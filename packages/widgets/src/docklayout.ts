@@ -1996,11 +1996,8 @@ namespace Private {
   export
   async function addAria(widget: Widget, tabBar: TabBar<Widget>) {
     let tabId = tabBar.renderer.createTabKey({title: widget.title, current: false, zIndex: 0});
-
-    if (tabId) {
-      widget.node.setAttribute('role', 'tabpanel');
-      widget.node.setAttribute('aria-labelledby', tabId);
-    }
+    widget.node.setAttribute('role', 'tabpanel');
+    widget.node.setAttribute('aria-labelledby', tabId);
   }
 
   export
