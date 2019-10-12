@@ -751,6 +751,10 @@ class VirtualElement {
 
 export
 class VirtualElementPass {
+  readonly realize: VirtualElementPass.IRealize;
+
+  readonly render: VirtualElementPass.IRender;
+
   /**
    * The type of the node.
    *
@@ -762,13 +766,26 @@ class VirtualElementPass {
   /**
    * Construct a new virtual element pass thru node.
    *
-   * @param callback - a function that takes a host HTMLElement and returns void
+   * @param realize - a function that takes no arguments and returns an HTMLElement
+   *
+   * @param render - a function that takes a host HTMLElement and returns void
    */
-  constructor(readonly callback: VirtualElementPass.ICallBack) {}
+  constructor({realize, render}: VirtualElementPass.IProps) {
+    this.render = render;
+    this.realize = realize || (() => {const host = document.createElement('div'); this.render(host); return host});
+  }
 }
 
-namespace VirtualElementPass {
-  export type ICallBack = (host: HTMLElement) => void;
+export namespace VirtualElementPass {
+  export type IRealize = () => HTMLElement;
+
+  export type IRender = (host: HTMLElement) => void;
+
+  export interface IProps {
+    realize?: IRealize;
+
+    render: IRender;
+  }
 }
 
 /**
@@ -813,6 +830,8 @@ export function h(tag: string): VirtualElement {
       children.push(arg);
     } else if (arg instanceof VirtualElement) {
       children.push(arg);
+    } else if (arg instanceof VirtualElementPass) {
+      children.push(arg);
     } else if (arg instanceof Array) {
       extend(children, arg);
     } else if (i === 1 && arg && typeof arg === 'object') {
@@ -828,6 +847,8 @@ export function h(tag: string): VirtualElement {
       } else if (child instanceof VirtualText) {
         array.push(child);
       } else if (child instanceof VirtualElement) {
+        array.push(child);
+      } else if (child instanceof VirtualElementPass) {
         array.push(child);
       }
     }
@@ -954,8 +975,8 @@ namespace h {
   export const wbr: IFactory = h.bind(undefined, 'wbr');
 }
 
-export function hpass(callback: (host: HTMLElement) => void): VirtualElementPass {
-  return new VirtualElementPass(callback);
+export function hpass(props: VirtualElementPass.IProps): VirtualElementPass {
+  return new VirtualElementPass(props);
 }
 
 /**
@@ -1039,12 +1060,17 @@ namespace Private {
   export
   function createDOMNode(node: VirtualElement): HTMLElement;
   export
+  function createDOMNode(node: VirtualElementPass): HTMLElement;
+  export
   function createDOMNode(node: VirtualNode): HTMLElement | Text;
   export
   function createDOMNode(node: VirtualNode): HTMLElement | Text {
     // Create a text node for a virtual text node.
     if (node.type === 'text') {
       return document.createTextNode(node.content);
+    } else if (node.type === 'passthru') {
+      console.error("createDOMNode should not be called on vdom nodes of type === 'passthru'");
+      return node.realize();
     }
 
     // Create the HTML element with the specified tag.
@@ -1055,7 +1081,13 @@ namespace Private {
 
     // Recursively populate the element with child content.
     for (let i = 0, n = node.children.length; i < n; ++i) {
-      element.appendChild(createDOMNode(node.children[i]));
+      const child = node.children[i];
+
+      if (child.type === 'passthru') {
+        child.render(element);
+      } else {
+        element.appendChild(createDOMNode(child));
+      }
     }
 
     // Return the populated element.
@@ -1092,15 +1124,13 @@ namespace Private {
       // Lookup the new virtual node.
       let newVNode = newContent[i];
 
-      // If the new content is a pass thru, let it handle diffing
-      if (newVNode.type === 'passthru') {
-        newVNode.callback(host);
-        continue;
-      }
-
       // If the old content is exhausted, create a new node.
       if (i >= oldCopy.length) {
-        host.appendChild(createDOMNode(newContent[i]));
+        if (newVNode.type === 'passthru') {
+          newVNode.render(host);
+        } else {
+          host.appendChild(createDOMNode(newVNode));
+        }
         continue;
       }
 
@@ -1120,15 +1150,27 @@ namespace Private {
         continue;
       }
 
-      // If the old or new node is a text node, the other node is now
-      // known to be an element node, so create and insert a new node.
-      if (oldVNode.type === 'text' || newVNode.type === 'text') {
-        ArrayExt.insert(oldCopy, i, newVNode);
-        host.insertBefore(createDOMNode(newVNode), currElem);
+      // Handle the case of passthru update.
+      if (oldVNode.type === 'passthru' && newVNode.type === 'passthru') {
+        newVNode.render(host);
+        currElem = currElem!.nextSibling;
         continue;
       }
 
-      // At this point, both nodes are known to be element nodes.
+      // If the types of the old and new nodes differ,
+      // create and insert a new node.
+      if (oldVNode.type === 'text' || newVNode.type === 'text' ||
+        oldVNode.type === 'passthru' || newVNode.type === 'passthru') {
+        ArrayExt.insert(oldCopy, i, newVNode);
+        if (newVNode.type === 'passthru') {
+          newVNode.render(host);
+        } else {
+          host.insertBefore(createDOMNode(newVNode), currElem);
+        }
+        continue;
+      }
+
+      // At this point, both nodes are known to be of type element.
 
       // If the new elem is keyed, move an old keyed elem to the proper
       // location before proceeding with the diff. The search can start
