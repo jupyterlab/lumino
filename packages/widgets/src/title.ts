@@ -11,6 +11,8 @@ import {
   ISignal, Signal
 } from '@lumino/signaling';
 
+import { VirtualElementPass } from "@phosphor/virtualdom";
+
 
 /**
  * An object which holds data related to an object's title.
@@ -43,6 +45,9 @@ class Title<T> {
     }
     if (options.iconLabel !== undefined) {
       this._iconLabel = options.iconLabel;
+    }
+    if (options.iconPass !== undefined) {
+      this._iconPass = options.iconPass;
     }
     if (options.caption !== undefined) {
       this._caption = options.caption;
@@ -172,6 +177,18 @@ class Title<T> {
     this._changed.emit(undefined);
   }
 
+  get iconPass(): VirtualElementPass.IProps {
+    return this._iconPass;
+  }
+
+  set iconPass(value: VirtualElementPass.IProps) {
+    if (this._iconPass === value) {
+      return;
+    }
+    this._iconPass = value;
+    this._changed.emit(undefined);
+  }
+
   /**
    * Get the caption for the title.
    *
@@ -270,6 +287,7 @@ class Title<T> {
   private _mnemonic = -1;
   private _iconClass = '';
   private _iconLabel = '';
+  private _iconPass: VirtualElementPass.IProps;
   private _className = '';
   private _closable = false;
   private _dataset: Title.Dataset;
@@ -322,6 +340,8 @@ namespace Title {
      * The icon label for the title.
      */
     iconLabel?: string;
+
+    iconPass?: VirtualElementPass.IProps;
 
     /**
      * The caption for the title.
