@@ -50,7 +50,7 @@ import {
 import {
   SelectionModel
 } from './selectionmodel';
-import { CellEditorController, TextCellEditor, EnumCellEditor, DateCellEditor } from './celleditor';
+import { CellEditorController } from './celleditor';
 
 
 /**
@@ -131,9 +131,6 @@ class DataGrid extends Widget {
     this._scrollCorner = new Widget();
 
     this._cellEditorController = new CellEditorController();
-    this._cellEditorController.registerEditor(new TextCellEditor());
-    this._cellEditorController.registerEditor(new EnumCellEditor());
-    this._cellEditorController.registerEditor(new DateCellEditor());
 
     // Add the extra class names to the child widgets.
     this._viewport.addClass('p-DataGrid-viewport');
