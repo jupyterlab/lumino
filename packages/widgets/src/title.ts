@@ -46,8 +46,8 @@ class Title<T> {
     if (options.iconLabel !== undefined) {
       this._iconLabel = options.iconLabel;
     }
-    if (options.iconPass !== undefined) {
-      this._iconPass = options.iconPass;
+    if (options.iconRender !== undefined) {
+      this._iconRender = options.iconRender;
     }
     if (options.caption !== undefined) {
       this._caption = options.caption;
@@ -177,15 +177,15 @@ class Title<T> {
     this._changed.emit(undefined);
   }
 
-  get iconPass(): VirtualElementPass.IProps {
-    return this._iconPass;
+  get iconRender(): VirtualElementPass.IRender {
+    return this._iconRender;
   }
 
-  set iconPass(value: VirtualElementPass.IProps) {
-    if (this._iconPass === value) {
+  set iconRender(value: VirtualElementPass.IRender) {
+    if (this._iconRender === value) {
       return;
     }
-    this._iconPass = value;
+    this._iconRender = value;
     this._changed.emit(undefined);
   }
 
@@ -287,7 +287,7 @@ class Title<T> {
   private _mnemonic = -1;
   private _iconClass = '';
   private _iconLabel = '';
-  private _iconPass: VirtualElementPass.IProps;
+  private _iconRender: VirtualElementPass.IRender;
   private _className = '';
   private _closable = false;
   private _dataset: Title.Dataset;
@@ -341,7 +341,7 @@ namespace Title {
      */
     iconLabel?: string;
 
-    iconPass?: VirtualElementPass.IProps;
+    iconRender?: VirtualElementPass.IRender;
 
     /**
      * The caption for the title.
