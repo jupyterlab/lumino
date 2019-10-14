@@ -60,7 +60,7 @@ class BasicKeyHandler implements DataGrid.IKeyHandler {
    * This will not be called if the mouse button is pressed.
    */
   onKeyDown(grid: DataGrid, event: KeyboardEvent): void {
-    if (!event.shiftKey && !Platform.accelKey(event)) {
+    if (!Platform.accelKey(event)) {
       const inp = String.fromCharCode(event.keyCode);
       if (/[a-zA-Z0-9-_ ]/.test(inp)) {
         if (grid.selectionModel) {
@@ -78,8 +78,8 @@ class BasicKeyHandler implements DataGrid.IKeyHandler {
                 dataModel.setData('body', row, column, response.value);
               }
               grid.viewport.node.focus();
-              if (response.returnPressed) {
-                grid.selectionModel!.incrementCursor();
+              if (response.cursorMovement) {
+                grid.incrementCursor(event.shiftKey ? 'up' : 'down');
                 grid.scrollToCursor();
               }
             });
@@ -115,7 +115,7 @@ class BasicKeyHandler implements DataGrid.IKeyHandler {
       break;
     case 'Enter':
       if (grid.selectionModel) {
-        grid.selectionModel.incrementCursor();
+        grid.incrementCursor(event.shiftKey ? 'up' : 'down');
         grid.scrollToCursor();
       }
       break;
