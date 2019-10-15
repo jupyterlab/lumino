@@ -32,7 +32,7 @@ import {
 } from '@lumino/signaling';
 
 import {
-  ElementDataset, ElementInlineStyle, VirtualDOM, VirtualElement, h, hpass, VirtualNode
+  ElementDataset, ElementInlineStyle, VirtualDOM, VirtualElement, VirtualElementPass, h, hpass
 } from '@lumino/virtualdom';
 
 import {
@@ -1339,7 +1339,7 @@ namespace TabBar {
      *
      * @returns A virtual element representing the tab icon.
      */
-    renderIcon(data: IRenderData<any>): VirtualNode {
+    renderIcon(data: IRenderData<any>): VirtualElement | VirtualElementPass {
       const { title } = data;
       let className = this.createIconClass(data);
 
