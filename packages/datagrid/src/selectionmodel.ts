@@ -62,7 +62,7 @@ abstract class SelectionModel {
    */
   abstract readonly cursorColumn: number;
 
-  abstract incrementCursorWithinSelections(direction: SelectionModel.CursorMoveDirection): void;
+  abstract moveCursorWithinSelections(direction: SelectionModel.CursorMoveDirection): void;
 
   /**
    * Get the current selection in the selection model.

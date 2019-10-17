@@ -522,7 +522,7 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
         grid: grid,
         row: row,
         column: column,
-        metadata: grid.dataModel!.metadata('body', row, column)
+        metadata: grid.dataModel.metadata('body', row, column)
       };
       const editor = grid.cellEditorController.createEditor(cell);
       if (editor) {
@@ -533,7 +533,7 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
           }
           grid.viewport.node.focus();
           if (args.cursorMovement !== 'none') {
-            grid.incrementCursor(args.cursorMovement);
+            grid.moveCursor(args.cursorMovement);
             grid.scrollToCursor();
           }
         });

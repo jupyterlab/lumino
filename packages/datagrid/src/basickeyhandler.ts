@@ -82,7 +82,7 @@ class BasicKeyHandler implements DataGrid.IKeyHandler {
                 }
                 grid.viewport.node.focus();
                 if (args.cursorMovement) {
-                  grid.incrementCursor(event.shiftKey ? 'up' : 'down');
+                  grid.moveCursor(args.cursorMovement);
                   grid.scrollToCursor();
                 }
               });
@@ -126,8 +126,16 @@ class BasicKeyHandler implements DataGrid.IKeyHandler {
       break;
     case 'Enter':
       if (grid.selectionModel) {
-        grid.incrementCursor(event.shiftKey ? 'up' : 'down');
+        grid.moveCursor(event.shiftKey ? 'up' : 'down');
         grid.scrollToCursor();
+      }
+      break;
+    case 'Tab':
+      if (grid.selectionModel) {
+        grid.moveCursor(event.shiftKey ? 'left' : 'right');
+        grid.scrollToCursor();
+        event.stopPropagation();
+        event.preventDefault();
       }
       break;
     }
