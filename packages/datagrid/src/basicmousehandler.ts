@@ -30,7 +30,7 @@ import {
 import {
   SelectionModel
 } from './selectionmodel';
-import { ICellEditResponse } from './celleditor';
+import { ICellEditResponse, CellEditor } from './celleditor';
 
 /**
  * A basic implementation of a data grid mouse handler.
@@ -518,11 +518,10 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
     }
 
     if (region === 'body') {
-      const cell = {
+      const cell: CellEditor.CellConfig = {
         grid: grid,
         row: row,
-        column: column,
-        metadata: grid.dataModel.metadata('body', row, column)
+        column: column
       };
       const editor = grid.cellEditorController.createEditor(cell);
       if (editor) {
