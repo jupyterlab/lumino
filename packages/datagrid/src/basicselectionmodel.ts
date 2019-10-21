@@ -51,7 +51,7 @@ class BasicSelectionModel extends SelectionModel {
   }
 
   /**
-   * Move cursor down/up while making sure it remains
+   * Move cursor down/up/left/right while making sure it remains
    * within the bounds of selected rectangles
    */
   moveCursorWithinSelections(direction: SelectionModel.CursorMoveDirection): void {
