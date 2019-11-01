@@ -7,7 +7,6 @@
     "tests/*"
   ],
   "scripts": {
-    "bootstrap": "lerna bootstrap",
     "api": "lerna run api",
     "build": "lerna run build",
     "build:examples": "lerna run build --scope \"@lumino/example-*\"",
