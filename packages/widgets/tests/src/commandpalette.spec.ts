@@ -461,6 +461,7 @@ describe('@lumino/widgets', () => {
             node = content.querySelector('.p-CommandPalette-item.p-mod-active');
             expect(node).to.equal(null);
           });
+          expect(called).to.be.false;
         });
 
         it('should trigger active item if enter is pressed', () => {

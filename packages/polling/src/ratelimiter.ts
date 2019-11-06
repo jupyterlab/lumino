@@ -36,7 +36,7 @@ export abstract class RateLimiter<T, U> implements IRateLimiter<T, U> {
 
       if (state.phase === 'resolved') {
         this.payload = new PromiseDelegate();
-        payload!.resolve((state.payload as T) || undefined);
+        payload!.resolve(state.payload as T);
         return;
       }
 

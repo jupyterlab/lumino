@@ -13,7 +13,8 @@
     "lib": [
       "DOM",
       "ES5",
-      "ES2015.Promise"
+      "ES2015.Promise",
+      "ES2015.Iterable"
     ],
     "types": [
       "chai",

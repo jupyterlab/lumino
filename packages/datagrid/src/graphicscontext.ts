@@ -94,33 +94,33 @@ class GraphicsContext implements IDisposable {
     }
   }
 
-  get textAlign(): string {
+  get textAlign(): CanvasTextAlign {
     return this._context.textAlign;
   }
 
-  set textAlign(value: string) {
+  set textAlign(value: CanvasTextAlign) {
     if (this._state.textAlign !== value) {
       this._state.textAlign = value;
       this._context.textAlign = value;
     }
   }
 
-  get textBaseline(): string {
+  get textBaseline(): CanvasTextBaseline {
     return this._context.textBaseline;
   }
 
-  set textBaseline(value: string) {
+  set textBaseline(value: CanvasTextBaseline) {
     if (this._state.textBaseline !== value) {
       this._state.textBaseline = value;
       this._context.textBaseline = value;
     }
   }
 
-  get lineCap(): string {
+  get lineCap(): CanvasLineCap {
     return this._context.lineCap;
   }
 
-  set lineCap(value: string) {
+  set lineCap(value: CanvasLineCap) {
     if (this._state.lineCap !== value) {
       this._state.lineCap = value;
       this._context.lineCap = value;
@@ -138,11 +138,11 @@ class GraphicsContext implements IDisposable {
     }
   }
 
-  get lineJoin(): string {
+  get lineJoin(): CanvasLineJoin {
     return this._context.lineJoin;
   }
 
-  set lineJoin(value: string) {
+  set lineJoin(value: CanvasLineJoin) {
     if (this._state.lineJoin !== value) {
       this._state.lineJoin = value;
       this._context.lineJoin = value;
@@ -415,7 +415,7 @@ class GraphicsContext implements IDisposable {
     return this._context.createRadialGradient(x0, y0, r0, x1, y1, r1);
   }
 
-  createPattern(image: HTMLImageElement | HTMLCanvasElement | HTMLVideoElement, repetition: string): CanvasPattern {
+  createPattern(image: HTMLImageElement | HTMLCanvasElement | HTMLVideoElement, repetition: string): CanvasPattern | null {
     return this._context.createPattern(image, repetition);
   }
 
