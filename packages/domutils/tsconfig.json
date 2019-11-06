@@ -8,11 +8,11 @@
     "strictNullChecks": true,
     "module": "commonjs",
     "moduleResolution": "node",
-    "target": "ES5",
+    "target": "es5",
     "outDir": "lib",
     "lib": [
-      "ES5",
-      "DOM"
+      "es5",
+      "dom"
     ],
     "types": [],
     "rootDir": "src"

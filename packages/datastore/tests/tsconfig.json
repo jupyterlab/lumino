@@ -7,10 +7,18 @@
     "strictNullChecks": true,
     "module": "commonjs",
     "moduleResolution": "node",
-    "target": "ES5",
+    "target": "es5",
     "outDir": "./build",
-    "lib": ["ES6", "DOM"],
-    "types": ["chai", "mocha"]
+    "lib": [
+      "es6",
+      "dom"
+    ],
+    "types": [
+      "chai",
+      "mocha"
+    ]
   },
-  "include": ["src/*"]
+  "include": [
+    "src/*"
+  ]
 }

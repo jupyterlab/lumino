@@ -7,11 +7,11 @@
     "strictNullChecks": true,
     "module": "commonjs",
     "moduleResolution": "node",
-    "target": "ES5",
+    "target": "es5",
     "outDir": "build",
     "lib": [
-      "ES5",
-      "DOM"
+      "es5",
+      "dom"
     ],
     "types": [
       "chai",

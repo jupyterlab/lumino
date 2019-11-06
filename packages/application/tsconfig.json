@@ -8,13 +8,14 @@
     "strictNullChecks": true,
     "module": "commonjs",
     "moduleResolution": "node",
-    "target": "ES5",
+    "target": "es5",
     "outDir": "lib",
     "lib": [
-      "ES5",
-      "ES2015.Collection",
-      "ES2015.Promise",
-      "DOM"
+      "es5",
+      "es2015.collection",
+      "es2015.promise",
+      "es2015.iterable",
+      "dom"
     ],
     "types": [],
     "rootDir": "src"
