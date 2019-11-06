@@ -494,7 +494,14 @@ namespace MessageLoop {
    */
   const schedule = (() => {
     let ok = typeof requestAnimationFrame === 'function';
-    return ok ? requestAnimationFrame : setImmediate;
+    let prev = 0;
+    return ok ? requestAnimationFrame : (callback: FrameRequestCallback) => {
+      const curr = new Date().getTime();
+      const next = Math.max(0, 16 - (curr - prev));
+      const handle = window.setTimeout(() => callback(curr + next), next);
+      prev = curr + next;
+      return handle;
+    };
   })();
 
   /**
@@ -502,7 +509,7 @@ namespace MessageLoop {
    */
   const unschedule = (() => {
     let ok = typeof cancelAnimationFrame === 'function';
-    return ok ? cancelAnimationFrame : clearImmediate;
+    return ok ? cancelAnimationFrame : (handle: number) => clearTimeout(handle);
   })();
 
   /**
