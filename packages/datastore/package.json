@@ -51,5 +51,8 @@
     "rimraf": "^2.5.2",
     "typedoc": "~0.15.0",
     "typescript": "~3.5.1"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

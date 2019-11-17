@@ -26,5 +26,8 @@
   "dependencies": {
     "@lumino/dragdrop": "^1.4.1",
     "@lumino/widgets": "^1.9.3"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
