@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2019, PhosphorJS Contributors
 |
@@ -11,7 +13,7 @@ import {
 
 import {
   ListField
-} from '@phosphor/datastore';
+} from '@lumino/datastore';
 
 type ListValue = number;
 
@@ -27,7 +29,7 @@ function shuffle<T>(array: ReadonlyArray<T>): T[] {
   return ret;
 }
 
-describe('@phosphor/datastore', () => {
+describe('@lumino/datastore', () => {
 
   describe('ListField', () => {
 
@@ -213,7 +215,7 @@ describe('@phosphor/datastore', () => {
         });
         expect(thirdUpdate.value).to.eql([1, 2, 3, 4, 5, 6, 7]);
 
-        // Now if we apply these patches on another client in 
+        // Now if we apply these patches on another client in
         // a different order, they should give the same result.
         metadata = field.createMetadata();
         let firstPatch = field.applyPatch({

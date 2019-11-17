@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2019, PhosphorJS Contributors
 |
@@ -5,7 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { Datastore } from '@phosphor/datastore';
+import { Datastore } from '@lumino/datastore';
 
 import { server as WebSocketServer, connection } from 'websocket';
 

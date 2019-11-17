@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -11,7 +13,7 @@ import {
 
 import {
   BoxSizer, BoxEngine
-} from '@phosphor/widgets';
+} from '@lumino/widgets';
 
 
 function createSizers(n: number): BoxSizer[] {
@@ -23,7 +25,7 @@ function createSizers(n: number): BoxSizer[] {
 }
 
 
-describe('@phosphor/widgets', () => {
+describe('@lumino/widgets', () => {
 
   describe('BoxSizer', () => {
 

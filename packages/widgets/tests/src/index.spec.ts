@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -7,7 +9,7 @@
 |----------------------------------------------------------------------------*/
 import 'es6-promise/auto';  // polyfill Promise on IE
 
-import '@phosphor/widgets/style/index.css';
+import '@lumino/widgets/style/index.css';
 
 import './boxengine.spec';
 import './boxlayout.spec';

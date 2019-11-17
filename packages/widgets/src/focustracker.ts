@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -7,15 +9,15 @@
 |----------------------------------------------------------------------------*/
 import {
   ArrayExt, each, filter, find, max
-} from '@phosphor/algorithm';
+} from '@lumino/algorithm';
 
 import {
   IDisposable
-} from '@phosphor/disposable';
+} from '@lumino/disposable';
 
 import {
   ISignal, Signal
-} from '@phosphor/signaling';
+} from '@lumino/signaling';
 
 import {
   Widget

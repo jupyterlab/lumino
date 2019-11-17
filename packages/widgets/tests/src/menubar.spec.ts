@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -15,27 +17,27 @@ import {
 
 import {
   JSONObject
-} from '@phosphor/coreutils';
+} from '@lumino/coreutils';
 
 import {
   CommandRegistry
-} from '@phosphor/commands';
+} from '@lumino/commands';
 
 import {
   DisposableSet
-} from '@phosphor/disposable';
+} from '@lumino/disposable';
 
 import {
   Message, MessageLoop
-} from '@phosphor/messaging';
+} from '@lumino/messaging';
 
 import {
   VirtualDOM
-} from '@phosphor/virtualdom';
+} from '@lumino/virtualdom';
 
 import {
   Menu, MenuBar, Widget
-} from '@phosphor/widgets';
+} from '@lumino/widgets';
 
 
 class LogMenuBar extends MenuBar {
@@ -66,7 +68,7 @@ class LogMenuBar extends MenuBar {
 }
 
 
-describe('@phosphor/widgets', () => {
+describe('@lumino/widgets', () => {
 
   const DEFAULT_CMD = 'menubar.spec.ts:defaultCmd';
 

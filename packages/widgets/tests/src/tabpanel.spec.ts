@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -11,18 +13,18 @@ import {
 
 import {
   each
-} from '@phosphor/algorithm';
+} from '@lumino/algorithm';
 
 import {
   StackedPanel, TabBar, TabPanel, Widget
-} from '@phosphor/widgets';
+} from '@lumino/widgets';
 
 import {
   LogWidget
 } from './widget.spec';
 
 
-describe('@phosphor/widgets', () => {
+describe('@lumino/widgets', () => {
 
   describe('TabPanel', () => {
 

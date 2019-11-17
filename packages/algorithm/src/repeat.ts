@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -21,7 +23,7 @@ import {
  *
  * #### Example
  * ```typescript
- * import { repeat, toArray } from '@phosphor/algorithm';
+ * import { repeat, toArray } from '@lumino/algorithm';
  *
  * let stream = repeat(7, 3);
  *
@@ -43,7 +45,7 @@ function repeat<T>(value: T, count: number): IIterator<T> {
  *
  * #### Example
  * ```typescript
- * import { once, toArray } from '@phosphor/algorithm';
+ * import { once, toArray } from '@lumino/algorithm';
  *
  * let stream = once(7);
  *

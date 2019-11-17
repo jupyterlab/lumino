@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2019, PhosphorJS Contributors
 |
@@ -17,15 +19,15 @@ import {
   MapField,
   RegisterField,
   TextField
-} from '@phosphor/datastore';
+} from '@lumino/datastore';
 
 import {
   MessageLoop
-} from '@phosphor/messaging';
+} from '@lumino/messaging';
 
 import {
   Signal
-} from '@phosphor/signaling';
+} from '@lumino/signaling';
 
 
 type CustomMetadata = { id: string };
@@ -81,7 +83,7 @@ let state = {
       content: 'Ipsum Lorem',
       count: 33,
       enabled: false,
-      links: ['www.example.com', 'https://github.com/phosphor/phosphorjs'],
+      links: ['www.example.com', 'https://github.com/lumino/luminojs'],
       metadata: null
     }
   ]
@@ -153,7 +155,7 @@ class InMemoryServerAdapter implements IServerAdapter {
   private _transactions: { [id: string]: Datastore.Transaction } = {};
 }
 
-describe('@phosphor/datastore', () => {
+describe('@lumino/datastore', () => {
 
   describe('Datastore', () => {
 

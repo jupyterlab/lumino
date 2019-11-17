@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -10,11 +12,11 @@ import 'es6-promise/auto';  // polyfill Promise on IE
 import {
   BasicKeyHandler, BasicMouseHandler, BasicSelectionModel, CellRenderer,
   DataGrid, DataModel, JSONModel, TextRenderer
-} from '@phosphor/datagrid';
+} from '@lumino/datagrid';
 
 import {
   DockPanel, StackedPanel, Widget
-} from '@phosphor/widgets';
+} from '@lumino/widgets';
 
 import '../style/index.css';
 

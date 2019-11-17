@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2018, PhosphorJS Contributors
 |
@@ -6,7 +8,7 @@
 |----------------------------------------------------------------------------*/
 import {
   ArrayExt, IIterable, IIterator, IRetroable, IterableOrArrayLike, each, empty
-} from "@phosphor/algorithm";
+} from "@lumino/algorithm";
 
 
 /**

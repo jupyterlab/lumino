@@ -1,5 +1,14 @@
-# PhosphorJS
+# lumino
 
-This project is archived. @sccolbert has retired from OSS development and no further public updates will be made.
+[![Build Status](https://travis-ci.org/jupyterlab/lumino.svg?branch=master)](https://travis-ci.org/jupyterlab/lumino)
 
-Permission is freely given to hard-fork this project and continue development in the public sphere. However, such a fork **may not use the name(s) PhosphorJS, Phosphor, or the names of the copyright holders without explicit written permission from those copyright holders (which is more than likely @sccolbert), *unless those names already exist in the code at the time the fork was created*.** In short: hard-fork, pick a new name, and move on with life.
+lumino is a set of JavaScript packages, written in TypeScript, that provide
+a rich set of widgets, layouts, events, and data structures. These enable
+developers to construct advanced, production-quality, desktop-like web
+applications that would be otherwise impossible using CSS alone.
+
+lumino follows the Jupyter [Community Guides](https://jupyter.readthedocs.io/en/latest/community/content-community.html).
+
+# Development
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) to know how to contribute and set up a development environment.

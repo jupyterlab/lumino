@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2019, PhosphorJS Contributors
 |
@@ -11,11 +13,11 @@ import {
 
 import {
   MapField
-} from '@phosphor/datastore';
+} from '@lumino/datastore';
 
 type MapValue = string;
 
-describe('@phosphor/datastore', () => {
+describe('@lumino/datastore', () => {
 
   describe('MapField', () => {
 

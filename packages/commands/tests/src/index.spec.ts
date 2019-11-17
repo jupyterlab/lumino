@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -17,15 +19,15 @@ import {
 
 import {
   CommandRegistry
-} from '@phosphor/commands';
+} from '@lumino/commands';
 
 import {
   JSONObject
-} from '@phosphor/coreutils';
+} from '@lumino/coreutils';
 
 import {
   Platform
-} from '@phosphor/domutils';
+} from '@lumino/domutils';
 
 
 const NULL_COMMAND = {
@@ -33,7 +35,7 @@ const NULL_COMMAND = {
 };
 
 
-describe('@phosphor/commands', () => {
+describe('@lumino/commands', () => {
 
   describe('CommandRegistry', () => {
 

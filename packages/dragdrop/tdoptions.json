@@ -7,6 +7,6 @@
   "out": "../../docs/api/dragdrop",
   "baseUrl": ".",
   "paths": {
-    "@phosphor/*": ["node_modules/@phosphor/*"]
+    "@lumino/*": ["node_modules/@lumino/*"]
   }
 }

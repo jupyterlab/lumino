@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -11,10 +13,10 @@ import {
 
 import {
   BoxLayout, BoxPanel, Widget
-} from '@phosphor/widgets';
+} from '@lumino/widgets';
 
 
-describe('@phosphor/widgets', () => {
+describe('@lumino/widgets', () => {
 
   describe('BoxPanel', () => {
 

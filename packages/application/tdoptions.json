@@ -7,6 +7,6 @@
   "out": "../../docs/api/application",
   "baseUrl": ".",
   "paths": {
-    "@phosphor/*": ["../packages/*"]
+    "@lumino/*": ["../packages/*"]
   }
 }

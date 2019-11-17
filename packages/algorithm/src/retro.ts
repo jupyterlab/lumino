@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -40,7 +42,7 @@ type RetroableOrArrayLike<T> = IRetroable<T> | ArrayLike<T>;
  *
  * #### Example
  * ```typescript
- * import { retro, toArray } from '@phosphor/algorithm';
+ * import { retro, toArray } from '@lumino/algorithm';
  *
  * let data = [1, 2, 3, 4, 5, 6];
  *

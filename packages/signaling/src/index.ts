@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -7,7 +9,7 @@
 |----------------------------------------------------------------------------*/
 import {
   ArrayExt, each, find
-} from '@phosphor/algorithm';
+} from '@lumino/algorithm';
 
 
 
@@ -84,7 +86,7 @@ interface ISignal<T, U> {
  *
  * #### Example
  * ```typescript
- * import { ISignal, Signal } from '@phosphor/signaling';
+ * import { ISignal, Signal } from '@lumino/signaling';
  *
  * class SomeClass {
  *

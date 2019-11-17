@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2019, PhosphorJS Contributors
 |
@@ -7,15 +9,15 @@
 |----------------------------------------------------------------------------*/
 import {
   ArrayExt
-} from '@phosphor/algorithm';
+} from '@lumino/algorithm';
 
 import {
   CommandRegistry
-} from '@phosphor/commands';
+} from '@lumino/commands';
 
 import {
   BoxPanel, DockPanel, Widget
-} from '@phosphor/widgets';
+} from '@lumino/widgets';
 
 import {
   WSAdapter

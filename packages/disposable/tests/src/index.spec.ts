@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2016, PhosphorJS Contributors
 |
@@ -12,7 +14,7 @@ import {
 import {
   DisposableDelegate, DisposableSet, IDisposable,
   ObservableDisposableDelegate, ObservableDisposableSet
-} from '@phosphor/disposable';
+} from '@lumino/disposable';
 
 
 class TestDisposable implements IDisposable {
@@ -29,7 +31,7 @@ class TestDisposable implements IDisposable {
 }
 
 
-describe('@phosphor/disposable', () => {
+describe('@lumino/disposable', () => {
 
   describe('DisposableDelegate', () => {
 

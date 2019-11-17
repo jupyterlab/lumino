@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -11,7 +13,7 @@ import {
 
 import {
   ElementExt
-} from '@phosphor/domutils';
+} from '@lumino/domutils';
 
 
 const STYLE_TEXT = (`
@@ -63,7 +65,7 @@ const STYLE_TEXT = (`
 `);
 
 
-describe('@phosphor/domutils', () => {
+describe('@lumino/domutils', () => {
 
   describe('ElementExt', () => {
 

@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2019, PhosphorJS Contributors
 |
@@ -8,7 +10,7 @@
 
 import {
   UUID
-} from '@phosphor/coreutils';
+} from '@lumino/coreutils';
 
 // A unique id for this collaborator.
 export const COLLABORATOR_ID = UUID.uuid4();

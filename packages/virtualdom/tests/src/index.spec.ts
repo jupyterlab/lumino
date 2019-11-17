@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -11,10 +13,10 @@ import {
 
 import {
   VirtualDOM, VirtualElement, VirtualText, h
-} from '@phosphor/virtualdom';
+} from '@lumino/virtualdom';
 
 
-describe('@phosphor/virtualdom', () => {
+describe('@lumino/virtualdom', () => {
 
   describe('VirtualText', () => {
 

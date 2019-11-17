@@ -1,10 +1,10 @@
 {
-  "name": "@phosphor/default-theme",
+  "name": "@lumino/default-theme",
   "version": "0.1.8",
-  "description": "PhosphorJS - Default Theme",
-  "homepage": "https://github.com/phosphorjs/phosphor",
+  "description": "lumino Default Theme",
+  "homepage": "https://github.com/luminojs/lumino",
   "bugs": {
-    "url": "https://github.com/phosphorjs/phosphor/issues"
+    "url": "https://github.com/luminojs/lumino/issues"
   },
   "license": "BSD-3-Clause",
   "author": "S. Chris Colbert <sccolbert@gmail.com>",
@@ -21,10 +21,10 @@
   "style": "style/index.css",
   "repository": {
     "type": "git",
-    "url": "https://github.com/phosphorjs/phosphor.git"
+    "url": "https://github.com/luminojs/lumino.git"
   },
   "dependencies": {
-    "@phosphor/dragdrop": "^1.4.1",
-    "@phosphor/widgets": "^1.9.3"
+    "@lumino/dragdrop": "^1.4.1",
+    "@lumino/widgets": "^1.9.3"
   }
 }

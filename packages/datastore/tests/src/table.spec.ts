@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2019, PhosphorJS Contributors
 |
@@ -11,11 +13,11 @@ import {
 
 import {
   toArray
-} from '@phosphor/algorithm';
+} from '@lumino/algorithm';
 
 import {
   Datastore, Fields, ListField, RegisterField, Table, TextField
-} from '@phosphor/datastore';
+} from '@lumino/datastore';
 
 
 type CustomMetadata = { id: string };
@@ -47,7 +49,7 @@ let schema: TestSchema = {
  */
 type MutableContext = { -readonly [K in keyof Datastore.Context]: Datastore.Context[K] };
 
-describe('@phosphor/datastore', () => {
+describe('@lumino/datastore', () => {
 
   describe('Table', () => {
 
@@ -151,7 +153,7 @@ describe('@phosphor/datastore', () => {
       it('should return undefined if the record does not exist', () => {
         expect(table.get('my-record')).to.be.undefined;
       })
-      
+
       it('should get an existing record from a table', () => {
         context.inTransaction = true;
         table.update({
@@ -216,7 +218,7 @@ describe('@phosphor/datastore', () => {
         table.update({
           'my-record': {
             content: { index: 0, remove: 0, text: 'text' },
-            links: { index: 0, remove: 0, values: ['a', 'b', 'c'] }, 
+            links: { index: 0, remove: 0, values: ['a', 'b', 'c'] },
             enabled: true,
             count: 10,
             metadata: { id: 'new-identifier' }

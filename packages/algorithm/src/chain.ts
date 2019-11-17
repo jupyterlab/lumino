@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -20,7 +22,7 @@ import {
  *
  * #### Example
  * ```typescript
- * import { chain, toArray } from '@phosphor/algorithm';
+ * import { chain, toArray } from '@lumino/algorithm';
  *
  * let data1 = [1, 2, 3];
  * let data2 = [4, 5, 6];

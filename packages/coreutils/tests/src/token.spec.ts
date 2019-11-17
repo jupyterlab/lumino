@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -11,7 +13,7 @@ import {
 
 import {
   Token
-} from '@phosphor/coreutils';
+} from '@lumino/coreutils';
 
 
 interface ITestInterface {
@@ -20,7 +22,7 @@ interface ITestInterface {
 }
 
 
-describe('@phosphor/coreutils', () => {
+describe('@lumino/coreutils', () => {
 
   describe('Token', () => {
 

@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -7,23 +9,23 @@
 |----------------------------------------------------------------------------*/
 import {
   IIterator, empty
-} from '@phosphor/algorithm';
+} from '@lumino/algorithm';
 
 import {
   IObservableDisposable
-} from '@phosphor/disposable';
+} from '@lumino/disposable';
 
 import {
   ConflatableMessage, IMessageHandler, Message, MessageLoop
-} from '@phosphor/messaging';
+} from '@lumino/messaging';
 
 import {
   AttachedProperty
-} from '@phosphor/properties';
+} from '@lumino/properties';
 
 import {
   ISignal, Signal
-} from '@phosphor/signaling';
+} from '@lumino/signaling';
 
 import {
   Layout

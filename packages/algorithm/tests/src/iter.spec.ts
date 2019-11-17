@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -11,7 +13,7 @@ import {
 
 import {
   ArrayIterator, IIterator, each, every, iter, some, toArray
-} from '@phosphor/algorithm';
+} from '@lumino/algorithm';
 
 
 /**
@@ -64,7 +66,7 @@ function testIterator<T>(factory: IteratorFactory<T>): void {
 }
 
 
-describe('@phosphor/algorithm', () => {
+describe('@lumino/algorithm', () => {
 
   describe('iter()', () => {
 

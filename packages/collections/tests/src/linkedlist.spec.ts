@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -11,14 +13,14 @@ import {
 
 import {
   find, map, toArray
-} from '@phosphor/algorithm';
+} from '@lumino/algorithm';
 
 import {
   LinkedList
-} from '@phosphor/collections';
+} from '@lumino/collections';
 
 
-describe('@phosphor/collections', () => {
+describe('@lumino/collections', () => {
 
   describe('LinkedList', () => {
 

@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -15,19 +17,19 @@ import {
 
 import {
   each, range
-} from '@phosphor/algorithm';
+} from '@lumino/algorithm';
 
 import {
   Message, MessageLoop
-} from '@phosphor/messaging';
+} from '@lumino/messaging';
 
 import {
   TabBar, Title, Widget
-} from '@phosphor/widgets';
+} from '@lumino/widgets';
 
 import {
   VirtualDOM
-} from '@phosphor/virtualdom';
+} from '@lumino/virtualdom';
 
 
 class LogTabBar extends TabBar<Widget> {
@@ -117,7 +119,7 @@ function simulateOnNode(node: Element, eventName: string): void {
 }
 
 
-describe('@phosphor/widgets', () => {
+describe('@lumino/widgets', () => {
 
   describe('TabBar', () => {
 

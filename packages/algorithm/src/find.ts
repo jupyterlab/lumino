@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -25,7 +27,7 @@ import {
  *
  * #### Example
  * ```typescript
- * import { find } from '@phosphor/algorithm';
+ * import { find } from '@lumino/algorithm';
  *
  * interface IAnimal { species: string, name: string };
  *
@@ -71,7 +73,7 @@ function find<T>(object: IterableOrArrayLike<T>, fn: (value: T, index: number) =
  *
  * #### Example
  * ```typescript
- * import { findIndex } from '@phosphor/algorithm';
+ * import { findIndex } from '@lumino/algorithm';
  *
  * interface IAnimal { species: string, name: string };
  *
@@ -121,7 +123,7 @@ function findIndex<T>(object: IterableOrArrayLike<T>, fn: (value: T, index: numb
  *
  * #### Example
  * ```typescript
- * import { min } from '@phosphor/algorithm';
+ * import { min } from '@lumino/algorithm';
  *
  * function numberCmp(a: number, b: number): number {
  *   return a - b;
@@ -166,7 +168,7 @@ function min<T>(object: IterableOrArrayLike<T>, fn: (first: T, second: T) => num
  *
  * #### Example
  * ```typescript
- * import { max } from '@phosphor/algorithm';
+ * import { max } from '@lumino/algorithm';
  *
  * function numberCmp(a: number, b: number): number {
  *   return a - b;
@@ -211,7 +213,7 @@ function max<T>(object: IterableOrArrayLike<T>, fn: (first: T, second: T) => num
  *
  * #### Example
  * ```typescript
- * import { minmax } from '@phosphor/algorithm';
+ * import { minmax } from '@lumino/algorithm';
  *
  * function numberCmp(a: number, b: number): number {
  *   return a - b;

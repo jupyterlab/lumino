@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -11,15 +13,15 @@ import {
 
 import {
   ArrayExt, IIterator, each, iter
-} from '@phosphor/algorithm';
+} from '@lumino/algorithm';
 
 import {
   Message, MessageLoop
-} from '@phosphor/messaging';
+} from '@lumino/messaging';
 
 import {
   Layout, Title, Widget
-} from '@phosphor/widgets';
+} from '@lumino/widgets';
 
 
 export
@@ -116,7 +118,7 @@ class TestLayout extends Layout {
 }
 
 
-describe('@phosphor/widgets', () => {
+describe('@lumino/widgets', () => {
 
   describe('Widget', () => {
 

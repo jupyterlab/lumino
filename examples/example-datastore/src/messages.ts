@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2018, PhosphorJS Contributors
 |
@@ -7,11 +9,11 @@
 |----------------------------------------------------------------------------*/
 import {
   ReadonlyJSONObject, UUID, JSONObject
-} from '@phosphor/coreutils';
+} from '@lumino/coreutils';
 
 import {
   Datastore
-} from '@phosphor/datastore';
+} from '@lumino/datastore';
 
 
 /**
@@ -251,7 +253,7 @@ namespace WSAdapterMessages {
 
   /**
    * Create a `'storeid-reply'` message.
-   * 
+   *
    * @param parentId - The id of the parent of this reply.
    *
    * @param storeId - The assigned storeId.
@@ -275,7 +277,7 @@ namespace WSAdapterMessages {
 
   /**
    * Create a `'undo-reply'` message.
-   * 
+   *
    * @param parentId - The id of the parent of this reply.
    *
    * @param storeId - The assigned storeId.
@@ -299,7 +301,7 @@ namespace WSAdapterMessages {
 
   /**
    * Create a `'undo-reply'` message.
-   * 
+   *
    * @param parentId - The id of the parent of this reply.
    *
    * @param storeId - The assigned storeId.

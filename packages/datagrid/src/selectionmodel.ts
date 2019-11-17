@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2019, PhosphorJS Contributors
 |
@@ -7,11 +9,11 @@
 |----------------------------------------------------------------------------*/
 import {
   IIterator, some
-} from '@phosphor/algorithm';
+} from '@lumino/algorithm';
 
 import {
   ISignal, Signal
-} from '@phosphor/signaling';
+} from '@lumino/signaling';
 
 import {
   DataModel

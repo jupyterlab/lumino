@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -10,7 +12,7 @@ import {
 } from 'chai';
 
 
-describe('@phosphor/application', () => {
+describe('@lumino/application', () => {
 
   it('should pass', () => {
     expect(true).to.equal(true);

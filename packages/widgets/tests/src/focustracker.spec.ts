@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -15,15 +17,15 @@ import {
 
 import {
   Platform
-} from '@phosphor/domutils';
+} from '@lumino/domutils';
 
 import {
   FocusTracker, Widget
-} from '@phosphor/widgets';
+} from '@lumino/widgets';
 
 
 
-describe('@phosphor/widgets', () => {
+describe('@lumino/widgets', () => {
 
   let _trackers: FocusTracker<Widget>[] = [];
   let _widgets: Widget[] = [];

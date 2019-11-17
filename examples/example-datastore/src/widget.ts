@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2019, PhosphorJS Contributors
 |
@@ -7,19 +9,19 @@
 |----------------------------------------------------------------------------*/
 import {
   JSONExt, JSONObject
-} from '@phosphor/coreutils';
+} from '@lumino/coreutils';
 
 import {
   Fields, Datastore, RegisterField, TextField
-} from '@phosphor/datastore';
+} from '@lumino/datastore';
 
 import {
   DisposableDelegate, IDisposable
-} from '@phosphor/disposable';
+} from '@lumino/disposable';
 
 import {
   Panel, Widget
-} from '@phosphor/widgets';
+} from '@lumino/widgets';
 
 import * as CodeMirror from 'codemirror';
 

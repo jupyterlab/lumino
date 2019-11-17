@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -12,7 +14,7 @@ import {
 import {
   ConflatableMessage, IMessageHandler, IMessageHook, Message, MessageHook,
   MessageLoop
-} from '@phosphor/messaging';
+} from '@lumino/messaging';
 
 
 class Handler implements IMessageHandler {
@@ -66,7 +68,7 @@ const defer = (() => {
 })();
 
 
-describe('@phosphor/messaging', () => {
+describe('@lumino/messaging', () => {
 
   describe('Message', () => {
 

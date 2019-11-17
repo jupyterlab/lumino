@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -15,23 +17,23 @@ import {
 
 import {
   CommandRegistry
-} from '@phosphor/commands';
+} from '@lumino/commands';
 
 import {
   Platform
-} from '@phosphor/domutils';
+} from '@lumino/domutils';
 
 import {
   MessageLoop
-} from '@phosphor/messaging';
+} from '@lumino/messaging';
 
 import {
   VirtualDOM, h
-} from '@phosphor/virtualdom';
+} from '@lumino/virtualdom';
 
 import {
   CommandPalette, Widget
-} from '@phosphor/widgets';
+} from '@lumino/widgets';
 
 
 class LogPalette extends CommandPalette {
@@ -53,7 +55,7 @@ const defaultOptions: CommandPalette.IItemOptions  = {
 }
 
 
-describe('@phosphor/widgets', () => {
+describe('@lumino/widgets', () => {
 
   let commands: CommandRegistry;
   let palette: CommandPalette;

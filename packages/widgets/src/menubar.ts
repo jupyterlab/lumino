@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -7,23 +9,23 @@
 |----------------------------------------------------------------------------*/
 import {
   ArrayExt
-} from '@phosphor/algorithm';
+} from '@lumino/algorithm';
 
 import {
   ElementExt
-} from '@phosphor/domutils';
+} from '@lumino/domutils';
 
 import {
   getKeyboardLayout
-} from '@phosphor/keyboard';
+} from '@lumino/keyboard';
 
 import {
   Message, MessageLoop
-} from '@phosphor/messaging';
+} from '@lumino/messaging';
 
 import {
   ElementDataset, VirtualDOM, VirtualElement, h
-} from '@phosphor/virtualdom';
+} from '@lumino/virtualdom';
 
 import {
   Menu

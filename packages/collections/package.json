@@ -1,10 +1,10 @@
 {
-  "name": "@phosphor/collections",
+  "name": "@lumino/collections",
   "version": "1.2.0",
-  "description": "PhosphorJS - Generic Collections",
-  "homepage": "https://github.com/phosphorjs/phosphor",
+  "description": "lumino Generic Collections",
+  "homepage": "https://github.com/luminojs/lumino",
   "bugs": {
-    "url": "https://github.com/phosphorjs/phosphor/issues"
+    "url": "https://github.com/luminojs/lumino/issues"
   },
   "license": "BSD-3-Clause",
   "author": "S. Chris Colbert <sccolbert@gmail.com>",
@@ -25,7 +25,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/phosphorjs/phosphor.git"
+    "url": "https://github.com/luminojs/lumino.git"
   },
   "scripts": {
     "build": "tsc --build",
@@ -40,7 +40,7 @@
     "watch": "tsc --build --watch"
   },
   "dependencies": {
-    "@phosphor/algorithm": "^1.2.0"
+    "@lumino/algorithm": "^1.2.0"
   },
   "devDependencies": {
     "@types/chai": "^3.4.35",

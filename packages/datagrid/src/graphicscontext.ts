@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2019, PhosphorJS Contributors
 |
@@ -7,7 +9,7 @@
 |----------------------------------------------------------------------------*/
 import {
   IDisposable
-} from '@phosphor/disposable';
+} from '@lumino/disposable';
 
 
 /**

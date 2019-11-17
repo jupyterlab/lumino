@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -7,27 +9,27 @@
 |----------------------------------------------------------------------------*/
 import {
   ArrayExt, StringExt
-} from '@phosphor/algorithm';
+} from '@lumino/algorithm';
 
 import {
   JSONExt, ReadonlyJSONObject
-} from '@phosphor/coreutils';
+} from '@lumino/coreutils';
 
 import {
   CommandRegistry
-} from '@phosphor/commands';
+} from '@lumino/commands';
 
 import {
   ElementExt
-} from '@phosphor/domutils';
+} from '@lumino/domutils';
 
 import {
   Message
-} from '@phosphor/messaging';
+} from '@lumino/messaging';
 
 import {
   ElementDataset, VirtualDOM, VirtualElement, h
-} from '@phosphor/virtualdom';
+} from '@lumino/virtualdom';
 
 import {
   Widget

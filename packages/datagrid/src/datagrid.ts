@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2019, PhosphorJS Contributors
 |
@@ -7,23 +9,23 @@
 |----------------------------------------------------------------------------*/
 import {
   toArray
-} from '@phosphor/algorithm';
+} from '@lumino/algorithm';
 
 import {
   IDisposable
-} from '@phosphor/disposable';
+} from '@lumino/disposable';
 
 import {
   ClipboardExt, ElementExt, Platform
-} from '@phosphor/domutils';
+} from '@lumino/domutils';
 
 import {
   ConflatableMessage, IMessageHandler, Message, MessageLoop
-} from '@phosphor/messaging';
+} from '@lumino/messaging';
 
 import {
   GridLayout, ScrollBar, Widget
-} from '@phosphor/widgets';
+} from '@lumino/widgets';
 
 import {
   CellRenderer

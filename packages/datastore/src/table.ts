@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2018, PhosphorJS Contributors
 |
@@ -7,11 +9,11 @@
 |----------------------------------------------------------------------------*/
 import {
   IIterable, IIterator, StringExt, IterableOrArrayLike
-} from '@phosphor/algorithm';
+} from '@lumino/algorithm';
 
 import {
   BPlusTree
-} from '@phosphor/collections';
+} from '@lumino/collections';
 
 import {
   Datastore

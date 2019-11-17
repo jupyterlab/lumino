@@ -1,10 +1,10 @@
 {
-  "name": "@phosphor/disposable",
+  "name": "@lumino/disposable",
   "version": "1.3.1",
-  "description": "PhosphorJS - Disposable",
-  "homepage": "https://github.com/phosphorjs/phosphor",
+  "description": "lumino Disposable",
+  "homepage": "https://github.com/luminojs/lumino",
   "bugs": {
-    "url": "https://github.com/phosphorjs/phosphor/issues"
+    "url": "https://github.com/luminojs/lumino/issues"
   },
   "license": "BSD-3-Clause",
   "author": "S. Chris Colbert <sccolbert@gmail.com>",
@@ -25,7 +25,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/phosphorjs/phosphor.git"
+    "url": "https://github.com/luminojs/lumino.git"
   },
   "scripts": {
     "build": "tsc --build",
@@ -40,8 +40,8 @@
     "watch": "tsc --build --watch"
   },
   "dependencies": {
-    "@phosphor/algorithm": "^1.2.0",
-    "@phosphor/signaling": "^1.3.1"
+    "@lumino/algorithm": "^1.2.0",
+    "@lumino/signaling": "^1.3.1"
   },
   "devDependencies": {
     "@types/chai": "^3.4.35",

@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -7,11 +9,11 @@
 |----------------------------------------------------------------------------*/
 import {
   MimeData
-} from '@phosphor/coreutils';
+} from '@lumino/coreutils';
 
 import {
   DisposableDelegate, IDisposable
-} from '@phosphor/disposable';
+} from '@lumino/disposable';
 
 
 /**
@@ -695,7 +697,7 @@ namespace Drag {
    *
    * #### Example
    * ```typescript
-   * import { Drag } from '@phosphor/dragdrop';
+   * import { Drag } from '@lumino/dragdrop';
    *
    * // Force the cursor to be 'wait' for the entire document.
    * let override = Drag.overrideCursor('wait');

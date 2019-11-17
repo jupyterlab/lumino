@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -11,15 +13,15 @@ import {
 
 import {
   each
-} from '@phosphor/algorithm';
+} from '@lumino/algorithm';
 
 import {
   IMessageHandler, IMessageHook, Message, MessageLoop
-} from '@phosphor/messaging';
+} from '@lumino/messaging';
 
 import {
   StackedLayout, Widget
-} from '@phosphor/widgets';
+} from '@lumino/widgets';
 
 
 class LogHook implements IMessageHook {
@@ -94,7 +96,7 @@ class LogStackedLayout extends StackedLayout {
 }
 
 
-describe('@phosphor/widgets', () => {
+describe('@lumino/widgets', () => {
 
   describe('StackedLayout', () => {
 

@@ -1,5 +1,5 @@
 {
-  "name": "@phosphor/example-datagrid",
+  "name": "@lumino/example-datagrid",
   "version": "0.2.1",
   "private": true,
   "scripts": {
@@ -7,10 +7,10 @@
     "clean": "rimraf build"
   },
   "dependencies": {
-    "@phosphor/datagrid": "^0.3.1",
-    "@phosphor/default-theme": "^0.1.8",
-    "@phosphor/dragdrop": "^1.4.1",
-    "@phosphor/widgets": "^1.9.3",
+    "@lumino/datagrid": "^0.3.1",
+    "@lumino/default-theme": "^0.1.8",
+    "@lumino/dragdrop": "^1.4.1",
+    "@lumino/widgets": "^1.9.3",
     "es6-promise": "^4.0.5"
   },
   "devDependencies": {

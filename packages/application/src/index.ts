@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -7,15 +9,15 @@
 |----------------------------------------------------------------------------*/
 import {
   CommandRegistry
-} from '@phosphor/commands';
+} from '@lumino/commands';
 
 import {
   PromiseDelegate, Token
-} from '@phosphor/coreutils';
+} from '@lumino/coreutils';
 
 import {
   ContextMenu, Menu, Widget
-} from '@phosphor/widgets';
+} from '@lumino/widgets';
 
 
 /**

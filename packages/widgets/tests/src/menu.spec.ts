@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -15,27 +17,27 @@ import {
 
 import {
   CommandRegistry
-} from '@phosphor/commands';
+} from '@lumino/commands';
 
 import {
   JSONObject
-} from '@phosphor/coreutils';
+} from '@lumino/coreutils';
 
 import {
   Platform
-} from '@phosphor/domutils';
+} from '@lumino/domutils';
 
 import {
   Message
-} from '@phosphor/messaging';
+} from '@lumino/messaging';
 
 import {
   VirtualDOM, h
-} from '@phosphor/virtualdom';
+} from '@lumino/virtualdom';
 
 import {
   Menu, Widget
-} from '@phosphor/widgets';
+} from '@lumino/widgets';
 
 
 class LogMenu extends Menu {
@@ -76,7 +78,7 @@ class LogMenu extends Menu {
 }
 
 
-describe('@phosphor/widgets', () => {
+describe('@lumino/widgets', () => {
 
   let commands = new CommandRegistry();
   let logMenu: LogMenu = null!;

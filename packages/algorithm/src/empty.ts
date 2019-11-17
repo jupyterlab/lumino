@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -17,7 +19,7 @@ import {
  *
  * #### Example
  * ```typescript
- * import { empty, toArray } from '@phosphor/algorithm';
+ * import { empty, toArray } from '@lumino/algorithm';
  *
  * let stream = empty<number>();
  *

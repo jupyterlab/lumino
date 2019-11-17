@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -7,14 +9,14 @@
 |----------------------------------------------------------------------------*/
 import {
   FilterIterator, filter, iter
-} from '@phosphor/algorithm';
+} from '@lumino/algorithm';
 
 import {
   testIterator
 } from './iter.spec';
 
 
-describe('@phosphor/algorithm', () => {
+describe('@lumino/algorithm', () => {
 
   describe('filter()', () => {
 

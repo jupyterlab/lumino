@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -7,27 +9,27 @@
 |----------------------------------------------------------------------------*/
 import {
   ArrayExt
-} from '@phosphor/algorithm';
+} from '@lumino/algorithm';
 
 import {
   JSONExt, ReadonlyJSONObject
-} from '@phosphor/coreutils';
+} from '@lumino/coreutils';
 
 import {
   DisposableDelegate, IDisposable
-} from '@phosphor/disposable';
+} from '@lumino/disposable';
 
 import {
   Platform, Selector
-} from '@phosphor/domutils';
+} from '@lumino/domutils';
 
 import {
   getKeyboardLayout
-} from '@phosphor/keyboard';
+} from '@lumino/keyboard';
 
 import {
   ISignal, Signal
-} from '@phosphor/signaling';
+} from '@lumino/signaling';
 
 
 /**

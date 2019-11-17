@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -11,15 +13,15 @@ import {
 
 import {
   each, every
-} from '@phosphor/algorithm';
+} from '@lumino/algorithm';
 
 import {
   IMessageHandler, IMessageHook, Message, MessageLoop
-} from '@phosphor/messaging';
+} from '@lumino/messaging';
 
 import {
   SplitLayout, Widget
-} from '@phosphor/widgets';
+} from '@lumino/widgets';
 
 
 const renderer: SplitLayout.IRenderer = {
@@ -99,7 +101,7 @@ class LogHook implements IMessageHook {
 }
 
 
-describe('@phosphor/widgets', () => {
+describe('@lumino/widgets', () => {
 
   describe('SplitLayout', () => {
 

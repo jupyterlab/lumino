@@ -7,6 +7,6 @@
   "out": "../../docs/api/virtualdom",
   "baseUrl": ".",
   "paths": {
-    "@phosphor/*": ["node_modules/@phosphor/*"]
+    "@lumino/*": ["node_modules/@lumino/*"]
   }
 }

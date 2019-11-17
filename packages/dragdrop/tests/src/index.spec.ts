@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -17,13 +19,13 @@ import {
 
 import {
   MimeData
-} from '@phosphor/coreutils';
+} from '@lumino/coreutils';
 
 import {
   Drag, IDragEvent
-} from '@phosphor/dragdrop';
+} from '@lumino/dragdrop';
 
-import '@phosphor/dragdrop/style/index.css';
+import '@lumino/dragdrop/style/index.css';
 
 
 class DropTarget {
@@ -96,7 +98,7 @@ class DropTarget {
 }
 
 
-describe('@phosphor/dragdrop', () => {
+describe('@lumino/dragdrop', () => {
 
   describe('Drag', () => {
 

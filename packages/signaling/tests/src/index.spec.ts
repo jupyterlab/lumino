@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -11,7 +13,7 @@ import {
 
 import {
   Signal
-} from '@phosphor/signaling';
+} from '@lumino/signaling';
 
 
 class TestObject {
@@ -63,7 +65,7 @@ class TestHandler {
 }
 
 
-describe('@phosphor/signaling', () => {
+describe('@lumino/signaling', () => {
 
   describe('Signal', () => {
 
@@ -459,7 +461,7 @@ describe('@phosphor/signaling', () => {
 
   });
 
-  context('https://github.com/phosphorjs/phosphor-signaling/issues/5', () => {
+  context('https://github.com/luminojs/lumino-signaling/issues/5', () => {
 
     it('should handle connect after disconnect and emit', () => {
       let obj = new TestObject();
@@ -474,7 +476,7 @@ describe('@phosphor/signaling', () => {
 
   });
 
-  context('https://github.com/phosphorjs/phosphor-signaling/issues/8', () => {
+  context('https://github.com/luminojs/lumino-signaling/issues/8', () => {
 
     it('should handle disconnecting sender after receiver', () => {
       let obj = new TestObject();

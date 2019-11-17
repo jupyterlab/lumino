@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -11,15 +13,15 @@ import {
 
 import {
   each, every
-} from '@phosphor/algorithm';
+} from '@lumino/algorithm';
 
 import {
   Message, MessageLoop
-} from '@phosphor/messaging';
+} from '@lumino/messaging';
 
 import {
   BoxLayout, Widget
-} from '@phosphor/widgets';
+} from '@lumino/widgets';
 
 
 class LogBoxLayout extends BoxLayout {
@@ -109,7 +111,7 @@ class LogWidget extends Widget {
 }
 
 
-describe('@phosphor/widgets', () => {
+describe('@lumino/widgets', () => {
 
   describe('BoxLayout', () => {
 

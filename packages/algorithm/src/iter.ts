@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -111,7 +113,7 @@ function iter<T>(object: IterableOrArrayLike<T>): IIterator<T> {
  *
  * #### Example
  * ```typescript
- * import { each, keys } from '@phosphor/algorithm';
+ * import { each, keys } from '@lumino/algorithm';
  *
  * let data = { one: 1, two: 2, three: 3 };
  *
@@ -136,7 +138,7 @@ function iterKeys<T>(object: { readonly [key: string]: T }): IIterator<string> {
  *
  * #### Example
  * ```typescript
- * import { each, values } from '@phosphor/algorithm';
+ * import { each, values } from '@lumino/algorithm';
  *
  * let data = { one: 1, two: 2, three: 3 };
  *
@@ -161,7 +163,7 @@ function iterValues<T>(object: { readonly [key: string]: T }): IIterator<T> {
  *
  * #### Example
  * ```typescript
- * import { each, items } from '@phosphor/algorithm';
+ * import { each, items } from '@lumino/algorithm';
  *
  * let data = { one: 1, two: 2, three: 3 };
  *
@@ -186,7 +188,7 @@ function iterItems<T>(object: { readonly [key: string]: T }): IIterator<[string,
  *
  * #### Example
  * ```typescript
- * import { each, iterFn } from '@phosphor/algorithm';
+ * import { each, iterFn } from '@lumino/algorithm';
  *
  * let it = iterFn((() => {
  *   let i = 0;
@@ -218,7 +220,7 @@ function iterFn<T>(fn: () => T | undefined): IIterator<T> {
  *
  * #### Example
  * ```typescript
- * import { each } from '@phosphor/algorithm';
+ * import { each } from '@lumino/algorithm';
  *
  * let data = [5, 7, 0, -2, 9];
  *
@@ -255,7 +257,7 @@ function each<T>(object: IterableOrArrayLike<T>, fn: (value: T, index: number) =
  *
  * #### Example
  * ```typescript
- * import { every } from '@phosphor/algorithm';
+ * import { every } from '@lumino/algorithm';
  *
  * let data = [5, 7, 1];
  *
@@ -294,7 +296,7 @@ function every<T>(object: IterableOrArrayLike<T>, fn: (value: T, index: number) 
  *
  * #### Example
  * ```typescript
- * import { some } from '@phosphor/algorithm';
+ * import { some } from '@lumino/algorithm';
  *
  * let data = [5, 7, 1];
  *
@@ -325,7 +327,7 @@ function some<T>(object: IterableOrArrayLike<T>, fn: (value: T, index: number) =
  *
  * #### Example
  * ```typescript
- * import { iter, toArray } from '@phosphor/algorithm';
+ * import { iter, toArray } from '@lumino/algorithm';
  *
  * let data = [1, 2, 3, 4, 5, 6];
  *
@@ -356,7 +358,7 @@ function toArray<T>(object: IterableOrArrayLike<T>): T[] {
  *
  * #### Example
  * ```typescript
- * import { toObject } from '@phosphor/algorithm';
+ * import { toObject } from '@lumino/algorithm';
  *
  * let data = [['one', 1], ['two', 2], ['three', 3]];
  *

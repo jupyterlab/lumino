@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2019, PhosphorJS Contributors
 |
@@ -7,11 +9,11 @@
 |----------------------------------------------------------------------------*/
 import {
   Platform
-} from '@phosphor/domutils';
+} from '@lumino/domutils';
 
 import {
   getKeyboardLayout
-} from '@phosphor/keyboard';
+} from '@lumino/keyboard';
 
 import {
   DataGrid

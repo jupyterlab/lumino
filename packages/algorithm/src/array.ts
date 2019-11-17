@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -42,7 +44,7 @@ namespace ArrayExt {
    *
    * #### Example
    * ```typescript
-   * import { ArrayExt } from '@phosphor/algorithm';
+   * import { ArrayExt } from '@lumino/algorithm';
    *
    * let data = ['one', 'two', 'three', 'four', 'one'];
    * ArrayExt.firstIndexOf(data, 'red');        // -1
@@ -113,7 +115,7 @@ namespace ArrayExt {
    *
    * #### Example
    * ```typescript
-   * import { ArrayExt } from '@phosphor/algorithm';
+   * import { ArrayExt } from '@lumino/algorithm';
    *
    * let data = ['one', 'two', 'three', 'four', 'one'];
    * ArrayExt.lastIndexOf(data, 'red');        // -1
@@ -185,7 +187,7 @@ namespace ArrayExt {
    *
    * #### Example
    * ```typescript
-   * import { ArrayExt } from '@phosphor/algorithm';
+   * import { ArrayExt } from '@lumino/algorithm';
    *
    * function isEven(value: number): boolean {
    *   return value % 2 === 0;
@@ -260,7 +262,7 @@ namespace ArrayExt {
    *
    * #### Example
    * ```typescript
-   * import { ArrayExt } from '@phosphor/algorithm';
+   * import { ArrayExt } from '@lumino/algorithm';
    *
    * function isEven(value: number): boolean {
    *   return value % 2 === 0;
@@ -335,7 +337,7 @@ namespace ArrayExt {
    *
    * #### Example
    * ```typescript
-   * import { ArrayExt } from '@phosphor/algorithm';
+   * import { ArrayExt } from '@lumino/algorithm';
    *
    * function isEven(value: number): boolean {
    *   return value % 2 === 0;
@@ -385,7 +387,7 @@ namespace ArrayExt {
    *
    * #### Example
    * ```typescript
-   * import { ArrayExt } from '@phosphor/algorithm';
+   * import { ArrayExt } from '@lumino/algorithm';
    *
    * function isEven(value: number): boolean {
    *   return value % 2 === 0;
@@ -445,7 +447,7 @@ namespace ArrayExt {
    *
    * #### Example
    * ```typescript
-   * import { ArrayExt } from '@phosphor/algorithm';
+   * import { ArrayExt } from '@lumino/algorithm';
    *
    * function numberCmp(a: number, b: number): number {
    *   return a - b;
@@ -531,7 +533,7 @@ namespace ArrayExt {
    *
    * #### Example
    * ```typescript
-   * import { ArrayExt } from '@phosphor/algorithm';
+   * import { ArrayExt } from '@lumino/algorithm';
    *
    * function numberCmp(a: number, b: number): number {
    *   return a - b;
@@ -597,7 +599,7 @@ namespace ArrayExt {
    *
    * #### Example
    * ```typescript
-   * import { ArrayExt } from '@phosphor/algorithm';
+   * import { ArrayExt } from '@lumino/algorithm';
    *
    * let d1 = [0, 3, 4, 7, 7, 9];
    * let d2 = [0, 3, 4, 7, 7, 9];
@@ -648,7 +650,7 @@ namespace ArrayExt {
    *
    * #### Example
    * ```typescript
-   * import { ArrayExt } from '@phosphor/algorithm';
+   * import { ArrayExt } from '@lumino/algorithm';
    *
    * let data = [0, 3, 4, 7, 7, 9];
    * ArrayExt.slice(data);                         // [0, 3, 4, 7, 7, 9]
@@ -783,7 +785,7 @@ namespace ArrayExt {
    *
    * #### Example
    * ```typescript
-   * import { ArrayExt } from from '@phosphor/algorithm';
+   * import { ArrayExt } from from '@lumino/algorithm';
    *
    * let data = [0, 1, 2, 3, 4];
    * ArrayExt.move(data, 1, 2);  // [0, 2, 1, 3, 4]
@@ -838,7 +840,7 @@ namespace ArrayExt {
    *
    * #### Example
    * ```typescript
-   * import { ArrayExt } from '@phosphor/algorithm';
+   * import { ArrayExt } from '@lumino/algorithm';
    *
    * let data = [0, 1, 2, 3, 4];
    * ArrayExt.reverse(data, 1, 3);  // [0, 3, 2, 1, 4]
@@ -895,7 +897,7 @@ namespace ArrayExt {
    *
    * #### Example
    * ```typescript
-   * import { ArrayExt } from '@phosphor/algorithm';
+   * import { ArrayExt } from '@lumino/algorithm';
    *
    * let data = [0, 1, 2, 3, 4];
    * ArrayExt.rotate(data, 2);        // [2, 3, 4, 0, 1]
@@ -965,7 +967,7 @@ namespace ArrayExt {
    *
    * #### Example
    * ```typescript
-   * import { ArrayExt } from '@phosphor/algorithm';
+   * import { ArrayExt } from '@lumino/algorithm';
    *
    * let data = ['one', 'two', 'three', 'four'];
    * ArrayExt.fill(data, 'r');        // ['r', 'r', 'r', 'r']
@@ -1019,7 +1021,7 @@ namespace ArrayExt {
    *
    * #### Example
    * ```typescript
-   * import { ArrayExt } from '@phosphor/algorithm';
+   * import { ArrayExt } from '@lumino/algorithm';
    *
    * let data = [0, 1, 2];
    * ArrayExt.insert(data, 0, -1);  // [-1, 0, 1, 2]
@@ -1061,7 +1063,7 @@ namespace ArrayExt {
    *
    * #### Example
    * ```typescript
-   * import { ArrayExt } from '@phosphor/algorithm';
+   * import { ArrayExt } from '@lumino/algorithm';
    *
    * let data = [0, 12, 23, 39, 14, 12, 75];
    * ArrayExt.removeAt(data, 2);   // 23
@@ -1113,7 +1115,7 @@ namespace ArrayExt {
    *
    * #### Example
    * ```typescript
-   * import { ArrayExt } from '@phosphor/algorithm';
+   * import { ArrayExt } from '@lumino/algorithm';
    *
    * let data = [0, 12, 23, 39, 14, 12, 75];
    * ArrayExt.removeFirstOf(data, 12);        // 1
@@ -1158,7 +1160,7 @@ namespace ArrayExt {
    *
    * #### Example
    * ```typescript
-   * import { ArrayExt } from '@phosphor/algorithm';
+   * import { ArrayExt } from '@lumino/algorithm';
    *
    * let data = [0, 12, 23, 39, 14, 12, 75];
    * ArrayExt.removeLastOf(data, 12);        // 5
@@ -1203,7 +1205,7 @@ namespace ArrayExt {
    *
    * #### Example
    * ```typescript
-   * import { ArrayExt } from '@phosphor/algorithm';
+   * import { ArrayExt } from '@lumino/algorithm';
    *
    * let data = [14, 12, 23, 39, 14, 12, 19, 14];
    * ArrayExt.removeAllOf(data, 12);        // 2
@@ -1269,7 +1271,7 @@ namespace ArrayExt {
    *
    * #### Example
    * ```typescript
-   * import { ArrayExt } from '@phosphor/algorithm';
+   * import { ArrayExt } from '@lumino/algorithm';
    *
    * function isEven(value: number): boolean {
    *   return value % 2 === 0;
@@ -1317,7 +1319,7 @@ namespace ArrayExt {
    *
    * #### Example
    * ```typescript
-   * import { ArrayExt } from '@phosphor/algorithm';
+   * import { ArrayExt } from '@lumino/algorithm';
    *
    * function isEven(value: number): boolean {
    *   return value % 2 === 0;
@@ -1365,7 +1367,7 @@ namespace ArrayExt {
    *
    * #### Example
    * ```typescript
-   * import { ArrayExt } from '@phosphor/algorithm';
+   * import { ArrayExt } from '@lumino/algorithm';
    *
    * function isEven(value: number): boolean {
    *   return value % 2 === 0;

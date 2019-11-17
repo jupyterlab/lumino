@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -15,10 +17,10 @@ import {
 
 import {
   EN_US, KeycodeLayout, getKeyboardLayout, setKeyboardLayout
-} from '@phosphor/keyboard';
+} from '@lumino/keyboard';
 
 
-describe('@phosphor/keyboard', () => {
+describe('@lumino/keyboard', () => {
 
   describe('getKeyboardLayout()', () => {
 

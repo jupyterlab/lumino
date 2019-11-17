@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -11,13 +13,13 @@ import {
 
 import {
   Title
-} from '@phosphor/widgets';
+} from '@lumino/widgets';
 
 
 const owner = { name: 'Bob' };
 
 
-describe('@phosphor/widgets', () => {
+describe('@lumino/widgets', () => {
 
   describe('Title', () => {
 

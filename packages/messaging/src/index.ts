@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -7,11 +9,11 @@
 |----------------------------------------------------------------------------*/
 import {
   ArrayExt, each, every, retro, some
-} from '@phosphor/algorithm';
+} from '@lumino/algorithm';
 
 import {
   LinkedList
-} from '@phosphor/collections';
+} from '@lumino/collections';
 
 
 /**

@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -11,10 +13,10 @@ import {
 
 import {
   PromiseDelegate
-} from '@phosphor/coreutils';
+} from '@lumino/coreutils';
 
 
-describe('@phosphor/coreutils', () => {
+describe('@lumino/coreutils', () => {
 
   describe('PromiseDelegate', () => {
 

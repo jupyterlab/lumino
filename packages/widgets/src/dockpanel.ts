@@ -1,3 +1,5 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2017, PhosphorJS Contributors
 |
@@ -7,35 +9,35 @@
 |----------------------------------------------------------------------------*/
 import {
   IIterator, each, find, toArray
-} from '@phosphor/algorithm';
+} from '@lumino/algorithm';
 
 import {
   MimeData
-} from '@phosphor/coreutils';
+} from '@lumino/coreutils';
 
 import {
   IDisposable
-} from '@phosphor/disposable';
+} from '@lumino/disposable';
 
 import {
   ElementExt, Platform
-} from '@phosphor/domutils';
+} from '@lumino/domutils';
 
 import {
   Drag, IDragEvent
-} from '@phosphor/dragdrop';
+} from '@lumino/dragdrop';
 
 import {
   ConflatableMessage, Message, MessageLoop
-} from '@phosphor/messaging';
+} from '@lumino/messaging';
 
 import {
   AttachedProperty
-} from '@phosphor/properties';
+} from '@lumino/properties';
 
 import {
   ISignal, Signal
-} from '@phosphor/signaling';
+} from '@lumino/signaling';
 
 import {
   DockLayout
@@ -457,7 +459,7 @@ class DockPanel extends Widget {
   private _evtDragEnter(event: IDragEvent): void {
     // If the factory mime type is present, mark the event as
     // handled in order to get the rest of the drag events.
-    if (event.mimeData.hasData('application/vnd.phosphor.widget-factory')) {
+    if (event.mimeData.hasData('application/vnd.lumino.widget-factory')) {
       event.preventDefault();
       event.stopPropagation();
     }
@@ -528,7 +530,7 @@ class DockPanel extends Widget {
 
     // Bail if the factory mime type has invalid data.
     let mimeData = event.mimeData;
-    let factory = mimeData.getData('application/vnd.phosphor.widget-factory');
+    let factory = mimeData.getData('application/vnd.lumino.widget-factory');
     if (typeof factory !== 'function') {
       event.dropAction = 'none';
       return;
@@ -931,7 +933,7 @@ class DockPanel extends Widget {
     // Setup the mime data for the drag operation.
     let mimeData = new MimeData();
     let factory = () => title.owner;
-    mimeData.setData('application/vnd.phosphor.widget-factory', factory);
+    mimeData.setData('application/vnd.lumino.widget-factory', factory);
 
     // Create the drag image for the drag operation.
     let dragImage = tab.cloneNode(true) as HTMLElement;
