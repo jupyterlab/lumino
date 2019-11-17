@@ -37,7 +37,7 @@ import {
 
 
 /**
- * An abstract base class for creating Phosphor layouts.
+ * An abstract base class for creating lumino layouts.
  *
  * #### Notes
  * A layout is used to add widgets to a parent and to arrange those
@@ -632,7 +632,7 @@ namespace Layout {
  * This class is useful when implementing a layout which arranges its
  * widgets using absolute positioning.
  *
- * This class is used by nearly all of the built-in Phosphor layouts.
+ * This class is used by nearly all of the built-in lumino layouts.
  */
 export
 class LayoutItem implements IDisposable {

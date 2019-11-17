@@ -232,7 +232,7 @@ namespace Private {
     }
 
     // There are some third party libraries that cause the `target` to
-    // be detached from the DOM before Phosphor can process the event.
+    // be detached from the DOM before lumino can process the event.
     // If that happens, search for a new target node by point. If that
     // node is still dangling, bail.
     if (!currentTarget.contains(target)) {

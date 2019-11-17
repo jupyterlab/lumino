@@ -37,7 +37,7 @@ import {
 
 
 /**
- * The base class of the Phosphor widget hierarchy.
+ * The base class of the lumino widget hierarchy.
  *
  * #### Notes
  * This class will typically be subclassed in order to create a useful

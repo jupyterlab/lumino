@@ -1,4 +1,4 @@
-Release instructions for Phosphor
+Release instructions for lumino
 
 Check for releases since the last published version to determine appropriate
 patch/minor/major version changes.
