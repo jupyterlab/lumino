@@ -4,3 +4,5 @@
 lib
 node_modules
 build
+review/api/temp
+*.tsbuildinfo

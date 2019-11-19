@@ -28,6 +28,7 @@
     "url": "https://github.com/luminojs/lumino.git"
   },
   "scripts": {
+    "api": "api-extractor run --local --verbose",
     "build": "tsc --build",
     "build:test": "tsc --build tests && cd tests && webpack",
     "clean": "rimraf lib",
@@ -40,7 +41,7 @@
     "watch": "tsc --build --watch"
   },
   "devDependencies": {
-    "@types/chai": "^3.4.35",
+    "@microsoft/api-extractor": "^7.6.0",
     "@types/mocha": "^2.2.39",
     "chai": "^3.5.0",
     "karma": "^1.5.0",
