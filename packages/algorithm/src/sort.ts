@@ -36,6 +36,7 @@ import {
  * ];
  *
  * topologicSort(data);  // ['a', 'b', 'c', 'd', 'e']
+ * ```
  */
 export
 function topologicSort<T>(edges: IterableOrArrayLike<[T, T]>): T[] {
