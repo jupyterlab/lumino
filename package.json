@@ -1,6 +1,7 @@
 {
   "private": true,
   "scripts": {
+    "api": "lerna run api",
     "build": "lerna run build",
     "build:examples": "lerna run build --scope \"@lumino/example-*\"",
     "build:src": "lerna run build --scope \"@lumino/!(test-|example-)*\"",
