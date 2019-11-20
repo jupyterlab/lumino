@@ -7,6 +7,8 @@ a rich set of widgets, layouts, events, and data structures. These enable
 developers to construct advanced, production-quality, desktop-like web
 applications that would be otherwise impossible using CSS alone.
 
+It is a fork of the [PhosphorJS library](https://github.com/phosphorjs/phosphor).
+
 lumino follows the Jupyter [Community Guides](https://jupyter.readthedocs.io/en/latest/community/content-community.html).
 
 # Development
