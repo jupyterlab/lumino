@@ -8,7 +8,7 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 import {
-  ArrayExt, StringExt
+  ArrayExt
 } from '@lumino/algorithm';
 
 import {
@@ -16,7 +16,7 @@ import {
 } from './field';
 
 import {
-  createTriplexIds
+  createTriplexIds, idCmp
 } from './utilities';
 
 
@@ -533,7 +533,7 @@ namespace Private {
     // Iterate over the identifiers to remove.
     while (i < n) {
       // Find the boundary identifier for the current id.
-      let j = ArrayExt.lowerBound(metadata.ids, ids[i], StringExt.cmp);
+      let j = ArrayExt.lowerBound(metadata.ids, ids[i], idCmp);
 
       // If the boundary is at the end of the array, or if the boundary id
       // does not match the id we are looking for, then we are dealing with
@@ -553,7 +553,7 @@ namespace Private {
       let count = 0;
 
       // Find the extent of the chunk.
-      while (i < n && StringExt.cmp(ids[i], metadata.ids[j]) === 0) {
+      while (i < n && idCmp(ids[i], metadata.ids[j]) === 0) {
         count++;
         i++;
         j++;
@@ -613,7 +613,7 @@ namespace Private {
 
       // Add the id to the ids which will be actually inserted.
       insertIds.push(ids[i]);
-      indices.push(ArrayExt.lowerBound(metadata.ids, ids[i], StringExt.cmp));
+      indices.push(ArrayExt.lowerBound(metadata.ids, ids[i], idCmp));
       insertText += text[i];
     }
     return chunkifyInsertions(insertIds, insertText, indices);

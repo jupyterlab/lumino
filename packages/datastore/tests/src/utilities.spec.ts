@@ -12,11 +12,7 @@ import {
 } from 'chai';
 
 import {
-  StringExt
-} from '@lumino/algorithm';
-
-import {
-  createDuplexId, createTriplexId
+  createDuplexId, createTriplexId, idCmp
 } from '@lumino/datastore';
 
 
@@ -31,7 +27,7 @@ describe('@lumino/datastore', () => {
       let prev = '';
       for (let version = 0; version < 10000; version++) {
         let id = createDuplexId(version, storeId);
-        expect(StringExt.cmp(id, prev)).to.be.above(0);
+        expect(idCmp(id, prev)).to.be.above(0);
 
         // The new ID should be valid unicode, without unpaired surrogates.
         // We can test this by round-tripping an encode/decode and checking
@@ -56,9 +52,9 @@ describe('@lumino/datastore', () => {
         let id = createTriplexId(version, storeId, lower, upper);
 
         // The new ID should fall between the upper and lower bounds.
-        expect(StringExt.cmp(id, lower)).to.be.above(0);
+        expect(idCmp(id, lower)).to.be.above(0);
         if (index !== ids.length) {
-          expect(StringExt.cmp(id, upper)).to.be.below(0);
+          expect(idCmp(id, upper)).to.be.below(0);
         }
 
         // The new ID should be valid unicode, without unpaired surrogates.

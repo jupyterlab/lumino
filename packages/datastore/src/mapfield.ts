@@ -8,7 +8,7 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 import {
-  ArrayExt, StringExt
+  ArrayExt
 } from '@lumino/algorithm';
 
 import {
@@ -20,7 +20,7 @@ import {
 } from './field';
 
 import {
-  createDuplexId
+  createDuplexId, idCmp
 } from './utilities';
 
 
@@ -341,7 +341,7 @@ namespace Private {
     let values = metadata.values[key] || (metadata.values[key] = []);
 
     // Find the insert index for the id.
-    let i = ArrayExt.lowerBound(ids, id, StringExt.cmp);
+    let i = ArrayExt.lowerBound(ids, id, idCmp);
 
     // Overwrite or insert the value as appropriate.
     if (i < ids.length && ids[i] === id) {
@@ -376,7 +376,7 @@ namespace Private {
     let values = metadata.values[key] || (metadata.values[key] = []);
 
     // Find the insert index for the id.
-    let i = ArrayExt.lowerBound(ids, id, StringExt.cmp);
+    let i = ArrayExt.lowerBound(ids, id, idCmp);
 
     // Find and remove the index for the id.
     if (ids[i] === id) {

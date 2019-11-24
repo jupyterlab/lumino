@@ -8,6 +8,10 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
+import {
+  StringExt
+} from '@lumino/algorithm';
+
 
 /**
  * Create a duplex string identifier.
@@ -33,7 +37,7 @@ function createDuplexId(version: number, store: number): string {
   let sa = (((store - sb) / 0x10000) | 0) & 0xFFFF;
 
   // Convert the parts into a string identifier duplex.
-  return String.fromCharCode(va, vb, vc, sa, sb);
+  return Private.generateIdString(va, vb, vc, sa, sb);
 }
 
 
@@ -62,6 +66,11 @@ function createTriplexId(version: number, store: number, lower: string, upper: s
 
   // Set up the variable to hold the id.
   let id = '';
+
+  // Remove dummy surrogate characters from the upper and lower strings
+  // so that we can process the bytes correctly.
+  upper = Private.stripSurrogates(upper);
+  lower = Private.stripSurrogates(lower);
 
   // Fetch the triplet counts of the ids.
   let lowerCount = lower ? Private.idTripletCount(lower) : 0;
@@ -131,6 +140,19 @@ function createTriplexId(version: number, store: number, lower: string, upper: s
   return id.slice();
 }
 
+/**
+ * A three way comparison function for ids, allowing them to be absolutely
+ * ordered.
+ *
+ * @param a - The first id.
+ *
+ * @param b - the second id.
+ *
+ * @returns `-1` if `a < b`, else `1` if `a > b`, else `0`.
+ */
+export function idCmp(a: string, b: string): number {
+  return StringExt.cmp(Private.stripSurrogates(a), Private.stripSurrogates(b));
+}
 
 /**
  * Create the multiple triplex identifiers.
@@ -201,7 +223,7 @@ namespace Private {
     let sa = (((store - sb) / 0x10000) | 0) & 0xFFFF;
 
     // Convert the parts into a string identifier triplet.
-    return String.fromCharCode(pa, pb, pc, va, vb, vc, sa, sb);
+    return Private.generateIdString(pa, pb, pc, va, vb, vc, sa, sb);
   }
 
   /**
@@ -281,5 +303,83 @@ namespace Private {
   export
   function randomPath(min: number, max: number): number {
     return min + Math.round(Math.random() * Math.sqrt(max - min));
+  }
+
+  /**
+   * The lower end of the high-surrogate unicode range.
+   */
+  const HS_L = '\uD800';
+
+  /**
+   * The upper end of the high-surrogate unicode range.
+   */
+  const HS_U = '\uDBFF';
+
+  /**
+   * The lower end of the low-surrogate unicode range.
+   */
+  const LS_L = '\uDC00';
+
+  /**
+   * The upper end of the low-surrogate unicode range.
+   */
+  const LS_U = '\uDFFF';
+
+  /**
+   * Match characters in the low-surrogate range.
+   */
+  const LS_REGEX = new RegExp(`([${LS_L}-${LS_U}])`, 'g');
+
+  /**
+   * Match characters in the high-surrogate range that are not followed
+   * by characters in the low-surrogate range.
+   */
+  const UNPAIRED_HS_REGEX = new RegExp(
+    `([${HS_L}-${HS_U}])(?![${LS_L}-${LS_U}])`,
+    'g',
+  );
+
+  /**
+   * Match a low-surrogate paired with our placeholder high-surrogate.
+   */
+  const PAIRED_LS_REGEX = new RegExp(`${HS_L}([${LS_L}-${LS_U}])`, 'g');
+
+  /**
+   * Match a low-surrogate paired with our placeholder high-surrogate.
+   */
+  const PAIRED_HS_REGEX = new RegExp(`([${HS_L}-${HS_U}])${LS_L}`, 'g');
+
+  /**
+   * In generateIdString we may insert some dummy surrogate pairs so that the
+   * ids are valid Unicode. This performs the inverse operation.
+   *
+   * @param id: the id string.
+   *
+   * @returns an id string with the dummy surrogates removed.
+   */
+  export
+  function stripSurrogates(id: string): string {
+    return id.replace(PAIRED_LS_REGEX, '$1').replace(PAIRED_HS_REGEX, '$1');
+  }
+
+  /**
+   * Given an ID string, check for unpaired surrogates. If they are found,
+   * pair them. Each paired high/low surrogate is given the exact same
+   * character so as to maintain the same relative ordering of IDs.
+   *
+   * @param codes: a variable number of code points.
+   *
+   * @returns a valid UTF-8 encodable ID string from the code points.
+   */
+  export
+  function generateIdString(...codes: number[]): string {
+    let str = String.fromCharCode(...codes);
+    // Any surrogate characters coming from character codes should be unpaired.
+    // First, we replace all low-surrogates with a high-low pair.
+    // Next, we replace all *unpaired* high surrogates with a high-low pair,
+    // so as not to catch the high surrogates that have already been inserted.
+    str = str.replace(LS_REGEX, `${HS_L}$1`);
+    str = str.replace(UNPAIRED_HS_REGEX, `$1${LS_L}`);
+    return str;
   }
 }
