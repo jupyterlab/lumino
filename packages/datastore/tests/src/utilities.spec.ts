@@ -42,7 +42,7 @@ describe('@lumino/datastore', () => {
   describe('createTriplexId', () => {
     it('should generate valid strings without unpaired surrogates', () => {
       let ids: string[] = [];
-      for (let version = 0; version < 100000; version++) {
+      for (let version = 0; version < 10000; version++) {
         // Generate a random index for insertion.
         let index = Math.round(Math.random()*ids.length);
         // Fetch the lower and upper identifiers.
@@ -66,6 +66,6 @@ describe('@lumino/datastore', () => {
         ids.splice(index, 0, id);
       }
 
-    }).timeout(20000);
+    }).timeout(30000);
   });
 });
