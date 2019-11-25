@@ -340,14 +340,16 @@ namespace Private {
   );
 
   /**
-   * Match a low-surrogate paired with our placeholder high-surrogate.
+   * Match a low-surrogate paired with our placeholder high-surrogate,
+   * as well as the leading 'X' documented below.
    */
-  const PAIRED_LS_REGEX = new RegExp(`${HS_L}([${LS_L}-${LS_U}])`, 'g');
+  const PAIRED_LS_REGEX = new RegExp(`X${HS_L}([${LS_L}-${LS_U}])`, 'g');
 
   /**
-   * Match a low-surrogate paired with our placeholder high-surrogate.
+   * Match a low-surrogate paired with our placeholder high-surrogate,
+   * as well as the trailing 'X' documented below.
    */
-  const PAIRED_HS_REGEX = new RegExp(`([${HS_L}-${HS_U}])${LS_L}`, 'g');
+  const PAIRED_HS_REGEX = new RegExp(`([${HS_L}-${HS_U}])${LS_L}X`, 'g');
 
   /**
    * In generateIdString we may insert some dummy surrogate pairs so that the
@@ -375,11 +377,18 @@ namespace Private {
   function generateIdString(...codes: number[]): string {
     let str = String.fromCharCode(...codes);
     // Any surrogate characters coming from character codes should be unpaired.
-    // First, we replace all low-surrogates with a high-low pair.
-    // Next, we replace all *unpaired* high surrogates with a high-low pair,
-    // so as not to catch the high surrogates that have already been inserted.
-    str = str.replace(LS_REGEX, `${HS_L}$1`);
-    str = str.replace(UNPAIRED_HS_REGEX, `$1${LS_L}`);
+    // First, we replace all low-surrogates with a high-low pair (using \uD800).
+    // Next, we replace all *unpaired* high surrogates with a high-low pair
+    // (using \uDC00), so as not to catch the high surrogates that have already
+    // been inserted.
+    //
+    // We later need to be able to strip dummy surrogate characters out when
+    // performing comparisons between IDs. The pair \uD800 \uDC00 cannot be
+    // distinguished with the above scheme, so we also include a
+    // leading/trailing non-surrogate character, arbitrarily chosen as 'X'
+    // to allow us to distinguish that case later.
+    str = str.replace(LS_REGEX, `X${HS_L}$1`);
+    str = str.replace(UNPAIRED_HS_REGEX, `$1${LS_L}X`);
     return str;
   }
 }
