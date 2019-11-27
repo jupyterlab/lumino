@@ -1,0 +1,19 @@
+{
+  "presets": [
+    "@babel/env",
+    [
+      "@babel/typescript",
+      {
+        "isTSX": true,
+        "allExtensions": true,
+        "allowNamespaces": true
+      }
+    ],
+    "@babel/react"
+  ],
+  "plugins": [
+      ["@babel/plugin-transform-modules-commonjs", {
+        "strictMode": false
+      }] 
+  ]
+}

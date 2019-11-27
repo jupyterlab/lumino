@@ -1,0 +1,25 @@
+{
+  "name": "lumino_notebooks",
+  "version": "0.1",
+  "description": "A set of JavaScript notebooks for lumino.",
+  "keywords": [],
+  "author": "Project Jupyter Contributors",
+  "license": "Revised BSD",
+  "dependencies": {
+    "convert-hrtime": "^3.0.0",
+    "d3-array": "^2.4.0",
+    "lodash": "^4.17.15",
+    "react": "^16.11.0",
+    "react-dom": "^16.11.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.7.2",
+    "@babel/plugin-transform-modules-commonjs": "^7.7.0",
+    "@babel/preset-env": "^7.7.1",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/preset-typescript": "^7.7.2",
+    "@types/react": "^16.9.11",
+    "@types/react-dom": "^16.9.4",
+    "typescript": "^3.7.2"
+  }
+}
