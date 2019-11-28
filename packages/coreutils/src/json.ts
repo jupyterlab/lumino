@@ -60,6 +60,8 @@ type ReadonlyJSONValue = JSONPrimitive | ReadonlyJSONObject | ReadonlyJSONArray;
 
 /**
  * A type alias for a partial JSON value.
+ *
+ * Note: Partial here means that JSON object attributes can be `undefined`.
  */
 export
 type PartialJSONValue = JSONPrimitive | PartialJSONObject | PartialJSONArray;
@@ -67,6 +69,8 @@ type PartialJSONValue = JSONPrimitive | PartialJSONObject | PartialJSONArray;
 
 /**
  * A type definition for a partial JSON object.
+ *
+ * Note: Partial here means that the JSON object attributes can be `undefined`.
  */
 export
 interface PartialJSONObject { [key: string]: PartialJSONValue | undefined; }
@@ -74,6 +78,8 @@ interface PartialJSONObject { [key: string]: PartialJSONValue | undefined; }
 
 /**
  * A type definition for a partial JSON array.
+ *
+ * Note: Partial here means that JSON object attributes can be `undefined`.
  */
 export
 interface PartialJSONArray extends Array<PartialJSONValue> { }
@@ -81,6 +87,8 @@ interface PartialJSONArray extends Array<PartialJSONValue> { }
 
 /**
  * A type definition for a readonly partial JSON object.
+ *
+ * Note: Partial here means that JSON object attributes can be `undefined`.
  */
 export
 interface ReadonlyPartialJSONObject { readonly [key: string]: ReadonlyPartialJSONValue | undefined; }
@@ -88,6 +96,8 @@ interface ReadonlyPartialJSONObject { readonly [key: string]: ReadonlyPartialJSO
 
 /**
  * A type definition for a readonly partial JSON array.
+ *
+ * Note: Partial here means that JSON object attributes can be `undefined`.
  */
 export
 interface ReadonlyPartialJSONArray extends ReadonlyArray<ReadonlyPartialJSONValue> { }
@@ -95,6 +105,8 @@ interface ReadonlyPartialJSONArray extends ReadonlyArray<ReadonlyPartialJSONValu
 
 /**
  * A type alias for a readonly partial JSON value.
+ *
+ * Note: Partial here means that JSON object attributes can be `undefined`.
  */
 export
 type ReadonlyPartialJSONValue = JSONPrimitive | ReadonlyPartialJSONObject | ReadonlyPartialJSONArray;
