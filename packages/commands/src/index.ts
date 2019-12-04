@@ -1046,6 +1046,26 @@ namespace CommandRegistry {
   }
 
   /**
+   * Get the platform-specific normalized keys for an options object.
+   *
+   * @param options - The options for the key binding.
+   *
+   * @returns Array of combined, normalized keys.
+   */
+  export
+  function normalizeKeys(options: IKeyBindingOptions): string[] {
+    let keys: string[];
+    if (Platform.IS_WIN) {
+      keys = options.winKeys || options.keys;
+    } else if (Platform.IS_MAC) {
+      keys = options.macKeys || options.keys;
+    } else {
+      keys = options.linuxKeys || options.keys;
+    }
+    return keys.map(normalizeKeystroke);
+  }
+
+  /**
    * Format a keystroke for display on the local system.
    */
   export
@@ -1179,7 +1199,7 @@ namespace Private {
   export
   function createKeyBinding(options: CommandRegistry.IKeyBindingOptions): CommandRegistry.IKeyBinding {
     return {
-      keys: normalizeKeys(options),
+      keys: CommandRegistry.normalizeKeys(options),
       selector: validateSelector(options),
       command: options.command,
       args: options.args || JSONExt.emptyObject
@@ -1314,20 +1334,7 @@ namespace Private {
     return () => value;
   }
 
-  /**
-   * Get the platform-specific normalized keys for an options object.
-   */
-  function normalizeKeys(options: CommandRegistry.IKeyBindingOptions): string[] {
-    let keys: string[];
-    if (Platform.IS_WIN) {
-      keys = options.winKeys || options.keys;
-    } else if (Platform.IS_MAC) {
-      keys = options.macKeys || options.keys;
-    } else {
-      keys = options.linuxKeys || options.keys;
-    }
-    return keys.map(CommandRegistry.normalizeKeystroke);
-  }
+
 
   /**
    * Validate the selector for an options object.
