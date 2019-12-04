@@ -1,6 +1,6 @@
-# Contributing to lumino
+# Contributing to Lumino
 
-lumino is a subproject of Project Jupyter and subject to the [Jupyter governance](https://github.com/jupyter/governance) and [Code of conduct](https://github.com/jupyter/governance/blob/master/conduct/code_of_conduct.md).
+Lumino is a subproject of Project Jupyter and subject to the [Jupyter governance](https://github.com/jupyter/governance) and [Code of conduct](https://github.com/jupyter/governance/blob/master/conduct/code_of_conduct.md).
 
 ## General Guidelines
 
@@ -8,8 +8,8 @@ For general documentation about contributing to Jupyter projects, see the [Proje
 
 ## Setting up a development environment
 
-lumino requires [nodejs](https://nodejs.org/en/) and [yarn](https://yarnpkg.com/lang/en/) for local development.  After
-cloning lumino, run the following to install dependencies and build the source:
+Lumino requires [nodejs](https://nodejs.org/en/) and [yarn](https://yarnpkg.com/lang/en/) for local development.  After
+cloning Lumino, run the following to install dependencies and build the source:
 
 ```bash
 yarn
@@ -29,7 +29,7 @@ yarn test  # optionally test:chrome, test:firefox, or test:ie
 
 ## Examples
 
-lumino examples are in the `examples/` folder.  To build and run an example:
+Lumino examples are in the `examples/` folder.  To build and run an example:
 
 ```bash
 yarn build:examples
