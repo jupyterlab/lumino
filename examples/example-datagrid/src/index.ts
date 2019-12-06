@@ -14,9 +14,14 @@ import {
   DataGrid, DataModel, JSONModel, TextRenderer, MutableDataModel, CellEditor, ICellEditor
 } from '@lumino/datagrid';
 
+
 import {
   DockPanel, StackedPanel, Widget
 } from '@lumino/widgets';
+
+import {
+  getKeyboardLayout
+} from '@phosphor/keyboard';
 
 import {
   getKeyboardLayout
