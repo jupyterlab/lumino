@@ -421,6 +421,10 @@ class CommandRegistry {
    * The registry **does not** install its own listener for `'keydown'`
    * events. This allows the application full control over the nodes
    * and phase for which the registry processes `'keydown'` events.
+   *
+   * When the keydown event is processed, if the event target or any of its
+   * ancestor nodes has a `data-p-suppress-shortcuts` attribute, its keydown
+   * events will not invoke commands.
    */
   processKeydownEvent(event: KeyboardEvent): void {
     // Bail immediately if playing back keystrokes.
@@ -1388,6 +1392,9 @@ namespace Private {
     let targ = event.target as (Element | null);
     let curr = event.currentTarget as (Element | null);
     for (let dist = 0; targ !== null; targ = targ.parentElement, ++dist) {
+      if (targ.hasAttribute('data-p-suppress-shortcuts')) {
+        return -1;
+      }
       if (Selector.matches(targ, selector)) {
         return dist;
       }
