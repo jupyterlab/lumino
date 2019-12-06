@@ -7,7 +7,7 @@
 |----------------------------------------------------------------------------*/
 import {
   IDisposable
-} from '@phosphor/disposable';
+} from '@lumino/disposable';
 
 import {
   DataGrid
@@ -19,11 +19,11 @@ import {
 
 import {
   getKeyboardLayout
-} from '@phosphor/keyboard';
+} from '@lumino/keyboard';
 
 import {
   Signal
-} from '@phosphor/signaling';
+} from '@lumino/signaling';
 
 export
 interface ICellInputValidatorResponse {
