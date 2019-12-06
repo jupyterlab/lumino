@@ -1,7 +1,7 @@
 {
   "name": "@lumino/application",
   "version": "1.7.3",
-  "description": "lumino Pluggable Application",
+  "description": "Lumino Pluggable Application",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
     "url": "https://github.com/jupyterlab/lumino/issues"

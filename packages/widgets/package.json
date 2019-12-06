@@ -1,7 +1,7 @@
 {
   "name": "@lumino/widgets",
   "version": "1.9.3",
-  "description": "lumino Widgets",
+  "description": "Lumino Widgets",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
     "url": "https://github.com/jupyterlab/lumino/issues"

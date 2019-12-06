@@ -1,7 +1,7 @@
 {
   "name": "@lumino/algorithm",
   "version": "1.2.0",
-  "description": "lumino Algorithms and Iterators",
+  "description": "Lumino Algorithms and Iterators",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
     "url": "https://github.com/jupyterlab/lumino/issues"

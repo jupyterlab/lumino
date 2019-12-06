@@ -1,7 +1,7 @@
 {
   "name": "@lumino/datastore",
   "version": "0.8.0",
-  "description": "lumino DataStore",
+  "description": "Lumino DataStore",
   "homepage": "https://github.com/jupyterlabab/lumino",
   "bugs": {
     "url": "https://github.com/jupyterlabab/lumino/issues"

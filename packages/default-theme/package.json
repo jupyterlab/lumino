@@ -1,7 +1,7 @@
 {
   "name": "@lumino/default-theme",
   "version": "0.1.8",
-  "description": "lumino Default Theme",
+  "description": "Lumino Default Theme",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
     "url": "https://github.com/jupyterlab/lumino/issues"

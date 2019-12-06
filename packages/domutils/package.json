@@ -1,7 +1,7 @@
 {
   "name": "@lumino/domutils",
   "version": "1.1.4",
-  "description": "lumino DOM Utilities",
+  "description": "Lumino DOM Utilities",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
     "url": "https://github.com/jupyterlab/lumino/issues"

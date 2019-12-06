@@ -1,7 +1,7 @@
 {
   "name": "@lumino/messaging",
   "version": "1.3.0",
-  "description": "lumino Message Passing",
+  "description": "Lumino Message Passing",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
     "url": "https://github.com/jupyterlab/lumino/issues"

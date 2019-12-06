@@ -1,7 +1,7 @@
 {
   "name": "@lumino/datagrid",
   "version": "0.3.1",
-  "description": "lumino Tabular Data Grid",
+  "description": "Lumino Tabular Data Grid",
   "homepage": "https://github.com/jupyterlabab/lumino",
   "bugs": {
     "url": "https://github.com/jupyterlabab/lumino/issues"

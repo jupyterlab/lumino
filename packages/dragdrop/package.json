@@ -1,7 +1,7 @@
 {
   "name": "@lumino/dragdrop",
   "version": "1.4.1",
-  "description": "lumino Drag and Drop",
+  "description": "Lumino Drag and Drop",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
     "url": "https://github.com/jupyterlab/lumino/issues"
