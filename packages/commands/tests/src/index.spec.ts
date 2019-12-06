@@ -509,18 +509,22 @@ describe('@lumino/commands', () => {
 
     let elemID = 0;
     let elem: HTMLElement = null!;
+    let parent: HTMLElement = null!;
 
     beforeEach(() => {
+      parent = document.createElement('div') as HTMLElement;
       elem = document.createElement('div') as HTMLElement;
+      parent.classList.add('p-test-parent');
       elem.id = `test${elemID++}`;
       elem.addEventListener('keydown', event => {
         registry.processKeydownEvent(event);
       });
-      document.body.appendChild(elem);
+      parent.appendChild(elem);
+      document.body.appendChild(parent);
     });
 
     afterEach(() => {
-      document.body.removeChild(elem);
+      document.body.removeChild(parent);
     });
 
     describe('#addKeyBinding()', () => {
@@ -594,6 +598,22 @@ describe('@lumino/commands', () => {
         let event = generate('keydown', { keyCode: 59, ctrlKey: true });
         elem.dispatchEvent(event);
         expect(called).to.equal(true);
+      });
+
+      it('should not dispatch on a suppressed node', () => {
+        let called = false;
+        registry.addCommand('test', {
+          execute: () => { called = true; }
+        });
+        registry.addKeyBinding({
+          keys: ['Ctrl ;'],
+          selector: `.p-test-parent`,
+          command: 'test'
+        });
+        parent.setAttribute('data-p-suppress-shortcuts', 'true');
+        let event = generate('keydown', { keyCode: 59, ctrlKey: true });
+        elem.dispatchEvent(event);
+        expect(called).to.equal(false);
       });
 
       it('should not dispatch on a non-matching keyboard event', () => {
