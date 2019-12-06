@@ -1,7 +1,7 @@
 {
-  "name": "@lumino/poll",
+  "name": "@lumino/polling",
   "version": "1.0.0",
-  "description": "Lumino Poll",
+  "description": "Lumino Polling",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
     "url": "https://github.com/jupyterlab/lumino/issues"
