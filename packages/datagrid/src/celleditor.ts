@@ -371,15 +371,14 @@ abstract class CellEditor implements ICellEditor, IDisposable {
 
   private _addContainer() {
     this._viewportOccluder = document.createElement('div');
-    this._viewportOccluder.className = 'cell-editor-occluder';
+    this._viewportOccluder.className = 'p-DataGrid-cellEditorOccluder';
     this._cell.grid.node.appendChild(this._viewportOccluder);
 
     this._cellContainer = document.createElement('div');
-    this._cellContainer.className = 'cell-editor-container';
+    this._cellContainer.className = 'p-DataGrid-cellEditorContainer';
     this._viewportOccluder.appendChild(this._cellContainer);
 
     this._form = document.createElement('form');
-    this._form.className = 'cell-editor-form';
     this._cellContainer.appendChild(this._form);
 
     this._validityReportInput = document.createElement('input');
@@ -490,8 +489,8 @@ class TextCellEditor extends CellEditor {
 
   _createWidget() {
     const input = document.createElement('input');
-    input.classList.add('cell-editor');
-    input.classList.add('input-cell-editor');
+    input.classList.add('p-DataGrid-cellEditorWidget');
+    input.classList.add('p-DataGrid-cellEditorInput');
     input.spellcheck = false;
 
     this._input = input;
@@ -660,8 +659,8 @@ class DateCellEditor extends CellEditor {
     const input = document.createElement('input');
     input.type = 'date';
     input.pattern = "\d{4}-\d{2}-\d{2}";
-    input.classList.add('cell-editor');
-    input.classList.add('input-cell-editor');
+    input.classList.add('p-DataGrid-cellEditorWidget');
+    input.classList.add('p-DataGrid-cellEditorInput');
 
     this._input = input;
   }
@@ -748,8 +747,8 @@ class BooleanCellEditor extends CellEditor {
 
   _createWidget() {
     const input = document.createElement('input');
-    input.classList.add('cell-editor');
-    input.classList.add('boolean-cell-editor');
+    input.classList.add('p-DataGrid-cellEditorWidget');
+    input.classList.add('p-DataGrid-cellEditorCheckbox');
     input.type = 'checkbox';
     input.spellcheck = false;
 
@@ -850,8 +849,7 @@ class OptionCellEditor extends CellEditor {
     const items = metadata.constraint.enum;
 
     const select = document.createElement('select');
-    select.classList.add('cell-editor');
-    select.classList.add('select-cell-editor');
+    select.classList.add('p-DataGrid-cellEditorWidget');
     for (let item of items) {
       const option = document.createElement("option");
       option.value = item;
@@ -953,8 +951,8 @@ class DynamicOptionCellEditor extends CellEditor {
     const list = document.createElement('datalist');
     list.id = listId;
     const input = document.createElement('input');
-    input.classList.add('cell-editor');
-    input.classList.add('input-cell-editor');
+    input.classList.add('p-DataGrid-cellEditorWidget');
+    input.classList.add('p-DataGrid-cellEditorInput');
     const valueSet = new Set<string>();
     for (let r = 0; r < rowCount; ++r) {
       const data = dataModel.data('body', r, cell.column);
