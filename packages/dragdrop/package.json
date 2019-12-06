@@ -1,10 +1,10 @@
 {
   "name": "@lumino/dragdrop",
   "version": "1.4.1",
-  "description": "lumino Drag and Drop",
-  "homepage": "https://github.com/luminojs/lumino",
+  "description": "Lumino Drag and Drop",
+  "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
-    "url": "https://github.com/luminojs/lumino/issues"
+    "url": "https://github.com/jupyterlab/lumino/issues"
   },
   "license": "BSD-3-Clause",
   "author": "S. Chris Colbert <sccolbert@gmail.com>",
@@ -27,7 +27,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/luminojs/lumino.git"
+    "url": "https://github.com/jupyterlab/lumino.git"
   },
   "scripts": {
     "api": "api-extractor run --local --verbose",
