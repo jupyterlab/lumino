@@ -2,9 +2,9 @@
   "name": "@lumino/widgets",
   "version": "1.9.3",
   "description": "lumino Widgets",
-  "homepage": "https://github.com/luminojs/lumino",
+  "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
-    "url": "https://github.com/luminojs/lumino/issues"
+    "url": "https://github.com/jupyterlab/lumino/issues"
   },
   "license": "BSD-3-Clause",
   "author": "S. Chris Colbert <sccolbert@gmail.com>",
@@ -27,7 +27,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/luminojs/lumino.git"
+    "url": "https://github.com/jupyterlab/lumino.git"
   },
   "scripts": {
     "api": "api-extractor run --local --verbose",
