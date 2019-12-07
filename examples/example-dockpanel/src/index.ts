@@ -321,16 +321,16 @@ function main(): void {
   contextMenu.addItem({ command: 'example:copy', selector: '.content' });
   contextMenu.addItem({ command: 'example:paste', selector: '.content' });
 
-  contextMenu.addItem({ command: 'example:one', selector: '.p-CommandPalette' });
-  contextMenu.addItem({ command: 'example:two', selector: '.p-CommandPalette' });
-  contextMenu.addItem({ command: 'example:three', selector: '.p-CommandPalette' });
-  contextMenu.addItem({ command: 'example:four', selector: '.p-CommandPalette' });
-  contextMenu.addItem({ command: 'example:black', selector: '.p-CommandPalette' });
+  contextMenu.addItem({ command: 'example:one', selector: '.lm-CommandPalette' });
+  contextMenu.addItem({ command: 'example:two', selector: '.lm-CommandPalette' });
+  contextMenu.addItem({ command: 'example:three', selector: '.lm-CommandPalette' });
+  contextMenu.addItem({ command: 'example:four', selector: '.lm-CommandPalette' });
+  contextMenu.addItem({ command: 'example:black', selector: '.lm-CommandPalette' });
 
-  contextMenu.addItem({ command: 'notebook:new', selector: '.p-CommandPalette-input' });
-  contextMenu.addItem({ command: 'example:save-on-exit', selector: '.p-CommandPalette-input' });
-  contextMenu.addItem({ command: 'example:open-task-manager', selector: '.p-CommandPalette-input' });
-  contextMenu.addItem({ type: 'separator', selector: '.p-CommandPalette-input' });
+  contextMenu.addItem({ command: 'notebook:new', selector: '.lm-CommandPalette-input' });
+  contextMenu.addItem({ command: 'example:save-on-exit', selector: '.lm-CommandPalette-input' });
+  contextMenu.addItem({ command: 'example:open-task-manager', selector: '.lm-CommandPalette-input' });
+  contextMenu.addItem({ type: 'separator', selector: '.lm-CommandPalette-input' });
 
   document.addEventListener('keydown', (event: KeyboardEvent) => {
     commands.processKeydownEvent(event);

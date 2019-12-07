@@ -1308,7 +1308,7 @@ namespace TabBar {
     /**
      * A selector which matches the close icon node in a tab.
      */
-    readonly closeIconSelector = '.p-TabBar-tabCloseIcon';
+    readonly closeIconSelector = '.lm-TabBar-tabCloseIcon';
 
     /**
      * Render the virtual element for a tab.

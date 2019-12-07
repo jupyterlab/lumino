@@ -514,7 +514,7 @@ describe('@lumino/commands', () => {
     beforeEach(() => {
       parent = document.createElement('div') as HTMLElement;
       elem = document.createElement('div') as HTMLElement;
-      parent.classList.add('p-test-parent');
+      parent.classList.add('lm-test-parent');
       elem.id = `test${elemID++}`;
       elem.addEventListener('keydown', event => {
         registry.processKeydownEvent(event);
@@ -607,10 +607,10 @@ describe('@lumino/commands', () => {
         });
         registry.addKeyBinding({
           keys: ['Ctrl ;'],
-          selector: `.p-test-parent`,
+          selector: `.lm-test-parent`,
           command: 'test'
         });
-        parent.setAttribute('data-p-suppress-shortcuts', 'true');
+        parent.setAttribute('data-lm-suppress-shortcuts', 'true');
         let event = generate('keydown', { keyCode: 59, ctrlKey: true });
         elem.dispatchEvent(event);
         expect(called).to.equal(false);

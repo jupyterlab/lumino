@@ -1273,9 +1273,9 @@ describe('@lumino/widgets', () => {
 
       describe('#closeIconSelector', () => {
 
-        it('should be `.p-TabBar-tabCloseIcon`', () => {
+        it('should be `.lm-TabBar-tabCloseIcon`', () => {
           let renderer = new TabBar.Renderer();
-          expect(renderer.closeIconSelector).to.equal('.p-TabBar-tabCloseIcon');
+          expect(renderer.closeIconSelector).to.equal('.lm-TabBar-tabCloseIcon');
         });
 
       });

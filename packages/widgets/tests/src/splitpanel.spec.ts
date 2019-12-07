@@ -82,9 +82,9 @@ describe('@lumino/widgets', () => {
         expect(panel.renderer).to.equal(renderer);
       });
 
-      it('should add the `p-SplitPanel` class', () => {
+      it('should add the `lm-SplitPanel` class', () => {
         let panel = new SplitPanel();
-        expect(panel.hasClass('p-SplitPanel')).to.equal(true);
+        expect(panel.hasClass('lm-SplitPanel')).to.equal(true);
       });
 
     });
@@ -354,7 +354,7 @@ describe('@lumino/widgets', () => {
         let panel = new SplitPanel();
         let widget = new Widget();
         panel.addWidget(widget);
-        expect(widget.hasClass('p-SplitPanel-child')).to.equal(true);
+        expect(widget.hasClass('lm-SplitPanel-child')).to.equal(true);
       });
 
     });
@@ -366,7 +366,7 @@ describe('@lumino/widgets', () => {
         let widget = new Widget();
         panel.addWidget(widget);
         widget.parent = null;
-        expect(widget.hasClass('p-SplitPanel-child')).to.equal(false);
+        expect(widget.hasClass('lm-SplitPanel-child')).to.equal(false);
       });
 
     });
@@ -384,10 +384,10 @@ describe('@lumino/widgets', () => {
           expect(node1).to.not.equal(node2);
         });
 
-        it('should add the "p-SplitPanel-handle" class', () => {
+        it('should add the "lm-SplitPanel-handle" class', () => {
           let renderer = new SplitPanel.Renderer();
           let node = renderer.createHandle();
-          expect(node.classList.contains('p-SplitPanel-handle')).to.equal(true);
+          expect(node.classList.contains('lm-SplitPanel-handle')).to.equal(true);
         });
 
       });

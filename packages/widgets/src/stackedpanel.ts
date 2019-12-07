@@ -39,7 +39,7 @@ class StackedPanel extends Panel {
    */
   constructor(options: StackedPanel.IOptions = {}) {
     super({ layout: Private.createLayout(options) });
-    this.addClass('p-StackedPanel');
+    this.addClass('lm-StackedPanel');
   }
 
   /**
@@ -53,14 +53,14 @@ class StackedPanel extends Panel {
    * A message handler invoked on a `'child-added'` message.
    */
   protected onChildAdded(msg: Widget.ChildMessage): void {
-    msg.child.addClass('p-StackedPanel-child');
+    msg.child.addClass('lm-StackedPanel-child');
   }
 
   /**
    * A message handler invoked on a `'child-removed'` message.
    */
   protected onChildRemoved(msg: Widget.ChildMessage): void {
-    msg.child.removeClass('p-StackedPanel-child');
+    msg.child.removeClass('lm-StackedPanel-child');
     this._widgetRemoved.emit(msg.child);
   }
 

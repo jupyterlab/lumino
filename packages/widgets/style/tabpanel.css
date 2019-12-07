@@ -8,11 +8,11 @@
 |----------------------------------------------------------------------------*/
 
 
-.p-TabPanel-tabBar {
+.lm-TabPanel-tabBar {
   z-index: 1;
 }
 
 
-.p-TabPanel-stackedPanel {
+.lm-TabPanel-stackedPanel {
   z-index: 0;
 }

@@ -8,7 +8,7 @@
 |----------------------------------------------------------------------------*/
 
 
-.p-ScrollBar[data-orientation='horizontal'] {
+.lm-ScrollBar[data-orientation='horizontal'] {
   min-height: 16px;
   max-height: 16px;
   min-width: 45px;
@@ -16,7 +16,7 @@
 }
 
 
-.p-ScrollBar[data-orientation='vertical'] {
+.lm-ScrollBar[data-orientation='vertical'] {
   min-width: 16px;
   max-width: 16px;
   min-height: 45px;
@@ -24,7 +24,7 @@
 }
 
 
-.p-ScrollBar-button {
+.lm-ScrollBar-button {
   background-color: #F0F0F0;
   background-position: center center;
   min-height: 15px;
@@ -34,37 +34,37 @@
 }
 
 
-.p-ScrollBar-button:hover {
+.lm-ScrollBar-button:hover {
   background-color: #DADADA;
 }
 
 
-.p-ScrollBar-button.p-mod-active {
+.lm-ScrollBar-button.lm-mod-active {
   background-color: #CDCDCD;
 }
 
 
-.p-ScrollBar-track {
+.lm-ScrollBar-track {
   background: #F0F0F0;
 }
 
 
-.p-ScrollBar-thumb {
+.lm-ScrollBar-thumb {
   background: #CDCDCD;
 }
 
 
-.p-ScrollBar-thumb:hover {
+.lm-ScrollBar-thumb:hover {
   background: #BABABA;
 }
 
 
-.p-ScrollBar-thumb.p-mod-active {
+.lm-ScrollBar-thumb.lm-mod-active {
   background: #A0A0A0;
 }
 
 
-.p-ScrollBar[data-orientation='horizontal'] .p-ScrollBar-thumb {
+.lm-ScrollBar[data-orientation='horizontal'] .lm-ScrollBar-thumb {
   height: 100%;
   min-width: 15px;
   border-left: 1px solid #A0A0A0;
@@ -72,7 +72,7 @@
 }
 
 
-.p-ScrollBar[data-orientation='vertical'] .p-ScrollBar-thumb {
+.lm-ScrollBar[data-orientation='vertical'] .lm-ScrollBar-thumb {
   width: 100%;
   min-height: 15px;
   border-top: 1px solid #A0A0A0;
@@ -80,21 +80,21 @@
 }
 
 
-.p-ScrollBar[data-orientation='horizontal'] .p-ScrollBar-button[data-action='decrement'] {
+.lm-ScrollBar[data-orientation='horizontal'] .lm-ScrollBar-button[data-action='decrement'] {
   background-image: url(../images/caretleft.png);
 }
 
 
-.p-ScrollBar[data-orientation='horizontal'] .p-ScrollBar-button[data-action='increment'] {
+.lm-ScrollBar[data-orientation='horizontal'] .lm-ScrollBar-button[data-action='increment'] {
   background-image: url(../images/caretright.png);
 }
 
 
-.p-ScrollBar[data-orientation='vertical'] .p-ScrollBar-button[data-action='decrement'] {
+.lm-ScrollBar[data-orientation='vertical'] .lm-ScrollBar-button[data-action='decrement'] {
   background-image: url(../images/caretup.png);
 }
 
 
-.p-ScrollBar[data-orientation='vertical'] .p-ScrollBar-button[data-action='increment'] {
+.lm-ScrollBar[data-orientation='vertical'] .lm-ScrollBar-button[data-action='increment'] {
   background-image: url(../images/caretdown.png);
 }

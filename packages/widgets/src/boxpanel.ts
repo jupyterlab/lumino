@@ -35,7 +35,7 @@ class BoxPanel extends Panel {
    */
   constructor(options: BoxPanel.IOptions = {}) {
     super({ layout: Private.createLayout(options) });
-    this.addClass('p-BoxPanel');
+    this.addClass('lm-BoxPanel');
   }
 
   /**
@@ -96,14 +96,14 @@ class BoxPanel extends Panel {
    * A message handler invoked on a `'child-added'` message.
    */
   protected onChildAdded(msg: Widget.ChildMessage): void {
-    msg.child.addClass('p-BoxPanel-child');
+    msg.child.addClass('lm-BoxPanel-child');
   }
 
   /**
    * A message handler invoked on a `'child-removed'` message.
    */
   protected onChildRemoved(msg: Widget.ChildMessage): void {
-    msg.child.removeClass('p-BoxPanel-child');
+    msg.child.removeClass('lm-BoxPanel-child');
   }
 }
 

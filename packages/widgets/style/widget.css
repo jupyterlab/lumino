@@ -8,7 +8,7 @@
 |----------------------------------------------------------------------------*/
 
 
-.p-Widget {
+.lm-Widget {
   box-sizing: border-box;
   position: relative;
   overflow: hidden;
@@ -16,6 +16,6 @@
 }
 
 
-.p-Widget.p-mod-hidden {
+.lm-Widget.lm-mod-hidden {
   display: none !important;
 }

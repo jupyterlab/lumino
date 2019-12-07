@@ -56,7 +56,7 @@ class Menu extends Widget {
    */
   constructor(options: Menu.IOptions) {
     super({ node: Private.createNode() });
-    this.addClass('p-Menu');
+    this.addClass('lm-Menu');
     this.setFlag(Widget.Flag.DisallowLayout);
     this.commands = options.commands;
     this.renderer = options.renderer || Menu.defaultRenderer;
@@ -162,7 +162,7 @@ class Menu extends Widget {
    * Modifying this node directly can lead to undefined behavior.
    */
   get contentNode(): HTMLUListElement {
-    return this.node.getElementsByClassName('p-Menu-content')[0] as HTMLUListElement;
+    return this.node.getElementsByClassName('lm-Menu-content')[0] as HTMLUListElement;
   }
 
   /**
@@ -1176,7 +1176,7 @@ namespace Menu {
      */
     renderLabel(data: IRenderData): VirtualElement {
       let content = this.formatLabel(data);
-      return h.div({ className: 'p-Menu-itemLabel' }, content);
+      return h.div({ className: 'lm-Menu-itemLabel' }, content);
     }
 
     /**
@@ -1188,7 +1188,7 @@ namespace Menu {
      */
     renderShortcut(data: IRenderData): VirtualElement {
       let content = this.formatShortcut(data);
-      return h.div({ className: 'p-Menu-itemShortcut' }, content);
+      return h.div({ className: 'lm-Menu-itemShortcut' }, content);
     }
 
     /**
@@ -1199,7 +1199,7 @@ namespace Menu {
      * @returns A virtual element representing the submenu icon.
      */
     renderSubmenu(data: IRenderData): VirtualElement {
-      return h.div({ className: 'p-Menu-itemSubmenuIcon' });
+      return h.div({ className: 'lm-Menu-itemSubmenuIcon' });
     }
 
     /**
@@ -1211,23 +1211,23 @@ namespace Menu {
      */
     createItemClass(data: IRenderData): string {
       // Setup the initial class name.
-      let name = 'p-Menu-item';
+      let name = 'lm-Menu-item';
 
       // Add the boolean state classes.
       if (!data.item.isEnabled) {
-        name += ' p-mod-disabled';
+        name += ' lm-mod-disabled';
       }
       if (data.item.isToggled) {
-        name += ' p-mod-toggled';
+        name += ' lm-mod-toggled';
       }
       if (!data.item.isVisible) {
-        name += ' p-mod-hidden';
+        name += ' lm-mod-hidden';
       }
       if (data.active) {
-        name += ' p-mod-active';
+        name += ' lm-mod-active';
       }
       if (data.collapsed) {
-        name += ' p-mod-collapsed';
+        name += ' lm-mod-collapsed';
       }
 
       // Add the extra class.
@@ -1266,7 +1266,7 @@ namespace Menu {
      * @returns The full class name for the item icon.
      */
     createIconClass(data: IRenderData): string {
-      let name = 'p-Menu-itemIcon';
+      let name = 'lm-Menu-itemIcon';
       let extra = data.item.iconClass;
       return extra ? `${name} ${extra}` : name;
     }
@@ -1293,7 +1293,7 @@ namespace Menu {
       let char = label[mnemonic];
 
       // Wrap the mnemonic character in a span.
-      let span = h.span({ className: 'p-Menu-itemMnemonic' }, char);
+      let span = h.span({ className: 'lm-Menu-itemMnemonic' }, char);
 
       // Return the content parts.
       return [prefix, span, suffix];
@@ -1343,7 +1343,7 @@ namespace Private {
   function createNode(): HTMLDivElement {
     let node = document.createElement('div');
     let content = document.createElement('ul');
-    content.className = 'p-Menu-content';
+    content.className = 'lm-Menu-content';
     node.appendChild(content);
     node.tabIndex = -1;
     return node;

@@ -8,7 +8,7 @@
 |----------------------------------------------------------------------------*/
 
 
-.p-CommandPalette {
+.lm-CommandPalette {
   display: flex;
   flex-direction: column;
   -webkit-user-select: none;
@@ -18,12 +18,12 @@
 }
 
 
-.p-CommandPalette-search {
+.lm-CommandPalette-search {
   flex: 0 0 auto;
 }
 
 
-.p-CommandPalette-content {
+.lm-CommandPalette-content {
   flex: 1 1 auto;
   margin: 0;
   padding: 0;
@@ -33,36 +33,36 @@
 }
 
 
-.p-CommandPalette-header {
+.lm-CommandPalette-header {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
 
-.p-CommandPalette-item {
+.lm-CommandPalette-item {
   display: flex;
   flex-direction: row;
 }
 
 
-.p-CommandPalette-itemIcon {
+.lm-CommandPalette-itemIcon {
   flex: 0 0 auto;
 }
 
 
-.p-CommandPalette-itemContent {
+.lm-CommandPalette-itemContent {
   flex: 1 1 auto;
   overflow: hidden;
 }
 
 
-.p-CommandPalette-itemShortcut {
+.lm-CommandPalette-itemShortcut {
   flex: 0 0 auto;
 }
 
 
-.p-CommandPalette-itemLabel {
+.lm-CommandPalette-itemLabel {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;

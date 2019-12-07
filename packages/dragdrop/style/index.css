@@ -8,6 +8,6 @@
 |----------------------------------------------------------------------------*/
 
 
-body.p-mod-override-cursor * {
+body.lm-mod-override-cursor * {
   cursor: inherit !important;
 }

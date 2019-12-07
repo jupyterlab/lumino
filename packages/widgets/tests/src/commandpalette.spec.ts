@@ -75,7 +75,7 @@ describe('@lumino/widgets', () => {
 
       it('should accept command palette instantiation options', () => {
         expect(palette).to.be.an.instanceof(CommandPalette);
-        expect(palette.node.classList.contains('p-CommandPalette')).to.equal(true);
+        expect(palette.node.classList.contains('lm-CommandPalette')).to.equal(true);
       });
 
     });
@@ -110,7 +110,7 @@ describe('@lumino/widgets', () => {
     describe('#searchNode', () => {
 
       it('should return the search node of a command palette', () => {
-        expect(palette.searchNode.classList.contains('p-CommandPalette-search')).to.equal(true);
+        expect(palette.searchNode.classList.contains('lm-CommandPalette-search')).to.equal(true);
       });
 
     });
@@ -118,7 +118,7 @@ describe('@lumino/widgets', () => {
     describe('#inputNode', () => {
 
       it('should return the input node of a command palette', () => {
-        expect(palette.inputNode.classList.contains('p-CommandPalette-input')).to.equal(true);
+        expect(palette.inputNode.classList.contains('lm-CommandPalette-input')).to.equal(true);
       });
 
     });
@@ -126,7 +126,7 @@ describe('@lumino/widgets', () => {
     describe('#contentNode', () => {
 
       it('should return the content node of a command palette', () => {
-        expect(palette.contentNode.classList.contains('p-CommandPalette-content')).to.equal(true);
+        expect(palette.contentNode.classList.contains('lm-CommandPalette-content')).to.equal(true);
       });
 
     });
@@ -354,7 +354,7 @@ describe('@lumino/widgets', () => {
         MessageLoop.flush();
 
         let content = palette.contentNode;
-        let itemClass = '.p-CommandPalette-item';
+        let itemClass = '.lm-CommandPalette-item';
         let items = () => content.querySelectorAll(itemClass);
 
         expect(items()).to.have.length(1);
@@ -388,7 +388,7 @@ describe('@lumino/widgets', () => {
           Widget.attach(palette, document.body);
           MessageLoop.flush();
 
-          let node = palette.contentNode.querySelector('.p-CommandPalette-item')!;
+          let node = palette.contentNode.querySelector('.lm-CommandPalette-item')!;
           simulate(node, 'click');
           expect(called).to.equal(true);
         });
@@ -401,7 +401,7 @@ describe('@lumino/widgets', () => {
           Widget.attach(palette, document.body);
           MessageLoop.flush();
 
-          let node = palette.contentNode.querySelector('.p-CommandPalette-item')!;
+          let node = palette.contentNode.querySelector('.lm-CommandPalette-item')!;
           simulate(node, 'click', { button: 1 });
           expect(called).to.equal(false);
         });
@@ -418,11 +418,11 @@ describe('@lumino/widgets', () => {
           Widget.attach(palette, document.body);
           MessageLoop.flush();
 
-          let node = content.querySelector('.p-mod-active');
+          let node = content.querySelector('.lm-mod-active');
           expect(node).to.equal(null);
           simulate(palette.node, 'keydown', { keyCode: 40 }); // Down arrow
           MessageLoop.flush();
-          node = content.querySelector('.p-CommandPalette-item.p-mod-active');
+          node = content.querySelector('.lm-CommandPalette-item.lm-mod-active');
           expect(node).to.not.equal(null);
         });
 
@@ -434,11 +434,11 @@ describe('@lumino/widgets', () => {
           Widget.attach(palette, document.body);
           MessageLoop.flush();
 
-          let node = content.querySelector('.p-mod-active');
+          let node = content.querySelector('.lm-mod-active');
           expect(node).to.equal(null);
           simulate(palette.node, 'keydown', { keyCode: 38 }); // Up arrow
           MessageLoop.flush();
-          node = content.querySelector('.p-CommandPalette-item.p-mod-active');
+          node = content.querySelector('.lm-CommandPalette-item.lm-mod-active');
           expect(node).to.not.equal(null);
         });
 
@@ -451,14 +451,14 @@ describe('@lumino/widgets', () => {
           Widget.attach(palette, document.body);
           MessageLoop.flush();
 
-          let node = content.querySelector('.p-mod-active');
+          let node = content.querySelector('.lm-mod-active');
 
           expect(node).to.equal(null);
           ['altKey', 'ctrlKey', 'shiftKey', 'metaKey'].forEach(key => {
             let options: any = { keyCode: 38 };
             options[key] = true;
             simulate(palette.node, 'keydown', options);
-            node = content.querySelector('.p-CommandPalette-item.p-mod-active');
+            node = content.querySelector('.lm-CommandPalette-item.lm-mod-active');
             expect(node).to.equal(null);
           });
           expect(called).to.be.false;
@@ -475,7 +475,7 @@ describe('@lumino/widgets', () => {
           Widget.attach(palette, document.body);
           MessageLoop.flush();
 
-          expect(content.querySelector('.p-mod-active')).to.equal(null);
+          expect(content.querySelector('.lm-mod-active')).to.equal(null);
           simulate(palette.node, 'keydown', { keyCode: 40 });  // Down arrow
           simulate(palette.node, 'keydown', { keyCode: 13 });  // Enter
           expect(called).to.equal(true);
@@ -495,7 +495,7 @@ describe('@lumino/widgets', () => {
           MessageLoop.flush();
 
           let content = palette.contentNode;
-          let itemClass = '.p-CommandPalette-item';
+          let itemClass = '.lm-CommandPalette-item';
           let items = () => content.querySelectorAll(itemClass);
 
           expect(items()).to.have.length(5);
@@ -521,8 +521,8 @@ describe('@lumino/widgets', () => {
           Widget.attach(palette, document.body);
           MessageLoop.flush();
 
-          let headers = () => palette.node.querySelectorAll('.p-CommandPalette-header');
-          let items = () => palette.node.querySelectorAll('.p-CommandPalette-item');
+          let headers = () => palette.node.querySelectorAll('.lm-CommandPalette-header');
+          let items = () => palette.node.querySelectorAll('.lm-CommandPalette-item');
           let input = (value: string) => {
             palette.inputNode.value = value;
             palette.refresh();
@@ -582,14 +582,14 @@ describe('@lumino/widgets', () => {
         it('should render a header node for the palette', () => {
           let vNode = renderer.renderHeader({ category: 'Test Category', indices: null });
           let node = VirtualDOM.realize(vNode);
-          expect(node.classList.contains('p-CommandPalette-header')).to.equal(true);
+          expect(node.classList.contains('lm-CommandPalette-header')).to.equal(true);
           expect(node.innerHTML).to.equal('Test Category');
         });
 
         it('should mark the matching indices', () => {
           let vNode = renderer.renderHeader({ category: 'Test Category', indices: [1, 2, 6, 7, 8] });
           let node = VirtualDOM.realize(vNode);
-          expect(node.classList.contains('p-CommandPalette-header')).to.equal(true);
+          expect(node.classList.contains('lm-CommandPalette-header')).to.equal(true);
           expect(node.innerHTML).to.equal('T<mark>es</mark>t C<mark>ate</mark>gory');
         });
 
@@ -600,35 +600,35 @@ describe('@lumino/widgets', () => {
         it('should render an item node for the palette', () => {
           let vNode = renderer.renderItem({ item, indices: null, active: false });
           let node = VirtualDOM.realize(vNode);
-          expect(node.classList.contains('p-CommandPalette-item')).to.equal(true);
-          expect(node.classList.contains('p-mod-disabled')).to.equal(false);
-          expect(node.classList.contains('p-mod-toggled')).to.equal(false);
-          expect(node.classList.contains('p-mod-active')).to.equal(false);
+          expect(node.classList.contains('lm-CommandPalette-item')).to.equal(true);
+          expect(node.classList.contains('lm-mod-disabled')).to.equal(false);
+          expect(node.classList.contains('lm-mod-toggled')).to.equal(false);
+          expect(node.classList.contains('lm-mod-active')).to.equal(false);
           expect(node.classList.contains('testClass')).to.equal(true);
           expect(node.getAttribute('data-command')).to.equal('test');
-          expect(node.querySelector('.p-CommandPalette-itemShortcut')).to.not.equal(null);
-          expect(node.querySelector('.p-CommandPalette-itemLabel')).to.not.equal(null);
-          expect(node.querySelector('.p-CommandPalette-itemCaption')).to.not.equal(null);
+          expect(node.querySelector('.lm-CommandPalette-itemShortcut')).to.not.equal(null);
+          expect(node.querySelector('.lm-CommandPalette-itemLabel')).to.not.equal(null);
+          expect(node.querySelector('.lm-CommandPalette-itemCaption')).to.not.equal(null);
         });
 
         it('should handle the disabled item state', () => {
           enabledFlag = false;
           let vNode = renderer.renderItem({ item, indices: null, active: false });
           let node = VirtualDOM.realize(vNode);
-          expect(node.classList.contains('p-mod-disabled')).to.equal(true);
+          expect(node.classList.contains('lm-mod-disabled')).to.equal(true);
         });
 
         it('should handle the toggled item state', () => {
           toggledFlag = true;
           let vNode = renderer.renderItem({ item, indices: null, active: false });
           let node = VirtualDOM.realize(vNode);
-          expect(node.classList.contains('p-mod-toggled')).to.equal(true);
+          expect(node.classList.contains('lm-mod-toggled')).to.equal(true);
         });
 
         it('should handle the active state', () => {
           let vNode = renderer.renderItem({ item, indices: null, active: true });
           let node = VirtualDOM.realize(vNode);
-          expect(node.classList.contains('p-mod-active')).to.equal(true);
+          expect(node.classList.contains('lm-mod-active')).to.equal(true);
         });
 
       });
@@ -638,7 +638,7 @@ describe('@lumino/widgets', () => {
         it('should render an empty message node for the palette', () => {
           let vNode = renderer.renderEmptyMessage({ query: 'foo' });
           let node = VirtualDOM.realize(vNode);
-          expect(node.classList.contains('p-CommandPalette-emptyMessage')).to.equal(true);
+          expect(node.classList.contains('lm-CommandPalette-emptyMessage')).to.equal(true);
           expect(node.innerHTML).to.equal("No commands found that match 'foo'");
         });
 
@@ -649,7 +649,7 @@ describe('@lumino/widgets', () => {
         it('should render an item shortcut node', () => {
           let vNode = renderer.renderItemShortcut({ item, indices: null, active: false });
           let node = VirtualDOM.realize(vNode);
-          expect(node.classList.contains('p-CommandPalette-itemShortcut')).to.equal(true);
+          expect(node.classList.contains('lm-CommandPalette-itemShortcut')).to.equal(true);
           if (Platform.IS_MAC) {
             expect(node.innerHTML).to.equal('\u2303 A');
           } else {
@@ -664,7 +664,7 @@ describe('@lumino/widgets', () => {
         it('should render an item label node', () => {
           let vNode = renderer.renderItemLabel({ item, indices: [1, 2, 3], active: false });
           let node = VirtualDOM.realize(vNode);
-          expect(node.classList.contains('p-CommandPalette-itemLabel')).to.equal(true);
+          expect(node.classList.contains('lm-CommandPalette-itemLabel')).to.equal(true);
           expect(node.innerHTML).to.equal('T<mark>est</mark> Command');
         });
 
@@ -675,7 +675,7 @@ describe('@lumino/widgets', () => {
         it('should render an item caption node', () => {
           let vNode = renderer.renderItemCaption({ item, indices: null, active: false });
           let node = VirtualDOM.realize(vNode);
-          expect(node.classList.contains('p-CommandPalette-itemCaption')).to.equal(true);
+          expect(node.classList.contains('lm-CommandPalette-itemCaption')).to.equal(true);
           expect(node.innerHTML).to.equal('A simple test command');
         });
 
@@ -685,14 +685,14 @@ describe('@lumino/widgets', () => {
 
         it('should create the full class name for the item node', () => {
           let name = renderer.createItemClass({ item, indices: null, active: false });
-          expect(name).to.equal('p-CommandPalette-item testClass');
+          expect(name).to.equal('lm-CommandPalette-item testClass');
         });
 
         it('should handle the boolean states', () => {
           enabledFlag = false;
           toggledFlag = true;
           let name = renderer.createItemClass({ item, indices: null, active: true });
-          expect(name).to.equal('p-CommandPalette-item p-mod-disabled p-mod-toggled p-mod-active testClass');
+          expect(name).to.equal('lm-CommandPalette-item lm-mod-disabled lm-mod-toggled p-mod-active testClass');
         });
 
       });

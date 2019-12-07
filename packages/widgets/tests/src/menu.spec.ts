@@ -150,9 +150,9 @@ describe('@lumino/widgets', () => {
         expect(menu).to.be.an.instanceof(Menu);
       });
 
-      it('should add the `p-Menu` class', () => {
+      it('should add the `lm-Menu` class', () => {
         let menu = new Menu({ commands });
-        expect(menu.hasClass('p-Menu')).to.equal(true);
+        expect(menu.hasClass('lm-Menu')).to.equal(true);
       });
 
     });
@@ -363,7 +363,7 @@ describe('@lumino/widgets', () => {
 
       it('should get the menu content node', () => {
         let content = menu.contentNode;
-        expect(content.classList.contains('p-Menu-content')).to.equal(true);
+        expect(content.classList.contains('lm-Menu-content')).to.equal(true);
       });
 
     });
@@ -761,7 +761,7 @@ describe('@lumino/widgets', () => {
         it('should set the active index', () => {
           menu.addItem({ command: 'test' });
           menu.open(0, 0);
-          let node = menu.node.getElementsByClassName('p-Menu-item')[0];
+          let node = menu.node.getElementsByClassName('lm-Menu-item')[0];
           let rect = node.getBoundingClientRect();
           simulate(menu.node, 'mousemove', { clientX: rect.left, clientY: rect.top });
           expect(menu.activeIndex).to.equal(0);
@@ -773,7 +773,7 @@ describe('@lumino/widgets', () => {
           submenu.title.label = 'Test Label';
           menu.addItem({ type: 'submenu', submenu });
           menu.open(0, 0);
-          let node = menu.node.getElementsByClassName('p-Menu-item')[0];
+          let node = menu.node.getElementsByClassName('lm-Menu-item')[0];
           let rect = node.getBoundingClientRect();
           simulate(menu.node, 'mousemove', { clientX: rect.left, clientY: rect.top });
           expect(menu.activeIndex).to.equal(0);
@@ -793,7 +793,7 @@ describe('@lumino/widgets', () => {
           menu.open(0, 0);
           menu.activeIndex = 1;
           menu.triggerActiveItem();
-          let node = menu.node.getElementsByClassName('p-Menu-item')[0];
+          let node = menu.node.getElementsByClassName('lm-Menu-item')[0];
           let rect = node.getBoundingClientRect();
           simulate(menu.node, 'mousemove', { clientX: rect.left, clientY: rect.top });
           expect(menu.activeIndex).to.equal(0);
@@ -814,7 +814,7 @@ describe('@lumino/widgets', () => {
           submenu.title.label = 'Test Label';
           menu.addItem({ type: 'submenu', submenu });
           menu.open(0, 0);
-          let node = menu.node.getElementsByClassName('p-Menu-item')[0];
+          let node = menu.node.getElementsByClassName('lm-Menu-item')[0];
           let rect = node.getBoundingClientRect();
           simulate(menu.node, 'mousemove', { clientX: rect.left, clientY: rect.top });
           expect(menu.activeIndex).to.equal(0);
@@ -928,12 +928,12 @@ describe('@lumino/widgets', () => {
         menu.addItem({ type: 'submenu', submenu: new Menu({ commands }) });
         menu.addItem({ type: 'separator' });
         menu.open(0, 0);
-        let elements = menu.node.querySelectorAll('.p-Menu-item[data-type="separator"');
+        let elements = menu.node.querySelectorAll('.lm-Menu-item[data-type="separator"');
         expect(elements.length).to.equal(4);
-        expect(elements[0].classList.contains('p-mod-collapsed')).to.equal(true);
-        expect(elements[1].classList.contains('p-mod-collapsed')).to.equal(false);
-        expect(elements[2].classList.contains('p-mod-collapsed')).to.equal(true);
-        expect(elements[3].classList.contains('p-mod-collapsed')).to.equal(true);
+        expect(elements[0].classList.contains('lm-mod-collapsed')).to.equal(true);
+        expect(elements[1].classList.contains('lm-mod-collapsed')).to.equal(false);
+        expect(elements[2].classList.contains('lm-mod-collapsed')).to.equal(true);
+        expect(elements[3].classList.contains('lm-mod-collapsed')).to.equal(true);
       });
 
     });
@@ -1268,52 +1268,52 @@ describe('@lumino/widgets', () => {
           let item = menu.addItem({ command: 'test' });
           let vNode = renderer.renderItem({ item, active: false, collapsed: false });
           let node = VirtualDOM.realize(vNode);
-          expect(node.classList.contains('p-Menu-item')).to.equal(true);
-          expect(node.classList.contains('p-mod-hidden')).to.equal(false);
-          expect(node.classList.contains('p-mod-disabled')).to.equal(false);
-          expect(node.classList.contains('p-mod-toggled')).to.equal(false);
-          expect(node.classList.contains('p-mod-active')).to.equal(false);
-          expect(node.classList.contains('p-mod-collapsed')).to.equal(false);
+          expect(node.classList.contains('lm-Menu-item')).to.equal(true);
+          expect(node.classList.contains('lm-mod-hidden')).to.equal(false);
+          expect(node.classList.contains('lm-mod-disabled')).to.equal(false);
+          expect(node.classList.contains('lm-mod-toggled')).to.equal(false);
+          expect(node.classList.contains('lm-mod-active')).to.equal(false);
+          expect(node.classList.contains('lm-mod-collapsed')).to.equal(false);
           expect(node.getAttribute('data-command')).to.equal('test');
           expect(node.getAttribute('data-type')).to.equal('command');
-          expect(node.querySelector('.p-Menu-itemIcon')).to.not.equal(null);
-          expect(node.querySelector('.p-Menu-itemLabel')).to.not.equal(null);
-          expect(node.querySelector('.p-Menu-itemSubmenuIcon')).to.not.equal(null);
+          expect(node.querySelector('.lm-Menu-itemIcon')).to.not.equal(null);
+          expect(node.querySelector('.lm-Menu-itemLabel')).to.not.equal(null);
+          expect(node.querySelector('.lm-Menu-itemSubmenuIcon')).to.not.equal(null);
         });
 
         it('should handle the hidden item state', () => {
           let item = menu.addItem({ command: 'test-hidden' });
           let vNode = renderer.renderItem({ item, active: false, collapsed: false });
           let node = VirtualDOM.realize(vNode);
-          expect(node.classList.contains('p-mod-hidden')).to.equal(true);
+          expect(node.classList.contains('lm-mod-hidden')).to.equal(true);
         });
 
         it('should handle the disabled item state', () => {
           let item = menu.addItem({ command: 'test-disabled' });
           let vNode = renderer.renderItem({ item, active: false, collapsed: false });
           let node = VirtualDOM.realize(vNode);
-          expect(node.classList.contains('p-mod-disabled')).to.equal(true);
+          expect(node.classList.contains('lm-mod-disabled')).to.equal(true);
         });
 
         it('should handle the toggled item state', () => {
           let item = menu.addItem({ command: 'test-toggled' });
           let vNode = renderer.renderItem({ item, active: false, collapsed: false });
           let node = VirtualDOM.realize(vNode);
-          expect(node.classList.contains('p-mod-toggled')).to.equal(true);
+          expect(node.classList.contains('lm-mod-toggled')).to.equal(true);
         });
 
         it('should handle the active item state', () => {
           let item = menu.addItem({ command: 'test' });
           let vNode = renderer.renderItem({ item, active: true, collapsed: false });
           let node = VirtualDOM.realize(vNode);
-          expect(node.classList.contains('p-mod-active')).to.equal(true);
+          expect(node.classList.contains('lm-mod-active')).to.equal(true);
         });
 
         it('should handle the collapsed item state', () => {
           let item = menu.addItem({ command: 'test-collapsed' });
           let vNode = renderer.renderItem({ item, active: false, collapsed: true });
           let node = VirtualDOM.realize(vNode);
-          expect(node.classList.contains('p-mod-collapsed')).to.equal(true);
+          expect(node.classList.contains('lm-mod-collapsed')).to.equal(true);
         });
 
       });
@@ -1324,7 +1324,7 @@ describe('@lumino/widgets', () => {
           let item = menu.addItem({ command: 'test' });
           let vNode = renderer.renderIcon({ item, active: false, collapsed: false });
           let node = VirtualDOM.realize(vNode);
-          expect(node.classList.contains('p-Menu-itemIcon')).to.equal(true);
+          expect(node.classList.contains('lm-Menu-itemIcon')).to.equal(true);
           expect(node.classList.contains('foo')).to.equal(true);
         });
 
@@ -1336,8 +1336,8 @@ describe('@lumino/widgets', () => {
           let item = menu.addItem({ command: 'test' });
           let vNode = renderer.renderLabel({ item, active: false, collapsed: false });
           let node = VirtualDOM.realize(vNode);
-          expect(node.classList.contains('p-Menu-itemLabel')).to.equal(true);
-          expect(node.innerHTML).to.equal('<span class="p-Menu-itemMnemonic">T</span>est Label');
+          expect(node.classList.contains('lm-Menu-itemLabel')).to.equal(true);
+          expect(node.innerHTML).to.equal('<span class="lm-Menu-itemMnemonic">T</span>est Label');
         });
 
       });
@@ -1348,7 +1348,7 @@ describe('@lumino/widgets', () => {
           let item = menu.addItem({ command: 'test' });
           let vNode = renderer.renderShortcut({ item, active: false, collapsed: false });
           let node = VirtualDOM.realize(vNode);
-          expect(node.classList.contains('p-Menu-itemShortcut')).to.equal(true);
+          expect(node.classList.contains('lm-Menu-itemShortcut')).to.equal(true);
           if (Platform.IS_MAC) {
             expect(node.innerHTML).to.equal('\u2303 T');
           } else {
@@ -1364,7 +1364,7 @@ describe('@lumino/widgets', () => {
           let item = menu.addItem({ command: 'test' });
           let vNode = renderer.renderSubmenu({ item, active: false, collapsed: false });
           let node = VirtualDOM.realize(vNode);
-          expect(node.classList.contains('p-Menu-itemSubmenuIcon')).to.equal(true);
+          expect(node.classList.contains('lm-Menu-itemSubmenuIcon')).to.equal(true);
         });
 
       });
@@ -1375,31 +1375,31 @@ describe('@lumino/widgets', () => {
           let item = menu.addItem({ command: 'test' });
 
           let name = renderer.createItemClass({ item, active: false, collapsed: false });
-          expect(name).to.equal('p-Menu-item testClass');
+          expect(name).to.equal('lm-Menu-item testClass');
 
           name = renderer.createItemClass({ item, active: true, collapsed: false });
-          expect(name).to.equal('p-Menu-item p-mod-active testClass');
+          expect(name).to.equal('lm-Menu-item lm-mod-active testClass');
 
           name = renderer.createItemClass({ item, active: false, collapsed: true });
-          expect(name).to.equal('p-Menu-item p-mod-collapsed testClass');
+          expect(name).to.equal('lm-Menu-item lm-mod-collapsed testClass');
 
           item = menu.addItem({ command: 'test-disabled' });
           name = renderer.createItemClass({ item, active: false, collapsed: false });
-          expect(name).to.equal('p-Menu-item p-mod-disabled testClass');
+          expect(name).to.equal('lm-Menu-item lm-mod-disabled testClass');
 
           item = menu.addItem({ command: 'test-toggled' });
           name = renderer.createItemClass({ item, active: false, collapsed: false });
-          expect(name).to.equal('p-Menu-item p-mod-toggled testClass');
+          expect(name).to.equal('lm-Menu-item lm-mod-toggled testClass');
 
           item = menu.addItem({ command: 'test-hidden' });
           name = renderer.createItemClass({ item, active: false, collapsed: false });
-          expect(name).to.equal('p-Menu-item p-mod-hidden testClass');
+          expect(name).to.equal('lm-Menu-item lm-mod-hidden testClass');
 
           let submenu = new Menu({ commands });
           submenu.title.className = 'fooClass';
           item = menu.addItem({ type: 'submenu', submenu });
           name = renderer.createItemClass({ item, active: false, collapsed: false });
-          expect(name).to.equal('p-Menu-item fooClass');
+          expect(name).to.equal('lm-Menu-item fooClass');
         });
 
       });
@@ -1428,17 +1428,17 @@ describe('@lumino/widgets', () => {
         it('should create the icon class name', () => {
           let item = menu.addItem({ command: 'test' });
           let name = renderer.createIconClass({ item, active: false, collapsed: false });
-          expect(name).to.equal('p-Menu-itemIcon foo');
+          expect(name).to.equal('lm-Menu-itemIcon foo');
 
           item = menu.addItem({ type: 'separator' });
           name = renderer.createIconClass({ item, active: false, collapsed: false });
-          expect(name).to.equal('p-Menu-itemIcon');
+          expect(name).to.equal('lm-Menu-itemIcon');
 
           let submenu = new Menu({ commands });
           submenu.title.icon = 'bar';
           item = menu.addItem({ type: 'submenu', submenu });
           name = renderer.createIconClass({ item, active: false, collapsed: false });
-          expect(name).to.equal('p-Menu-itemIcon bar');
+          expect(name).to.equal('lm-Menu-itemIcon bar');
         });
 
       });
@@ -1449,7 +1449,7 @@ describe('@lumino/widgets', () => {
           let item = menu.addItem({ command: 'test' });
           let child = renderer.formatLabel({ item, active: false, collapsed: false });
           let node = VirtualDOM.realize(h.div(child));
-          expect(node.innerHTML).to.equal('<span class="p-Menu-itemMnemonic">T</span>est Label');
+          expect(node.innerHTML).to.equal('<span class="lm-Menu-itemMnemonic">T</span>est Label');
 
           item = menu.addItem({ type: 'separator' });
           child = renderer.formatLabel({ item, active: false, collapsed: false });

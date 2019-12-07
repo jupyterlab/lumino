@@ -53,7 +53,7 @@ class Widget implements IMessageHandler, IObservableDisposable {
    */
   constructor(options: Widget.IOptions = {}) {
     this.node = Private.createNode(options);
-    this.addClass('p-Widget');
+    this.addClass('lm-Widget');
   }
 
   /**
@@ -396,7 +396,7 @@ class Widget implements IMessageHandler, IObservableDisposable {
       MessageLoop.sendMessage(this, Widget.Msg.BeforeShow);
     }
     this.clearFlag(Widget.Flag.IsHidden);
-    this.removeClass('p-mod-hidden');
+    this.removeClass('lm-mod-hidden');
     if (this.isAttached && (!this.parent || this.parent.isVisible)) {
       MessageLoop.sendMessage(this, Widget.Msg.AfterShow);
     }
@@ -422,7 +422,7 @@ class Widget implements IMessageHandler, IObservableDisposable {
       MessageLoop.sendMessage(this, Widget.Msg.BeforeHide);
     }
     this.setFlag(Widget.Flag.IsHidden);
-    this.addClass('p-mod-hidden');
+    this.addClass('lm-mod-hidden');
     if (this.isAttached && (!this.parent || this.parent.isVisible)) {
       MessageLoop.sendMessage(this, Widget.Msg.AfterHide);
     }

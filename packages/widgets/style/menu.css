@@ -8,7 +8,7 @@
 |----------------------------------------------------------------------------*/
 
 
-.p-Menu {
+.lm-Menu {
   z-index: 10000;
   position: absolute;
   white-space: nowrap;
@@ -22,7 +22,7 @@
 }
 
 
-.p-Menu-content {
+.lm-Menu-content {
   margin: 0;
   padding: 0;
   display: table;
@@ -30,31 +30,31 @@
 }
 
 
-.p-Menu-item {
+.lm-Menu-item {
   display: table-row;
 }
 
 
-.p-Menu-item.p-mod-hidden,
-.p-Menu-item.p-mod-collapsed {
+.lm-Menu-item.lm-mod-hidden,
+.lm-Menu-item.lm-mod-collapsed {
   display: none !important;
 }
 
 
-.p-Menu-itemIcon,
-.p-Menu-itemSubmenuIcon {
+.lm-Menu-itemIcon,
+.lm-Menu-itemSubmenuIcon {
   display: table-cell;
   text-align: center;
 }
 
 
-.p-Menu-itemLabel {
+.lm-Menu-itemLabel {
   display: table-cell;
   text-align: left;
 }
 
 
-.p-Menu-itemShortcut {
+.lm-Menu-itemShortcut {
   display: table-cell;
   text-align: right;
 }
