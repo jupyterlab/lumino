@@ -169,9 +169,9 @@ class JSONCellEditor extends CellEditor {
     this._createWidgets();
   }
 
-  _createWidgets() {
-    const cell = this._cell;
-    const grid = this._cell.grid;
+  private _createWidgets() {
+    const cell = this.cell;
+    const grid = this.cell.grid;
     if (!grid.dataModel) {
       this.cancel();
       return;
@@ -187,7 +187,7 @@ class JSONCellEditor extends CellEditor {
     button.style.textOverflow = 'ellipsis';
 
     button.textContent = this.deserialize(data);
-    this._form.appendChild(button);
+    this.form.appendChild(button);
 
     this._button = button;
 
