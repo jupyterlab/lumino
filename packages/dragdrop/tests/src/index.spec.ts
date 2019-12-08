@@ -525,10 +525,10 @@ describe('@lumino/dragdrop', () => {
         override.dispose();
       });
 
-      it('should add the `p-mod-override-cursor` class to the body', () => {
-        expect(document.body.classList.contains('p-mod-override-cursor')).to.equal(false);
+      it('should add the `lm-mod-override-cursor` class to the body', () => {
+        expect(document.body.classList.contains('lm-mod-override-cursor')).to.equal(false);
         let override = Drag.overrideCursor('wait');
-        expect(document.body.classList.contains('p-mod-override-cursor')).to.equal(true);
+        expect(document.body.classList.contains('lm-mod-override-cursor')).to.equal(true);
         override.dispose();
       });
 
@@ -540,35 +540,35 @@ describe('@lumino/dragdrop', () => {
         expect(document.body.style.cursor).to.equal('');
       });
 
-      it('should remove the `p-mod-override-cursor` class when disposed', () => {
-        expect(document.body.classList.contains('p-mod-override-cursor')).to.equal(false);
+      it('should remove the `lm-mod-override-cursor` class when disposed', () => {
+        expect(document.body.classList.contains('lm-mod-override-cursor')).to.equal(false);
         let override = Drag.overrideCursor('wait');
-        expect(document.body.classList.contains('p-mod-override-cursor')).to.equal(true);
+        expect(document.body.classList.contains('lm-mod-override-cursor')).to.equal(true);
         override.dispose();
-        expect(document.body.classList.contains('p-mod-override-cursor')).to.equal(false);
+        expect(document.body.classList.contains('lm-mod-override-cursor')).to.equal(false);
       });
 
       it('should respect the most recent override', () => {
         expect(document.body.style.cursor).to.equal('');
-        expect(document.body.classList.contains('p-mod-override-cursor')).to.equal(false);
+        expect(document.body.classList.contains('lm-mod-override-cursor')).to.equal(false);
         let one = Drag.overrideCursor('wait');
         expect(document.body.style.cursor).to.equal('wait');
-        expect(document.body.classList.contains('p-mod-override-cursor')).to.equal(true);
+        expect(document.body.classList.contains('lm-mod-override-cursor')).to.equal(true);
         let two = Drag.overrideCursor('default');
         expect(document.body.style.cursor).to.equal('default');
-        expect(document.body.classList.contains('p-mod-override-cursor')).to.equal(true);
+        expect(document.body.classList.contains('lm-mod-override-cursor')).to.equal(true);
         let three = Drag.overrideCursor('cell');
         expect(document.body.style.cursor).to.equal('cell');
-        expect(document.body.classList.contains('p-mod-override-cursor')).to.equal(true);
+        expect(document.body.classList.contains('lm-mod-override-cursor')).to.equal(true);
         two.dispose();
         expect(document.body.style.cursor).to.equal('cell');
-        expect(document.body.classList.contains('p-mod-override-cursor')).to.equal(true);
+        expect(document.body.classList.contains('lm-mod-override-cursor')).to.equal(true);
         one.dispose();
         expect(document.body.style.cursor).to.equal('cell');
-        expect(document.body.classList.contains('p-mod-override-cursor')).to.equal(true);
+        expect(document.body.classList.contains('lm-mod-override-cursor')).to.equal(true);
         three.dispose();
         expect(document.body.style.cursor).to.equal('');
-        expect(document.body.classList.contains('p-mod-override-cursor')).to.equal(false);
+        expect(document.body.classList.contains('lm-mod-override-cursor')).to.equal(false);
       });
 
       it('should override the computed cursor for a node', () => {
