@@ -388,13 +388,13 @@ class DockPanel extends Widget {
    */
   handleEvent(event: Event): void {
     switch (event.type) {
-    case 'p-dragenter':
+    case 'lm-dragenter':
       this._evtDragEnter(event as IDragEvent);
       break;
-    case 'p-dragleave':
+    case 'lm-dragleave':
       this._evtDragLeave(event as IDragEvent);
       break;
-    case 'p-dragover':
+    case 'lm-dragover':
       this._evtDragOver(event as IDragEvent);
       break;
     case 'p-drop':
@@ -423,9 +423,9 @@ class DockPanel extends Widget {
    * A message handler invoked on a `'before-attach'` message.
    */
   protected onBeforeAttach(msg: Message): void {
-    this.node.addEventListener('p-dragenter', this);
-    this.node.addEventListener('p-dragleave', this);
-    this.node.addEventListener('p-dragover', this);
+    this.node.addEventListener('lm-dragenter', this);
+    this.node.addEventListener('lm-dragleave', this);
+    this.node.addEventListener('lm-dragover', this);
     this.node.addEventListener('p-drop', this);
     this.node.addEventListener('mousedown', this);
   }
@@ -434,9 +434,9 @@ class DockPanel extends Widget {
    * A message handler invoked on an `'after-detach'` message.
    */
   protected onAfterDetach(msg: Message): void {
-    this.node.removeEventListener('p-dragenter', this);
-    this.node.removeEventListener('p-dragleave', this);
-    this.node.removeEventListener('p-dragover', this);
+    this.node.removeEventListener('lm-dragenter', this);
+    this.node.removeEventListener('lm-dragleave', this);
+    this.node.removeEventListener('lm-dragover', this);
     this.node.removeEventListener('p-drop', this);
     this.node.removeEventListener('mousedown', this);
     this._releaseMouse();
@@ -472,7 +472,7 @@ class DockPanel extends Widget {
   }
 
   /**
-   * Handle the `'p-dragenter'` event for the dock panel.
+   * Handle the `'lm-dragenter'` event for the dock panel.
    */
   private _evtDragEnter(event: IDragEvent): void {
     // If the factory mime type is present, mark the event as
@@ -484,7 +484,7 @@ class DockPanel extends Widget {
   }
 
   /**
-   * Handle the `'p-dragleave'` event for the dock panel.
+   * Handle the `'lm-dragleave'` event for the dock panel.
    */
   private _evtDragLeave(event: IDragEvent): void {
     // Mark the event as handled.
@@ -492,13 +492,13 @@ class DockPanel extends Widget {
     event.stopPropagation();
 
     // The new target might be a descendant, so we might still handle the drop.
-    // Hide asynchronously so that if a p-dragover event bubbles up to us, the
-    // hide is cancelled by the p-dragover handler's show overlay logic.
+    // Hide asynchronously so that if a lm-dragover event bubbles up to us, the
+    // hide is cancelled by the lm-dragover handler's show overlay logic.
     this.overlay.hide(1)
   }
 
   /**
-   * Handle the `'p-dragover'` event for the dock panel.
+   * Handle the `'lm-dragover'` event for the dock panel.
    */
   private _evtDragOver(event: IDragEvent): void {
     // Mark the event as handled.
