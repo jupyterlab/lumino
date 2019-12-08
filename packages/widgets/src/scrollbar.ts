@@ -44,7 +44,7 @@ class ScrollBar extends Widget {
    */
   constructor(options: ScrollBar.IOptions = {}) {
     super({ node: Private.createNode() });
-    this.addClass('p-ScrollBar');
+    this.addClass('lm-ScrollBar');
     this.setFlag(Widget.Flag.DisallowLayout);
 
     // Set the orientation.
@@ -222,7 +222,7 @@ class ScrollBar extends Widget {
    * Modifying this node directly can lead to undefined behavior.
    */
   get decrementNode(): HTMLDivElement {
-    return this.node.getElementsByClassName('p-ScrollBar-button')[0] as HTMLDivElement;
+    return this.node.getElementsByClassName('lm-ScrollBar-button')[0] as HTMLDivElement;
   }
 
   /**
@@ -232,7 +232,7 @@ class ScrollBar extends Widget {
    * Modifying this node directly can lead to undefined behavior.
    */
   get incrementNode(): HTMLDivElement {
-    return this.node.getElementsByClassName('p-ScrollBar-button')[1] as HTMLDivElement;
+    return this.node.getElementsByClassName('lm-ScrollBar-button')[1] as HTMLDivElement;
   }
 
   /**
@@ -242,7 +242,7 @@ class ScrollBar extends Widget {
    * Modifying this node directly can lead to undefined behavior.
    */
   get trackNode(): HTMLDivElement {
-    return this.node.getElementsByClassName('p-ScrollBar-track')[0] as HTMLDivElement;
+    return this.node.getElementsByClassName('lm-ScrollBar-track')[0] as HTMLDivElement;
   }
 
   /**
@@ -252,7 +252,7 @@ class ScrollBar extends Widget {
    * Modifying this node directly can lead to undefined behavior.
    */
   get thumbNode(): HTMLDivElement {
-    return this.node.getElementsByClassName('p-ScrollBar-thumb')[0] as HTMLDivElement;
+    return this.node.getElementsByClassName('lm-ScrollBar-thumb')[0] as HTMLDivElement;
   }
 
   /**
@@ -802,12 +802,12 @@ namespace Private {
     let increment = document.createElement('div');
     let track = document.createElement('div');
     let thumb = document.createElement('div');
-    decrement.className = 'p-ScrollBar-button';
-    increment.className = 'p-ScrollBar-button';
+    decrement.className = 'lm-ScrollBar-button';
+    increment.className = 'lm-ScrollBar-button';
     decrement.dataset['action'] = 'decrement';
     increment.dataset['action'] = 'increment';
-    track.className = 'p-ScrollBar-track';
-    thumb.className = 'p-ScrollBar-thumb';
+    track.className = 'lm-ScrollBar-track';
+    thumb.className = 'lm-ScrollBar-thumb';
     track.appendChild(thumb);
     node.appendChild(decrement);
     node.appendChild(track);
