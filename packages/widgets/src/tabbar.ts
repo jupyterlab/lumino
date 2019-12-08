@@ -61,7 +61,7 @@ class TabBar<T> extends Widget {
    */
   constructor(options: TabBar.IOptions<T> = {}) {
     super({ node: Private.createNode() });
-    this.addClass('p-TabBar');
+    this.addClass('lm-TabBar');
     this.setFlag(Widget.Flag.DisallowLayout);
     this.tabsMovable = options.tabsMovable || false;
     this.allowDeselect = options.allowDeselect || false;
@@ -294,7 +294,7 @@ class TabBar<T> extends Widget {
    * Modifying this node directly can lead to undefined behavior.
    */
   get contentNode(): HTMLUListElement {
-    return this.node.getElementsByClassName('p-TabBar-content')[0] as HTMLUListElement;
+    return this.node.getElementsByClassName('lm-TabBar-content')[0] as HTMLUListElement;
   }
 
   /**
@@ -1358,7 +1358,7 @@ namespace TabBar {
      * @returns A virtual element representing the tab label.
      */
     renderLabel(data: IRenderData<any>): VirtualElement {
-      return h.div({ className: 'p-TabBar-tabLabel' }, data.title.label);
+      return h.div({ className: 'lm-TabBar-tabLabel' }, data.title.label);
     }
 
     /**
@@ -1369,7 +1369,7 @@ namespace TabBar {
      * @returns A virtual element representing the tab close icon.
      */
     renderCloseIcon(data: IRenderData<any>): VirtualElement {
-      return h.div({ className: 'p-TabBar-tabCloseIcon' });
+      return h.div({ className: 'lm-TabBar-tabCloseIcon' });
     }
 
     /**
@@ -1412,7 +1412,7 @@ namespace TabBar {
      * @returns The full class name for the tab.
      */
     createTabClass(data: IRenderData<any>): string {
-      let name = 'p-TabBar-tab';
+      let name = 'lm-TabBar-tab';
       if (data.title.className) {
         name += ` ${data.title.className}`;
       }
@@ -1444,7 +1444,7 @@ namespace TabBar {
      * @returns The full class name for the tab icon.
      */
     createIconClass(data: IRenderData<any>): string {
-      let name = 'p-TabBar-tabIcon';
+      let name = 'lm-TabBar-tabIcon';
       let extra = data.title.iconClass;
       return extra ? `${name} ${extra}` : name;
     }
@@ -1595,7 +1595,7 @@ namespace Private {
   function createNode(): HTMLDivElement {
     let node = document.createElement('div');
     let content = document.createElement('ul');
-    content.className = 'p-TabBar-content';
+    content.className = 'lm-TabBar-content';
     node.appendChild(content);
     return node;
   }

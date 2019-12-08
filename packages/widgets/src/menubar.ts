@@ -52,7 +52,7 @@ class MenuBar extends Widget {
    */
   constructor(options: MenuBar.IOptions = {}) {
     super({ node: Private.createNode() });
-    this.addClass('p-MenuBar');
+    this.addClass('lm-MenuBar');
     this.setFlag(Widget.Flag.DisallowLayout);
     this.renderer = options.renderer || MenuBar.defaultRenderer;
   }
@@ -90,7 +90,7 @@ class MenuBar extends Widget {
    * Modifying this node directly can lead to undefined behavior.
    */
   get contentNode(): HTMLUListElement {
-    return this.node.getElementsByClassName('p-MenuBar-content')[0] as HTMLUListElement;
+    return this.node.getElementsByClassName('lm-MenuBar-content')[0] as HTMLUListElement;
   }
 
   /**
@@ -213,7 +213,7 @@ class MenuBar extends Widget {
       ArrayExt.insert(this._menus, j, menu);
 
       // Add the styling class to the menu.
-      menu.addClass('p-MenuBar-menu');
+      menu.addClass('lm-MenuBar-menu');
 
       // Connect to the menu signals.
       menu.aboutToClose.connect(this._onMenuAboutToClose, this);
@@ -284,7 +284,7 @@ class MenuBar extends Widget {
     menu.title.changed.disconnect(this._onTitleChanged, this);
 
     // Remove the styling class from the menu.
-    menu.removeClass('p-MenuBar-menu');
+    menu.removeClass('lm-MenuBar-menu');
 
     // Schedule an update of the items.
     this.update();
@@ -307,7 +307,7 @@ class MenuBar extends Widget {
       menu.aboutToClose.disconnect(this._onMenuAboutToClose, this);
       menu.menuRequested.disconnect(this._onMenuMenuRequested, this);
       menu.title.changed.disconnect(this._onTitleChanged, this);
-      menu.removeClass('p-MenuBar-menu');
+      menu.removeClass('lm-MenuBar-menu');
     }
 
     // Clear the menus array.
@@ -778,7 +778,7 @@ namespace MenuBar {
      */
     renderLabel(data: IRenderData): VirtualElement {
       let content = this.formatLabel(data);
-      return h.div({ className: 'p-MenuBar-itemLabel' }, content);
+      return h.div({ className: 'lm-MenuBar-itemLabel' }, content);
     }
 
     /**
@@ -789,7 +789,7 @@ namespace MenuBar {
      * @returns The full class name for the menu item.
      */
     createItemClass(data: IRenderData): string {
-      let name = 'p-MenuBar-item';
+      let name = 'lm-MenuBar-item';
       if (data.title.className) {
         name += ` ${data.title.className}`;
       }
@@ -818,7 +818,7 @@ namespace MenuBar {
      * @returns The full class name for the item icon.
      */
     createIconClass(data: IRenderData): string {
-      let name = 'p-MenuBar-itemIcon';
+      let name = 'lm-MenuBar-itemIcon';
       let extra = data.title.iconClass;
       return extra ? `${name} ${extra}` : name;
     }
@@ -845,7 +845,7 @@ namespace MenuBar {
       let char = label[mnemonic];
 
       // Wrap the mnemonic character in a span.
-      let span = h.span({ className: 'p-MenuBar-itemMnemonic' }, char);
+      let span = h.span({ className: 'lm-MenuBar-itemMnemonic' }, char);
 
       // Return the content parts.
       return [prefix, span, suffix];
@@ -871,7 +871,7 @@ namespace Private {
   function createNode(): HTMLDivElement {
     let node = document.createElement('div');
     let content = document.createElement('ul');
-    content.className = 'p-MenuBar-content';
+    content.className = 'lm-MenuBar-content';
     node.appendChild(content);
     node.tabIndex = -1;
     return node;
