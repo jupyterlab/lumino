@@ -40,7 +40,7 @@ class DropTarget {
     this.node.addEventListener('lm-dragenter', this);
     this.node.addEventListener('lm-dragover', this);
     this.node.addEventListener('lm-dragleave', this);
-    this.node.addEventListener('p-drop', this);
+    this.node.addEventListener('lm-drop', this);
     document.body.appendChild(this.node);
   }
 
@@ -49,7 +49,7 @@ class DropTarget {
     this.node.removeEventListener('lm-dragenter', this);
     this.node.removeEventListener('lm-dragover', this);
     this.node.removeEventListener('lm-dragleave', this);
-    this.node.removeEventListener('p-drop', this);
+    this.node.removeEventListener('lm-drop', this);
   }
 
   handleEvent(event: Event): void {
@@ -64,7 +64,7 @@ class DropTarget {
     case 'lm-dragover':
       this._evtDragOver(event as IDragEvent);
       break;
-    case 'p-drop':
+    case 'lm-drop':
       this._evtDrop(event as IDragEvent);
       break;
     }
@@ -379,7 +379,7 @@ describe('@lumino/dragdrop', () => {
         it('should dispatch the drop event at the current target', () => {
           let rect = child0.node.getBoundingClientRect();
           simulate(child0.node, 'mouseup', { clientX: rect.left + 1, clientY: rect.top + 1 } );
-          expect(child0.events).to.contain('p-drop');
+          expect(child0.events).to.contain('lm-drop');
         });
 
         it('should resolve with the drop action', (done) => {

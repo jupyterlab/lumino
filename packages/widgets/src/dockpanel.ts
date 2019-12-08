@@ -397,7 +397,7 @@ class DockPanel extends Widget {
     case 'lm-dragover':
       this._evtDragOver(event as IDragEvent);
       break;
-    case 'p-drop':
+    case 'lm-drop':
       this._evtDrop(event as IDragEvent);
       break;
     case 'mousedown':
@@ -426,7 +426,7 @@ class DockPanel extends Widget {
     this.node.addEventListener('lm-dragenter', this);
     this.node.addEventListener('lm-dragleave', this);
     this.node.addEventListener('lm-dragover', this);
-    this.node.addEventListener('p-drop', this);
+    this.node.addEventListener('lm-drop', this);
     this.node.addEventListener('mousedown', this);
   }
 
@@ -437,7 +437,7 @@ class DockPanel extends Widget {
     this.node.removeEventListener('lm-dragenter', this);
     this.node.removeEventListener('lm-dragleave', this);
     this.node.removeEventListener('lm-dragover', this);
-    this.node.removeEventListener('p-drop', this);
+    this.node.removeEventListener('lm-drop', this);
     this.node.removeEventListener('mousedown', this);
     this._releaseMouse();
   }
@@ -515,7 +515,7 @@ class DockPanel extends Widget {
   }
 
   /**
-   * Handle the `'p-drop'` event for the dock panel.
+   * Handle the `'lm-drop'` event for the dock panel.
    */
   private _evtDrop(event: IDragEvent): void {
     // Mark the event as handled.
