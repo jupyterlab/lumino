@@ -64,7 +64,7 @@ class DockPanel extends Widget {
    */
   constructor(options: DockPanel.IOptions = {}) {
     super();
-    this.addClass('p-DockPanel');
+    this.addClass('lm-DockPanel');
     this._mode = options.mode || 'multiple-document';
     this._renderer = options.renderer || DockPanel.defaultRenderer;
     this._edges = options.edges || Private.DEFAULT_EDGES;
@@ -452,7 +452,7 @@ class DockPanel extends Widget {
     }
 
     // Add the widget class to the child.
-    msg.child.addClass('p-DockPanel-widget');
+    msg.child.addClass('lm-DockPanel-widget');
   }
 
   /**
@@ -465,7 +465,7 @@ class DockPanel extends Widget {
     }
 
     // Remove the widget class from the child.
-    msg.child.removeClass('p-DockPanel-widget');
+    msg.child.removeClass('lm-DockPanel-widget');
 
     // Schedule an emit of the layout modified signal.
     MessageLoop.postMessage(this, Private.LayoutModified);
@@ -1177,7 +1177,7 @@ namespace DockPanel {
      */
     constructor() {
       this.node = document.createElement('div');
-      this.node.classList.add('p-DockPanel-overlay');
+      this.node.classList.add('lm-DockPanel-overlay');
       this.node.classList.add('lm-mod-hidden');
       this.node.style.position = 'absolute';
     }
@@ -1272,7 +1272,7 @@ namespace DockPanel {
      */
     createTabBar(): TabBar<Widget> {
       let bar = new TabBar<Widget>();
-      bar.addClass('p-DockPanel-tabBar');
+      bar.addClass('lm-DockPanel-tabBar');
       return bar;
     }
 
@@ -1283,7 +1283,7 @@ namespace DockPanel {
      */
     createHandle(): HTMLDivElement {
       let handle = document.createElement('div');
-      handle.className = 'p-DockPanel-handle';
+      handle.className = 'lm-DockPanel-handle';
       return handle;
     }
   }
