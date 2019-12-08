@@ -692,7 +692,7 @@ describe('@lumino/widgets', () => {
           enabledFlag = false;
           toggledFlag = true;
           let name = renderer.createItemClass({ item, indices: null, active: true });
-          expect(name).to.equal('lm-CommandPalette-item lm-mod-disabled lm-mod-toggled p-mod-active testClass');
+          expect(name).to.equal('lm-CommandPalette-item lm-mod-disabled lm-mod-toggled lm-mod-active testClass');
         });
 
       });

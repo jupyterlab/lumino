@@ -690,8 +690,8 @@ class TabBar<T> extends Widget {
       data.override = Drag.overrideCursor('default');
 
       // Add the dragging style classes.
-      data.tab.classList.add('p-mod-dragging');
-      this.addClass('p-mod-dragging');
+      data.tab.classList.add('lm-mod-dragging');
+      this.addClass('lm-mod-dragging');
 
       // Mark the drag as active.
       data.dragActive = true;
@@ -797,7 +797,7 @@ class TabBar<T> extends Widget {
     Private.finalizeTabPosition(data, this._orientation);
 
     // Remove the dragging class from the tab so it can be transitioned.
-    data.tab.classList.remove('p-mod-dragging');
+    data.tab.classList.remove('lm-mod-dragging');
 
     // Parse the transition duration for releasing the tab.
     let duration = Private.parseTransitionDuration(data.tab);
@@ -819,7 +819,7 @@ class TabBar<T> extends Widget {
       data.override!.dispose();
 
       // Remove the remaining dragging style.
-      this.removeClass('p-mod-dragging');
+      this.removeClass('lm-mod-dragging');
 
       // If the tab was not moved, there is nothing else to do.
       let i = data.index;
@@ -879,8 +879,8 @@ class TabBar<T> extends Widget {
     data.override!.dispose();
 
     // Clear the dragging style classes.
-    data.tab.classList.remove('p-mod-dragging');
-    this.removeClass('p-mod-dragging');
+    data.tab.classList.remove('lm-mod-dragging');
+    this.removeClass('lm-mod-dragging');
   }
 
   /**
@@ -1417,10 +1417,10 @@ namespace TabBar {
         name += ` ${data.title.className}`;
       }
       if (data.title.closable) {
-        name += ' p-mod-closable';
+        name += ' lm-mod-closable';
       }
       if (data.current) {
-        name += ' p-mod-current';
+        name += ' lm-mod-current';
       }
       return name;
     }

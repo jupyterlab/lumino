@@ -422,7 +422,7 @@ class ScrollBar extends Widget {
       }
 
       // Add the active class to the thumb node.
-      thumbNode.classList.add('p-mod-active');
+      thumbNode.classList.add('lm-mod-active');
 
       // Store the current value in the press data.
       this._pressData.value = this._value;
@@ -457,7 +457,7 @@ class ScrollBar extends Widget {
     // Handle a decrement button press.
     if (part === 'decrement') {
       // Add the active class to the decrement node.
-      this.decrementNode.classList.add('p-mod-active');
+      this.decrementNode.classList.add('lm-mod-active');
 
       // Start the repeat timer.
       this._repeatTimer = window.setTimeout(this._onRepeat, 350);
@@ -473,7 +473,7 @@ class ScrollBar extends Widget {
     if (part === 'increment') {
 
       // Add the active class to the increment node.
-      this.incrementNode.classList.add('p-mod-active');
+      this.incrementNode.classList.add('lm-mod-active');
 
       // Start the repeat timer.
       this._repeatTimer = window.setTimeout(this._onRepeat, 350);
@@ -571,9 +571,9 @@ class ScrollBar extends Widget {
     document.removeEventListener('contextmenu', this, true);
 
     // Remove the active classes from the nodes.
-    this.thumbNode.classList.remove('p-mod-active');
-    this.decrementNode.classList.remove('p-mod-active');
-    this.incrementNode.classList.remove('p-mod-active');
+    this.thumbNode.classList.remove('lm-mod-active');
+    this.decrementNode.classList.remove('lm-mod-active');
+    this.incrementNode.classList.remove('lm-mod-active');
   }
 
   /**

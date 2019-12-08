@@ -425,12 +425,12 @@ describe('@lumino/widgets', () => {
         expect(called).to.equal(1);
       });
 
-      it('should add the `p-mod-dragging` class to the tab and the bar', () => {
+      it('should add the `lm-mod-dragging` class to the tab and the bar', () => {
         simulateOnNode(tab, 'mousedown');
         let called = false;
         bar.tabDetachRequested.connect((sender, args) => {
-          expect(tab.classList.contains('p-mod-dragging')).to.equal(true);
-          expect(bar.hasClass('p-mod-dragging')).to.equal(true);
+          expect(tab.classList.contains('lm-mod-dragging')).to.equal(true);
+          expect(bar.hasClass('lm-mod-dragging')).to.equal(true);
           called = true;
         });
         let rect = bar.contentNode.getBoundingClientRect();
@@ -1249,7 +1249,7 @@ describe('@lumino/widgets', () => {
           let label = tab.getElementsByClassName('lm-TabBar-tabLabel')[0] as HTMLElement;
           expect(label.textContent).to.equal(title.label);
           let current = i === 0;
-          expect(tab.classList.contains('p-mod-current')).to.equal(current);
+          expect(tab.classList.contains('lm-mod-current')).to.equal(current);
         });
       });
 
@@ -1293,8 +1293,8 @@ describe('@lumino/widgets', () => {
 
           expect(node.classList.contains('lm-TabBar-tab')).to.equal(true);
           expect(node.classList.contains(title.className)).to.equal(true);
-          expect(node.classList.contains('p-mod-current')).to.equal(true);
-          expect(node.classList.contains('p-mod-closable')).to.equal(true);
+          expect(node.classList.contains('lm-mod-current')).to.equal(true);
+          expect(node.classList.contains('lm-mod-closable')).to.equal(true);
           expect(node.title).to.equal(title.caption);
 
           let icon = node.getElementsByClassName('lm-TabBar-tabIcon')[0] as HTMLElement;
@@ -1369,8 +1369,8 @@ describe('@lumino/widgets', () => {
             title, current: true, zIndex: 1
           });
           expect(className).to.contain('lm-TabBar-tab');
-          expect(className).to.contain('p-mod-closable');
-          expect(className).to.contain('p-mod-current');
+          expect(className).to.contain('lm-mod-closable');
+          expect(className).to.contain('lm-mod-current');
         });
 
       });

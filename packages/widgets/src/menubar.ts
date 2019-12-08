@@ -572,7 +572,7 @@ class MenuBar extends Widget {
     if (oldMenu) {
       oldMenu.close();
     } else {
-      this.addClass('p-mod-active');
+      this.addClass('lm-mod-active');
       document.addEventListener('mousedown', this, true);
     }
 
@@ -599,7 +599,7 @@ class MenuBar extends Widget {
     }
 
     // Remove the active class from the menu bar.
-    this.removeClass('p-mod-active');
+    this.removeClass('lm-mod-active');
 
     // Remove the document listeners.
     document.removeEventListener('mousedown', this, true);
@@ -625,7 +625,7 @@ class MenuBar extends Widget {
     }
 
     // Remove the active class from the menu bar.
-    this.removeClass('p-mod-active');
+    this.removeClass('lm-mod-active');
 
     // Remove the document listeners.
     document.removeEventListener('mousedown', this, true);
@@ -794,7 +794,7 @@ namespace MenuBar {
         name += ` ${data.title.className}`;
       }
       if (data.active) {
-        name += ' p-mod-active';
+        name += ' lm-mod-active';
       }
       return name;
     }

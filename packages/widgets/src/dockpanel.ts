@@ -964,12 +964,12 @@ class DockPanel extends Widget {
     });
 
     // Hide the tab node in the original tab.
-    tab.classList.add('p-mod-hidden');
+    tab.classList.add('lm-mod-hidden');
 
     // Create the cleanup callback.
     let cleanup = (() => {
       this._drag = null;
-      tab.classList.remove('p-mod-hidden');
+      tab.classList.remove('lm-mod-hidden');
     });
 
     // Start the drag operation and cleanup when done.
@@ -1178,7 +1178,7 @@ namespace DockPanel {
     constructor() {
       this.node = document.createElement('div');
       this.node.classList.add('p-DockPanel-overlay');
-      this.node.classList.add('p-mod-hidden');
+      this.node.classList.add('lm-mod-hidden');
       this.node.style.position = 'absolute';
     }
 
@@ -1213,7 +1213,7 @@ namespace DockPanel {
       this._hidden = false;
 
       // Finally, show the overlay.
-      this.node.classList.remove('p-mod-hidden');
+      this.node.classList.remove('lm-mod-hidden');
     }
 
     /**
@@ -1233,7 +1233,7 @@ namespace DockPanel {
         clearTimeout(this._timer);
         this._timer = -1;
         this._hidden = true;
-        this.node.classList.add('p-mod-hidden');
+        this.node.classList.add('lm-mod-hidden');
         return;
       }
 
@@ -1246,7 +1246,7 @@ namespace DockPanel {
       this._timer = window.setTimeout(() => {
         this._timer = -1;
         this._hidden = true;
-        this.node.classList.add('p-mod-hidden');
+        this.node.classList.add('lm-mod-hidden');
       }, delay);
     }
 
