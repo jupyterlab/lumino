@@ -916,7 +916,7 @@ namespace Private {
    *
    * #### Notes
    * This largely implements the drag enter portion of the whatwg spec:
-   * https://html.spec.whatwg.org/multipage/interaction.html#drag-and-drolm-processing-model
+   * https://html.spec.whatwg.org/multipage/interaction.html#drag-and-drop-processing-model
    */
   export
   function dispatchDragEnter(drag: Drag, currElem: Element | null, currTarget: Element | null, event: MouseEvent): Element | null {
