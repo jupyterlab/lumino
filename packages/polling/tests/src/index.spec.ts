@@ -3,7 +3,7 @@
 
 import { expect } from 'chai';
 
-import { IPoll, Poll } from '@lumino/poll';
+import { IPoll, Poll } from '@lumino/polling';
 
 /**
  * Return a promise that resolves in the given milliseconds with the given value.
