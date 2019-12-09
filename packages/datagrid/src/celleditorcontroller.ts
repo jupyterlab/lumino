@@ -66,6 +66,15 @@ function resolveOption<T>(option: ConfigOption<T>, config: CellEditor.CellConfig
 
 export
 class CellEditorController implements ICellEditorController {
+  setEditor(identifier: CellDataType | DataModel.Metadata, editor: ICellEditor | Resolver) {
+    if (typeof identifier === 'string') {
+      this._typeBasedOverrides.set(identifier, editor);
+    } else {
+      const key = this._metadataIdentifierToKey(identifier);
+      this._metadataBasedOverrides.set(key, [identifier, editor]);
+    }
+  }
+
   edit(cell: CellEditor.CellConfig, options?: ICellEditOptions): boolean {
     const grid = cell.grid;
 
@@ -220,15 +229,6 @@ class CellEditorController implements ICellEditorController {
     }
 
     return undefined;
-  }
-
-  setEditor(identifier: CellDataType | DataModel.Metadata, editor: ICellEditor | Resolver) {
-    if (typeof identifier === 'string') {
-      this._typeBasedOverrides.set(identifier, editor);
-    } else {
-      const key = this._metadataIdentifierToKey(identifier);
-      this._metadataBasedOverrides.set(key, [identifier, editor]);
-    }
   }
 
   private _editor: ICellEditor | null = null;

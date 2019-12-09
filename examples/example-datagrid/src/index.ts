@@ -165,8 +165,22 @@ class RandomDataModel extends DataModel {
 }
 
 class JSONCellEditor extends CellEditor {
-  startEditing() {
+  dispose(): void {
+    if (this.isDisposed) {
+      return;
+    }
+
+    super.dispose();
+
+    document.body.removeChild(this._textarea);
+  }
+
+  protected startEditing() {
     this._createWidgets();
+  }
+
+  protected getInput(): any {
+    return JSON.parse(this._textarea.value);
   }
 
   private _createWidgets() {
@@ -186,7 +200,7 @@ class JSONCellEditor extends CellEditor {
     button.style.overflow = 'hidden';
     button.style.textOverflow = 'ellipsis';
 
-    button.textContent = this.deserialize(data);
+    button.textContent = this._deserialize(data);
     this.form.appendChild(button);
 
     this._button = button;
@@ -244,22 +258,8 @@ class JSONCellEditor extends CellEditor {
     this._textarea.focus();
   }
 
-  protected getInput(): any {
-    return JSON.parse(this._textarea.value);
-  }
-
-  deserialize(value: any): any {
+  private _deserialize(value: any): any {
     return JSON.stringify(value);
-  }
-
-  dispose(): void {
-    if (this.isDisposed) {
-      return;
-    }
-
-    super.dispose();
-
-    document.body.removeChild(this._textarea);
   }
   
   private _button: HTMLButtonElement;

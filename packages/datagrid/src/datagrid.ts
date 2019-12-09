@@ -664,6 +664,29 @@ class DataGrid extends Widget {
     return this._viewport;
   }
 
+  get editorController(): ICellEditorController | null {
+    return this._editorController;
+  }
+
+  set editorController(controller: ICellEditorController | null) {
+    this._editorController = controller;
+  }
+
+  get editingEnabled(): boolean {
+    return this._editingEnabled;
+  }
+
+  set editingEnabled(enabled: boolean) {
+    this._editingEnabled = enabled;
+  }
+
+  get editable(): boolean {
+    return this._editingEnabled &&
+      this._selectionModel !== null &&
+      this._editorController !== null &&
+      this.dataModel instanceof MutableDataModel;
+  }
+
   /**
    * Scroll the grid to the specified row.
    *
@@ -5068,29 +5091,6 @@ class DataGrid extends Widget {
 
     // Restore the gc state.
     gc.restore();
-  }
-
-  get editorController(): ICellEditorController | null {
-    return this._editorController;
-  }
-
-  set editorController(controller: ICellEditorController | null) {
-    this._editorController = controller;
-  }
-
-  get editingEnabled(): boolean {
-    return this._editingEnabled;
-  }
-
-  set editingEnabled(enabled: boolean) {
-    this._editingEnabled = enabled;
-  }
-
-  get editable(): boolean {
-    return this._editingEnabled &&
-      this._selectionModel !== null &&
-      this._editorController !== null &&
-      this.dataModel instanceof MutableDataModel;
   }
 
   private _viewport: Widget;

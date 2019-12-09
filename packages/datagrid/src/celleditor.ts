@@ -187,45 +187,10 @@ class NumberInputValidator implements ICellInputValidator {
 
 export
 abstract class CellEditor implements ICellEditor, IDisposable {
-  protected abstract startEditing(): void;
-  protected abstract getInput(): any;
-  protected inputChanged = new Signal<this, void>(this);
-
   constructor() {
     this.inputChanged.connect(() => {
       this.validate();
     });
-  }
-
-  protected validate() {
-    let value;
-    try {
-      value = this.getInput();
-    } catch (error) {
-      console.log(`Input error: ${error.message}`);
-      this.setValidity(false, error.message || DEFAULT_INVALID_INPUT_MESSAGE);
-      return;
-    }
-
-    if (this.validator) {
-      const result = this.validator.validate(this.cell, value);
-      if (result.valid) {
-        this.setValidity(true);
-      } else {
-        this.setValidity(false, result.message || DEFAULT_INVALID_INPUT_MESSAGE);
-      }
-    } else {
-      this.setValidity(true);
-    }
-  }
-
-  protected setValidity(valid: boolean, message: string = "") {
-    this._validInput = valid;
-
-    this.validityReportInput.setCustomValidity(message);
-    if (message !== "") {
-      this.form.reportValidity();
-    }
   }
 
   /**
@@ -272,6 +237,53 @@ abstract class CellEditor implements ICellEditor, IDisposable {
     this.dispose();
     if (this.onCancel) {
       this.onCancel();
+    }
+  }
+
+  protected abstract startEditing(): void;
+  protected abstract getInput(): any;
+
+  protected set validInput(value: boolean) {
+    this._validInput = value;
+    if (this._validInput) {
+      this.cellContainer.classList.remove('invalid');
+    } else {
+      this.cellContainer.classList.add('invalid');
+    }
+  }
+
+  protected get validInput(): boolean {
+    return this._validInput;
+  }
+
+  protected validate() {
+    let value;
+    try {
+      value = this.getInput();
+    } catch (error) {
+      console.log(`Input error: ${error.message}`);
+      this.setValidity(false, error.message || DEFAULT_INVALID_INPUT_MESSAGE);
+      return;
+    }
+
+    if (this.validator) {
+      const result = this.validator.validate(this.cell, value);
+      if (result.valid) {
+        this.setValidity(true);
+      } else {
+        this.setValidity(false, result.message || DEFAULT_INVALID_INPUT_MESSAGE);
+      }
+    } else {
+      this.setValidity(true);
+    }
+  }
+
+  protected setValidity(valid: boolean, message: string = "") {
+    this._validInput = valid;
+
+    this.validityReportInput.setCustomValidity(message);
+    if (message !== "") {
+      this.form.reportValidity();
     }
   }
 
@@ -369,6 +381,52 @@ abstract class CellEditor implements ICellEditor, IDisposable {
     };
   }
 
+  protected updatePosition(): void {
+    const grid = this.cell.grid;
+    const cellInfo = this.getCellInfo(this.cell);
+    const headerHeight = grid.headerHeight;
+    const headerWidth = grid.headerWidth;
+
+    this.viewportOccluder.style.top = headerHeight + 'px';
+    this.viewportOccluder.style.left = headerWidth + 'px';
+    this.viewportOccluder.style.width = (grid.viewportWidth - headerWidth) + 'px';
+    this.viewportOccluder.style.height = (grid.viewportHeight - headerHeight) + 'px';
+
+    this.cellContainer.style.left = (cellInfo.x - 1 - headerWidth) + 'px';
+    this.cellContainer.style.top = (cellInfo.y - 1 - headerHeight) + 'px';
+    this.cellContainer.style.width = (cellInfo.width + 1) + 'px';
+    this.cellContainer.style.height = (cellInfo.height + 1) + 'px';
+    this.cellContainer.style.visibility = 'visible';
+  }
+
+  protected commit(cursorMovement: SelectionModel.CursorMoveDirection = 'none'): boolean {
+    this.validate();
+
+    if (!this._validInput) {
+      return false;
+    }
+
+    let value;
+    try {
+      value = this.getInput();
+    } catch (error) {
+      console.log(`Input error: ${error.message}`);
+      return false;
+    }
+
+    this.dispose();
+
+    if (this.onCommit) {
+      this.onCommit({
+        cell: this.cell,
+        value: value,
+        cursorMovement: cursorMovement
+      });
+    }
+
+    return true;
+  }
+
   private _addContainer() {
     this.viewportOccluder = document.createElement('div');
     this.viewportOccluder.className = 'p-DataGrid-cellEditorOccluder';
@@ -401,65 +459,7 @@ abstract class CellEditor implements ICellEditor, IDisposable {
     });
   }
 
-  protected updatePosition(): void {
-    const grid = this.cell.grid;
-    const cellInfo = this.getCellInfo(this.cell);
-    const headerHeight = grid.headerHeight;
-    const headerWidth = grid.headerWidth;
-
-    this.viewportOccluder.style.top = headerHeight + 'px';
-    this.viewportOccluder.style.left = headerWidth + 'px';
-    this.viewportOccluder.style.width = (grid.viewportWidth - headerWidth) + 'px';
-    this.viewportOccluder.style.height = (grid.viewportHeight - headerHeight) + 'px';
-
-    this.cellContainer.style.left = (cellInfo.x - 1 - headerWidth) + 'px';
-    this.cellContainer.style.top = (cellInfo.y - 1 - headerHeight) + 'px';
-    this.cellContainer.style.width = (cellInfo.width + 1) + 'px';
-    this.cellContainer.style.height = (cellInfo.height + 1) + 'px';
-    this.cellContainer.style.visibility = 'visible';
-  }
-
-  protected set validInput(value: boolean) {
-    this._validInput = value;
-    if (this._validInput) {
-      this.cellContainer.classList.remove('invalid');
-    } else {
-      this.cellContainer.classList.add('invalid');
-    }
-  }
-
-  protected get validInput(): boolean {
-    return this._validInput;
-  }
-
-  protected commit(cursorMovement: SelectionModel.CursorMoveDirection = 'none'): boolean {
-    this.validate();
-
-    if (!this._validInput) {
-      return false;
-    }
-
-    let value;
-    try {
-      value = this.getInput();
-    } catch (error) {
-      console.log(`Input error: ${error.message}`);
-      return false;
-    }
-
-    this.dispose();
-
-    if (this.onCommit) {
-      this.onCommit({
-        cell: this.cell,
-        value: value,
-        cursorMovement: cursorMovement
-      });
-    }
-
-    return true;
-  }
-
+  protected inputChanged = new Signal<this, void>(this);
   protected onCommit?: (response: ICellEditResponse) => void;
   protected onCancel?: () => void;
   protected cell: CellEditor.CellConfig;
@@ -468,13 +468,37 @@ abstract class CellEditor implements ICellEditor, IDisposable {
   protected cellContainer: HTMLDivElement;
   protected form: HTMLFormElement;
   protected validityReportInput: HTMLInputElement;
-  protected _validInput: boolean = true;
   protected disposed = false;
+  private _validInput: boolean = true;
 }
 
 export
 class TextCellEditor extends CellEditor {
-  startEditing() {
+  handleEvent(event: Event): void {
+    switch (event.type) {
+      case 'keydown':
+        this._onKeyDown(event as KeyboardEvent);
+        break;
+      case 'blur':
+        this._onBlur(event as FocusEvent);
+        break;
+      case 'input':
+        this._onInput(event);
+        break;
+    }
+  }
+
+  dispose() {
+    if (this.isDisposed) {
+      return;
+    }
+
+    this._unbindEvents();
+
+    super.dispose();
+  }
+
+  protected startEditing() {
     this.createWidget();
 
     const cell = this.cell;
@@ -485,6 +509,18 @@ class TextCellEditor extends CellEditor {
     this.input.focus();
 
     this.bindEvents();
+  }
+
+  protected getInput(): any {
+    return this.input.value;
+  }
+
+  protected deserialize(value: any): any {
+    if (value === null || value === undefined) {
+      return '';
+    }
+
+    return value.toString();
   }
 
   protected createWidget() {
@@ -506,20 +542,6 @@ class TextCellEditor extends CellEditor {
     this.input.removeEventListener('keydown', this);
     this.input.removeEventListener('blur', this);
     this.input.removeEventListener('input', this);
-  }
-
-  handleEvent(event: Event): void {
-    switch (event.type) {
-      case 'keydown':
-        this._onKeyDown(event as KeyboardEvent);
-        break;
-      case 'blur':
-        this._onBlur(event as FocusEvent);
-        break;
-      case 'input':
-        this._onInput(event);
-        break;
-    }
   }
 
   private _onKeyDown(event: KeyboardEvent) {
@@ -556,28 +578,6 @@ class TextCellEditor extends CellEditor {
     this.inputChanged.emit(void 0);
   }
 
-  protected getInput(): any {
-    return this.input.value;
-  }
-
-  protected deserialize(value: any): any {
-    if (value === null || value === undefined) {
-      return '';
-    }
-
-    return value.toString();
-  }
-
-  dispose() {
-    if (this.isDisposed) {
-      return;
-    }
-
-    this._unbindEvents();
-
-    super.dispose();
-  }
-
   protected input: HTMLInputElement;
 }
 
@@ -600,7 +600,7 @@ class NumberCellEditor extends TextCellEditor {
 
 export
 class IntegerCellEditor extends NumberCellEditor {
-  startEditing() {
+  protected startEditing() {
     this.createWidget();
     this.input.type = 'number';
 
@@ -643,16 +643,49 @@ class IntegerCellEditor extends NumberCellEditor {
 
 export
 class DateCellEditor extends CellEditor {
-  startEditing() {
+  handleEvent(event: Event): void {
+    switch (event.type) {
+      case 'keydown':
+        this._onKeyDown(event as KeyboardEvent);
+        break;
+      case 'blur':
+        this._onBlur(event as FocusEvent);
+        break;
+    }
+  }
+
+  dispose() {
+    if (this.isDisposed) {
+      return;
+    }
+
+    this._unbindEvents();
+
+    super.dispose();
+  }
+
+  protected startEditing() {
     this._createWidget();
 
     const cell = this.cell;
     const cellInfo = this.getCellInfo(cell);
-    this._input.value = this.deserialize(cellInfo.data);
+    this._input.value = this._deserialize(cellInfo.data);
     this.form.appendChild(this._input);
     this._input.focus();
 
     this._bindEvents();
+  }
+
+  protected getInput(): any {
+    return this._input.value;
+  }
+
+  private _deserialize(value: any): any {
+    if (value === null || value === undefined) {
+      return '';
+    }
+
+    return value.toString();
   }
 
   private _createWidget() {
@@ -673,17 +706,6 @@ class DateCellEditor extends CellEditor {
   private _unbindEvents() {
     this._input.removeEventListener('keydown', this);
     this._input.removeEventListener('blur', this);
-  }
-
-  handleEvent(event: Event): void {
-    switch (event.type) {
-      case 'keydown':
-        this._onKeyDown(event as KeyboardEvent);
-        break;
-      case 'blur':
-        this._onBlur(event as FocusEvent);
-        break;
-    }
   }
 
   private _onKeyDown(event: KeyboardEvent) {
@@ -716,16 +738,26 @@ class DateCellEditor extends CellEditor {
     }
   }
 
-  protected getInput(): any {
-    return this._input.value;
-  }
+  private _input: HTMLInputElement;
+}
 
-  protected deserialize(value: any): any {
-    if (value === null || value === undefined) {
-      return '';
+export
+class BooleanCellEditor extends CellEditor {
+  handleEvent(event: Event): void {
+    switch (event.type) {
+      case 'keydown':
+        this._onKeyDown(event as KeyboardEvent);
+        break;
+      case 'mousedown':
+        // fix focus loss problem in Safari and Firefox
+        this._input.focus();
+        event.stopPropagation();
+        event.preventDefault();
+        break;
+      case 'blur':
+        this._onBlur(event as FocusEvent);
+        break;
     }
-
-    return value.toString();
   }
 
   dispose() {
@@ -738,21 +770,28 @@ class DateCellEditor extends CellEditor {
     super.dispose();
   }
 
-  private _input: HTMLInputElement;
-}
-
-export
-class BooleanCellEditor extends CellEditor {
-  startEditing() {
+  protected startEditing() {
     this._createWidget();
 
     const cell = this.cell;
     const cellInfo = this.getCellInfo(cell);
-    this._input.checked = this.deserialize(cellInfo.data);
+    this._input.checked = this._deserialize(cellInfo.data);
     this.form.appendChild(this._input);
     this._input.focus();
 
     this._bindEvents();
+  }
+
+  protected getInput(): any {
+    return this._input.checked;
+  }
+
+  private _deserialize(value: any): any {
+    if (value === null || value === undefined) {
+      return false;
+    }
+
+    return value == true;
   }
 
   private _createWidget() {
@@ -777,23 +816,6 @@ class BooleanCellEditor extends CellEditor {
     this._input.removeEventListener('blur', this);
   }
 
-  handleEvent(event: Event): void {
-    switch (event.type) {
-      case 'keydown':
-        this._onKeyDown(event as KeyboardEvent);
-        break;
-      case 'mousedown':
-        // fix focus loss problem in Safari and Firefox
-        this._input.focus();
-        event.stopPropagation();
-        event.preventDefault();
-        break;
-      case 'blur':
-        this._onBlur(event as FocusEvent);
-        break;
-    }
-  }
-
   private _onKeyDown(event: KeyboardEvent) {
     switch (getKeyboardLayout().keyForKeydownEvent(event)) {
       case 'Enter':
@@ -824,16 +846,20 @@ class BooleanCellEditor extends CellEditor {
     }
   }
 
-  protected getInput(): any {
-    return this._input.checked;
-  }
+  private _input: HTMLInputElement;
+}
 
-  protected deserialize(value: any): any {
-    if (value === null || value === undefined) {
-      return false;
+export
+class OptionCellEditor extends CellEditor {
+  handleEvent(event: Event): void {
+    switch (event.type) {
+      case 'keydown':
+        this._onKeyDown(event as KeyboardEvent);
+        break;
+      case 'blur':
+        this._onBlur(event as FocusEvent);
+        break;
     }
-
-    return value == true;
   }
 
   dispose() {
@@ -846,21 +872,28 @@ class BooleanCellEditor extends CellEditor {
     super.dispose();
   }
 
-  private _input: HTMLInputElement;
-}
-
-export
-class OptionCellEditor extends CellEditor {
-  startEditing() {
+  protected startEditing() {
     this._createWidget();
 
     const cell = this.cell;
     const cellInfo = this.getCellInfo(cell);
-    this._select.value = this.deserialize(cellInfo.data);
+    this._select.value = this._deserialize(cellInfo.data);
     this.form.appendChild(this._select);
     this._select.focus();
 
     this._bindEvents();
+  }
+
+  protected getInput(): any {
+    return this._select.value;
+  }
+
+  private _deserialize(value: any): any {
+    if (value === null || value === undefined) {
+      return '';
+    }
+
+    return value.toString();
   }
 
   private _createWidget() {
@@ -888,17 +921,6 @@ class OptionCellEditor extends CellEditor {
   private _unbindEvents() {
     this._select.removeEventListener('keydown', this);
     this._select.removeEventListener('blur', this);
-  }
-
-  handleEvent(event: Event): void {
-    switch (event.type) {
-      case 'keydown':
-        this._onKeyDown(event as KeyboardEvent);
-        break;
-      case 'blur':
-        this._onBlur(event as FocusEvent);
-        break;
-    }
   }
 
   private _onKeyDown(event: KeyboardEvent) {
@@ -931,16 +953,20 @@ class OptionCellEditor extends CellEditor {
     }
   }
 
-  protected getInput(): any {
-    return this._select.value;
-  }
+  private _select: HTMLSelectElement;
+}
 
-  protected deserialize(value: any): any {
-    if (value === null || value === undefined) {
-      return '';
+export
+class DynamicOptionCellEditor extends CellEditor {
+  handleEvent(event: Event): void {
+    switch (event.type) {
+      case 'keydown':
+        this._onKeyDown(event as KeyboardEvent);
+        break;
+      case 'blur':
+        this._onBlur(event as FocusEvent);
+        break;
     }
-
-    return value.toString();
   }
 
   dispose() {
@@ -953,22 +979,29 @@ class OptionCellEditor extends CellEditor {
     super.dispose();
   }
 
-  private _select: HTMLSelectElement;
-}
-
-export
-class DynamicOptionCellEditor extends CellEditor {
-  startEditing() {
+  protected startEditing() {
     this._createWidget();
 
     const cell = this.cell;
     const cellInfo = this.getCellInfo(cell);
-    this._input.value = this.deserialize(cellInfo.data);
+    this._input.value = this._deserialize(cellInfo.data);
     this.form.appendChild(this._input);
     this._input.select();
     this._input.focus();
 
     this._bindEvents();
+  }
+
+  protected getInput(): any {
+    return this._input.value;
+  }
+
+  private _deserialize(value: any): any {
+    if (value === null || value === undefined) {
+      return '';
+    }
+
+    return value.toString();
   }
 
   private _createWidget() {
@@ -1012,17 +1045,6 @@ class DynamicOptionCellEditor extends CellEditor {
     this._input.removeEventListener('blur', this);
   }
 
-  handleEvent(event: Event): void {
-    switch (event.type) {
-      case 'keydown':
-        this._onKeyDown(event as KeyboardEvent);
-        break;
-      case 'blur':
-        this._onBlur(event as FocusEvent);
-        break;
-    }
-  }
-
   private _onKeyDown(event: KeyboardEvent) {
     switch (getKeyboardLayout().keyForKeydownEvent(event)) {
       case 'Enter':
@@ -1051,28 +1073,6 @@ class DynamicOptionCellEditor extends CellEditor {
       event.stopPropagation();
       this._input.focus();
     }
-  }
-
-  protected getInput(): any {
-    return this._input.value;
-  }
-
-  protected deserialize(value: any): any {
-    if (value === null || value === undefined) {
-      return '';
-    }
-
-    return value.toString();
-  }
-
-  dispose() {
-    if (this.isDisposed) {
-      return;
-    }
-
-    this._unbindEvents();
-
-    super.dispose();
   }
 
   private _input: HTMLInputElement;
