@@ -1,10 +1,10 @@
 {
   "name": "@lumino/datagrid",
   "version": "0.3.1",
-  "description": "lumino Tabular Data Grid",
-  "homepage": "https://github.com/luminojs/lumino",
+  "description": "Lumino Tabular Data Grid",
+  "homepage": "https://github.com/jupyterlabab/lumino",
   "bugs": {
-    "url": "https://github.com/luminojs/lumino/issues"
+    "url": "https://github.com/jupyterlabab/lumino/issues"
   },
   "license": "BSD-3-Clause",
   "author": "S. Chris Colbert <sccolbert@gmail.com>",
@@ -24,7 +24,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/luminojs/lumino.git"
+    "url": "https://github.com/jupyterlabab/lumino.git"
   },
   "scripts": {
     "api": "api-extractor run --local --verbose",
