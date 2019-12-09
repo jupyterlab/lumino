@@ -429,11 +429,11 @@ abstract class CellEditor implements ICellEditor, IDisposable {
 
   private _addContainer() {
     this.viewportOccluder = document.createElement('div');
-    this.viewportOccluder.className = 'p-DataGrid-cellEditorOccluder';
+    this.viewportOccluder.className = 'lm-DataGrid-cellEditorOccluder';
     this.cell.grid.node.appendChild(this.viewportOccluder);
 
     this.cellContainer = document.createElement('div');
-    this.cellContainer.className = 'p-DataGrid-cellEditorContainer';
+    this.cellContainer.className = 'lm-DataGrid-cellEditorContainer';
     this.viewportOccluder.appendChild(this.cellContainer);
 
     this.form = document.createElement('form');
@@ -525,8 +525,8 @@ class TextCellEditor extends CellEditor {
 
   protected createWidget() {
     const input = document.createElement('input');
-    input.classList.add('p-DataGrid-cellEditorWidget');
-    input.classList.add('p-DataGrid-cellEditorInput');
+    input.classList.add('lm-DataGrid-cellEditorWidget');
+    input.classList.add('lm-DataGrid-cellEditorInput');
     input.spellcheck = false;
 
     this.input = input;
@@ -692,8 +692,8 @@ class DateCellEditor extends CellEditor {
     const input = document.createElement('input');
     input.type = 'date';
     input.pattern = "\d{4}-\d{2}-\d{2}";
-    input.classList.add('p-DataGrid-cellEditorWidget');
-    input.classList.add('p-DataGrid-cellEditorInput');
+    input.classList.add('lm-DataGrid-cellEditorWidget');
+    input.classList.add('lm-DataGrid-cellEditorInput');
 
     this._input = input;
   }
@@ -796,8 +796,8 @@ class BooleanCellEditor extends CellEditor {
 
   private _createWidget() {
     const input = document.createElement('input');
-    input.classList.add('p-DataGrid-cellEditorWidget');
-    input.classList.add('p-DataGrid-cellEditorCheckbox');
+    input.classList.add('lm-DataGrid-cellEditorWidget');
+    input.classList.add('lm-DataGrid-cellEditorCheckbox');
     input.type = 'checkbox';
     input.spellcheck = false;
 
@@ -902,7 +902,7 @@ class OptionCellEditor extends CellEditor {
     const items = metadata.constraint.enum;
 
     const select = document.createElement('select');
-    select.classList.add('p-DataGrid-cellEditorWidget');
+    select.classList.add('lm-DataGrid-cellEditorWidget');
     for (let item of items) {
       const option = document.createElement("option");
       option.value = item;
@@ -1014,8 +1014,8 @@ class DynamicOptionCellEditor extends CellEditor {
     const list = document.createElement('datalist');
     list.id = listId;
     const input = document.createElement('input');
-    input.classList.add('p-DataGrid-cellEditorWidget');
-    input.classList.add('p-DataGrid-cellEditorInput');
+    input.classList.add('lm-DataGrid-cellEditorWidget');
+    input.classList.add('lm-DataGrid-cellEditorInput');
     const valueSet = new Set<string>();
     for (let r = 0; r < rowCount; ++r) {
       const data = dataModel.data('body', r, cell.column);
