@@ -19,11 +19,16 @@ import {
     DynamicOptionCellEditor
 } from './celleditor';
 
-import { DataModel } from './datamodel';
+import {
+  DataModel
+} from './datamodel';
+
+export
+type EditorOverrideIdentifier = CellDataType | DataModel.Metadata | 'default';
 
 export
 interface ICellEditorController {
-  setEditor(identifier: CellDataType | DataModel.Metadata, editor: ICellEditor | Resolver): void;
+  setEditor(identifier: EditorOverrideIdentifier, editor: ICellEditor | Resolver): void;
   edit(cell: CellEditor.CellConfig, options?: ICellEditOptions): boolean;
   cancel(): void;
 }
@@ -66,7 +71,7 @@ function resolveOption<T>(option: ConfigOption<T>, config: CellEditor.CellConfig
 
 export
 class CellEditorController implements ICellEditorController {
-  setEditor(identifier: CellDataType | DataModel.Metadata, editor: ICellEditor | Resolver) {
+  setEditor(identifier: EditorOverrideIdentifier, editor: ICellEditor | Resolver) {
     if (typeof identifier === 'string') {
       this._typeBasedOverrides.set(identifier, editor);
     } else {
@@ -112,7 +117,7 @@ class CellEditorController implements ICellEditorController {
     const metadata = cell.grid.dataModel ? cell.grid.dataModel.metadata('body', cell.row, cell.column) : null;
 
     if (!metadata) {
-      return 'undefined';
+      return 'default';
     }
 
     let key = '';
@@ -191,7 +196,7 @@ class CellEditorController implements ICellEditorController {
     const dtKey = this._getDataTypeKey(cell);
 
     if (this._typeBasedOverrides.has(dtKey)) {
-      let editor = this._typeBasedOverrides.get(dtKey);
+      const editor = this._typeBasedOverrides.get(dtKey);
       return resolveOption(editor!, cell);
     } else if (this._metadataBasedOverrides.size > 0) {
       const editor = this._getMetadataBasedEditor(cell);
@@ -221,6 +226,11 @@ class CellEditorController implements ICellEditorController {
       case 'integer:dynamic-option':
       case 'date:dynamic-option':
         return new DynamicOptionCellEditor();
+    }
+
+    if (this._typeBasedOverrides.has('default')) {
+      const editor = this._typeBasedOverrides.get('default');
+      return resolveOption(editor!, cell);
     }
 
     const data = cell.grid.dataModel!.data('body', cell.row, cell.column);
