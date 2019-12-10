@@ -24,7 +24,6 @@ import {
 } from './selectionmodel';
 
 import {
-  ICellEditResponse,
   CellEditor
 } from './celleditor';
 
@@ -78,20 +77,7 @@ class BasicKeyHandler implements DataGrid.IKeyHandler {
           row: row,
           column: column
         };
-        grid.editorController!.edit(cell, {
-          onCommit: (response: ICellEditResponse) => {
-            const dataModel = grid.dataModel as MutableDataModel;
-            dataModel.setData('body', row, column, response.value);
-            grid.viewport.node.focus();
-            if (response.cursorMovement) {
-              grid.moveCursor(response.cursorMovement);
-              grid.scrollToCursor();
-            }
-          },
-          onCancel: () => {
-            grid.viewport.node.focus();
-          }
-        });
+        grid.editorController!.edit(cell);
         if (getKeyboardLayout().keyForKeydownEvent(event) === 'Space') {
           event.stopPropagation();
           event.preventDefault();

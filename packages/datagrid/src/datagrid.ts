@@ -137,7 +137,7 @@ class DataGrid extends Widget {
     this._editorController = new CellEditorController();
 
     // Add the extra class names to the child widgets.
-    this._viewport.addClass('lm-viewport');
+    this._viewport.addClass('lm-DataGrid-viewport');
     this._vScrollBar.addClass('lm-DataGrid-scrollBar');
     this._hScrollBar.addClass('lm-DataGrid-scrollBar');
     this._scrollCorner.addClass('lm-DataGrid-scrollCorner');

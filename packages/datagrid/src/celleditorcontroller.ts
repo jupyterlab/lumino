@@ -16,11 +16,12 @@ import {
     BooleanCellEditor,
     DateCellEditor,
     OptionCellEditor,
-    DynamicOptionCellEditor
+    DynamicOptionCellEditor,
+    ICellEditResponse
 } from './celleditor';
 
 import {
-  DataModel
+  DataModel, MutableDataModel
 } from './datamodel';
 
 export
@@ -90,7 +91,13 @@ class CellEditorController implements ICellEditorController {
 
     this.cancel();
 
-    if (options && options.editor) {
+    this._cell = cell;
+
+    options = options || {};
+    options.onCommit = options.onCommit || this._onCommit.bind(this);
+    options.onCancel = options.onCancel || this._onCancel.bind(this);
+
+    if (options.editor) {
       this._editor = options.editor;
       options.editor.edit(cell, options);
       return true;
@@ -111,6 +118,33 @@ class CellEditorController implements ICellEditorController {
       this._editor.cancel();
       this._editor = null;
     }
+
+    this._cell = null;
+  }
+
+  private _onCommit(response: ICellEditResponse): void {
+    const cell = this._cell;
+
+    if (!cell) {
+      return;
+    }
+
+    const grid = cell.grid;
+    const dataModel = grid.dataModel as MutableDataModel;
+    dataModel.setData('body', cell.row, cell.column, response.value);
+    grid.viewport.node.focus();
+    if (response.cursorMovement !== 'none') {
+      grid.moveCursor(response.cursorMovement);
+      grid.scrollToCursor();
+    }
+  }
+
+  private _onCancel(): void {
+    if (!this._cell) {
+      return;
+    }
+
+    this._cell.grid.viewport.node.focus();
   }
 
   private _getDataTypeKey(cell: CellEditor.CellConfig): string {
@@ -242,6 +276,7 @@ class CellEditorController implements ICellEditorController {
   }
 
   private _editor: ICellEditor | null = null;
+  private _cell: CellEditor.CellConfig | null = null;
   private _typeBasedOverrides: Map<string, ICellEditor | Resolver> = new Map();
   private _metadataBasedOverrides: Map<string, [DataModel.Metadata, ICellEditor | Resolver]> = new Map();
 }

@@ -24,7 +24,7 @@ import {
 } from './datagrid';
 
 import {
-  DataModel, MutableDataModel
+  DataModel
 } from './datamodel';
 
 import {
@@ -32,7 +32,6 @@ import {
 } from './selectionmodel';
 
 import {
-  ICellEditResponse,
   CellEditor
 } from './celleditor';
 
@@ -528,20 +527,7 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
           row: row,
           column: column
         };
-        grid.editorController!.edit(cell, {
-          onCommit: (response: ICellEditResponse) => {
-            const dataModel = grid.dataModel as MutableDataModel;
-            dataModel.setData('body', row, column, response.value);
-            grid.viewport.node.focus();
-            if (response.cursorMovement !== 'none') {
-              grid.moveCursor(response.cursorMovement);
-              grid.scrollToCursor();
-            }
-          },
-          onCancel: () => {
-            grid.viewport.node.focus();
-          }
-        });
+        grid.editorController!.edit(cell);
       }
     }
 
