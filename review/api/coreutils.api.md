@@ -12,15 +12,23 @@ export interface JSONArray extends Array<JSONValue> {
 export namespace JSONExt {
     const emptyObject: ReadonlyJSONObject;
     const emptyArray: ReadonlyJSONArray;
-    export function deepCopy<T extends ReadonlyJSONValue>(value: T): T;
-    export function deepEqual(first: ReadonlyJSONValue, second: ReadonlyJSONValue): boolean;
+    export function deepCopy<T extends ReadonlyPartialJSONValue>(value: T): T;
+    export function deepEqual(first: ReadonlyPartialJSONValue, second: ReadonlyPartialJSONValue): boolean;
     export function isArray(value: JSONValue): value is JSONArray;
     // (undocumented)
     export function isArray(value: ReadonlyJSONValue): value is ReadonlyJSONArray;
+    // (undocumented)
+    export function isArray(value: PartialJSONValue): value is PartialJSONArray;
+    // (undocumented)
+    export function isArray(value: ReadonlyPartialJSONValue): value is ReadonlyPartialJSONArray;
     export function isObject(value: JSONValue): value is JSONObject;
     // (undocumented)
     export function isObject(value: ReadonlyJSONValue): value is ReadonlyJSONObject;
-    export function isPrimitive(value: ReadonlyJSONValue): value is JSONPrimitive;
+    // (undocumented)
+    export function isObject(value: PartialJSONValue): value is PartialJSONObject;
+    // (undocumented)
+    export function isObject(value: ReadonlyPartialJSONValue): value is ReadonlyPartialJSONObject;
+    export function isPrimitive(value: ReadonlyPartialJSONValue): value is JSONPrimitive;
 }
 
 // @public
@@ -44,6 +52,19 @@ export class MimeData {
     setData(mime: string, data: any): void;
     types(): string[];
     }
+
+// @public
+export interface PartialJSONArray extends Array<PartialJSONValue> {
+}
+
+// @public
+export interface PartialJSONObject {
+    // (undocumented)
+    [key: string]: PartialJSONValue | undefined;
+}
+
+// @public
+export type PartialJSONValue = JSONPrimitive | PartialJSONObject | PartialJSONArray;
 
 // @public
 export class PromiseDelegate<T> {
@@ -70,6 +91,19 @@ export interface ReadonlyJSONObject {
 
 // @public
 export type ReadonlyJSONValue = JSONPrimitive | ReadonlyJSONObject | ReadonlyJSONArray;
+
+// @public
+export interface ReadonlyPartialJSONArray extends ReadonlyArray<ReadonlyPartialJSONValue> {
+}
+
+// @public
+export interface ReadonlyPartialJSONObject {
+    // (undocumented)
+    readonly [key: string]: ReadonlyPartialJSONValue | undefined;
+}
+
+// @public
+export type ReadonlyPartialJSONValue = JSONPrimitive | ReadonlyPartialJSONObject | ReadonlyPartialJSONArray;
 
 // @public
 export class Token<T> {
