@@ -136,7 +136,7 @@ namespace Private {
       proto.webkitMatchesSelector ||
       (function(selector: string) {
         let elem = this as Element;
-        let matches = elem.ownerDocument.querySelectorAll(selector);
+        let matches = elem.ownerDocument ? elem.ownerDocument.querySelectorAll(selector) : [];
         return Array.prototype.indexOf.call(matches, elem) !== -1;
       })
     );

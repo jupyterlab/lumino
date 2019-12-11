@@ -479,10 +479,12 @@ namespace MessageLoop {
     console.error(err);
   };
 
+  type ScheduleHandle = number | any; //  requestAnimationFrame (number) and setImmediate (any)
+
   /**
    * The id of the pending loop task animation frame.
    */
-  let loopTaskID = 0;
+  let loopTaskID: ScheduleHandle = 0;
 
   /**
    * A guard flag to prevent flush recursion.
@@ -492,7 +494,7 @@ namespace MessageLoop {
   /**
    * A function to schedule an event loop callback.
    */
-  const schedule = (() => {
+  const schedule = ((): ScheduleHandle => {
     let ok = typeof requestAnimationFrame === 'function';
     return ok ? requestAnimationFrame : setImmediate;
   })();

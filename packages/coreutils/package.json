@@ -31,7 +31,7 @@
     "api": "api-extractor run --local --verbose",
     "build": "tsc --build",
     "build:test": "tsc --build tests && cd tests && webpack",
-    "clean": "rimraf lib",
+    "clean": "rimraf lib && rimraf *.tsbuildinfo",
     "clean:test": "rimraf tests/build",
     "docs": "typedoc --options tdoptions.json src",
     "test": "npm run test:firefox",
@@ -54,8 +54,8 @@
     "karma-mocha-reporter": "^2.2.2",
     "mocha": "^3.2.0",
     "rimraf": "^2.5.2",
-    "typedoc": "~0.12.0",
-    "typescript": "~3.0.3",
+    "typedoc": "~0.15.0",
+    "typescript": "~3.6.4",
     "webpack": "^2.2.1"
   },
   "publishConfig": {

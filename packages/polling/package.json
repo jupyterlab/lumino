@@ -49,6 +49,7 @@
     "@microsoft/api-extractor": "^7.6.0",
     "@types/chai": "^3.4.35",
     "@types/mocha": "^2.2.39",
+    "@types/node": "^12.12.17",
     "chai": "^3.5.0",
     "karma": "^1.5.0",
     "karma-chrome-launcher": "^2.0.0",
@@ -59,7 +60,7 @@
     "mocha": "^3.2.0",
     "rimraf": "^2.5.2",
     "typedoc": "~0.12.0",
-    "typescript": "~3.0.3",
+    "typescript": "~3.6.4",
     "webpack": "^2.2.1"
   },
   "publishConfig": {

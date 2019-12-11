@@ -29,7 +29,7 @@
   "scripts": {
     "api": "api-extractor run --local --verbose",
     "build": "tsc --build",
-    "clean": "rimraf lib",
+    "clean": "rimraf lib && rimraf *.tsbuildinfo",
     "docs": "typedoc --options tdoptions.json src",
     "watch": "tsc --build --watch"
   },
@@ -46,8 +46,8 @@
   },
   "devDependencies": {
     "rimraf": "^2.5.2",
-    "typedoc": "~0.12.0",
-    "typescript": "~3.0.3"
+    "typedoc": "~0.15.0",
+    "typescript": "~3.6.4"
   },
   "publishConfig": {
     "access": "public"

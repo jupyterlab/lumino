@@ -15,7 +15,9 @@
       "ES5",
       "ES2015.Promise"
     ],
-    "types": [],
+    "types": [
+      "@types/node"
+    ],
     "rootDir": "src"
   },
   "include": [
