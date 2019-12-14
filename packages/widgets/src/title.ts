@@ -11,7 +11,7 @@ import {
   ISignal, Signal
 } from '@lumino/signaling';
 
-import { VirtualElementPass } from "@phosphor/virtualdom";
+import { VirtualElementPass } from "@lumino/virtualdom";
 
 
 /**
