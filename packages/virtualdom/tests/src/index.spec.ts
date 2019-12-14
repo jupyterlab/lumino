@@ -109,7 +109,7 @@ describe('@lumino/virtualdom', () => {
     describe('#constructor()', () => {
 
       it('should create a virtual element node', () => {
-        let vnode = new VirtualElementPass(mockRenderer, 'div', {});
+        let vnode = new VirtualElementPass('div', {}, mockRenderer);
         expect(vnode).to.be.an.instanceof(VirtualElementPass);
       });
 
@@ -118,18 +118,8 @@ describe('@lumino/virtualdom', () => {
     describe('#type', () => {
 
       it('should be `element`', () => {
-        let vnode = new VirtualElementPass(mockRenderer,'div', {});
+        let vnode = new VirtualElementPass('div', {}, mockRenderer);
         expect(vnode.type).to.equal('passthru');
-      });
-
-    });
-
-    describe('#renderer', () => {
-
-      it('should be the element children renderer', () => {
-        let vnode = new VirtualElementPass(mockRenderer, 'div', {});
-        expect(vnode.renderer.render).to.equal(mockRenderer.render);
-        expect(vnode.renderer.unrender).to.equal(mockRenderer.unrender);
       });
 
     });
@@ -137,7 +127,7 @@ describe('@lumino/virtualdom', () => {
     describe('#tag', () => {
 
       it('should be the element tag name', () => {
-        let vnode = new VirtualElementPass(mockRenderer,'img', {});
+        let vnode = new VirtualElementPass('img', {}, mockRenderer);
         expect(vnode.tag).to.equal('img');
       });
 
@@ -147,8 +137,18 @@ describe('@lumino/virtualdom', () => {
 
       it('should be the element attrs', () => {
         let attrs = { className: 'baz' };
-        let vnode = new VirtualElementPass(mockRenderer,'img', attrs);
+        let vnode = new VirtualElementPass('img', attrs, mockRenderer);
         expect(vnode.attrs).to.deep.equal(attrs);
+      });
+
+    });
+
+    describe('#renderer', () => {
+
+      it('should be the element children renderer', () => {
+        let vnode = new VirtualElementPass('div', {}, mockRenderer);
+        expect(vnode.renderer!.render).to.equal(mockRenderer.render);
+        expect(vnode.renderer!.unrender).to.equal(mockRenderer.unrender);
       });
 
     });
@@ -346,16 +346,57 @@ describe('@lumino/virtualdom', () => {
   });
 
   describe('hpass()', () => {
+    let tag = 'div';
+    let attrs = { className: 'baz' };
+    let mockRenderer = {
+      render: (host: HTMLElement) => {},
+      unrender: (host: HTMLElement) =>{}
+    };
 
     it('should create a new virtual element passthru node', () => {
       let vnode = hpass(
-        {
-          render: (host: HTMLElement) => {},
-          unrender: (host: HTMLElement) =>{}
-        },
+        tag,
+        attrs,
+        mockRenderer
+      );
+      expect(vnode).to.be.an.instanceof(VirtualElementPass);
+      expect(vnode.tag).to.equal(tag);
+      expect(vnode.attrs).to.deep.equal(attrs);
+      expect(vnode.renderer!.render).to.equal(mockRenderer.render);
+      expect(vnode.renderer!.unrender).to.equal(mockRenderer.unrender);
+    });
+
+    it('should create a passthru vnode without attrs', () => {
+      let vnode = hpass(
+        'div',
+        mockRenderer
+      );
+      expect(vnode).to.be.an.instanceof(VirtualElementPass);
+      expect(vnode.tag).to.equal('div');
+      expect(vnode.attrs).to.deep.equal({});
+      expect(vnode.renderer!.render).to.equal(mockRenderer.render);
+      expect(vnode.renderer!.unrender).to.equal(mockRenderer.unrender);
+    });
+
+    it('should create a passthru vnode without renderer', () => {
+      let vnode = hpass(
+        'div',
+        attrs
+      );
+      expect(vnode).to.be.an.instanceof(VirtualElementPass);
+      expect(vnode.tag).to.equal(tag);
+      expect(vnode.attrs).to.deep.equal(attrs);
+      expect(vnode.renderer).to.equal(null);
+    });
+
+    it('should create a passthru vnode without attrs or renderer', () => {
+      let vnode = hpass(
         'div'
       );
       expect(vnode).to.be.an.instanceof(VirtualElementPass);
+      expect(vnode.tag).to.equal('div');
+      expect(vnode.attrs).to.deep.equal({});
+      expect(vnode.renderer).to.equal(null);
     });
 
   });
@@ -510,7 +551,7 @@ describe('@lumino/virtualdom', () => {
 
     describe('realize()', () => {
       it('should realize successfully', () => {
-        let node = VirtualDOM.realize(hpass(rendererClosure(), 'span'));
+        let node = VirtualDOM.realize(hpass('span', rendererClosure()));
         expect(node.tagName.toLowerCase()).to.equal('span');
         expect(node.children[0].tagName.toLowerCase()).to.equal('div');
         expect(node.children[0].className).to.equal('p-render');
@@ -522,7 +563,7 @@ describe('@lumino/virtualdom', () => {
       it('should render successfully at top of tree', () => {
         let host = document.createElement('div');
 
-        VirtualDOM.render(hpass(rendererClosure(), 'span'), host);
+        VirtualDOM.render(hpass('span', rendererClosure()), host);
         expect(host.children[0].tagName.toLowerCase()).to.equal('span');
         expect(host.children[0].children[0].tagName.toLowerCase()).to.equal('div');
         expect(host.children[0].children[0].className).to.equal('p-render');
@@ -532,7 +573,7 @@ describe('@lumino/virtualdom', () => {
         let host = document.createElement('div');
         let record: any = {child: undefined, cleanedUp: false};
 
-        let children = [h.a(), h.span(), h.div(h.div(), hpass(rendererClosure(record), 'span'), h.div())];
+        let children = [h.a(), h.span(), h.div(h.div(), hpass('span', rendererClosure(record)), h.div())];
         VirtualDOM.render(children, host);
         expect(host.children[2].children[1].children[0]).to.equal(record.child);
         expect(host.children[2].children[1].children[0].className).to.equal('p-render');
@@ -543,7 +584,7 @@ describe('@lumino/virtualdom', () => {
         let record: any = {child: undefined, cleanedUp: false};
 
         // first pass, render the hpass children
-        let children0 = [h.a(), h.span(), h.div(h.div(), hpass(rendererClosure(record), 'span'), h.div())];
+        let children0 = [h.a(), h.span(), h.div(h.div(), hpass('span', rendererClosure(record)), h.div())];
         VirtualDOM.render(children0, host);
 
         // second pass, explicitly unrender the hpass children

@@ -762,7 +762,6 @@ class VirtualElement {
  */
 export
 class VirtualElementPass{
-
   /**
    * The type of the node.
    *
@@ -774,18 +773,33 @@ class VirtualElementPass{
   /**
    * Construct a new virtual element pass thru node.
    *
-   * @param renderer - an object with render and unrender functions,
-   * each of which should take a single argument of type HTMLElement
-   * and return nothing
-   *
    * @param tag - the tag of the parent element of this node. Once the parent
    * element is rendered, it will be passed as an argument to
    * renderer.render
    *
-   * @param attrs - optional attributes that will assigned to the
+   * @param attrs - attributes that will assigned to the
    * parent element
+   *
+   * @param renderer - an object with render and unrender
+   * functions, each of which should take a single argument of type
+   * HTMLElement and return nothing. If null, the parent element
+   * will be rendered barren without any children.
    */
-  constructor(readonly renderer: VirtualElementPass.IRenderer, readonly tag: string, readonly attrs: ElementAttrs) {}
+  constructor(readonly tag: string, readonly attrs: ElementAttrs, readonly renderer: VirtualElementPass.IRenderer | null) {}
+
+  render(host: HTMLElement): void {
+    // skip actual render if renderer is null
+    if (this.renderer) {
+      this.renderer.render(host);
+    }
+  }
+
+  unrender(host: HTMLElement): void {
+    // skip actual unrender if renderer is null
+    if (this.renderer) {
+      this.renderer.unrender(host);
+    }
+  }
 }
 
 
@@ -793,7 +807,10 @@ class VirtualElementPass{
  * The namespace for the VirtualElementPass class statics.
  */
 export namespace VirtualElementPass {
-  export type IRenderer = {render: (host: HTMLElement) => void, unrender: (host: HTMLElement) => void};
+  export type IRenderer = {
+    render: (host: HTMLElement) => void,
+    unrender: (host: HTMLElement) => void
+  };
 }
 
 
@@ -988,17 +1005,35 @@ namespace h {
 /**
  * Create a new "pass thru" virtual element node.
  *
- * @param renderer - an object with render and unrender functions.
- *
  * @param tag - The tag name for the parent element.
  *
  * @param attrs - The attributes for the parent element, if any.
  *
+ * @param renderer - an object with render and unrender functions, if any.
+ *
  * @returns A new "pass thru" virtual element node for the given parameters.
  *
  */
-export function hpass(renderer: VirtualElementPass.IRenderer, tag: string, attrs: ElementAttrs = {}): VirtualElementPass {
-  return new VirtualElementPass(renderer, tag, attrs);
+export function hpass(tag: string, renderer?: VirtualElementPass.IRenderer): VirtualElementPass;
+export function hpass(tag: string, attrs: ElementAttrs, renderer?: VirtualElementPass.IRenderer): VirtualElementPass;
+export function hpass(tag: string): VirtualElementPass {
+  let attrs: ElementAttrs = {};
+  let renderer: VirtualElementPass.IRenderer | null = null;
+
+  if (arguments.length === 2) {
+    const arg = arguments[1];
+
+    if ("render" in arg && "unrender" in arg) {
+      renderer = arg;
+    } else {
+      attrs = arg;
+    }
+  } else if (arguments.length === 3) {
+    attrs = arguments[1];
+    renderer = arguments[2];
+  }
+
+  return new VirtualElementPass(tag, attrs, renderer);
 }
 
 
@@ -1103,7 +1138,7 @@ namespace Private {
       addAttrs(host, node.attrs);
 
       if (node.type === 'passthru') {
-        node.renderer.render(host);
+        node.render(host);
         return host;
       }
 
@@ -1168,7 +1203,7 @@ namespace Private {
 
       // Handle the case of passthru update.
       if (oldVNode.type === 'passthru' && newVNode.type === 'passthru') {
-        newVNode.renderer.render(currElem as HTMLElement);
+        newVNode.render(currElem as HTMLElement);
         currElem = currElem!.nextSibling;
         continue;
       }
@@ -1252,7 +1287,7 @@ namespace Private {
 
       // recursively clean up host children
       if (oldNode.type === 'text') {} else if (oldNode.type === 'passthru') {
-        oldNode.renderer.unrender!(child!);
+        oldNode.unrender(child!);
       } else {
         removeContent(child!, oldNode.children, 0);
       }
