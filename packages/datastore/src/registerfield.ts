@@ -8,7 +8,7 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 import {
-  ArrayExt
+  ArrayExt, StringExt
 } from '@lumino/algorithm';
 
 import {
@@ -20,7 +20,7 @@ import {
 } from './field';
 
 import {
-  createDuplexId, idCmp
+  createDuplexId, encodeId, decodeId
 } from './utilities';
 
 
@@ -136,6 +136,28 @@ class RegisterField<T extends ReadonlyJSONValue> extends Field<RegisterField.Val
 
     // Return the result of the patch.
     return { value, change };
+  }
+
+  /**
+   * Encode a system patch so that it can be sent across a network.
+   *
+   * @param patch - The patch to encode.
+   *
+   * @returns a JSON value that can be sent across the network.
+   */
+  encodePatch(patch: RegisterField.Patch<T>): RegisterField.Patch<T> {
+    return { ...patch, id: encodeId(patch.id) };
+  }
+
+  /**
+   * Decode a system patch from the network.
+   *
+   * @param patch - The object to decode.
+   *
+   * @returns a JSON value that can be sent across the network.
+   */
+  decodePatch(patch: RegisterField.Patch<T>): RegisterField.Patch<T> {
+    return { ...patch, id: decodeId(patch.id) };
   }
 
   /**
@@ -268,7 +290,7 @@ namespace Private {
     let { ids, values } = metadata;
 
     // Find the insert index for the id.
-    let i = ArrayExt.lowerBound(ids, id, idCmp);
+    let i = ArrayExt.lowerBound(ids, id, StringExt.cmp);
 
     // Overwrite or insert the value as appropriate.
     if (i < ids.length && ids[i] === id) {
@@ -302,7 +324,7 @@ namespace Private {
     let { ids, values } = metadata;
 
     // Find the remove index for the id.
-    let i = ArrayExt.lowerBound(ids, id, idCmp);
+    let i = ArrayExt.lowerBound(ids, id, StringExt.cmp);
     if (ids[i] === id) {
       ArrayExt.removeAt(ids, i);
       ArrayExt.removeAt(values, i);

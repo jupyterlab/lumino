@@ -140,6 +140,57 @@ class Table<S extends Schema> implements IIterable<Record<S>> {
     // Return the change object.
     return tc;
   }
+
+  /**
+   * @internal
+   *
+   * Encode a table patch so that it can be sent across the network.
+   *
+   * @param data: The patch to encode.
+   *
+   * @returns The patch which can be sent across the network.
+   */
+  static encodePatch<U extends Schema>(table: Table<U>, data: Table.Patch<U>): Table.Patch<U> {
+    let schema = table.schema;
+    let tp: Table.MutablePatch<U> = {};
+
+    for (let id in data) {
+      let recordPatch = data[id];
+      let encoded: Record.MutablePatch<U> = {};
+      for (let name in recordPatch) {
+        let field = schema.fields[name];
+        encoded[name] = field.encodePatch(recordPatch[name]!);
+      }
+      tp[id] = encoded;
+    }
+    return tp;
+  }
+
+  /**
+   * @internal
+   *
+   * Decode a table patch from the network.
+   *
+   * @param data: The patch to decode.
+   *
+   * @returns The patch which can be sent across the network.
+   */
+  static decodePatch<U extends Schema>(table: Table<U>, data: Table.Patch<U>): Table.Patch<U> {
+    let schema = table.schema;
+    let tp: Table.MutablePatch<U> = {};
+
+    for (let id in data) {
+      let recordPatch = data[id];
+      let encoded: Record.MutablePatch<U> = {};
+      for (let name in recordPatch) {
+        let field = schema.fields[name];
+        encoded[name] = field.decodePatch(recordPatch[name]!);
+      }
+      tp[id] = encoded;
+    }
+    return tp;
+  }
+
   /**
    * The schema for the table.
    *

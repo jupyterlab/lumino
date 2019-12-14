@@ -8,11 +8,6 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
-import {
-  StringExt
-} from '@lumino/algorithm';
-
-
 /**
  * Create a duplex string identifier.
  *
@@ -37,7 +32,7 @@ function createDuplexId(version: number, store: number): string {
   let sa = (((store - sb) / 0x10000) | 0) & 0xFFFF;
 
   // Convert the parts into a string identifier duplex.
-  return Private.generateIdString(va, vb, vc, sa, sb);
+  return String.fromCharCode(va, vb, vc, sa, sb);
 }
 
 
@@ -66,11 +61,6 @@ function createTriplexId(version: number, store: number, lower: string, upper: s
 
   // Set up the variable to hold the id.
   let id = '';
-
-  // Remove dummy surrogate characters from the upper and lower strings
-  // so that we can process the bytes correctly.
-  upper = Private.stripSurrogates(upper);
-  lower = Private.stripSurrogates(lower);
 
   // Fetch the triplet counts of the ids.
   let lowerCount = lower ? Private.idTripletCount(lower) : 0;
@@ -141,20 +131,6 @@ function createTriplexId(version: number, store: number, lower: string, upper: s
 }
 
 /**
- * A three way comparison function for ids, allowing them to be absolutely
- * ordered.
- *
- * @param a - The first id.
- *
- * @param b - the second id.
- *
- * @returns `-1` if `a < b`, else `1` if `a > b`, else `0`.
- */
-export function idCmp(a: string, b: string): number {
-  return StringExt.cmp(Private.stripSurrogates(a), Private.stripSurrogates(b));
-}
-
-/**
  * Create the multiple triplex identifiers.
  *
  * @param n - The number of identifiers to create.
@@ -190,6 +166,38 @@ function createTriplexIds(n: number, version: number, store: number, lower: stri
   return ids;
 }
 
+/**
+ * Encode an identifier so that it may be serialized across the network.
+ *
+ * The ID generation scheme in this module can generate unpaired surrogate
+ * characters, which are invalid unicode. The encoding function must be
+ * called for each ID before transmitting it, otherwise it may be
+ * corrupted.
+ *
+ * @param id - the identifier.
+ *
+ * @returns a valid id string to be transmitted.
+ */
+export
+function encodeId(str: string): string {
+  return Private.pairSurrogates(str);
+}
+
+
+/**
+ * Decode an identifier from the network.
+ *
+ * This removes any dummy surrogate characters that have been inserted in
+ * encodeId.
+ *
+ * @param id - the identifier.
+ *
+ * @returns a valid id string to be transmitted.
+ */
+export
+function decodeId(str: string): string {
+  return Private.stripSurrogates(str);
+}
 
 /**
  * The namespace for the module implementation details.
@@ -223,7 +231,7 @@ namespace Private {
     let sa = (((store - sb) / 0x10000) | 0) & 0xFFFF;
 
     // Convert the parts into a string identifier triplet.
-    return Private.generateIdString(pa, pb, pc, va, vb, vc, sa, sb);
+    return String.fromCharCode(pa, pb, pc, va, vb, vc, sa, sb);
   }
 
   /**
@@ -352,7 +360,7 @@ namespace Private {
   const PAIRED_HS_REGEX = new RegExp(`([${HS_L}-${HS_U}])${LS_L}X`, 'g');
 
   /**
-   * In generateIdString we may insert some dummy surrogate pairs so that the
+   * In pairSurrogates we may insert some dummy surrogate pairs so that the
    * ids are valid Unicode. This performs the inverse operation.
    *
    * @param id: the id string.
@@ -374,8 +382,7 @@ namespace Private {
    * @returns a valid UTF-8 encodable ID string from the code points.
    */
   export
-  function generateIdString(...codes: number[]): string {
-    let str = String.fromCharCode(...codes);
+  function pairSurrogates(str: string): string {
     // Any surrogate characters coming from character codes should be unpaired.
     // First, we replace all low-surrogates with a high-low pair (using \uD800).
     // Next, we replace all *unpaired* high surrogates with a high-low pair

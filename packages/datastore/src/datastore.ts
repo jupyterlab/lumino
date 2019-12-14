@@ -244,12 +244,12 @@ class Datastore implements IDisposable, IIterable<Table<Schema>>, IMessageHandle
     let {patch, change, storeId, transactionId, version} = this._context;
     // Possibly broadcast the transaction to collaborators.
     if (this._adapter && !Private.isPatchEmpty(patch)) {
-      this._adapter.broadcast({
+      this._adapter.broadcast(this._encodeTransaction({
         id: transactionId,
         storeId,
         patch,
         version
-      });
+      }));
     }
     // Add the transation to the cemetery to indicate it is visible.
     this._cemetery[transactionId] = 1;
@@ -382,21 +382,21 @@ class Datastore implements IDisposable, IIterable<Table<Schema>>, IMessageHandle
    * Handle a transaction from the server adapter.
    */
   private _onRemoteTransaction(transaction: Datastore.Transaction): void {
-    this._processTransaction(transaction, 'transaction');
+    this._processTransaction(this._decodeTransaction(transaction), 'transaction');
   }
 
   /**
    * Handle an undo from the server adapter.
    */
   private _onUndo(transaction: Datastore.Transaction): void {
-    this._processTransaction(transaction, 'undo');
+    this._processTransaction(this._decodeTransaction(transaction), 'undo');
   }
 
   /**
    * Handle a redo from the server adapter.
    */
   private _onRedo(transaction: Datastore.Transaction): void {
-    this._processTransaction(transaction, 'redo');
+    this._processTransaction(this._decodeTransaction(transaction), 'redo');
   }
 
   /**
@@ -458,6 +458,7 @@ class Datastore implements IDisposable, IIterable<Table<Schema>>, IMessageHandle
           // If the transaction hasn't already been unapplied, do so.
           if (this._cemetery[transaction.id] === 0) {
             change[schemaId] = Table.unpatch(table, tablePatch);
+            delete this._cemetery[transaction.id];
           }
         }
       });
@@ -546,6 +547,44 @@ class Datastore implements IDisposable, IIterable<Table<Schema>>, IMessageHandle
       throw new Error('No transaction in progress.');
     }
     context.inTransaction = false;
+  }
+
+  /**
+   * Encode a patch from the network.
+   */
+  private _encodeTransaction(transaction: Datastore.Transaction): Datastore.Transaction {
+    let p: Datastore.MutablePatch = {};
+    each(iterItems(transaction.patch), ([schemaId, tablePatch]) => {
+      let table = this._tables.get(schemaId, Private.recordIdCmp);
+      if (table === undefined) {
+        console.warn(
+          `Missing table for schema id '${
+            schemaId
+          }' in transaction '${transaction.id}'`);
+        return;
+      }
+      p[schemaId] = Table.encodePatch(table, tablePatch);
+    });
+    return { ...transaction, patch: p };
+  }
+
+  /**
+   * Decode a patch from the network.
+   */
+  private _decodeTransaction(transaction: Datastore.Transaction): Datastore.Transaction {
+    let p: Datastore.MutablePatch = {};
+    each(iterItems(transaction.patch), ([schemaId, tablePatch]) => {
+      let table = this._tables.get(schemaId, Private.recordIdCmp);
+      if (table === undefined) {
+        console.warn(
+          `Missing table for schema id '${
+            schemaId
+          }' in transaction '${transaction.id}'`);
+        return;
+      }
+      p[schemaId] = Table.decodePatch(table, tablePatch);
+    });
+    return { ...transaction, patch: p };
   }
 
   private _adapter: IServerAdapter | null;

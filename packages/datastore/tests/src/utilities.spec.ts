@@ -12,7 +12,11 @@ import {
 } from 'chai';
 
 import {
-  createDuplexId, createTriplexId, idCmp
+  StringExt
+} from '@lumino/algorithm';
+
+import {
+  createDuplexId, createTriplexId, encodeId, decodeId
 } from '@lumino/datastore';
 
 
@@ -27,12 +31,12 @@ describe('@lumino/datastore', () => {
       let prev = '';
       for (let version = 0; version < 100000; version++) {
         let id = createDuplexId(version, storeId);
-        expect(idCmp(id, prev)).to.be.above(0);
+        expect(StringExt.cmp(id, prev)).to.be.above(0);
 
         // The new ID should be valid unicode, without unpaired surrogates.
         // We can test this by round-tripping an encode/decode and checking
         // that the string is the same.
-        expect(decoder.decode(encoder.encode(id))).to.equal(id);
+        expect(decodeId(decoder.decode(encoder.encode(encodeId(id))))).to.equal(id);
 
         prev = id;
       }
@@ -52,15 +56,15 @@ describe('@lumino/datastore', () => {
         let id = createTriplexId(version, storeId, lower, upper);
 
         // The new ID should fall between the upper and lower bounds.
-        expect(idCmp(id, lower)).to.be.above(0);
+        expect(StringExt.cmp(id, lower)).to.be.above(0);
         if (index !== ids.length) {
-          expect(idCmp(id, upper)).to.be.below(0);
+          expect(StringExt.cmp(id, upper)).to.be.below(0);
         }
 
         // The new ID should be valid unicode, without unpaired surrogates.
         // We can test this by round-tripping an encode/decode and checking
         // that the string is the same.
-        expect(decoder.decode(encoder.encode(id))).to.equal(id);
+        expect(decodeId(decoder.decode(encoder.encode(encodeId(id))))).to.equal(id);
 
         // Insert the new id into the sorted IDs list.
         ids.splice(index, 0, id);

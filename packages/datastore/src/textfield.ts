@@ -8,7 +8,7 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 import {
-  ArrayExt
+  ArrayExt, StringExt
 } from '@lumino/algorithm';
 
 import {
@@ -16,7 +16,7 @@ import {
 } from './field';
 
 import {
-  createTriplexIds, idCmp
+  createTriplexIds, encodeId, decodeId
 } from './utilities';
 
 
@@ -171,6 +171,36 @@ class TextField extends Field<TextField.Value, TextField.Update, TextField.Metad
 
     // Return the patch result.
     return { value, change };
+  }
+
+  /**
+   * Encode a system patch so that it can be sent across a network.
+   *
+   * @param patch - The patch to encode.
+   *
+   * @returns a JSON value that can be sent across the network.
+   */
+  encodePatch(patch: TextField.Patch): TextField.Patch {
+    return patch.map(part => ({
+      ...part,
+      removedIds: part.removedIds.map(id => encodeId(id)),
+      inserteIds: part.insertedIds.map(id => encodeId(id))
+    }));
+  }
+
+  /**
+   * Decode a system patch from the network.
+   *
+   * @param patch - The object to decode.
+   *
+   * @returns a JSON value that can be sent across the network.
+   */
+  decodePatch(patch: TextField.Patch): TextField.Patch {
+    return patch.map(part => ({
+      ...part,
+      removedIds: part.removedIds.map(id => decodeId(id)),
+      inserteIds: part.insertedIds.map(id => decodeId(id))
+    }));
   }
 
   /**
@@ -533,7 +563,7 @@ namespace Private {
     // Iterate over the identifiers to remove.
     while (i < n) {
       // Find the boundary identifier for the current id.
-      let j = ArrayExt.lowerBound(metadata.ids, ids[i], idCmp);
+      let j = ArrayExt.lowerBound(metadata.ids, ids[i], StringExt.cmp);
 
       // If the boundary is at the end of the array, or if the boundary id
       // does not match the id we are looking for, then we are dealing with
@@ -553,7 +583,7 @@ namespace Private {
       let count = 0;
 
       // Find the extent of the chunk.
-      while (i < n && idCmp(ids[i], metadata.ids[j]) === 0) {
+      while (i < n && StringExt.cmp(ids[i], metadata.ids[j]) === 0) {
         count++;
         i++;
         j++;
@@ -613,7 +643,7 @@ namespace Private {
 
       // Add the id to the ids which will be actually inserted.
       insertIds.push(ids[i]);
-      indices.push(ArrayExt.lowerBound(metadata.ids, ids[i], idCmp));
+      indices.push(ArrayExt.lowerBound(metadata.ids, ids[i], StringExt.cmp));
       insertText += text[i];
     }
     return chunkifyInsertions(insertIds, insertText, indices);
