@@ -470,7 +470,7 @@ abstract class CellEditor implements ICellEditor, IDisposable {
 }
 
 export
-class TextCellEditor extends CellEditor {
+abstract class InputCellEditor extends CellEditor {
   handleEvent(event: Event): void {
     switch (event.type) {
       case 'keydown':
@@ -506,10 +506,6 @@ class TextCellEditor extends CellEditor {
     this.input.focus();
 
     this.bindEvents();
-  }
-
-  protected getInput(): any {
-    return this.input.value;
   }
 
   protected deserialize(value: any): any {
@@ -579,8 +575,35 @@ class TextCellEditor extends CellEditor {
 }
 
 export
-class NumberCellEditor extends TextCellEditor {
-  protected getInput(): any {
+class TextCellEditor extends InputCellEditor {
+  protected getInput(): string | null {
+    return this.input.value;
+  }
+}
+
+export
+class NumberCellEditor extends InputCellEditor {
+  protected startEditing() {
+    super.startEditing();
+
+    this.input.type = 'number';
+    this.input.step = 'any';
+
+    const cell = this.cell;
+
+    const metadata = cell.grid.dataModel!.metadata('body', cell.row, cell.column);
+    const constraint = metadata.constraint;
+    if (constraint) {
+      if (constraint.minimum) {
+        this.input.min = constraint.minimum;
+      }
+      if (constraint.maximum) {
+        this.input.max = constraint.maximum;
+      }
+    }
+  }
+
+  protected getInput(): number | null {
     let value = this.input.value;
     if (value.trim() === '') {
       return null;
@@ -596,14 +619,14 @@ class NumberCellEditor extends TextCellEditor {
 }
 
 export
-class IntegerCellEditor extends NumberCellEditor {
+class IntegerCellEditor extends InputCellEditor {
   protected startEditing() {
-    this.createWidget();
+    super.startEditing();
+
     this.input.type = 'number';
+    this.input.step = '1';
 
     const cell = this.cell;
-    const cellInfo = this.getCellInfo(cell);
-    this.input.value = this.deserialize(cellInfo.data);
 
     const metadata = cell.grid.dataModel!.metadata('body', cell.row, cell.column);
     const constraint = metadata.constraint;
@@ -615,15 +638,9 @@ class IntegerCellEditor extends NumberCellEditor {
         this.input.max = constraint.maximum;
       }
     }
-
-    this.form.appendChild(this.input);
-    this.input.select();
-    this.input.focus();
-
-    this.bindEvents();
   }
 
-  protected getInput(): any {
+  protected getInput(): number | null {
     let value = this.input.value;
     if (value.trim() === '') {
       return null;
@@ -673,7 +690,7 @@ class DateCellEditor extends CellEditor {
     this._bindEvents();
   }
 
-  protected getInput(): any {
+  protected getInput(): string | null {
     return this._input.value;
   }
 
@@ -779,7 +796,7 @@ class BooleanCellEditor extends CellEditor {
     this._bindEvents();
   }
 
-  protected getInput(): any {
+  protected getInput(): boolean | null {
     return this._input.checked;
   }
 
@@ -881,7 +898,7 @@ class OptionCellEditor extends CellEditor {
     this._bindEvents();
   }
 
-  protected getInput(): any {
+  protected getInput(): string | null {
     return this._select.value;
   }
 
@@ -989,7 +1006,7 @@ class DynamicOptionCellEditor extends CellEditor {
     this._bindEvents();
   }
 
-  protected getInput(): any {
+  protected getInput(): string | null {
     return this._input.value;
   }
 
