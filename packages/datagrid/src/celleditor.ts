@@ -197,18 +197,18 @@ abstract class CellEditor implements ICellEditor, IDisposable {
    * Whether the cell editor is disposed.
    */
   get isDisposed(): boolean {
-    return this.disposed;
+    return this._disposed;
   }
 
   /**
    * Dispose of the resources held by cell editor handler.
    */
   dispose(): void {
-    if (this.disposed) {
+    if (this._disposed) {
       return;
     }
 
-    this.disposed = true;
+    this._disposed = true;
     this.cell.grid.node.removeChild(this.viewportOccluder);
   }
 
@@ -230,7 +230,7 @@ abstract class CellEditor implements ICellEditor, IDisposable {
   }
 
   cancel() {
-    if (this.disposed) {
+    if (this._disposed) {
       return;
     }
 
@@ -465,7 +465,7 @@ abstract class CellEditor implements ICellEditor, IDisposable {
   protected cellContainer: HTMLDivElement;
   protected form: HTMLFormElement;
   protected validityReportInput: HTMLInputElement;
-  protected disposed = false;
+  private _disposed = false;
   private _validInput: boolean = true;
 }
 
