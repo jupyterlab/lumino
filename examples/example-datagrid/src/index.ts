@@ -183,6 +183,28 @@ class JSONCellEditor extends CellEditor {
     return JSON.parse(this._textarea.value);
   }
 
+  protected validate() {
+    let value;
+    try {
+      value = this.getInput();
+    } catch (error) {
+      console.log(`Input error: ${error.message}`);
+      this.setValidity(false);
+      return;
+    }
+
+    if (this.validator) {
+      const result = this.validator.validate(this.cell, value);
+      if (result.valid) {
+        this.setValidity(true);
+      } else {
+        this.setValidity(false, result.message || 'Invalid JSON input');
+      }
+    } else {
+      this.setValidity(true);
+    }
+  }
+
   private _createWidgets() {
     const cell = this.cell;
     const grid = this.cell.grid;
@@ -229,7 +251,7 @@ class JSONCellEditor extends CellEditor {
           (event.shiftKey ? "up" : "down") :
           (event.shiftKey ? "left" : "right");
         if (!this.commit(next)) {
-          this.validInput = false;
+          this.setValidity(false);
         }
         event.preventDefault();
         event.stopPropagation();
@@ -244,12 +266,12 @@ class JSONCellEditor extends CellEditor {
       }
 
       if (!this.commit()) {
-        this.validInput = false;
+        this.setValidity(false);
       }
     });
 
-    textarea.addEventListener('input', (event: FocusEvent) => {
-      this.validInput = true;
+    textarea.addEventListener('input', (event: Event) => {
+      this.inputChanged.emit(void 0);
     });
 
     this._textarea = textarea;

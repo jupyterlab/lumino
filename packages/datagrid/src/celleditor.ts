@@ -243,15 +243,6 @@ abstract class CellEditor implements ICellEditor, IDisposable {
   protected abstract startEditing(): void;
   protected abstract getInput(): any;
 
-  protected set validInput(value: boolean) {
-    this._validInput = value;
-    if (this._validInput) {
-      this.cellContainer.classList.remove('invalid');
-    } else {
-      this.cellContainer.classList.add('invalid');
-    }
-  }
-
   protected get validInput(): boolean {
     return this._validInput;
   }
@@ -280,6 +271,12 @@ abstract class CellEditor implements ICellEditor, IDisposable {
 
   protected setValidity(valid: boolean, message: string = "") {
     this._validInput = valid;
+
+    if (valid) {
+      this.cellContainer.classList.remove('invalid');
+    } else {
+      this.cellContainer.classList.add('invalid');
+    }
 
     this.validityReportInput.setCustomValidity(message);
     if (message !== "") {
