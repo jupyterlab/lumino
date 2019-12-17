@@ -5,5 +5,12 @@ module.exports = {
   mode: 'development',
   output: {
     filename: './build/bundle.test.js'
-  }
+  },
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader']
+      }
+    ]
 }
