@@ -1,6 +1,6 @@
 {
   "name": "@lumino/coreutils",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Lumino Core Utilities",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
