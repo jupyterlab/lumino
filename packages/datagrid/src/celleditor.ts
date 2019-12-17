@@ -865,49 +865,93 @@ class BooleanCellEditor extends CellEditor {
 
 export
 class OptionCellEditor extends CellEditor {
-  handleEvent(event: Event): void {
-    switch (event.type) {
-      case 'keydown':
-        this._onKeyDown(event as KeyboardEvent);
-        break;
-      case 'blur':
-        this._onBlur(event as FocusEvent);
-        break;
-    }
-  }
-
   dispose() {
     if (this.isDisposed) {
       return;
     }
 
-    this._unbindEvents();
-
     super.dispose();
+
+    if (this._isMultiSelect) {
+      document.body.removeChild(this._select);
+    }
   }
 
   protected startEditing() {
-    this._createWidget();
-
     const cell = this.cell;
     const cellInfo = this.getCellInfo(cell);
-    this._select.value = this._deserialize(cellInfo.data);
-    this.form.appendChild(this._select);
+    const metadata = cell.grid.dataModel!.metadata('body', cell.row, cell.column);
+    this._isMultiSelect = metadata.type === 'array';
+    this._createWidget();
+
+    if (this._isMultiSelect) {
+      this._select.multiple = true;
+      const values = this._deserialize(cellInfo.data) as string[];
+      for (let i = 0; i < this._select.options.length; ++i) {
+        const option = this._select.options.item(i);
+        option!.selected = values.indexOf(option!.value) !== -1;
+      }
+      document.body.appendChild(this._select);
+    } else {
+      this._select.value = this._deserialize(cellInfo.data) as string;
+      this.form.appendChild(this._select);
+    }
+
     this._select.focus();
 
     this._bindEvents();
+
+    this.updatePosition();
   }
 
-  protected getInput(): string | null {
-    return this._select.value;
+  protected getInput(): string | string[] | null {
+    if (this._isMultiSelect) {
+      const input: string[] = [];
+      for (let i = 0; i < this._select.selectedOptions.length; ++i) {
+        input.push(this._select.selectedOptions.item(i)!.value);
+      }
+      return input;
+    } else {
+      return this._select.value;
+    }
   }
 
-  private _deserialize(value: any): any {
+  protected updatePosition(): void {
+    super.updatePosition();
+
+    if (!this._isMultiSelect) {
+      return;
+    }
+
+    const cellInfo = this.getCellInfo(this.cell);
+
+    this._select.style.position = 'absolute';
+    const cellContainerRect = this.cellContainer.getBoundingClientRect();
+
+    this._select.style.left = cellContainerRect.left + 'px';
+    this._select.style.top = (cellContainerRect.top + cellInfo.height) + 'px';
+    this._select.style.width = cellContainerRect.width + 'px';
+    this._select.style.maxHeight = '60px';
+
+    this.cellContainer.style.visibility = 'hidden';
+  }
+
+  private _deserialize(value: any): string | string[] {
     if (value === null || value === undefined) {
       return '';
     }
 
-    return value.toString();
+    if (this._isMultiSelect) {
+      const values: string[] = [];
+      if (Array.isArray(value)) {
+        for (let item of value) {
+          values.push(item.toString());
+        }
+      }
+      return values;
+    } else {
+      return value.toString();
+    }
   }
 
   private _createWidget() {
@@ -928,13 +972,8 @@ class OptionCellEditor extends CellEditor {
   }
 
   private _bindEvents() {
-    this._select.addEventListener('keydown', this);
-    this._select.addEventListener('blur', this);
-  }
-
-  private _unbindEvents() {
-    this._select.removeEventListener('keydown', this);
-    this._select.removeEventListener('blur', this);
+    this._select.addEventListener('keydown', this._onKeyDown.bind(this));
+    this._select.addEventListener('blur', this._onBlur.bind(this));
   }
 
   private _onKeyDown(event: KeyboardEvent) {
@@ -968,6 +1007,7 @@ class OptionCellEditor extends CellEditor {
   }
 
   private _select: HTMLSelectElement;
+  private _isMultiSelect: boolean = false;
 }
 
 export

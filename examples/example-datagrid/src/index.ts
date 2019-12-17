@@ -1233,7 +1233,8 @@ namespace Data {
         "Name": "Chevrolet",
         "Contact": "info@chevrolet.com",
         "Origin": "USA",
-        "Cylinders": 8,
+        "Revenue": "$20-100 bn",
+        "Cylinders": [4, 8, 16],
         "Horsepower": 130.0,
         "Models": 2,
         "Automatic": true,
@@ -1245,7 +1246,8 @@ namespace Data {
         "Name": "BMW",
         "Contact": "info@bmw.com",
         "Origin": "Germany",
-        "Cylinders": 8,
+        "Revenue": "$20-100 bn",
+        "Cylinders": [3, 6, 8, 16],
         "Horsepower": 120.0,
         "Models": 3,
         "Automatic": true,
@@ -1257,7 +1259,8 @@ namespace Data {
         "Name": "Mercedes",
         "Contact": "info@mbusa.com",
         "Origin": "Germany",
-        "Cylinders": 4,
+        "Revenue": "$20-100 bn",
+        "Cylinders": [4, 8, 16],
         "Horsepower": 100.0,
         "Models": 5,
         "Automatic": false,
@@ -1269,7 +1272,8 @@ namespace Data {
         "Name": "Honda",
         "Contact": "info@honda.com",
         "Origin": "Japan",
-        "Cylinders": 4,
+        "Revenue": "$5-20 bn",
+        "Cylinders": [4],
         "Horsepower": 90.0,
         "Models": 5,
         "Automatic": true,
@@ -1281,7 +1285,8 @@ namespace Data {
         "Name": "Toyota",
         "Contact": "info@toyota.com",
         "Origin": "Japan",
-        "Cylinders": 8,
+        "Revenue": "$20-100 bn",
+        "Cylinders": [2, 3, 4, 6, 8, 16],
         "Horsepower": 95.0,
         "Models": 7,
         "Automatic": true,
@@ -1293,7 +1298,8 @@ namespace Data {
         "Name": "Renault",
         "Contact": "info@renault.com",
         "Origin": "France",
-        "Cylinders": 4,
+        "Revenue": "$1-5 bn",
+        "Cylinders": [2, 3, 4],
         "Horsepower": 75.0,
         "Models": 4,
         "Automatic": false,
@@ -1327,8 +1333,17 @@ namespace Data {
           }
         },
         {
+          "name": "Revenue",
+          "type": "string",
+          "constraint": {
+            "enum": [
+              "$1-5 bn", "$5-20 bn", "$20-100 bn"
+            ]
+          }
+        },
+        {
           "name": "Cylinders",
-          "type": "integer",
+          "type": "array",
           "constraint": {
             "enum": [
               2, 3, 4, 6, 8, 16

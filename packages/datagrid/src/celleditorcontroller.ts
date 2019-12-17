@@ -254,6 +254,7 @@ class CellEditorController implements ICellEditorController {
       case 'number:option':
       case 'integer:option':
       case 'date:option':
+      case 'array:option':
         return new OptionCellEditor();
       case 'string:dynamic-option':
       case 'number:dynamic-option':
