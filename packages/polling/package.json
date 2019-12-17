@@ -61,7 +61,8 @@
     "rimraf": "^2.5.2",
     "typedoc": "~0.12.0",
     "typescript": "~3.6.4",
-    "webpack": "^2.2.1"
+    "webpack": "^4.41.3",
+    "webpack-cli": "^3.3.10"
   },
   "publishConfig": {
     "access": "public"
