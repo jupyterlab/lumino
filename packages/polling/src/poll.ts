@@ -289,7 +289,7 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
         ? false
         : standby === 'when-hidden'
         ? !!(typeof document !== 'undefined' && document && document.hidden)
-        : true;
+        : standby;
 
     // If in standby mode schedule next tick without calling the factory.
     if (standby) {
