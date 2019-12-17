@@ -24,9 +24,9 @@
     "@types/node": "^10.12.19",
     "@types/websocket": "^0.0.40",
     "css-loader": "^3.4.0",
-    "file-loader": "^0.11.1",
+    "file-loader": "^5.0.2",
     "rimraf": "^2.5.2",
-    "style-loader": "^0.13.1",
+    "style-loader": "^1.0.2",
     "typescript": "~3.6.4",
     "webpack": "^4.41.3"
   }

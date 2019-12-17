@@ -62,7 +62,7 @@
     "mocha": "^6.2.2",
     "rimraf": "^2.5.2",
     "simulate-event": "^1.4.0",
-    "style-loader": "^0.13.1",
+    "style-loader": "^1.0.2",
     "typedoc": "~0.15.0",
     "typescript": "~3.6.4",
     "webpack": "^4.41.3",
