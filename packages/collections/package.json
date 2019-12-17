@@ -6,6 +6,10 @@
   "bugs": {
     "url": "https://github.com/jupyterlab/lumino/issues"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jupyterlab/lumino.git"
+  },
   "license": "BSD-3-Clause",
   "author": "S. Chris Colbert <sccolbert@gmail.com>",
   "contributors": [
@@ -22,10 +26,6 @@
   "types": "lib/index.d.ts",
   "directories": {
     "lib": "lib/"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/jupyterlab/lumino.git"
   },
   "scripts": {
     "api": "api-extractor run --local --verbose",
@@ -48,13 +48,13 @@
     "@types/chai": "^3.4.35",
     "@types/mocha": "^2.2.39",
     "chai": "^3.5.0",
-    "karma": "^1.5.0",
+    "karma": "4.4.1",
     "karma-chrome-launcher": "^2.0.0",
     "karma-firefox-launcher": "^1.0.0",
     "karma-ie-launcher": "^1.0.0",
     "karma-mocha": "^1.3.0",
     "karma-mocha-reporter": "^2.2.2",
-    "mocha": "^3.2.0",
+    "mocha": "6.2.2",
     "rimraf": "^2.5.2",
     "typedoc": "~0.15.0",
     "typescript": "~3.6.4",
