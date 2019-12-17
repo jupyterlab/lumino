@@ -29,7 +29,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@jupyterlab/buildutils": "^2.0.0-alpha.4",
+    "@jupyterlab/buildutils": "^1.0.0",
     "lerna": "^3.19.0"
   }
 }
