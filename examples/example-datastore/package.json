@@ -23,7 +23,7 @@
     "@types/codemirror": "^0.0.76",
     "@types/node": "^10.12.19",
     "@types/websocket": "^0.0.40",
-    "css-loader": "3.4.0",
+    "css-loader": "^3.4.0",
     "file-loader": "^0.11.1",
     "rimraf": "^2.5.2",
     "style-loader": "^0.13.1",
