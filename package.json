@@ -1,5 +1,11 @@
 {
+  "version": "0.0.0",
   "private": true,
+  "workspaces": [
+    "examples/*",
+    "packages/*",
+    "tests/*"
+  ],
   "scripts": {
     "api": "lerna run api",
     "build": "lerna run build",
@@ -18,18 +24,12 @@
     "test:chrome": "lerna run test:chrome",
     "test:firefox": "lerna run test:firefox",
     "test:ie": "lerna run test:ie --concurrency 1",
-    "update:dependency": "update-dependency",
+    "update:dependency": "update-dependency --lerna",
     "version": "lerna version"
   },
   "dependencies": {},
   "devDependencies": {
-    "@jupyterlab/buildutils": "^0.10.0",
-    "lerna": "^3.14.1"
-  },
-  "workspaces": [
-    "examples/*",
-    "packages/*",
-    "tests/*"
-  ],
-  "version": "0.0.0"
+    "@jupyterlab/buildutils": "^1.0.0",
+    "lerna": "^3.19.0"
+  }
 }

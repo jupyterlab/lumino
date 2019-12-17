@@ -2,6 +2,7 @@ var path = require('path');
 
 module.exports = {
   entry: './build/index.js',
+  mode: 'development',
   output: {
     path: __dirname + '/build/',
     filename: 'bundle.example.js',
