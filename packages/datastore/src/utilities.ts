@@ -180,7 +180,8 @@ function createTriplexIds(n: number, version: number, store: number, lower: stri
  */
 export
 function encodeId(str: string): string {
-  return Private.pairSurrogates(str);
+  // return Private.pairSurrogates(str);
+  return Private.btoaUTF16(str);
 }
 
 
@@ -196,7 +197,8 @@ function encodeId(str: string): string {
  */
 export
 function decodeId(str: string): string {
-  return Private.stripSurrogates(str);
+  //return Private.stripSurrogates(str);
+  return Private.atobUTF16(str);
 }
 
 /**
@@ -314,88 +316,50 @@ namespace Private {
   }
 
   /**
-   * The lower end of the high-surrogate unicode range.
-   */
-  const HS_L = '\uD800';
-
-  /**
-   * The upper end of the high-surrogate unicode range.
-   */
-  const HS_U = '\uDBFF';
-
-  /**
-   * The lower end of the low-surrogate unicode range.
-   */
-  const LS_L = '\uDC00';
-
-  /**
-   * The upper end of the low-surrogate unicode range.
-   */
-  const LS_U = '\uDFFF';
-
-  /**
-   * Match characters in the low-surrogate range.
-   */
-  const LS_REGEX = new RegExp(`([${LS_L}-${LS_U}])`, 'g');
-
-  /**
-   * Match characters in the high-surrogate range that are not followed
-   * by characters in the low-surrogate range.
-   */
-  const UNPAIRED_HS_REGEX = new RegExp(
-    `([${HS_L}-${HS_U}])(?![${LS_L}-${LS_U}])`,
-    'g',
-  );
-
-  /**
-   * Match a low-surrogate paired with our placeholder high-surrogate,
-   * as well as the leading 'X' documented below.
-   */
-  const PAIRED_LS_REGEX = new RegExp(`X${HS_L}([${LS_L}-${LS_U}])`, 'g');
-
-  /**
-   * Match a low-surrogate paired with our placeholder high-surrogate,
-   * as well as the trailing 'X' documented below.
-   */
-  const PAIRED_HS_REGEX = new RegExp(`([${HS_L}-${HS_U}])${LS_L}X`, 'g');
-
-  /**
-   * In pairSurrogates we may insert some dummy surrogate pairs so that the
-   * ids are valid Unicode. This performs the inverse operation.
+   * Encode a DOMString to base64. Modified from
+   * https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/Base64_encoding_and_decoding#Solution_3_–_JavaScript's_UTF-16_>_binary_string_>_base64
    *
-   * @param id: the id string.
+   * @param str: The DOMString to encode.
    *
-   * @returns an id string with the dummy surrogates removed.
+   * @returns base64 encoded data.
    */
   export
-  function stripSurrogates(id: string): string {
-    return id.replace(PAIRED_LS_REGEX, '$1').replace(PAIRED_HS_REGEX, '$1');
+  function btoaUTF16 (str: string) {
+	  let codeUnits = new Uint16Array(str.length);
+    Array.prototype.forEach.call(
+      codeUnits,
+      (el: number, idx: number, arr: number[]) => {
+        arr[idx] = str.charCodeAt(idx);
+      }
+    );
+    return btoa(String.fromCharCode.apply(
+      null,
+      new Uint8Array(codeUnits.buffer)
+    ));
+
   }
 
   /**
-   * Given an ID string, check for unpaired surrogates. If they are found,
-   * pair them. Each paired high/low surrogate is given the exact same
-   * character so as to maintain the same relative ordering of IDs.
+   * Encode a DOMString to base64. Modified from
+   * https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/Base64_encoding_and_decoding#Solution_3_–_JavaScript's_UTF-16_>_binary_string_>_base64
    *
-   * @param codes: a variable number of code points.
+   * @param str: The DOMString to encode.
    *
-   * @returns a valid UTF-8 encodable ID string from the code points.
+   * @returns base64 encoded data.
    */
   export
-  function pairSurrogates(str: string): string {
-    // Any surrogate characters coming from character codes should be unpaired.
-    // First, we replace all low-surrogates with a high-low pair (using \uD800).
-    // Next, we replace all *unpaired* high surrogates with a high-low pair
-    // (using \uDC00), so as not to catch the high surrogates that have already
-    // been inserted.
-    //
-    // We later need to be able to strip dummy surrogate characters out when
-    // performing comparisons between IDs. The pair \uD800 \uDC00 cannot be
-    // distinguished with the above scheme, so we also include a
-    // leading/trailing non-surrogate character, arbitrarily chosen as 'X'
-    // to allow us to distinguish that case later.
-    str = str.replace(LS_REGEX, `X${HS_L}$1`);
-    str = str.replace(UNPAIRED_HS_REGEX, `$1${LS_L}X`);
-    return str;
+  function atobUTF16 (str: string) {
+    let binaryString = atob(str);
+    let binaryView = new Uint8Array(binaryString.length);
+    Array.prototype.forEach.call(
+      binaryView,
+      (el: number, idx: number, arr: number[]) => {
+        arr[idx] = binaryString.charCodeAt(idx);
+      }
+    );
+    return String.fromCharCode.apply(
+      null,
+      new Uint16Array(binaryView.buffer)
+    );
   }
 }
