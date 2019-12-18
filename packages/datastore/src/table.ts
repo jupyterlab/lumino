@@ -181,12 +181,12 @@ class Table<S extends Schema> implements IIterable<Record<S>> {
 
     for (let id in data) {
       let recordPatch = data[id];
-      let encoded: Record.MutablePatch<U> = {};
+      let decoded: Record.MutablePatch<U> = {};
       for (let name in recordPatch) {
         let field = schema.fields[name];
-        encoded[name] = field.decodePatch(recordPatch[name]!);
+        decoded[name] = field.decodePatch(recordPatch[name]!);
       }
-      tp[id] = encoded;
+      tp[id] = decoded;
     }
     return tp;
   }

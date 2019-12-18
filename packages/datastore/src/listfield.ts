@@ -179,7 +179,7 @@ class ListField<T extends ReadonlyJSONValue> extends Field<ListField.Value<T>, L
     return patch.map(part => ({
       ...part,
       removedIds: part.removedIds.map(id => encodeId(id)),
-      inserteIds: part.insertedIds.map(id => encodeId(id))
+      insertedIds: part.insertedIds.map(id => encodeId(id))
     }));
   }
 
@@ -194,7 +194,7 @@ class ListField<T extends ReadonlyJSONValue> extends Field<ListField.Value<T>, L
     return patch.map(part => ({
       ...part,
       removedIds: part.removedIds.map(id => decodeId(id)),
-      inserteIds: part.insertedIds.map(id => decodeId(id))
+      insertedIds: part.insertedIds.map(id => decodeId(id))
     }));
   }
 

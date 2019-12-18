@@ -184,7 +184,7 @@ class TextField extends Field<TextField.Value, TextField.Update, TextField.Metad
     return patch.map(part => ({
       ...part,
       removedIds: part.removedIds.map(id => encodeId(id)),
-      inserteIds: part.insertedIds.map(id => encodeId(id))
+      insertedIds: part.insertedIds.map(id => encodeId(id))
     }));
   }
 
@@ -199,7 +199,7 @@ class TextField extends Field<TextField.Value, TextField.Update, TextField.Metad
     return patch.map(part => ({
       ...part,
       removedIds: part.removedIds.map(id => decodeId(id)),
-      inserteIds: part.insertedIds.map(id => decodeId(id))
+      insertedIds: part.insertedIds.map(id => decodeId(id))
     }));
   }
 
