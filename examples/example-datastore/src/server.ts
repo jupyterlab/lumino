@@ -225,7 +225,6 @@ wsServer.on('request', request => {
         let acks = [];
         let propagate = [];
         for (let t of data.content.transactions) {
-          console.log(t.patch.editor.e1);
           if (store.add(t)) {
             acks.push(t.id);
             propagate.push(t);
