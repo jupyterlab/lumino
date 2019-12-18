@@ -231,6 +231,21 @@ describe('@lumino/datastore', () => {
           });
       });
 
+      it('should create valid unicode transaction IDs by default', () => {
+        let encoder = new TextEncoder();
+        let decoder = new TextDecoder('utf8');
+
+        for (let i = 0; i < 100000; i++) {
+          let t1 = datastore.get(schema1);
+          let id = datastore.beginTransaction();
+          t1.update({ 'my-record': { enabled: true } });
+          datastore.endTransaction();
+
+          // Test that the transaction id is valid unicode by encoding and
+          // then decoding it.
+          expect(decoder.decode(encoder.encode(id))).to.equal(id);
+        }
+      }).timeout(30000);
     });
 
     describe('dispose()', () => {

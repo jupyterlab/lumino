@@ -44,7 +44,7 @@ import {
 } from './table';
 
 import {
-  createDuplexId
+  createDuplexId, encodeId
 } from './utilities';
 
 
@@ -370,7 +370,8 @@ class Datastore implements IDisposable, IIterable<Table<Schema>>, IMessageHandle
     this._context = context;
     this._tables = tables;
     this._adapter = adapter || null;
-    this._transactionIdFactory = transactionIdFactory || createDuplexId;
+    this._transactionIdFactory =
+      transactionIdFactory || Private.defaultTransactionIdFactory;
     if (this._adapter) {
       this._adapter.onRemoteTransaction = this._onRemoteTransaction.bind(this);
       this._adapter.onUndo = this._onUndo.bind(this);
@@ -1143,5 +1144,13 @@ namespace Private {
   export
   function isChangeEmpty(change: Datastore.Change): boolean {
     return Object.keys(change).length === 0;
+  }
+
+  /**
+   * Create a transaction ID.
+   */
+  export
+  function defaultTransactionIdFactory(version: number, storeId: number) {
+    return encodeId(createDuplexId(version, storeId));
   }
 }
