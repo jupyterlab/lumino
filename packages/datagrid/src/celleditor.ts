@@ -502,8 +502,8 @@ abstract class InputCellEditor extends CellEditor {
     const cellInfo = this.getCellInfo(cell);
     this.input.value = this.deserialize(cellInfo.data);
     this.form.appendChild(this.input);
-    this.input.select();
     this.input.focus();
+    this.input.select();
 
     this.bindEvents();
   }
@@ -521,6 +521,7 @@ abstract class InputCellEditor extends CellEditor {
     input.classList.add('lm-DataGrid-cellEditorWidget');
     input.classList.add('lm-DataGrid-cellEditorInput');
     input.spellcheck = false;
+    input.type = this.inputType;
 
     this.input = input;
   }
@@ -572,6 +573,7 @@ abstract class InputCellEditor extends CellEditor {
   }
 
   protected input: HTMLInputElement;
+  protected abstract inputType: string;
 }
 
 export
@@ -579,6 +581,8 @@ class TextCellEditor extends InputCellEditor {
   protected getInput(): string | null {
     return this.input.value;
   }
+
+  protected inputType: string = 'text';
 }
 
 export
@@ -586,7 +590,6 @@ class NumberCellEditor extends InputCellEditor {
   protected startEditing() {
     super.startEditing();
 
-    this.input.type = 'number';
     this.input.step = 'any';
 
     const cell = this.cell;
@@ -616,6 +619,8 @@ class NumberCellEditor extends InputCellEditor {
 
     return floatValue;
   }
+
+  protected inputType: string = 'number';
 }
 
 export
@@ -623,7 +628,6 @@ class IntegerCellEditor extends InputCellEditor {
   protected startEditing() {
     super.startEditing();
 
-    this.input.type = 'number';
     this.input.step = '1';
 
     const cell = this.cell;
@@ -653,6 +657,8 @@ class IntegerCellEditor extends InputCellEditor {
 
     return intValue;
   }
+
+  protected inputType: string = 'number';
 }
 
 export
@@ -1040,8 +1046,8 @@ class DynamicOptionCellEditor extends CellEditor {
     const cellInfo = this.getCellInfo(cell);
     this._input.value = this._deserialize(cellInfo.data);
     this.form.appendChild(this._input);
-    this._input.select();
     this._input.focus();
+    this._input.select();
 
     this._bindEvents();
   }
