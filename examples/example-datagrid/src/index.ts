@@ -218,6 +218,8 @@ class JSONCellEditor extends CellEditor {
     const button = document.createElement('button');
     button.type = 'button';
     button.classList.add('cell-editor');
+    button.style.width = '100%';
+    button.style.height = '100%';
     button.style.whiteSpace = 'nowrap';
     button.style.overflow = 'hidden';
     button.style.textOverflow = 'ellipsis';
