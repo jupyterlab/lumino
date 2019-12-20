@@ -1207,7 +1207,7 @@ namespace Private {
       keys: CommandRegistry.normalizeKeys(options),
       selector: validateSelector(options),
       command: options.command,
-      args: options.args || JSONExt.emptyObject
+      args: (options.args as ReadonlyJSONObject) || JSONExt.emptyObject
     };
   }
 
