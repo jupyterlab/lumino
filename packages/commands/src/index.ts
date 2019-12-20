@@ -167,10 +167,13 @@ class CommandRegistry {
    *
    * @returns The display label for the command, or an empty string
    *   if the command is not registered.
+   *
+   * ### Notes
+   * Any `undefined` values in the args will be stripped.
    */
   label(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): string {
     let cmd = this._commands[id];
-    return cmd ? cmd.label.call(undefined, args) : '';
+    return cmd ? cmd.label.call(undefined, JSONExt.deepCopy(args)) : '';
   }
 
   /**
@@ -182,10 +185,13 @@ class CommandRegistry {
    *
    * @returns The mnemonic index for the command, or `-1` if the
    *   command is not registered.
+   *
+   * ### Notes
+   * Any `undefined` values in the args will be stripped.
    */
   mnemonic(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): number {
     let cmd = this._commands[id];
-    return cmd ? cmd.mnemonic.call(undefined, args) : -1;
+    return cmd ? cmd.mnemonic.call(undefined, JSONExt.deepCopy(args)) : -1;
   }
 
   /**
@@ -204,10 +210,13 @@ class CommandRegistry {
    *
    * @returns The icon class for the command, or an empty string if
    *   the command is not registered.
+   *
+   * ### Notes
+   * Any `undefined` values in the args will be stripped.
    */
   iconClass(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): string {
     let cmd = this._commands[id];
-    return cmd ? cmd.iconClass.call(undefined, args) : '';
+    return cmd ? cmd.iconClass.call(undefined, JSONExt.deepCopy(args)) : '';
   }
 
   /**
@@ -219,10 +228,13 @@ class CommandRegistry {
    *
    * @returns The icon label for the command, or an empty string if
    *   the command is not registered.
+   *
+   * ### Notes
+   * Any `undefined` values in the args will be stripped.
    */
   iconLabel(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): string {
     let cmd = this._commands[id];
-    return cmd ? cmd.iconLabel.call(undefined, args) : '';
+    return cmd ? cmd.iconLabel.call(undefined, JSONExt.deepCopy(args)) : '';
   }
 
   /**
@@ -234,10 +246,13 @@ class CommandRegistry {
    *
    * @returns The caption for the command, or an empty string if the
    *   command is not registered.
+   *
+   * ### Notes
+   * Any `undefined` values in the args will be stripped.
    */
   caption(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): string {
     let cmd = this._commands[id];
-    return cmd ? cmd.caption.call(undefined, args) : '';
+    return cmd ? cmd.caption.call(undefined, JSONExt.deepCopy(args)) : '';
   }
 
   /**
@@ -249,10 +264,13 @@ class CommandRegistry {
    *
    * @returns The usage text for the command, or an empty string if
    *   the command is not registered.
+   *
+   * ### Notes
+   * Any `undefined` values in the args will be stripped.
    */
   usage(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): string {
     let cmd = this._commands[id];
-    return cmd ? cmd.usage.call(undefined, args) : '';
+    return cmd ? cmd.usage.call(undefined, JSONExt.deepCopy(args)) : '';
   }
 
   /**
@@ -264,10 +282,13 @@ class CommandRegistry {
    *
    * @returns The class name for the command, or an empty string if
    *   the command is not registered.
+   *
+   * ### Notes
+   * Any `undefined` values in the args will be stripped.
    */
   className(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): string {
     let cmd = this._commands[id];
-    return cmd ? cmd.className.call(undefined, args) : '';
+    return cmd ? cmd.className.call(undefined, JSONExt.deepCopy(args)) : '';
   }
 
   /**
@@ -279,10 +300,13 @@ class CommandRegistry {
    *
    * @returns The dataset for the command, or an empty dataset if
    *   the command is not registered.
+   *
+   * ### Notes
+   * Any `undefined` values in the args will be stripped.
    */
   dataset(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): CommandRegistry.Dataset {
     let cmd = this._commands[id];
-    return cmd ? cmd.dataset.call(undefined, args) : {};
+    return cmd ? cmd.dataset.call(undefined, JSONExt.deepCopy(args)) : {};
   }
 
   /**
@@ -294,10 +318,13 @@ class CommandRegistry {
    *
    * @returns A boolean indicating whether the command is enabled,
    *   or `false` if the command is not registered.
+   *
+   * ### Notes
+   * Any `undefined` values in the args will be stripped.
    */
   isEnabled(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): boolean {
     let cmd = this._commands[id];
-    return cmd ? cmd.isEnabled.call(undefined, args) : false;
+    return cmd ? cmd.isEnabled.call(undefined, JSONExt.deepCopy(args)) : false;
   }
 
   /**
@@ -309,10 +336,13 @@ class CommandRegistry {
    *
    * @returns A boolean indicating whether the command is toggled,
    *   or `false` if the command is not registered.
+   *
+   * ### Notes
+   * Any `undefined` values in the args will be stripped.
    */
   isToggled(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): boolean {
     let cmd = this._commands[id];
-    return cmd ? cmd.isToggled.call(undefined, args) : false;
+    return cmd ? cmd.isToggled.call(undefined, JSONExt.deepCopy(args)) : false;
   }
 
   /**
@@ -324,10 +354,13 @@ class CommandRegistry {
    *
    * @returns A boolean indicating whether the command is visible,
    *   or `false` if the command is not registered.
+   *
+   * ### Notes
+   * Any `undefined` values in the args will be stripped.
    */
   isVisible(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): boolean {
     let cmd = this._commands[id];
-    return cmd ? cmd.isVisible.call(undefined, args) : false;
+    return cmd ? cmd.isVisible.call(undefined, JSONExt.deepCopy(args)) : false;
   }
 
   /**
@@ -342,6 +375,8 @@ class CommandRegistry {
    * #### Notes
    * The promise will reject if the command throws an exception,
    * or if the command is not registered.
+   *
+   * Any `undefined` values in the args will be stripped.
    */
   execute(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): Promise<any> {
     // Reject if the command is not registered.
@@ -352,8 +387,9 @@ class CommandRegistry {
 
     // Execute the command and reject if an exception is thrown.
     let value: any;
+    const execArgs = JSONExt.deepCopy(args) as ReadonlyJSONObject;
     try {
-      value = cmd.execute.call(undefined, args);
+      value = cmd.execute.call(undefined, execArgs);
     } catch (err) {
       value = Promise.reject(err);
     }
@@ -362,7 +398,6 @@ class CommandRegistry {
     let result = Promise.resolve(value);
 
     // Emit the command executed signal.
-    const execArgs = args as ReadonlyJSONObject;
     this._commandExecuted.emit({ id, args: execArgs, result });
 
     // Return the result promise to the caller.
@@ -866,6 +901,8 @@ namespace CommandRegistry {
      * The arguments for the command, if necessary.
      *
      * The default value is an empty object.
+     *
+     * Any `undefined` values in the args will be stripped.
      */
     args?: ReadonlyPartialJSONObject;
 

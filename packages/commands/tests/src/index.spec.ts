@@ -22,7 +22,7 @@ import {
 } from '@lumino/commands';
 
 import {
-  JSONObject
+  JSONObject, ReadonlyPartialJSONObject
 } from '@lumino/coreutils';
 
 import {
@@ -503,6 +503,28 @@ describe('@lumino/commands', () => {
         registry.execute('foo').catch(() => {
           done();
         });
+      });
+
+      it('should handle partial objects', () => {
+        interface ITestPartial extends ReadonlyPartialJSONObject {
+          foo: string;
+          bar?: string;
+        }
+        const a: ITestPartial = {
+          foo: 'hi',
+          bar: undefined
+        };
+        let called = false;
+        let cmd = {
+          execute: (args: ITestPartial) => {
+            expect(args.foo).to.equal('hi');
+            expect(Object.keys(args).indexOf('bar')).to.equal(-1);
+            called = true;
+          },
+        };
+        registry.addCommand('test', cmd);
+        registry.execute('test', a);
+        expect(called).to.equal(true);
       });
 
     });

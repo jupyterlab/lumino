@@ -525,6 +525,8 @@ namespace CommandPalette {
      * The arguments for the command.
      *
      * The default value is an empty object.
+     *
+     * Any `undefined` values in the args will be stripped.
      */
     args?: ReadonlyPartialJSONObject;
 
@@ -1358,7 +1360,7 @@ namespace Private {
       this._commands = commands;
       this.category = normalizeCategory(options.category);
       this.command = options.command;
-      this.args = (options.args as ReadonlyJSONObject) || JSONExt.emptyObject;
+      this.args = JSONExt.deepCopy(options.args || JSONExt.emptyObject) as ReadonlyJSONObject;
       this.rank = options.rank !== undefined ? options.rank : Infinity;
     }
 

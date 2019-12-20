@@ -986,6 +986,8 @@ namespace Menu {
      * The arguments for the command.
      *
      * The default value is an empty object.
+     *
+     * Any `undefined` values in the args will be stripped.
      */
     args?: ReadonlyPartialJSONObject;
 
@@ -1647,7 +1649,7 @@ namespace Private {
       this._commands = commands;
       this.type = options.type || 'command';
       this.command = options.command || '';
-      this.args = (options.args as ReadonlyJSONObject) || JSONExt.emptyObject;
+      this.args = JSONExt.deepCopy(options.args || JSONExt.emptyObject) as ReadonlyJSONObject;
       this.submenu = options.submenu || null;
     }
 
