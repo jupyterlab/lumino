@@ -69,3 +69,33 @@
 .lm-DataGrid-cellEditorCheckbox {
   margin: 0;
 }
+
+.lm-DataGrid-notification {
+  position: absolute;
+  display: flex;
+  overflow: visible;
+  animation: fade-in 300ms ease-out;
+}
+
+.lm-DataGrid-notificationContainer {
+  box-shadow: 0px 2px 5px #999999;
+  border-radius: 3px;
+  background-color: white;
+  color: black;
+  border: 1px solid black;
+  font-family: sans-serif;
+  font-size: 13px;
+  padding: 4px;
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
+}

@@ -25,6 +25,10 @@ import {
   Signal
 } from '@lumino/signaling';
 
+import {
+  Notification
+} from './notification';
+
 export
 interface ICellInputValidatorResponse {
   valid: boolean;
@@ -208,6 +212,8 @@ abstract class CellEditor implements ICellEditor, IDisposable {
       return;
     }
 
+    this._closeValidityNotification();
+
     this._disposed = true;
     this.cell.grid.node.removeChild(this.viewportOccluder);
   }
@@ -220,6 +226,7 @@ abstract class CellEditor implements ICellEditor, IDisposable {
     this.validator = (options && options.validator) ? options.validator : this.createValidatorBasedOnType();
 
     cell.grid.node.addEventListener('wheel', () => {
+      this._closeValidityNotification();
       this.updatePosition();
     });
 
@@ -272,15 +279,22 @@ abstract class CellEditor implements ICellEditor, IDisposable {
   protected setValidity(valid: boolean, message: string = "") {
     this._validInput = valid;
 
+    this._closeValidityNotification();
+
     if (valid) {
       this.cellContainer.classList.remove('invalid');
     } else {
       this.cellContainer.classList.add('invalid');
-    }
 
-    this.validityReportInput.setCustomValidity(message);
-    if (message !== "") {
-      this.form.reportValidity();
+      if (message !== "") {
+        this.validityNotification = new Notification({
+          target: this.cellContainer,
+          message: message,
+          placement: 'bottom',
+          timeout: 5000
+        });
+        this.validityNotification.show();
+      }
     }
   }
 
@@ -433,20 +447,6 @@ abstract class CellEditor implements ICellEditor, IDisposable {
     this.cellContainer.className = 'lm-DataGrid-cellEditorContainer';
     this.viewportOccluder.appendChild(this.cellContainer);
 
-    this.form = document.createElement('form');
-    this.cellContainer.appendChild(this.form);
-
-    this.validityReportInput = document.createElement('input');
-    this.validityReportInput.style.opacity = '0';
-    this.validityReportInput.style.zIndex = '-1';
-    this.validityReportInput.style.position = 'absolute';
-    this.validityReportInput.style.left = '0';
-    this.validityReportInput.style.top = '0';
-    this.validityReportInput.style.width = '100%';
-    this.validityReportInput.style.height = '100%';
-    this.validityReportInput.style.visibility = 'visible';
-    this.form.appendChild(this.validityReportInput);
-
     // update mouse event pass-through state based on input validity
     this.cellContainer.addEventListener('mouseleave', (event: MouseEvent) => {
       this.viewportOccluder.style.pointerEvents = this._validInput ? 'none' : 'auto';
@@ -456,6 +456,13 @@ abstract class CellEditor implements ICellEditor, IDisposable {
     });
   }
 
+  private _closeValidityNotification() {
+    if (this.validityNotification) {
+      this.validityNotification.close();
+      this.validityNotification = null;
+    }
+  }
+
   protected inputChanged = new Signal<this, void>(this);
   protected onCommit?: (response: ICellEditResponse) => void;
   protected onCancel?: () => void;
@@ -463,8 +470,7 @@ abstract class CellEditor implements ICellEditor, IDisposable {
   protected validator: ICellInputValidator | undefined;
   protected viewportOccluder: HTMLDivElement;
   protected cellContainer: HTMLDivElement;
-  protected form: HTMLFormElement;
-  protected validityReportInput: HTMLInputElement;
+  protected validityNotification: Notification | null = null;
   private _disposed = false;
   private _validInput: boolean = true;
 }
@@ -501,7 +507,7 @@ abstract class InputCellEditor extends CellEditor {
     const cell = this.cell;
     const cellInfo = this.getCellInfo(cell);
     this.input.value = this.deserialize(cellInfo.data);
-    this.form.appendChild(this.input);
+    this.cellContainer.appendChild(this.input);
     this.input.focus();
     this.input.select();
 
@@ -690,7 +696,7 @@ class DateCellEditor extends CellEditor {
     const cell = this.cell;
     const cellInfo = this.getCellInfo(cell);
     this._input.value = this._deserialize(cellInfo.data);
-    this.form.appendChild(this._input);
+    this.cellContainer.appendChild(this._input);
     this._input.focus();
 
     this._bindEvents();
@@ -796,7 +802,7 @@ class BooleanCellEditor extends CellEditor {
     const cell = this.cell;
     const cellInfo = this.getCellInfo(cell);
     this._input.checked = this._deserialize(cellInfo.data);
-    this.form.appendChild(this._input);
+    this.cellContainer.appendChild(this._input);
     this._input.focus();
 
     this._bindEvents();
@@ -900,7 +906,7 @@ class OptionCellEditor extends CellEditor {
       document.body.appendChild(this._select);
     } else {
       this._select.value = this._deserialize(cellInfo.data) as string;
-      this.form.appendChild(this._select);
+      this.cellContainer.appendChild(this._select);
     }
 
     this._select.focus();
@@ -1045,7 +1051,7 @@ class DynamicOptionCellEditor extends CellEditor {
     const cell = this.cell;
     const cellInfo = this.getCellInfo(cell);
     this._input.value = this._deserialize(cellInfo.data);
-    this.form.appendChild(this._input);
+    this.cellContainer.appendChild(this._input);
     this._input.focus();
     this._input.select();
 
@@ -1089,7 +1095,7 @@ class DynamicOptionCellEditor extends CellEditor {
       option.text = value;
       list.appendChild(option);
     });
-    this.form.appendChild(list);
+    this.cellContainer.appendChild(list);
     input.setAttribute('list', listId);
 
     this._input = input;

@@ -223,7 +223,7 @@ class JSONCellEditor extends CellEditor {
     button.style.textOverflow = 'ellipsis';
 
     button.textContent = this._deserialize(data);
-    this.form.appendChild(button);
+    this.cellContainer.appendChild(button);
 
     this._button = button;
 
