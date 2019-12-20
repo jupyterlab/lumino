@@ -133,6 +133,6 @@ namespace CellRenderer {
    */
   export
   function resolveOption<T>(option: ConfigOption<T>, config: CellConfig): T {
-    return typeof option === 'function' ? option(config) : option;
+    return typeof option === 'function' ? (option as ConfigFunc<T>)(config) : option;
   }
 }

@@ -12,7 +12,8 @@
     "outDir": "lib",
     "lib": [
       "ES5",
-      "DOM"
+      "DOM",
+      "ES2015.Iterable"
     ],
     "types": [],
     "rootDir": "src"

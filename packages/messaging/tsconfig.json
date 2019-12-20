@@ -15,7 +15,9 @@
       "ES2015.Collection",
       "DOM"
     ],
-    "types": [],
+    "types": [
+      "@types/node"
+    ],
     "rootDir": "src"
   },
   "include": [

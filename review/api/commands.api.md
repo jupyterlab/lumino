@@ -96,6 +96,7 @@ export namespace CommandRegistry {
         shift: boolean;
     }
     export function keystrokeForKeydownEvent(event: KeyboardEvent): string;
+    export function normalizeKeys(options: IKeyBindingOptions): string[];
     export function normalizeKeystroke(keystroke: string): string;
     export function parseKeystroke(keystroke: string): IKeystrokeParts;
 }

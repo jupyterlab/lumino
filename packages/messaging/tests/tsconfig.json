@@ -15,7 +15,8 @@
     ],
     "types": [
       "chai",
-      "mocha"
+      "mocha",
+      "@types/node"
     ],
     "rootDir": "src"
   },

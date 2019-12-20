@@ -13,6 +13,7 @@
     "lib": [
       "ES5",
       "ES2015.Collection",
+      "ES2015.Iterable",
       "DOM"
     ],
     "types": [],

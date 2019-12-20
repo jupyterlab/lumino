@@ -1,10 +1,10 @@
 {
   "name": "@lumino/default-theme",
-  "version": "0.1.8",
-  "description": "lumino Default Theme",
-  "homepage": "https://github.com/luminojs/lumino",
+  "version": "0.1.11",
+  "description": "Lumino Default Theme",
+  "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
-    "url": "https://github.com/luminojs/lumino/issues"
+    "url": "https://github.com/jupyterlab/lumino/issues"
   },
   "license": "BSD-3-Clause",
   "author": "S. Chris Colbert <sccolbert@gmail.com>",
@@ -21,11 +21,11 @@
   "style": "style/index.css",
   "repository": {
     "type": "git",
-    "url": "https://github.com/luminojs/lumino.git"
+    "url": "https://github.com/jupyterlab/lumino.git"
   },
   "dependencies": {
-    "@lumino/dragdrop": "^1.4.1",
-    "@lumino/widgets": "^1.9.3"
+    "@lumino/dragdrop": "^1.4.3",
+    "@lumino/widgets": "^1.9.6"
   },
   "publishConfig": {
     "access": "public"

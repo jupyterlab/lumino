@@ -355,6 +355,7 @@ export class DockPanel extends Widget {
     selectWidget(widget: Widget): void;
     spacing: number;
     tabBars(): IIterator<TabBar<Widget>>;
+    tabsMovable: boolean;
     widgets(): IIterator<Widget>;
 }
 
@@ -375,6 +376,7 @@ export namespace DockPanel {
         overlay?: IOverlay;
         renderer?: IRenderer;
         spacing?: number;
+        tabsMovable?: boolean;
     }
     export interface IOverlay {
         hide(delay: number): void;

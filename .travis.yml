@@ -3,7 +3,7 @@ services:
   - xvfb
 language: node_js
 node_js:
-  '8'
+  '10'
 addons:
   firefox: latest
 sudo: false

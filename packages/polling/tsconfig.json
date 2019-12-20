@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "declaration": true,
+    "noImplicitAny": true,
+    "noEmitOnError": true,
+    "noUnusedLocals": true,
+    "strictNullChecks": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "ES5",
+    "outDir": "lib",
+    "lib": [
+      "DOM",
+      "ES5",
+      "ES2015.Promise"
+    ],
+    "types": [
+      "@types/node"
+    ],
+    "rootDir": "src"
+  },
+  "include": [
+    "src/*"
+  ],
+  "references": [
+    {
+      "path": "../coreutils"
+    },
+    {
+      "path": "../disposable"
+    },
+    {
+      "path": "../signaling"
+    }
+  ]
+}
