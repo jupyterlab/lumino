@@ -619,7 +619,7 @@ namespace CommandRegistry {
    * A type alias for a user-defined command function.
    */
   export
-  type CommandFunc<T> = (args: ReadonlyJSONObject) => T;
+  type CommandFunc<T, U extends ReadonlyJSONObject = ReadonlyJSONObject> = (args: U) => T;
 
   /**
    * A type alias for a simple immutable string dataset.
