@@ -867,7 +867,7 @@ namespace CommandRegistry {
      *
      * The default value is an empty object.
      */
-    args?: ReadonlyJSONObject;
+    args?: ReadonlyPartialJSONObject;
 
     /**
      * The key sequence to use when running on Windows.
