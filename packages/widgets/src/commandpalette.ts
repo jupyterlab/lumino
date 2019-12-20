@@ -12,7 +12,7 @@ import {
 } from '@lumino/algorithm';
 
 import {
-  JSONExt, ReadonlyJSONObject
+  JSONExt, ReadonlyPartialJSONObject
 } from '@lumino/coreutils';
 
 import {
@@ -526,7 +526,7 @@ namespace CommandPalette {
      *
      * The default value is an empty object.
      */
-    args?: ReadonlyJSONObject;
+    args?: ReadonlyPartialJSONObject;
 
     /**
      * The rank for the command item.
@@ -559,7 +559,7 @@ namespace CommandPalette {
     /**
      * The arguments for the command.
      */
-    readonly args: ReadonlyJSONObject;
+    readonly args: ReadonlyPartialJSONObject;
 
     /**
      * The category for the command item.
@@ -1375,7 +1375,7 @@ namespace Private {
     /**
      * The arguments for the command.
      */
-    readonly args: ReadonlyJSONObject;
+    readonly args: ReadonlyPartialJSONObject;
 
     /**
      * The rank for the command item.

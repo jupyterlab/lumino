@@ -16,7 +16,7 @@ import {
 } from '@lumino/commands';
 
 import {
-  JSONExt, ReadonlyJSONObject
+  JSONExt, ReadonlyPartialJSONObject
 } from '@lumino/coreutils';
 
 import {
@@ -987,7 +987,7 @@ namespace Menu {
      *
      * The default value is an empty object.
      */
-    args?: ReadonlyJSONObject;
+    args?: ReadonlyPartialJSONObject;
 
     /**
      * The submenu for a `'submenu'` type item.
@@ -1018,7 +1018,7 @@ namespace Menu {
     /**
      * The arguments for the command.
      */
-    readonly args: ReadonlyJSONObject;
+    readonly args: ReadonlyPartialJSONObject;
 
     /**
      * The submenu for a `'submenu'` type item.
@@ -1664,7 +1664,7 @@ namespace Private {
     /**
      * The arguments for the command.
      */
-    readonly args: ReadonlyJSONObject;
+    readonly args: ReadonlyPartialJSONObject;
 
     /**
      * The submenu for a `'submenu'` type item.
