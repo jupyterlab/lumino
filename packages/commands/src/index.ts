@@ -12,7 +12,7 @@ import {
 } from '@lumino/algorithm';
 
 import {
-  JSONExt, ReadonlyPartialJSONObject
+  JSONExt, ReadonlyJSONObject, ReadonlyPartialJSONObject
 } from '@lumino/coreutils';
 
 import {
@@ -362,7 +362,8 @@ class CommandRegistry {
     let result = Promise.resolve(value);
 
     // Emit the command executed signal.
-    this._commandExecuted.emit({ id, args, result });
+    const execArgs = args as ReadonlyJSONObject;
+    this._commandExecuted.emit({ id, args: execArgs, result });
 
     // Return the result promise to the caller.
     return result;
@@ -583,7 +584,7 @@ namespace CommandRegistry {
    * A type alias for a user-defined command function.
    */
   export
-  type CommandFunc<T> = (args: ReadonlyPartialJSONObject) => T;
+  type CommandFunc<T> = (args: ReadonlyJSONObject) => T;
 
   /**
    * A type alias for a simple immutable string dataset.
@@ -808,7 +809,7 @@ namespace CommandRegistry {
     /**
      * The arguments object passed to the command.
      */
-    readonly args: ReadonlyPartialJSONObject;
+    readonly args: ReadonlyJSONObject;
 
     /**
      * The promise which resolves with the result of the command.
@@ -866,7 +867,7 @@ namespace CommandRegistry {
      *
      * The default value is an empty object.
      */
-    args?: ReadonlyPartialJSONObject;
+    args?: ReadonlyJSONObject;
 
     /**
      * The key sequence to use when running on Windows.
@@ -916,7 +917,7 @@ namespace CommandRegistry {
     /**
      * The arguments for the command.
      */
-    readonly args: ReadonlyPartialJSONObject;
+    readonly args: ReadonlyJSONObject;
   }
 
   /**
