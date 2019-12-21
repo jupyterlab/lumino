@@ -180,7 +180,6 @@ function createTriplexIds(n: number, version: number, store: number, lower: stri
  */
 export
 function encodeId(str: string): string {
-  // return Private.pairSurrogates(str);
   return Private.btoaUTF16(str);
 }
 
@@ -197,7 +196,6 @@ function encodeId(str: string): string {
  */
 export
 function decodeId(str: string): string {
-  //return Private.stripSurrogates(str);
   return Private.atobUTF16(str);
 }
 
