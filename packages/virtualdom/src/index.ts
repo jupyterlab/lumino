@@ -1031,6 +1031,8 @@ export function hpass(tag: string): VirtualElementPass {
   } else if (arguments.length === 3) {
     attrs = arguments[1];
     renderer = arguments[2];
+  } else if (arguments.length > 3) {
+    throw new Error("hpass() should be called with 1, 2, or 3 arguments");
   }
 
   return new VirtualElementPass(tag, attrs, renderer);
@@ -1201,23 +1203,15 @@ namespace Private {
         continue;
       }
 
-      // Handle the case of passthru update.
-      if (oldVNode.type === 'passthru' && newVNode.type === 'passthru') {
-        newVNode.render(currElem as HTMLElement);
-        currElem = currElem!.nextSibling;
-        continue;
-      }
-
       // If the types of the old and new nodes differ,
       // create and insert a new node.
-      if (oldVNode.type === 'text' || newVNode.type === 'text' ||
-        oldVNode.type === 'passthru' || newVNode.type === 'passthru') {
+      if (oldVNode.type !== newVNode.type || oldVNode.type === 'text' || newVNode.type === 'text') {
         ArrayExt.insert(oldCopy, i, newVNode);
         createDOMNode(newVNode, host, currElem);
         continue;
       }
 
-      // At this point, both nodes are known to be element nodes.
+      // At this point, both nodes are known to be of matching non-text type.
 
       // If the new elem is keyed, move an old keyed elem to the proper
       // location before proceeding with the diff. The search can start
@@ -1263,7 +1257,11 @@ namespace Private {
       updateAttrs(currElem as HTMLElement, oldVNode.attrs, newVNode.attrs);
 
       // Update the element content.
-      updateContent(currElem as HTMLElement, oldVNode.children, newVNode.children);
+      if (oldVNode.type === 'passthru' || newVNode.type === 'passthru') {
+        (newVNode as VirtualElementPass).render(currElem as HTMLElement);
+      } else {
+        updateContent(currElem as HTMLElement, oldVNode.children, newVNode.children);
+      }
 
       // Step to the next sibling element.
       currElem = currElem!.nextSibling;
