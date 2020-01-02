@@ -532,7 +532,7 @@ describe('@lumino/commands', () => {
           execute: (args: JSONObject) => { return args; },
         };
         registry.addCommand('test', cmd);
-        const result = registry.execute('test', { foo: 12, bar: undefined })
+        const result = await registry.execute('test', { foo: 12, bar: undefined })
         expect(result).to.deep.equal({ foo: 12 });
       });
 
