@@ -527,6 +527,15 @@ describe('@lumino/commands', () => {
         expect(called).to.equal(true);
       });
 
+      it('should allow being called with a partial JSON value', async () => {
+        let cmd = {
+          execute: (args: JSONObject) => { return args; },
+        };
+        registry.addCommand('test', cmd);
+        const result = registry.execute('test', { foo: 12, bar: undefined })
+        expect(result).to.deep.equal({ foo: 12 });
+      });
+
     });
 
     let elemID = 0;
