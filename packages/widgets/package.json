@@ -1,6 +1,6 @@
 {
   "name": "@lumino/widgets",
-  "version": "1.9.6",
+  "version": "1.9.7",
   "description": "Lumino Widgets",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -48,17 +48,17 @@
     "watch": "tsc --build --watch"
   },
   "dependencies": {
-    "@lumino/algorithm": "^1.2.2",
-    "@lumino/commands": "^1.9.0",
-    "@lumino/coreutils": "^1.4.1",
-    "@lumino/disposable": "^1.3.3",
-    "@lumino/domutils": "^1.1.6",
-    "@lumino/dragdrop": "^1.4.3",
-    "@lumino/keyboard": "^1.1.5",
-    "@lumino/messaging": "^1.3.2",
-    "@lumino/properties": "^1.1.5",
-    "@lumino/signaling": "^1.3.3",
-    "@lumino/virtualdom": "^1.3.0"
+    "@lumino/algorithm": "^1.2.3",
+    "@lumino/commands": "^1.9.1",
+    "@lumino/coreutils": "^1.4.2",
+    "@lumino/disposable": "^1.3.4",
+    "@lumino/domutils": "^1.1.7",
+    "@lumino/dragdrop": "^1.4.4",
+    "@lumino/keyboard": "^1.1.6",
+    "@lumino/messaging": "^1.3.3",
+    "@lumino/properties": "^1.1.6",
+    "@lumino/signaling": "^1.3.4",
+    "@lumino/virtualdom": "^1.4.0"
   },
   "devDependencies": {
     "@microsoft/api-extractor": "^7.6.0",
