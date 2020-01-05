@@ -64,7 +64,7 @@ type ReadonlyJSONValue = JSONPrimitive | ReadonlyJSONObject | ReadonlyJSONArray;
  * Note: Partial here means that JSON object attributes can be `undefined`.
  */
 export
-type PartialJSONValue = ReadonlyJSONValue | PartialJSONObject | PartialJSONArray;
+type PartialJSONValue = JSONPrimitive | PartialJSONObject | PartialJSONArray;
 
 
 /**
