@@ -8,6 +8,7 @@
 |----------------------------------------------------------------------------*/
 
 
+/* <DEPRECATED> */ body.p-mod-override-cursor *, /* </DEPRECATED> */
 body.lm-mod-override-cursor * {
   cursor: inherit !important;
 }
