@@ -8,12 +8,14 @@
 |----------------------------------------------------------------------------*/
 
 
+/* <DEPRECATED> */ .p-TabBar, /* </DEPRECATED> */
 .lm-TabBar {
   min-height: 24px;
   max-height: 24px;
 }
 
 
+/* <DEPRECATED> */ .p-TabBar-content, /* </DEPRECATED> */
 .lm-TabBar-content {
   min-width: 0;
   min-height: 0;
@@ -22,6 +24,7 @@
 }
 
 
+/* <DEPRECATED> */ .p-TabBar-tab, /* </DEPRECATED> */
 .lm-TabBar-tab {
   padding: 0px 10px;
   background: #E5E5E5;
@@ -37,21 +40,25 @@
 }
 
 
+/* <DEPRECATED> */ .p-TabBar-tab.p-mod-current, /* </DEPRECATED> */
 .lm-TabBar-tab.lm-mod-current {
   background: white;
 }
 
 
+/* <DEPRECATED> */ .p-TabBar-tab:hover:not(.p-mod-current), /* </DEPRECATED> */
 .lm-TabBar-tab:hover:not(.lm-mod-current) {
   background: #F0F0F0;
 }
 
 
+/* <DEPRECATED> */ .p-TabBar-tab:first-child, /* </DEPRECATED> */
 .lm-TabBar-tab:first-child {
   margin-left: 0;
 }
 
 
+/* <DEPRECATED> */ .p-TabBar-tab.p-mod-current, /* </DEPRECATED> */
 .lm-TabBar-tab.lm-mod-current {
   min-height: 23px;
   max-height: 23px;
@@ -59,6 +66,11 @@
 }
 
 
+/* <DEPRECATED> */
+.p-TabBar-tabIcon,
+.p-TabBar-tabLabel,
+.p-TabBar-tabCloseIcon,
+/* </DEPRECATED> */
 .lm-TabBar-tabIcon,
 .lm-TabBar-tabLabel,
 .lm-TabBar-tabCloseIcon {
@@ -66,17 +78,26 @@
 }
 
 
+/* <DEPRECATED> */
+.p-TabBar-tab.p-mod-closable > .p-TabBar-tabCloseIcon,
+/* </DEPRECATED> */
 .lm-TabBar-tab.lm-mod-closable > .lm-TabBar-tabCloseIcon {
   margin-left: 4px;
 }
 
 
+/* <DEPRECATED> */
+.p-TabBar-tab.p-mod-closable > .p-TabBar-tabCloseIcon:before,
+/* </DEPRECATED> */
 .lm-TabBar-tab.lm-mod-closable > .lm-TabBar-tabCloseIcon:before {
   content: '\f00d';
   font-family: FontAwesome;
 }
 
 
+/* <DEPRECATED> */
+.p-TabBar-tab.p-mod-drag-image,
+/* </DEPRECATED> */
 .lm-TabBar-tab.lm-mod-drag-image {
   min-height: 23px;
   max-height: 23px;
