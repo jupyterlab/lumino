@@ -8,6 +8,7 @@
 |----------------------------------------------------------------------------*/
 
 
+/* <DEPRECATED> */ .p-Widget, /* </DEPRECATED> */
 .lm-Widget {
   box-sizing: border-box;
   position: relative;
@@ -16,6 +17,7 @@
 }
 
 
+/* <DEPRECATED> */ .p-Widget.p-mod-hidden, /* </DEPRECATED> */
 .lm-Widget.lm-mod-hidden {
   display: none !important;
 }
