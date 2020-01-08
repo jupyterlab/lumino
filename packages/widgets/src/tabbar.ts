@@ -62,6 +62,9 @@ class TabBar<T> extends Widget {
   constructor(options: TabBar.IOptions<T> = {}) {
     super({ node: Private.createNode() });
     this.addClass('lm-TabBar');
+    /* <DEPRECATED> */
+    this.addClass('p-TabBar');
+    /* </DEPRECATED> */
     this.setFlag(Widget.Flag.DisallowLayout);
     this.tabsMovable = options.tabsMovable || false;
     this.allowDeselect = options.allowDeselect || false;
@@ -692,6 +695,10 @@ class TabBar<T> extends Widget {
       // Add the dragging style classes.
       data.tab.classList.add('lm-mod-dragging');
       this.addClass('lm-mod-dragging');
+      /* <DEPRECATED> */
+      data.tab.classList.add('p-mod-dragging');
+      this.addClass('p-mod-dragging');
+      /* </DEPRECATED> */
 
       // Mark the drag as active.
       data.dragActive = true;
@@ -798,6 +805,9 @@ class TabBar<T> extends Widget {
 
     // Remove the dragging class from the tab so it can be transitioned.
     data.tab.classList.remove('lm-mod-dragging');
+    /* <DEPRECATED> */
+    data.tab.classList.remove('p-mod-dragging');
+    /* </DEPRECATED> */
 
     // Parse the transition duration for releasing the tab.
     let duration = Private.parseTransitionDuration(data.tab);
@@ -820,6 +830,9 @@ class TabBar<T> extends Widget {
 
       // Remove the remaining dragging style.
       this.removeClass('lm-mod-dragging');
+      /* <DEPRECATED> */
+      this.removeClass('p-mod-dragging');
+      /* </DEPRECATED> */
 
       // If the tab was not moved, there is nothing else to do.
       let i = data.index;
@@ -881,6 +894,10 @@ class TabBar<T> extends Widget {
     // Clear the dragging style classes.
     data.tab.classList.remove('lm-mod-dragging');
     this.removeClass('lm-mod-dragging');
+    /* <DEPRECATED> */
+    data.tab.classList.remove('p-mod-dragging');
+    this.removeClass('p-mod-dragging');
+    /* </DEPRECATED> */
   }
 
   /**
@@ -1358,7 +1375,12 @@ namespace TabBar {
      * @returns A virtual element representing the tab label.
      */
     renderLabel(data: IRenderData<any>): VirtualElement {
-      return h.div({ className: 'lm-TabBar-tabLabel' }, data.title.label);
+      return h.div({
+        className: 'lm-TabBar-tabLabel'
+          /* <DEPRECATED> */
+          + ' p-TabBar-tabLabel'
+          /* </DEPRECATED> */
+      }, data.title.label);
     }
 
     /**
@@ -1369,7 +1391,12 @@ namespace TabBar {
      * @returns A virtual element representing the tab close icon.
      */
     renderCloseIcon(data: IRenderData<any>): VirtualElement {
-      return h.div({ className: 'lm-TabBar-tabCloseIcon' });
+      return h.div({
+        className: 'lm-TabBar-tabCloseIcon'
+          /* <DEPRECATED> */
+          + ' p-TabBar-tabCloseIcon'
+          /* </DEPRECATED> */
+      });
     }
 
     /**
@@ -1413,14 +1440,23 @@ namespace TabBar {
      */
     createTabClass(data: IRenderData<any>): string {
       let name = 'lm-TabBar-tab';
+      /* <DEPRECATED> */
+      name += ' p-TabBar-tab';
+      /* </DEPRECATED> */
       if (data.title.className) {
         name += ` ${data.title.className}`;
       }
       if (data.title.closable) {
         name += ' lm-mod-closable';
+        /* <DEPRECATED> */
+        name += ' p-mod-closable';
+        /* </DEPRECATED> */
       }
       if (data.current) {
         name += ' lm-mod-current';
+        /* <DEPRECATED> */
+        name += ' p-mod-current';
+        /* </DEPRECATED> */
       }
       return name;
     }
@@ -1445,6 +1481,9 @@ namespace TabBar {
      */
     createIconClass(data: IRenderData<any>): string {
       let name = 'lm-TabBar-tabIcon';
+      /* <DEPRECATED> */
+      name += ' p-TabBar-tabIcon';
+      /* </DEPRECATED> */
       let extra = data.title.iconClass;
       return extra ? `${name} ${extra}` : name;
     }
@@ -1596,6 +1635,9 @@ namespace Private {
     let node = document.createElement('div');
     let content = document.createElement('ul');
     content.className = 'lm-TabBar-content';
+    /* <DEPRECATED> */
+    content.classList.add('p-TabBar-content');
+    /* </DEPRECATED> */
     node.appendChild(content);
     return node;
   }
