@@ -35,7 +35,10 @@ class Panel extends Widget {
    */
   constructor(options: Panel.IOptions = {}) {
     super();
+    this.addClass('lm-Panel');
+    /* <DEPRECATED> */
     this.addClass('p-Panel');
+    /* </DEPRECATED> */
     this.layout = Private.createLayout(options);
   }
 

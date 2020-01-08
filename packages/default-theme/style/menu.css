@@ -8,7 +8,8 @@
 |----------------------------------------------------------------------------*/
 
 
-.p-Menu {
+/* <DEPRECATED> */ .p-Menu, /* </DEPRECATED> */
+.lm-Menu {
   padding: 3px 0px;
   background: white;
   color: rgba(0, 0, 0, 0.87);
@@ -18,50 +19,63 @@
 }
 
 
-.p-Menu-item.p-mod-active {
+/* <DEPRECATED> */ .p-Menu-item.p-mod-active, /* </DEPRECATED> */
+.lm-Menu-item.lm-mod-active {
   background: #E5E5E5;
 }
 
 
-.p-Menu-item.p-mod-disabled {
+/* <DEPRECATED> */ .p-Menu-item.p-mod-disabled, /* </DEPRECATED> */
+.lm-Menu-item.lm-mod-disabled {
   color: rgba(0, 0, 0, 0.25);
 }
 
 
-.p-Menu-itemIcon {
+/* <DEPRECATED> */ .p-Menu-itemIcon, /* </DEPRECATED> */
+.lm-Menu-itemIcon {
   width: 21px;
   padding: 4px 2px;
 }
 
 
-.p-Menu-itemLabel {
+/* <DEPRECATED> */ .p-Menu-itemLabel, /* </DEPRECATED> */
+.lm-Menu-itemLabel {
   padding: 4px 35px 4px 2px;
 }
 
 
-.p-Menu-itemMnemonic {
+/* <DEPRECATED> */ .p-Menu-itemMnemonic, /* </DEPRECATED> */
+.lm-Menu-itemMnemonic {
   text-decoration: underline;
 }
 
 
-.p-Menu-itemShortcut {
+/* <DEPRECATED> */ .p-Menu-itemShortcut, /* </DEPRECATED> */
+.lm-Menu-itemShortcut {
   padding: 4px 0px;
 }
 
 
-.p-Menu-itemSubmenuIcon {
+/* <DEPRECATED> */ .p-Menu-itemSubmenuIcon, /* </DEPRECATED> */
+.lm-Menu-itemSubmenuIcon {
   width: 16px;
   padding: 4px 0px;
 }
 
 
-.p-Menu-item[data-type='separator'] > div {
+/* <DEPRECATED> */
+.p-Menu-item[data-type='separator'] > div,
+/* </DEPRECATED> */
+.lm-Menu-item[data-type='separator'] > div {
   padding: 0;
   height: 9px;
 }
 
 
-.p-Menu-item[data-type='separator'] > div::after {
+/* <DEPRECATED> */
+.p-Menu-item[data-type='separator'] > div::after,
+/* </DEPRECATED> */
+.lm-Menu-item[data-type='separator'] > div::after {
   content: '';
   display: block;
   position: relative;
@@ -70,17 +84,27 @@
 }
 
 
+/* <DEPRECATED> */
 .p-Menu-itemIcon::before,
-.p-Menu-itemSubmenuIcon::before {
+.p-Menu-itemSubmenuIcon::before,
+/* </DEPRECATED> */
+.lm-Menu-itemIcon::before,
+.lm-Menu-itemSubmenuIcon::before {
   font-family: FontAwesome;
 }
 
 
-.p-Menu-item.p-mod-toggled > .p-Menu-itemIcon::before {
+/* <DEPRECATED> */
+.p-Menu-item.lm-mod-toggled > .p-Menu-itemIcon::before,
+/* </DEPRECATED> */
+.lm-Menu-item.lm-mod-toggled > .lm-Menu-itemIcon::before {
   content: '\f00c';
 }
 
 
-.p-Menu-item[data-type='submenu'] > .p-Menu-itemSubmenuIcon::before {
+/* <DEPRECATED> */
+.p-Menu-item[data-type='submenu'] > .p-Menu-itemSubmenuIcon::before,
+/* </DEPRECATED> */
+.lm-Menu-item[data-type='submenu'] > .lm-Menu-itemSubmenuIcon::before {
   content: '\f0da';
 }

@@ -156,9 +156,9 @@ describe('@lumino/widgets', () => {
         expect(newBar.renderer).to.equal(renderer);
       });
 
-      it('should add the `p-TabBar` class', () => {
+      it('should add the `lm-TabBar` class', () => {
         let newBar = new TabBar<Widget>();
-        expect(newBar.hasClass('p-TabBar')).to.equal(true);
+        expect(newBar.hasClass('lm-TabBar')).to.equal(true);
       });
 
     });
@@ -267,7 +267,7 @@ describe('@lumino/widgets', () => {
       beforeEach(() => {
         populateBar(bar);
         bar.tabsMovable = false;
-        tab = bar.contentNode.getElementsByClassName('p-TabBar-tab')[2] as HTMLElement;
+        tab = bar.contentNode.getElementsByClassName('lm-TabBar-tab')[2] as HTMLElement;
       });
 
       it('should be emitted when a tab is left pressed by the user', () => {
@@ -425,12 +425,12 @@ describe('@lumino/widgets', () => {
         expect(called).to.equal(1);
       });
 
-      it('should add the `p-mod-dragging` class to the tab and the bar', () => {
+      it('should add the `lm-mod-dragging` class to the tab and the bar', () => {
         simulateOnNode(tab, 'mousedown');
         let called = false;
         bar.tabDetachRequested.connect((sender, args) => {
-          expect(tab.classList.contains('p-mod-dragging')).to.equal(true);
-          expect(bar.hasClass('p-mod-dragging')).to.equal(true);
+          expect(tab.classList.contains('lm-mod-dragging')).to.equal(true);
+          expect(bar.hasClass('lm-mod-dragging')).to.equal(true);
           called = true;
         });
         let rect = bar.contentNode.getBoundingClientRect();
@@ -486,7 +486,7 @@ describe('@lumino/widgets', () => {
         bar.currentIndex = 2;
         // Force the tabs to render
         MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
-        let tab = bar.contentNode.getElementsByClassName('p-TabBar-tab')[2] as HTMLElement;
+        let tab = bar.contentNode.getElementsByClassName('lm-TabBar-tab')[2] as HTMLElement;
         simulateOnNode(tab, 'mousedown');
         expect(bar.currentIndex).to.equal(2);
         simulateOnNode(tab, 'mouseup');
@@ -724,7 +724,7 @@ describe('@lumino/widgets', () => {
     describe('#contentNode', () => {
 
       it('should get the tab bar content node', () => {
-        expect(bar.contentNode.classList.contains('p-TabBar-content')).to.equal(true);
+        expect(bar.contentNode.classList.contains('lm-TabBar-content')).to.equal(true);
       });
 
     });
@@ -1246,10 +1246,10 @@ describe('@lumino/widgets', () => {
         expect(bar.methods.indexOf('onUpdateRequest')).to.not.equal(-1);
         each(bar.titles, (title, i) => {
           let tab = bar.contentNode.children[i] as HTMLElement;
-          let label = tab.getElementsByClassName('p-TabBar-tabLabel')[0] as HTMLElement;
+          let label = tab.getElementsByClassName('lm-TabBar-tabLabel')[0] as HTMLElement;
           expect(label.textContent).to.equal(title.label);
           let current = i === 0;
-          expect(tab.classList.contains('p-mod-current')).to.equal(current);
+          expect(tab.classList.contains('lm-mod-current')).to.equal(current);
         });
       });
 
@@ -1273,9 +1273,9 @@ describe('@lumino/widgets', () => {
 
       describe('#closeIconSelector', () => {
 
-        it('should be `.p-TabBar-tabCloseIcon`', () => {
+        it('should be `.lm-TabBar-tabCloseIcon`', () => {
           let renderer = new TabBar.Renderer();
-          expect(renderer.closeIconSelector).to.equal('.p-TabBar-tabCloseIcon');
+          expect(renderer.closeIconSelector).to.equal('.lm-TabBar-tabCloseIcon');
         });
 
       });
@@ -1287,18 +1287,18 @@ describe('@lumino/widgets', () => {
           let vNode = renderer.renderTab({ title, current: true, zIndex: 1 });
           let node = VirtualDOM.realize(vNode);
 
-          expect(node.getElementsByClassName('p-TabBar-tabIcon').length).to.equal(1);
-          expect(node.getElementsByClassName('p-TabBar-tabLabel').length).to.equal(1);
-          expect(node.getElementsByClassName('p-TabBar-tabCloseIcon').length).to.equal(1);
+          expect(node.getElementsByClassName('lm-TabBar-tabIcon').length).to.equal(1);
+          expect(node.getElementsByClassName('lm-TabBar-tabLabel').length).to.equal(1);
+          expect(node.getElementsByClassName('lm-TabBar-tabCloseIcon').length).to.equal(1);
 
-          expect(node.classList.contains('p-TabBar-tab')).to.equal(true);
+          expect(node.classList.contains('lm-TabBar-tab')).to.equal(true);
           expect(node.classList.contains(title.className)).to.equal(true);
-          expect(node.classList.contains('p-mod-current')).to.equal(true);
-          expect(node.classList.contains('p-mod-closable')).to.equal(true);
+          expect(node.classList.contains('lm-mod-current')).to.equal(true);
+          expect(node.classList.contains('lm-mod-closable')).to.equal(true);
           expect(node.title).to.equal(title.caption);
 
-          let icon = node.getElementsByClassName('p-TabBar-tabIcon')[0] as HTMLElement;
-          let label = node.getElementsByClassName('p-TabBar-tabLabel')[0] as HTMLElement;
+          let icon = node.getElementsByClassName('lm-TabBar-tabIcon')[0] as HTMLElement;
+          let label = node.getElementsByClassName('lm-TabBar-tabLabel')[0] as HTMLElement;
           expect(icon.classList.contains(title.icon)).to.equal(true);
           expect(label.textContent).to.equal(title.label);
         });
@@ -1311,7 +1311,7 @@ describe('@lumino/widgets', () => {
           let renderer = new TabBar.Renderer();
           let vNode = renderer.renderIcon({ title, current: true, zIndex: 1 });
           let node = VirtualDOM.realize(vNode as VirtualElement);
-          expect(node.className).to.contain('p-TabBar-tabIcon');
+          expect(node.className).to.contain('lm-TabBar-tabIcon');
           expect(node.classList.contains(title.icon)).to.equal(true);
         });
 
@@ -1323,7 +1323,7 @@ describe('@lumino/widgets', () => {
           let renderer = new TabBar.Renderer();
           let vNode = renderer.renderLabel({ title, current: true, zIndex: 1 });
           let label = VirtualDOM.realize(vNode);
-          expect(label.className).to.contain('p-TabBar-tabLabel');
+          expect(label.className).to.contain('lm-TabBar-tabLabel');
           expect(label.textContent).to.equal(title.label);
         });
 
@@ -1335,7 +1335,7 @@ describe('@lumino/widgets', () => {
           let renderer = new TabBar.Renderer();
           let vNode = renderer.renderCloseIcon({ title, current: true, zIndex: 1 });
           let icon = VirtualDOM.realize(vNode);
-          expect(icon.className).to.contain('p-TabBar-tabCloseIcon');
+          expect(icon.className).to.contain('lm-TabBar-tabCloseIcon');
         });
 
       });
@@ -1368,9 +1368,9 @@ describe('@lumino/widgets', () => {
           let className = renderer.createTabClass({
             title, current: true, zIndex: 1
           });
-          expect(className).to.contain('p-TabBar-tab');
-          expect(className).to.contain('p-mod-closable');
-          expect(className).to.contain('p-mod-current');
+          expect(className).to.contain('lm-TabBar-tab');
+          expect(className).to.contain('lm-mod-closable');
+          expect(className).to.contain('lm-mod-current');
         });
 
       });
@@ -1382,7 +1382,7 @@ describe('@lumino/widgets', () => {
           let className = renderer.createIconClass({
             title, current: true, zIndex: 1
           });
-          expect(className).to.contain('p-TabBar-tabIcon');
+          expect(className).to.contain('lm-TabBar-tabIcon');
           expect(className).to.contain(title.icon);
         });
 

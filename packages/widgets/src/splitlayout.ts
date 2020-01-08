@@ -239,7 +239,7 @@ class SplitLayout extends PanelLayout {
   moveHandle(index: number, position: number): void {
     // Bail if the index is invalid or the handle is hidden.
     let handle = this._handles[index];
-    if (!handle || handle.classList.contains('p-mod-hidden')) {
+    if (!handle || handle.classList.contains('lm-mod-hidden')) {
       return;
     }
 
@@ -446,9 +446,15 @@ class SplitLayout extends PanelLayout {
     let lastHandleIndex = -1;
     for (let i = 0, n = this._items.length; i < n; ++i) {
       if (this._items[i].isHidden) {
+        this._handles[i].classList.add('lm-mod-hidden');
+        /* <DEPRECATED> */
         this._handles[i].classList.add('p-mod-hidden');
+        /* </DEPRECATED> */
       } else {
+        this._handles[i].classList.remove('lm-mod-hidden');
+        /* <DEPRECATED> */
         this._handles[i].classList.remove('p-mod-hidden');
+        /* </DEPRECATED> */
         lastHandleIndex = i;
         nVisible++;
       }
@@ -456,7 +462,10 @@ class SplitLayout extends PanelLayout {
 
     // Hide the handle for the last visible widget.
     if (lastHandleIndex !== -1) {
+      this._handles[lastHandleIndex].classList.add('lm-mod-hidden');
+      /* <DEPRECATED> */
       this._handles[lastHandleIndex].classList.add('p-mod-hidden');
+      /* </DEPRECATED> */
     }
 
     // Update the fixed space for the visible items.

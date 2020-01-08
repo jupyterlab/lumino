@@ -64,7 +64,10 @@ class DockPanel extends Widget {
    */
   constructor(options: DockPanel.IOptions = {}) {
     super();
+    this.addClass('lm-DockPanel');
+    /* <DEPRECATED> */
     this.addClass('p-DockPanel');
+    /* </DEPRECATED> */
     this._mode = options.mode || 'multiple-document';
     this._renderer = options.renderer || DockPanel.defaultRenderer;
     this._edges = options.edges || Private.DEFAULT_EDGES;
@@ -388,16 +391,16 @@ class DockPanel extends Widget {
    */
   handleEvent(event: Event): void {
     switch (event.type) {
-    case 'p-dragenter':
+    case 'lm-dragenter':
       this._evtDragEnter(event as IDragEvent);
       break;
-    case 'p-dragleave':
+    case 'lm-dragleave':
       this._evtDragLeave(event as IDragEvent);
       break;
-    case 'p-dragover':
+    case 'lm-dragover':
       this._evtDragOver(event as IDragEvent);
       break;
-    case 'p-drop':
+    case 'lm-drop':
       this._evtDrop(event as IDragEvent);
       break;
     case 'mousedown':
@@ -423,10 +426,10 @@ class DockPanel extends Widget {
    * A message handler invoked on a `'before-attach'` message.
    */
   protected onBeforeAttach(msg: Message): void {
-    this.node.addEventListener('p-dragenter', this);
-    this.node.addEventListener('p-dragleave', this);
-    this.node.addEventListener('p-dragover', this);
-    this.node.addEventListener('p-drop', this);
+    this.node.addEventListener('lm-dragenter', this);
+    this.node.addEventListener('lm-dragleave', this);
+    this.node.addEventListener('lm-dragover', this);
+    this.node.addEventListener('lm-drop', this);
     this.node.addEventListener('mousedown', this);
   }
 
@@ -434,10 +437,10 @@ class DockPanel extends Widget {
    * A message handler invoked on an `'after-detach'` message.
    */
   protected onAfterDetach(msg: Message): void {
-    this.node.removeEventListener('p-dragenter', this);
-    this.node.removeEventListener('p-dragleave', this);
-    this.node.removeEventListener('p-dragover', this);
-    this.node.removeEventListener('p-drop', this);
+    this.node.removeEventListener('lm-dragenter', this);
+    this.node.removeEventListener('lm-dragleave', this);
+    this.node.removeEventListener('lm-dragover', this);
+    this.node.removeEventListener('lm-drop', this);
     this.node.removeEventListener('mousedown', this);
     this._releaseMouse();
   }
@@ -452,7 +455,10 @@ class DockPanel extends Widget {
     }
 
     // Add the widget class to the child.
+    msg.child.addClass('lm-DockPanel-widget');
+    /* <DEPRECATED> */
     msg.child.addClass('p-DockPanel-widget');
+    /* </DEPRECATED> */
   }
 
   /**
@@ -465,14 +471,17 @@ class DockPanel extends Widget {
     }
 
     // Remove the widget class from the child.
+    msg.child.removeClass('lm-DockPanel-widget');
+    /* <DEPRECATED> */
     msg.child.removeClass('p-DockPanel-widget');
+    /* </DEPRECATED> */
 
     // Schedule an emit of the layout modified signal.
     MessageLoop.postMessage(this, Private.LayoutModified);
   }
 
   /**
-   * Handle the `'p-dragenter'` event for the dock panel.
+   * Handle the `'lm-dragenter'` event for the dock panel.
    */
   private _evtDragEnter(event: IDragEvent): void {
     // If the factory mime type is present, mark the event as
@@ -484,7 +493,7 @@ class DockPanel extends Widget {
   }
 
   /**
-   * Handle the `'p-dragleave'` event for the dock panel.
+   * Handle the `'lm-dragleave'` event for the dock panel.
    */
   private _evtDragLeave(event: IDragEvent): void {
     // Mark the event as handled.
@@ -492,13 +501,13 @@ class DockPanel extends Widget {
     event.stopPropagation();
 
     // The new target might be a descendant, so we might still handle the drop.
-    // Hide asynchronously so that if a p-dragover event bubbles up to us, the
-    // hide is cancelled by the p-dragover handler's show overlay logic.
+    // Hide asynchronously so that if a lm-dragover event bubbles up to us, the
+    // hide is cancelled by the lm-dragover handler's show overlay logic.
     this.overlay.hide(1)
   }
 
   /**
-   * Handle the `'p-dragover'` event for the dock panel.
+   * Handle the `'lm-dragover'` event for the dock panel.
    */
   private _evtDragOver(event: IDragEvent): void {
     // Mark the event as handled.
@@ -515,7 +524,7 @@ class DockPanel extends Widget {
   }
 
   /**
-   * Handle the `'p-drop'` event for the dock panel.
+   * Handle the `'lm-drop'` event for the dock panel.
    */
   private _evtDrop(event: IDragEvent): void {
     // Mark the event as handled.
@@ -964,12 +973,18 @@ class DockPanel extends Widget {
     });
 
     // Hide the tab node in the original tab.
+    tab.classList.add('lm-mod-hidden');
+    /* <DEPRECATED> */
     tab.classList.add('p-mod-hidden');
+    /* </DEPRECATED> */;
 
     // Create the cleanup callback.
     let cleanup = (() => {
       this._drag = null;
+      tab.classList.remove('lm-mod-hidden');
+      /* <DEPRECATED> */
       tab.classList.remove('p-mod-hidden');
+      /* </DEPRECATED> */;
     });
 
     // Start the drag operation and cleanup when done.
@@ -1177,8 +1192,12 @@ namespace DockPanel {
      */
     constructor() {
       this.node = document.createElement('div');
+      this.node.classList.add('lm-DockPanel-overlay');
+      this.node.classList.add('lm-mod-hidden');
+      /* <DEPRECATED> */
       this.node.classList.add('p-DockPanel-overlay');
       this.node.classList.add('p-mod-hidden');
+      /* </DEPRECATED> */;
       this.node.style.position = 'absolute';
     }
 
@@ -1213,7 +1232,10 @@ namespace DockPanel {
       this._hidden = false;
 
       // Finally, show the overlay.
+      this.node.classList.remove('lm-mod-hidden');
+      /* <DEPRECATED> */
       this.node.classList.remove('p-mod-hidden');
+      /* </DEPRECATED> */;
     }
 
     /**
@@ -1233,7 +1255,10 @@ namespace DockPanel {
         clearTimeout(this._timer);
         this._timer = -1;
         this._hidden = true;
+        this.node.classList.add('lm-mod-hidden');
+        /* <DEPRECATED> */
         this.node.classList.add('p-mod-hidden');
+        /* </DEPRECATED> */;
         return;
       }
 
@@ -1246,7 +1271,10 @@ namespace DockPanel {
       this._timer = window.setTimeout(() => {
         this._timer = -1;
         this._hidden = true;
+        this.node.classList.add('lm-mod-hidden');
+        /* <DEPRECATED> */
         this.node.classList.add('p-mod-hidden');
+        /* </DEPRECATED> */;
       }, delay);
     }
 
@@ -1272,7 +1300,10 @@ namespace DockPanel {
      */
     createTabBar(): TabBar<Widget> {
       let bar = new TabBar<Widget>();
+      bar.addClass('lm-DockPanel-tabBar');
+      /* <DEPRECATED> */
       bar.addClass('p-DockPanel-tabBar');
+      /* </DEPRECATED> */
       return bar;
     }
 
@@ -1283,7 +1314,10 @@ namespace DockPanel {
      */
     createHandle(): HTMLDivElement {
       let handle = document.createElement('div');
-      handle.className = 'p-DockPanel-handle';
+      handle.className = 'lm-DockPanel-handle';
+      /* <DEPRECATED> */
+      handle.classList.add('p-DockPanel-handle');
+      /* </DEPRECATED> */;
       return handle;
     }
   }

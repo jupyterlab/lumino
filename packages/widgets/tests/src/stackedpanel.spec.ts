@@ -33,9 +33,9 @@ describe('@lumino/widgets', () => {
         expect(panel.layout).to.equal(layout);
       });
 
-      it('should add the `p-StackedPanel` class', () => {
+      it('should add the `lm-StackedPanel` class', () => {
         let panel = new StackedPanel();
-        expect(panel.hasClass('p-StackedPanel')).to.equal(true);
+        expect(panel.hasClass('lm-StackedPanel')).to.equal(true);
       });
 
     });
@@ -61,7 +61,7 @@ describe('@lumino/widgets', () => {
         let panel = new StackedPanel();
         let widget = new Widget();
         panel.addWidget(widget);
-        expect(widget.hasClass('p-StackedPanel-child')).to.equal(true);
+        expect(widget.hasClass('lm-StackedPanel-child')).to.equal(true);
       });
 
     });
@@ -73,7 +73,7 @@ describe('@lumino/widgets', () => {
         let widget = new Widget();
         panel.addWidget(widget);
         widget.parent = null;
-        expect(widget.hasClass('p-StackedPanel-child')).to.equal(false);
+        expect(widget.hasClass('lm-StackedPanel-child')).to.equal(false);
       });
 
     });

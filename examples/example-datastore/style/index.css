@@ -28,7 +28,7 @@ body {
   flex: 1 1 auto;
 }
 
-.p-Dockpanel-widget .CodeMirror {
+.lm-Dockpanel-widget .CodeMirror {
   width: 100%;
   height: 100%;
   margin: 16px;
@@ -39,7 +39,7 @@ body {
   background: slategray;
 }
 
-.p-DockPanel-overlay {
+.lm-DockPanel-overlay {
   background: rgba(255, 255, 255, 0.8);
   border: 1px dashed black;
   transition-property: top, left, right, bottom;

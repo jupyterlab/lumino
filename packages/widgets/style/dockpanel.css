@@ -8,32 +8,38 @@
 |----------------------------------------------------------------------------*/
 
 
-.p-DockPanel {
+/* <DEPRECATED> */ .p-DockPanel, /* </DEPRECATED> */
+.lm-DockPanel {
   z-index: 0;
 }
 
 
-.p-DockPanel-widget {
+/* <DEPRECATED> */ .p-DockPanel-widget, /* </DEPRECATED> */
+.lm-DockPanel-widget {
   z-index: 0;
 }
 
 
-.p-DockPanel-tabBar {
+/* <DEPRECATED> */ .p-DockPanel-tabBar, /* </DEPRECATED> */
+.lm-DockPanel-tabBar {
   z-index: 1;
 }
 
 
-.p-DockPanel-handle {
+/* <DEPRECATED> */ .p-DockPanel-handle, /* </DEPRECATED> */
+.lm-DockPanel-handle {
   z-index: 2;
 }
 
 
-.p-DockPanel-handle.p-mod-hidden {
+/* <DEPRECATED> */ .p-DockPanel-handle.p-mod-hidden, /* </DEPRECATED> */
+.lm-DockPanel-handle.lm-mod-hidden {
   display: none !important;
 }
 
 
-.p-DockPanel-handle:after {
+/* <DEPRECATED> */ .p-DockPanel-handle:after, /* </DEPRECATED> */
+.lm-DockPanel-handle:after {
   position: absolute;
   top: 0;
   left: 0;
@@ -43,37 +49,51 @@
 }
 
 
-.p-DockPanel-handle[data-orientation='horizontal'] {
+/* <DEPRECATED> */
+.p-DockPanel-handle[data-orientation='horizontal'],
+/* </DEPRECATED> */
+.lm-DockPanel-handle[data-orientation='horizontal'] {
   cursor: ew-resize;
 }
 
 
-.p-DockPanel-handle[data-orientation='vertical'] {
+/* <DEPRECATED> */
+.p-DockPanel-handle[data-orientation='vertical'],
+/* </DEPRECATED> */
+.lm-DockPanel-handle[data-orientation='vertical'] {
   cursor: ns-resize;
 }
 
 
-.p-DockPanel-handle[data-orientation='horizontal']:after {
+/* <DEPRECATED> */
+.p-DockPanel-handle[data-orientation='horizontal']:after,
+/* </DEPRECATED> */
+.lm-DockPanel-handle[data-orientation='horizontal']:after {
   left: 50%;
   min-width: 8px;
   transform: translateX(-50%);
 }
 
 
-.p-DockPanel-handle[data-orientation='vertical']:after {
+/* <DEPRECATED> */
+.p-DockPanel-handle[data-orientation='vertical']:after,
+/* </DEPRECATED> */
+.lm-DockPanel-handle[data-orientation='vertical']:after {
   top: 50%;
   min-height: 8px;
   transform: translateY(-50%);
 }
 
 
-.p-DockPanel-overlay {
+/* <DEPRECATED> */ .p-DockPanel-overlay, /* </DEPRECATED> */
+.lm-DockPanel-overlay {
   z-index: 3;
   box-sizing: border-box;
   pointer-events: none;
 }
 
 
-.p-DockPanel-overlay.p-mod-hidden {
+/* <DEPRECATED> */ .p-DockPanel-overlay.p-mod-hidden, /* </DEPRECATED> */
+.lm-DockPanel-overlay.lm-mod-hidden {
   display: none !important;
 }

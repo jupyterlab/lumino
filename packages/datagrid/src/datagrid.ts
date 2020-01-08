@@ -71,7 +71,10 @@ class DataGrid extends Widget {
    */
   constructor(options: DataGrid.IOptions = {}) {
     super();
+    this.addClass('lm-DataGrid');
+    /* <DEPRECATED> */
     this.addClass('p-DataGrid');
+    /* </DEPRECATED> */
 
     // Parse the simple options.
     this._style = options.style || DataGrid.defaultStyle;
@@ -130,10 +133,16 @@ class DataGrid extends Widget {
     this._scrollCorner = new Widget();
 
     // Add the extra class names to the child widgets.
+    this._viewport.addClass('lm-DataGrid-viewport');
+    this._vScrollBar.addClass('lm-DataGrid-scrollBar');
+    this._hScrollBar.addClass('lm-DataGrid-scrollBar');
+    this._scrollCorner.addClass('lm-DataGrid-scrollCorner');
+    /* <DEPRECATED> */
     this._viewport.addClass('p-DataGrid-viewport');
     this._vScrollBar.addClass('p-DataGrid-scrollBar');
     this._hScrollBar.addClass('p-DataGrid-scrollBar');
     this._scrollCorner.addClass('p-DataGrid-scrollCorner');
+    /* </DEPRECATED> */
 
     // Add the on-screen canvas to the viewport node.
     this._viewport.node.appendChild(this._canvas);

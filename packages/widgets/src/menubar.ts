@@ -52,7 +52,10 @@ class MenuBar extends Widget {
    */
   constructor(options: MenuBar.IOptions = {}) {
     super({ node: Private.createNode() });
+    this.addClass('lm-MenuBar');
+    /* <DEPRECATED> */
     this.addClass('p-MenuBar');
+    /* </DEPRECATED> */
     this.setFlag(Widget.Flag.DisallowLayout);
     this.renderer = options.renderer || MenuBar.defaultRenderer;
   }
@@ -90,7 +93,7 @@ class MenuBar extends Widget {
    * Modifying this node directly can lead to undefined behavior.
    */
   get contentNode(): HTMLUListElement {
-    return this.node.getElementsByClassName('p-MenuBar-content')[0] as HTMLUListElement;
+    return this.node.getElementsByClassName('lm-MenuBar-content')[0] as HTMLUListElement;
   }
 
   /**
@@ -213,7 +216,10 @@ class MenuBar extends Widget {
       ArrayExt.insert(this._menus, j, menu);
 
       // Add the styling class to the menu.
+      menu.addClass('lm-MenuBar-menu');
+      /* <DEPRECATED> */
       menu.addClass('p-MenuBar-menu');
+      /* </DEPRECATED> */
 
       // Connect to the menu signals.
       menu.aboutToClose.connect(this._onMenuAboutToClose, this);
@@ -284,7 +290,10 @@ class MenuBar extends Widget {
     menu.title.changed.disconnect(this._onTitleChanged, this);
 
     // Remove the styling class from the menu.
+    menu.removeClass('lm-MenuBar-menu');
+    /* <DEPRECATED> */
     menu.removeClass('p-MenuBar-menu');
+    /* </DEPRECATED> */
 
     // Schedule an update of the items.
     this.update();
@@ -307,7 +316,10 @@ class MenuBar extends Widget {
       menu.aboutToClose.disconnect(this._onMenuAboutToClose, this);
       menu.menuRequested.disconnect(this._onMenuMenuRequested, this);
       menu.title.changed.disconnect(this._onTitleChanged, this);
+      menu.removeClass('lm-MenuBar-menu');
+      /* <DEPRECATED> */
       menu.removeClass('p-MenuBar-menu');
+      /* </DEPRECATED> */
     }
 
     // Clear the menus array.
@@ -572,7 +584,10 @@ class MenuBar extends Widget {
     if (oldMenu) {
       oldMenu.close();
     } else {
+      this.addClass('lm-mod-active');
+      /* <DEPRECATED> */
       this.addClass('p-mod-active');
+      /* </DEPRECATED> */
       document.addEventListener('mousedown', this, true);
     }
 
@@ -599,7 +614,10 @@ class MenuBar extends Widget {
     }
 
     // Remove the active class from the menu bar.
+    this.removeClass('lm-mod-active');
+    /* <DEPRECATED> */
     this.removeClass('p-mod-active');
+    /* </DEPRECATED> */
 
     // Remove the document listeners.
     document.removeEventListener('mousedown', this, true);
@@ -625,7 +643,10 @@ class MenuBar extends Widget {
     }
 
     // Remove the active class from the menu bar.
+    this.removeClass('lm-mod-active');
+    /* <DEPRECATED> */
     this.removeClass('p-mod-active');
+    /* </DEPRECATED> */
 
     // Remove the document listeners.
     document.removeEventListener('mousedown', this, true);
@@ -778,7 +799,12 @@ namespace MenuBar {
      */
     renderLabel(data: IRenderData): VirtualElement {
       let content = this.formatLabel(data);
-      return h.div({ className: 'p-MenuBar-itemLabel' }, content);
+      return h.div({ className:
+        'lm-MenuBar-itemLabel'
+          /* <DEPRECATED> */
+            + ' p-MenuBar-itemLabel'
+          /* </DEPRECATED> */
+      }, content);
     }
 
     /**
@@ -789,12 +815,18 @@ namespace MenuBar {
      * @returns The full class name for the menu item.
      */
     createItemClass(data: IRenderData): string {
-      let name = 'p-MenuBar-item';
+      let name = 'lm-MenuBar-item';
+      /* <DEPRECATED> */
+      name += ' p-MenuBar-item';
+      /* </DEPRECATED> */
       if (data.title.className) {
         name += ` ${data.title.className}`;
       }
       if (data.active) {
-        name += ' p-mod-active';
+        name += ' lm-mod-active';
+      /* <DEPRECATED> */
+      name += ' p-mod-active';
+      /* </DEPRECATED> */
       }
       return name;
     }
@@ -818,7 +850,10 @@ namespace MenuBar {
      * @returns The full class name for the item icon.
      */
     createIconClass(data: IRenderData): string {
-      let name = 'p-MenuBar-itemIcon';
+      let name = 'lm-MenuBar-itemIcon';
+      /* <DEPRECATED> */
+      name += ' p-MenuBar-itemIcon';
+      /* </DEPRECATED> */
       let extra = data.title.iconClass;
       return extra ? `${name} ${extra}` : name;
     }
@@ -845,7 +880,12 @@ namespace MenuBar {
       let char = label[mnemonic];
 
       // Wrap the mnemonic character in a span.
-      let span = h.span({ className: 'p-MenuBar-itemMnemonic' }, char);
+      let span = h.span({
+        className: 'lm-MenuBar-itemMnemonic'
+          /* <DEPRECATED> */
+          + ' p-MenuBar-itemMnemonic'
+          /* </DEPRECATED> */
+      }, char);
 
       // Return the content parts.
       return [prefix, span, suffix];
@@ -871,7 +911,10 @@ namespace Private {
   function createNode(): HTMLDivElement {
     let node = document.createElement('div');
     let content = document.createElement('ul');
-    content.className = 'p-MenuBar-content';
+    content.className = 'lm-MenuBar-content';
+    /* <DEPRECATED> */
+    content.classList.add('p-MenuBar-content');
+    /* </DEPRECATED> */
     node.appendChild(content);
     node.tabIndex = -1;
     return node;

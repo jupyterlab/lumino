@@ -131,9 +131,9 @@ describe('@lumino/widgets', () => {
         expect(bar).to.be.an.instanceof(MenuBar);
       });
 
-      it('should add the `p-MenuBar` class', () => {
+      it('should add the `lm-MenuBar` class', () => {
         let bar = new MenuBar();
-        expect(bar.hasClass('p-MenuBar')).to.equal(true);
+        expect(bar.hasClass('lm-MenuBar')).to.equal(true);
       });
 
     });
@@ -189,7 +189,7 @@ describe('@lumino/widgets', () => {
       it('should get the menu content node', () => {
         let bar = new MenuBar();
         let content = bar.contentNode;
-        expect(content.classList.contains('p-MenuBar-content')).to.equal(true);
+        expect(content.classList.contains('lm-MenuBar-content')).to.equal(true);
       });
 
     });
@@ -271,10 +271,10 @@ describe('@lumino/widgets', () => {
         bar.dispose();
       });
 
-      it('should add `p-mod-active` to the active node', () => {
+      it('should add `lm-mod-active` to the active node', () => {
         let bar = createMenuBar();
         let node = bar.contentNode.firstChild as HTMLElement;
-        expect(node.classList.contains('p-mod-active')).to.equal(true);
+        expect(node.classList.contains('lm-mod-active')).to.equal(true);
         expect(bar.activeIndex).to.equal(0);
         bar.dispose();
       });
@@ -591,7 +591,7 @@ describe('@lumino/widgets', () => {
         it('should close an active menu', () => {
           bar.openActiveMenu();
           let menu = bar.activeMenu!;
-          let node = bar.node.getElementsByClassName('p-MenuBar-item')[0] as HTMLElement;
+          let node = bar.node.getElementsByClassName('lm-MenuBar-item')[0] as HTMLElement;
           let rect = node.getBoundingClientRect();
           simulate(bar.node, 'mousedown', { clientX: rect.left, clientY: rect.top });
           expect(bar.activeIndex).to.equal(0);
@@ -600,7 +600,7 @@ describe('@lumino/widgets', () => {
 
         it('should open an active menu', () => {
           let menu = bar.activeMenu!;
-          let node = bar.node.getElementsByClassName('p-MenuBar-item')[0] as HTMLElement;
+          let node = bar.node.getElementsByClassName('lm-MenuBar-item')[0] as HTMLElement;
           let rect = node.getBoundingClientRect();
           simulate(bar.node, 'mousedown', { clientX: rect.left, clientY: rect.top });
           expect(bar.activeIndex).to.equal(0);
@@ -610,7 +610,7 @@ describe('@lumino/widgets', () => {
         it('should not close an active menu if not a left mouse press', () => {
           bar.openActiveMenu();
           let menu = bar.activeMenu!;
-          let node = bar.node.getElementsByClassName('p-MenuBar-item')[0] as HTMLElement;
+          let node = bar.node.getElementsByClassName('lm-MenuBar-item')[0] as HTMLElement;
           let rect = node.getBoundingClientRect();
           simulate(bar.node, 'mousedown', { button: 1, clientX: rect.left, clientY: rect.top });
           expect(bar.activeIndex).to.equal(0);
@@ -624,7 +624,7 @@ describe('@lumino/widgets', () => {
         it('should open a new menu if a menu is already open', () => {
           bar.openActiveMenu();
           let menu = bar.activeMenu!;
-          let node = bar.node.getElementsByClassName('p-MenuBar-item')[1] as HTMLElement;
+          let node = bar.node.getElementsByClassName('lm-MenuBar-item')[1] as HTMLElement;
           let rect = node.getBoundingClientRect();
           simulate(node, 'mousemove', { clientX: rect.left + 1, clientY: rect.top });
           expect(bar.activeIndex).to.equal(1);
@@ -635,7 +635,7 @@ describe('@lumino/widgets', () => {
         it('should be a no-op if the active index will not change', () => {
           bar.openActiveMenu();
           let menu = bar.activeMenu!;
-          let node = bar.node.getElementsByClassName('p-MenuBar-item')[0] as HTMLElement;
+          let node = bar.node.getElementsByClassName('lm-MenuBar-item')[0] as HTMLElement;
           let rect = node.getBoundingClientRect();
           simulate(bar.node, 'mousemove', { clientX: rect.left, clientY: rect.top + 1 });
           expect(bar.activeIndex).to.equal(0);
@@ -767,7 +767,7 @@ describe('@lumino/widgets', () => {
         expect(bar.contentNode.children.length).to.equal(0);
         MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
         let child = bar.contentNode.firstChild as HTMLElement;
-        expect(child.className).to.contain('p-MenuBar-item');
+        expect(child.className).to.contain('lm-MenuBar-item');
       });
 
     });
@@ -820,9 +820,9 @@ describe('@lumino/widgets', () => {
 
         it('should render the virtual element for a menu bar item', () => {
           let node = VirtualDOM.realize(renderer.renderItem(data));
-          expect(node.classList.contains('p-MenuBar-item')).to.equal(true);
-          expect(node.getElementsByClassName('p-MenuBar-itemIcon').length).to.equal(1);
-          expect(node.getElementsByClassName('p-MenuBar-itemLabel').length).to.equal(1);
+          expect(node.classList.contains('lm-MenuBar-item')).to.equal(true);
+          expect(node.getElementsByClassName('lm-MenuBar-itemIcon').length).to.equal(1);
+          expect(node.getElementsByClassName('lm-MenuBar-itemLabel').length).to.equal(1);
         });
 
       });
@@ -831,7 +831,7 @@ describe('@lumino/widgets', () => {
 
         it('should render the icon element for a menu bar item', () => {
           let node = VirtualDOM.realize(renderer.renderIcon(data));
-          expect(node.className).to.contain('p-MenuBar-itemIcon');
+          expect(node.className).to.contain('lm-MenuBar-itemIcon');
           expect(node.className).to.contain('bar');
         });
 
@@ -841,7 +841,7 @@ describe('@lumino/widgets', () => {
 
         it('should render the label element for a menu item', () => {
           let node = VirtualDOM.realize(renderer.renderLabel(data));
-          expect(node.className).to.contain('p-MenuBar-itemLabel');
+          expect(node.className).to.contain('lm-MenuBar-itemLabel');
           expect(node.textContent).to.equal('foo');
         });
 
@@ -852,7 +852,7 @@ describe('@lumino/widgets', () => {
         it('should create the class name for the menu bar item', () => {
           let itemClass = renderer.createItemClass(data);
           expect(itemClass).to.contain('baz');
-          expect(itemClass).to.contain('p-mod-active');
+          expect(itemClass).to.contain('lm-mod-active');
         });
 
       });
@@ -861,7 +861,7 @@ describe('@lumino/widgets', () => {
 
         it('should create the class name for the menu bar item icon', () => {
           let iconClass = renderer.createIconClass(data);
-          expect(iconClass).to.contain('p-MenuBar-itemIcon');
+          expect(iconClass).to.contain('lm-MenuBar-itemIcon');
           expect(iconClass).to.contain('bar');
         });
 
@@ -874,7 +874,7 @@ describe('@lumino/widgets', () => {
           let label = renderer.formatLabel(data);
           expect((label as any)[0]).to.equal('f');
           let node = VirtualDOM.realize(((label as any)[1]) as VirtualElement);
-          expect(node.className).to.contain('p-MenuBar-itemMnemonic');
+          expect(node.className).to.contain('lm-MenuBar-itemMnemonic');
           expect(node.textContent).to.equal('o');
           expect((label as any)[2]).to.equal('o');
         });

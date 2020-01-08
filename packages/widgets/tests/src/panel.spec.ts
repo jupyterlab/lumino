@@ -33,9 +33,9 @@ describe('@lumino/widgets', () => {
         expect(panel.layout).to.equal(layout);
       });
 
-      it('should add the `p-Panel` class', () => {
+      it('should add the `lm-Panel` class', () => {
         let panel = new Panel();
-        expect(panel.hasClass('p-Panel')).to.equal(true);
+        expect(panel.hasClass('lm-Panel')).to.equal(true);
       });
 
     });
