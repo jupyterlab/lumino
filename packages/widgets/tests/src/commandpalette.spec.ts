@@ -685,14 +685,22 @@ describe('@lumino/widgets', () => {
 
         it('should create the full class name for the item node', () => {
           let name = renderer.createItemClass({ item, indices: null, active: false });
-          expect(name).to.equal('lm-CommandPalette-item testClass');
+          let expected = 'lm-CommandPalette-item testClass';
+          /* <DEPRECATED> */
+          expected = 'lm-CommandPalette-item p-CommandPalette-item testClass';
+          /* </DEPRECATED> */
+          expect(name).to.equal(expected);
         });
 
         it('should handle the boolean states', () => {
           enabledFlag = false;
           toggledFlag = true;
           let name = renderer.createItemClass({ item, indices: null, active: true });
-          expect(name).to.equal('lm-CommandPalette-item lm-mod-disabled lm-mod-toggled lm-mod-active testClass');
+          let expected = 'lm-CommandPalette-item lm-mod-disabled lm-mod-toggled lm-mod-active testClass';
+          /* <DEPRECATED> */
+          expected = 'lm-CommandPalette-item p-CommandPalette-item lm-mod-disabled p-mod-disabled lm-mod-toggled p-mod-toggled lm-mod-active p-mod-active testClass';
+          /* </DEPRECATED> */
+          expect(name).to.equal(expected);
         });
 
       });
