@@ -1819,8 +1819,14 @@ namespace Private {
         handle.setAttribute('data-orientation', this.orientation);
         if (i === this.handles.length - 1) {
           handle.classList.add('lm-mod-hidden');
+          /* <DEPRECATED> */
+          handle.classList.add('p-mod-hidden');
+          /* </DEPRECATED> */
         } else {
           handle.classList.remove('lm-mod-hidden');
+          /* <DEPRECATED> */
+          handle.classList.remove('p-mod-hidden');
+          /* </DEPRECATED> */
         }
       });
     }
