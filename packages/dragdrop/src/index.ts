@@ -988,7 +988,7 @@ namespace Private {
    *
    * #### Notes
    * This largely implements the drag exit portion of the whatwg spec:
-   * https://html.spec.whatwg.org/multipage/interaction.html#drag-and-drolm-processing-model
+   * https://html.spec.whatwg.org/multipage/interaction.html#drag-and-drop-processing-model
    */
   export
   function dispatchDragExit(drag: Drag, prevTarget: Element | null, currTarget: Element | null, event: MouseEvent): void {
@@ -1022,7 +1022,7 @@ namespace Private {
    *
    * #### Notes
    * This largely implements the drag leave portion of the whatwg spec:
-   * https://html.spec.whatwg.org/multipage/interaction.html#drag-and-drolm-processing-model
+   * https://html.spec.whatwg.org/multipage/interaction.html#drag-and-drop-processing-model
    */
   export
   function dispatchDragLeave(drag: Drag, prevTarget: Element | null, currTarget: Element | null, event: MouseEvent): void {
@@ -1055,7 +1055,7 @@ namespace Private {
    *
    * #### Notes
    * This largely implements the drag over portion of the whatwg spec:
-   * https://html.spec.whatwg.org/multipage/interaction.html#drag-and-drolm-processing-model
+   * https://html.spec.whatwg.org/multipage/interaction.html#drag-and-drop-processing-model
    */
   export
   function dispatchDragOver(drag: Drag, currTarget: Element | null, event: MouseEvent): DropAction {
@@ -1099,7 +1099,7 @@ namespace Private {
    *
    * #### Notes
    * This largely implements the drag over portion of the whatwg spec:
-   * https://html.spec.whatwg.org/multipage/interaction.html#drag-and-drolm-processing-model
+   * https://html.spec.whatwg.org/multipage/interaction.html#drag-and-drop-processing-model
    */
   export
   function dispatchDrop(drag: Drag, currTarget: Element | null, event: MouseEvent): DropAction {
