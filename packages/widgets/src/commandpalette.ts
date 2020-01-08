@@ -49,6 +49,9 @@ class CommandPalette extends Widget {
   constructor(options: CommandPalette.IOptions) {
     super({ node: Private.createNode() });
     this.addClass('lm-CommandPalette');
+    /* <DEPRECATED> */
+    this.addClass('p-CommandPalette');
+    /* </DEPRECATED> */
     this.setFlag(Widget.Flag.DisallowLayout);
     this.commands = options.commands;
     this.renderer = options.renderer || CommandPalette.defaultRenderer;
@@ -468,6 +471,9 @@ class CommandPalette extends Widget {
   private _toggleFocused(): void {
     let focused = document.activeElement === this.inputNode;
     this.toggleClass('lm-mod-focused', focused);
+    /* <DEPRECATED> */
+    this.toggleClass('p-mod-focused', focused);
+    /* </DEPRECATED> */
   }
 
   /**
@@ -720,7 +726,12 @@ namespace CommandPalette {
      */
     renderHeader(data: IHeaderRenderData): VirtualElement {
       let content = this.formatHeader(data);
-      return h.li({ className: 'lm-CommandPalette-header' }, content);
+      return h.li({ className:
+        'lm-CommandPalette-header'
+          /* <DEPRECATED> */
+          + ' p-CommandPalette-header'
+          /* </DEPRECATED> */
+      }, content);
     }
 
     /**
@@ -751,7 +762,12 @@ namespace CommandPalette {
      */
     renderEmptyMessage(data: IEmptyMessageRenderData): VirtualElement {
       let content = this.formatEmptyMessage(data);
-      return h.li({ className: 'lm-CommandPalette-emptyMessage' }, content);
+      return h.li({
+        className: 'lm-CommandPalette-emptyMessage'
+          /* <DEPRECATED> */
+          + ' p-CommandPalette-emptyMessage'
+          /* </DEPRECATED> */
+      }, content);
     }
 
     /**
@@ -775,7 +791,12 @@ namespace CommandPalette {
      */
     renderItemContent(data: IItemRenderData): VirtualElement {
       return (
-        h.div({ className: 'lm-CommandPalette-itemContent' },
+        h.div({
+          className: 'lm-CommandPalette-itemContent'
+            /* <DEPRECATED> */
+            + ' p-CommandPalette-itemContent'
+            /* </DEPRECATED> */
+        },
           this.renderItemLabel(data),
           this.renderItemCaption(data)
         )
@@ -791,7 +812,12 @@ namespace CommandPalette {
      */
     renderItemLabel(data: IItemRenderData): VirtualElement {
       let content = this.formatItemLabel(data);
-      return h.div({ className: 'lm-CommandPalette-itemLabel' }, content);
+      return h.div({
+        className: 'lm-CommandPalette-itemLabel'
+          /* <DEPRECATED> */
+          + ' p-CommandPalette-itemLabel'
+          /* </DEPRECATED> */
+      }, content);
     }
 
     /**
@@ -803,7 +829,12 @@ namespace CommandPalette {
      */
     renderItemCaption(data: IItemRenderData): VirtualElement {
       let content = this.formatItemCaption(data);
-      return h.div({ className: 'lm-CommandPalette-itemCaption' }, content);
+      return h.div({
+        className: 'lm-CommandPalette-itemCaption'
+          /* <DEPRECATED> */
+          + ' p-CommandPalette-itemCaption'
+          /* </DEPRECATED> */
+      }, content);
     }
 
     /**
@@ -815,7 +846,12 @@ namespace CommandPalette {
      */
     renderItemShortcut(data: IItemRenderData): VirtualElement {
       let content = this.formatItemShortcut(data);
-      return h.div({ className: 'lm-CommandPalette-itemShortcut' }, content);
+      return h.div({
+        className: 'lm-CommandPalette-itemShortcut'
+          /* <DEPRECATED> */
+          + ' p-CommandPalette-itemShortcut'
+          /* </DEPRECATED> */
+      }, content);
     }
 
     /**
@@ -828,16 +864,28 @@ namespace CommandPalette {
     createItemClass(data: IItemRenderData): string {
       // Set up the initial class name.
       let name = 'lm-CommandPalette-item';
+      /* <DEPRECATED> */
+      name += ' p-CommandPalette-item';
+      /* </DEPRECATED> */
 
       // Add the boolean state classes.
       if (!data.item.isEnabled) {
         name += ' lm-mod-disabled';
+        /* <DEPRECATED> */
+        name += ' p-mod-disabled';
+        /* </DEPRECATED> */
       }
       if (data.item.isToggled) {
         name += ' lm-mod-toggled';
+        /* <DEPRECATED> */
+        name += ' p-mod-toggled';
+        /* </DEPRECATED> */
       }
       if (data.active) {
         name += ' lm-mod-active';
+        /* <DEPRECATED> */
+        name += ' p-mod-active';
+        /* </DEPRECATED> */
       }
 
       // Add the extra class.
@@ -870,6 +918,9 @@ namespace CommandPalette {
      */
     createIconClass(data: IItemRenderData): string {
       let name = 'lm-CommandPalette-itemIcon';
+      /* <DEPRECATED> */
+      name += ' p-CommandPalette-itemIcon';
+      /* </DEPRECATED> */
       let extra = data.item.iconClass;
       return extra ? `${name} ${extra}` : name;
     }
@@ -963,6 +1014,12 @@ namespace Private {
     wrapper.className = 'lm-CommandPalette-wrapper';
     input.className = 'lm-CommandPalette-input';
     content.className = 'lm-CommandPalette-content';
+    /* <DEPRECATED> */
+    search.classList.add('p-CommandPalette-search');
+    wrapper.classList.add('p-CommandPalette-wrapper');
+    input.classList.add('p-CommandPalette-input');
+    content.classList.add('p-CommandPalette-content');
+    /* </DEPRECATED> */
     input.spellcheck = false;
     wrapper.appendChild(input);
     search.appendChild(wrapper);
