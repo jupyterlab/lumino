@@ -2,17 +2,19 @@
   "compilerOptions": {
     "composite": true,
     "declaration": true,
+    "declarationDir": "./types",
     "noImplicitAny": true,
     "noEmitOnError": true,
     "noUnusedLocals": true,
     "strictNullChecks": true,
-    "module": "commonjs",
+    "module": "ES6",
     "moduleResolution": "node",
     "target": "ES5",
     "outDir": "lib",
     "lib": [
       "ES5"
     ],
+    "importHelpers": true,
     "types": [],
     "rootDir": "src"
   },

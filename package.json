@@ -8,6 +8,7 @@
   ],
   "scripts": {
     "api": "lerna run api",
+    "minimize": "lerna run minimize",
     "build": "lerna run build",
     "build:examples": "lerna run build --scope \"@lumino/example-*\"",
     "build:src": "lerna run build --scope \"@lumino/!(test-|example-)*\"",
@@ -18,7 +19,7 @@
     "clean:tests": "lerna run clean:tests",
     "docs": "rimraf docs/api && lerna run docs",
     "get:dependency": "get-dependency",
-    "publish": "npm run clean && npm run build && lerna publish -m \"Publish\" from-package",
+    "publish": "npm run clean && npm run build && npm run minimize && lerna publish -m \"Publish\" from-package",
     "remove:dependency": "remove-dependency",
     "test": "lerna run test",
     "test:chrome": "lerna run test:chrome",
