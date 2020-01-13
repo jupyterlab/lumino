@@ -2,6 +2,7 @@
   "compilerOptions": {
     "composite": true,
     "declaration": true,
+    "declarationDir": "./types",
     "noImplicitAny": true,
     "noEmitOnError": true,
     "noUnusedLocals": true,
@@ -17,6 +18,7 @@
       "ES2015.Iterable",
       "DOM"
     ],
+    "importHelpers": true,
     "types": [],
     "rootDir": "src"
   },

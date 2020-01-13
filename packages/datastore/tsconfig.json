@@ -2,6 +2,7 @@
   "compilerOptions": {
     "composite": true,
     "declaration": true,
+    "declarationDir": "./types",
     "noImplicitAny": true,
     "noEmitOnError": true,
     "noUnusedLocals": true,
@@ -11,7 +12,11 @@
     "target": "ES5",
     "outDir": "lib",
     "rootDir": "src",
-    "lib": ["dom", "es6"],
+    "lib": [
+      "dom",
+      "es6"
+    ],
+    "importHelpers": true,
     "types": []
   },
   "include": [

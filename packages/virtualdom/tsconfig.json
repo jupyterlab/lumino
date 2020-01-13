@@ -2,6 +2,7 @@
   "compilerOptions": {
     "composite": true,
     "declaration": true,
+    "declarationDir": "./types",
     "noImplicitAny": true,
     "noEmitOnError": true,
     "noUnusedLocals": true,
@@ -16,6 +17,7 @@
       "DOM"
     ],
     "sourceMap": true,
+    "importHelpers": true,
     "types": [],
     "rootDir": "src"
   },

@@ -19,19 +19,20 @@
     "Steven Silvester <steven.silvester@gmail.com>"
   ],
   "files": [
-    "lib/*.d.ts",
-    "lib/*.js"
+    "dist/*",
+    "types/*"
   ],
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
-  "directories": {
-    "lib": "lib/"
-  },
+  "main": "dist/index.js",
+  "module": "dist/index.es6",
+  "unpkg": "dist/index.min.js",
+  "jsdelivr": "dist/index.min.js",
+  "types": "types/index.d.ts",
   "scripts": {
     "api": "api-extractor run --local --verbose",
-    "build": "tsc --build",
+    "minimize": "terser dist/index.js -c -m --source-map \"content='dist/index.js.map',url='index.min.js.map'\" -o dist/index.min.js",
+    "build": "tsc --build && rollup -c",
     "build:test": "tsc --build tests && cd tests && webpack",
-    "clean": "rimraf lib && rimraf *.tsbuildinfo",
+    "clean": "rimraf ./lib && rimraf *.tsbuildinfo && rimraf ./types && rimraf ./dist",
     "clean:test": "rimraf tests/build",
     "docs": "typedoc --options tdoptions.json src",
     "test": "npm run test:firefox",
@@ -44,6 +45,7 @@
     "@microsoft/api-extractor": "^7.6.0",
     "@types/chai": "^3.4.35",
     "@types/mocha": "^2.2.39",
+    "tslib": "1.10.0",
     "chai": "^3.5.0",
     "karma": "^4.4.1",
     "karma-chrome-launcher": "^2.0.0",
@@ -53,6 +55,12 @@
     "karma-mocha-reporter": "^2.2.2",
     "mocha": "^6.2.2",
     "rimraf": "^2.5.2",
+    "rollup": "^1.29.0",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-sourcemaps": "^0.5.0",
+    "rollup-plugin-postcss": "^2.0.3",
+    "terser": "^4.6.2",
     "typedoc": "~0.15.0",
     "typescript": "~3.6.4",
     "webpack": "^4.41.3",

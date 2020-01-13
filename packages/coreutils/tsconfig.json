@@ -2,6 +2,7 @@
   "compilerOptions": {
     "composite": true,
     "declaration": true,
+    "declarationDir": "./types",
     "noImplicitAny": true,
     "noEmitOnError": true,
     "noUnusedLocals": true,
@@ -15,6 +16,7 @@
       "ES2015.Promise",
       "ES2015.Iterable"
     ],
+    "importHelpers": true,
     "types": [],
     "rootDir": "src"
   },
