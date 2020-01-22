@@ -37,34 +37,34 @@ class DropTarget {
   constructor() {
     this.node.style.minWidth = '100px';
     this.node.style.minHeight = '100px';
-    this.node.addEventListener('p-dragenter', this);
-    this.node.addEventListener('p-dragover', this);
-    this.node.addEventListener('p-dragleave', this);
-    this.node.addEventListener('p-drop', this);
+    this.node.addEventListener('lm-dragenter', this);
+    this.node.addEventListener('lm-dragover', this);
+    this.node.addEventListener('lm-dragleave', this);
+    this.node.addEventListener('lm-drop', this);
     document.body.appendChild(this.node);
   }
 
   dispose(): void {
     document.body.removeChild(this.node);
-    this.node.removeEventListener('p-dragenter', this);
-    this.node.removeEventListener('p-dragover', this);
-    this.node.removeEventListener('p-dragleave', this);
-    this.node.removeEventListener('p-drop', this);
+    this.node.removeEventListener('lm-dragenter', this);
+    this.node.removeEventListener('lm-dragover', this);
+    this.node.removeEventListener('lm-dragleave', this);
+    this.node.removeEventListener('lm-drop', this);
   }
 
   handleEvent(event: Event): void {
     this.events.push(event.type);
     switch (event.type) {
-    case 'p-dragenter':
+    case 'lm-dragenter':
       this._evtDragEnter(event as IDragEvent);
       break;
-    case 'p-dragleave':
+    case 'lm-dragleave':
       this._evtDragLeave(event as IDragEvent);
       break;
-    case 'p-dragover':
+    case 'lm-dragover':
       this._evtDragOver(event as IDragEvent);
       break;
-    case 'p-drop':
+    case 'lm-drop':
       this._evtDrop(event as IDragEvent);
       break;
     }
@@ -307,18 +307,18 @@ describe('@lumino/dragdrop', () => {
         it('should dispatch an enter and leave events', () => {
           let rect = child0.node.getBoundingClientRect();
           simulate(child0.node, 'mousemove', { clientX: rect.left + 1, clientY: rect.top + 1 } );
-          expect(child0.events).to.contain('p-dragenter');
+          expect(child0.events).to.contain('lm-dragenter');
           child0.events = [];
           rect = child1.node.getBoundingClientRect();
           simulate(child1.node, 'mousemove', { clientX: rect.left + 1, clientY: rect.top + 1 } );
-          expect(child0.events).to.contain('p-dragleave');
-          expect(child1.events).to.contain('p-dragenter');
+          expect(child0.events).to.contain('lm-dragleave');
+          expect(child1.events).to.contain('lm-dragenter');
         });
 
         it('should dispatch drag over event', () => {
           let rect = child0.node.getBoundingClientRect();
           simulate(child0.node, 'mousemove', { clientX: rect.left + 1, clientY: rect.top + 1 } );
-          expect(child0.events).to.contain('p-dragover');
+          expect(child0.events).to.contain('lm-dragover');
         });
 
         it('should move the drag image to the client location', () => {
@@ -342,18 +342,18 @@ describe('@lumino/dragdrop', () => {
         it('should do nothing if the left button is not released', () => {
           let rect = child0.node.getBoundingClientRect();
           simulate(child0.node, 'mouseup', { clientX: rect.left + 1, clientY: rect.top + 1, button: 1 } );
-          expect(child0.events).to.not.contain('p-dragenter');
+          expect(child0.events).to.not.contain('lm-dragenter');
         });
 
         it('should dispatch enter and leave events', () => {
           let rect = child0.node.getBoundingClientRect();
           simulate(child0.node, 'mousemove', { clientX: rect.left + 1, clientY: rect.top + 1 } );
-          expect(child0.events).to.contain('p-dragenter');
+          expect(child0.events).to.contain('lm-dragenter');
           child0.events = [];
           rect = child1.node.getBoundingClientRect();
           simulate(child1.node, 'mouseup', { clientX: rect.left + 1, clientY: rect.top + 1 } );
-          expect(child0.events).to.contain('p-dragleave');
-          expect(child1.events).to.contain('p-dragenter');
+          expect(child0.events).to.contain('lm-dragleave');
+          expect(child1.events).to.contain('lm-dragenter');
         });
 
         it("should dispatch a leave event if the last drop action was `'none'", () => {
@@ -362,7 +362,7 @@ describe('@lumino/dragdrop', () => {
           drag.start(0, 0);
           let rect = child0.node.getBoundingClientRect();
           simulate(child0.node, 'mouseup', { clientX: rect.left + 1, clientY: rect.top + 1 } );
-          expect(child0.events).to.contain('p-dragleave');
+          expect(child0.events).to.contain('lm-dragleave');
         });
 
         it("should finalize the drag with `'none' if the last drop action was `'none`", (done) => {
@@ -379,7 +379,7 @@ describe('@lumino/dragdrop', () => {
         it('should dispatch the drop event at the current target', () => {
           let rect = child0.node.getBoundingClientRect();
           simulate(child0.node, 'mouseup', { clientX: rect.left + 1, clientY: rect.top + 1 } );
-          expect(child0.events).to.contain('p-drop');
+          expect(child0.events).to.contain('lm-drop');
         });
 
         it('should resolve with the drop action', (done) => {
@@ -525,10 +525,10 @@ describe('@lumino/dragdrop', () => {
         override.dispose();
       });
 
-      it('should add the `p-mod-override-cursor` class to the body', () => {
-        expect(document.body.classList.contains('p-mod-override-cursor')).to.equal(false);
+      it('should add the `lm-mod-override-cursor` class to the body', () => {
+        expect(document.body.classList.contains('lm-mod-override-cursor')).to.equal(false);
         let override = Drag.overrideCursor('wait');
-        expect(document.body.classList.contains('p-mod-override-cursor')).to.equal(true);
+        expect(document.body.classList.contains('lm-mod-override-cursor')).to.equal(true);
         override.dispose();
       });
 
@@ -540,35 +540,35 @@ describe('@lumino/dragdrop', () => {
         expect(document.body.style.cursor).to.equal('');
       });
 
-      it('should remove the `p-mod-override-cursor` class when disposed', () => {
-        expect(document.body.classList.contains('p-mod-override-cursor')).to.equal(false);
+      it('should remove the `lm-mod-override-cursor` class when disposed', () => {
+        expect(document.body.classList.contains('lm-mod-override-cursor')).to.equal(false);
         let override = Drag.overrideCursor('wait');
-        expect(document.body.classList.contains('p-mod-override-cursor')).to.equal(true);
+        expect(document.body.classList.contains('lm-mod-override-cursor')).to.equal(true);
         override.dispose();
-        expect(document.body.classList.contains('p-mod-override-cursor')).to.equal(false);
+        expect(document.body.classList.contains('lm-mod-override-cursor')).to.equal(false);
       });
 
       it('should respect the most recent override', () => {
         expect(document.body.style.cursor).to.equal('');
-        expect(document.body.classList.contains('p-mod-override-cursor')).to.equal(false);
+        expect(document.body.classList.contains('lm-mod-override-cursor')).to.equal(false);
         let one = Drag.overrideCursor('wait');
         expect(document.body.style.cursor).to.equal('wait');
-        expect(document.body.classList.contains('p-mod-override-cursor')).to.equal(true);
+        expect(document.body.classList.contains('lm-mod-override-cursor')).to.equal(true);
         let two = Drag.overrideCursor('default');
         expect(document.body.style.cursor).to.equal('default');
-        expect(document.body.classList.contains('p-mod-override-cursor')).to.equal(true);
+        expect(document.body.classList.contains('lm-mod-override-cursor')).to.equal(true);
         let three = Drag.overrideCursor('cell');
         expect(document.body.style.cursor).to.equal('cell');
-        expect(document.body.classList.contains('p-mod-override-cursor')).to.equal(true);
+        expect(document.body.classList.contains('lm-mod-override-cursor')).to.equal(true);
         two.dispose();
         expect(document.body.style.cursor).to.equal('cell');
-        expect(document.body.classList.contains('p-mod-override-cursor')).to.equal(true);
+        expect(document.body.classList.contains('lm-mod-override-cursor')).to.equal(true);
         one.dispose();
         expect(document.body.style.cursor).to.equal('cell');
-        expect(document.body.classList.contains('p-mod-override-cursor')).to.equal(true);
+        expect(document.body.classList.contains('lm-mod-override-cursor')).to.equal(true);
         three.dispose();
         expect(document.body.style.cursor).to.equal('');
-        expect(document.body.classList.contains('p-mod-override-cursor')).to.equal(false);
+        expect(document.body.classList.contains('lm-mod-override-cursor')).to.equal(false);
       });
 
       it('should override the computed cursor for a node', () => {

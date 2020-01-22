@@ -51,7 +51,10 @@ class SplitPanel extends Panel {
    */
   constructor(options: SplitPanel.IOptions = {}) {
     super({ layout: Private.createLayout(options) });
+    this.addClass('lm-SplitPanel');
+    /* <DEPRECATED> */
     this.addClass('p-SplitPanel');
+    /* </DEPRECATED> */
   }
 
   /**
@@ -209,7 +212,10 @@ class SplitPanel extends Panel {
    * A message handler invoked on a `'child-added'` message.
    */
   protected onChildAdded(msg: Widget.ChildMessage): void {
+    msg.child.addClass('lm-SplitPanel-child');
+    /* <DEPRECATED> */
     msg.child.addClass('p-SplitPanel-child');
+    /* </DEPRECATED> */
     this._releaseMouse();
   }
 
@@ -217,7 +223,10 @@ class SplitPanel extends Panel {
    * A message handler invoked on a `'child-removed'` message.
    */
   protected onChildRemoved(msg: Widget.ChildMessage): void {
+    msg.child.removeClass('lm-SplitPanel-child');
+    /* <DEPRECATED> */
     msg.child.removeClass('p-SplitPanel-child');
+    /* </DEPRECATED> */
     this._releaseMouse();
   }
 
@@ -422,7 +431,10 @@ namespace SplitPanel {
      */
     createHandle(): HTMLDivElement {
       let handle = document.createElement('div');
-      handle.className = 'p-SplitPanel-handle';
+      handle.className = 'lm-SplitPanel-handle';
+      /* <DEPRECATED> */
+      handle.classList.add('p-SplitPanel-handle');
+      /* </DEPRECATED> */
       return handle;
     }
   }

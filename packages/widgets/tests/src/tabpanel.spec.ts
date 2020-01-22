@@ -46,9 +46,9 @@ describe('@lumino/widgets', () => {
         expect(panel.tabBar.renderer).to.equal(renderer);
       });
 
-      it('should add a `p-TabPanel` class', () => {
+      it('should add a `lm-TabPanel` class', () => {
         let panel = new TabPanel();
-        expect(panel.hasClass('p-TabPanel')).to.equal(true);
+        expect(panel.hasClass('lm-TabPanel')).to.equal(true);
       });
 
     });
@@ -227,10 +227,10 @@ describe('@lumino/widgets', () => {
         expect(bar).to.be.an.instanceof(TabBar);
       });
 
-      it('should have the "p-TabPanel-tabBar" class', () => {
+      it('should have the "lm-TabPanel-tabBar" class', () => {
         let panel = new TabPanel();
         let bar = panel.tabBar;
-        expect(bar.hasClass('p-TabPanel-tabBar')).to.equal(true);
+        expect(bar.hasClass('lm-TabPanel-tabBar')).to.equal(true);
       });
 
       it('should move the widget in the stacked panel when a tab is moved', () => {
@@ -294,10 +294,10 @@ describe('@lumino/widgets', () => {
         expect(stack).to.be.an.instanceof(StackedPanel);
       });
 
-      it('should have the "p-TabPanel-stackedPanel" class', () => {
+      it('should have the "lm-TabPanel-stackedPanel" class', () => {
         let panel = new TabPanel();
         let stack = panel.stackedPanel;
-        expect(stack.hasClass('p-TabPanel-stackedPanel')).to.equal(true);
+        expect(stack.hasClass('lm-TabPanel-stackedPanel')).to.equal(true);
       });
 
       it('remove a tab when a widget is removed from the stacked panel', () => {

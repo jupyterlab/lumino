@@ -135,9 +135,9 @@ describe('@lumino/widgets', () => {
         expect(widget.node).to.equal(span);
       });
 
-      it('should add the `p-Widget` class', () => {
+      it('should add the `lm-Widget` class', () => {
         let widget = new Widget();
-        expect(widget.hasClass('p-Widget')).to.equal(true);
+        expect(widget.hasClass('lm-Widget')).to.equal(true);
       });
 
     });
@@ -657,12 +657,12 @@ describe('@lumino/widgets', () => {
         expect(widget.isHidden).to.equal(false);
       });
 
-      it('should remove the "p-mod-hidden" class', () => {
+      it('should remove the "lm-mod-hidden" class', () => {
         let widget = new Widget();
         widget.hide();
-        expect(widget.hasClass('p-mod-hidden')).to.equal(true);
+        expect(widget.hasClass('lm-mod-hidden')).to.equal(true);
         widget.show();
-        expect(widget.hasClass('p-mod-hidden')).to.equal(false);
+        expect(widget.hasClass('lm-mod-hidden')).to.equal(false);
       });
 
       it('should send an `after-show` message if applicable', () => {
@@ -701,10 +701,10 @@ describe('@lumino/widgets', () => {
         expect(widget.isHidden).to.equal(true);
       });
 
-      it('should add the `p-mod-hidden` class', () => {
+      it('should add the `lm-mod-hidden` class', () => {
         let widget = new Widget();
         widget.hide();
-        expect(widget.hasClass('p-mod-hidden')).to.equal(true);
+        expect(widget.hasClass('lm-mod-hidden')).to.equal(true);
       });
 
       it('should send a `before-hide` message if applicable', () => {

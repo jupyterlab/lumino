@@ -49,9 +49,9 @@ describe('@lumino/widgets', () => {
         expect(panel.spacing).to.equal(4);
       });
 
-      it('should add the `p-BoxPanel` class', () => {
+      it('should add the `lm-BoxPanel` class', () => {
         let panel = new BoxPanel();
-        expect(panel.hasClass('p-BoxPanel')).to.equal(true);
+        expect(panel.hasClass('lm-BoxPanel')).to.equal(true);
       });
 
     });
@@ -92,7 +92,7 @@ describe('@lumino/widgets', () => {
         let panel = new BoxPanel();
         let widget = new Widget();
         panel.addWidget(widget);
-        expect(widget.hasClass('p-BoxPanel-child')).to.equal(true);
+        expect(widget.hasClass('lm-BoxPanel-child')).to.equal(true);
       });
 
     });
@@ -104,7 +104,7 @@ describe('@lumino/widgets', () => {
         let widget = new Widget();
         panel.addWidget(widget);
         widget.parent = null;
-        expect(widget.hasClass('p-BoxPanel-child')).to.equal(false);
+        expect(widget.hasClass('lm-BoxPanel-child')).to.equal(false);
       });
 
     });

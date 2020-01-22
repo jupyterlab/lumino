@@ -44,7 +44,10 @@ class ScrollBar extends Widget {
    */
   constructor(options: ScrollBar.IOptions = {}) {
     super({ node: Private.createNode() });
+    this.addClass('lm-ScrollBar');
+    /* <DEPRECATED> */
     this.addClass('p-ScrollBar');
+    /* </DEPRECATED> */
     this.setFlag(Widget.Flag.DisallowLayout);
 
     // Set the orientation.
@@ -222,7 +225,7 @@ class ScrollBar extends Widget {
    * Modifying this node directly can lead to undefined behavior.
    */
   get decrementNode(): HTMLDivElement {
-    return this.node.getElementsByClassName('p-ScrollBar-button')[0] as HTMLDivElement;
+    return this.node.getElementsByClassName('lm-ScrollBar-button')[0] as HTMLDivElement;
   }
 
   /**
@@ -232,7 +235,7 @@ class ScrollBar extends Widget {
    * Modifying this node directly can lead to undefined behavior.
    */
   get incrementNode(): HTMLDivElement {
-    return this.node.getElementsByClassName('p-ScrollBar-button')[1] as HTMLDivElement;
+    return this.node.getElementsByClassName('lm-ScrollBar-button')[1] as HTMLDivElement;
   }
 
   /**
@@ -242,7 +245,7 @@ class ScrollBar extends Widget {
    * Modifying this node directly can lead to undefined behavior.
    */
   get trackNode(): HTMLDivElement {
-    return this.node.getElementsByClassName('p-ScrollBar-track')[0] as HTMLDivElement;
+    return this.node.getElementsByClassName('lm-ScrollBar-track')[0] as HTMLDivElement;
   }
 
   /**
@@ -252,7 +255,7 @@ class ScrollBar extends Widget {
    * Modifying this node directly can lead to undefined behavior.
    */
   get thumbNode(): HTMLDivElement {
-    return this.node.getElementsByClassName('p-ScrollBar-thumb')[0] as HTMLDivElement;
+    return this.node.getElementsByClassName('lm-ScrollBar-thumb')[0] as HTMLDivElement;
   }
 
   /**
@@ -422,7 +425,10 @@ class ScrollBar extends Widget {
       }
 
       // Add the active class to the thumb node.
+      thumbNode.classList.add('lm-mod-active');
+      /* <DEPRECATED> */
       thumbNode.classList.add('p-mod-active');
+      /* </DEPRECATED> */
 
       // Store the current value in the press data.
       this._pressData.value = this._value;
@@ -457,7 +463,10 @@ class ScrollBar extends Widget {
     // Handle a decrement button press.
     if (part === 'decrement') {
       // Add the active class to the decrement node.
+      this.decrementNode.classList.add('lm-mod-active');
+      /* <DEPRECATED> */
       this.decrementNode.classList.add('p-mod-active');
+      /* </DEPRECATED> */
 
       // Start the repeat timer.
       this._repeatTimer = window.setTimeout(this._onRepeat, 350);
@@ -473,7 +482,10 @@ class ScrollBar extends Widget {
     if (part === 'increment') {
 
       // Add the active class to the increment node.
+      this.incrementNode.classList.add('lm-mod-active');
+      /* <DEPRECATED> */
       this.incrementNode.classList.add('p-mod-active');
+      /* </DEPRECATED> */
 
       // Start the repeat timer.
       this._repeatTimer = window.setTimeout(this._onRepeat, 350);
@@ -571,9 +583,14 @@ class ScrollBar extends Widget {
     document.removeEventListener('contextmenu', this, true);
 
     // Remove the active classes from the nodes.
+    this.thumbNode.classList.remove('lm-mod-active');
+    this.decrementNode.classList.remove('lm-mod-active');
+    this.incrementNode.classList.remove('lm-mod-active');
+    /* <DEPRECATED> */
     this.thumbNode.classList.remove('p-mod-active');
     this.decrementNode.classList.remove('p-mod-active');
     this.incrementNode.classList.remove('p-mod-active');
+    /* </DEPRECATED> */
   }
 
   /**
@@ -802,12 +819,18 @@ namespace Private {
     let increment = document.createElement('div');
     let track = document.createElement('div');
     let thumb = document.createElement('div');
-    decrement.className = 'p-ScrollBar-button';
-    increment.className = 'p-ScrollBar-button';
+    decrement.className = 'lm-ScrollBar-button';
+    increment.className = 'lm-ScrollBar-button';
     decrement.dataset['action'] = 'decrement';
     increment.dataset['action'] = 'increment';
-    track.className = 'p-ScrollBar-track';
-    thumb.className = 'p-ScrollBar-thumb';
+    track.className = 'lm-ScrollBar-track';
+    thumb.className = 'lm-ScrollBar-thumb';
+    /* <DEPRECATED> */
+    decrement.classList.add('p-ScrollBar-button');
+    increment.classList.add('p-ScrollBar-button');
+    track.classList.add('p-ScrollBar-track');
+    thumb.classList.add('p-ScrollBar-thumb');
+    /* </DEPRECATED> */
     track.appendChild(thumb);
     node.appendChild(decrement);
     node.appendChild(track);

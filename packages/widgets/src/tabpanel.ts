@@ -56,13 +56,20 @@ class TabPanel extends Widget {
    */
   constructor(options: TabPanel.IOptions = {}) {
     super();
+    this.addClass('lm-TabPanel');
+    /* <DEPRECATED> */
     this.addClass('p-TabPanel');
+    /* </DEPRECATED> */
 
     // Create the tab bar and stacked panel.
     this.tabBar = new TabBar<Widget>(options);
-    this.tabBar.addClass('p-TabPanel-tabBar');
+    this.tabBar.addClass('lm-TabPanel-tabBar');
     this.stackedPanel = new StackedPanel();
+    this.stackedPanel.addClass('lm-TabPanel-stackedPanel');
+    /* <DEPRECATED> */
+    this.tabBar.addClass('p-TabPanel-tabBar');
     this.stackedPanel.addClass('p-TabPanel-stackedPanel');
+    /* </DEPRECATED> */
 
     // Connect the tab bar signal handlers.
     this.tabBar.tabMoved.connect(this._onTabMoved, this);

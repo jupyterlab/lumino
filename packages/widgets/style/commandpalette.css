@@ -8,7 +8,8 @@
 |----------------------------------------------------------------------------*/
 
 
-.p-CommandPalette {
+/* <DEPRECATED> */ .p-CommandPalette, /* </DEPRECATED> */
+.lm-CommandPalette {
   display: flex;
   flex-direction: column;
   -webkit-user-select: none;
@@ -18,12 +19,14 @@
 }
 
 
-.p-CommandPalette-search {
+/* <DEPRECATED> */ .p-CommandPalette-search, /* </DEPRECATED> */
+.lm-CommandPalette-search {
   flex: 0 0 auto;
 }
 
 
-.p-CommandPalette-content {
+/* <DEPRECATED> */ .p-CommandPalette-content, /* </DEPRECATED> */
+.lm-CommandPalette-content {
   flex: 1 1 auto;
   margin: 0;
   padding: 0;
@@ -33,36 +36,42 @@
 }
 
 
-.p-CommandPalette-header {
+/* <DEPRECATED> */ .p-CommandPalette-header, /* </DEPRECATED> */
+.lm-CommandPalette-header {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
 
-.p-CommandPalette-item {
+/* <DEPRECATED> */ .p-CommandPalette-item, /* </DEPRECATED> */
+.lm-CommandPalette-item {
   display: flex;
   flex-direction: row;
 }
 
 
-.p-CommandPalette-itemIcon {
+/* <DEPRECATED> */ .p-CommandPalette-itemIcon, /* </DEPRECATED> */
+.lm-CommandPalette-itemIcon {
   flex: 0 0 auto;
 }
 
 
-.p-CommandPalette-itemContent {
+/* <DEPRECATED> */ .p-CommandPalette-itemContent, /* </DEPRECATED> */
+.lm-CommandPalette-itemContent {
   flex: 1 1 auto;
   overflow: hidden;
 }
 
 
-.p-CommandPalette-itemShortcut {
+/* <DEPRECATED> */ .p-CommandPalette-itemShortcut, /* </DEPRECATED> */
+.lm-CommandPalette-itemShortcut {
   flex: 0 0 auto;
 }
 
 
-.p-CommandPalette-itemLabel {
+/* <DEPRECATED> */ .p-CommandPalette-itemLabel, /* </DEPRECATED> */
+.lm-CommandPalette-itemLabel {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;

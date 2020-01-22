@@ -8,11 +8,13 @@
 |----------------------------------------------------------------------------*/
 
 
-.p-TabPanel-tabBar {
+/* <DEPRECATED> */ .p-TabPanel-tabBar, /* </DEPRECATED> */
+.lm-TabPanel-tabBar {
   z-index: 1;
 }
 
 
-.p-TabPanel-stackedPanel {
+/* <DEPRECATED> */ .p-TabPanel-stackedPanel, /* </DEPRECATED> */
+.lm-TabPanel-stackedPanel {
   z-index: 0;
 }

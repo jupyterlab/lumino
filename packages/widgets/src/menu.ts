@@ -56,7 +56,10 @@ class Menu extends Widget {
    */
   constructor(options: Menu.IOptions) {
     super({ node: Private.createNode() });
+    this.addClass('lm-Menu');
+    /* <DEPRECATED> */
     this.addClass('p-Menu');
+    /* </DEPRECATED> */
     this.setFlag(Widget.Flag.DisallowLayout);
     this.commands = options.commands;
     this.renderer = options.renderer || Menu.defaultRenderer;
@@ -162,7 +165,7 @@ class Menu extends Widget {
    * Modifying this node directly can lead to undefined behavior.
    */
   get contentNode(): HTMLUListElement {
-    return this.node.getElementsByClassName('p-Menu-content')[0] as HTMLUListElement;
+    return this.node.getElementsByClassName('lm-Menu-content')[0] as HTMLUListElement;
   }
 
   /**
@@ -1176,7 +1179,12 @@ namespace Menu {
      */
     renderLabel(data: IRenderData): VirtualElement {
       let content = this.formatLabel(data);
-      return h.div({ className: 'p-Menu-itemLabel' }, content);
+      return h.div({
+        className: 'lm-Menu-itemLabel'
+          /* <DEPRECATED> */
+          + ' p-Menu-itemLabel'
+          /* </DEPRECATED> */
+      }, content);
     }
 
     /**
@@ -1188,7 +1196,12 @@ namespace Menu {
      */
     renderShortcut(data: IRenderData): VirtualElement {
       let content = this.formatShortcut(data);
-      return h.div({ className: 'p-Menu-itemShortcut' }, content);
+      return h.div({
+        className: 'lm-Menu-itemShortcut'
+          /* <DEPRECATED> */
+          + ' p-Menu-itemShortcut'
+          /* </DEPRECATED> */
+      }, content);
     }
 
     /**
@@ -1199,7 +1212,12 @@ namespace Menu {
      * @returns A virtual element representing the submenu icon.
      */
     renderSubmenu(data: IRenderData): VirtualElement {
-      return h.div({ className: 'p-Menu-itemSubmenuIcon' });
+      return h.div({
+        className: 'lm-Menu-itemSubmenuIcon'
+          /* <DEPRECATED> */
+          + ' p-Menu-itemSubmenuIcon'
+          /* </DEPRECATED> */
+      });
     }
 
     /**
@@ -1211,23 +1229,41 @@ namespace Menu {
      */
     createItemClass(data: IRenderData): string {
       // Setup the initial class name.
-      let name = 'p-Menu-item';
+      let name = 'lm-Menu-item';
+      /* <DEPRECATED> */
+      name += ' p-Menu-item';
+      /* </DEPRECATED> */
 
       // Add the boolean state classes.
       if (!data.item.isEnabled) {
+        name += ' lm-mod-disabled';
+        /* <DEPRECATED> */
         name += ' p-mod-disabled';
+        /* </DEPRECATED> */
       }
       if (data.item.isToggled) {
+        name += ' lm-mod-toggled';
+        /* <DEPRECATED> */
         name += ' p-mod-toggled';
+        /* </DEPRECATED> */
       }
       if (!data.item.isVisible) {
+        name += ' lm-mod-hidden';
+        /* <DEPRECATED> */
         name += ' p-mod-hidden';
+        /* </DEPRECATED> */
       }
       if (data.active) {
+        name += ' lm-mod-active';
+        /* <DEPRECATED> */
         name += ' p-mod-active';
+        /* </DEPRECATED> */
       }
       if (data.collapsed) {
+        name += ' lm-mod-collapsed';
+        /* <DEPRECATED> */
         name += ' p-mod-collapsed';
+        /* </DEPRECATED> */
       }
 
       // Add the extra class.
@@ -1266,7 +1302,10 @@ namespace Menu {
      * @returns The full class name for the item icon.
      */
     createIconClass(data: IRenderData): string {
-      let name = 'p-Menu-itemIcon';
+      let name = 'lm-Menu-itemIcon';
+      /* <DEPRECATED> */
+      name += ' p-Menu-itemIcon';
+      /* </DEPRECATED> */
       let extra = data.item.iconClass;
       return extra ? `${name} ${extra}` : name;
     }
@@ -1293,7 +1332,12 @@ namespace Menu {
       let char = label[mnemonic];
 
       // Wrap the mnemonic character in a span.
-      let span = h.span({ className: 'p-Menu-itemMnemonic' }, char);
+      let span = h.span({
+        className: 'lm-Menu-itemMnemonic'
+          /* <DEPRECATED> */
+          + ' p-Menu-itemMnemonic'
+          /* </DEPRECATED> */
+      }, char);
 
       // Return the content parts.
       return [prefix, span, suffix];
@@ -1343,7 +1387,10 @@ namespace Private {
   function createNode(): HTMLDivElement {
     let node = document.createElement('div');
     let content = document.createElement('ul');
-    content.className = 'p-Menu-content';
+    content.className = 'lm-Menu-content';
+    /* <DEPRECATED> */
+    content.classList.add('p-Menu-content');
+    /* </DEPRECATED> */
     node.appendChild(content);
     node.tabIndex = -1;
     return node;

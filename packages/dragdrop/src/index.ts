@@ -34,8 +34,8 @@ type SupportedActions = DropAction | 'copy-link' | 'copy-move' | 'link-move' | '
  * A custom event type used for drag-drop operations.
  *
  * #### Notes
- * In order to receive `'p-dragover'`, `'p-dragleave'`, or `'p-drop'`
- * events, a drop target must cancel the `'p-dragenter'` event by
+ * In order to receive `'lm-dragover'`, `'lm-dragleave'`, or `'lm-drop'`
+ * events, a drop target must cancel the `'lm-dragenter'` event by
  * calling the event's `preventDefault()` method.
  */
 export
@@ -45,7 +45,7 @@ interface IDragEvent extends MouseEvent {
    *
    * #### Notes
    * At the start of each event, this value will be `'none'`. During a
-   * `'p-dragover'` event, the drop target must set this value to one
+   * `'lm-dragover'` event, the drop target must set this value to one
    * of the supported actions, or the drop event will not occur.
    *
    * When handling the drop event, the drop target should set this
@@ -69,7 +69,7 @@ interface IDragEvent extends MouseEvent {
    *
    * #### Notes
    * If the `dropAction` is not set to one of the supported actions
-   * during the `'p-dragover'` event, the drop event will not occur.
+   * during the `'lm-dragover'` event, the drop event will not occur.
    */
   readonly supportedActions: SupportedActions;
 
@@ -99,18 +99,18 @@ interface IDragEvent extends MouseEvent {
  *
  * A drag object dispatches four different events to drop targets:
  *
- * - `'p-dragenter'` - Dispatched when the mouse enters the target
+ * - `'lm-dragenter'` - Dispatched when the mouse enters the target
  *   element. This event must be canceled in order to receive any
  *   of the other events.
  *
- * - `'p-dragover'` - Dispatched when the mouse moves over the drop
+ * - `'lm-dragover'` - Dispatched when the mouse moves over the drop
  *   target. It must cancel the event and set the `dropAction` to one
  *   of the supported actions in order to receive drop events.
  *
- * - `'p-dragleave'` - Dispatched when the mouse leaves the target
+ * - `'lm-dragleave'` - Dispatched when the mouse leaves the target
  *   element. This includes moving the mouse into child elements.
  *
- * - `'p-drop'`- Dispatched when the mouse is released over the target
+ * - `'lm-drop'`- Dispatched when the mouse is released over the target
  *   element when the target indicates an appropriate drop action. If
  *   the event is canceled, the indicated drop action is returned to
  *   the initiator through the resolved promise.
@@ -120,7 +120,7 @@ interface IDragEvent extends MouseEvent {
  *
  * A drag object has the ability to automatically scroll a scrollable
  * element when the mouse is hovered near one of its edges. To enable
- * this, add the `data-p-dragscroll` attribute to any element which
+ * this, add the `data-lm-dragscroll` attribute to any element which
  * the drag object should consider for scrolling.
  *
  * #### Notes
@@ -457,7 +457,10 @@ class Drag implements IDisposable {
     if (!this.dragImage) {
       return;
     }
+    this.dragImage.classList.add('lm-mod-drag-image');
+    /* <DEPRECATED> */
     this.dragImage.classList.add('p-mod-drag-image');
+    /* </DEPRECATED> */
     let style = this.dragImage.style;
     style.pointerEvents = 'none';
     style.position = 'fixed';
@@ -635,7 +638,7 @@ namespace Drag {
      * mouse move event. A CSS transform can be used to offset the node
      * from its specified position.
      *
-     * The drag image will automatically have the `p-mod-drag-image`
+     * The drag image will automatically have the `lm-mod-drag-image`
      * class name added.
      *
      * The default value is `null`.
@@ -710,11 +713,17 @@ namespace Drag {
   function overrideCursor(cursor: string): IDisposable {
     let id = ++overrideCursorID;
     document.body.style.cursor = cursor;
+    document.body.classList.add('lm-mod-override-cursor');
+    /* <DEPRECATED> */
     document.body.classList.add('p-mod-override-cursor');
+    /* </DEPRECATED> */
     return new DisposableDelegate(() => {
       if (id === overrideCursorID) {
         document.body.style.cursor = '';
+        document.body.classList.remove('lm-mod-override-cursor');
+        /* <DEPRECATED> */
         document.body.classList.remove('p-mod-override-cursor');
+        /* </DEPRECATED> */
       }
     });
   }
@@ -803,7 +812,11 @@ namespace Private {
     // https://github.com/Microsoft/TypeScript/issues/14143
     for (; element; element = element!.parentElement) {
       // Ignore elements which are not marked as scrollable.
-      if (!element.hasAttribute('data-p-dragscroll')) {
+      let scrollable = element.hasAttribute('data-lm-dragscroll');
+      /* <DEPRECATED> */
+      scrollable = scrollable || element.hasAttribute('data-p-dragscroll');
+      /* </DEPRECATED> */
+      if (!scrollable) {
         continue;
       }
 
@@ -926,7 +939,7 @@ namespace Private {
     }
 
     // Dispatch a drag enter event to the current element.
-    let dragEvent = createDragEvent('p-dragenter', drag, event, currTarget);
+    let dragEvent = createDragEvent('lm-dragenter', drag, event, currTarget);
     let canceled = !currElem.dispatchEvent(dragEvent);
 
     // If the event was canceled, use the current element as the new target.
@@ -934,14 +947,27 @@ namespace Private {
       return currElem;
     }
 
+    /* <DEPRECATED> */
+    dragEvent = createDragEvent('p-dragenter', drag, event, currTarget);
+    canceled = !currElem.dispatchEvent(dragEvent);
+    if (canceled) {
+      return currElem;
+    }
+    /* </DEPRECATED> */
+
     // If the current element is the document body, keep the original target.
     if (currElem === document.body) {
       return currTarget;
     }
 
     // Dispatch a drag enter event on the document body.
+    dragEvent = createDragEvent('lm-dragenter', drag, event, currTarget);
+    document.body.dispatchEvent(dragEvent);
+
+    /* <DEPRECATED> */
     dragEvent = createDragEvent('p-dragenter', drag, event, currTarget);
     document.body.dispatchEvent(dragEvent);
+    /* </DEPRECATED> */
 
     // Ignore the event cancellation, and use the body as the new target.
     return document.body;
@@ -972,8 +998,13 @@ namespace Private {
     }
 
     // Dispatch the drag exit event to the previous target.
-    let dragEvent = createDragEvent('p-dragexit', drag, event, currTarget);
+    let dragEvent = createDragEvent('lm-dragexit', drag, event, currTarget);
     prevTarget.dispatchEvent(dragEvent);
+
+    /* <DEPRECATED> */
+    dragEvent = createDragEvent('p-dragexit', drag, event, currTarget);
+    prevTarget.dispatchEvent(dragEvent);
+    /* </DEPRECATED> */
   }
 
   /**
@@ -1001,8 +1032,13 @@ namespace Private {
     }
 
     // Dispatch the drag leave event to the previous target.
-    let dragEvent = createDragEvent('p-dragleave', drag, event, currTarget);
+    let dragEvent = createDragEvent('lm-dragleave', drag, event, currTarget);
     prevTarget.dispatchEvent(dragEvent);
+
+    /* <DEPRECATED> */
+    dragEvent = createDragEvent('p-dragleave', drag, event, currTarget);
+    prevTarget.dispatchEvent(dragEvent);
+    /* </DEPRECATED> */
   }
 
   /**
@@ -1029,13 +1065,21 @@ namespace Private {
     }
 
     // Dispatch the drag over event to the current target.
-    let dragEvent = createDragEvent('p-dragover', drag, event, null);
+    let dragEvent = createDragEvent('lm-dragover', drag, event, null);
     let canceled = !currTarget.dispatchEvent(dragEvent);
 
     // If the event was canceled, return the drop action result.
     if (canceled) {
       return dragEvent.dropAction;
     }
+
+    /* <DEPRECATED> */
+    dragEvent = createDragEvent('p-dragover', drag, event, null);
+    canceled = !currTarget.dispatchEvent(dragEvent);
+    if (canceled) {
+      return dragEvent.dropAction;
+    }
+    /* </DEPRECATED> */
 
     // Otherwise, the effective drop action is none.
     return 'none';
@@ -1065,13 +1109,21 @@ namespace Private {
     }
 
     // Dispatch the drop event to the current target.
-    let dragEvent = createDragEvent('p-drop', drag, event, null);
+    let dragEvent = createDragEvent('lm-drop', drag, event, null);
     let canceled = !currTarget.dispatchEvent(dragEvent);
 
     // If the event was canceled, return the drop action result.
     if (canceled) {
       return dragEvent.dropAction;
     }
+
+    /* <DEPRECATED> */
+    dragEvent = createDragEvent('p-drop', drag, event, null);
+    canceled = !currTarget.dispatchEvent(dragEvent);
+    if (canceled) {
+      return dragEvent.dropAction;
+    }
+    /* </DEPRECATED> */
 
     // Otherwise, the effective drop action is none.
     return 'none';
