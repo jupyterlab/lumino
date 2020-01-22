@@ -53,6 +53,8 @@ class BasicSelectionModel extends SelectionModel {
   /**
    * Move cursor down/up/left/right while making sure it remains
    * within the bounds of selected rectangles
+   * 
+   * @param direction - The direction of the movement.
    */
   moveCursorWithinSelections(direction: SelectionModel.CursorMoveDirection): void {
     // Bail early if there are no selections or no existing cursor

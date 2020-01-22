@@ -72,7 +72,7 @@ class JSONModel extends DataModel {
    *
    * @param column - The column index of the cell of interest.
    *
-   * @param returns - The data value for the specified cell.
+   * @returns - The data value for the specified cell.
    *
    * #### Notes
    * A `missingValue` as defined by the schema is converted to `null`.

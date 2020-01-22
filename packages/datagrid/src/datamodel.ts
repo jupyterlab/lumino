@@ -61,7 +61,7 @@ abstract class DataModel {
    *
    * @param column - The column index of the cell of interest.
    *
-   * @param returns The data value for the specified cell.
+   * @returns The data value for the specified cell.
    *
    * #### Notes
    * The returned data should be treated as immutable.
@@ -106,8 +106,27 @@ abstract class DataModel {
   private _changed = new Signal<this, DataModel.ChangedArgs>(this);
 }
 
+/**
+ * An object which provides the mutable data for a data grid.
+ *
+ * #### Notes
+ * This object is an extension to `DataModel` and it only adds ability to
+ * change data for cells.
+ */
 export
 abstract class MutableDataModel extends DataModel {
+  /**
+   * Set the data value for a cell in the data model.
+   *
+   * @param region - The cell region of interest.
+   *
+   * @param row - The row index of the cell of interest.
+   *
+   * @param column - The column index of the cell of interest.
+   *
+   * @returns true if succeeds, false otherwise.
+   *
+   */
   abstract setData(region: DataModel.CellRegion, row: number, column: number, value: any): boolean;
 }
 

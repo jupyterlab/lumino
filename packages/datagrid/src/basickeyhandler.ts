@@ -65,6 +65,8 @@ class BasicKeyHandler implements DataGrid.IKeyHandler {
    * This will not be called if the mouse button is pressed.
    */
   onKeyDown(grid: DataGrid, event: KeyboardEvent): void {
+    // if grid is editable and cell selection available, start cell editing
+    // on key press (letters, numbers and space only)
     if (grid.editable && 
       grid.selectionModel!.cursorRow !== -1 &&
       grid.selectionModel!.cursorColumn !== -1) {

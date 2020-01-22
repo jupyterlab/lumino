@@ -664,6 +664,9 @@ class DataGrid extends Widget {
     return this._viewport;
   }
 
+  /**
+   * The cell editor controller object for the data grid.
+   */
   get editorController(): ICellEditorController | null {
     return this._editorController;
   }
@@ -672,6 +675,9 @@ class DataGrid extends Widget {
     this._editorController = controller;
   }
 
+  /**
+   * Whether the cell editing is enabled for the data grid.
+   */
   get editingEnabled(): boolean {
     return this._editingEnabled;
   }
@@ -680,6 +686,12 @@ class DataGrid extends Widget {
     this._editingEnabled = enabled;
   }
 
+  /**
+   * Whether the grid cells are editable.
+   * 
+   * `editingEnabled` flag must be on and grid must have required
+   * selection model, editor controller and data model properties.
+   */
   get editable(): boolean {
     return this._editingEnabled &&
       this._selectionModel !== null &&
@@ -857,6 +869,8 @@ class DataGrid extends Widget {
   /**
    * Move cursor down/up/left/right while making sure it remains
    * within the bounds of selected rectangles
+   * 
+   * @param direction - The direction of the movement.
    */
   moveCursor(direction: SelectionModel.CursorMoveDirection): void {
     // Bail early if there is no selection

@@ -24,13 +24,39 @@ import {
   DataModel, MutableDataModel
 } from './datamodel';
 
+/**
+ * A type alias for cell editor override identifier.
+ */
 export
 type EditorOverrideIdentifier = CellDataType | DataModel.Metadata | 'default';
 
+/**
+ * An object which manages cell editing.
+ */
 export
 interface ICellEditorController {
+  /**
+   * Override cell editor for the cells matching the identifier.
+   *
+   * @param identifier - Cell identifier to use when matching cells.
+   * if identifier is a CellDataType, then cell matching is done using data type of the cell,
+   * if identifier is a Metadata, then partial match of the cell metadata with identifier is used for match,
+   * if identifier is 'default' then override is used as default editor when no other editor is found suitable
+   *
+   * @param editor - The cell editor to use or resolver to use to get an editor for matching cells.
+   */
   setEditor(identifier: EditorOverrideIdentifier, editor: ICellEditor | Resolver): void;
+  /**
+   * Start editing a cell.
+   *
+   * @param cell - The object holding cell configuration data.
+   *
+   * @param options - The cell editing options.
+   */
   edit(cell: CellEditor.CellConfig, options?: ICellEditOptions): boolean;
+  /**
+   * Cancel editing.
+   */
   cancel(): void;
 }
 
@@ -70,8 +96,22 @@ function resolveOption<T>(option: ConfigOption<T>, config: CellEditor.CellConfig
   return typeof option === 'function' ? (option as ConfigFunc<T>)(config) : option;
 }
 
+/**
+ * An object which manages cell editing. It stores editor overrides,
+ * decides which editor to use for a cell, makes sure there is only one editor active.
+ */
 export
 class CellEditorController implements ICellEditorController {
+  /**
+   * Override cell editor for the cells matching the identifier.
+   *
+   * @param identifier - Cell identifier to use when matching cells.
+   * if identifier is a CellDataType, then cell matching is done using data type of the cell,
+   * if identifier is a Metadata, then partial match of the cell metadata with identifier is used for match,
+   * if identifier is 'default' then override is used as default editor when no other editor is found suitable
+   *
+   * @param editor - The cell editor to use or resolver to use to get an editor for matching cells.
+   */
   setEditor(identifier: EditorOverrideIdentifier, editor: ICellEditor | Resolver) {
     if (typeof identifier === 'string') {
       this._typeBasedOverrides.set(identifier, editor);
@@ -81,6 +121,13 @@ class CellEditorController implements ICellEditorController {
     }
   }
 
+  /**
+   * Start editing a cell.
+   *
+   * @param cell - The object holding cell configuration data.
+   *
+   * @param options - The cell editing options.
+   */
   edit(cell: CellEditor.CellConfig, options?: ICellEditOptions): boolean {
     const grid = cell.grid;
 
@@ -97,12 +144,14 @@ class CellEditorController implements ICellEditorController {
     options.onCommit = options.onCommit || this._onCommit.bind(this);
     options.onCancel = options.onCancel || this._onCancel.bind(this);
 
+    // if an editor is passed in with options, then use it for editing
     if (options.editor) {
       this._editor = options.editor;
       options.editor.edit(cell, options);
       return true;
     }
 
+    // choose an editor based on overrides / cell data type
     const editor = this._getEditor(cell);
     if (editor) {
       this._editor = editor;
@@ -113,6 +162,9 @@ class CellEditorController implements ICellEditorController {
     return false;
   }
 
+  /**
+   * Cancel editing.
+   */
   cancel(): void {
     if (this._editor) {
       this._editor.cancel();
@@ -226,19 +278,29 @@ class CellEditorController implements ICellEditorController {
     return editorMatched;
   }
 
+  /**
+   * Choose the most appropriate cell editor to use based on overrides / cell data type.
+   * 
+   * If no match is found in overrides or based on cell data type, and if cell has a primitive
+   * data type then TextCellEditor is used as default cell editor. If 'default' cell editor
+   * is overridden, then it is used instead of TextCellEditor for default.
+   */
   private _getEditor(cell: CellEditor.CellConfig): ICellEditor | undefined {
     const dtKey = this._getDataTypeKey(cell);
 
+    // find an editor based on data type based override
     if (this._typeBasedOverrides.has(dtKey)) {
       const editor = this._typeBasedOverrides.get(dtKey);
       return resolveOption(editor!, cell);
-    } else if (this._metadataBasedOverrides.size > 0) {
+    } // find an editor based on metadata match based override
+    else if (this._metadataBasedOverrides.size > 0) {
       const editor = this._getMetadataBasedEditor(cell);
       if (editor) {
         return editor;
       }
     }
 
+    // choose an editor based on data type
     switch (dtKey) {
       case 'string':
         return new TextCellEditor();
@@ -263,21 +325,28 @@ class CellEditorController implements ICellEditorController {
         return new DynamicOptionCellEditor();
     }
 
+    // if an override exists for 'default', then use it
     if (this._typeBasedOverrides.has('default')) {
       const editor = this._typeBasedOverrides.get('default');
       return resolveOption(editor!, cell);
     }
 
+    // if cell has a primitive data type then use TextCellEditor
     const data = cell.grid.dataModel!.data('body', cell.row, cell.column);
     if (!data || typeof data !== 'object') {
       return new TextCellEditor();
     }
 
+    // no suitable editor found for the cell
     return undefined;
   }
 
+  // active cell editor
   private _editor: ICellEditor | null = null;
+  // active cell being edited
   private _cell: CellEditor.CellConfig | null = null;
+  // cell editor overrides based on cell data type identifier
   private _typeBasedOverrides: Map<string, ICellEditor | Resolver> = new Map();
+  // cell editor overrides based on partial metadata match
   private _metadataBasedOverrides: Map<string, [DataModel.Metadata, ICellEditor | Resolver]> = new Map();
 }

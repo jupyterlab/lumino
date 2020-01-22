@@ -164,6 +164,10 @@ class RandomDataModel extends DataModel {
   private _data: number[] = [];
 }
 
+/**
+ * Example custom cell editor which implements editing
+ * JSON cell data.
+ */
 class JSONCellEditor extends CellEditor {
   dispose(): void {
     if (this.isDisposed) {
@@ -225,7 +229,7 @@ class JSONCellEditor extends CellEditor {
     button.style.textOverflow = 'ellipsis';
 
     button.textContent = this._deserialize(data);
-    this.cellContainer.appendChild(button);
+    this.editorContainer.appendChild(button);
 
     this._button = button;
 
@@ -290,6 +294,10 @@ class JSONCellEditor extends CellEditor {
   private _textarea: HTMLTextAreaElement;
 }
 
+/**
+ * Mutable JSON data model. Allows editing existing
+ * grid cell values via MutableDataModel interface.
+ */
 class MutableJSONModel extends MutableDataModel {
   constructor(options: JSONModel.IOptions) {
     super();

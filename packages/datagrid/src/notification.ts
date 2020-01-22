@@ -209,7 +209,7 @@ namespace Notification {
   export
   interface IOptions {
     /**
-     * Target element to attach notification to
+     * Target element to attach notification to.
      *
      */
     target: HTMLElement;
@@ -252,6 +252,7 @@ namespace Private {
     message.className = 'lm-DataGrid-notificationMessage';
     container.appendChild(message);
     node.appendChild(container);
+
     return node;
   }
 }
