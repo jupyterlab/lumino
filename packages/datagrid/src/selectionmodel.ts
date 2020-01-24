@@ -63,6 +63,14 @@ abstract class SelectionModel {
   abstract readonly cursorColumn: number;
 
   /**
+   * Move cursor down/up/left/right while making sure it remains
+   * within the bounds of selected rectangles
+   * 
+   * @param direction - The direction of the movement.
+   */
+  abstract moveCursorWithinSelections(direction: SelectionModel.CursorMoveDirection): void;
+
+  /**
    * Get the current selection in the selection model.
    *
    * @returns The current selection or `null`.
@@ -215,6 +223,11 @@ namespace SelectionModel {
    */
   export
   type SelectionMode = 'row' | 'column' | 'cell';
+  
+  /**
+   * A type alias for the cursor move direction.
+   */
+  export type CursorMoveDirection = 'up' | 'down' | 'left' | 'right' | 'none';
 
   /**
    * A type alias for the clear mode.
