@@ -11,3 +11,5 @@ yarn
 yarn run version
 yarn run publish
 ```
+
+Update the changelog with published packages (minor or higher) and included PRs.
