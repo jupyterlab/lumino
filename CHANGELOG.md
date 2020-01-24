@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2020-01-24
+ - @lumino/datagrid@0.5.0
+
+ - DataGrid Cell Editing [#14](https://github.com/jupyterlab/lumino/pull/14)
+
+
 ## 2020-01-07
 
  - @lumino/application@1.8.0
