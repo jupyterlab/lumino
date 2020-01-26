@@ -760,7 +760,8 @@ class VirtualElement {
   }
 }
 
-export namespace VirtualElement {
+export
+namespace VirtualElement {
   /**
    * A type describing a custom element renderer
    */
@@ -806,6 +807,53 @@ export namespace VirtualElement {
      */
     unrender?: (host: HTMLElement) => void;
   };
+}
+
+/**
+ * DEPRECATED - use VirtualElement with a defined renderer param instead.
+ * This class is provided as a backwards compatibility shim
+ *
+ * A "pass thru" virtual node whose children are managed by a render and an
+ * unrender callback. The intent of this flavor of virtual node is to make
+ * it easy to blend other kinds of virtualdom (eg React) into Phosphor's
+ * virtualdom.
+ *
+ * #### Notes
+ * User code will not typically create a `VirtualElementPass` node directly.
+ * Instead, the `hpass()` function will be used to create an element tree.
+ */
+export
+class VirtualElementPass extends VirtualElement {
+  /**
+   * DEPRECATED - use VirtualElement with a defined renderer param instead
+   *
+   * Construct a new virtual element pass thru node.
+   *
+   * @param tag - the tag of the parent element of this node. Once the parent
+   * element is rendered, it will be passed as an argument to
+   * renderer.render
+   *
+   * @param attrs - attributes that will assigned to the
+   * parent element
+   *
+   * @param renderer - an object with render and unrender
+   * functions, each of which should take a single argument of type
+   * HTMLElement and return nothing. If null, the parent element
+   * will be rendered barren without any children.
+   */
+  constructor(tag: string, attrs: ElementAttrs, renderer: VirtualElementPass.IRenderer | null) {
+    super(tag, attrs, [], renderer || undefined);
+  }
+}
+
+export
+namespace VirtualElementPass {
+  /**
+   * DEPRECATED - use VirtualElement.IRenderer instead
+   *
+   * A type describing a custom element renderer
+   */
+  export type IRenderer = VirtualElement.IRenderer;
 }
 
 
@@ -1002,6 +1050,45 @@ namespace h {
   export const var_: IFactory = h.bind(undefined, 'var');
   export const video: IFactory = h.bind(undefined, 'video');
   export const wbr: IFactory = h.bind(undefined, 'wbr');
+}
+
+
+/**
+ * DEPRECATED - pass the renderer arg to the h function instead
+ *
+ * Create a new "pass thru" virtual element node.
+ *
+ * @param tag - The tag name for the parent element.
+ *
+ * @param attrs - The attributes for the parent element, if any.
+ *
+ * @param renderer - an object with render and unrender functions, if any.
+ *
+ * @returns A new "pass thru" virtual element node for the given parameters.
+ *
+ */
+export function hpass(tag: string, renderer?: VirtualElementPass.IRenderer): VirtualElementPass;
+export function hpass(tag: string, attrs: ElementAttrs, renderer?: VirtualElementPass.IRenderer): VirtualElementPass;
+export function hpass(tag: string): VirtualElementPass {
+  let attrs: ElementAttrs = {};
+  let renderer: VirtualElementPass.IRenderer | null = null;
+
+  if (arguments.length === 2) {
+    const arg = arguments[1];
+
+    if ("render" in arg && "unrender" in arg) {
+      renderer = arg;
+    } else {
+      attrs = arg;
+    }
+  } else if (arguments.length === 3) {
+    attrs = arguments[1];
+    renderer = arguments[2];
+  } else if (arguments.length > 3) {
+    throw new Error("hpass() should be called with 1, 2, or 3 arguments");
+  }
+
+  return new VirtualElementPass(tag, attrs, renderer);
 }
 
 
