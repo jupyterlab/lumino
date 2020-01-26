@@ -119,7 +119,7 @@ describe('@lumino/virtualdom', () => {
 
       it('should be `element`', () => {
         let vnode = new VirtualElement('div', {}, [], mockRenderer);
-        expect(vnode.type).to.equal('passthru');
+        expect(vnode.type).to.equal('element');
       });
 
     });
@@ -345,7 +345,7 @@ describe('@lumino/virtualdom', () => {
 
   });
 
-  describe('hpass()', () => {
+  describe('h() with IRenderer param', () => {
     let tag = 'div';
     let attrs = { className: 'baz' };
     let mockRenderer = {
@@ -386,7 +386,7 @@ describe('@lumino/virtualdom', () => {
       expect(vnode).to.be.an.instanceof(VirtualElement);
       expect(vnode.tag).to.equal(tag);
       expect(vnode.attrs).to.deep.equal(attrs);
-      expect(vnode.renderer).to.equal(null);
+      expect(vnode.renderer).to.equal(undefined);
     });
 
     it('should create a virtual element without custom renderer or attrs', () => {
@@ -396,7 +396,7 @@ describe('@lumino/virtualdom', () => {
       expect(vnode).to.be.an.instanceof(VirtualElement);
       expect(vnode.tag).to.equal('div');
       expect(vnode.attrs).to.deep.equal({});
-      expect(vnode.renderer).to.equal(null);
+      expect(vnode.renderer).to.equal(undefined);
     });
 
   });
@@ -533,7 +533,7 @@ describe('@lumino/virtualdom', () => {
 
   });
 
-  describe('VirtualDOM passthru', () => {
+  describe('VirtualDOM with custom renderer', () => {
     const rendererClosure = (record: any = {}) => {
       return {
         render: (host: HTMLElement) => {
@@ -583,11 +583,11 @@ describe('@lumino/virtualdom', () => {
         let host = document.createElement('div');
         let record: any = {child: undefined, cleanedUp: false};
 
-        // first pass, render the hpass children
+        // first pass, render the custom children
         let children0 = [h.a(), h.span(), h.div(h.div(), h('span', rendererClosure(record)), h.div())];
         VirtualDOM.render(children0, host);
 
-        // second pass, explicitly unrender the hpass children
+        // second pass, explicitly unrender the custom children
         let children1 = [h.a(), h.span(), h.label()];
         VirtualDOM.render(children1, host);
         expect(record.cleanedUp).to.equal(true);
