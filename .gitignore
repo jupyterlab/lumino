@@ -6,3 +6,11 @@ node_modules
 build
 review/api/temp
 *.tsbuildinfo
+
+# jetbrains IDE stuff
+*.iml
+.idea/
+
+# ms IDE stuff
+.vscode
+
