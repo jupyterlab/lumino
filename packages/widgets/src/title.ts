@@ -11,7 +11,7 @@ import {
   ISignal, Signal
 } from '@lumino/signaling';
 
-import { VirtualElementPass } from "@lumino/virtualdom";
+import { VirtualElement } from "@lumino/virtualdom";
 
 
 /**
@@ -183,7 +183,7 @@ class Title<T> {
    * #### Notes
    * The default value is undefined.
    */
-  get iconRenderer(): VirtualElementPass.IRenderer {
+  get iconRenderer(): VirtualElement.IRenderer {
     return this._iconRenderer;
   }
 
@@ -193,7 +193,7 @@ class Title<T> {
    * #### Notes
    * A renderer is an object that supplies a render and unrender function.
    */
-  set iconRenderer(value: VirtualElementPass.IRenderer) {
+  set iconRenderer(value: VirtualElement.IRenderer) {
     if (this._iconRenderer === value) {
       return;
     }
@@ -299,7 +299,7 @@ class Title<T> {
   private _mnemonic = -1;
   private _iconClass = '';
   private _iconLabel = '';
-  private _iconRenderer: VirtualElementPass.IRenderer;
+  private _iconRenderer: VirtualElement.IRenderer;
   private _className = '';
   private _closable = false;
   private _dataset: Title.Dataset;
@@ -357,7 +357,7 @@ namespace Title {
      * An object that supplies render and unrender functions used
      * to create and cleanup the icon of the title.
      */
-    iconRenderer?: VirtualElementPass.IRenderer;
+    iconRenderer?: VirtualElement.IRenderer;
 
     /**
      * The caption for the title.

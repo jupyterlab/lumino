@@ -901,6 +901,8 @@ namespace h {
   interface IFactory {
     (...children: Child[]): VirtualElement;
     (attrs: ElementAttrs, ...children: Child[]): VirtualElement;
+    (renderer: VirtualElement.IRenderer, ...children: h.Child[]): VirtualElement;
+    (attrs: ElementAttrs, renderer: VirtualElement.IRenderer, ...children: h.Child[]): VirtualElement;
   }
 
   export const a: IFactory = h.bind(undefined, 'a');

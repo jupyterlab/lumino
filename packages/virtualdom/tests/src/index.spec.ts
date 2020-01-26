@@ -100,7 +100,7 @@ describe('@lumino/virtualdom', () => {
 
   });
 
-  describe('VirtualElementPass', () => {
+  describe('VirtualElement with custom .renderer', () => {
     let mockRenderer = {
       render: (host: HTMLElement) => {},
       unrender: (host: HTMLElement) =>{}
