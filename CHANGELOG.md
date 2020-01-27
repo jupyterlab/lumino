@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2020-01-27
+
+- @lumino/virtualdom@1.5.0
+
+- Simplified/improved custom rendering of virtual nodes: removed `hpass` and `VirtualElementPass`, added optional `renderer` param [#44](https://github.com/jupyterlab/lumino/pull/44)
+
+
 ## 2020-01-24
  - @lumino/datagrid@0.5.0
 
