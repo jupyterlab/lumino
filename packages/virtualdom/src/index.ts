@@ -907,7 +907,7 @@ export function h(tag: string): VirtualElement {
     } else if (arg instanceof Array) {
       extend(children, arg);
     } else if ((i === 1 || i === 2) && arg && typeof arg === 'object') {
-      if ("render" in arg && "unrender" in arg) {
+      if ("render" in arg) {
         renderer = arg;
       }
       else {
@@ -1076,7 +1076,7 @@ export function hpass(tag: string): VirtualElementPass {
   if (arguments.length === 2) {
     const arg = arguments[1];
 
-    if ("render" in arg && "unrender" in arg) {
+    if ("render" in arg) {
       renderer = arg;
     } else {
       attrs = arg;
