@@ -13,7 +13,7 @@ import {
 
 import {
   JSONArray, JSONExt, JSONObject, JSONPrimitive,
-  PartialJSONObject
+  PartialJSONObject, ReadonlyJSONObject, ReadonlyJSONArray
 } from '@lumino/coreutils';
 
 
@@ -149,6 +149,23 @@ describe('@lumino/coreutils', () => {
       });
 
     });
+
+    describe('stripUndefined()', () => {
+
+      it('should remove undefined values', () => {
+        let v1 = { a: false, b: { bar: undefined } };
+        let r1 = JSONExt.stripUndefined(v1);
+        expect(r1.a).to.equal(false);
+        expect(Object.keys((r1.b as ReadonlyJSONObject)).length).to.equal(0);
+
+        let v2 = { a: [1, { foo: 'a', bar: undefined } ] };
+        let r2 = JSONExt.stripUndefined(v2);
+        let a = r2.a as ReadonlyJSONArray;
+        expect(Object.keys(a[1] as ReadonlyJSONObject).length).to.equal(1);
+        expect((a[1] as ReadonlyJSONObject)['foo']).to.equal('a');
+      });
+
+    })
 
   });
 

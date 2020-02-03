@@ -1360,7 +1360,7 @@ namespace Private {
       this._commands = commands;
       this.category = normalizeCategory(options.category);
       this.command = options.command;
-      this.args = JSONExt.deepCopy(options.args || JSONExt.emptyObject) as ReadonlyJSONObject;
+      this.args = JSONExt.stripUndefined(options.args || JSONExt.emptyObject);
       this.rank = options.rank !== undefined ? options.rank : Infinity;
     }
 

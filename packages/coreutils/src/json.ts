@@ -249,6 +249,56 @@ namespace JSONExt {
   }
 
   /**
+   * Strip out any `undefined` values from a JSON object.
+   *
+   * @param value - The JSON value to copy.
+   *
+   * @returns The given JSON value with `undefined` values stripped, recursively.
+   */
+  export
+  function stripUndefined(value: ReadonlyPartialJSONObject): ReadonlyJSONObject {
+    for (let key in value) {
+      // Remove undefined values.
+      let subvalue = value[key];
+      if (subvalue === undefined) {
+        delete (value as any)[key];
+        continue;
+      }
+
+      // Do nothing for primitive values.
+      if (isPrimitive(subvalue)) {
+        continue;
+      }
+
+      // Strip an array.
+      if (isArray(subvalue)) {
+        stripUndefinedArray(subvalue);
+        continue;
+      }
+
+      // Strip an object.
+      stripUndefined(subvalue);
+    }
+    return value as ReadonlyJSONObject;
+  }
+
+
+  /**
+   * Strip a ReadonlyPartialArray of any underlying `undefined` keys.
+   */
+  function stripUndefinedArray(value: ReadonlyPartialJSONArray) {
+    for (let i = 0, n = value.length; i < n; ++i) {
+      const subValue = value[i];
+      if (isPrimitive(subValue)) {
+      } else if (isArray(subValue)) {
+        stripUndefinedArray(subValue);
+      } else {
+        stripUndefined(subValue);
+      }
+    }
+  }
+
+  /**
    * Compare two JSON arrays for deep equality.
    */
   function deepArrayEqual(first: ReadonlyPartialJSONArray, second: ReadonlyPartialJSONArray): boolean {

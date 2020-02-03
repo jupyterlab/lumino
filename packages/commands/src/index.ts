@@ -173,7 +173,7 @@ class CommandRegistry {
    */
   label(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): string {
     let cmd = this._commands[id];
-    return cmd ? cmd.label.call(undefined, JSONExt.deepCopy(args)) : '';
+    return cmd ? cmd.label.call(undefined, JSONExt.stripUndefined(args)) : '';
   }
 
   /**
@@ -191,7 +191,7 @@ class CommandRegistry {
    */
   mnemonic(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): number {
     let cmd = this._commands[id];
-    return cmd ? cmd.mnemonic.call(undefined, JSONExt.deepCopy(args)) : -1;
+    return cmd ? cmd.mnemonic.call(undefined, JSONExt.stripUndefined(args)) : -1;
   }
 
   /**
@@ -216,7 +216,7 @@ class CommandRegistry {
    */
   iconClass(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): string {
     let cmd = this._commands[id];
-    return cmd ? cmd.iconClass.call(undefined, JSONExt.deepCopy(args)) : '';
+    return cmd ? cmd.iconClass.call(undefined, JSONExt.stripUndefined(args)) : '';
   }
 
   /**
@@ -234,7 +234,7 @@ class CommandRegistry {
    */
   iconLabel(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): string {
     let cmd = this._commands[id];
-    return cmd ? cmd.iconLabel.call(undefined, JSONExt.deepCopy(args)) : '';
+    return cmd ? cmd.iconLabel.call(undefined, JSONExt.stripUndefined(args)) : '';
   }
 
   /**
@@ -252,7 +252,7 @@ class CommandRegistry {
    */
   caption(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): string {
     let cmd = this._commands[id];
-    return cmd ? cmd.caption.call(undefined, JSONExt.deepCopy(args)) : '';
+    return cmd ? cmd.caption.call(undefined, JSONExt.stripUndefined(args)) : '';
   }
 
   /**
@@ -270,7 +270,7 @@ class CommandRegistry {
    */
   usage(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): string {
     let cmd = this._commands[id];
-    return cmd ? cmd.usage.call(undefined, JSONExt.deepCopy(args)) : '';
+    return cmd ? cmd.usage.call(undefined, JSONExt.stripUndefined(args)) : '';
   }
 
   /**
@@ -288,7 +288,7 @@ class CommandRegistry {
    */
   className(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): string {
     let cmd = this._commands[id];
-    return cmd ? cmd.className.call(undefined, JSONExt.deepCopy(args)) : '';
+    return cmd ? cmd.className.call(undefined, JSONExt.stripUndefined(args)) : '';
   }
 
   /**
@@ -306,7 +306,7 @@ class CommandRegistry {
    */
   dataset(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): CommandRegistry.Dataset {
     let cmd = this._commands[id];
-    return cmd ? cmd.dataset.call(undefined, JSONExt.deepCopy(args)) : {};
+    return cmd ? cmd.dataset.call(undefined, JSONExt.stripUndefined(args)) : {};
   }
 
   /**
@@ -324,7 +324,7 @@ class CommandRegistry {
    */
   isEnabled(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): boolean {
     let cmd = this._commands[id];
-    return cmd ? cmd.isEnabled.call(undefined, JSONExt.deepCopy(args)) : false;
+    return cmd ? cmd.isEnabled.call(undefined, JSONExt.stripUndefined(args)) : false;
   }
 
   /**
@@ -342,7 +342,7 @@ class CommandRegistry {
    */
   isToggled(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): boolean {
     let cmd = this._commands[id];
-    return cmd ? cmd.isToggled.call(undefined, JSONExt.deepCopy(args)) : false;
+    return cmd ? cmd.isToggled.call(undefined, JSONExt.stripUndefined(args)) : false;
   }
 
   /**
@@ -360,7 +360,7 @@ class CommandRegistry {
    */
   isVisible(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): boolean {
     let cmd = this._commands[id];
-    return cmd ? cmd.isVisible.call(undefined, JSONExt.deepCopy(args)) : false;
+    return cmd ? cmd.isVisible.call(undefined, JSONExt.stripUndefined(args)) : false;
   }
 
   /**
@@ -387,7 +387,7 @@ class CommandRegistry {
 
     // Execute the command and reject if an exception is thrown.
     let value: any;
-    const execArgs = JSONExt.deepCopy(args) as ReadonlyJSONObject;
+    const execArgs = JSONExt.stripUndefined(args) as ReadonlyJSONObject;
     try {
       value = cmd.execute.call(undefined, execArgs);
     } catch (err) {

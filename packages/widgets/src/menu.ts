@@ -1649,7 +1649,7 @@ namespace Private {
       this._commands = commands;
       this.type = options.type || 'command';
       this.command = options.command || '';
-      this.args = JSONExt.deepCopy(options.args || JSONExt.emptyObject) as ReadonlyJSONObject;
+      this.args = JSONExt.stripUndefined(options.args || JSONExt.emptyObject);
       this.submenu = options.submenu || null;
     }
 
