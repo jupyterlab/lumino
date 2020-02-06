@@ -20,6 +20,7 @@
   ],
   "files": [
     "dist/*",
+    "src/*",
     "types/*"
   ],
   "main": "dist/index.js",

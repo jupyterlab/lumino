@@ -1,24 +1,23 @@
 import nodeResolve from 'rollup-plugin-node-resolve';
-import sourcemaps from "rollup-plugin-sourcemaps";
-import postcss from "rollup-plugin-postcss";
+import sourcemaps from 'rollup-plugin-sourcemaps';
+import postcss from 'rollup-plugin-postcss';
 
-const pkg = require("./package.json");
+const pkg = require('./package.json');
 
-const globals = id => id.indexOf("@lumino/") === 0 ? id.replace("@lumino/", "lumino_") : id;
+const globals = id => id.indexOf('@lumino/') === 0 ? id.replace('@lumino/', 'lumino_') : id;
 
 export default [{
-    input: "lib/index",
+    input: 'lib/index',
     external: id => pkg.dependencies && !!pkg.dependencies[id],
     output: [{
         file: pkg.main,
         globals,
-        format: "umd",
+        format: 'umd',
         sourcemap: true,
         name: pkg.name
     }, {
-        file: pkg.module + ".js",
-        globals,
-        format: "es",
+        file: pkg.module + '.js',
+        format: 'es',
         sourcemap: true,
         name: pkg.name
     }],
@@ -28,7 +27,7 @@ export default [{
         }),
         sourcemaps(),
         postcss({
-            extensions: [".css"],
+            extensions: ['.css'],
             minimize: true
         })
     ]

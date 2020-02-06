@@ -14,9 +14,11 @@ script:
     set -e;
     pushd packages/widgets;
     yarn build;
+    yarn minimize;
     popd;
     yarn clean;
     yarn build;
+    yarn minimize;
     yarn build:test;
     yarn test;
     yarn docs;

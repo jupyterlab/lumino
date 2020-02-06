@@ -16,6 +16,7 @@
   ],
   "files": [
     "dist/*",
+    "src/*",
     "types/*",
     "images/*.png",
     "style/*.css"

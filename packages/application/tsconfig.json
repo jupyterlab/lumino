@@ -1,8 +1,10 @@
 {
   "compilerOptions": {
     "composite": true,
+    "sourceMap": true,
     "declaration": true,
     "declarationDir": "./types",
+    "declarationMap": true,
     "noImplicitAny": true,
     "noEmitOnError": true,
     "noUnusedLocals": true,
