@@ -674,10 +674,10 @@ namespace CommandRegistry {
      * DEPRECATED: if set to a string value, the .icon field will function as
      * an alias for the .iconClass field, for backwards compatibility
      */
-    icon?: VirtualElement.IRenderer
+    icon?: VirtualElement.IRenderer | undefined
     /* <DEPRECATED> */ | string /* </DEPRECATED> */
     | CommandFunc<
-      VirtualElement.IRenderer
+      VirtualElement.IRenderer | undefined
       /* <DEPRECATED> */ | string /* </DEPRECATED> */
     >;
     
@@ -1197,8 +1197,7 @@ namespace Private {
     readonly mnemonic: CommandFunc<number>;
     
     readonly icon: CommandFunc<
-      VirtualElement.IRenderer
-      | undefined
+      VirtualElement.IRenderer | undefined
       /* <DEPRECATED> */ | string /* </DEPRECATED> */
     >;
     

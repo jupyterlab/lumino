@@ -338,7 +338,10 @@ class Title<T> {
   private _label = '';
   private _caption = '';
   private _mnemonic = -1;
-  private _icon: VirtualElement.IRenderer | null | undefined;
+
+  private _icon: VirtualElement.IRenderer | undefined
+  /* <DEPRECATED> */ | null /* </DEPRECATED> */;
+
   private _iconClass = '';
   private _iconLabel = '';
   private _className = '';
