@@ -38,7 +38,19 @@ class Title<T> {
       this._mnemonic = options.mnemonic;
     }
     if (options.icon !== undefined) {
-      this.icon = options.icon;
+      /* <DEPRECATED> */
+      if (typeof options.icon === "string") {
+        // when ._icon is null, the .icon getter will alias .iconClass
+        this._icon = null;
+        this._iconClass = options.icon;
+      } else {
+      /* </DEPRECATED> */
+
+      this._icon = options.icon;
+
+      /* <DEPRECATED> */
+      }
+      /* </DEPRECATED> */
     }
     if (options.iconClass !== undefined) {
       this._iconClass = options.iconClass;
