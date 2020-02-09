@@ -192,10 +192,23 @@ class CommandRegistry {
   }
 
   /**
-   * @deprecated Use `iconClass()` instead.
+   * Get the icon renderer for a specific command.
+   *
+   * @param id - The id of the command of interest.
+   *
+   * @param args - The arguments for the command.
+   *
+   * @returns The icon renderer for the command, or undefined if
+   *   the command is not registered.
+   *   
+   *   DEPRECATED: if set to a string value, the .icon field will function as
+   *   an alias for the .iconClass field, for backwards compatibility
    */
-  icon(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): string {
-    return this.iconClass(id, args);
+  icon(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): VirtualElement.IRenderer | undefined
+  /* <DEPRECATED> */ | string /* </DEPRECATED> */
+  {
+    let cmd = this._commands[id];
+    return cmd ? cmd.icon.call(undefined, args) : undefined;
   }
 
   /**
@@ -226,21 +239,6 @@ class CommandRegistry {
   iconLabel(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): string {
     let cmd = this._commands[id];
     return cmd ? cmd.iconLabel.call(undefined, args) : '';
-  }
-
-  /**
-   * Get the icon renderer for a specific command.
-   *
-   * @param id - The id of the command of interest.
-   *
-   * @param args - The arguments for the command.
-   *
-   * @returns The icon renderer for the command, or undefined if
-   *   the command is not registered.
-   */
-  iconRenderer(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): VirtualElement.IRenderer {
-    let cmd = this._commands[id];
-    return cmd ? cmd.iconRenderer.call(undefined, args) : undefined;
   }
 
   /**
@@ -665,10 +663,24 @@ namespace CommandRegistry {
     mnemonic?: number | CommandFunc<number>;
 
     /**
-     * @deprecated Use `iconClass` instead.
+     * The icon renderer for the command.
+     *
+     * #### Notes
+     * This can be an IRenderer object, or a function which returns the
+     * renderer based on the provided command arguments.
+     *
+     * The default value is undefined.
+     * 
+     * DEPRECATED: if set to a string value, the .icon field will function as
+     * an alias for the .iconClass field, for backwards compatibility
      */
-    icon?: string | CommandFunc<string>;
-
+    icon?: VirtualElement.IRenderer
+    /* <DEPRECATED> */ | string /* </DEPRECATED> */
+    | CommandFunc<
+      VirtualElement.IRenderer
+      /* <DEPRECATED> */ | string /* </DEPRECATED> */
+    >;
+    
     /**
      * The icon class for the command.
      *
@@ -698,17 +710,6 @@ namespace CommandRegistry {
      * The default value is an empty string.
      */
     iconLabel?: string | CommandFunc<string>;
-
-    /**
-     * The icon renderer for the command.
-     *
-     * #### Notes
-     * This can be an IRenderer object, or a function which returns the
-     * renderer based on the provided command arguments.
-     *
-     * The default value is undefined.
-     */
-    iconRenderer?: VirtualElement.IRenderer | CommandFunc<VirtualElement.IRenderer>;
 
     /**
      * The caption for the command.
@@ -1194,9 +1195,15 @@ namespace Private {
     readonly execute: CommandFunc<any>;
     readonly label: CommandFunc<string>;
     readonly mnemonic: CommandFunc<number>;
+    
+    readonly icon: CommandFunc<
+      VirtualElement.IRenderer
+      | undefined
+      /* <DEPRECATED> */ | string /* </DEPRECATED> */
+    >;
+    
     readonly iconClass: CommandFunc<string>;
     readonly iconLabel: CommandFunc<string>;
-    readonly iconRenderer: CommandFunc<VirtualElement.IRenderer | undefined>;
     readonly caption: CommandFunc<string>;
     readonly usage: CommandFunc<string>;
     readonly className: CommandFunc<string>;
@@ -1211,13 +1218,31 @@ namespace Private {
    */
   export
   function createCommand(options: CommandRegistry.ICommandOptions): ICommand {
+    let icon;
+    let iconClass;
+    
+    /* <DEPRECATED> */
+    if (typeof options.icon === 'string') {
+      // alias icon to iconClass
+      iconClass = asFunc(options.iconClass || options.icon, emptyStringFunc);
+      icon = iconClass;
+    } else {
+    /* /<DEPRECATED> */
+
+    iconClass = asFunc(options.iconClass, emptyStringFunc);
+    icon = asFunc(options.icon, undefinedFunc);
+
+    /* <DEPRECATED> */
+    }
+    /* </DEPRECATED> */
+    
     return {
       execute: options.execute,
       label: asFunc(options.label, emptyStringFunc),
       mnemonic: asFunc(options.mnemonic, negativeOneFunc),
-      iconClass: asFunc(options.iconClass || options.icon, emptyStringFunc),
+      icon,
+      iconClass,
       iconLabel: asFunc(options.iconLabel, emptyStringFunc),
-      iconRenderer: asFunc(options.iconRenderer, undefinedFunc),
       caption: asFunc(options.caption, emptyStringFunc),
       usage: asFunc(options.usage, emptyStringFunc),
       className: asFunc(options.className, emptyStringFunc),

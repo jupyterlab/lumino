@@ -1039,9 +1039,10 @@ namespace Menu {
     readonly mnemonic: number;
 
     /**
-     * @deprecated Use `iconClass` instead.
+     * The icon renderer for the menu item.
      */
-    readonly icon: string;
+    readonly icon: VirtualElement.IRenderer | undefined
+    /* <DEPRECATED> */ | string /* </DEPRECATED> */;
 
     /**
      * The icon class for the menu item.
@@ -1052,11 +1053,6 @@ namespace Menu {
      * The icon label for the menu item.
      */
     readonly iconLabel: string;
-
-    /**
-     * The icon renderer for the menu item.
-     */
-    readonly iconRenderer?: VirtualElement.IRenderer;
 
     /**
      * The display caption for the menu item.
@@ -1172,8 +1168,15 @@ namespace Menu {
      */
     renderIcon(data: IRenderData): VirtualElement {
       let className = this.createIconClass(data);
-      // if iconRenderer is undefined, it will just be ignored
-      return h.div({ className }, data.item.iconRenderer!, data.item.iconLabel);
+
+      /* <DEPRECATED> */
+      if (typeof data.item.icon === 'string') {
+        return h.div({className}, data.item.iconLabel);
+      }
+      /* </DEPRECATED> */
+
+      // if data.item.icon is undefined, it will be ignored
+      return h.div({className}, data.item.icon!, data.item.iconLabel);
     }
 
     /**
@@ -1751,10 +1754,18 @@ namespace Private {
     }
 
     /**
-     * @deprecated Use `iconClass` instead.
+     * The icon renderer for the menu item.
      */
-    get icon(): string {
-      return this.iconClass;
+    get icon(): VirtualElement.IRenderer | undefined 
+    /* <DEPRECATED> */ | string /* </DEPRECATED> */
+    {
+      if (this.type === 'command') {
+        return this._commands.icon(this.command, this.args);
+      }
+      if (this.type === 'submenu' && this.submenu) {
+        return this.submenu.title.icon;
+      }
+      return undefined!;
     }
 
     /**
@@ -1783,18 +1794,6 @@ namespace Private {
       return '';
     }
 
-    /**
-     * The icon renderer for the menu item.
-     */
-    get iconRenderer(): VirtualElement.IRenderer {
-      if (this.type === 'command') {
-        return this._commands.iconRenderer(this.command, this.args);
-      }
-      if (this.type === 'submenu' && this.submenu) {
-        return this.submenu.title.iconRenderer;
-      }
-      return undefined!;
-    }
 
     /**
      * The display caption for the menu item.

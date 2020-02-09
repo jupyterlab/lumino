@@ -124,7 +124,9 @@ class Title<T> {
    * DEPRECATED: if set to a string value, the .icon field will function as
    * an alias for the .iconClass field, for backwards compatibility
    */
-  get icon(): VirtualElement.IRenderer | string | undefined {
+  get icon(): VirtualElement.IRenderer| undefined
+  /* <DEPRECATED> */ | string /* </DEPRECATED> */
+  {
     /* <DEPRECATED> */
     if (this._icon === null) {
       // only alias .iconClass if ._icon has been explicitly nulled
@@ -144,7 +146,9 @@ class Title<T> {
    * DEPRECATED: if set to a string value, the .icon field will function as
    * an alias for the .iconClass field, for backwards compatibility
    */
-  set icon(value: VirtualElement.IRenderer | string | undefined ) {
+  set icon(value: VirtualElement.IRenderer | undefined
+  /* <DEPRECATED> */ | string /* </DEPRECATED> */
+  ) {
     /* <DEPRECATED> */
     if (typeof value === "string") {
       // when ._icon is null, the .icon getter will alias .iconClass
@@ -153,11 +157,11 @@ class Title<T> {
     } else {
     /* </DEPRECATED> */
 
-      if (this._icon === value) {
-        return;
-      }
-      this._icon = value;
-      this._changed.emit(undefined);
+    if (this._icon === value) {
+      return;
+    }
+    this._icon = value;
+    this._changed.emit(undefined);
 
     /* <DEPRECATED> */
     }
