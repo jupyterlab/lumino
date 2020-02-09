@@ -38,7 +38,7 @@ class Title<T> {
       this._mnemonic = options.mnemonic;
     }
     if (options.icon !== undefined) {
-      this._iconClass = options.icon;
+      this.icon = options.icon;
     }
     if (options.iconClass !== undefined) {
       this._iconClass = options.iconClass;
@@ -47,7 +47,7 @@ class Title<T> {
       this._iconLabel = options.iconLabel;
     }
     if (options.iconRenderer !== undefined) {
-      this._iconRenderer = options.iconRenderer;
+      this._icon = options.iconRenderer;
     }
     if (options.caption !== undefined) {
       this._caption = options.caption;
@@ -116,17 +116,52 @@ class Title<T> {
   }
 
   /**
-   * @deprecated Use `iconClass` instead.
+   * Get the icon renderer for the title.
+   *
+   * #### Notes
+   * The default value is undefined.
+   *
+   * DEPRECATED: if set to a string value, the .icon field will function as
+   * an alias for the .iconClass field, for backwards compatibility
    */
-  get icon(): string {
-    return this.iconClass;
+  get icon(): VirtualElement.IRenderer | string | undefined {
+    /* <DEPRECATED> */
+    if (this._icon === null) {
+      // only alias .iconClass if ._icon has been explicitly nulled
+      return this.iconClass
+    }
+    /* </DEPRECATED> */
+
+    return this._icon;
   }
 
   /**
-   * @deprecated Use `iconClass` instead.
+   * Set the icon renderer for the title.
+   *
+   * #### Notes
+   * A renderer is an object that supplies a render and unrender function.
+   *
+   * DEPRECATED: if set to a string value, the .icon field will function as
+   * an alias for the .iconClass field, for backwards compatibility
    */
-  set icon(value: string) {
-    this.iconClass = value;
+  set icon(value: VirtualElement.IRenderer | string | undefined ) {
+    /* <DEPRECATED> */
+    if (typeof value === "string") {
+      // when ._icon is null, the .icon getter will alias .iconClass
+      this._icon = null;
+      this.iconClass = value;
+    } else {
+    /* </DEPRECATED> */
+
+      if (this._icon === value) {
+        return;
+      }
+      this._icon = value;
+      this._changed.emit(undefined);
+
+    /* <DEPRECATED> */
+    }
+    /* </DEPRECATED> */
   }
 
   /**
@@ -178,27 +213,17 @@ class Title<T> {
   }
 
   /**
-   * Get the icon renderer for the title.
-   *
-   * #### Notes
-   * The default value is undefined.
+   * @deprecated Use `icon` instead.
    */
-  get iconRenderer(): VirtualElement.IRenderer {
-    return this._iconRenderer;
+  get iconRenderer(): VirtualElement.IRenderer | undefined {
+    return this._icon || undefined;
   }
 
   /**
-   * Set the icon renderer for the title.
-   *
-   * #### Notes
-   * A renderer is an object that supplies a render and unrender function.
+   * @deprecated Use `icon` instead.
    */
-  set iconRenderer(value: VirtualElement.IRenderer) {
-    if (this._iconRenderer === value) {
-      return;
-    }
-    this._iconRenderer = value;
-    this._changed.emit(undefined);
+  set iconRenderer(value: VirtualElement.IRenderer | undefined) {
+    this.icon = value;
   }
 
   /**
@@ -297,9 +322,9 @@ class Title<T> {
   private _label = '';
   private _caption = '';
   private _mnemonic = -1;
+  private _icon: VirtualElement.IRenderer | null | undefined;
   private _iconClass = '';
   private _iconLabel = '';
-  private _iconRenderer: VirtualElement.IRenderer;
   private _className = '';
   private _closable = false;
   private _dataset: Title.Dataset;
@@ -339,9 +364,12 @@ namespace Title {
     mnemonic?: number;
 
     /**
-     * @deprecated Use `iconClass` instead.
+     * The icon renderer for the title.
+     *
+     * DEPRECATED: if set to a string value, the .icon field will function as
+     * an alias for the .iconClass field, for backwards compatibility
      */
-    icon?: string;
+    icon?: VirtualElement.IRenderer | string;
 
     /**
      * The icon class name for the title.
@@ -354,8 +382,7 @@ namespace Title {
     iconLabel?: string;
 
     /**
-     * An object that supplies render and unrender functions used
-     * to create and cleanup the icon of the title.
+     * @deprecated Use `icon` instead.
      */
     iconRenderer?: VirtualElement.IRenderer;
 
