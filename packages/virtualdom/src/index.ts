@@ -801,7 +801,8 @@ namespace VirtualElement {
      *
      * For example, if render calls `ReactDOM.render(..., host)`, then
      * there has to also be a corresponding implementation of unrender that
-     * calls `ReactDOM.unmountComponentAtNode(host)`.
+     * calls `ReactDOM.unmountComponentAtNode(host)` in order to prevent
+     * a memory leak.
      *
      * @param host - the DOM element to be removed.
      */

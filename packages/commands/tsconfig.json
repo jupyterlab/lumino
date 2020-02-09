@@ -40,6 +40,9 @@
     },
     {
       "path": "../signaling"
+    },
+    {
+      "path": "../virtualdom"
     }
   ]
 }

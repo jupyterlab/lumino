@@ -1054,6 +1054,11 @@ namespace Menu {
     readonly iconLabel: string;
 
     /**
+     * The icon renderer for the menu item.
+     */
+    readonly iconRenderer?: VirtualElement.IRenderer;
+
+    /**
      * The display caption for the menu item.
      */
     readonly caption: string;
@@ -1167,7 +1172,8 @@ namespace Menu {
      */
     renderIcon(data: IRenderData): VirtualElement {
       let className = this.createIconClass(data);
-      return h.div({ className }, data.item.iconLabel);
+      // if iconRenderer is undefined, it will just be ignored
+      return h.div({ className }, data.item.iconRenderer!, data.item.iconLabel);
     }
 
     /**
@@ -1775,6 +1781,19 @@ namespace Private {
         return this.submenu.title.iconLabel;
       }
       return '';
+    }
+
+    /**
+     * The icon renderer for the menu item.
+     */
+    get iconRenderer(): VirtualElement.IRenderer {
+      if (this.type === 'command') {
+        return this._commands.iconRenderer(this.command, this.args);
+      }
+      if (this.type === 'submenu' && this.submenu) {
+        return this.submenu.title.iconRenderer;
+      }
+      return undefined!;
     }
 
     /**

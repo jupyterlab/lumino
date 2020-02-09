@@ -46,7 +46,8 @@
     "@lumino/disposable": "^1.3.4",
     "@lumino/domutils": "^1.1.7",
     "@lumino/keyboard": "^1.1.6",
-    "@lumino/signaling": "^1.3.4"
+    "@lumino/signaling": "^1.3.4",
+    "@lumino/virtualdom": "^1.5.0"
   },
   "devDependencies": {
     "@microsoft/api-extractor": "^7.6.0",

@@ -31,6 +31,9 @@ import {
   ISignal, Signal
 } from '@lumino/signaling';
 
+import {
+  VirtualElement
+} from '@lumino/virtualdom';
 
 /**
  * An object which manages a collection of commands.
@@ -223,6 +226,21 @@ class CommandRegistry {
   iconLabel(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): string {
     let cmd = this._commands[id];
     return cmd ? cmd.iconLabel.call(undefined, args) : '';
+  }
+
+  /**
+   * Get the icon renderer for a specific command.
+   *
+   * @param id - The id of the command of interest.
+   *
+   * @param args - The arguments for the command.
+   *
+   * @returns The icon renderer for the command, or undefined if
+   *   the command is not registered.
+   */
+  iconRenderer(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): VirtualElement.IRenderer {
+    let cmd = this._commands[id];
+    return cmd ? cmd.iconRenderer.call(undefined, args) : undefined;
   }
 
   /**
@@ -680,6 +698,17 @@ namespace CommandRegistry {
      * The default value is an empty string.
      */
     iconLabel?: string | CommandFunc<string>;
+
+    /**
+     * The icon renderer for the command.
+     *
+     * #### Notes
+     * This can be an IRenderer object, or a function which returns the
+     * renderer based on the provided command arguments.
+     *
+     * The default value is undefined.
+     */
+    iconRenderer?: VirtualElement.IRenderer | CommandFunc<VirtualElement.IRenderer>;
 
     /**
      * The caption for the command.
@@ -1167,6 +1196,7 @@ namespace Private {
     readonly mnemonic: CommandFunc<number>;
     readonly iconClass: CommandFunc<string>;
     readonly iconLabel: CommandFunc<string>;
+    readonly iconRenderer: CommandFunc<VirtualElement.IRenderer | undefined>;
     readonly caption: CommandFunc<string>;
     readonly usage: CommandFunc<string>;
     readonly className: CommandFunc<string>;
@@ -1187,6 +1217,7 @@ namespace Private {
       mnemonic: asFunc(options.mnemonic, negativeOneFunc),
       iconClass: asFunc(options.iconClass || options.icon, emptyStringFunc),
       iconLabel: asFunc(options.iconLabel, emptyStringFunc),
+      iconRenderer: asFunc(options.iconRenderer, undefinedFunc),
       caption: asFunc(options.caption, emptyStringFunc),
       usage: asFunc(options.usage, emptyStringFunc),
       className: asFunc(options.className, emptyStringFunc),
@@ -1324,6 +1355,11 @@ namespace Private {
    * A singleton empty dataset function.
    */
   const emptyDatasetFunc = () => ({});
+
+  /**
+   * A singleton undefined function
+   */
+  const undefinedFunc = () => undefined;
 
   /**
    * Cast a value or command func to a command func.
