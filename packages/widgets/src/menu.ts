@@ -1765,7 +1765,15 @@ namespace Private {
       if (this.type === 'submenu' && this.submenu) {
         return this.submenu.title.icon;
       }
-      return undefined!;
+
+      /* <DEPRECATED> */
+      // alias to icon class if not otherwise defined
+      return this.iconClass;
+      /* </DEPRECATED> */
+
+      /* <FUTURE>
+      return undefined;
+      </FUTURE> */
     }
 
     /**

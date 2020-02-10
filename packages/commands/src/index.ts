@@ -194,21 +194,23 @@ class CommandRegistry {
   /**
    * Get the icon renderer for a specific command.
    *
+   * DEPRECATED: if set to a string value, the .icon field will
+   * function as an alias for the .iconClass field, for backwards
+   * compatibility. In the future when this is removed, the default
+   * return type will become undefined.
+   *
    * @param id - The id of the command of interest.
    *
    * @param args - The arguments for the command.
    *
-   * @returns The icon renderer for the command, or undefined if
-   *   the command is not registered.
-   *   
-   *   DEPRECATED: if set to a string value, the .icon field will function as
-   *   an alias for the .iconClass field, for backwards compatibility
+   * @returns The icon renderer for the command, or
+   *   an empty string if the command is not registered.
    */
   icon(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): VirtualElement.IRenderer | undefined
   /* <DEPRECATED> */ | string /* </DEPRECATED> */
   {
     let cmd = this._commands[id];
-    return cmd ? cmd.icon.call(undefined, args) : undefined;
+    return cmd ? cmd.icon.call(undefined, args) : /* <DEPRECATED> */ '' /* </DEPRECATED> */ /* <FUTURE> undefined </FUTURE> */;
   }
 
   /**
@@ -1221,7 +1223,7 @@ namespace Private {
     let iconClass;
     
     /* <DEPRECATED> */
-    if (typeof options.icon === 'string') {
+    if (!(options.icon) || typeof options.icon === 'string') {
       // alias icon to iconClass
       iconClass = asFunc(options.iconClass || options.icon, emptyStringFunc);
       icon = iconClass;
