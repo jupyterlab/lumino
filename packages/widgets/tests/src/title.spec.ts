@@ -210,6 +210,11 @@ describe('@lumino/widgets', () => {
         // when switched to string, should alias .iconClass
         expect(title.icon).to.equal(title.iconClass);
       });
+
+      it('should alias .iconClass if unset', () => {
+        let title = new Title({ owner, iconClass: 'foo' });
+        expect(title.icon).to.equal('foo');
+      });
       /* </DEPRECATED> */
 
     });

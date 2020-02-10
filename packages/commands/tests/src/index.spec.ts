@@ -275,13 +275,21 @@ describe('@lumino/commands', () => {
 
     describe('#icon()', () => {
 
+      const iconRenderer = {
+        render: (host: HTMLElement, options?: any) => {
+          const renderNode = document.createElement('div');
+          renderNode.className = 'p-render';
+          host.appendChild(renderNode);
+        }
+      };
+
       it('should get the icon for a specific command', () => {
         let cmd = {
           execute: (args: JSONObject) => { return args; },
-          icon: 'foo'
+          icon: iconRenderer
         };
         registry.addCommand('test', cmd);
-        expect(registry.icon('test')).to.equal('foo');
+        expect(registry.icon('test')).to.equal(iconRenderer);
       });
 
       it('should give the appropriate icon given arguments', () => {
@@ -302,6 +310,25 @@ describe('@lumino/commands', () => {
         expect(registry.icon('test')).to.equal('');
       });
 
+      /* <DEPRECATED> */
+      it('should be able to return a string value', () => {
+        let cmd = {
+          execute: (args: JSONObject) => { return args; },
+          icon: 'foo'
+        };
+        registry.addCommand('test', cmd);
+        expect(registry.icon('test')).to.equal('foo');
+      });
+
+      it('should alias .iconClass() if cmd.icon is unset', () => {
+        let cmd = {
+          execute: (args: JSONObject) => { return args; },
+          iconClass: 'foo'
+        };
+        registry.addCommand('test', cmd);
+        expect(registry.icon('test')).to.equal('foo');
+      });
+      /* </DEPRECATED> */
     });
 
     describe('#caption()', () => {
