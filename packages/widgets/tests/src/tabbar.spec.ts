@@ -1297,10 +1297,17 @@ describe('@lumino/widgets', () => {
           expect(node.classList.contains('lm-mod-closable')).to.equal(true);
           expect(node.title).to.equal(title.caption);
 
-          let icon = node.getElementsByClassName('lm-TabBar-tabIcon')[0] as HTMLElement;
           let label = node.getElementsByClassName('lm-TabBar-tabLabel')[0] as HTMLElement;
-          expect(icon.classList.contains(title.icon)).to.equal(true);
           expect(label.textContent).to.equal(title.label);
+
+          let icon = node.getElementsByClassName('lm-TabBar-tabIcon')[0] as HTMLElement;
+          expect(icon.classList.contains(title.iconClass)).to.equal(true);
+
+          /* <DEPRECATED> */
+          // since a string was assigned to .icon, it should alias .iconClass
+          expect(icon.classList.contains(title.icon as string)).to.equal(true);
+          expect(title.icon).to.equal(title.iconClass);
+          /* </DEPRECATED> */
         });
 
       });
@@ -1312,7 +1319,13 @@ describe('@lumino/widgets', () => {
           let vNode = renderer.renderIcon({ title, current: true, zIndex: 1 });
           let node = VirtualDOM.realize(vNode as VirtualElement);
           expect(node.className).to.contain('lm-TabBar-tabIcon');
-          expect(node.classList.contains(title.icon)).to.equal(true);
+          expect(node.classList.contains(title.iconClass)).to.equal(true);
+
+          /* <DEPRECATED> */
+          // make sure that icon and iconClass match
+          expect(node.classList.contains(title.icon as string)).to.equal(true);
+          expect(title.icon).to.equal(title.iconClass);
+          /* </DEPRECATED> */
         });
 
       });
@@ -1383,7 +1396,13 @@ describe('@lumino/widgets', () => {
             title, current: true, zIndex: 1
           });
           expect(className).to.contain('lm-TabBar-tabIcon');
-          expect(className).to.contain(title.icon);
+          expect(className).to.contain(title.iconClass);
+
+          /* <DEPRECATED> */
+          // make sure that icon and iconClass match
+          expect(className).to.contain(title.icon as string);
+          expect(title.icon).to.equal(title.iconClass);
+          /* </DEPRECATED> */
         });
 
       });

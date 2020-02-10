@@ -52,6 +52,14 @@ class Title<T> {
       }
       /* </DEPRECATED> */
     }
+
+    /* <DEPRECATED> */
+    else {
+      // if unset, default to aliasing .iconClass
+      this._icon = null;
+    }
+    /* </DEPRECATED> */
+
     if (options.iconClass !== undefined) {
       this._iconClass = options.iconClass;
     }

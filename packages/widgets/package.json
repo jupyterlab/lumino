@@ -41,7 +41,7 @@
     "test:chrome-headless": "cd tests && karma start --browsers=ChromeHeadless",
     "test:debug": "npm run test:debug:firefox",
     "test:debug:chrome": "cd tests && karma start --browsers=Chrome --singleRun=false --debug=true --browserNoActivityTimeout=10000000 --browserDisconnectTimeout=10000000",
-    "test:debug:chrome-headless": "cd tests && karma start  --browsers=ChromeHeadless --singleRun=false --debug=true --browserNoActivityTimeout=10000000 --browserDisconnectTimeout=10000000",
+    "test:debug:chrome-headless": "cd tests && karma start --browsers=ChromeHeadless --singleRun=false --debug=true --browserNoActivityTimeout=10000000 --browserDisconnectTimeout=10000000",
     "test:debug:firefox": "cd tests && karma start --browsers=Firefox --singleRun=false --debug=true --browserNoActivityTimeout=10000000 --browserDisconnectTimeout=10000000",
     "test:firefox": "cd tests && karma start --browsers=Firefox",
     "test:ie": "cd tests && karma start --browsers=IE",
