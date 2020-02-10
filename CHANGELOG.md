@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2020-02-10
+
+ - @lumino/commands@1.10.0
+ - @lumino/virtualdom@1.6.0
+ - @lumino/widgets@1.11.0
+
+ - Normalize `icon` fields across all interfaces [#46](https://github.com/jupyterlab/lumino/pull/46).
+
+
 ## 2020-01-27
 
 - @lumino/virtualdom@1.5.0
