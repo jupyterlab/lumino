@@ -1756,7 +1756,7 @@ namespace Private {
     /**
      * The icon renderer for the menu item.
      */
-    get icon(): VirtualElement.IRenderer | undefined 
+    get icon(): VirtualElement.IRenderer | undefined
     /* <DEPRECATED> */ | string /* </DEPRECATED> */
     {
       if (this.type === 'command') {

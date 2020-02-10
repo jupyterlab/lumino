@@ -588,6 +588,12 @@ namespace CommandPalette {
     readonly caption: string;
 
     /**
+     * The icon renderer for the command item.
+     */
+    readonly icon: VirtualElement.IRenderer | undefined
+    /* <DEPRECATED> */ | string /* </DEPRECATED> */;
+
+    /**
      * The icon class for the command item.
      */
     readonly iconClass: string;
@@ -779,7 +785,15 @@ namespace CommandPalette {
      */
     renderItemIcon(data: IItemRenderData): VirtualElement {
       let className = this.createIconClass(data);
-      return h.div({ className }, data.item.iconLabel);
+
+      /* <DEPRECATED> */
+      if (typeof data.item.icon === 'string') {
+        return h.div({className}, data.item.iconLabel);
+      }
+      /* </DEPRECATED> */
+
+      // if data.item.icon is undefined, it will be ignored
+      return h.div({className}, data.item.icon!, data.item.iconLabel);
     }
 
     /**
@@ -1444,6 +1458,15 @@ namespace Private {
      */
     get label(): string {
       return this._commands.label(this.command, this.args);
+    }
+
+    /**
+     * The icon renderer for the command item.
+     */
+    get icon(): VirtualElement.IRenderer | undefined
+    /* <DEPRECATED> */ | string /* </DEPRECATED> */
+    {
+      return this._commands.icon(this.command, this.args);
     }
 
     /**
