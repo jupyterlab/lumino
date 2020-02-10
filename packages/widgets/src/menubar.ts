@@ -787,7 +787,15 @@ namespace MenuBar {
      */
     renderIcon(data: IRenderData): VirtualElement {
       let className = this.createIconClass(data);
-      return h.div({ className }, data.title.iconLabel);
+
+      /* <DEPRECATED> */
+      if (typeof data.title.icon === 'string') {
+        return h.div({className}, data.title.iconLabel);
+      }
+      /* </DEPRECATED> */
+
+      // if data.title.icon is undefined, it will be ignored
+      return h.div({className}, data.title.icon!, data.title.iconLabel);
     }
 
     /**

@@ -801,11 +801,15 @@ namespace VirtualElement {
      *
      * For example, if render calls `ReactDOM.render(..., host)`, then
      * there has to also be a corresponding implementation of unrender that
-     * calls `ReactDOM.unmountComponentAtNode(host)`.
+     * calls `ReactDOM.unmountComponentAtNode(host)` in order to prevent
+     * a memory leak.
      *
      * @param host - the DOM element to be removed.
+     *
+     * @param options - Will be populated with the .attrs and .children fields
+     * set on the VirtualElement being unrendered.
      */
-    unrender?: (host: HTMLElement) => void;
+    unrender?: (host: HTMLElement, options?: {attrs?: ElementAttrs, children?: ReadonlyArray<VirtualNode>}) => void;
   };
 }
 
@@ -1312,7 +1316,7 @@ namespace Private {
 
       // Update the element content.
       if (newVNode.renderer) {
-        newVNode.renderer.render(currElem as HTMLElement);
+        newVNode.renderer.render(currElem as HTMLElement, {attrs: newVNode.attrs, children: newVNode.children});
       } else {
         updateContent(currElem as HTMLElement, oldVNode.children, newVNode.children);
       }
@@ -1341,7 +1345,7 @@ namespace Private {
 
       // recursively clean up host children
       if (oldNode.type === 'text') {} else if (oldNode.renderer && oldNode.renderer.unrender) {
-        oldNode.renderer.unrender(child!);
+        oldNode.renderer.unrender(child!, {attrs: oldNode.attrs, children: oldNode.children});
       } else {
         removeContent(child!, oldNode.children, 0, false);
       }

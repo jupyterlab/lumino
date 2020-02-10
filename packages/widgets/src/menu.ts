@@ -1039,9 +1039,10 @@ namespace Menu {
     readonly mnemonic: number;
 
     /**
-     * @deprecated Use `iconClass` instead.
+     * The icon renderer for the menu item.
      */
-    readonly icon: string;
+    readonly icon: VirtualElement.IRenderer | undefined
+    /* <DEPRECATED> */ | string /* </DEPRECATED> */;
 
     /**
      * The icon class for the menu item.
@@ -1167,7 +1168,15 @@ namespace Menu {
      */
     renderIcon(data: IRenderData): VirtualElement {
       let className = this.createIconClass(data);
-      return h.div({ className }, data.item.iconLabel);
+
+      /* <DEPRECATED> */
+      if (typeof data.item.icon === 'string') {
+        return h.div({className}, data.item.iconLabel);
+      }
+      /* </DEPRECATED> */
+
+      // if data.item.icon is undefined, it will be ignored
+      return h.div({className}, data.item.icon!, data.item.iconLabel);
     }
 
     /**
@@ -1745,10 +1754,26 @@ namespace Private {
     }
 
     /**
-     * @deprecated Use `iconClass` instead.
+     * The icon renderer for the menu item.
      */
-    get icon(): string {
+    get icon(): VirtualElement.IRenderer | undefined
+    /* <DEPRECATED> */ | string /* </DEPRECATED> */
+    {
+      if (this.type === 'command') {
+        return this._commands.icon(this.command, this.args);
+      }
+      if (this.type === 'submenu' && this.submenu) {
+        return this.submenu.title.icon;
+      }
+
+      /* <DEPRECATED> */
+      // alias to icon class if not otherwise defined
       return this.iconClass;
+      /* </DEPRECATED> */
+
+      /* <FUTURE>
+      return undefined;
+      </FUTURE> */
     }
 
     /**
@@ -1776,6 +1801,7 @@ namespace Private {
       }
       return '';
     }
+
 
     /**
      * The display caption for the menu item.

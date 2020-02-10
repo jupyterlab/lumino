@@ -7,10 +7,12 @@ build
 review/api/temp
 *.tsbuildinfo
 
-# jetbrains IDE stuff
+# jetbrains ide stuff
 *.iml
 .idea/
 
-# ms IDE stuff
+# ms ide stuff
+*.code-workspace
+.history
 .vscode
 

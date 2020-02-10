@@ -1360,7 +1360,14 @@ namespace TabBar {
       const { title } = data;
       let className = this.createIconClass(data);
 
-      return h.div({className}, title.iconRenderer, title.iconLabel);
+      /* <DEPRECATED> */
+      if (typeof title.icon === 'string') {
+        return h.div({className}, title.iconLabel);
+      }
+      /* </DEPRECATED> */
+
+      // if title.icon is undefined, it will be ignored
+      return h.div({className}, title.icon!, title.iconLabel);
     }
 
     /**

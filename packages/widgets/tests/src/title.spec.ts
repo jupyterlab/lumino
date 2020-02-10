@@ -143,6 +143,14 @@ describe('@lumino/widgets', () => {
 
     describe('#icon', () => {
 
+      const iconRenderer = {
+        render: (host: HTMLElement, options?: any) => {
+          const renderNode = document.createElement('div');
+          renderNode.className = 'p-render';
+          host.appendChild(renderNode);
+        }
+      };
+
       it('should default to an empty string', () => {
         let title = new Title({ owner });
         expect(title.icon).to.equal('');
@@ -180,6 +188,34 @@ describe('@lumino/widgets', () => {
         title.icon = 'foo';
         expect(called).to.equal(false);
       });
+
+      /* <DEPRECATED> */
+      it('should be able to switch string => renderer', () => {
+        let title = new Title({ owner, icon: 'foo' });
+        expect(title.icon).to.equal('foo');
+
+        // when initialized with string, should alias .iconClass
+        expect(title.icon).to.equal(title.iconClass);
+
+        title.icon = iconRenderer;
+        expect(title.icon).to.equal(iconRenderer);
+      });
+
+      it('should be able to switch renderer => string', () => {
+        let title = new Title({ owner, icon: iconRenderer });
+        expect(title.icon).to.equal(iconRenderer);
+        title.icon = 'foo';
+        expect(title.icon).to.equal('foo');
+
+        // when switched to string, should alias .iconClass
+        expect(title.icon).to.equal(title.iconClass);
+      });
+
+      it('should alias .iconClass if unset', () => {
+        let title = new Title({ owner, iconClass: 'foo' });
+        expect(title.icon).to.equal('foo');
+      });
+      /* </DEPRECATED> */
 
     });
 

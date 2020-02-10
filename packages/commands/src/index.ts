@@ -31,6 +31,9 @@ import {
   ISignal, Signal
 } from '@lumino/signaling';
 
+import {
+  VirtualElement
+} from '@lumino/virtualdom';
 
 /**
  * An object which manages a collection of commands.
@@ -189,10 +192,25 @@ class CommandRegistry {
   }
 
   /**
-   * @deprecated Use `iconClass()` instead.
+   * Get the icon renderer for a specific command.
+   *
+   * DEPRECATED: if set to a string value, the .icon field will
+   * function as an alias for the .iconClass field, for backwards
+   * compatibility. In the future when this is removed, the default
+   * return type will become undefined.
+   *
+   * @param id - The id of the command of interest.
+   *
+   * @param args - The arguments for the command.
+   *
+   * @returns The icon renderer for the command, or
+   *   an empty string if the command is not registered.
    */
-  icon(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): string {
-    return this.iconClass(id, args);
+  icon(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): VirtualElement.IRenderer | undefined
+  /* <DEPRECATED> */ | string /* </DEPRECATED> */
+  {
+    let cmd = this._commands[id];
+    return cmd ? cmd.icon.call(undefined, args) : /* <DEPRECATED> */ '' /* </DEPRECATED> */ /* <FUTURE> undefined </FUTURE> */;
   }
 
   /**
@@ -647,10 +665,24 @@ namespace CommandRegistry {
     mnemonic?: number | CommandFunc<number>;
 
     /**
-     * @deprecated Use `iconClass` instead.
+     * The icon renderer for the command.
+     *
+     * #### Notes
+     * This can be an IRenderer object, or a function which returns the
+     * renderer based on the provided command arguments.
+     *
+     * The default value is undefined.
+     * 
+     * DEPRECATED: if set to a string value, the .icon field will function as
+     * an alias for the .iconClass field, for backwards compatibility
      */
-    icon?: string | CommandFunc<string>;
-
+    icon?: VirtualElement.IRenderer | undefined
+    /* <DEPRECATED> */ | string /* </DEPRECATED> */
+    | CommandFunc<
+      VirtualElement.IRenderer | undefined
+      /* <DEPRECATED> */ | string /* </DEPRECATED> */
+    >;
+    
     /**
      * The icon class for the command.
      *
@@ -1165,6 +1197,12 @@ namespace Private {
     readonly execute: CommandFunc<any>;
     readonly label: CommandFunc<string>;
     readonly mnemonic: CommandFunc<number>;
+    
+    readonly icon: CommandFunc<
+      VirtualElement.IRenderer | undefined
+      /* <DEPRECATED> */ | string /* </DEPRECATED> */
+    >;
+    
     readonly iconClass: CommandFunc<string>;
     readonly iconLabel: CommandFunc<string>;
     readonly caption: CommandFunc<string>;
@@ -1181,11 +1219,30 @@ namespace Private {
    */
   export
   function createCommand(options: CommandRegistry.ICommandOptions): ICommand {
+    let icon;
+    let iconClass;
+    
+    /* <DEPRECATED> */
+    if (!(options.icon) || typeof options.icon === 'string') {
+      // alias icon to iconClass
+      iconClass = asFunc(options.iconClass || options.icon, emptyStringFunc);
+      icon = iconClass;
+    } else {
+    /* /<DEPRECATED> */
+
+    iconClass = asFunc(options.iconClass, emptyStringFunc);
+    icon = asFunc(options.icon, undefinedFunc);
+
+    /* <DEPRECATED> */
+    }
+    /* </DEPRECATED> */
+    
     return {
       execute: options.execute,
       label: asFunc(options.label, emptyStringFunc),
       mnemonic: asFunc(options.mnemonic, negativeOneFunc),
-      iconClass: asFunc(options.iconClass || options.icon, emptyStringFunc),
+      icon,
+      iconClass,
       iconLabel: asFunc(options.iconLabel, emptyStringFunc),
       caption: asFunc(options.caption, emptyStringFunc),
       usage: asFunc(options.usage, emptyStringFunc),
@@ -1324,6 +1381,11 @@ namespace Private {
    * A singleton empty dataset function.
    */
   const emptyDatasetFunc = () => ({});
+
+  /**
+   * A singleton undefined function
+   */
+  const undefinedFunc = () => undefined;
 
   /**
    * Cast a value or command func to a command func.
