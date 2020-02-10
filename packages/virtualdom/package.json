@@ -34,13 +34,20 @@
     "clean": "rimraf lib && rimraf *.tsbuildinfo",
     "clean:test": "rimraf tests/build",
     "docs": "typedoc --options tdoptions.json src",
+
     "test": "npm run test:firefox",
-    "test:chrome": "cd tests && karma start --browsers=Chrome",
-    "test:chrome-headless": "cd tests && karma start --browsers=ChromeHeadless",
-    "test:debug": "cd tests && karma start --browsers=Chrome --singleRun=false --debug=true --browserNoActivityTimeout=10000000 --browserDisconnectTimeout=10000000",
-    "test:debug:chrome-headless": "cd tests && karma start  --browsers=ChromeHeadless --singleRun=false --debug=true --browserNoActivityTimeout=10000000 --browserDisconnectTimeout=10000000",
-    "test:firefox": "cd tests && karma start --browsers=Firefox",
-    "test:ie": "cd tests && karma start --browsers=IE",
+    "test:chrome": "npm run test:nobrowser -- --browsers=Chrome",
+    "test:chrome-headless": "npm run test:nobrowser -- --browsers=ChromeHeadless",
+    "test:ie": "npm run test:nobrowser -- --browsers=IE",
+    "test:firefox": "npm run test:nobrowser -- --browsers=Firefox",
+    "test:nobrowser": "cd tests && karma start",
+
+    "test:debug": "npm run test:debug:firefox",
+    "test:debug:chrome-headless": "npm run test:debug:nobrowser -- --browsers=ChromeHeadless",
+    "test:debug:chrome": "npm run test:debug:nobrowser -- --browsers=Chrome",
+    "test:debug:firefox": "npm run test:debug:nobrowser -- --browsers=Firefox",
+    "test:debug:nobrowser": "cd tests && karma start --singleRun=false --debug=true --browserNoActivityTimeout=10000000 --browserDisconnectTimeout=10000000",
+
     "watch": "tsc --build --watch"
   },
   "dependencies": {
