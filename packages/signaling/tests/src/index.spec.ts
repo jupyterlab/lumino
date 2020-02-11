@@ -122,6 +122,17 @@ describe('@lumino/signaling', () => {
         expect(handler.twoValue).to.equal(42);
       });
 
+      it('should handle connect after disconnect and emit', () => {
+        let obj = new TestObject();
+        let handler = new TestHandler();
+        let c1 = obj.one.connect(handler.onOne, handler);
+        expect(c1).to.equal(true);
+        obj.one.disconnect(handler.onOne, handler);
+        obj.one.emit(undefined);
+        let c2 = obj.one.connect(handler.onOne, handler);
+        expect(c2).to.equal(true);
+      });
+
     });
 
     describe('#disconnect()', () => {
@@ -173,6 +184,26 @@ describe('@lumino/signaling', () => {
         expect(handler1.oneCount).to.equal(0);
         expect(handler2.oneCount).to.equal(1);
         expect(handler3.oneCount).to.equal(2);
+      });
+
+      it('should handle disconnecting sender after receiver', () => {
+        let obj = new TestObject();
+        let handler = new TestHandler();
+        obj.one.connect(handler.onOne, handler);
+        Signal.disconnectReceiver(handler);
+        Signal.disconnectSender(obj);
+        obj.one.emit(undefined);
+        expect(handler.oneCount).to.equal(0);
+      });
+
+      it('should handle disconnecting receiver after sender', () => {
+        let obj = new TestObject();
+        let handler = new TestHandler();
+        obj.one.connect(handler.onOne, handler);
+        Signal.disconnectSender(obj);
+        Signal.disconnectReceiver(handler);
+        obj.one.emit(undefined);
+        expect(handler.oneCount).to.equal(0);
       });
 
     });
@@ -457,45 +488,6 @@ describe('@lumino/signaling', () => {
         expect(called).to.equal(true);
       });
 
-    });
-
-  });
-
-  context('https://github.com/luminojs/lumino-signaling/issues/5', () => {
-
-    it('should handle connect after disconnect and emit', () => {
-      let obj = new TestObject();
-      let handler = new TestHandler();
-      let c1 = obj.one.connect(handler.onOne, handler);
-      expect(c1).to.equal(true);
-      obj.one.disconnect(handler.onOne, handler);
-      obj.one.emit(undefined);
-      let c2 = obj.one.connect(handler.onOne, handler);
-      expect(c2).to.equal(true);
-    });
-
-  });
-
-  context('https://github.com/luminojs/lumino-signaling/issues/8', () => {
-
-    it('should handle disconnecting sender after receiver', () => {
-      let obj = new TestObject();
-      let handler = new TestHandler();
-      obj.one.connect(handler.onOne, handler);
-      Signal.disconnectReceiver(handler);
-      Signal.disconnectSender(obj);
-      obj.one.emit(undefined);
-      expect(handler.oneCount).to.equal(0);
-    });
-
-    it('should handle disconnecting receiver after sender', () => {
-      let obj = new TestObject();
-      let handler = new TestHandler();
-      obj.one.connect(handler.onOne, handler);
-      Signal.disconnectSender(obj);
-      Signal.disconnectReceiver(handler);
-      obj.one.emit(undefined);
-      expect(handler.oneCount).to.equal(0);
     });
 
   });
