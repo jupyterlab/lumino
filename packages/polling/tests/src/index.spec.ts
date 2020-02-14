@@ -28,7 +28,7 @@ describe('Poll', () => {
       poll = new Poll({
         auto: false,
         factory: () => Promise.resolve(),
-        name: '@jupyterlab/test-coreutils:Poll#constructor()-1'
+        name: '@lumino/polling:Poll#constructor()-1'
       });
       expect(poll).to.be.an.instanceof(Poll);
     });
@@ -37,7 +37,7 @@ describe('Poll', () => {
       const expected = 'started resolved';
       const ticker: IPoll.Phase<any>[] = [];
       poll = new Poll({
-        name: '@jupyterlab/test-coreutils:Poll#constructor()-2',
+        name: '@lumino/polling:Poll#constructor()-2',
         frequency: { interval: 100 },
         factory: () => Promise.resolve()
       });
@@ -57,7 +57,7 @@ describe('Poll', () => {
       const ticker: IPoll.Phase<any>[] = [];
       poll = new Poll({
         auto: false,
-        name: '@jupyterlab/test-coreutils:Poll#constructor()-2',
+        name: '@lumino/polling:Poll#constructor()-2',
         frequency: { interval: 100 },
         factory: () => Promise.resolve()
       });
@@ -75,7 +75,7 @@ describe('Poll', () => {
         poll = new Poll({
           factory: () => Promise.resolve(),
           frequency: { interval },
-          name: '@jupyterlab/test-coreutils:Poll#frequency:interval-1'
+          name: '@lumino/polling:Poll#frequency:interval-1'
         });
         expect(poll.frequency.interval).to.equal(interval);
       });
@@ -84,7 +84,7 @@ describe('Poll', () => {
         poll = new Poll({
           factory: () => Promise.resolve(),
           frequency: {},
-          name: '@jupyterlab/test-coreutils:Poll#frequency:interval-2'
+          name: '@lumino/polling:Poll#frequency:interval-2'
         });
         expect(poll.frequency.interval).to.equal(1000);
       });
@@ -94,7 +94,7 @@ describe('Poll', () => {
         poll = new Poll({
           factory: () => Promise.resolve(),
           frequency: { backoff },
-          name: '@jupyterlab/test-coreutils:Poll#frequency:backoff-1'
+          name: '@lumino/polling:Poll#frequency:backoff-1'
         });
         expect(poll.frequency.backoff).to.equal(backoff);
       });
@@ -102,7 +102,7 @@ describe('Poll', () => {
       it('should default backoff to `true`', () => {
         poll = new Poll({
           factory: () => Promise.resolve(),
-          name: '@jupyterlab/test-coreutils:Poll#frequency:backoff-2'
+          name: '@lumino/polling:Poll#frequency:backoff-2'
         });
         expect(poll.frequency.backoff).to.equal(true);
       });
@@ -112,7 +112,7 @@ describe('Poll', () => {
         poll = new Poll({
           factory: () => Promise.resolve(),
           frequency: { max },
-          name: '@jupyterlab/test-coreutils:Poll#max-1'
+          name: '@lumino/polling:Poll#max-1'
         });
         expect(poll.frequency.max).to.equal(200000);
       });
@@ -123,7 +123,7 @@ describe('Poll', () => {
         poll = new Poll({
           frequency: { interval },
           factory: () => Promise.resolve(),
-          name: '@jupyterlab/test-coreutils:Poll#frequency:max-2'
+          name: '@lumino/polling:Poll#frequency:max-2'
         });
         expect(poll.frequency.max).to.equal(max);
       });
@@ -133,7 +133,7 @@ describe('Poll', () => {
         poll = new Poll({
           frequency: { interval },
           factory: () => Promise.resolve(),
-          name: '@jupyterlab/test-coreutils:Poll#frequency:max-2'
+          name: '@lumino/polling:Poll#frequency:max-2'
         });
         expect(poll.frequency.max).to.equal(max);
       });
@@ -143,7 +143,7 @@ describe('Poll', () => {
   describe('#name', () => {
     it('should be set to value passed in during instantation', () => {
       const factory = () => Promise.resolve();
-      const name = '@jupyterlab/test-coreutils:Poll#name-1';
+      const name = '@lumino/polling:Poll#name-1';
       poll = new Poll({ factory, name });
       expect(poll.name).to.equal(name);
     });
@@ -158,7 +158,7 @@ describe('Poll', () => {
     it('should emit when the poll is disposed', () => {
       poll = new Poll({
         factory: () => Promise.resolve(),
-        name: '@jupyterlab/test-coreutils:Poll#disposed-1'
+        name: '@lumino/polling:Poll#disposed-1'
       });
       let disposed = false;
       poll.disposed.connect(() => {
@@ -173,7 +173,7 @@ describe('Poll', () => {
     it('should indicate whether the poll is disposed', () => {
       poll = new Poll({
         factory: () => Promise.resolve(),
-        name: '@jupyterlab/test-coreutils:Poll#isDisposed-1'
+        name: '@lumino/polling:Poll#isDisposed-1'
       });
       expect(poll.isDisposed).to.equal(false);
       poll.dispose();
@@ -187,7 +187,7 @@ describe('Poll', () => {
         auto: false,
         factory: () => Promise.resolve(),
         frequency: { interval: 200, backoff: false },
-        name: '@jupyterlab/test-coreutils:Poll#tick-1'
+        name: '@lumino/polling:Poll#tick-1'
       });
       const expected = 'started resolved resolved';
       const ticker: IPoll.Phase<any>[] = [];
@@ -206,7 +206,7 @@ describe('Poll', () => {
         factory: () =>
           Math.random() > 0.5 ? Promise.resolve() : Promise.reject(),
         frequency: { interval: 0, backoff: false },
-        name: '@jupyterlab/test-coreutils:Poll#tick-2'
+        name: '@lumino/polling:Poll#tick-2'
       });
       const ticker: IPoll.Phase<any>[] = [];
       const tocker: IPoll.Phase<any>[] = [];
@@ -245,7 +245,7 @@ describe('Poll', () => {
       poll = new Poll<void, void>({
         factory: () => Promise.resolve(),
         frequency: { interval: 100, backoff: false },
-        name: '@jupyterlab/test-coreutils:Poll#ticked-3'
+        name: '@lumino/polling:Poll#ticked-3'
       });
       poll.ticked.connect((_, tick) => {
         expect(tick).to.equal(poll.state);
@@ -259,7 +259,7 @@ describe('Poll', () => {
       let rejected = false;
       let tick: Promise<Poll>;
       poll = new Poll({
-        name: '@jupyterlab/test-coreutils:Poll#dispose()-1',
+        name: '@lumino/polling:Poll#dispose()-1',
         factory: () => Promise.resolve()
       });
       tick = poll.tick;
@@ -281,7 +281,7 @@ describe('Poll', () => {
       const expected = 'refreshed resolved';
       const ticker: IPoll.Phase<any>[] = [];
       poll = new Poll({
-        name: '@jupyterlab/test-coreutils:Poll#refresh()-1',
+        name: '@lumino/polling:Poll#refresh()-1',
         frequency: { interval: 100 },
         factory: () => Promise.resolve()
       });
@@ -300,7 +300,7 @@ describe('Poll', () => {
       const expected = 'started resolved refreshed resolved';
       const ticker: IPoll.Phase<any>[] = [];
       poll = new Poll({
-        name: '@jupyterlab/test-coreutils:Poll#refresh()-2',
+        name: '@lumino/polling:Poll#refresh()-2',
         frequency: { interval: 100 },
         factory: () => Promise.resolve()
       });
@@ -329,7 +329,7 @@ describe('Poll', () => {
       const expected = 'stopped started resolved';
       const ticker: IPoll.Phase<any>[] = [];
       poll = new Poll({
-        name: '@jupyterlab/test-coreutils:Poll#start()-1',
+        name: '@lumino/polling:Poll#start()-1',
         frequency: { interval: 100 },
         factory: () => Promise.resolve()
       });
@@ -350,7 +350,7 @@ describe('Poll', () => {
       const ticker: IPoll.Phase<any>[] = [];
       poll = new Poll({
         auto: false,
-        name: '@jupyterlab/test-coreutils:Poll#start()-2',
+        name: '@lumino/polling:Poll#start()-2',
         frequency: { interval: 100 },
         factory: () => Promise.resolve()
       });
@@ -382,7 +382,7 @@ describe('Poll', () => {
       const ticker: IPoll.Phase<any>[] = [];
       poll = new Poll({
         auto: false,
-        name: '@jupyterlab/test-coreutils:Poll#stop()-1',
+        name: '@lumino/polling:Poll#stop()-1',
         frequency: { interval: 100 },
         factory: () => Promise.resolve()
       });
@@ -405,7 +405,7 @@ describe('Poll', () => {
       const ticker: IPoll.Phase<any>[] = [];
       poll = new Poll({
         auto: false,
-        name: '@jupyterlab/test-coreutils:Poll#stop()-2',
+        name: '@lumino/polling:Poll#stop()-2',
         frequency: { interval: 100 },
         factory: () => Promise.resolve()
       });
@@ -434,7 +434,7 @@ describe('Poll', () => {
       poll = new Poll({
         factory: () => Promise.resolve(),
         frequency: { interval: 100 },
-        name: '@jupyterlab/test-coreutils:Poll#schedule()-1'
+        name: '@lumino/polling:Poll#schedule()-1'
       });
       expect(poll.state.phase).to.equal('constructed');
       await poll.tick;
@@ -450,7 +450,7 @@ describe('Poll', () => {
       poll = new Poll({
         factory: () => Promise.resolve(),
         frequency: { interval: 100 },
-        name: '@jupyterlab/test-coreutils:Poll#schedule()-2'
+        name: '@lumino/polling:Poll#schedule()-2'
       });
       expect(poll.state.phase).to.equal('constructed');
       await poll.tick;
@@ -466,7 +466,7 @@ describe('Poll', () => {
       poll = new Poll({
         factory: () => Promise.resolve(),
         frequency: { interval: 100 },
-        name: '@jupyterlab/test-coreutils:Poll#schedule()-3'
+        name: '@lumino/polling:Poll#schedule()-3'
       });
       expect(poll.state.phase).to.equal('constructed');
       await poll.tick;
