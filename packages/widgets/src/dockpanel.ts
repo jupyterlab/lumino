@@ -516,7 +516,7 @@ class DockPanel extends Widget {
 
     // Show the drop indicator overlay and update the drop
     // action based on the drop target zone under the mouse.
-    if (this._showOverlay(event.clientX, event.clientY) === 'invalid') {
+    if (event.source !== this || this._showOverlay(event.clientX, event.clientY) === 'invalid') {
       event.dropAction = 'none';
     } else {
       event.dropAction = event.proposedAction;
@@ -970,6 +970,7 @@ class DockPanel extends Widget {
       mimeData, dragImage,
       proposedAction: 'move',
       supportedActions: 'move',
+      source: this
     });
 
     // Hide the tab node in the original tab.
