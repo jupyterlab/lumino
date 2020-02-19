@@ -1269,6 +1269,14 @@ namespace Private {
         continue;
       }
 
+      // If the old XOR new node has a custom renderer,
+      // create and insert a new node.
+      if (!(oldVNode.renderer) != !(newVNode.renderer)) {
+        ArrayExt.insert(oldCopy, i, newVNode);
+        createDOMNode(newVNode, host, currElem);
+        continue;
+      }
+
       // At this point, both nodes are known to be element nodes.
 
       // If the new elem is keyed, move an old keyed elem to the proper
