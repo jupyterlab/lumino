@@ -1,6 +1,6 @@
 {
   "name": "@lumino/datastore",
-  "version": "0.8.3",
+  "version": "0.8.4",
   "description": "Lumino DataStore",
   "homepage": "https://github.com/jupyterlabab/lumino",
   "bugs": {
@@ -44,9 +44,9 @@
     "@lumino/algorithm": "^1.2.3",
     "@lumino/collections": "^1.2.3",
     "@lumino/coreutils": "^1.4.2",
-    "@lumino/disposable": "^1.3.4",
+    "@lumino/disposable": "^1.3.5",
     "@lumino/messaging": "^1.3.3",
-    "@lumino/signaling": "^1.3.4"
+    "@lumino/signaling": "^1.3.5"
   },
   "devDependencies": {
     "rimraf": "^2.5.2",
