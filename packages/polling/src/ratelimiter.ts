@@ -136,11 +136,18 @@ export class Throttler<T = any, U = any> extends RateLimiter<T, U> {
    */
   constructor(fn: () => T | Promise<T>, options?: Throttler.IOptions | number) {
     super(fn, typeof options === 'number' ? options : options && options.limit);
+    let leading = true;
+    let trailing = true;
     if (typeof options !== 'number') {
       options = options || {};
-      this._leading = 'leading' in options ? options.leading! : true;
-      this._trailing = 'trailing' in options ? options.trailing! : true;
+      leading = 'leading' in options ? options.leading! : true;
+      trailing = 'trailing' in options ? options.trailing! : true;
     }
+    this._interval = leading
+      ? Poll.IMMEDIATE
+      : trailing
+      ? this.limit
+      : Poll.IMMEDIATE;
   }
 
   /**
@@ -148,20 +155,12 @@ export class Throttler<T = any, U = any> extends RateLimiter<T, U> {
    */
   async invoke(): Promise<T> {
     if (this.poll.state.phase !== 'invoked') {
-      void this.poll.schedule({
-        interval: this._leading
-          ? Poll.IMMEDIATE
-          : this._trailing
-          ? this.limit
-          : Poll.IMMEDIATE,
-        phase: 'invoked'
-      });
+      void this.poll.schedule({ interval: this._interval, phase: 'invoked' });
     }
     return this.payload!.promise;
   }
 
-  private _leading = true;
-  private _trailing =  true;
+  private _interval: number;
 }
 
 /**
