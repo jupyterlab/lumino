@@ -124,12 +124,72 @@ export class Debouncer<T = any, U = any> extends RateLimiter<T, U> {
  */
 export class Throttler<T = any, U = any> extends RateLimiter<T, U> {
   /**
+   * Instantiate a throttler.
+   *
+   * @param fn - The function being throttled.
+   *
+   * @param options - Throttling configuration or throttling limit in ms.
+   *
+   * #### Notes
+   * Both `leading` and `trailing` default to `true`; `limit` defaults to `500`.
+   * When both `leading` and `trailing` are `true`, `leading` has priority.`
+   */
+  constructor(fn: () => T | Promise<T>, options?: Throttler.IOptions | number) {
+    super(fn, typeof options === 'number' ? options : options && options.limit);
+    if (typeof options !== 'number') {
+      options = options || {};
+      this._leading = 'leading' in options ? options.leading! : true;
+      this._trailing = 'trailing' in options ? options.trailing! : true;
+    }
+  }
+
+  /**
    * Throttles function invocations if one is currently in flight.
    */
   async invoke(): Promise<T> {
     if (this.poll.state.phase !== 'invoked') {
-      void this.poll.schedule({ interval: this.limit, phase: 'invoked' });
+      void this.poll.schedule({
+        interval: this._leading
+          ? Poll.IMMEDIATE
+          : this._trailing
+          ? this.limit
+          : Poll.IMMEDIATE,
+        phase: 'invoked'
+      });
     }
     return this.payload!.promise;
   }
+
+  private _leading = true;
+  private _trailing =  true;
+}
+
+/**
+ * A namespace for `Throttler` interfaces.
+ */
+export namespace Throttler {
+  /**
+   * Instantiation options for a `Throttler`.
+   */
+  export interface IOptions {
+    /**
+     * The throttling limit; defaults to 500ms.
+     */
+    limit?: number;
+
+    /**
+     * Whether the function should invoke at the beginning of throttle cycle.
+     * Defaults to `true`.
+     */
+    leading?: boolean;
+
+    /**
+     * Whether the function should invoke at the end of throttle cycle.
+     * Defaults to `true`.
+     *
+     * #### Notes
+     * When both `leading` and `trailing` are `true`, `leading` has priority.
+     */
+    trailing?: boolean;
+  };
 }
