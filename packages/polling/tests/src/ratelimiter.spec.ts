@@ -19,6 +19,21 @@ describe('Debouncer', () => {
     });
   });
 
+  describe('#invoke()', () => {
+    it('should invoke and debounce a function', async () => {
+      let counter = 0;
+      debouncer = new Debouncer(() => counter++);
+      expect(counter).to.equal(0);
+      await debouncer.invoke();
+      expect(counter).to.equal(1);
+      void debouncer.invoke();
+      void debouncer.invoke();
+      void debouncer.invoke();
+      await debouncer.invoke();
+      expect(counter).to.equal(2);
+    });
+  });
+
 });
 
 describe('Throttler', () => {
