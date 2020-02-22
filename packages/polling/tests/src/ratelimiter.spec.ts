@@ -37,6 +37,7 @@ describe('Debouncer', () => {
 });
 
 describe('Throttler', () => {
+  const limit = 500;
   let throttler: Throttler;
 
   afterEach(() => {
@@ -64,8 +65,8 @@ describe('Throttler', () => {
       expect(counter).to.equal(2);
     });
 
-    it('should default to the `leading` call', async () => {
-      throttler = new Throttler(() => undefined);
+    it('should collapse invocations into one promise per cycle', async () => {
+      throttler = new Throttler(() => undefined, limit);
       const first = throttler.invoke();
       const second = throttler.invoke();
       const third = throttler.invoke();
@@ -87,7 +88,6 @@ describe('Throttler', () => {
 
     it('should support the `leading` edge of cycle', async () => {
       const leading = true;
-      const limit = 300;
       const trailing = false;
       const started = (new Date()).getTime();
       let invoked = 0;
@@ -106,14 +106,13 @@ describe('Throttler', () => {
 
     it('should support the `trailing` edge of cycle', async () => {
       const leading = false;
-      const limit = 300;
       const trailing = true;
       const started = (new Date()).getTime();
       let invoked = 0;
 
       throttler = new Throttler(() => {
         invoked = (new Date()).getTime();
-        expect(invoked - started).to.be.greaterThan(limit);
+        expect(invoked - started).to.be.gte(limit);
       }, { leading, limit, trailing });
 
       void throttler.invoke();

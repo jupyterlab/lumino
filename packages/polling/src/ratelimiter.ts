@@ -108,7 +108,7 @@ export class Debouncer<T = any, U = any> extends RateLimiter<T, U> {
    * Invokes the function and only executes after rate limit has elapsed.
    * Each invocation resets the timer.
    */
-  async invoke(): Promise<T> {
+  invoke(): Promise<T> {
     void this.poll.schedule({ interval: this.limit, phase: 'invoked' });
     return this.payload!.promise;
   }
@@ -153,7 +153,7 @@ export class Throttler<T = any, U = any> extends RateLimiter<T, U> {
   /**
    * Throttles function invocations if one is currently in flight.
    */
-  async invoke(): Promise<T> {
+  invoke(): Promise<T> {
     if (this.poll.state.phase !== 'invoked') {
       void this.poll.schedule({ interval: this._interval, phase: 'invoked' });
     }
