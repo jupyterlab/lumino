@@ -50,4 +50,78 @@ describe('Throttler', () => {
     });
   });
 
+  describe('#invoke()', () => {
+    it('should invoke and throttle a function', async () => {
+      let counter = 0;
+      throttler = new Throttler(() => counter++);
+      expect(counter).to.equal(0);
+      await throttler.invoke();
+      expect(counter).to.equal(1);
+      void throttler.invoke();
+      void throttler.invoke();
+      void throttler.invoke();
+      await throttler.invoke();
+      expect(counter).to.equal(2);
+    });
+
+    it('should default to the `leading` call', async () => {
+      throttler = new Throttler(() => undefined);
+      const first = throttler.invoke();
+      const second = throttler.invoke();
+      const third = throttler.invoke();
+      const fourth = throttler.invoke();
+      const fifth = throttler.invoke();
+
+      await fifth;
+
+      const sixth = throttler.invoke();
+      const seventh = throttler.invoke();
+
+      expect(first).to.equal(second, 'first === second');
+      expect(first).to.equal(third, 'first === third');
+      expect(first).to.equal(fourth, 'first === fourth');
+      expect(first).to.equal(fifth, 'first === fifth');
+      expect(fifth).not.to.equal(sixth, 'fifth !== sixth');
+      expect(sixth).to.equal(seventh, 'sixth === seventh');
+    });
+
+    it('should support the `leading` edge of cycle', async () => {
+      const leading = true;
+      const limit = 300;
+      const trailing = false;
+      const started = (new Date()).getTime();
+      let invoked = 0;
+
+      throttler = new Throttler(() => {
+        invoked = (new Date()).getTime();
+        expect(invoked - started).to.be.lessThan(limit);
+      }, { leading, limit, trailing });
+
+      void throttler.invoke();
+      void throttler.invoke();
+      void throttler.invoke();
+      void throttler.invoke();
+      await throttler.invoke();
+    });
+
+    it('should support the `trailing` edge of cycle', async () => {
+      const leading = false;
+      const limit = 300;
+      const trailing = true;
+      const started = (new Date()).getTime();
+      let invoked = 0;
+
+      throttler = new Throttler(() => {
+        invoked = (new Date()).getTime();
+        expect(invoked - started).to.be.greaterThan(limit);
+      }, { leading, limit, trailing });
+
+      void throttler.invoke();
+      void throttler.invoke();
+      void throttler.invoke();
+      void throttler.invoke();
+      await throttler.invoke();
+    });
+  });
+
 });
