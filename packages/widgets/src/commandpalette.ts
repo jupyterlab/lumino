@@ -1035,6 +1035,7 @@ namespace Private {
     content.classList.add('p-CommandPalette-content');
     /* </DEPRECATED> */
     input.spellcheck = false;
+    input.type = 'search';
     wrapper.appendChild(input);
     search.appendChild(wrapper);
     node.appendChild(search);
