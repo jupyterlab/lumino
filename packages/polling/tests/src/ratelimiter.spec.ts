@@ -87,15 +87,14 @@ describe('Throttler', () => {
     });
 
     it('should support the `leading` edge of cycle', async () => {
-      const leading = true;
-      const trailing = false;
+      const edge = 'leading';
       const started = (new Date()).getTime();
       let invoked = 0;
 
       throttler = new Throttler(() => {
         invoked = (new Date()).getTime();
         expect(invoked - started).to.be.lessThan(limit);
-      }, { leading, limit, trailing });
+      }, { edge, limit });
 
       void throttler.invoke();
       void throttler.invoke();
@@ -105,15 +104,14 @@ describe('Throttler', () => {
     });
 
     it('should support the `trailing` edge of cycle', async () => {
-      const leading = false;
-      const trailing = true;
+      const edge = 'trailing';
       const started = (new Date()).getTime();
       let invoked = 0;
 
       throttler = new Throttler(() => {
         invoked = (new Date()).getTime();
         expect(invoked - started).to.be.gte(limit);
-      }, { leading, limit, trailing });
+      }, { edge, limit });
 
       void throttler.invoke();
       void throttler.invoke();

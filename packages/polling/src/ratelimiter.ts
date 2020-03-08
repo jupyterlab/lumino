@@ -131,23 +131,16 @@ export class Throttler<T = any, U = any> extends RateLimiter<T, U> {
    * @param options - Throttling configuration or throttling limit in ms.
    *
    * #### Notes
-   * Both `leading` and `trailing` default to `true`; `limit` defaults to `500`.
-   * When both `leading` and `trailing` are `true`, `leading` has priority.`
+   * The `edge` defaults to `leading`; the `limit` defaults to `500`.
    */
   constructor(fn: () => T | Promise<T>, options?: Throttler.IOptions | number) {
     super(fn, typeof options === 'number' ? options : options && options.limit);
-    let leading = true;
-    let trailing = true;
+    let edge: 'leading' | 'trailing' = 'leading';
     if (typeof options !== 'number') {
       options = options || {};
-      leading = 'leading' in options ? options.leading! : true;
-      trailing = 'trailing' in options ? options.trailing! : true;
+      edge = 'edge' in options ? options.edge! : edge;
     }
-    this._interval = leading
-      ? Poll.IMMEDIATE
-      : trailing
-      ? this.limit
-      : Poll.IMMEDIATE;
+    this._interval = edge === 'trailing' ? this.limit : Poll.IMMEDIATE;
   }
 
   /**
@@ -177,18 +170,9 @@ export namespace Throttler {
     limit?: number;
 
     /**
-     * Whether the function should invoke at the beginning of throttle cycle.
-     * Defaults to `true`.
+     * Whether to invoke at the leading or trailing edge of throttle cycle.
+     * Defaults to `leading`.
      */
-    leading?: boolean;
-
-    /**
-     * Whether the function should invoke at the end of throttle cycle.
-     * Defaults to `true`.
-     *
-     * #### Notes
-     * When both `leading` and `trailing` are `true`, `leading` has priority.
-     */
-    trailing?: boolean;
+    edge?: 'leading' | 'trailing';
   };
 }
