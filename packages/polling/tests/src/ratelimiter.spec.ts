@@ -86,6 +86,22 @@ describe('Throttler', () => {
       expect(sixth).to.equal(seventh, 'sixth === seventh');
     });
 
+    it('should default to the `leading` edge of cycle', async () => {
+      const started = (new Date()).getTime();
+      let invoked = 0;
+
+      throttler = new Throttler(() => {
+        invoked = (new Date()).getTime();
+        expect(invoked - started).to.be.lessThan(limit);
+      }, limit);
+
+      void throttler.invoke();
+      void throttler.invoke();
+      void throttler.invoke();
+      void throttler.invoke();
+      await throttler.invoke();
+    });
+
     it('should support the `leading` edge of cycle', async () => {
       const edge = 'leading';
       const started = (new Date()).getTime();
