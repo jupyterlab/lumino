@@ -14,3 +14,7 @@ Lumino is Jupyter project and follows the Jupyter
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) to know how to contribute and set up
 a development environment.
+
+## External Examples
+
+- [Using Lumino in a Vue.js application](https://github.com/kinow/vue-lumino)
