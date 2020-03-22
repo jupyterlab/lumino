@@ -31,7 +31,7 @@
     "api": "api-extractor run --local --verbose",
     "build": "tsc --build",
     "build:test": "tsc --build tests && cd tests && webpack",
-    "clean": "rimraf lib",
+    "clean": "rimraf lib && rimraf *.tsbuildinfo",
     "clean:test": "rimraf tests/build",
     "docs": "typedoc --options tdoptions.json src",
     "test": "npm run test:firefox",
