@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2020-03-22
+
+ - @lumino/datagrid: 0.5.3 => 0.6.0
+ - @lumino/datastore: 0.8.4 => 0.9.0
+ - @lumino/polling: 1.0.4 => 1.1.0
+
+ - Update throttler API [#54](https://github.com/jupyterlab/lumino/pull/54).
+
+
 ## 2020-02-10
 
  - @lumino/commands@1.10.0
