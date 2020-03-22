@@ -108,7 +108,7 @@ export class Debouncer<T = any, U = any> extends RateLimiter<T, U> {
    * Invokes the function and only executes after rate limit has elapsed.
    * Each invocation resets the timer.
    */
-  async invoke(): Promise<T> {
+  invoke(): Promise<T> {
     void this.poll.schedule({ interval: this.limit, phase: 'invoked' });
     return this.payload!.promise;
   }
@@ -124,12 +124,55 @@ export class Debouncer<T = any, U = any> extends RateLimiter<T, U> {
  */
 export class Throttler<T = any, U = any> extends RateLimiter<T, U> {
   /**
+   * Instantiate a throttler.
+   *
+   * @param fn - The function being throttled.
+   *
+   * @param options - Throttling configuration or throttling limit in ms.
+   *
+   * #### Notes
+   * The `edge` defaults to `leading`; the `limit` defaults to `500`.
+   */
+  constructor(fn: () => T | Promise<T>, options?: Throttler.IOptions | number) {
+    super(fn, typeof options === 'number' ? options : options && options.limit);
+    let edge: 'leading' | 'trailing' = 'leading';
+    if (typeof options !== 'number') {
+      options = options || {};
+      edge = 'edge' in options ? options.edge! : edge;
+    }
+    this._interval = edge === 'trailing' ? this.limit : Poll.IMMEDIATE;
+  }
+
+  /**
    * Throttles function invocations if one is currently in flight.
    */
-  async invoke(): Promise<T> {
+  invoke(): Promise<T> {
     if (this.poll.state.phase !== 'invoked') {
-      void this.poll.schedule({ interval: this.limit, phase: 'invoked' });
+      void this.poll.schedule({ interval: this._interval, phase: 'invoked' });
     }
     return this.payload!.promise;
   }
+
+  private _interval: number;
+}
+
+/**
+ * A namespace for `Throttler` interfaces.
+ */
+export namespace Throttler {
+  /**
+   * Instantiation options for a `Throttler`.
+   */
+  export interface IOptions {
+    /**
+     * The throttling limit; defaults to 500ms.
+     */
+    limit?: number;
+
+    /**
+     * Whether to invoke at the leading or trailing edge of throttle cycle.
+     * Defaults to `leading`.
+     */
+    edge?: 'leading' | 'trailing';
+  };
 }
