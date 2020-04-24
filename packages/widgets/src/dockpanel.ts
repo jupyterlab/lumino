@@ -71,16 +71,14 @@ class DockPanel extends Widget {
     this._mode = options.mode || 'multiple-document';
     this._renderer = options.renderer || DockPanel.defaultRenderer;
     this._edges = options.edges || Private.DEFAULT_EDGES;
-    if (options.tabsMovable !== undefined) {
-      this._tabsMovable = options.tabsMovable;
-    }
+    this._tabsMovable = options.tabsMovable || true;
 
     // Toggle the CSS mode attribute.
     this.dataset['mode'] = this._mode;
 
     // Create the delegate renderer for the layout.
     let renderer: DockPanel.IRenderer = {
-      createTabBar: () => this._createTabBar(this._tabsMovable),
+      createTabBar: () => this._createTabBar(),
       createHandle: () => this._createHandle()
     };
 
@@ -858,7 +856,7 @@ class DockPanel extends Widget {
   /**
    * Create a new tab bar for use by the panel.
    */
-  private _createTabBar(tabsMovable: boolean): TabBar<Widget> {
+  private _createTabBar(): TabBar<Widget> {
     // Create the tab bar.
     let tabBar = this._renderer.createTabBar();
 
@@ -872,7 +870,7 @@ class DockPanel extends Widget {
 
     // Enforce necessary tab bar behavior.
     // TODO do we really want to enforce *all* of these?
-    tabBar.tabsMovable = tabsMovable;
+    tabBar.tabsMovable = this._tabsMovable;
     tabBar.allowDeselect = false;
     tabBar.removeBehavior = 'select-previous-tab';
     tabBar.insertBehavior = 'select-tab-if-needed';
