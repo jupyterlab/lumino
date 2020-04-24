@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2020-04-24
+
+ - @lumino/application: 1.8.4 => 1.9.0
+ - @lumino/datagrid: 0.6.0 => 0.7.0
+ - @lumino/default-theme: 0.2.4 => 0.3.0
+ - @lumino/polling: 1.1.1 => 1.2.0
+ - @lumino/widgets: 1.11.1 => 1.12.0
+
+ - Customize minimum row and column section sizes for datagrid [65](https://github.com/jupyterlab/lumino/pull/65)
+ - Fixes tabsMovable on DockPanel [66](https://github.com/jupyterlab/lumino/pull/66)
+
+
 ## 2020-03-22
 
  - @lumino/datagrid: 0.5.3 => 0.6.0
