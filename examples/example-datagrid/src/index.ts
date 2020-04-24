@@ -451,7 +451,14 @@ function main(): void {
     selectionMode: 'column'
   });
 
-  let grid3 = new DataGrid({ stretchLastColumn: true });
+  let grid3 = new DataGrid({ stretchLastColumn: true,
+    minimumSizes: {
+      rowHeight: 25,
+      columnWidth: 70,
+      rowHeaderWidth: 70,
+      columnHeaderHeight: 25
+    }
+  });
   grid3.cellRenderers.update({ 'body': fgColorFloatRenderer });
   grid3.dataModel = model3;
   grid3.keyHandler = new BasicKeyHandler();

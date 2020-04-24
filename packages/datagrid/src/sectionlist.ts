@@ -28,7 +28,8 @@ class SectionList {
    * @param options - The options for initializing the list.
    */
   constructor(options: SectionList.IOptions) {
-    this._defaultSize = Math.max(0, Math.floor(options.defaultSize));
+    this._minimumSize = options.minimumSize || 2;
+    this._defaultSize = Math.max(this._minimumSize, Math.floor(options.defaultSize));
   }
 
   /**
@@ -52,6 +53,40 @@ class SectionList {
   }
 
   /**
+   * Get the minimum size of sections in the list.
+   *
+   * #### Complexity
+   * Constant.
+   */
+  get minimumSize(): number {
+    return this._minimumSize;
+  }
+
+  /**
+   * Set the minimum size of sections in the list.
+   *
+   * #### Complexity
+   * Linear on the number of resized sections.
+   */
+  set minimumSize(value: number) {
+    // Normalize the value.
+    value = Math.max(2, Math.floor(value));
+
+    // Bail early if the value does not change.
+    if (this._minimumSize === value) {
+      return;
+    }
+
+    // Update the internal minimum size.
+    this._minimumSize = value;
+
+    // Update default size if larger than minimum size
+    if (value > this._defaultSize) {
+      this.defaultSize = value;
+    }
+  }
+
+  /**
    * Get the default size of sections in the list.
    *
    * #### Complexity
@@ -69,7 +104,7 @@ class SectionList {
    */
   set defaultSize(value: number) {
     // Normalize the value.
-    value = Math.max(0, Math.floor(value));
+    value = Math.max(this._minimumSize, Math.floor(value));
 
     // Bail early if the value does not change.
     if (this._defaultSize === value) {
@@ -104,6 +139,17 @@ class SectionList {
         curr.offset = curr.index * value;
       }
     }
+  }
+
+  /**
+   * Clamp a size to the minimum section size
+   *
+   * @param size - The size to clamp.
+   *
+   * @returns The size or the section minimum size, whichever is larger
+   */
+  clampSize(size: number): number {
+    return Math.max(this._minimumSize, Math.floor(size));
   }
 
   /**
@@ -293,8 +339,8 @@ class SectionList {
       return;
     }
 
-    // Clamp the size to an integer >= 0.
-    size = Math.max(0, Math.floor(size));
+    // Clamp the size to an integer >= minimum size.
+    size = Math.max(this._minimumSize, Math.floor(size));
 
     // Find the modified section for the given index.
     let i = ArrayExt.lowerBound(this._sections, index, Private.indexCmp);
@@ -566,6 +612,7 @@ class SectionList {
 
   private _count = 0;
   private _length = 0;
+  private _minimumSize: number;
   private _defaultSize: number;
   private _sections: Private.Section[] = [];
 }
@@ -585,6 +632,11 @@ namespace SectionList {
      * The size of new sections added to the list.
      */
     defaultSize: number;
+
+    /**
+     * The minimum size of the section list.
+     */
+    minimumSize?: number;
   }
 }
 
