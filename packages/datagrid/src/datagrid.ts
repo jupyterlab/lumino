@@ -95,16 +95,17 @@ class DataGrid extends Widget {
     // Parse the default sizes.
     let defaultSizes = options.defaultSizes || DataGrid.defaultSizes;
     let minimumSizes = options.minimumSizes || DataGrid.minimumSizes;
-    let rh = Private.clampSectionSize(defaultSizes.rowHeight, minimumSizes.rowHeight);
-    let cw = Private.clampSectionSize(defaultSizes.columnWidth, minimumSizes.columnWidth);
-    let rhw = Private.clampSectionSize(defaultSizes.rowHeaderWidth, minimumSizes.rowHeaderWidth);
-    let chh = Private.clampSectionSize(defaultSizes.columnHeaderHeight, minimumSizes.columnHeaderHeight);
 
     // Set up the sections lists.
-    this._rowSections = new SectionList({ defaultSize: rh, minimumSize: minimumSizes.rowHeight });
-    this._columnSections = new SectionList({ defaultSize: cw, minimumSize: minimumSizes.columnWidth});
-    this._rowHeaderSections = new SectionList({ defaultSize: rhw, minimumSize: minimumSizes.rowHeaderWidth});
-    this._columnHeaderSections = new SectionList({ defaultSize: chh, minimumSize: minimumSizes.columnHeaderHeight});
+    this._rowSections = new SectionList({ defaultSize: defaultSizes.rowHeight,
+      minimumSize: minimumSizes.rowHeight });
+    this._columnSections = new SectionList({ defaultSize: defaultSizes.columnWidth,
+      minimumSize: minimumSizes.columnWidth});
+    this._rowHeaderSections = new SectionList({ defaultSize: defaultSizes.rowHeaderWidth,
+      minimumSize: minimumSizes.rowHeaderWidth});
+    this._columnHeaderSections = new SectionList({ defaultSize: defaultSizes.columnHeaderHeight,
+      minimumSize: minimumSizes.columnHeaderHeight});
+
     // Create the canvas, buffer, and overlay objects.
     this._canvas = Private.createCanvas();
     this._buffer = Private.createCanvas();
@@ -468,17 +469,11 @@ class DataGrid extends Widget {
    * Set the default sizes for the various sections of the data grid.
    */
   set defaultSizes(value: DataGrid.DefaultSizes) {
-    // Clamp the sizes.
-    let rh = Private.clampSectionSize(value.rowHeight, this._rowSections.minimumSize);
-    let cw = Private.clampSectionSize(value.columnWidth, this._columnSections.minimumSize);
-    let rhw = Private.clampSectionSize(value.rowHeaderWidth, this._rowHeaderSections.minimumSize);
-    let chh = Private.clampSectionSize(value.columnHeaderHeight, this._columnHeaderSections.minimumSize);
-
     // Update the section default sizes.
-    this._rowSections.defaultSize = rh;
-    this._columnSections.defaultSize = cw;
-    this._rowHeaderSections.defaultSize = rhw;
-    this._columnHeaderSections.defaultSize = chh;
+    this._rowSections.defaultSize = value.rowHeight;
+    this._columnSections.defaultSize = value.columnWidth;
+    this._rowHeaderSections.defaultSize = value.rowHeaderWidth;
+    this._columnHeaderSections.defaultSize = value.columnHeaderHeight;
 
     // Sync the viewport.
     this._syncViewport();
@@ -3052,7 +3047,7 @@ class DataGrid extends Widget {
     let oldSize = list.sizeOf(index);
 
     // Normalize the new size of the section.
-    let newSize = Private.clampSectionSize(size, list.minimumSize);
+    let newSize = list.clampSize(size);
 
     // Bail early if the size does not change.
     if (oldSize === newSize) {
@@ -3164,7 +3159,7 @@ class DataGrid extends Widget {
     let oldSize = list.sizeOf(index);
 
     // Normalize the new size of the section.
-    let newSize = Private.clampSectionSize(size, list.minimumSize);
+    let newSize = list.clampSize(size);
 
     // Bail early if the size does not change.
     if (oldSize === newSize) {
@@ -3276,7 +3271,7 @@ class DataGrid extends Widget {
     let oldSize = list.sizeOf(index);
 
     // Normalize the new size of the section.
-    let newSize = Private.clampSectionSize(size, list.minimumSize);
+    let newSize = list.clampSize(size);
 
     // Bail early if the size does not change.
     if (oldSize === newSize) {
@@ -3364,7 +3359,7 @@ class DataGrid extends Widget {
     let oldSize = list.sizeOf(index);
 
     // Normalize the new size of the section.
-    let newSize = Private.clampSectionSize(size, list.minimumSize);
+    let newSize = list.clampSize(size);
 
     // Bail early if the size does not change.
     if (oldSize === newSize) {
@@ -5738,10 +5733,10 @@ namespace DataGrid {
    */
   export
   const minimumSizes: MinimumSizes = {
-    rowHeight: 10,
+    rowHeight: 20,
     columnWidth: 10,
     rowHeaderWidth: 10,
-    columnHeaderHeight: 10
+    columnHeaderHeight: 20
   };
 
   /**
@@ -5788,14 +5783,6 @@ namespace Private {
     canvas.width = 0;
     canvas.height = 0;
     return canvas;
-  }
-
-  /**
-   * Clamp a section size to the limits.
-   */
-  export
-  function clampSectionSize(size: number, clamp: number): number {
-    return Math.max(clamp, Math.floor(size));
   }
 
   /**

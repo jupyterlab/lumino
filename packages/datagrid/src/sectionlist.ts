@@ -77,9 +77,6 @@ class SectionList {
       return;
     }
 
-    // Compute the delta default size.
-    //let delta = value - this._minimumSize;
-
     // Update the internal minimum size.
     this._minimumSize = value;
 
@@ -142,6 +139,17 @@ class SectionList {
         curr.offset = curr.index * value;
       }
     }
+  }
+
+  /**
+   * Clamp a size to the minimum section size
+   *
+   * @param size - The size to clamp.
+   *
+   * @returns The size or the section minimum size, whichever is larger
+   */
+  clampSize(size: number): number {
+    return Math.max(this._minimumSize, Math.floor(size));
   }
 
   /**
