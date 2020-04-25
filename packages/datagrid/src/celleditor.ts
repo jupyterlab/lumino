@@ -476,9 +476,9 @@ abstract class CellEditor implements ICellEditor, IDisposable {
     this._closeValidityNotification();
 
     if (valid) {
-      this.editorContainer.classList.remove('invalid');
+      this.editorContainer.classList.remove('lm-mod-invalid');
     } else {
-      this.editorContainer.classList.add('invalid');
+      this.editorContainer.classList.add('lm-mod-invalid');
 
       // show a notification popup
       if (message !== "") {
