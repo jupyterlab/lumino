@@ -47,7 +47,7 @@
   border: 2px solid #006bf7;
 }
 
-.lm-DataGrid-cellEditorContainer.invalid {
+.lm-DataGrid-cellEditorContainer.lm-mod-invalid {
   box-shadow: 0px 0px 6px red;
   border: 2px solid red;
 }
