@@ -71,7 +71,9 @@ class DockPanel extends Widget {
     this._mode = options.mode || 'multiple-document';
     this._renderer = options.renderer || DockPanel.defaultRenderer;
     this._edges = options.edges || Private.DEFAULT_EDGES;
-    this._tabsMovable = options.tabsMovable || true;
+    if (options.tabsMovable !== undefined) {
+      this._tabsMovable = options.tabsMovable;
+    }
 
     // Toggle the CSS mode attribute.
     this.dataset['mode'] = this._mode;
