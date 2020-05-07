@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2020-05-07
+
+ - @lumino/coreutils: 1.4.2 => 1.4.3
+ - @lumino/datagrid: 0.7.0 => 0.7.1
+ - @lumino/default-theme: 0.3.0 => 0.3.1
+ - @lumino/widgets: 1.12.0 => 1.12.1
+
+- Tell bundlers to not package a crypto module for the browser [70](https://github.com/jupyterlab/lumino/pull/70)
+- Fix boolean logic when false is specified [69](https://github.com/jupyterlab/lumino/pull/69)
+- Fix namespacing for 'invalid' classname [67](https://github.com/jupyterlab/lumino/pull/67)
+
+
 ## 2020-04-24
 
  - @lumino/application: 1.8.4 => 1.9.0
