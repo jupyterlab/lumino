@@ -9,7 +9,8 @@ minor/major as well.
 git clean -dfx
 yarn
 yarn run version
+# Update the changelog with published packages (minor or higher) and included PRs.
+#
 yarn run publish
 ```
 
-Update the changelog with published packages (minor or higher) and included PRs.
