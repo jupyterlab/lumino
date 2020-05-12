@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2020-05-12
+
+- @lumino/signaling: 1.3.5 => 1.3.6
+
+- Fix `disconnectAll` implementation [#71](https://github.com/jupyterlab/lumino/pull/71)
 ## 2020-05-07
 
  - @lumino/coreutils: 1.4.2 => 1.4.3
@@ -9,9 +14,9 @@ All notable changes to this project will be documented in this file.
  - @lumino/default-theme: 0.3.0 => 0.3.1
  - @lumino/widgets: 1.12.0 => 1.12.1
 
-- Tell bundlers to not package a crypto module for the browser [70](https://github.com/jupyterlab/lumino/pull/70)
-- Fix boolean logic when false is specified [69](https://github.com/jupyterlab/lumino/pull/69)
-- Fix namespacing for 'invalid' classname [67](https://github.com/jupyterlab/lumino/pull/67)
+- Tell bundlers to not package a crypto module for the browser [#70](https://github.com/jupyterlab/lumino/pull/70)
+- Fix boolean logic when false is specified [#69](https://github.com/jupyterlab/lumino/pull/69)
+- Fix namespacing for 'invalid' classname [#67](https://github.com/jupyterlab/lumino/pull/67)
 
 
 ## 2020-04-24
@@ -22,8 +27,8 @@ All notable changes to this project will be documented in this file.
  - @lumino/polling: 1.1.1 => 1.2.0
  - @lumino/widgets: 1.11.1 => 1.12.0
 
- - Customize minimum row and column section sizes for datagrid [65](https://github.com/jupyterlab/lumino/pull/65)
- - Fixes tabsMovable on DockPanel [66](https://github.com/jupyterlab/lumino/pull/66)
+ - Customize minimum row and column section sizes for datagrid [#65](https://github.com/jupyterlab/lumino/pull/65)
+ - Fixes tabsMovable on DockPanel [#66](https://github.com/jupyterlab/lumino/pull/66)
 
 
 ## 2020-03-22
