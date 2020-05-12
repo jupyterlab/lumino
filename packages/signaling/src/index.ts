@@ -522,19 +522,10 @@ namespace Private {
    */
   export
   function disconnectAll(object: any): void {
-    // Clear and cleanup any receiver connections.
-    let receivers = receiversForSender.get(object);
-    if (receivers && receivers.length > 0) {
-      each(receivers, connection => { connection.signal = null; });
-      scheduleCleanup(receivers);
-    }
-
-    // Clear and cleanup any sender connections.
-    let senders = sendersForReceiver.get(object);
-    if (senders && senders.length > 0) {
-      each(senders, connection => { connection.signal = null; });
-      scheduleCleanup(senders);
-    }
+    // Remove all connections where the given object is the sender.
+    disconnectSender(object);
+    // Remove all connections where the given object is the receiver.
+    disconnectReceiver(object);
   }
 
   /**
