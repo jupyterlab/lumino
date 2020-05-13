@@ -1,17 +1,24 @@
 {
   "compilerOptions": {
     "composite": true,
+    "sourceMap": true,
     "declaration": true,
+    "declarationDir": "./types",
+    "declarationMap": true,
     "noImplicitAny": true,
     "noEmitOnError": true,
     "noUnusedLocals": true,
     "strictNullChecks": true,
-    "module": "commonjs",
+    "module": "ES6",
     "moduleResolution": "node",
     "target": "ES5",
     "outDir": "lib",
     "rootDir": "src",
-    "lib": ["dom", "es6"],
+    "lib": [
+      "dom",
+      "es6"
+    ],
+    "importHelpers": true,
     "types": []
   },
   "include": [

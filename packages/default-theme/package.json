@@ -15,6 +15,9 @@
     "Steven Silvester <steven.silvester@gmail.com>"
   ],
   "files": [
+    "dist/*",
+    "src/*",
+    "types/*",
     "images/*.png",
     "style/*.css"
   ],

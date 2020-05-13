@@ -1,0 +1,53 @@
+/*-----------------------------------------------------------------------------
+| Copyright (c) Jupyter Development Team.
+| Copyright (c) 2014-2017, PhosphorJS Contributors
+|
+| Distributed under the terms of the BSD 3-Clause License.
+|
+| The full license is in the file LICENSE, distributed with this software.
+|----------------------------------------------------------------------------*/
+
+@import '../../../packages/dragdrop/style/index.css';
+@import '../../../packages/widgets/style/index.css';
+@import '../../../packages/default-theme/style/commandpalette.css';
+@import '../../../packages/default-theme/style/datagrid.css';
+@import '../../../packages/default-theme/style/dockpanel.css';
+@import '../../../packages/default-theme/style/menu.css';
+@import '../../../packages/default-theme/style/menubar.css';
+@import '../../../packages/default-theme/style/scrollbar.css';
+@import '../../../packages/default-theme/style/tabbar.css';
+@import './content.css';
+
+body {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+
+#menuBar {
+  flex: 0 0 auto;
+}
+
+
+#main {
+  flex: 1 1 auto;
+}
+
+
+#palette {
+  min-width: 300px;
+  border-right: 1px solid #DDDDDD;
+}
+
+
+#dock {
+  padding: 4px;
+}

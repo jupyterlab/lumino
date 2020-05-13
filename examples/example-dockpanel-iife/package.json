@@ -1,0 +1,11 @@
+{
+  "name": "@lumino/example-dockpanel-iife",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "test": "node ./test/runner.js"
+  },
+  "devDependencies": {
+    "puppeteer": "^2.1.1"
+  }
+}

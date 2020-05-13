@@ -1,12 +1,15 @@
 {
   "compilerOptions": {
     "composite": true,
+    "sourceMap": true,
     "declaration": true,
+    "declarationDir": "./types",
+    "declarationMap": true,
     "noImplicitAny": true,
     "noEmitOnError": true,
     "noUnusedLocals": true,
     "strictNullChecks": true,
-    "module": "commonjs",
+    "module": "ES6",
     "moduleResolution": "node",
     "target": "ES5",
     "rootDir": "src",
@@ -16,6 +19,7 @@
       "ES2015.Collection",
       "ES2015.Iterable"
     ],
+    "importHelpers": true,
     "types": []
   },
   "include": [
