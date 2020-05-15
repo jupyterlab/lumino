@@ -26,12 +26,13 @@
   padding: 4px 6px;
   background: white;
   border: 1px solid #E0E0E0;
+  position: relative;
 }
 
 
 /* <DEPRECATED> */ .p-CommandPalette-input, /* </DEPRECATED> */
 .lm-CommandPalette-input {
-  width: 100%;
+  width: 92%;
   border: none;
   outline: none;
   font-size: 16px;
