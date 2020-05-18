@@ -76,3 +76,30 @@
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+
+.lm-close-icon {
+	border:1px solid transparent;
+  background-color: transparent;
+  position: absolute;
+	z-index:1;
+	right:3%;
+	top: 0;
+	bottom: 0;
+	margin: auto;
+	padding: 7px 0;
+	display: none;
+	vertical-align: middle;
+  outline: 0;
+  cursor: pointer;
+}
+.lm-close-icon:after {
+	content: "X";
+	display: block;
+	width: 15px;
+	height: 15px;
+	text-align: center;
+	color:#000;
+	font-weight: normal;
+	font-size: 12px;
+	cursor: pointer;
+}

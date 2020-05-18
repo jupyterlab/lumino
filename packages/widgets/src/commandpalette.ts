@@ -202,6 +202,14 @@ class CommandPalette extends Widget {
    */
   refresh(): void {
     this._results = null;
+    if(this.inputNode.value !== '') {
+      let clear = this.node.getElementsByClassName('lm-close-icon')[0] as HTMLInputElement;
+      clear.style.display = 'inherit'
+    }
+    else {
+      let clear = this.node.getElementsByClassName('lm-close-icon')[0] as HTMLInputElement;
+      clear.style.display = 'none'
+    }
     this.update();
   }
 
@@ -335,6 +343,13 @@ class CommandPalette extends Widget {
   private _evtClick(event: MouseEvent): void {
     // Bail if the click is not the left button.
     if (event.button !== 0) {
+      return;
+    }
+
+    // Clear input if the target is clear button
+    if((event.target as HTMLElement).classList.contains("lm-close-icon")) {
+      this.inputNode.value = '';
+      this.refresh();
       return;
     }
 
@@ -1024,9 +1039,12 @@ namespace Private {
     let wrapper = document.createElement('div');
     let input = document.createElement('input');
     let content = document.createElement('ul');
+    let clear = document.createElement('button');
     search.className = 'lm-CommandPalette-search';
     wrapper.className = 'lm-CommandPalette-wrapper';
     input.className = 'lm-CommandPalette-input';
+    clear.className = 'lm-close-icon';
+
     content.className = 'lm-CommandPalette-content';
     /* <DEPRECATED> */
     search.classList.add('p-CommandPalette-search');
@@ -1036,6 +1054,7 @@ namespace Private {
     /* </DEPRECATED> */
     input.spellcheck = false;
     wrapper.appendChild(input);
+    wrapper.appendChild(clear);
     search.appendChild(wrapper);
     node.appendChild(search);
     node.appendChild(content);
