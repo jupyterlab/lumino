@@ -38,7 +38,7 @@ namespace WSAdapterMessages {
    * A base message for the patch server.
    */
   export
-  type IBaseMessage = JSONObject & {
+  interface IBaseMessage extends Partial<JSONObject> {
     msgId: string;
     msgType: (
       'storeid-request' | 'storeid-reply'|
@@ -48,13 +48,13 @@ namespace WSAdapterMessages {
       'history-request' | 'history-reply' |
       'fetch-transaction-request' | 'fetch-transaction-reply'
     );
-    parentId: undefined;
+    parentId?: string;
 
     readonly content: ReadonlyJSONObject;
   }
 
   export
-  type IBaseReplyMessage = IBaseMessage & {
+  interface IBaseReplyMessage extends IBaseMessage {
     parentId: string;
   }
 
@@ -71,7 +71,7 @@ namespace WSAdapterMessages {
    * A reply from the server containing a unique store ID.
    */
   export
-  type IStoreIdMessageReply = IBaseReplyMessage & {
+  interface IStoreIdMessageReply extends IBaseReplyMessage {
     msgType: 'storeid-reply';
     content: {
       readonly storeId: number

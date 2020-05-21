@@ -2,7 +2,7 @@
   "excludeNotExported": true,
   "mode": "file",
   "target": "es5",
-  "module": "es5",
+  "module": "es6",
   "out": "../../docs/api/collections",
   "baseUrl": ".",
   "paths": {
