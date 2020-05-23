@@ -1,6 +1,6 @@
 {
   "name": "@lumino/domutils",
-  "version": "1.1.7",
+  "version": "1.2.0-alpha.0",
   "description": "Lumino DOM Utilities",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -46,7 +46,6 @@
     "@microsoft/api-extractor": "^7.6.0",
     "@types/chai": "^3.4.35",
     "@types/mocha": "^2.2.39",
-    "tslib": "1.10.0",
     "chai": "^3.5.0",
     "karma": "^4.4.1",
     "karma-chrome-launcher": "^2.0.0",
@@ -58,9 +57,10 @@
     "rimraf": "^2.5.2",
     "rollup": "^1.29.0",
     "rollup-plugin-node-resolve": "^5.2.0",
-    "rollup-plugin-sourcemaps": "^0.5.0",
     "rollup-plugin-postcss": "^2.0.3",
+    "rollup-plugin-sourcemaps": "^0.5.0",
     "terser": "^4.6.2",
+    "tslib": "1.10.0",
     "typedoc": "~0.15.0",
     "typescript": "~3.6.4",
     "webpack": "^4.41.3",
