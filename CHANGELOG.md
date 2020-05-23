@@ -2,11 +2,37 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2020-05-23
+
+ - @lumino/algorithm: 1.2.0 => 1.3.0
+ - @lumino/application: 1.9.0 => 1.10.0
+ - @lumino/collections: 1.2.0 => 1.3.0
+ - @lumino/commands: 1.10.0 => 1.11.0
+ - @lumino/coreutils: 1.4.0 => 1.5.0
+ - @lumino/datagrid: 0.7.0 => 0.8.0
+ - @lumino/datastore: 0.9.0 => 0.10.0
+ - @lumino/default-theme: 0.3.0 => 0.4.0
+ - @lumino/disposable: 1.3.0 => 1.4.0
+ - @lumino/domutils: 1.1.0 => 1.2.0
+ - @lumino/dragdrop: 1.5.0 => 1.6.0
+ - @lumino/keyboard: 1.1.0 => 1.2.0
+ - @lumino/messaging: 1.3.0 => 1.4.0
+ - @lumino/polling: 1.2.0 => 1.3.0
+ - @lumino/properties: 1.1.0 => 1.2.0
+ - @lumino/signaling: 1.3.0 => 1.4.0
+ - @lumino/virtualdom: 1.6.0 => 1.7.0
+ - @lumino/widgets: 1.12.0 => 1.13.0
+
+ - Add UMD support [#40](https://github.com/jupyterlab/lumino/pull/40)
+
+
 ## 2020-05-12
 
 - @lumino/signaling: 1.3.5 => 1.3.6
 
 - Fix `disconnectAll` implementation [#71](https://github.com/jupyterlab/lumino/pull/71)
+
+
 ## 2020-05-07
 
  - @lumino/coreutils: 1.4.2 => 1.4.3
