@@ -1,6 +1,6 @@
 {
   "name": "@lumino/properties",
-  "version": "1.2.0-alpha.0",
+  "version": "1.2.0",
   "description": "Lumino Attached Properties",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
