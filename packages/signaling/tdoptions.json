@@ -2,7 +2,7 @@
   "excludeNotExported": true,
   "mode": "file",
   "target": "es5",
-  "module": "es5",
+  "module": "es6",
   "lib": ["lib.es2015.d.ts", "lib.es2015.collection.d.ts", "lib.es2015.promise.d.ts", "lib.dom.d.ts"],
   "out": "../../docs/api/signaling",
   "baseUrl": ".",
