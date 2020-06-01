@@ -6,6 +6,14 @@ import * as math from 'lib0/math.js'
 import * as t from 'lib0/testing.js'
 import Automerge from 'automerge'
 
+import InMemoryServerAdapter from './inmemoryserveradapter'
+import transactionSize from './transactionsize'
+
+import {
+  Datastore,
+  Fields
+} from '@lumino/datastore';
+
 const initText = prng.word(gen, 100, 100)
 
 const benchmarkYjs = (id, changeDoc1, changeDoc2, check) => {
@@ -53,7 +61,7 @@ const benchmarkYjs = (id, changeDoc1, changeDoc2, check) => {
 }
 
 const benchmarkAutomerge = (id, changeDoc1, changeDoc2, check) => {
-  if (N > 10000 || disableAutomergeBenchmarks) {
+  if (N > 5000 || disableAutomergeBenchmarks) {
     setBenchmarkResult('automerge', id, 'skipping')
     return
   }
@@ -83,8 +91,95 @@ const benchmarkAutomerge = (id, changeDoc1, changeDoc2, check) => {
   })
 }
 
+const benchmarkLumino = (id, changeDoc1, changeDoc2, check) => {
+  let updateSize = 0
+  let schema = {
+    id: 'test-schema',
+    fields: {
+      text: Fields.Text(),
+      numbers: Fields.List()
+    }
+  }
+  let adapter1 = new InMemoryServerAdapter();
+  let store1 = Datastore.create({
+    id: 1234,
+    schemas: [schema],
+    adapter: adapter1
+  });
+  let adapter2 = new InMemoryServerAdapter();
+  let store2 = Datastore.create({
+    id: 5678,
+    schemas: [schema],
+    adapter: adapter2
+  });
+  let update1To2 = ''
+  let update2To1 = ''
+  store1.changed.connect((_, change) => {
+    if (store1.id === change.storeId) {
+      update1To2 = change.transactionId
+    }
+  })
+  store2.changed.connect((_, change) => {
+    if (store2.id === change.storeId) {
+      update2To1 = change.transactionId
+    }
+  })
+  let table1 = store1.get('test-schema');
+  let table2 = store2.get('test-schema');
+  store1.beginTransaction()
+  table1.update({
+    'my-record': {'text': {index: 0, remove: 0, text: initText}}
+  });
+  store1.endTransaction()
+  if (adapter2.onRemoteTransaction) {
+    adapter2.onRemoteTransaction(adapter1.transactions[update1To2])
+  }
+  benchmarkTime('lumino', `${id} (time)`, () => {
+    store1.beginTransaction()
+    changeDoc1(table1)
+    store1.endTransaction()
+    store2.beginTransaction()
+    changeDoc2(table2)
+    store2.endTransaction()
+    if (adapter1.onRemoteTransaction) {
+      adapter1.onRemoteTransaction(adapter2.transactions[update2To1])
+    }
+    if (adapter2.onRemoteTransaction) {
+      adapter2.onRemoteTransaction(adapter1.transactions[update1To2])
+    }
+  })
+  check(table1, table2)
+  updateSize += transactionSize(adapter2.transactions[update2To1])
+  updateSize += transactionSize(adapter1.transactions[update1To2])
+  setBenchmarkResult('lumino', `${id} (updateSize)`, `${math.round(updateSize)} bytes`)
+  let adapter3 = new InMemoryServerAdapter()
+  let store3 = Datastore.create({
+    id: 9012,
+    schemas: [schema],
+    adapter: adapter3
+  });
+  let documentSize = 0
+  for (let id in adapter1.transactions) {
+    documentSize += transactionSize(adapter1.transactions[id])
+  }
+  setBenchmarkResult('lumino', `${id} (docSize)`, `${documentSize} bytes`)
+  benchmarkTime('lumino', `${id} (parseTime)`, () => {
+    for (let id in adapter1.transactions) {
+      if (adapter3.onRemoteTransaction) {
+        adapter3.onRemoteTransaction(adapter1.transactions[id])
+      }
+    }
+  })
+  store1.dispose()
+  store2.dispose()
+  store3.dispose()
+  adapter1.dispose()
+  adapter2.dispose()
+  adapter3.dispose()
+}
+
 {
-  const benchmarkName = '[B2.1] Cuncurrently insert string of length N at index 0'
+  const benchmarkName = '[B2.1] Concurrently insert string of length N at index 0'
   const string1 = prng.word(gen, N, N)
   const string2 = prng.word(gen, N, N)
   benchmarkYjs(
@@ -105,10 +200,27 @@ const benchmarkAutomerge = (id, changeDoc1, changeDoc2, check) => {
       t.assert(doc1.text.join('').length === N * 2 + 100)
     }
   )
+  benchmarkLumino(
+    benchmarkName,
+    table1 => { table1.update({
+      'my-record': {
+        text: { index: 0, remove: 0, text: string1}
+      }
+    })},
+    table2 => { table2.update({
+      'my-record': {
+        text: { index: 0, remove: 0, text: string2}
+      }
+    })},
+    (table1, table2) => {
+      t.assert(table1.get('my-record').text === table2.get('my-record').text)
+      t.assert(table1.get('my-record').text.length === N * 2 + 100)
+    }
+  )
 }
 
 {
-  const benchmarkName = '[B2.2] Cuncurrently insert N characters at random positions'
+  const benchmarkName = '[B2.2] Concurrently insert N characters at random positions'
   const genInput = () => {
     let str = initText
     const input = []
@@ -150,10 +262,33 @@ const benchmarkAutomerge = (id, changeDoc1, changeDoc2, check) => {
       t.assert(doc1.text.join('').length === N * 2 + 100)
     }
   )
+  benchmarkLumino(
+    benchmarkName,
+    table1 => {
+      input1.forEach(({ index, insert }) => { 
+        table1.update({
+          'my-record': {
+            text: { index: index, remove: 0, text: insert}
+          }})
+      })
+    },
+    table2 => {
+      input1.forEach(({ index, insert }) => { 
+        table2.update({
+          'my-record': {
+            text: { index: index, remove: 0, text: insert}
+          }})
+      })
+    },
+    (table1, table2) => {
+      t.assert(table1.get('my-record').text === table2.get('my-record').text)
+      t.assert(table1.get('my-record').text.length === N * 2 + 100)
+    }
+  )
 }
 
 {
-  const benchmarkName = '[B2.3] Cuncurrently insert N words at random positions'
+  const benchmarkName = '[B2.3] Concurrently insert N words at random positions'
   const genInput = () => {
     let str = initText
     const input = []
@@ -193,10 +328,32 @@ const benchmarkAutomerge = (id, changeDoc1, changeDoc2, check) => {
       t.assert(doc1.text.join('') === doc2.text.join(''))
     }
   )
+  benchmarkLumino(
+    benchmarkName,
+    table1 => {
+      input1.forEach(({ index, insert }) => { 
+        table1.update({
+          'my-record': {
+            text: { index: index, remove: 0, text: insert}
+          }})
+      })
+    },
+    table2 => {
+      input1.forEach(({ index, insert }) => { 
+        table2.update({
+          'my-record': {
+            text: { index: index, remove: 0, text: insert}
+          }})
+      })
+    },
+    (table1, table2) => {
+      t.assert(table1.get('my-record').text === table2.get('my-record').text)
+    }
+  )
 }
 
 {
-  const benchmarkName = '[B2.4] Cuncurrently insert & delete'
+  const benchmarkName = '[B2.4] Concurrently insert & delete'
   const genInput = () => {
     let str = initText
     const input = []
@@ -267,6 +424,42 @@ const benchmarkAutomerge = (id, changeDoc1, changeDoc2, check) => {
     },
     (doc1, doc2) => {
       t.assert(doc1.text.join('') === doc2.text.join(''))
+    }
+  )
+  benchmarkLumino(
+    benchmarkName,
+    table1 => {
+      input1.forEach(({ index, insert, deleteCount }) => { 
+        if (insert !== undefined) {
+          table1.update({
+            'my-record': {
+              text: { index: index, remove: 0, text: insert}
+          }})
+        } else {
+          table1.update({
+            'my-record': {
+              text: { index: index, remove: deleteCount, text: ''}
+          }})
+        }
+      })
+    },
+    table2 => {
+      input2.forEach(({ index, insert, deleteCount }) => { 
+        if (insert !== undefined) {
+          table2.update({
+            'my-record': {
+              text: { index: index, remove: 0, text: insert}
+          }})
+        } else {
+          table2.update({
+            'my-record': {
+              text: { index: index, remove: deleteCount, text: ''}
+          }})
+        }
+      })
+    },
+    (table1, table2) => {
+      t.assert(table1.get('my-record').text === table2.get('my-record').text)
     }
   )
 }

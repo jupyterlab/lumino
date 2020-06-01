@@ -6,6 +6,15 @@ import * as math from 'lib0/math.js'
 import * as t from 'lib0/testing.js'
 import Automerge from 'automerge'
 
+import InMemoryServerAdapter from './inmemoryserveradapter'
+import transactionSize from './transactionsize'
+
+import {
+  Datastore,
+  Fields
+} from '@lumino/datastore';
+
+
 const benchmarkYjs = (id, inputData, changeFunction, check) => {
   const doc1 = new Y.Doc()
   const doc2 = new Y.Doc()
@@ -31,7 +40,7 @@ const benchmarkYjs = (id, inputData, changeFunction, check) => {
 }
 
 const benchmarkAutomerge = (id, init, inputData, changeFunction, check) => {
-  if (N > 10000 || disableAutomergeBenchmarks) {
+  if (N > 5000 || disableAutomergeBenchmarks) {
     setBenchmarkResult('automerge', id, 'skipping')
     return
   }
@@ -60,6 +69,72 @@ const benchmarkAutomerge = (id, init, inputData, changeFunction, check) => {
   })
 }
 
+const benchmarkLumino = (id, inputData, changeFunction, check) => {
+  let updateSize = 0
+  let schema = {
+    id: 'test-schema',
+    fields: {
+      text: Fields.Text(),
+      numbers: Fields.List()
+    }
+  }
+  let adapter1 = new InMemoryServerAdapter();
+  let store1 = Datastore.create({
+    id: 1234,
+    schemas: [schema],
+    adapter: adapter1
+  });
+  let adapter2 = new InMemoryServerAdapter();
+  let store2 = Datastore.create({
+    id: 5678,
+    schemas: [schema],
+    adapter: adapter2
+  });
+  store1.changed.connect((_, change) => {
+    let t = adapter1.transactions[change.transactionId]
+    if (adapter2.onRemoteTransaction) {
+      adapter2.onRemoteTransaction(t)
+    }
+    updateSize += transactionSize(t)
+  });
+  let table1 = store1.get('test-schema');
+  let table2 = store2.get('test-schema');
+
+  benchmarkTime('lumino', `${id} (time)`, () => {
+    for (let i = 0; i < inputData.length; i++) {
+      store1.beginTransaction()
+      changeFunction(table1, inputData[i], i)
+      store1.endTransaction()
+    }
+  })
+  check(table1, table2)
+  setBenchmarkResult('lumino', `${id} (avgUpdateSize)`, `${math.round(updateSize / inputData.length)} bytes`)
+  let adapter3 = new InMemoryServerAdapter()
+  let store3 = Datastore.create({
+    id: 9012,
+    schemas: [schema],
+    adapter: adapter3
+  });
+  let documentSize = 0
+  for (let id in adapter1.transactions) {
+    documentSize += transactionSize(adapter1.transactions[id])
+  }
+  setBenchmarkResult('lumino', `${id} (docSize)`, `${documentSize} bytes`)
+  benchmarkTime('lumino', `${id} (parseTime)`, () => {
+    for (let id in adapter1.transactions) {
+      if (adapter3.onRemoteTransaction) {
+        adapter3.onRemoteTransaction(adapter1.transactions[id])
+      }
+    }
+  })
+  store1.dispose()
+  store2.dispose()
+  store3.dispose()
+  adapter1.dispose()
+  adapter2.dispose()
+  adapter3.dispose()
+}
+
 {
   const benchmarkName = '[B1.1] Append N characters'
   const string = prng.word(gen, N, N)
@@ -80,6 +155,21 @@ const benchmarkAutomerge = (id, init, inputData, changeFunction, check) => {
     (doc1, doc2) => {
       t.assert(doc1.text.join('') === doc2.text.join(''))
       t.assert(doc1.text.join('') === string)
+    }
+  )
+  benchmarkLumino(
+    benchmarkName,
+    string,
+    (table1, s, i) => {
+      table1.update({
+        'my-record': {
+          text: { index: i, remove: 0, text: s }
+        }
+      })
+    },
+    (table1, table2) => {
+      t.assert(table1.get('my-record').text === table2.get('my-record').text)
+      t.assert(table1.get('my-record').text === string)
     }
   )
 }
@@ -107,6 +197,21 @@ const benchmarkAutomerge = (id, init, inputData, changeFunction, check) => {
       t.assert(doc1.text.join('') === string)
     }
   )
+  benchmarkLumino(
+    benchmarkName,
+    [string],
+    (table1, s, i) => {
+      table1.update({
+        'my-record': {
+          text: { index: i, remove: 0, text: s }
+        }
+      })
+    },
+    (table1, table2) => {
+      t.assert(table1.get('my-record').text === table2.get('my-record').text)
+      t.assert(table1.get('my-record').text === string)
+    }
+  )
 }
 
 {
@@ -130,6 +235,21 @@ const benchmarkAutomerge = (id, init, inputData, changeFunction, check) => {
     (doc1, doc2) => {
       t.assert(doc1.text.join('') === doc2.text.join(''))
       t.assert(doc1.text.join('') === string)
+    }
+  )
+  benchmarkLumino(
+    benchmarkName,
+    reversedString,
+    (table1, s, i) => {
+      table1.update({
+        'my-record': {
+          text: { index: 0, remove: 0, text: s }
+        }
+      })
+    },
+    (table1, table2) => {
+      t.assert(table1.get('my-record').text === table2.get('my-record').text)
+      t.assert(table1.get('my-record').text === string)
     }
   )
 }
@@ -162,6 +282,21 @@ const benchmarkAutomerge = (id, init, inputData, changeFunction, check) => {
     (doc1, doc2) => {
       t.assert(doc1.text.join('') === doc2.text.join(''))
       t.assert(doc1.text.join('') === string)
+    }
+  )
+  benchmarkLumino(
+    benchmarkName,
+    input,
+    (table1, op, i) => {
+      table1.update({
+        'my-record': {
+          text: { index: op.index, remove: 0, text: op.insert }
+        }
+      })
+    },
+    (table1, table2) => {
+      t.assert(table1.get('my-record').text === table2.get('my-record').text)
+      t.assert(table1.get('my-record').text === string)
     }
   )
 }
@@ -198,6 +333,21 @@ const benchmarkAutomerge = (id, init, inputData, changeFunction, check) => {
       t.assert(doc1.text.join('') === string)
     }
   )
+  benchmarkLumino(
+    benchmarkName,
+    input,
+    (table1, op, i) => {
+      table1.update({
+        'my-record': {
+          text: { index: op.index, remove: 0, text: op.insert }
+        }
+      })
+    },
+    (table1, table2) => {
+      t.assert(table1.get('my-record').text === table2.get('my-record').text)
+      t.assert(table1.get('my-record').text === string)
+    }
+  )
 }
 
 {
@@ -227,6 +377,26 @@ const benchmarkAutomerge = (id, init, inputData, changeFunction, check) => {
     (doc1, doc2) => {
       t.assert(doc1.text.join('') === doc2.text.join(''))
       t.assert(doc1.text.join('') === '')
+    }
+  )
+  benchmarkLumino(
+    benchmarkName,
+    [string],
+    (table1, s, i) => {
+      table1.update({
+        'my-record': {
+          text: { index: i, remove: 0, text: s }
+        }
+      })
+      table1.update({
+        'my-record': {
+          text: { index: i, remove: s.length, text: '' }
+        }
+      })
+    },
+    (table1, table2) => {
+      t.assert(table1.get('my-record').text === table2.get('my-record').text)
+      t.assert(table1.get('my-record').text === '')
     }
   )
 }
@@ -279,9 +449,32 @@ const benchmarkAutomerge = (id, init, inputData, changeFunction, check) => {
       t.assert(doc1.text.join('') === string)
     }
   )
+  benchmarkLumino(
+    benchmarkName,
+    input,
+    (table1, op, i) => {
+      if (op.insert !== undefined) {
+        table1.update({
+          'my-record': {
+            text: { index: op.index, remove: 0, text: op.insert }
+          }
+        })
+      } else {
+        table1.update({
+          'my-record': {
+            text: { index: op.index, remove: op.deleteCount, text: '' }
+          }
+        })
+      }
+    },
+    (table1, table2) => {
+      t.assert(table1.get('my-record').text === table2.get('my-record').text)
+      t.assert(table1.get('my-record').text === string)
+    }
+  )
 }
 
-// benchmarks with numbers begin here
+// // benchmarks with numbers begin here
 
 {
   const benchmarkName = '[B1.8] Append N numbers'
@@ -303,6 +496,21 @@ const benchmarkAutomerge = (id, init, inputData, changeFunction, check) => {
     (doc1, doc2) => {
       t.compare(Array.from(doc1.array), Array.from(doc2.array))
       t.compare(Array.from(doc1.array), numbers)
+    }
+  )
+  benchmarkLumino(
+    benchmarkName,
+    numbers,
+    (table1, s, i) => {
+      table1.update({
+        'my-record': {
+          numbers: { index: i, remove: 0, values: Array.from([s]) }
+        }
+      })
+    },
+    (table1, table2) => {
+      t.compare(table1.get('my-record').numbers, table2.get('my-record').numbers)
+      t.compare(table1.get('my-record').numbers, numbers)
     }
   )
 }
@@ -329,6 +537,21 @@ const benchmarkAutomerge = (id, init, inputData, changeFunction, check) => {
       t.compare(Array.from(doc1.array), numbers)
     }
   )
+  benchmarkLumino(
+    benchmarkName,
+    [numbers],
+    (table1, s, i) => {
+      table1.update({
+        'my-record': {
+          numbers: { index: i, remove: 0, values: s }
+        }
+      })
+    },
+    (table1, table2) => {
+      t.compare(table1.get('my-record').numbers, table2.get('my-record').numbers)
+      t.compare(table1.get('my-record').numbers, numbers)
+    }
+  )
 }
 
 {
@@ -353,6 +576,21 @@ const benchmarkAutomerge = (id, init, inputData, changeFunction, check) => {
     (doc1, doc2) => {
       t.compare(Array.from(doc1.array), Array.from(doc2.array))
       t.compare(Array.from(doc1.array), numbersReversed)
+    }
+  )
+  benchmarkLumino(
+    benchmarkName,
+    numbers,
+    (table1, s, i) => {
+      table1.update({
+        'my-record': {
+          numbers: { index: 0, remove: 0, values: [s] }
+        }
+      })
+    },
+    (table1, table2) => {
+      t.compare(table1.get('my-record').numbers, table2.get('my-record').numbers)
+      t.compare(table1.get('my-record').numbers, numbersReversed)
     }
   )
 }
@@ -386,6 +624,21 @@ const benchmarkAutomerge = (id, init, inputData, changeFunction, check) => {
     (doc1, doc2) => {
       t.compare(Array.from(doc1.array), Array.from(doc2.array))
       t.compare(Array.from(doc1.array), numbers)
+    }
+  )
+  benchmarkLumino(
+    benchmarkName,
+    input,
+    (table1, op, i) => {
+      table1.update({
+        'my-record': {
+          numbers: { index: op.index, remove: 0, values: [op.insert] }
+        }
+      })
+    },
+    (table1, table2) => {
+      t.compare(table1.get('my-record').numbers, table2.get('my-record').numbers)
+      t.compare(table1.get('my-record').numbers, numbers)
     }
   )
 }
