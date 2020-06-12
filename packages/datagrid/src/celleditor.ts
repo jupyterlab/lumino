@@ -372,6 +372,11 @@ abstract class CellEditor implements ICellEditor, IDisposable {
       return;
     }
 
+    if (this._gridWheelEventHandler) {
+      this.cell.grid.node.removeEventListener('wheel', this._gridWheelEventHandler);
+      this._gridWheelEventHandler = null;
+    }
+
     this._closeValidityNotification();
 
     this._disposed = true;
@@ -392,10 +397,12 @@ abstract class CellEditor implements ICellEditor, IDisposable {
 
     this.validator = (options && options.validator) ? options.validator : this.createValidatorBasedOnType();
 
-    cell.grid.node.addEventListener('wheel', () => {
+    this._gridWheelEventHandler = () => {
       this._closeValidityNotification();
       this.updatePosition();
-    });
+    };
+
+    cell.grid.node.addEventListener('wheel', this._gridWheelEventHandler);
 
     this._addContainer();
 
@@ -722,6 +729,10 @@ abstract class CellEditor implements ICellEditor, IDisposable {
    * Whether the value input is valid.
    */
   private _validInput: boolean = true;
+  /**
+   * Grid wheel event handler.
+   */
+  private _gridWheelEventHandler: ((this: HTMLElement, ev: WheelEvent) => any) | null = null;
 }
 
 /**
