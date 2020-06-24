@@ -1100,7 +1100,7 @@ class DataGrid extends Widget {
    *
    * @returns The column count for the specified region.
    */
-  columnCount(region: DataModel.RowRegion): number {
+  columnCount(region: DataModel.ColumnRegion): number {
     let count: number;
     if (region === 'body') {
       count = this._columnSections.count;
