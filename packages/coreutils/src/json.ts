@@ -27,7 +27,7 @@ type JSONValue = JSONPrimitive | JSONObject | JSONArray;
  * A type definition for a JSON object.
  */
 export
-interface JSONObject { [key: string]: JSONValue | ReadonlyJSONValue; }
+interface JSONObject { [key: string]: JSONValue; }
 
 
 /**
