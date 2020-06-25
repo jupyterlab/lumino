@@ -1,6 +1,6 @@
 {
   "name": "@lumino/dragdrop",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "Lumino Drag and Drop",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -54,16 +54,16 @@
     "watch": "tsc --build --watch"
   },
   "dependencies": {
-    "@lumino/coreutils": "^1.5.0",
-    "@lumino/disposable": "^1.4.0"
+    "@lumino/coreutils": "^1.5.1",
+    "@lumino/disposable": "^1.4.1"
   },
   "devDependencies": {
     "@microsoft/api-extractor": "^7.6.0",
     "@types/chai": "^3.4.35",
     "@types/mocha": "^2.2.39",
     "chai": "^3.5.0",
-    "downlevel-dts": "^0.4.0",
     "css-loader": "^3.4.0",
+    "downlevel-dts": "^0.4.0",
     "es6-promise": "^4.0.5",
     "karma": "^4.4.1",
     "karma-chrome-launcher": "^2.0.0",
