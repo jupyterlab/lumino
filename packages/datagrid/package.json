@@ -16,21 +16,13 @@
   "files": [
     "dist/*",
     "src/*",
-    "types/*",
-    "types-3.4/*"
+    "types/*"
   ],
   "main": "dist/index.js",
   "module": "dist/index.es6",
   "unpkg": "dist/index.min.js",
   "jsdelivr": "dist/index.min.js",
   "types": "types/index.d.ts",
-  "typesVersions": {
-    "<3.8": {
-      "*": [
-        "types-3.4/index.d.ts"
-      ]
-    }
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/jupyterlab/lumino.git"
@@ -38,8 +30,7 @@
   "scripts": {
     "api": "api-extractor run --local --verbose",
     "minimize": "terser dist/index.js -c -m --source-map \"content='dist/index.js.map',url='index.min.js.map'\" -o dist/index.min.js",
-    "build": "tsc --build && npm run gen-legacy-types && rollup -c",
-    "gen-legacy-types": "downlevel-dts ./types ./types-3.4",
+    "build": "tsc --build && rollup -c",
     "clean": "rimraf ./lib && rimraf *.tsbuildinfo && rimraf ./types && rimraf ./dist",
     "docs": "typedoc --options tdoptions.json src",
     "watch": "tsc --build --watch"
@@ -56,7 +47,6 @@
     "@lumino/widgets": "^1.13.1"
   },
   "devDependencies": {
-    "downlevel-dts": "^0.4.0",
     "rimraf": "^2.5.2",
     "rollup": "^1.29.0",
     "rollup-plugin-node-resolve": "^5.2.0",
@@ -64,8 +54,8 @@
     "rollup-plugin-sourcemaps": "^0.5.0",
     "terser": "^4.6.2",
     "tslib": "1.10.0",
-    "typedoc": "~0.17.7",
-    "typescript": "~3.9.2"
+    "typedoc": "~0.15.0",
+    "typescript": "~3.6.4"
   },
   "publishConfig": {
     "access": "public"

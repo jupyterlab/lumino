@@ -21,27 +21,18 @@
   "files": [
     "dist/*",
     "src/*",
-    "types/*",
-    "types-3.4/*"
+    "types/*"
   ],
   "main": "dist/index.js",
   "module": "dist/index.es6",
   "unpkg": "dist/index.min.js",
   "jsdelivr": "dist/index.min.js",
   "types": "types/index.d.ts",
-  "typesVersions": {
-    "<3.8": {
-      "*": [
-        "types-3.4/index.d.ts"
-      ]
-    }
-  },
   "scripts": {
     "api": "api-extractor run --local --verbose",
     "minimize": "terser dist/index.js -c -m --source-map \"content='dist/index.js.map',url='index.min.js.map'\" -o dist/index.min.js",
-    "build": "tsc --build && npm run gen-legacy-types && rollup -c",
+    "build": "tsc --build && rollup -c",
     "build:test": "tsc --build tests && cd tests && webpack",
-    "gen-legacy-types": "downlevel-dts ./types ./types-3.4",
     "clean": "rimraf ./lib && rimraf *.tsbuildinfo && rimraf ./types && rimraf ./dist",
     "clean:test": "rimraf tests/build",
     "docs": "typedoc --options tdoptions.json src",
@@ -56,7 +47,6 @@
     "@types/chai": "^3.4.35",
     "@types/mocha": "^2.2.39",
     "chai": "^3.5.0",
-    "downlevel-dts": "^0.4.0",
     "karma": "^4.4.1",
     "karma-chrome-launcher": "^2.0.0",
     "karma-firefox-launcher": "^1.0.0",
@@ -71,8 +61,8 @@
     "rollup-plugin-sourcemaps": "^0.5.0",
     "terser": "^4.6.2",
     "tslib": "1.10.0",
-    "typedoc": "~0.17.7",
-    "typescript": "~3.9.2",
+    "typedoc": "~0.15.0",
+    "typescript": "~3.6.4",
     "webpack": "^4.41.3",
     "webpack-cli": "^3.3.10"
   },

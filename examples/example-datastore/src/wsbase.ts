@@ -21,7 +21,7 @@ import {
  * Abstract base for a class that sends/receives messages over websocket.
  */
 export
-abstract class WSConnection<T extends Partial<JSONValue>, U extends Partial<JSONValue>> implements IDisposable {
+abstract class WSConnection<T extends JSONValue, U extends JSONValue> implements IDisposable {
   /**
    * Create a new websocket based connection.
    */
