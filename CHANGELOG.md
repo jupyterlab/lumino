@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2020-06-24
+
+- @lumino/datagrid: 0.8.0 => 0.9.0
+
+- Fix columnCount signature  [#82](https://github.com/jupyterlab/lumino/pull/82)
+- Unsubscribe from grid wheel events on editor dispose  [#80](https://github.com/jupyterlab/lumino/pull/70)
+
+
 ## 2020-05-23
 
  - @lumino/algorithm: 1.2.0 => 1.3.0
