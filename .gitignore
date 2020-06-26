@@ -4,7 +4,6 @@
 dist
 lib
 types
-types-3.4
 node_modules
 build
 review/api/temp
