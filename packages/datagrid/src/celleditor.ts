@@ -5,22 +5,35 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { IDisposable } from "@lumino/disposable";
+import {
+  IDisposable
+} from '@lumino/disposable';
 
-import { DataGrid } from "./datagrid";
+import {
+  DataGrid
+} from './datagrid';
 
-import { SelectionModel } from "./selectionmodel";
+import {
+  SelectionModel
+} from './selectionmodel';
 
-import { getKeyboardLayout } from "@lumino/keyboard";
+import {
+  getKeyboardLayout
+} from '@lumino/keyboard';
 
-import { Signal } from "@lumino/signaling";
+import {
+  Signal
+} from '@lumino/signaling';
 
-import { Notification } from "./notification";
+import {
+  Notification
+} from './notification';
 
 /**
  * A response object returned from cell input validator
  */
-export interface ICellInputValidatorResponse {
+export
+interface ICellInputValidatorResponse {
   /**
    * Flag indicating cell input is valid or not
    */
@@ -34,7 +47,8 @@ export interface ICellInputValidatorResponse {
 /**
  * An object which validates cell input values.
  */
-export interface ICellInputValidator {
+export
+interface ICellInputValidator {
   /**
    * Validate cell input.
    *
@@ -44,16 +58,14 @@ export interface ICellInputValidator {
    *
    * @returns An object with validation result.
    */
-  validate(
-    cell: CellEditor.CellConfig,
-    value: any
-  ): ICellInputValidatorResponse;
+  validate(cell: CellEditor.CellConfig, value: any): ICellInputValidatorResponse;
 }
 
 /**
  * An object returned from cell editor after a successful edit.
  */
-export interface ICellEditResponse {
+export
+interface ICellEditResponse {
   /**
    * An object which holds the configuration data for a cell.
    */
@@ -71,7 +83,8 @@ export interface ICellEditResponse {
 /**
  * An object implementing cell editing.
  */
-export interface ICellEditor {
+export
+interface ICellEditor {
   /**
    * Start editing the cell.
    *
@@ -90,28 +103,19 @@ export interface ICellEditor {
 const DEFAULT_INVALID_INPUT_MESSAGE = "Invalid input!";
 
 // A type alias for available cell data types
-export type CellDataType =
-  | "string"
-  | "number"
-  | "integer"
-  | "boolean"
-  | "date"
-  | "string:option"
-  | "number:option"
-  | "integer:option"
-  | "date:option"
-  | "string:dynamic-option"
-  | "number:dynamic-option"
-  | "integer:dynamic-option"
-  | "date:dynamic-option";
+export
+type CellDataType = 'string' | 'number' | 'integer' | 'boolean' | 'date' |
+                    'string:option' | 'number:option' | 'integer:option'| 'date:option'|
+                    'string:dynamic-option' | 'number:dynamic-option' | 'integer:dynamic-option' | 'date:dynamic-option';
 
 /**
  * An object containing cell editing options.
  */
-export interface ICellEditOptions {
+export
+interface ICellEditOptions {
   /**
    * Cell editor to use for editing.
-   *
+   * 
    * #### Notes
    * This object is only used by cell editor controller.
    * If not set, controller picks the most suitable editor
@@ -135,7 +139,8 @@ export interface ICellEditOptions {
 /**
  * A cell input validator object which always returns valid.
  */
-export class PassInputValidator implements ICellInputValidator {
+export
+class PassInputValidator implements ICellInputValidator {
   /**
    * Validate cell input.
    *
@@ -145,10 +150,7 @@ export class PassInputValidator implements ICellInputValidator {
    *
    * @returns An object with validation result.
    */
-  validate(
-    cell: CellEditor.CellConfig,
-    value: any
-  ): ICellInputValidatorResponse {
+  validate(cell: CellEditor.CellConfig, value: any): ICellInputValidatorResponse {
     return { valid: true };
   }
 }
@@ -156,7 +158,8 @@ export class PassInputValidator implements ICellInputValidator {
 /**
  * Text cell input validator.
  */
-export class TextInputValidator implements ICellInputValidator {
+export
+class TextInputValidator implements ICellInputValidator {
   /**
    * Validate cell input.
    *
@@ -166,39 +169,36 @@ export class TextInputValidator implements ICellInputValidator {
    *
    * @returns An object with validation result.
    */
-  validate(
-    cell: CellEditor.CellConfig,
-    value: string
-  ): ICellInputValidatorResponse {
+  validate(cell: CellEditor.CellConfig, value: string): ICellInputValidatorResponse {
     if (value === null) {
       return { valid: true };
     }
 
-    if (typeof value !== "string") {
+    if (typeof value !== 'string') {
       return {
         valid: false,
-        message: "Input must be valid text",
+        message: 'Input must be valid text'
       };
     }
 
     if (!isNaN(this.minLength) && value.length < this.minLength) {
       return {
         valid: false,
-        message: `Text length must be greater than ${this.minLength}`,
+        message: `Text length must be greater than ${this.minLength}`
       };
     }
 
     if (!isNaN(this.maxLength) && value.length > this.maxLength) {
       return {
         valid: false,
-        message: `Text length must be less than ${this.maxLength}`,
+        message: `Text length must be less than ${this.maxLength}`
       };
     }
 
     if (this.pattern && !this.pattern.test(value)) {
       return {
         valid: false,
-        message: `Text doesn't match the required pattern`,
+        message: `Text doesn't match the required pattern`
       };
     }
 
@@ -207,19 +207,19 @@ export class TextInputValidator implements ICellInputValidator {
 
   /**
    * Minimum text length
-   *
+   * 
    * The default is Number.NaN, meaning no minimum constraint
    */
   minLength: number = Number.NaN;
   /**
    * Maximum text length
-   *
+   * 
    * The default is Number.NaN, meaning no maximum constraint
    */
   maxLength: number = Number.NaN;
   /**
    * Required text pattern as regular expression
-   *
+   * 
    * The default is null, meaning no pattern constraint
    */
   pattern: RegExp | null = null;
@@ -228,7 +228,8 @@ export class TextInputValidator implements ICellInputValidator {
 /**
  * Integer cell input validator.
  */
-export class IntegerInputValidator implements ICellInputValidator {
+export
+class IntegerInputValidator implements ICellInputValidator {
   /**
    * Validate cell input.
    *
@@ -238,32 +239,29 @@ export class IntegerInputValidator implements ICellInputValidator {
    *
    * @returns An object with validation result.
    */
-  validate(
-    cell: CellEditor.CellConfig,
-    value: number
-  ): ICellInputValidatorResponse {
+  validate(cell: CellEditor.CellConfig, value: number): ICellInputValidatorResponse {
     if (value === null) {
       return { valid: true };
     }
 
-    if (isNaN(value) || value % 1 !== 0) {
+    if (isNaN(value) || (value % 1 !== 0)) {
       return {
         valid: false,
-        message: "Input must be valid integer",
+        message: 'Input must be valid integer'
       };
     }
 
     if (!isNaN(this.min) && value < this.min) {
       return {
         valid: false,
-        message: `Input must be greater than ${this.min}`,
+        message: `Input must be greater than ${this.min}`
       };
     }
 
     if (!isNaN(this.max) && value > this.max) {
       return {
         valid: false,
-        message: `Input must be less than ${this.max}`,
+        message: `Input must be less than ${this.max}`
       };
     }
 
@@ -272,13 +270,13 @@ export class IntegerInputValidator implements ICellInputValidator {
 
   /**
    * Minimum value
-   *
+   * 
    * The default is Number.NaN, meaning no minimum constraint
    */
   min: number = Number.NaN;
   /**
    * Maximum value
-   *
+   * 
    * The default is Number.NaN, meaning no maximum constraint
    */
   max: number = Number.NaN;
@@ -287,7 +285,8 @@ export class IntegerInputValidator implements ICellInputValidator {
 /**
  * Real number cell input validator.
  */
-export class NumberInputValidator implements ICellInputValidator {
+export
+class NumberInputValidator implements ICellInputValidator {
   /**
    * Validate cell input.
    *
@@ -297,10 +296,7 @@ export class NumberInputValidator implements ICellInputValidator {
    *
    * @returns An object with validation result.
    */
-  validate(
-    cell: CellEditor.CellConfig,
-    value: number
-  ): ICellInputValidatorResponse {
+  validate(cell: CellEditor.CellConfig, value: number): ICellInputValidatorResponse {
     if (value === null) {
       return { valid: true };
     }
@@ -308,21 +304,21 @@ export class NumberInputValidator implements ICellInputValidator {
     if (isNaN(value)) {
       return {
         valid: false,
-        message: "Input must be valid number",
+        message: 'Input must be valid number'
       };
     }
 
     if (!isNaN(this.min) && value < this.min) {
       return {
         valid: false,
-        message: `Input must be greater than ${this.min}`,
+        message: `Input must be greater than ${this.min}`
       };
     }
 
     if (!isNaN(this.max) && value > this.max) {
       return {
         valid: false,
-        message: `Input must be less than ${this.max}`,
+        message: `Input must be less than ${this.max}`
       };
     }
 
@@ -331,17 +327,18 @@ export class NumberInputValidator implements ICellInputValidator {
 
   /**
    * Minimum value
-   *
+   * 
    * The default is Number.NaN, meaning no minimum constraint
    */
   min: number = Number.NaN;
   /**
    * Maximum value
-   *
+   * 
    * The default is Number.NaN, meaning no maximum constraint
    */
   max: number = Number.NaN;
 }
+
 
 /**
  * An abstract base class that provides the most of the functionality
@@ -349,7 +346,8 @@ export class NumberInputValidator implements ICellInputValidator {
  * for various cell types are derived from this base class. Custom cell editors
  * can be easily implemented by extending this class.
  */
-export abstract class CellEditor implements ICellEditor, IDisposable {
+export
+abstract class CellEditor implements ICellEditor, IDisposable {
   /**
    * Construct a new cell editor.
    */
@@ -375,10 +373,7 @@ export abstract class CellEditor implements ICellEditor, IDisposable {
     }
 
     if (this._gridWheelEventHandler) {
-      this.cell.grid.node.removeEventListener(
-        "wheel",
-        this._gridWheelEventHandler
-      );
+      this.cell.grid.node.removeEventListener('wheel', this._gridWheelEventHandler);
       this._gridWheelEventHandler = null;
     }
 
@@ -400,17 +395,14 @@ export abstract class CellEditor implements ICellEditor, IDisposable {
     this.onCommit = options && options.onCommit;
     this.onCancel = options && options.onCancel;
 
-    this.validator =
-      options && options.validator
-        ? options.validator
-        : this.createValidatorBasedOnType();
+    this.validator = (options && options.validator) ? options.validator : this.createValidatorBasedOnType();
 
     this._gridWheelEventHandler = () => {
       this._closeValidityNotification();
       this.updatePosition();
     };
 
-    cell.grid.node.addEventListener("wheel", this._gridWheelEventHandler);
+    cell.grid.node.addEventListener('wheel', this._gridWheelEventHandler);
 
     this._addContainer();
 
@@ -468,10 +460,7 @@ export abstract class CellEditor implements ICellEditor, IDisposable {
       if (result.valid) {
         this.setValidity(true);
       } else {
-        this.setValidity(
-          false,
-          result.message || DEFAULT_INVALID_INPUT_MESSAGE
-        );
+        this.setValidity(false, result.message || DEFAULT_INVALID_INPUT_MESSAGE);
       }
     } else {
       this.setValidity(true);
@@ -484,7 +473,7 @@ export abstract class CellEditor implements ICellEditor, IDisposable {
    * @param valid - Whether the input is valid.
    *
    * @param message - Notification message to show.
-   *
+   * 
    * If message is set to empty string (which is the default)
    * existing notification popup is removed if any.
    */
@@ -494,17 +483,17 @@ export abstract class CellEditor implements ICellEditor, IDisposable {
     this._closeValidityNotification();
 
     if (valid) {
-      this.editorContainer.classList.remove("lm-mod-invalid");
+      this.editorContainer.classList.remove('lm-mod-invalid');
     } else {
-      this.editorContainer.classList.add("lm-mod-invalid");
+      this.editorContainer.classList.add('lm-mod-invalid');
 
       // show a notification popup
       if (message !== "") {
         this.validityNotification = new Notification({
           target: this.editorContainer,
           message: message,
-          placement: "bottom",
-          timeout: 5000,
+          placement: 'bottom',
+          timeout: 5000
         });
         this.validityNotification.show();
       }
@@ -517,33 +506,25 @@ export abstract class CellEditor implements ICellEditor, IDisposable {
    */
   protected createValidatorBasedOnType(): ICellInputValidator | undefined {
     const cell = this.cell;
-    const metadata = cell.grid.dataModel!.metadata(
-      "body",
-      cell.row,
-      cell.column
-    );
+    const metadata = cell.grid.dataModel!.metadata('body', cell.row, cell.column);
 
     switch (metadata && metadata.type) {
-      case "string":
+      case 'string':
         {
           const validator = new TextInputValidator();
-          if (typeof metadata!.format === "string") {
+          if (typeof(metadata!.format) === 'string') {
             const format = metadata!.format;
             switch (format) {
-              case "email":
-                validator.pattern = new RegExp(
-                  "^([a-z0-9_.-]+)@([da-z.-]+).([a-z.]{2,6})$"
-                );
+              case 'email':
+                validator.pattern = new RegExp("^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$");
                 break;
-              case "uuid":
-                validator.pattern = new RegExp(
-                  "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
-                );
+              case 'uuid':
+                validator.pattern = new RegExp("[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}");
                 break;
-              case "uri":
+              case 'uri':
                 // TODO
                 break;
-              case "binary":
+              case 'binary':
                 // TODO
                 break;
             }
@@ -556,14 +537,14 @@ export abstract class CellEditor implements ICellEditor, IDisposable {
             if (metadata!.constraint.maxLength !== undefined) {
               validator.maxLength = metadata!.constraint.maxLength;
             }
-            if (typeof metadata!.constraint.pattern === "string") {
+            if (typeof(metadata!.constraint.pattern) === 'string') {
               validator.pattern = new RegExp(metadata!.constraint.pattern);
             }
           }
           return validator;
         }
         break;
-      case "number":
+      case 'number':
         {
           const validator = new NumberInputValidator();
           if (metadata!.constraint) {
@@ -577,7 +558,7 @@ export abstract class CellEditor implements ICellEditor, IDisposable {
           return validator;
         }
         break;
-      case "integer":
+      case 'integer':
         {
           const validator = new IntegerInputValidator();
           if (metadata!.constraint) {
@@ -601,13 +582,12 @@ export abstract class CellEditor implements ICellEditor, IDisposable {
    */
   protected getCellInfo(cell: CellEditor.CellConfig): Private.ICellInfo {
     const { grid, row, column } = cell;
-    const data = grid.dataModel!.data("body", row, column);
+    const data = grid.dataModel!.data('body', row, column);
 
-    const columnX =
-      grid.headerWidth - grid.scrollX + grid.columnOffset("body", column);
-    const rowY = grid.headerHeight - grid.scrollY + grid.rowOffset("body", row);
-    const width = grid.columnSize("body", column);
-    const height = grid.rowSize("body", row);
+    const columnX = grid.headerWidth - grid.scrollX + grid.columnOffset('body', column);
+    const rowY = grid.headerHeight - grid.scrollY + grid.rowOffset('body', row);
+    const width = grid.columnSize('body', column);
+    const height = grid.rowSize('body', row);
 
     return {
       grid: grid,
@@ -617,7 +597,7 @@ export abstract class CellEditor implements ICellEditor, IDisposable {
       x: columnX,
       y: rowY,
       width: width,
-      height: height,
+      height: height
     };
   }
 
@@ -630,31 +610,28 @@ export abstract class CellEditor implements ICellEditor, IDisposable {
     const headerHeight = grid.headerHeight;
     const headerWidth = grid.headerWidth;
 
-    this.viewportOccluder.style.top = headerHeight + "px";
-    this.viewportOccluder.style.left = headerWidth + "px";
-    this.viewportOccluder.style.width = grid.viewportWidth - headerWidth + "px";
-    this.viewportOccluder.style.height =
-      grid.viewportHeight - headerHeight + "px";
-    this.viewportOccluder.style.position = "absolute";
+    this.viewportOccluder.style.top = headerHeight + 'px';
+    this.viewportOccluder.style.left = headerWidth + 'px';
+    this.viewportOccluder.style.width = (grid.viewportWidth - headerWidth) + 'px';
+    this.viewportOccluder.style.height = (grid.viewportHeight - headerHeight) + 'px';
+    this.viewportOccluder.style.position = 'absolute';
 
-    this.editorContainer.style.left = cellInfo.x - 1 - headerWidth + "px";
-    this.editorContainer.style.top = cellInfo.y - 1 - headerHeight + "px";
-    this.editorContainer.style.width = cellInfo.width + 1 + "px";
-    this.editorContainer.style.height = cellInfo.height + 1 + "px";
-    this.editorContainer.style.visibility = "visible";
-    this.editorContainer.style.position = "absolute";
+    this.editorContainer.style.left = (cellInfo.x - 1 - headerWidth) + 'px';
+    this.editorContainer.style.top = (cellInfo.y - 1 - headerHeight) + 'px';
+    this.editorContainer.style.width = (cellInfo.width + 1) + 'px';
+    this.editorContainer.style.height = (cellInfo.height + 1) + 'px';
+    this.editorContainer.style.visibility = 'visible';
+    this.editorContainer.style.position = 'absolute';
   }
 
   /**
    * Commit the edited value.
-   *
+   * 
    * @param cursorMovement - Cursor move direction based on keys pressed to end the edit.
-   *
+   * 
    * @returns true on valid input, false otherwise.
    */
-  protected commit(
-    cursorMovement: SelectionModel.CursorMoveDirection = "none"
-  ): boolean {
+  protected commit(cursorMovement: SelectionModel.CursorMoveDirection = 'none'): boolean {
     this.validate();
 
     if (!this._validInput) {
@@ -675,7 +652,7 @@ export abstract class CellEditor implements ICellEditor, IDisposable {
       this.onCommit({
         cell: this.cell,
         value: value,
-        cursorMovement: cursorMovement,
+        cursorMovement: cursorMovement
       });
     }
 
@@ -687,22 +664,20 @@ export abstract class CellEditor implements ICellEditor, IDisposable {
    * beyond viewport and to position cell editor widget.
    */
   private _addContainer() {
-    this.viewportOccluder = document.createElement("div");
-    this.viewportOccluder.className = "lm-DataGrid-cellEditorOccluder";
+    this.viewportOccluder = document.createElement('div');
+    this.viewportOccluder.className = 'lm-DataGrid-cellEditorOccluder';
     this.cell.grid.node.appendChild(this.viewportOccluder);
 
-    this.editorContainer = document.createElement("div");
-    this.editorContainer.className = "lm-DataGrid-cellEditorContainer";
+    this.editorContainer = document.createElement('div');
+    this.editorContainer.className = 'lm-DataGrid-cellEditorContainer';
     this.viewportOccluder.appendChild(this.editorContainer);
 
     // update mouse event pass-through state based on input validity
-    this.editorContainer.addEventListener("mouseleave", (event: MouseEvent) => {
-      this.viewportOccluder.style.pointerEvents = this._validInput
-        ? "none"
-        : "auto";
+    this.editorContainer.addEventListener('mouseleave', (event: MouseEvent) => {
+      this.viewportOccluder.style.pointerEvents = this._validInput ? 'none' : 'auto';
     });
-    this.editorContainer.addEventListener("mouseenter", (event: MouseEvent) => {
-      this.viewportOccluder.style.pointerEvents = "none";
+    this.editorContainer.addEventListener('mouseenter', (event: MouseEvent) => {
+      this.viewportOccluder.style.pointerEvents = 'none';
     });
   }
 
@@ -759,16 +734,15 @@ export abstract class CellEditor implements ICellEditor, IDisposable {
   /**
    * Grid wheel event handler.
    */
-  private _gridWheelEventHandler:
-    | ((this: HTMLElement, ev: WheelEvent) => any)
-    | null = null;
+  private _gridWheelEventHandler: ((this: HTMLElement, ev: WheelEvent) => any) | null = null;
 }
 
 /**
  * Abstract base class with shared functionality
  * for cell editors which use HTML Input widget as editor.
  */
-export abstract class InputCellEditor extends CellEditor {
+export
+abstract class InputCellEditor extends CellEditor {
   /**
    * Handle the DOM events for the editor.
    *
@@ -776,13 +750,13 @@ export abstract class InputCellEditor extends CellEditor {
    */
   handleEvent(event: Event): void {
     switch (event.type) {
-      case "keydown":
+      case 'keydown':
         this._onKeyDown(event as KeyboardEvent);
         break;
-      case "blur":
+      case 'blur':
         this._onBlur(event as FocusEvent);
         break;
-      case "input":
+      case 'input':
         this._onInput(event);
         break;
     }
@@ -819,16 +793,16 @@ export abstract class InputCellEditor extends CellEditor {
 
   protected deserialize(value: any): any {
     if (value === null || value === undefined) {
-      return "";
+      return '';
     }
 
     return value.toString();
   }
 
   protected createWidget() {
-    const input = document.createElement("input");
-    input.classList.add("lm-DataGrid-cellEditorWidget");
-    input.classList.add("lm-DataGrid-cellEditorInput");
+    const input = document.createElement('input');
+    input.classList.add('lm-DataGrid-cellEditorWidget');
+    input.classList.add('lm-DataGrid-cellEditorInput');
     input.spellcheck = false;
     input.type = this.inputType;
 
@@ -836,28 +810,28 @@ export abstract class InputCellEditor extends CellEditor {
   }
 
   protected bindEvents() {
-    this.input.addEventListener("keydown", this);
-    this.input.addEventListener("blur", this);
-    this.input.addEventListener("input", this);
+    this.input.addEventListener('keydown', this);
+    this.input.addEventListener('blur', this);
+    this.input.addEventListener('input', this);
   }
 
   private _unbindEvents() {
-    this.input.removeEventListener("keydown", this);
-    this.input.removeEventListener("blur", this);
-    this.input.removeEventListener("input", this);
+    this.input.removeEventListener('keydown', this);
+    this.input.removeEventListener('blur', this);
+    this.input.removeEventListener('input', this);
   }
 
   private _onKeyDown(event: KeyboardEvent) {
     switch (getKeyboardLayout().keyForKeydownEvent(event)) {
-      case "Enter":
-        this.commit(event.shiftKey ? "up" : "down");
+      case 'Enter':
+        this.commit(event.shiftKey ? 'up' : 'down');
         break;
-      case "Tab":
-        this.commit(event.shiftKey ? "left" : "right");
+      case 'Tab':
+        this.commit(event.shiftKey ? 'left' : 'right');
         event.stopPropagation();
         event.preventDefault();
         break;
-      case "Escape":
+      case 'Escape':
         this.cancel();
         break;
       default:
@@ -888,7 +862,8 @@ export abstract class InputCellEditor extends CellEditor {
 /**
  * Cell editor for text cells.
  */
-export class TextCellEditor extends InputCellEditor {
+export
+class TextCellEditor extends InputCellEditor {
   /**
    * Return the current text input entered.
    */
@@ -896,28 +871,25 @@ export class TextCellEditor extends InputCellEditor {
     return this.input.value;
   }
 
-  protected inputType: string = "text";
+  protected inputType: string = 'text';
 }
 
 /**
  * Cell editor for real number cells.
  */
-export class NumberCellEditor extends InputCellEditor {
+export
+class NumberCellEditor extends InputCellEditor {
   /**
    * Start editing the cell.
    */
   protected startEditing() {
     super.startEditing();
 
-    this.input.step = "any";
+    this.input.step = 'any';
 
     const cell = this.cell;
 
-    const metadata = cell.grid.dataModel!.metadata(
-      "body",
-      cell.row,
-      cell.column
-    );
+    const metadata = cell.grid.dataModel!.metadata('body', cell.row, cell.column);
     const constraint = metadata.constraint;
     if (constraint) {
       if (constraint.minimum) {
@@ -935,40 +907,37 @@ export class NumberCellEditor extends InputCellEditor {
    */
   protected getInput(): number | null {
     let value = this.input.value;
-    if (value.trim() === "") {
+    if (value.trim() === '') {
       return null;
     }
 
     const floatValue = parseFloat(value);
     if (isNaN(floatValue)) {
-      throw new Error("Invalid input");
+      throw new Error('Invalid input');
     }
 
     return floatValue;
   }
 
-  protected inputType: string = "number";
+  protected inputType: string = 'number';
 }
 
 /**
  * Cell editor for integer cells.
  */
-export class IntegerCellEditor extends InputCellEditor {
+export
+class IntegerCellEditor extends InputCellEditor {
   /**
    * Start editing the cell.
    */
   protected startEditing() {
     super.startEditing();
 
-    this.input.step = "1";
+    this.input.step = '1';
 
     const cell = this.cell;
 
-    const metadata = cell.grid.dataModel!.metadata(
-      "body",
-      cell.row,
-      cell.column
-    );
+    const metadata = cell.grid.dataModel!.metadata('body', cell.row, cell.column);
     const constraint = metadata.constraint;
     if (constraint) {
       if (constraint.minimum) {
@@ -986,25 +955,26 @@ export class IntegerCellEditor extends InputCellEditor {
    */
   protected getInput(): number | null {
     let value = this.input.value;
-    if (value.trim() === "") {
+    if (value.trim() === '') {
       return null;
     }
 
     let intValue = parseInt(value);
     if (isNaN(intValue)) {
-      throw new Error("Invalid input");
+      throw new Error('Invalid input');
     }
 
     return intValue;
   }
 
-  protected inputType: string = "number";
+  protected inputType: string = 'number';
 }
 
 /**
  * Cell editor for date cells.
  */
-export class DateCellEditor extends CellEditor {
+export
+class DateCellEditor extends CellEditor {
   /**
    * Handle the DOM events for the editor.
    *
@@ -1012,10 +982,10 @@ export class DateCellEditor extends CellEditor {
    */
   handleEvent(event: Event): void {
     switch (event.type) {
-      case "keydown":
+      case 'keydown':
         this._onKeyDown(event as KeyboardEvent);
         break;
-      case "blur":
+      case 'blur':
         this._onBlur(event as FocusEvent);
         break;
     }
@@ -1058,43 +1028,43 @@ export class DateCellEditor extends CellEditor {
 
   private _deserialize(value: any): any {
     if (value === null || value === undefined) {
-      return "";
+      return '';
     }
 
     return value.toString();
   }
 
   private _createWidget() {
-    const input = document.createElement("input");
-    input.type = "date";
-    input.pattern = "d{4}-d{2}-d{2}";
-    input.classList.add("lm-DataGrid-cellEditorWidget");
-    input.classList.add("lm-DataGrid-cellEditorInput");
+    const input = document.createElement('input');
+    input.type = 'date';
+    input.pattern = "\d{4}-\d{2}-\d{2}";
+    input.classList.add('lm-DataGrid-cellEditorWidget');
+    input.classList.add('lm-DataGrid-cellEditorInput');
 
     this._input = input;
   }
 
   private _bindEvents() {
-    this._input.addEventListener("keydown", this);
-    this._input.addEventListener("blur", this);
+    this._input.addEventListener('keydown', this);
+    this._input.addEventListener('blur', this);
   }
 
   private _unbindEvents() {
-    this._input.removeEventListener("keydown", this);
-    this._input.removeEventListener("blur", this);
+    this._input.removeEventListener('keydown', this);
+    this._input.removeEventListener('blur', this);
   }
 
   private _onKeyDown(event: KeyboardEvent) {
     switch (getKeyboardLayout().keyForKeydownEvent(event)) {
-      case "Enter":
-        this.commit(event.shiftKey ? "up" : "down");
+      case 'Enter':
+        this.commit(event.shiftKey ? 'up' : 'down');
         break;
-      case "Tab":
-        this.commit(event.shiftKey ? "left" : "right");
+      case 'Tab':
+        this.commit(event.shiftKey ? 'left' : 'right');
         event.stopPropagation();
         event.preventDefault();
         break;
-      case "Escape":
+      case 'Escape':
         this.cancel();
         break;
       default:
@@ -1120,7 +1090,8 @@ export class DateCellEditor extends CellEditor {
 /**
  * Cell editor for boolean cells.
  */
-export class BooleanCellEditor extends CellEditor {
+export
+class BooleanCellEditor extends CellEditor {
   /**
    * Handle the DOM events for the editor.
    *
@@ -1128,16 +1099,16 @@ export class BooleanCellEditor extends CellEditor {
    */
   handleEvent(event: Event): void {
     switch (event.type) {
-      case "keydown":
+      case 'keydown':
         this._onKeyDown(event as KeyboardEvent);
         break;
-      case "mousedown":
+      case 'mousedown':
         // fix focus loss problem in Safari and Firefox
         this._input.focus();
         event.stopPropagation();
         event.preventDefault();
         break;
-      case "blur":
+      case 'blur':
         this._onBlur(event as FocusEvent);
         break;
     }
@@ -1187,38 +1158,38 @@ export class BooleanCellEditor extends CellEditor {
   }
 
   private _createWidget() {
-    const input = document.createElement("input");
-    input.classList.add("lm-DataGrid-cellEditorWidget");
-    input.classList.add("lm-DataGrid-cellEditorCheckbox");
-    input.type = "checkbox";
+    const input = document.createElement('input');
+    input.classList.add('lm-DataGrid-cellEditorWidget');
+    input.classList.add('lm-DataGrid-cellEditorCheckbox');
+    input.type = 'checkbox';
     input.spellcheck = false;
 
     this._input = input;
   }
 
   private _bindEvents() {
-    this._input.addEventListener("keydown", this);
-    this._input.addEventListener("mousedown", this);
-    this._input.addEventListener("blur", this);
+    this._input.addEventListener('keydown', this);
+    this._input.addEventListener('mousedown', this);
+    this._input.addEventListener('blur', this);
   }
 
   private _unbindEvents() {
-    this._input.removeEventListener("keydown", this);
-    this._input.removeEventListener("mousedown", this);
-    this._input.removeEventListener("blur", this);
+    this._input.removeEventListener('keydown', this);
+    this._input.removeEventListener('mousedown', this);
+    this._input.removeEventListener('blur', this);
   }
 
   private _onKeyDown(event: KeyboardEvent) {
     switch (getKeyboardLayout().keyForKeydownEvent(event)) {
-      case "Enter":
-        this.commit(event.shiftKey ? "up" : "down");
+      case 'Enter':
+        this.commit(event.shiftKey ? 'up' : 'down');
         break;
-      case "Tab":
-        this.commit(event.shiftKey ? "left" : "right");
+      case 'Tab':
+        this.commit(event.shiftKey ? 'left' : 'right');
         event.stopPropagation();
         event.preventDefault();
         break;
-      case "Escape":
+      case 'Escape':
         this.cancel();
         break;
       default:
@@ -1241,14 +1212,16 @@ export class BooleanCellEditor extends CellEditor {
   private _input: HTMLInputElement;
 }
 
+
 /**
  * Cell editor for option cells.
- *
+ * 
  * It supports multiple option selection. If cell metadata contains
  * type attribute 'array', then it behaves as a multi select.
  * In that case cell data is expected to be list of string values.
  */
-export class OptionCellEditor extends CellEditor {
+export
+class OptionCellEditor extends CellEditor {
   /**
    * Dispose of the resources held by cell editor.
    */
@@ -1270,12 +1243,8 @@ export class OptionCellEditor extends CellEditor {
   protected startEditing() {
     const cell = this.cell;
     const cellInfo = this.getCellInfo(cell);
-    const metadata = cell.grid.dataModel!.metadata(
-      "body",
-      cell.row,
-      cell.column
-    );
-    this._isMultiSelect = metadata.type === "array";
+    const metadata = cell.grid.dataModel!.metadata('body', cell.row, cell.column);
+    this._isMultiSelect = metadata.type === 'array';
     this._createWidget();
 
     if (this._isMultiSelect) {
@@ -1325,20 +1294,20 @@ export class OptionCellEditor extends CellEditor {
 
     const cellInfo = this.getCellInfo(this.cell);
 
-    this._select.style.position = "absolute";
+    this._select.style.position = 'absolute';
     const editorContainerRect = this.editorContainer.getBoundingClientRect();
 
-    this._select.style.left = editorContainerRect.left + "px";
-    this._select.style.top = editorContainerRect.top + cellInfo.height + "px";
-    this._select.style.width = editorContainerRect.width + "px";
-    this._select.style.maxHeight = "60px";
+    this._select.style.left = editorContainerRect.left + 'px';
+    this._select.style.top = (editorContainerRect.top + cellInfo.height) + 'px';
+    this._select.style.width = editorContainerRect.width + 'px';
+    this._select.style.maxHeight = '60px';
 
-    this.editorContainer.style.visibility = "hidden";
+    this.editorContainer.style.visibility = 'hidden';
   }
 
   private _deserialize(value: any): string | string[] {
     if (value === null || value === undefined) {
-      return "";
+      return '';
     }
 
     if (this._isMultiSelect) {
@@ -1356,15 +1325,11 @@ export class OptionCellEditor extends CellEditor {
 
   private _createWidget() {
     const cell = this.cell;
-    const metadata = cell.grid.dataModel!.metadata(
-      "body",
-      cell.row,
-      cell.column
-    );
+    const metadata = cell.grid.dataModel!.metadata('body', cell.row, cell.column);
     const items = metadata.constraint.enum;
 
-    const select = document.createElement("select");
-    select.classList.add("lm-DataGrid-cellEditorWidget");
+    const select = document.createElement('select');
+    select.classList.add('lm-DataGrid-cellEditorWidget');
     for (let item of items) {
       const option = document.createElement("option");
       option.value = item;
@@ -1376,21 +1341,21 @@ export class OptionCellEditor extends CellEditor {
   }
 
   private _bindEvents() {
-    this._select.addEventListener("keydown", this._onKeyDown.bind(this));
-    this._select.addEventListener("blur", this._onBlur.bind(this));
+    this._select.addEventListener('keydown', this._onKeyDown.bind(this));
+    this._select.addEventListener('blur', this._onBlur.bind(this));
   }
 
   private _onKeyDown(event: KeyboardEvent) {
     switch (getKeyboardLayout().keyForKeydownEvent(event)) {
-      case "Enter":
-        this.commit(event.shiftKey ? "up" : "down");
+      case 'Enter':
+        this.commit(event.shiftKey ? 'up' : 'down');
         break;
-      case "Tab":
-        this.commit(event.shiftKey ? "left" : "right");
+      case 'Tab':
+        this.commit(event.shiftKey ? 'left' : 'right');
         event.stopPropagation();
         event.preventDefault();
         break;
-      case "Escape":
+      case 'Escape':
         this.cancel();
         break;
       default:
@@ -1418,7 +1383,8 @@ export class OptionCellEditor extends CellEditor {
  * Cell editor for option cells whose value can be any value
  * from set of pre-defined options or values that can be input by user.
  */
-export class DynamicOptionCellEditor extends CellEditor {
+export
+class DynamicOptionCellEditor extends CellEditor {
   /**
    * Handle the DOM events for the editor.
    *
@@ -1426,10 +1392,10 @@ export class DynamicOptionCellEditor extends CellEditor {
    */
   handleEvent(event: Event): void {
     switch (event.type) {
-      case "keydown":
+      case 'keydown':
         this._onKeyDown(event as KeyboardEvent);
         break;
-      case "blur":
+      case 'blur':
         this._onBlur(event as FocusEvent);
         break;
     }
@@ -1473,7 +1439,7 @@ export class DynamicOptionCellEditor extends CellEditor {
 
   private _deserialize(value: any): any {
     if (value === null || value === undefined) {
-      return "";
+      return '';
     }
 
     return value.toString();
@@ -1483,17 +1449,17 @@ export class DynamicOptionCellEditor extends CellEditor {
     const cell = this.cell;
     const grid = cell.grid;
     const dataModel = grid.dataModel!;
-    const rowCount = dataModel.rowCount("body");
+    const rowCount = dataModel.rowCount('body');
 
-    const listId = "cell-editor-list";
-    const list = document.createElement("datalist");
+    const listId = 'cell-editor-list';
+    const list = document.createElement('datalist');
     list.id = listId;
-    const input = document.createElement("input");
-    input.classList.add("lm-DataGrid-cellEditorWidget");
-    input.classList.add("lm-DataGrid-cellEditorInput");
+    const input = document.createElement('input');
+    input.classList.add('lm-DataGrid-cellEditorWidget');
+    input.classList.add('lm-DataGrid-cellEditorInput');
     const valueSet = new Set<string>();
     for (let r = 0; r < rowCount; ++r) {
-      const data = dataModel.data("body", r, cell.column);
+      const data = dataModel.data('body', r, cell.column);
       if (data) {
         valueSet.add(data);
       }
@@ -1505,32 +1471,32 @@ export class DynamicOptionCellEditor extends CellEditor {
       list.appendChild(option);
     });
     this.editorContainer.appendChild(list);
-    input.setAttribute("list", listId);
+    input.setAttribute('list', listId);
 
     this._input = input;
   }
 
   private _bindEvents() {
-    this._input.addEventListener("keydown", this);
-    this._input.addEventListener("blur", this);
+    this._input.addEventListener('keydown', this);
+    this._input.addEventListener('blur', this);
   }
 
   private _unbindEvents() {
-    this._input.removeEventListener("keydown", this);
-    this._input.removeEventListener("blur", this);
+    this._input.removeEventListener('keydown', this);
+    this._input.removeEventListener('blur', this);
   }
 
   private _onKeyDown(event: KeyboardEvent) {
     switch (getKeyboardLayout().keyForKeydownEvent(event)) {
-      case "Enter":
-        this.commit(event.shiftKey ? "up" : "down");
+      case 'Enter':
+        this.commit(event.shiftKey ? 'up' : 'down');
         break;
-      case "Tab":
-        this.commit(event.shiftKey ? "left" : "right");
+      case 'Tab':
+        this.commit(event.shiftKey ? 'left' : 'right');
         event.stopPropagation();
         event.preventDefault();
         break;
-      case "Escape":
+      case 'Escape':
         this.cancel();
         break;
       default:
@@ -1553,14 +1519,17 @@ export class DynamicOptionCellEditor extends CellEditor {
   private _input: HTMLInputElement;
 }
 
+
 /**
  * The namespace for the `CellEditor` class statics.
  */
-export namespace CellEditor {
+export
+namespace CellEditor {
   /**
    * An object which holds the configuration data for a cell.
    */
-  export type CellConfig = {
+  export
+  type CellConfig = {
     /**
      * The grid containing the cell.
      */
@@ -1585,13 +1554,13 @@ namespace Private {
    * A type alias for cell properties.
    */
   export type ICellInfo = {
-    grid: DataGrid;
-    row: number;
-    column: number;
-    data: any;
-    x: number;
-    y: number;
-    width: number;
-    height: number;
+    grid: DataGrid,
+    row: number,
+    column: number,
+    data: any,
+    x: number,
+    y: number,
+    width: number,
+    height: number
   };
 }
