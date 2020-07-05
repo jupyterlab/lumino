@@ -614,12 +614,14 @@ abstract class CellEditor implements ICellEditor, IDisposable {
     this.viewportOccluder.style.left = headerWidth + 'px';
     this.viewportOccluder.style.width = (grid.viewportWidth - headerWidth) + 'px';
     this.viewportOccluder.style.height = (grid.viewportHeight - headerHeight) + 'px';
+    this.viewportOccluder.style.position = 'absolute';
 
     this.editorContainer.style.left = (cellInfo.x - 1 - headerWidth) + 'px';
     this.editorContainer.style.top = (cellInfo.y - 1 - headerHeight) + 'px';
     this.editorContainer.style.width = (cellInfo.width + 1) + 'px';
     this.editorContainer.style.height = (cellInfo.height + 1) + 'px';
     this.editorContainer.style.visibility = 'visible';
+    this.editorContainer.style.position = 'absolute';
   }
 
   /**
