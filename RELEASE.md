@@ -12,4 +12,5 @@ yarn run version
 # Update the changelog with published packages (minor or higher) and included PRs.
 #
 yarn run publish
+# Push any changes to master
 ```
