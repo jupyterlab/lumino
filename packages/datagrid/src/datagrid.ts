@@ -2682,8 +2682,8 @@ class DataGrid extends Widget {
       this._repaintRegion('corner-header', r1, 0, r2, Infinity);
     }
 
-    // Schedule a repaint of the overlay.
-    this._repaintOverlay();
+    // Sync the viewport.
+    this._syncViewport();
   }
 
   /**
@@ -2740,8 +2740,8 @@ class DataGrid extends Widget {
       this._repaintRegion('corner-header', 0, c1, Infinity, c2);
     }
 
-    // Schedule a repaint of the overlay.
-    this._repaintOverlay();
+    // Sync the viewport.
+    this._syncViewport();
   }
 
   /**
