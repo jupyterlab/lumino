@@ -100,7 +100,7 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
     let handle = Private.resizeHandleForHitTest(hit);
 
     // Fetch the cursor for the handle.
-    let cursor = Private.cursorForHandle(handle);
+    let cursor = this.cursorForHandle(handle);
 
     // Update the viewport cursor based on the part.
     grid.viewport.node.style.cursor = cursor;
@@ -216,7 +216,7 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
     let handle = Private.resizeHandleForHitTest(hit);
 
     // Fetch the cursor for the handle.
-    let cursor = Private.cursorForHandle(handle);
+    let cursor = this.cursorForHandle(handle);
 
     // Handle horizontal resize.
     if (handle === 'left' || handle === 'right' ) {
@@ -583,9 +583,22 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
     grid.scrollBy(dx, dy);
   }
 
+/**
+* Convert a resize handle into a cursor.
+*/
+cursorForHandle(handle: ResizeHandle): string {
+  return Private.cursorMap[handle];
+}
+
   private _disposed = false;
   private _pressData: Private.PressData | null;
 }
+
+/**
+* A type alias for the resize handle types.
+*/
+  export
+  type ResizeHandle = 'top' | 'left' | 'right' | 'bottom' | 'none';
 
 
 /**
@@ -717,12 +730,6 @@ namespace Private {
   type PressData = RowResizeData | ColumnResizeData | SelectData ;
 
   /**
-   * A type alias for the resize handle types.
-   */
-  export
-  type ResizeHandle = 'top' | 'left' | 'right' | 'bottom' | 'none';
-
-  /**
    * Get the resize handle for a grid hit test.
    */
   export
@@ -793,14 +800,6 @@ namespace Private {
 
     // Return the result.
     return result;
-  }
-
-  /**
-   * Convert a resize handle into a cursor.
-   */
-  export
-  function cursorForHandle(handle: ResizeHandle): string {
-    return cursorMap[handle];
   }
 
   /**
@@ -904,6 +903,7 @@ namespace Private {
   /**
    * A mapping of resize handle to cursor.
    */
+  export
   const cursorMap = {
     top: 'ns-resize',
     left: 'ew-resize',
