@@ -6,6 +6,10 @@
   "bugs": {
     "url": "https://github.com/jupyterlab/lumino/issues"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jupyterlab/lumino.git"
+  },
   "license": "BSD-3-Clause",
   "author": "S. Chris Colbert <sccolbert@gmail.com>",
   "contributors": [
@@ -19,20 +23,15 @@
     "types/*"
   ],
   "main": "dist/index.js",
-  "module": "dist/index.es6",
   "unpkg": "dist/index.min.js",
-  "jsdelivr": "dist/index.min.js",
+  "module": "dist/index.es6",
   "types": "types/index.d.ts",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/jupyterlab/lumino.git"
-  },
   "scripts": {
     "api": "api-extractor run --local --verbose",
-    "minimize": "terser dist/index.js -c -m --source-map \"content='dist/index.js.map',url='index.min.js.map'\" -o dist/index.min.js",
     "build": "tsc --build && rollup -c",
     "clean": "rimraf ./lib && rimraf *.tsbuildinfo && rimraf ./types && rimraf ./dist",
     "docs": "typedoc --options tdoptions.json src",
+    "minimize": "terser dist/index.js -c -m --source-map \"content='dist/index.js.map',url='index.min.js.map'\" -o dist/index.min.js",
     "watch": "tsc --build --watch"
   },
   "dependencies": {
@@ -48,7 +47,7 @@
   },
   "devDependencies": {
     "rimraf": "^2.5.2",
-    "rollup": "^1.29.0",
+    "rollup": "^2.22.1",
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-postcss": "^2.0.3",
     "rollup-plugin-sourcemaps": "^0.5.0",
@@ -59,5 +58,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "jsdelivr": "dist/index.min.js"
 }

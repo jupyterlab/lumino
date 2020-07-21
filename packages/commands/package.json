@@ -24,29 +24,28 @@
     "types/*"
   ],
   "main": "dist/index.js",
-  "module": "dist/index.es6",
   "unpkg": "dist/index.min.js",
-  "jsdelivr": "dist/index.min.js",
+  "module": "dist/index.es6",
   "types": "types/index.d.ts",
   "scripts": {
     "api": "api-extractor run --local --verbose",
-    "minimize": "terser dist/index.js -c -m --source-map \"content='dist/index.js.map',url='index.min.js.map'\" -o dist/index.min.js",
     "build": "tsc --build && rollup -c",
     "build:test": "tsc --build tests && cd tests && webpack",
     "clean": "rimraf ./lib && rimraf *.tsbuildinfo && rimraf ./types && rimraf ./dist",
     "clean:test": "rimraf tests/build",
     "docs": "typedoc --options tdoptions.json src",
+    "minimize": "terser dist/index.js -c -m --source-map \"content='dist/index.js.map',url='index.min.js.map'\" -o dist/index.min.js",
     "test": "npm run test:firefox",
     "test:chrome": "npm run test:nobrowser -- --browsers=Chrome",
     "test:chrome-headless": "npm run test:nobrowser -- --browsers=ChromeHeadless",
-    "test:ie": "npm run test:nobrowser -- --browsers=IE",
-    "test:firefox": "npm run test:nobrowser -- --browsers=Firefox",
-    "test:nobrowser": "cd tests && karma start",
     "test:debug": "npm run test:debug:firefox",
-    "test:debug:chrome-headless": "npm run test:debug:nobrowser -- --browsers=ChromeHeadless",
     "test:debug:chrome": "npm run test:debug:nobrowser -- --browsers=Chrome",
+    "test:debug:chrome-headless": "npm run test:debug:nobrowser -- --browsers=ChromeHeadless",
     "test:debug:firefox": "npm run test:debug:nobrowser -- --browsers=Firefox",
     "test:debug:nobrowser": "cd tests && karma start --singleRun=false --debug=true --browserNoActivityTimeout=10000000 --browserDisconnectTimeout=10000000",
+    "test:firefox": "npm run test:nobrowser -- --browsers=Firefox",
+    "test:ie": "npm run test:nobrowser -- --browsers=IE",
+    "test:nobrowser": "cd tests && karma start",
     "watch": "tsc --build --watch"
   },
   "dependencies": {
@@ -72,7 +71,7 @@
     "karma-mocha-reporter": "^2.2.2",
     "mocha": "^6.2.2",
     "rimraf": "^2.5.2",
-    "rollup": "^1.29.0",
+    "rollup": "^2.22.1",
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-postcss": "^2.0.3",
     "rollup-plugin-sourcemaps": "^0.5.0",
@@ -86,5 +85,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "jsdelivr": "dist/index.min.js"
 }

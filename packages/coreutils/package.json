@@ -24,26 +24,25 @@
     "types/*"
   ],
   "main": "dist/index.js",
-  "module": "dist/index.es6",
   "unpkg": "dist/index.min.js",
-  "jsdelivr": "dist/index.min.js",
+  "module": "dist/index.es6",
+  "browser": {
+    "crypto": false
+  },
   "types": "types/index.d.ts",
   "scripts": {
     "api": "api-extractor run --local --verbose",
-    "minimize": "terser dist/index.js -c -m --source-map \"content='dist/index.js.map',url='index.min.js.map'\" -o dist/index.min.js",
     "build": "tsc --build && rollup -c",
     "build:test": "tsc --build tests && cd tests && webpack",
     "clean": "rimraf ./lib && rimraf *.tsbuildinfo && rimraf ./types && rimraf ./dist",
     "clean:test": "rimraf tests/build",
     "docs": "typedoc --options tdoptions.json src",
+    "minimize": "terser dist/index.js -c -m --source-map \"content='dist/index.js.map',url='index.min.js.map'\" -o dist/index.min.js",
     "test": "npm run test:firefox",
     "test:chrome": "cd tests && karma start --browsers=Chrome",
     "test:firefox": "cd tests && karma start --browsers=Firefox",
     "test:ie": "cd tests && karma start --browsers=IE",
     "watch": "tsc --build --watch"
-  },
-  "peerDependencies": {
-    "crypto": "1.0.1"
   },
   "devDependencies": {
     "@microsoft/api-extractor": "^7.6.0",
@@ -59,7 +58,7 @@
     "karma-mocha-reporter": "^2.2.2",
     "mocha": "^6.2.2",
     "rimraf": "^2.5.2",
-    "rollup": "^1.29.0",
+    "rollup": "^2.22.1",
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-postcss": "^2.0.3",
     "rollup-plugin-sourcemaps": "^0.5.0",
@@ -70,10 +69,11 @@
     "webpack": "^4.41.3",
     "webpack-cli": "^3.3.10"
   },
+  "peerDependencies": {
+    "crypto": "1.0.1"
+  },
   "publishConfig": {
     "access": "public"
   },
-  "browser": {
-    "crypto": false
-  }
+  "jsdelivr": "dist/index.min.js"
 }
