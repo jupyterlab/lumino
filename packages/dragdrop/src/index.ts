@@ -282,6 +282,20 @@ class Drag implements IDisposable {
   }
 
   /**
+   * Move the drag image element to the specified location.
+   *
+   * This is a no-op if there is no drag image element.
+   */
+  moveDragImage(clientX: number, clientY: number): void {
+    if (!this.dragImage) {
+      return;
+    }
+    let style = this.dragImage.style;
+    style.top = `${clientY}px`;
+    style.left = `${clientX}px`;
+  }
+
+  /**
    * Handle the `'mousemove'` event for the drag object.
    */
   private _evtMouseMove(event: MouseEvent): void {
@@ -297,7 +311,7 @@ class Drag implements IDisposable {
 
     // Move the drag image to the specified client position. This is
     // performed *after* dispatching to prevent unnecessary reflows.
-    this._moveDragImage(event.clientX, event.clientY);
+    this.moveDragImage(event.clientX, event.clientY);
   }
 
   /**
@@ -467,20 +481,6 @@ class Drag implements IDisposable {
     style.top = `${clientY}px`;
     style.left = `${clientX}px`;
     document.body.appendChild(this.dragImage);
-  }
-
-  /**
-   * Move the drag image element to the specified location.
-   *
-   * This is a no-op if there is no drag image element.
-   */
-  private _moveDragImage(clientX: number, clientY: number): void {
-    if (!this.dragImage) {
-      return;
-    }
-    let style = this.dragImage.style;
-    style.top = `${clientY}px`;
-    style.left = `${clientX}px`;
   }
 
   /**
