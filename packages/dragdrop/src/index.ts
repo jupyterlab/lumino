@@ -286,7 +286,7 @@ class Drag implements IDisposable {
    *
    * This is a no-op if there is no drag image element.
    */
-  moveDragImage(clientX: number, clientY: number): void {
+  protected moveDragImage(clientX: number, clientY: number): void {
     if (!this.dragImage) {
       return;
     }
