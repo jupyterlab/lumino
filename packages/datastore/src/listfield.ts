@@ -679,7 +679,7 @@ namespace Private {
     let n = Math.floor(items.length / size);
     let idx = 0;
     for (let i = 0; i < n; i++, idx += size) {
-      arr.splice(idx, 0, ...items.slice(idx, size));
+      arr.splice(start + idx, 0, ...items.slice(idx, idx + size));
     }
     arr.splice(idx, 0, ...items.slice(idx));
     return deleted;
