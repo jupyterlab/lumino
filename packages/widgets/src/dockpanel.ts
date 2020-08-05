@@ -1172,7 +1172,7 @@ namespace DockPanel {
      * Hide the overlay node.
      *
      * @param delay - The delay (in ms) before hiding the overlay.
-     *   A delay value <= 0 should hide the overlay immediately.
+     *   A delay value \<= 0 should hide the overlay immediately.
      *
      * #### Notes
      * This is called whenever the overlay node should been hidden.
@@ -1242,7 +1242,7 @@ namespace DockPanel {
      * Hide the overlay node.
      *
      * @param delay - The delay (in ms) before hiding the overlay.
-     *   A delay value <= 0 will hide the overlay immediately.
+     *   A delay value \<= 0 will hide the overlay immediately.
      */
     hide(delay: number): void {
       // Do nothing if the overlay is already hidden.
