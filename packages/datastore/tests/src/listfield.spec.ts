@@ -395,7 +395,7 @@ describe('@lumino/datastore', () => {
       it('should handle large patches', () => {
         let previous = field.createValue();
         let metadata = field.createMetadata();
-        let values = new Array(2**6).fill(0);
+        let values = new Array(2*10**5).fill(0);
         // Create a patch
         let { patch } = field.applyUpdate({
             previous,
@@ -412,7 +412,7 @@ describe('@lumino/datastore', () => {
             metadata,
             patch
         });
-        expect(patched.value).to.eql(values);
+        expect(patched.value.length).to.eql(values.length);
       })
 
     });
