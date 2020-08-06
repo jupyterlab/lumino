@@ -412,7 +412,7 @@ describe('@lumino/datastore', () => {
             metadata,
             patch
         });
-        expect(patched).to.eql(values);
+        expect(patched.value).to.eql(values);
       })
 
     });
