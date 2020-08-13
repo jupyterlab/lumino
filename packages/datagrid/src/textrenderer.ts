@@ -170,16 +170,16 @@ class TextRenderer extends CellRenderer {
     // Compute the X position for the text.
     switch (hAlign) {
     case 'left':
-      textX = config.x + 2;
-      boxWidth = config.width - 4;
+      textX = config.x + 8;
+      boxWidth = config.width - 14;
       break;
     case 'center':
       textX = config.x + config.width / 2;
       boxWidth = config.width;
       break;
     case 'right':
-      textX = config.x + config.width - 3;
-      boxWidth = config.width - 6;
+      textX = config.x + config.width - 8;
+      boxWidth = config.width - 14;
       break;
     default:
       throw 'unreachable';
