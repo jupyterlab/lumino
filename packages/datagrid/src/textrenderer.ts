@@ -150,6 +150,7 @@ class TextRenderer extends CellRenderer {
     // Set up the text position variables.
     let textX: number;
     let textY: number;
+    let boxWidth: number;
 
     // Compute the Y position for the text.
     switch (vAlign) {
@@ -170,12 +171,15 @@ class TextRenderer extends CellRenderer {
     switch (hAlign) {
     case 'left':
       textX = config.x + 2;
+      boxWidth = config.width - 4;
       break;
     case 'center':
       textX = config.x + config.width / 2;
+      boxWidth = config.width;
       break;
     case 'right':
       textX = config.x + config.width - 3;
+      boxWidth = config.width - 6;
       break;
     default:
       throw 'unreachable';
@@ -193,6 +197,22 @@ class TextRenderer extends CellRenderer {
     gc.fillStyle = color;
     gc.textAlign = hAlign;
     gc.textBaseline = 'bottom';
+
+    // Elide text that is too long
+    let elide = '\u2026';
+    let textWidth = gc.measureText(text).width;
+
+    // Compute elided text
+    while ((textWidth > boxWidth) && (text.length > 1)) {
+      if (text.length > 4 && textWidth >= 2 * boxWidth) {
+        // If text width is substantially bigger, take half the string
+        text = text.substring(0, (text.length / 2) + 1) + elide;
+      } else {
+        // Otherwise incrementally remove the last character
+        text = text.substring(0, text.length - 2) + elide;
+      }
+      textWidth = gc.measureText(text).width;
+    }
 
     // Draw the text for the cell.
     gc.fillText(text, textX, textY);
