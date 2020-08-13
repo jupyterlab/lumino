@@ -392,6 +392,29 @@ describe('@lumino/datastore', () => {
         expect(patchC3.value).to.eql([4]);
       });
 
+      it('should handle large patches', () => {
+        let previous = field.createValue();
+        let metadata = field.createMetadata();
+        let values = new Array(250000).fill(0);
+        // Create a patch
+        let { patch } = field.applyUpdate({
+            previous,
+            update: { index: 0, remove: 0, values },
+            metadata,
+            version: 1,
+            storeId: 1
+        });
+        // Reset the metadata
+        metadata = field.createMetadata();
+        // Apply the patch
+        let patched = field.applyPatch({
+            previous,
+            metadata,
+            patch
+        });
+        expect(patched.value.length).to.eql(values.length);
+      })
+
     });
 
     describe('unapplyPatch', () => {
