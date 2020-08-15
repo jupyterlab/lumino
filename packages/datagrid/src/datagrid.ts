@@ -336,7 +336,7 @@ class DataGrid extends Widget {
     this._selectionModel = value;
 
     // Schedule a repaint of the overlay.
-    this._repaintOverlay();
+    this.repaintOverlay();
   }
 
   /**
@@ -396,10 +396,10 @@ class DataGrid extends Widget {
     this._style = { ...value };
 
     // Schedule a repaint of the content.
-    this._repaintContent();
+    this.repaintContent();
 
     // Schedule a repaint of the overlay.
-    this._repaintOverlay();
+    this.repaintOverlay();
   }
 
   /**
@@ -428,7 +428,7 @@ class DataGrid extends Widget {
     this._cellRenderers = value;
 
     // Schedule a repaint of the grid content.
-    this._repaintContent();
+    this.repaintContent();
   }
 
   /**
@@ -1428,8 +1428,8 @@ class DataGrid extends Widget {
     default:
       throw 'unreachable';
     }
-    this._repaintContent();
-    this._repaintOverlay();
+    this.repaintContent();
+    this.repaintOverlay();
   }
 
   /**
@@ -1452,8 +1452,8 @@ class DataGrid extends Widget {
     default:
       throw 'unreachable';
     }
-    this._repaintContent();
-    this._repaintOverlay();
+    this.repaintContent();
+    this.repaintOverlay();
   }
 
   /**
@@ -1949,8 +1949,8 @@ class DataGrid extends Widget {
     this._viewport.node.addEventListener('dblclick', this);
     this._viewport.node.addEventListener('mouseleave', this);
     this._viewport.node.addEventListener('contextmenu', this);
-    this._repaintContent();
-    this._repaintOverlay();
+    this.repaintContent();
+    this.repaintOverlay();
   }
 
   /**
@@ -1972,8 +1972,8 @@ class DataGrid extends Widget {
    * A message handler invoked on a `'before-show'` message.
    */
   protected onBeforeShow(msg: Message): void {
-    this._repaintContent();
-    this._repaintOverlay();
+    this.repaintContent();
+    this.repaintOverlay();
   }
 
   /**
@@ -1990,7 +1990,7 @@ class DataGrid extends Widget {
   /**
    * Schedule a repaint of all of the grid content.
    */
-  private _repaintContent(): void {
+  protected repaintContent(): void {
     let msg = new Private.PaintRequest('all', 0, 0, 0, 0);
     MessageLoop.postMessage(this._viewport, msg);
   }
@@ -2006,7 +2006,7 @@ class DataGrid extends Widget {
   /**
    * Schedule a repaint of the overlay.
    */
-  private _repaintOverlay(): void {
+  protected repaintOverlay(): void {
     MessageLoop.postMessage(this._viewport, Private.OverlayPaintRequest);
   }
 
@@ -2182,8 +2182,8 @@ class DataGrid extends Widget {
    * This schedules a full repaint and syncs the scroll state.
    */
   private _syncViewport(): void {
-    this._repaintContent();
-    this._repaintOverlay();
+    this.repaintContent();
+    this.repaintOverlay();
     this._syncScrollState();
   }
 
@@ -2508,7 +2508,7 @@ class DataGrid extends Widget {
    * A signal handler for the selection model `changed` signal.
    */
   private _onSelectionsChanged(sender: SelectionModel): void {
-    this._repaintOverlay();
+    this.repaintOverlay();
   }
 
   /**
@@ -2839,7 +2839,7 @@ class DataGrid extends Widget {
    * A signal handler for the renderer map `changed` signal.
    */
   private _onRenderersChanged(): void {
-    this._repaintContent();
+    this.repaintContent();
   }
 
   /**
@@ -3035,10 +3035,10 @@ class DataGrid extends Widget {
     this._dpiRatio = dpiRatio;
 
     // Schedule a repaint of the content.
-    this._repaintContent();
+    this.repaintContent();
 
     // Schedule a repaint of the overlay.
-    this._repaintOverlay();
+    this.repaintOverlay();
 
     // Update the canvas size for the new dpi ratio.
     this._resizeCanvasIfNeeded(this._viewportWidth, this._viewportHeight);
