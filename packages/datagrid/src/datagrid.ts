@@ -729,6 +729,13 @@ class DataGrid extends Widget {
   }
 
   /**
+   * The renduring context for painting the data grid.
+   */
+  get canvasGC(): CanvasRenderingContext2D {
+    return this._canvasGC;
+  }
+
+  /**
    * Scroll the grid to the specified row.
    *
    * @param row - The row index of the cell.
