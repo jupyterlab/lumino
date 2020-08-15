@@ -736,6 +736,20 @@ class DataGrid extends Widget {
   }
 
   /**
+   * The row sections of the data grid.
+   */
+  get rowSections(): SectionList {
+    return this._rowSections;
+  }
+
+  /**
+   * The column sections of the data grid. 
+   */
+  get columnSections(): SectionList {
+    return this._columnSections;
+  }
+
+  /**
    * Scroll the grid to the specified row.
    *
    * @param row - The row index of the cell.
