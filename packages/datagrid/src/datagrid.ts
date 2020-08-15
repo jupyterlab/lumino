@@ -3772,7 +3772,7 @@ class DataGrid extends Widget {
     }
 
     // Create the paint region object.
-    let rgn: Private.PaintRegion = {
+    let rgn: DataGrid.PaintRegion = {
       region: 'body',
       xMin: x1, yMin: y1,
       xMax: x2, yMax: y2,
@@ -3900,7 +3900,7 @@ class DataGrid extends Widget {
     }
 
     // Create the paint region object.
-    let rgn: Private.PaintRegion = {
+    let rgn: DataGrid.PaintRegion = {
       region: 'row-header',
       xMin: x1, yMin: y1,
       xMax: x2, yMax: y2,
@@ -4022,7 +4022,7 @@ class DataGrid extends Widget {
     }
 
     // Create the paint region object.
-    let rgn: Private.PaintRegion = {
+    let rgn: DataGrid.PaintRegion = {
       region: 'column-header',
       xMin: x1, yMin: y1,
       xMax: x2, yMax: y2,
@@ -4128,7 +4128,7 @@ class DataGrid extends Widget {
     }
 
     // Create the paint region object.
-    let rgn: Private.PaintRegion = {
+    let rgn: DataGrid.PaintRegion = {
       region: 'corner-header',
       xMin: x1, yMin: y1,
       xMax: x2, yMax: y2,
@@ -4159,7 +4159,7 @@ class DataGrid extends Widget {
   /**
    * Draw the background for the given paint region.
    */
-  private _drawBackground(rgn: Private.PaintRegion, color: string | undefined): void {
+  private _drawBackground(rgn: DataGrid.PaintRegion, color: string | undefined): void {
     // Bail if there is no color to draw.
     if (!color) {
       return;
@@ -4176,7 +4176,7 @@ class DataGrid extends Widget {
   /**
    * Draw the row background for the given paint region.
    */
-  private _drawRowBackground(rgn: Private.PaintRegion, colorFn: ((i: number) => string) | undefined): void {
+  private _drawRowBackground(rgn: DataGrid.PaintRegion, colorFn: ((i: number) => string) | undefined): void {
     // Bail if there is no color function.
     if (!colorFn) {
       return;
@@ -4215,7 +4215,7 @@ class DataGrid extends Widget {
   /**
    * Draw the column background for the given paint region.
    */
-  private _drawColumnBackground(rgn: Private.PaintRegion, colorFn: ((i: number) => string) | undefined): void {
+  private _drawColumnBackground(rgn: DataGrid.PaintRegion, colorFn: ((i: number) => string) | undefined): void {
     // Bail if there is no color function.
     if (!colorFn) {
       return;
@@ -4254,7 +4254,7 @@ class DataGrid extends Widget {
   /**
    * Draw the cells for the given paint region.
    */
-  private _drawCells(rgn: Private.PaintRegion): void {
+  private _drawCells(rgn: DataGrid.PaintRegion): void {
     // Bail if there is no data model.
     if (!this._dataModel) {
       return;
@@ -4388,7 +4388,7 @@ class DataGrid extends Widget {
   /**
    * Draw the horizontal grid lines for the given paint region.
    */
-  private _drawHorizontalGridLines(rgn: Private.PaintRegion, color: string | undefined): void {
+  private _drawHorizontalGridLines(rgn: DataGrid.PaintRegion, color: string | undefined): void {
     // Bail if there is no color to draw.
     if (!color) {
       return;
@@ -4449,7 +4449,7 @@ class DataGrid extends Widget {
   /**
    * Draw the vertical grid lines for the given paint region.
    */
-  private _drawVerticalGridLines(rgn: Private.PaintRegion, color: string | undefined): void {
+  private _drawVerticalGridLines(rgn: DataGrid.PaintRegion, color: string | undefined): void {
     // Bail if there is no color to draw.
     if (!color) {
       return;
@@ -5451,6 +5451,101 @@ namespace DataGrid {
   };
 
   /**
+   * An object which represents a region to be painted.
+   */
+  export
+  type PaintRegion = {
+    /**
+     * The min X coordinate the of the dirty viewport rect.
+     *
+     * #### Notes
+     * The data grid must not draw outside of this boundary.
+     */
+    xMin: number;
+
+    /**
+     * The min Y coordinate the of the dirty viewport rect.
+     *
+     * #### Notes
+     * The data grid must not draw outside of this boundary.
+     */
+    yMin: number;
+
+    /**
+     * The max X coordinate the of the dirty viewport rect.
+     *
+     * #### Notes
+     * The data grid must not draw outside of this boundary.
+     */
+    xMax: number;
+
+    /**
+     * The max Y coordinate the of the dirty viewport rect.
+     *
+     * #### Notes
+     * The data grid must not draw outside of this boundary.
+     */
+    yMax: number;
+
+    /**
+     * The X coordinate the of the region, in viewport coordinates.
+     *
+     * #### Notes
+     * This is aligned to the first cell boundary.
+     */
+    x: number;
+
+    /**
+     * The Y coordinate the of the region, in viewport coordinates.
+     *
+     * #### Notes
+     * This is aligned to the first cell boundary.
+     */
+    y: number;
+
+    /**
+     * The total width of the region.
+     *
+     * #### Notes
+     * This is aligned to the cell boundaries.
+     */
+    width: number;
+
+    /**
+     * The total height of the region.
+     *
+     * #### Notes
+     * This is aligned to the cell boundaries.
+     */
+    height: number;
+
+    /**
+     * The cell region being painted.
+     */
+    region: DataModel.CellRegion;
+
+    /**
+     * The row index of the first cell in the region.
+     */
+    row: number;
+
+    /**
+     * The column index of the first cell in the region.
+     */
+    column: number;
+
+    /**
+     * The row sizes for the rows in the region.
+     */
+    rowSizes: number[];
+
+    /**
+     * The column sizes for the columns in the region.
+     */
+    columnSizes: number[];
+  };
+
+  /**
    * An options object for initializing a data grid.
    */
   export
@@ -5784,101 +5879,6 @@ namespace Private {
     canvas.height = 0;
     return canvas;
   }
-
-  /**
-   * An object which represents a region to be painted.
-   */
-  export
-  type PaintRegion = {
-    /**
-     * The min X coordinate the of the dirty viewport rect.
-     *
-     * #### Notes
-     * The data grid must not draw outside of this boundary.
-     */
-    xMin: number;
-
-    /**
-     * The min Y coordinate the of the dirty viewport rect.
-     *
-     * #### Notes
-     * The data grid must not draw outside of this boundary.
-     */
-    yMin: number;
-
-    /**
-     * The max X coordinate the of the dirty viewport rect.
-     *
-     * #### Notes
-     * The data grid must not draw outside of this boundary.
-     */
-    xMax: number;
-
-    /**
-     * The max Y coordinate the of the dirty viewport rect.
-     *
-     * #### Notes
-     * The data grid must not draw outside of this boundary.
-     */
-    yMax: number;
-
-    /**
-     * The X coordinate the of the region, in viewport coordinates.
-     *
-     * #### Notes
-     * This is aligned to the first cell boundary.
-     */
-    x: number;
-
-    /**
-     * The Y coordinate the of the region, in viewport coordinates.
-     *
-     * #### Notes
-     * This is aligned to the first cell boundary.
-     */
-    y: number;
-
-    /**
-     * The total width of the region.
-     *
-     * #### Notes
-     * This is aligned to the cell boundaries.
-     */
-    width: number;
-
-    /**
-     * The total height of the region.
-     *
-     * #### Notes
-     * This is aligned to the cell boundaries.
-     */
-    height: number;
-
-    /**
-     * The cell region being painted.
-     */
-    region: DataModel.CellRegion;
-
-    /**
-     * The row index of the first cell in the region.
-     */
-    row: number;
-
-    /**
-     * The column index of the first cell in the region.
-     */
-    column: number;
-
-    /**
-     * The row sizes for the rows in the region.
-     */
-    rowSizes: number[];
-
-    /**
-     * The column sizes for the columns in the region.
-     */
-    columnSizes: number[];
-  };
 
   /**
    * A conflatable message which merges dirty paint regions.
