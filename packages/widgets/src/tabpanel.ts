@@ -76,6 +76,8 @@ class TabPanel extends Widget {
     this.tabBar.currentChanged.connect(this._onCurrentChanged, this);
     this.tabBar.tabCloseRequested.connect(this._onTabCloseRequested, this);
     this.tabBar.tabActivateRequested.connect(this._onTabActivateRequested, this);
+    this.tabBar.tabAddRequested.connect(this._onTabAddRequested, this);
+    this.tabBar.tabAddRequested.connect(this._onTabAddRequested, this);
 
     // Connect the stacked panel signal handlers.
     this.stackedPanel.widgetRemoved.connect(this._onWidgetRemoved, this);
@@ -181,6 +183,22 @@ class TabPanel extends Widget {
   }
 
   /**
+   * Get the whether the add button is enabled.
+   *
+   */
+  get addButtonEnabled(): boolean {
+    return this.tabBar.addButtonEnabled;
+  }
+
+  /**
+   * Set the whether the add button is enabled.
+   *
+   */
+  set addButtonEnabled(value: boolean) {
+    this.tabBar.addButtonEnabled = value;
+  }
+
+  /**
    * Get the tab placement for the tab panel.
    *
    * #### Notes
@@ -215,6 +233,14 @@ class TabPanel extends Widget {
 
     // Update the layout direction.
     (this.layout as BoxLayout).direction = direction;
+  }
+
+  /**
+   * A signal emitted when the add button on a tab bar is clicked.
+   *
+   */
+  get widgetAddRequested(): ISignal<this, TabPanel.IWidgetAddRequestedArgs<Widget>> {
+    return this._widgetAddRequested;
   }
 
   /**
@@ -315,6 +341,15 @@ class TabPanel extends Widget {
   }
 
   /**
+   * Handle the `tabAddRequested` signal from the tab bar.
+   */
+  private _onTabAddRequested(sender: TabBar<Widget>, args: TabBar.ITabAddRequestedArgs): void {
+    this._widgetAddRequested.emit({
+      tabBar: sender
+    });
+  }
+
+  /**
    * Handle the `tabActivateRequested` signal from the tab bar.
    */
   private _onTabActivateRequested(sender: TabBar<Widget>, args: TabBar.ITabActivateRequestedArgs<Widget>): void {
@@ -346,6 +381,9 @@ class TabPanel extends Widget {
 
   private _tabPlacement: TabPanel.TabPlacement;
   private _currentChanged = new Signal<this, TabPanel.ICurrentChangedArgs>(this);
+
+  private _widgetAddRequested = new Signal<this, TabPanel.IWidgetAddRequestedArgs<Widget>>(this);
+
 }
 
 
@@ -393,6 +431,13 @@ namespace TabPanel {
     tabsMovable?: boolean;
 
     /**
+     * Whether the button to add new tabs is enabled.
+     *
+     * The default is `false`.
+     */
+    addButtonEnabled?: boolean;
+
+    /**
      * The placement of the tab bar relative to the content.
      *
      * The default is `'top'`.
@@ -431,6 +476,17 @@ namespace TabPanel {
      * The currently selected widget.
      */
     currentWidget: Widget | null;
+  }
+
+  /**
+   * The arguments object for the `addRequested` signal.
+   */
+  export
+  interface IWidgetAddRequestedArgs<T> {
+    /**
+     * The tabbar.
+     */
+    tabBar: TabBar<T>;
   }
 }
 
