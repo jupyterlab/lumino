@@ -8,7 +8,6 @@
 |----------------------------------------------------------------------------*/
 
 
-/* <DEPRECATED> */ .p-CommandPalette, /* </DEPRECATED> */
 .lm-CommandPalette {
   display: flex;
   flex-direction: column;
@@ -19,13 +18,11 @@
 }
 
 
-/* <DEPRECATED> */ .p-CommandPalette-search, /* </DEPRECATED> */
 .lm-CommandPalette-search {
   flex: 0 0 auto;
 }
 
 
-/* <DEPRECATED> */ .p-CommandPalette-content, /* </DEPRECATED> */
 .lm-CommandPalette-content {
   flex: 1 1 auto;
   margin: 0;
@@ -36,7 +33,6 @@
 }
 
 
-/* <DEPRECATED> */ .p-CommandPalette-header, /* </DEPRECATED> */
 .lm-CommandPalette-header {
   overflow: hidden;
   white-space: nowrap;
@@ -44,33 +40,28 @@
 }
 
 
-/* <DEPRECATED> */ .p-CommandPalette-item, /* </DEPRECATED> */
 .lm-CommandPalette-item {
   display: flex;
   flex-direction: row;
 }
 
 
-/* <DEPRECATED> */ .p-CommandPalette-itemIcon, /* </DEPRECATED> */
 .lm-CommandPalette-itemIcon {
   flex: 0 0 auto;
 }
 
 
-/* <DEPRECATED> */ .p-CommandPalette-itemContent, /* </DEPRECATED> */
 .lm-CommandPalette-itemContent {
   flex: 1 1 auto;
   overflow: hidden;
 }
 
 
-/* <DEPRECATED> */ .p-CommandPalette-itemShortcut, /* </DEPRECATED> */
 .lm-CommandPalette-itemShortcut {
   flex: 0 0 auto;
 }
 
 
-/* <DEPRECATED> */ .p-CommandPalette-itemLabel, /* </DEPRECATED> */
 .lm-CommandPalette-itemLabel {
   overflow: hidden;
   white-space: nowrap;

@@ -8,7 +8,6 @@
 |----------------------------------------------------------------------------*/
 
 
-/* <DEPRECATED> */ .p-MenuBar, /* </DEPRECATED> */
 .lm-MenuBar {
   padding-left: 5px;
   background: #FAFAFA;
@@ -18,13 +17,11 @@
 }
 
 
-/* <DEPRECATED> */ .p-MenuBar-menu, /* </DEPRECATED> */
 .lm-MenuBar-menu {
   transform: translateY(-1px);
 }
 
 
-/* <DEPRECATED> */ .p-MenuBar-item, /* </DEPRECATED> */
 .lm-MenuBar-item {
   padding: 4px 8px;
   border-left: 1px solid transparent;
@@ -32,15 +29,11 @@
 }
 
 
-/* <DEPRECATED> */ .p-MenuBar-item.p-mod-active, /* </DEPRECATED> */
 .lm-MenuBar-item.lm-mod-active {
   background: #E5E5E5;
 }
 
 
-/* <DEPRECATED> */
-.p-MenuBar.p-mod-active .p-MenuBar-item.p-mod-active,
-/* </DEPRECATED> */
 .lm-MenuBar.lm-mod-active .lm-MenuBar-item.lm-mod-active {
   z-index: 10001;
   background: white;

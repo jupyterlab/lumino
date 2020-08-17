@@ -472,9 +472,6 @@ class Drag implements IDisposable {
       return;
     }
     this.dragImage.classList.add('lm-mod-drag-image');
-    /* <DEPRECATED> */
-    this.dragImage.classList.add('p-mod-drag-image');
-    /* </DEPRECATED> */
     let style = this.dragImage.style;
     style.pointerEvents = 'none';
     style.position = 'fixed';
@@ -714,16 +711,10 @@ namespace Drag {
     let id = ++overrideCursorID;
     document.body.style.cursor = cursor;
     document.body.classList.add('lm-mod-override-cursor');
-    /* <DEPRECATED> */
-    document.body.classList.add('p-mod-override-cursor');
-    /* </DEPRECATED> */
     return new DisposableDelegate(() => {
       if (id === overrideCursorID) {
         document.body.style.cursor = '';
         document.body.classList.remove('lm-mod-override-cursor');
-        /* <DEPRECATED> */
-        document.body.classList.remove('p-mod-override-cursor');
-        /* </DEPRECATED> */
       }
     });
   }
@@ -813,9 +804,6 @@ namespace Private {
     for (; element; element = element!.parentElement) {
       // Ignore elements which are not marked as scrollable.
       let scrollable = element.hasAttribute('data-lm-dragscroll');
-      /* <DEPRECATED> */
-      scrollable = scrollable || element.hasAttribute('data-p-dragscroll');
-      /* </DEPRECATED> */
       if (!scrollable) {
         continue;
       }
@@ -947,14 +935,6 @@ namespace Private {
       return currElem;
     }
 
-    /* <DEPRECATED> */
-    dragEvent = createDragEvent('p-dragenter', drag, event, currTarget);
-    canceled = !currElem.dispatchEvent(dragEvent);
-    if (canceled) {
-      return currElem;
-    }
-    /* </DEPRECATED> */
-
     // If the current element is the document body, keep the original target.
     if (currElem === document.body) {
       return currTarget;
@@ -963,11 +943,6 @@ namespace Private {
     // Dispatch a drag enter event on the document body.
     dragEvent = createDragEvent('lm-dragenter', drag, event, currTarget);
     document.body.dispatchEvent(dragEvent);
-
-    /* <DEPRECATED> */
-    dragEvent = createDragEvent('p-dragenter', drag, event, currTarget);
-    document.body.dispatchEvent(dragEvent);
-    /* </DEPRECATED> */
 
     // Ignore the event cancellation, and use the body as the new target.
     return document.body;
@@ -1000,11 +975,6 @@ namespace Private {
     // Dispatch the drag exit event to the previous target.
     let dragEvent = createDragEvent('lm-dragexit', drag, event, currTarget);
     prevTarget.dispatchEvent(dragEvent);
-
-    /* <DEPRECATED> */
-    dragEvent = createDragEvent('p-dragexit', drag, event, currTarget);
-    prevTarget.dispatchEvent(dragEvent);
-    /* </DEPRECATED> */
   }
 
   /**
@@ -1034,11 +1004,6 @@ namespace Private {
     // Dispatch the drag leave event to the previous target.
     let dragEvent = createDragEvent('lm-dragleave', drag, event, currTarget);
     prevTarget.dispatchEvent(dragEvent);
-
-    /* <DEPRECATED> */
-    dragEvent = createDragEvent('p-dragleave', drag, event, currTarget);
-    prevTarget.dispatchEvent(dragEvent);
-    /* </DEPRECATED> */
   }
 
   /**
@@ -1072,14 +1037,6 @@ namespace Private {
     if (canceled) {
       return dragEvent.dropAction;
     }
-
-    /* <DEPRECATED> */
-    dragEvent = createDragEvent('p-dragover', drag, event, null);
-    canceled = !currTarget.dispatchEvent(dragEvent);
-    if (canceled) {
-      return dragEvent.dropAction;
-    }
-    /* </DEPRECATED> */
 
     // Otherwise, the effective drop action is none.
     return 'none';
@@ -1116,14 +1073,6 @@ namespace Private {
     if (canceled) {
       return dragEvent.dropAction;
     }
-
-    /* <DEPRECATED> */
-    dragEvent = createDragEvent('p-drop', drag, event, null);
-    canceled = !currTarget.dispatchEvent(dragEvent);
-    if (canceled) {
-      return dragEvent.dropAction;
-    }
-    /* </DEPRECATED> */
 
     // Otherwise, the effective drop action is none.
     return 'none';

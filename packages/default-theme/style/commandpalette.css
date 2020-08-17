@@ -8,20 +8,17 @@
 |----------------------------------------------------------------------------*/
 
 
-/* <DEPRECATED> */ .p-CommandPalette, /* </DEPRECATED> */
 .lm-CommandPalette {
   font-family: sans-serif;
   background: #F5F5F5;
 }
 
 
-/* <DEPRECATED> */ .p-CommandPalette-search, /* </DEPRECATED> */
 .lm-CommandPalette-search {
   padding: 8px;
 }
 
 
-/* <DEPRECATED> */ .p-CommandPalette-wrapper, /* </DEPRECATED> */
 .lm-CommandPalette-wrapper {
   padding: 4px 6px;
   background: white;
@@ -30,7 +27,6 @@
 }
 
 
-/* <DEPRECATED> */ .p-CommandPalette-input, /* </DEPRECATED> */
 .lm-CommandPalette-input {
   width: 92%;
   border: none;
@@ -39,7 +35,6 @@
 }
 
 
-/* <DEPRECATED> */ .p-CommandPalette-header, /* </DEPRECATED> */
 .lm-CommandPalette-header {
   padding: 4px;
   color: #757575;
@@ -50,7 +45,6 @@
 }
 
 
-/* <DEPRECATED> */ .p-CommandPalette-header:hover::before, /* </DEPRECATED> */
 .lm-CommandPalette-header:hover::before {
   content: '\2026'; /* ellipsis */
   float: right;
@@ -58,14 +52,12 @@
 }
 
 
-/* <DEPRECATED> */ .p-CommandPalette-header > mark, /* </DEPRECATED> */
 .lm-CommandPalette-header > mark {
   background-color: transparent;
   font-weight: bold;
 }
 
 
-/* <DEPRECATED> */ .p-CommandPalette-item, /* </DEPRECATED> */
 .lm-CommandPalette-item {
   padding: 4px 8px;
   color: #757575;
@@ -74,7 +66,6 @@
 }
 
 
-/* <DEPRECATED> */ .p-CommandPalette-emptyMessage, /* </DEPRECATED> */
 .lm-CommandPalette-emptyMessage {
   padding: 4px;
   color: #757575;
@@ -84,48 +75,37 @@
 }
 
 
-/* <DEPRECATED> */ .p-CommandPalette-item.p-mod-disabled, /* </DEPRECATED> */
 .lm-CommandPalette-item.lm-mod-disabled {
   color: rgba(0, 0, 0, 0.25);
 }
 
 
-/* <DEPRECATED> */ .p-CommandPalette-item.p-mod-active, /* </DEPRECATED> */
 .lm-CommandPalette-item.lm-mod-active {
   background: #7FDBFF;
 }
 
 
-/* <DEPRECATED> */
-.p-CommandPalette-item:hover:not(.p-mod-active):not(.p-mod-disabled),
-/* </DEPRECATED> */
 .lm-CommandPalette-item:hover:not(.lm-mod-active):not(.lm-mod-disabled) {
   background: #E5E5E5;
 }
 
 
-/* <DEPRECATED> */ .p-CommandPalette-itemIcon, /* </DEPRECATED> */
 .lm-CommandPalette-itemIcon {
   display: none;
 }
 
 
-/* <DEPRECATED> */ .p-CommandPalette-itemLabel > mark, /* </DEPRECATED> */
 .lm-CommandPalette-itemLabel > mark {
   background-color: transparent;
   font-weight: bold;
 }
 
 
-/* <DEPRECATED> */
-.p-CommandPalette-item.p-mod-disabled mark,
-/* </DEPRECATED> */
 .lm-CommandPalette-item.lm-mod-disabled mark {
   color: rgba(0, 0, 0, 0.4);
 }
 
 
-/* <DEPRECATED> */ .p-CommandPalette-itemCaption, /* </DEPRECATED> */
 .lm-CommandPalette-itemCaption {
   color: #9E9E9E;
   font-size: 11px;

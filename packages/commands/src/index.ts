@@ -1457,11 +1457,6 @@ namespace Private {
       if (targ.hasAttribute('data-lm-suppress-shortcuts')) {
         return -1;
       }
-      /* <DEPRECATED> */
-      if (targ.hasAttribute('data-p-suppress-shortcuts')) {
-        return -1;
-      }
-      /* </DEPRECATED> */
       if (Selector.matches(targ, selector)) {
         return dist;
       }

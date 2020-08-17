@@ -57,9 +57,6 @@ class Menu extends Widget {
   constructor(options: Menu.IOptions) {
     super({ node: Private.createNode() });
     this.addClass('lm-Menu');
-    /* <DEPRECATED> */
-    this.addClass('p-Menu');
-    /* </DEPRECATED> */
     this.setFlag(Widget.Flag.DisallowLayout);
     this.commands = options.commands;
     this.renderer = options.renderer || Menu.defaultRenderer;
@@ -1190,9 +1187,6 @@ namespace Menu {
       let content = this.formatLabel(data);
       return h.div({
         className: 'lm-Menu-itemLabel'
-          /* <DEPRECATED> */
-          + ' p-Menu-itemLabel'
-          /* </DEPRECATED> */
       }, content);
     }
 
@@ -1207,9 +1201,6 @@ namespace Menu {
       let content = this.formatShortcut(data);
       return h.div({
         className: 'lm-Menu-itemShortcut'
-          /* <DEPRECATED> */
-          + ' p-Menu-itemShortcut'
-          /* </DEPRECATED> */
       }, content);
     }
 
@@ -1223,9 +1214,6 @@ namespace Menu {
     renderSubmenu(data: IRenderData): VirtualElement {
       return h.div({
         className: 'lm-Menu-itemSubmenuIcon'
-          /* <DEPRECATED> */
-          + ' p-Menu-itemSubmenuIcon'
-          /* </DEPRECATED> */
       });
     }
 
@@ -1239,40 +1227,22 @@ namespace Menu {
     createItemClass(data: IRenderData): string {
       // Setup the initial class name.
       let name = 'lm-Menu-item';
-      /* <DEPRECATED> */
-      name += ' p-Menu-item';
-      /* </DEPRECATED> */
 
       // Add the boolean state classes.
       if (!data.item.isEnabled) {
         name += ' lm-mod-disabled';
-        /* <DEPRECATED> */
-        name += ' p-mod-disabled';
-        /* </DEPRECATED> */
       }
       if (data.item.isToggled) {
         name += ' lm-mod-toggled';
-        /* <DEPRECATED> */
-        name += ' p-mod-toggled';
-        /* </DEPRECATED> */
       }
       if (!data.item.isVisible) {
         name += ' lm-mod-hidden';
-        /* <DEPRECATED> */
-        name += ' p-mod-hidden';
-        /* </DEPRECATED> */
       }
       if (data.active) {
         name += ' lm-mod-active';
-        /* <DEPRECATED> */
-        name += ' p-mod-active';
-        /* </DEPRECATED> */
       }
       if (data.collapsed) {
         name += ' lm-mod-collapsed';
-        /* <DEPRECATED> */
-        name += ' p-mod-collapsed';
-        /* </DEPRECATED> */
       }
 
       // Add the extra class.
@@ -1312,9 +1282,6 @@ namespace Menu {
      */
     createIconClass(data: IRenderData): string {
       let name = 'lm-Menu-itemIcon';
-      /* <DEPRECATED> */
-      name += ' p-Menu-itemIcon';
-      /* </DEPRECATED> */
       let extra = data.item.iconClass;
       return extra ? `${name} ${extra}` : name;
     }
@@ -1343,9 +1310,6 @@ namespace Menu {
       // Wrap the mnemonic character in a span.
       let span = h.span({
         className: 'lm-Menu-itemMnemonic'
-          /* <DEPRECATED> */
-          + ' p-Menu-itemMnemonic'
-          /* </DEPRECATED> */
       }, char);
 
       // Return the content parts.
@@ -1397,9 +1361,6 @@ namespace Private {
     let node = document.createElement('div');
     let content = document.createElement('ul');
     content.className = 'lm-Menu-content';
-    /* <DEPRECATED> */
-    content.classList.add('p-Menu-content');
-    /* </DEPRECATED> */
     node.appendChild(content);
     node.tabIndex = -1;
     return node;

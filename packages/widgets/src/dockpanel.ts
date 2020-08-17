@@ -65,9 +65,6 @@ class DockPanel extends Widget {
   constructor(options: DockPanel.IOptions = {}) {
     super();
     this.addClass('lm-DockPanel');
-    /* <DEPRECATED> */
-    this.addClass('p-DockPanel');
-    /* </DEPRECATED> */
     this._mode = options.mode || 'multiple-document';
     this._renderer = options.renderer || DockPanel.defaultRenderer;
     this._edges = options.edges || Private.DEFAULT_EDGES;
@@ -456,9 +453,6 @@ class DockPanel extends Widget {
 
     // Add the widget class to the child.
     msg.child.addClass('lm-DockPanel-widget');
-    /* <DEPRECATED> */
-    msg.child.addClass('p-DockPanel-widget');
-    /* </DEPRECATED> */
   }
 
   /**
@@ -472,9 +466,6 @@ class DockPanel extends Widget {
 
     // Remove the widget class from the child.
     msg.child.removeClass('lm-DockPanel-widget');
-    /* <DEPRECATED> */
-    msg.child.removeClass('p-DockPanel-widget');
-    /* </DEPRECATED> */
 
     // Schedule an emit of the layout modified signal.
     MessageLoop.postMessage(this, Private.LayoutModified);
@@ -974,17 +965,11 @@ class DockPanel extends Widget {
 
     // Hide the tab node in the original tab.
     tab.classList.add('lm-mod-hidden');
-    /* <DEPRECATED> */
-    tab.classList.add('p-mod-hidden');
-    /* </DEPRECATED> */;
 
     // Create the cleanup callback.
     let cleanup = (() => {
       this._drag = null;
       tab.classList.remove('lm-mod-hidden');
-      /* <DEPRECATED> */
-      tab.classList.remove('p-mod-hidden');
-      /* </DEPRECATED> */;
     });
 
     // Start the drag operation and cleanup when done.
@@ -1194,10 +1179,6 @@ namespace DockPanel {
       this.node = document.createElement('div');
       this.node.classList.add('lm-DockPanel-overlay');
       this.node.classList.add('lm-mod-hidden');
-      /* <DEPRECATED> */
-      this.node.classList.add('p-DockPanel-overlay');
-      this.node.classList.add('p-mod-hidden');
-      /* </DEPRECATED> */;
       this.node.style.position = 'absolute';
     }
 
@@ -1233,9 +1214,6 @@ namespace DockPanel {
 
       // Finally, show the overlay.
       this.node.classList.remove('lm-mod-hidden');
-      /* <DEPRECATED> */
-      this.node.classList.remove('p-mod-hidden');
-      /* </DEPRECATED> */;
     }
 
     /**
@@ -1256,9 +1234,6 @@ namespace DockPanel {
         this._timer = -1;
         this._hidden = true;
         this.node.classList.add('lm-mod-hidden');
-        /* <DEPRECATED> */
-        this.node.classList.add('p-mod-hidden');
-        /* </DEPRECATED> */;
         return;
       }
 
@@ -1272,9 +1247,6 @@ namespace DockPanel {
         this._timer = -1;
         this._hidden = true;
         this.node.classList.add('lm-mod-hidden');
-        /* <DEPRECATED> */
-        this.node.classList.add('p-mod-hidden');
-        /* </DEPRECATED> */;
       }, delay);
     }
 
@@ -1301,9 +1273,6 @@ namespace DockPanel {
     createTabBar(): TabBar<Widget> {
       let bar = new TabBar<Widget>();
       bar.addClass('lm-DockPanel-tabBar');
-      /* <DEPRECATED> */
-      bar.addClass('p-DockPanel-tabBar');
-      /* </DEPRECATED> */
       return bar;
     }
 
@@ -1315,9 +1284,6 @@ namespace DockPanel {
     createHandle(): HTMLDivElement {
       let handle = document.createElement('div');
       handle.className = 'lm-DockPanel-handle';
-      /* <DEPRECATED> */
-      handle.classList.add('p-DockPanel-handle');
-      /* </DEPRECATED> */;
       return handle;
     }
   }

@@ -1337,9 +1337,6 @@ describe('@lumino/widgets', () => {
           let vNode = renderer.renderLabel({ item, active: false, collapsed: false });
           let node = VirtualDOM.realize(vNode);
           let span = '<span class="lm-Menu-itemMnemonic">T</span>est Label';
-          /* <DEPRECATED> */
-          span = '<span class="lm-Menu-itemMnemonic p-Menu-itemMnemonic">T</span>est Label';
-          /* </DEPRECATED> */
           expect(node.classList.contains('lm-Menu-itemLabel')).to.equal(true);
           expect(node.innerHTML).to.equal(span);
         });
@@ -1380,47 +1377,29 @@ describe('@lumino/widgets', () => {
 
           let name = renderer.createItemClass({ item, active: false, collapsed: false });
           let expected = 'lm-Menu-item testClass';
-          /* <DEPRECATED> */
-          expected = 'lm-Menu-item p-Menu-item testClass';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
 
           name = renderer.createItemClass({ item, active: true, collapsed: false });
           expected = 'lm-Menu-item lm-mod-active testClass';
-          /* <DEPRECATED> */
-          expected = 'lm-Menu-item p-Menu-item lm-mod-active p-mod-active testClass';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
 
           name = renderer.createItemClass({ item, active: false, collapsed: true });
           expected = 'lm-Menu-item lm-mod-collapsed testClass';
-          /* <DEPRECATED> */
-          expected = 'lm-Menu-item p-Menu-item lm-mod-collapsed p-mod-collapsed testClass';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
 
           item = menu.addItem({ command: 'test-disabled' });
           name = renderer.createItemClass({ item, active: false, collapsed: false });
           expected = 'lm-Menu-item lm-mod-disabled testClass';
-          /* <DEPRECATED> */
-          expected = 'lm-Menu-item p-Menu-item lm-mod-disabled p-mod-disabled testClass';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
 
           item = menu.addItem({ command: 'test-toggled' });
           name = renderer.createItemClass({ item, active: false, collapsed: false });
           expected = 'lm-Menu-item lm-mod-toggled testClass';
-          /* <DEPRECATED> */
-          expected = 'lm-Menu-item p-Menu-item lm-mod-toggled p-mod-toggled testClass';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
 
           item = menu.addItem({ command: 'test-hidden' });
           name = renderer.createItemClass({ item, active: false, collapsed: false });
           expected = 'lm-Menu-item lm-mod-hidden testClass';
-          /* <DEPRECATED> */
-          expected = 'lm-Menu-item p-Menu-item lm-mod-hidden p-mod-hidden testClass';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
 
           let submenu = new Menu({ commands });
@@ -1428,9 +1407,6 @@ describe('@lumino/widgets', () => {
           item = menu.addItem({ type: 'submenu', submenu });
           name = renderer.createItemClass({ item, active: false, collapsed: false });
           expected = 'lm-Menu-item fooClass';
-          /* <DEPRECATED> */
-          expected = 'lm-Menu-item p-Menu-item fooClass';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
         });
 
@@ -1461,17 +1437,11 @@ describe('@lumino/widgets', () => {
           let item = menu.addItem({ command: 'test' });
           let name = renderer.createIconClass({ item, active: false, collapsed: false });
           let expected = 'lm-Menu-itemIcon foo';
-          /* <DEPRECATED> */
-          expected = 'lm-Menu-itemIcon p-Menu-itemIcon foo';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
 
           item = menu.addItem({ type: 'separator' });
           name = renderer.createIconClass({ item, active: false, collapsed: false });
           expected = 'lm-Menu-itemIcon';
-          /* <DEPRECATED> */
-          expected = 'lm-Menu-itemIcon p-Menu-itemIcon';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
 
           let submenu = new Menu({ commands });
@@ -1479,9 +1449,6 @@ describe('@lumino/widgets', () => {
           item = menu.addItem({ type: 'submenu', submenu });
           name = renderer.createIconClass({ item, active: false, collapsed: false });
           expected = 'lm-Menu-itemIcon bar';
-          /* <DEPRECATED> */
-          expected = 'lm-Menu-itemIcon p-Menu-itemIcon bar';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
         });
 
@@ -1494,9 +1461,6 @@ describe('@lumino/widgets', () => {
           let child = renderer.formatLabel({ item, active: false, collapsed: false });
           let node = VirtualDOM.realize(h.div(child));
           let span = '<span class="lm-Menu-itemMnemonic">T</span>est Label';
-          /* <DEPRECATED> */
-          span = '<span class="lm-Menu-itemMnemonic p-Menu-itemMnemonic">T</span>est Label';
-          /* </DEPRECATED> */
           expect(node.innerHTML).to.equal(span);
 
           item = menu.addItem({ type: 'separator' });

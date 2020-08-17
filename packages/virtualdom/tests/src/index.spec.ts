@@ -538,7 +538,7 @@ describe('@lumino/virtualdom', () => {
       return {
         render: (host: HTMLElement) => {
           const renderNode = document.createElement('div');
-          renderNode.className = 'p-render';
+          renderNode.className = 'lm-render';
           host.appendChild(renderNode);
           record.child = renderNode;
         },
@@ -554,7 +554,7 @@ describe('@lumino/virtualdom', () => {
         let node = VirtualDOM.realize(h('span', rendererClosure()));
         expect(node.tagName.toLowerCase()).to.equal('span');
         expect(node.children[0].tagName.toLowerCase()).to.equal('div');
-        expect(node.children[0].className).to.equal('p-render');
+        expect(node.children[0].className).to.equal('lm-render');
       });
 
     });
@@ -566,7 +566,7 @@ describe('@lumino/virtualdom', () => {
         VirtualDOM.render(h('span', rendererClosure()), host);
         expect(host.children[0].tagName.toLowerCase()).to.equal('span');
         expect(host.children[0].children[0].tagName.toLowerCase()).to.equal('div');
-        expect(host.children[0].children[0].className).to.equal('p-render');
+        expect(host.children[0].children[0].className).to.equal('lm-render');
       });
 
       it('should render child node', () => {
@@ -576,7 +576,7 @@ describe('@lumino/virtualdom', () => {
         let children = [h.a(), h.span(), h.div(h.div(), h('span', rendererClosure(record)), h.div())];
         VirtualDOM.render(children, host);
         expect(host.children[2].children[1].children[0]).to.equal(record.child);
-        expect(host.children[2].children[1].children[0].className).to.equal('p-render');
+        expect(host.children[2].children[1].children[0].className).to.equal('lm-render');
       });
 
       it('should cleanup child node', () => {
