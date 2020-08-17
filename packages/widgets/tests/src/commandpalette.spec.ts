@@ -686,9 +686,6 @@ describe('@lumino/widgets', () => {
         it('should create the full class name for the item node', () => {
           let name = renderer.createItemClass({ item, indices: null, active: false });
           let expected = 'lm-CommandPalette-item testClass';
-          /* <DEPRECATED> */
-          expected = 'lm-CommandPalette-item testClass';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
         });
 
@@ -697,9 +694,6 @@ describe('@lumino/widgets', () => {
           toggledFlag = true;
           let name = renderer.createItemClass({ item, indices: null, active: true });
           let expected = 'lm-CommandPalette-item lm-mod-disabled lm-mod-toggled lm-mod-active testClass';
-          /* <DEPRECATED> */
-          expected = 'lm-CommandPalette-item lm-mod-disabled lm-mod-toggled lm-mod-active testClass';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
         });
 
