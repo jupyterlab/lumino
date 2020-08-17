@@ -278,7 +278,7 @@ describe('@lumino/commands', () => {
       const iconRenderer = {
         render: (host: HTMLElement, options?: any) => {
           const renderNode = document.createElement('div');
-          renderNode.className = 'p-render';
+          renderNode.className = 'lm-render';
           host.appendChild(renderNode);
         }
       };

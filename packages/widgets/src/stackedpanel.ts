@@ -40,9 +40,6 @@ class StackedPanel extends Panel {
   constructor(options: StackedPanel.IOptions = {}) {
     super({ layout: Private.createLayout(options) });
     this.addClass('lm-StackedPanel');
-    /* <DEPRECATED> */
-    this.addClass('p-StackedPanel');
-    /* </DEPRECATED> */
   }
 
   /**
@@ -57,9 +54,6 @@ class StackedPanel extends Panel {
    */
   protected onChildAdded(msg: Widget.ChildMessage): void {
     msg.child.addClass('lm-StackedPanel-child');
-    /* <DEPRECATED> */
-    msg.child.addClass('p-StackedPanel-child');
-    /* </DEPRECATED> */
   }
 
   /**
@@ -67,9 +61,6 @@ class StackedPanel extends Panel {
    */
   protected onChildRemoved(msg: Widget.ChildMessage): void {
     msg.child.removeClass('lm-StackedPanel-child');
-    /* <DEPRECATED> */
-    msg.child.removeClass('p-StackedPanel-child');
-    /* </DEPRECATED> */
     this._widgetRemoved.emit(msg.child);
   }
 

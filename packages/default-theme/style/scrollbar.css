@@ -8,9 +8,6 @@
 |----------------------------------------------------------------------------*/
 
 
-/* <DEPRECATED> */
-.p-ScrollBar[data-orientation='horizontal'],
-/* </DEPRECATED> */
 .lm-ScrollBar[data-orientation='horizontal'] {
   min-height: 16px;
   max-height: 16px;
@@ -19,9 +16,6 @@
 }
 
 
-/* <DEPRECATED> */
-.p-ScrollBar[data-orientation='vertical'],
-/* </DEPRECATED> */
 .lm-ScrollBar[data-orientation='vertical'] {
   min-width: 16px;
   max-width: 16px;
@@ -30,7 +24,6 @@
 }
 
 
-/* <DEPRECATED> */ .p-ScrollBar-button, /* </DEPRECATED> */
 .lm-ScrollBar-button {
   background-color: #F0F0F0;
   background-position: center center;
@@ -41,45 +34,36 @@
 }
 
 
-/* <DEPRECATED> */ .p-ScrollBar-button:hover, /* </DEPRECATED> */
 .lm-ScrollBar-button:hover {
   background-color: #DADADA;
 }
 
 
-/* <DEPRECATED> */ .p-ScrollBar-button.p-mod-active, /* </DEPRECATED> */
 .lm-ScrollBar-button.lm-mod-active {
   background-color: #CDCDCD;
 }
 
 
-/* <DEPRECATED> */ .p-ScrollBar-track, /* </DEPRECATED> */
 .lm-ScrollBar-track {
   background: #F0F0F0;
 }
 
 
-/* <DEPRECATED> */ .p-ScrollBar-thumb, /* </DEPRECATED> */
 .lm-ScrollBar-thumb {
   background: #CDCDCD;
 }
 
 
-/* <DEPRECATED> */ .p-ScrollBar-thumb:hover, /* </DEPRECATED> */
 .lm-ScrollBar-thumb:hover {
   background: #BABABA;
 }
 
 
-/* <DEPRECATED> */ .p-ScrollBar-thumb.lm-mod-active, /* </DEPRECATED> */
 .lm-ScrollBar-thumb.lm-mod-active {
   background: #A0A0A0;
 }
 
 
-/* <DEPRECATED> */
-.p-ScrollBar[data-orientation='horizontal'] .p-ScrollBar-thumb,
-/* </DEPRECATED> */
 .lm-ScrollBar[data-orientation='horizontal'] .lm-ScrollBar-thumb {
   height: 100%;
   min-width: 15px;
@@ -88,9 +72,6 @@
 }
 
 
-/* <DEPRECATED> */
-.p-ScrollBar[data-orientation='vertical'] .p-ScrollBar-thumb,
-/* </DEPRECATED> */
 .lm-ScrollBar[data-orientation='vertical'] .lm-ScrollBar-thumb {
   width: 100%;
   min-height: 15px;
@@ -99,33 +80,21 @@
 }
 
 
-/* <DEPRECATED> */
-.p-ScrollBar[data-orientation='horizontal'] .p-ScrollBar-button[data-action='decrement'],
-/* </DEPRECATED> */
 .lm-ScrollBar[data-orientation='horizontal'] .lm-ScrollBar-button[data-action='decrement'] {
   background-image: url(../images/caretleft.png);
 }
 
 
-/* <DEPRECATED> */
-.p-ScrollBar[data-orientation='horizontal'] .p-ScrollBar-button[data-action='increment'],
-/* </DEPRECATED> */
 .lm-ScrollBar[data-orientation='horizontal'] .lm-ScrollBar-button[data-action='increment'] {
   background-image: url(../images/caretright.png);
 }
 
 
-/* <DEPRECATED> */
-.p-ScrollBar[data-orientation='vertical'] .p-ScrollBar-button[data-action='decrement'],
-/* </DEPRECATED> */
 .lm-ScrollBar[data-orientation='vertical'] .lm-ScrollBar-button[data-action='decrement'] {
   background-image: url(../images/caretup.png);
 }
 
 
-/* <DEPRECATED> */
-.p-ScrollBar[data-orientation='vertical'] .p-ScrollBar-button[data-action='increment'],
-/* </DEPRECATED> */
 .lm-ScrollBar[data-orientation='vertical'] .lm-ScrollBar-button[data-action='increment'] {
   background-image: url(../images/caretdown.png);
 }

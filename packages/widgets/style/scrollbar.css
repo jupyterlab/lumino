@@ -8,7 +8,6 @@
 |----------------------------------------------------------------------------*/
 
 
-/* <DEPRECATED> */ .p-ScrollBar, /* </DEPRECATED> */
 .lm-ScrollBar {
   display: flex;
   -webkit-user-select: none;
@@ -18,30 +17,22 @@
 }
 
 
-/* <DEPRECATED> */
-.p-ScrollBar[data-orientation='horizontal'],
-/* </DEPRECATED> */
 .lm-ScrollBar[data-orientation='horizontal'] {
   flex-direction: row;
 }
 
 
-/* <DEPRECATED> */
-.p-ScrollBar[data-orientation='vertical'],
-/* </DEPRECATED> */
 .lm-ScrollBar[data-orientation='vertical'] {
   flex-direction: column;
 }
 
 
-/* <DEPRECATED> */ .p-ScrollBar-button, /* </DEPRECATED> */
 .lm-ScrollBar-button {
   box-sizing: border-box;
   flex: 0 0 auto;
 }
 
 
-/* <DEPRECATED> */ .p-ScrollBar-track, /* </DEPRECATED> */
 .lm-ScrollBar-track {
   box-sizing: border-box;
   position: relative;
@@ -50,7 +41,6 @@
 }
 
 
-/* <DEPRECATED> */ .p-ScrollBar-thumb, /* </DEPRECATED> */
 .lm-ScrollBar-thumb {
   box-sizing: border-box;
   position: absolute;
