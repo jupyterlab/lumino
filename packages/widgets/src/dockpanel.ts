@@ -210,7 +210,7 @@ class DockPanel extends Widget {
    */
   set tabsMovable(value: boolean) {
     this._tabsMovable = value;
-    each(this.tabBars(), (tabbar) => tabbar.tabsMovable = value);
+    each(this.tabBars(), (tabbar) => { tabbar.tabsMovable = value });
   }
 
   /**
