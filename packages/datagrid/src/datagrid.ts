@@ -729,37 +729,37 @@ class DataGrid extends Widget {
   }
 
   /**
-   * The renduring context for painting the data grid.
+   * The rendering context for painting the data grid.
    */
-  get canvasGC(): CanvasRenderingContext2D {
+  protected get canvasGC(): CanvasRenderingContext2D {
     return this._canvasGC;
   }
 
   /**
    * The row sections of the data grid.
    */
-  get rowSections(): SectionList {
+  protected get rowSections(): SectionList {
     return this._rowSections;
   }
 
   /**
    * The column sections of the data grid. 
    */
-  get columnSections(): SectionList {
+  protected get columnSections(): SectionList {
     return this._columnSections;
   }
 
   /**
    * The row header sections of the data grid.
    */
-  get rowHeaderSections(): SectionList {
+  protected get rowHeaderSections(): SectionList {
     return this._rowHeaderSections;
   }
 
   /**
    * The column header sections of the data grid.
    */
-  get columnHeaderSections(): SectionList {
+  protected get columnHeaderSections(): SectionList {
     return this._columnHeaderSections;
   }
 
