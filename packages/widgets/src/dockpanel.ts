@@ -77,6 +77,9 @@ class DockPanel extends Widget {
     if(options.tabsConstrained !== undefined){
       this._tabsConstrained = options.tabsConstrained;
     }
+    if (options.addButtonEnabled !== undefined) {
+      this._addButtonEnabled = options.addButtonEnabled;
+    }
 
     // Toggle the CSS mode attribute.
     this.dataset['mode'] = this._mode;
@@ -127,6 +130,14 @@ class DockPanel extends Widget {
    */
   get layoutModified(): ISignal<this, void> {
     return this._layoutModified;
+  }
+
+  /**
+   * A signal emitted when the add button on a tab bar is clicked.
+   *
+   */
+  get widgetAddRequested(): ISignal<this, DockPanel.IWidgetAddRequestedArgs<Widget>> {
+    return this._widgetAddRequested;
   }
 
   /**
@@ -229,6 +240,21 @@ class DockPanel extends Widget {
    */
   set tabsConstrained(value:boolean) {
     this._tabsConstrained = value;
+  }
+
+  /**
+   * Whether the add buttons for each tab bar are enableds.
+   */
+  get addButtonEnabled(): boolean {
+    return this._addButtonEnabled;
+  }
+
+  /**
+   * Enable / Disable add button.
+   */
+  set addButtonEnabled(value: boolean) {
+    this._addButtonEnabled = value;
+    each(this.tabBars(), (tabbar) => { tabbar.addButtonEnabled = value });
   }
 
   /**
@@ -892,6 +918,7 @@ class DockPanel extends Widget {
     // TODO do we really want to enforce *all* of these?
     tabBar.tabsMovable = this._tabsMovable;
     tabBar.allowDeselect = false;
+    tabBar.addButtonEnabled = this._addButtonEnabled;
     tabBar.removeBehavior = 'select-previous-tab';
     tabBar.insertBehavior = 'select-tab-if-needed';
 
@@ -901,6 +928,7 @@ class DockPanel extends Widget {
     tabBar.tabCloseRequested.connect(this._onTabCloseRequested, this);
     tabBar.tabDetachRequested.connect(this._onTabDetachRequested, this);
     tabBar.tabActivateRequested.connect(this._onTabActivateRequested, this);
+    tabBar.tabAddRequested.connect(this._onTabAddRequested, this);
 
     // Return the initialized tab bar.
     return tabBar;
@@ -944,6 +972,15 @@ class DockPanel extends Widget {
 
     // Schedule an emit of the layout modified signal.
     MessageLoop.postMessage(this, Private.LayoutModified);
+  }
+
+  /**
+   * Handle the `tabAddRequested` signal from the tab bar.
+   */
+  private _onTabAddRequested(sender: TabBar<Widget>, args: TabBar.ITabAddRequestedArgs): void {
+    this._widgetAddRequested.emit({
+      tabBar: sender
+    });
   }
 
   /**
@@ -1016,8 +1053,12 @@ class DockPanel extends Widget {
   private _renderer: DockPanel.IRenderer;
   private _tabsMovable: boolean = true;
   private _tabsConstrained: boolean = false;
+  private _addButtonEnabled: boolean = false;
   private _pressData: Private.IPressData | null = null;
   private _layoutModified = new Signal<this, void>(this);
+
+  private _widgetAddRequested = new Signal<this, DockPanel.IWidgetAddRequestedArgs<Widget>>(this);
+
 }
 
 
@@ -1078,6 +1119,13 @@ namespace DockPanel {
      * The default is `'false'`.
      */
     tabsConstrained?: boolean;
+
+    /**
+     * Show add buttons to each tab bar.
+     *
+     * The default is `'false'`.
+     */
+    addButtonEnabled?: boolean;
   }
 
   /**
@@ -1354,6 +1402,18 @@ namespace DockPanel {
    */
   export
   const defaultRenderer = new Renderer();
+
+
+  /**
+   * The arguments object for the `addRequested` signal.
+   */
+  export
+  interface IWidgetAddRequestedArgs<T> {
+    /**
+     * The tabbar.
+     */
+    tabBar: TabBar<T>;
+  }
 }
 
 
