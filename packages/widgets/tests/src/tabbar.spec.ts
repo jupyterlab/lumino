@@ -147,6 +147,7 @@ describe('@lumino/widgets', () => {
           orientation: 'horizontal',
           tabsMovable: true,
           allowDeselect: true,
+          addButtonEnabled: true,
           insertBehavior: 'select-tab',
           removeBehavior: 'select-previous-tab',
           renderer
@@ -154,6 +155,7 @@ describe('@lumino/widgets', () => {
         expect(newBar).to.be.an.instanceof(TabBar);
         expect(newBar.tabsMovable).to.equal(true);
         expect(newBar.renderer).to.equal(renderer);
+        expect(newBar.addButtonEnabled).to.equal(true);
       });
 
       it('should add the `lm-TabBar` class', () => {
@@ -366,6 +368,47 @@ describe('@lumino/widgets', () => {
         simulate(closeIcon, 'mouseup', { clientX: rect1.left, clientY: rect1.top, button: 0 });
         simulate(tab, 'mousedown', { clientX: rect2.left, clientY: rect2.top, button: 1 });
         simulate(tab, 'mouseup', { clientX: rect2.left, clientY: rect2.top, button: 1 });
+        expect(called).to.equal(false);
+      });
+
+    });
+
+
+    describe('#tabAddRequested', () => {
+
+      let addButton: Element;
+
+      beforeEach(() => {
+        populateBar(bar);
+        bar.currentIndex = 0;
+        addButton = bar.addButtonNode;
+      });
+
+      it('should be emitted when the add button is clicked', () => {
+        bar.addButtonEnabled = true;
+        let called = false;
+        let rect = addButton.getBoundingClientRect();
+        bar.tabAddRequested.connect((sender, args) => {
+          expect(sender).to.equal(bar);
+          expect(args).to.equal({});
+          called = true;
+        });
+        simulate(addButton, 'mousedown', { clientX: rect.left, clientY: rect.top, button: 0 });
+        simulate(addButton, 'mouseup', { clientX: rect.left, clientY: rect.top, button: 0 });
+        expect(called).to.equal(true);
+      });
+
+      it('should not be emitted if addButtonEnabled is `false`', () => {
+        bar.addButtonEnabled = false;
+        let called = false;
+        let rect = addButton.getBoundingClientRect();
+        bar.tabAddRequested.connect((sender, args) => {
+          expect(sender).to.equal(bar);
+          expect(args).to.equal({});
+          called = true;
+        });
+        simulate(addButton, 'mousedown', { clientX: rect.left, clientY: rect.top, button: 0 });
+        simulate(addButton, 'mouseup', { clientX: rect.left, clientY: rect.top, button: 0 });
         expect(called).to.equal(false);
       });
 
