@@ -390,7 +390,7 @@ describe('@lumino/widgets', () => {
         let rect = addButton.getBoundingClientRect();
         bar.tabAddRequested.connect((sender, args) => {
           expect(sender).to.equal(bar);
-          expect(args).to.equal({});
+          expect(args).to.eql({});
           called = true;
         });
         simulate(addButton, 'mousedown', { clientX: rect.left, clientY: rect.top, button: 0 });
@@ -404,7 +404,7 @@ describe('@lumino/widgets', () => {
         let rect = addButton.getBoundingClientRect();
         bar.tabAddRequested.connect((sender, args) => {
           expect(sender).to.equal(bar);
-          expect(args).to.equal({});
+          expect(args).to.eql({});
           called = true;
         });
         simulate(addButton, 'mousedown', { clientX: rect.left, clientY: rect.top, button: 0 });
@@ -516,6 +516,30 @@ describe('@lumino/widgets', () => {
         let titles = bar.titles.slice();
         bar.insertTab(2, titles[0]);
         expect(bar.titles[2]).to.equal(titles[0]);
+      });
+
+    });
+
+    describe('#addButtonEnabled', () => {
+
+      it('should get whether the add button is enabled', () => {
+        let bar = new TabBar<Widget>();
+        expect(bar.addButtonEnabled).to.equal(false);
+      });
+
+      it('should set whether the add button is enabled', () => {
+        let bar = new TabBar<Widget>();
+        bar.addButtonEnabled = true;
+        expect(bar.addButtonEnabled).to.equal(true);
+      });
+
+      it('should not show the add button if not set', () => {
+        populateBar(bar);
+        expect(bar.addButtonNode.classList.contains('lm-mod-hidden')).to.equal(true);
+
+        bar.addButtonEnabled = true;
+        expect(bar.addButtonNode.classList.contains('lm-mod-hidden')).to.equal(false);
+
       });
 
     });
