@@ -203,6 +203,9 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
         clear = 'all';
       }
 
+      // Use selection mode 'cell'
+      model.selectionMode = 'cell'
+
       // Make the selection.
       model.select({ r1, c1, r2, c2, cursorRow, cursorColumn, clear });
 
@@ -331,6 +334,19 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
       cursorRow = accel ? row : shift ? model.cursorRow : row;
       cursorColumn = accel ? column : shift ? model.cursorColumn : column;
       clear = accel ? 'none' : shift ? 'current' : 'all';
+    }
+
+    // Set selection mode based on region
+    switch (region) {
+      case 'column-header':
+        model.selectionMode = 'column';
+        break;
+      case 'row-header':
+        model.selectionMode = 'row';
+        break;
+      default:
+        model.selectionMode = 'cell';
+        break;
     }
 
     // Make the selection.
