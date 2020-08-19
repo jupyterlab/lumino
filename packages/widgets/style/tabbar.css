@@ -83,6 +83,13 @@
 }
 
 
+.lm-TabBar-tabInput {
+  user-select: all;
+  width: 100%;
+  box-sizing : border-box;
+}
+
+
 /* <DEPRECATED> */ .p-TabBar-tab.p-mod-hidden, /* </DEPRECATED> */
 .lm-TabBar-tab.lm-mod-hidden {
   display: none !important;
