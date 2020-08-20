@@ -204,7 +204,7 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
       }
 
       // Use selection mode 'cell'
-      model.selectionMode = 'cell'
+      model.selectionMode = 'cell';
 
       // Make the selection.
       model.select({ r1, c1, r2, c2, cursorRow, cursorColumn, clear });
