@@ -40,6 +40,13 @@
 }
 
 
+.lm-TabBar-tabLabel .lm-TabBar-tabInput {
+  padding: 0px;
+  border: 0px;
+  font: 12px Helvetica, Arial, sans-serif
+}
+
+
 /* <DEPRECATED> */ .p-TabBar-tab.p-mod-current, /* </DEPRECATED> */
 .lm-TabBar-tab.lm-mod-current {
   background: white;

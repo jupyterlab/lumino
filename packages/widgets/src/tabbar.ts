@@ -67,6 +67,7 @@ class TabBar<T> extends Widget {
     /* </DEPRECATED> */
     this.setFlag(Widget.Flag.DisallowLayout);
     this.tabsMovable = options.tabsMovable || false;
+    this.titlesEditable = options.titlesEditable || false;
     this.allowDeselect = options.allowDeselect || false;
     this.insertBehavior = options.insertBehavior || 'select-tab-if-needed';
     this.removeBehavior = options.removeBehavior || 'select-tab-after';
@@ -163,6 +164,22 @@ class TabBar<T> extends Widget {
    * Tabs can always be moved programmatically.
    */
   tabsMovable: boolean;
+
+  /**
+   * Whether the titles can be user-edited.
+   *
+   */
+  get titlesEditable(): boolean {
+    return this._titlesEditable;
+  }
+
+  /**
+   * Set whether titles can be user edited.
+   *
+   */
+  set titlesEditable(value: boolean) {
+    this._titlesEditable = value;
+  }
 
   /**
    * Whether a tab can be deselected by the user.
@@ -509,6 +526,9 @@ class TabBar<T> extends Widget {
     case 'mouseup':
       this._evtMouseUp(event as MouseEvent);
       break;
+    case 'dblclick':
+      this._evtDblClick(event as MouseEvent);
+      break;
     case 'keydown':
       this._evtKeyDown(event as KeyboardEvent);
       break;
@@ -524,6 +544,7 @@ class TabBar<T> extends Widget {
    */
   protected onBeforeAttach(msg: Message): void {
     this.node.addEventListener('mousedown', this);
+    this.node.addEventListener('dblclick', this);
   }
 
   /**
@@ -531,6 +552,7 @@ class TabBar<T> extends Widget {
    */
   protected onAfterDetach(msg: Message): void {
     this.node.removeEventListener('mousedown', this);
+    this.node.removeEventListener('dblclick', this);
     this._releaseMouse();
   }
 
@@ -549,6 +571,69 @@ class TabBar<T> extends Widget {
       content[i] = renderer.renderTab({ title, current, zIndex });
     }
     VirtualDOM.render(content, this.contentNode);
+  }
+
+  /**
+   * Handle the `'dblclick'` event for the tab bar.
+   */
+  private _evtDblClick(event: MouseEvent): void {
+
+    // Do nothing if titles are not editable
+    if (!this.titlesEditable) {
+      return;
+    }
+
+    let tabs = this.contentNode.children;
+
+    // Find the index of the released tab.
+    let index = ArrayExt.findFirstIndex(tabs, tab => {
+      return ElementExt.hitTest(tab, event.clientX, event.clientY);
+    });
+
+    // Do nothing if the press is not on a tab.
+    if (index === -1) {
+      return;
+    }
+
+    let title = this.titles[index];
+    let label = tabs[index].querySelector('.lm-TabBar-tabLabel') as HTMLElement;
+    if (label && label.contains(event.target as HTMLElement)) {
+
+      let value = title.label || '';
+
+      // Clear the label element
+      let oldValue = label.innerHTML;
+      label.innerHTML = "";
+
+      let input = document.createElement('input');
+      input.classList.add('lm-TabBar-tabInput');
+      input.value = value;
+      label.appendChild(input);
+
+      let onblur = () => {
+        input.removeEventListener('blur', onblur);
+        label.innerHTML = oldValue;
+      }
+
+      input.addEventListener('dblclick', (event: Event) => event.stopPropagation());
+      input.addEventListener('blur', onblur);
+      input.addEventListener('keydown', (event: KeyboardEvent) => {
+        if (event.key === 'Enter') {
+          if (input.value !== '') {
+            title.label = title.caption = input.value;
+          }
+          onblur();
+        } else if (event.key === 'Escape') {
+          onblur();
+        }
+      });
+      input.select();
+      input.focus();
+
+      if (label.children.length > 0) {
+        (label.children[0] as HTMLElement).focus();
+      }
+    }
   }
 
   /**
@@ -1028,6 +1113,7 @@ class TabBar<T> extends Widget {
   private _currentIndex = -1;
   private _titles: Title<T>[] = [];
   private _orientation: TabBar.Orientation;
+  private _titlesEditable: boolean = false;
   private _previousTitle: Title<T> | null = null;
   private _dragData: Private.IDragData | null = null;
   private _tabMoved = new Signal<this, TabBar.ITabMovedArgs<T>>(this);
@@ -1135,6 +1221,13 @@ namespace TabBar {
      * The default is `false`.
      */
     allowDeselect?: boolean;
+
+    /**
+     * Whether the titles can be directly edited by the user.
+     *
+     * The default is `false`.
+     */
+    titlesEditable?: boolean;
 
     /**
      * The selection behavior when inserting a tab.
