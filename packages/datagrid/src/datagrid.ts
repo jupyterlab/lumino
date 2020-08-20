@@ -3653,7 +3653,7 @@ class DataGrid extends Widget {
     this._drawColumnHeaderRegion(rx, ry, rw, rh);
 
     // Draw the corner header region.
-    this._drawCornerHeaderRegion(rx, ry, rw, rh);
+    this.drawCornerHeaderRegion(rx, ry, rw, rh);
   }
 
   /**
@@ -4088,7 +4088,7 @@ class DataGrid extends Widget {
   /**
    * Draw the corner header region which intersects the dirty rect.
    */
-  private _drawCornerHeaderRegion(rx: number, ry: number, rw: number, rh: number): void {
+  protected drawCornerHeaderRegion(rx: number, ry: number, rw: number, rh: number): void {
     // Get the visible content dimensions.
     let contentW = this.headerWidth;
     let contentH = this.headerHeight;
