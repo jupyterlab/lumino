@@ -735,7 +735,7 @@ class TabBar<T> extends Widget {
 
     // Handle clicking on the add button
     let addButtonClicked = false;
-    if (this.addButtonNode.contains(event.target as HTMLElement)) {
+    if (this.addButtonEnabled && this.addButtonNode.contains(event.target as HTMLElement)) {
       addButtonClicked = true;
     }
 
@@ -921,7 +921,7 @@ class TabBar<T> extends Widget {
       this._dragData = null;
 
       // Handle clicking on the add button
-      if (this.addButtonNode.contains(event.target as HTMLElement)) {
+      if (this.addButtonEnabled && this.addButtonNode.contains(event.target as HTMLElement)) {
         this._tabAddRequested.emit({});
         return;
       }
