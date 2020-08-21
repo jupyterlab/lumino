@@ -885,11 +885,12 @@ class NumberCellEditor extends InputCellEditor {
   protected startEditing() {
     super.startEditing();
 
-    this.input.step = 'any';
-
     const cell = this.cell;
 
     const metadata = cell.grid.dataModel!.metadata('body', cell.row, cell.column);
+
+    this.input.step = metadata.step || 'any';
+
     const constraint = metadata.constraint;
     if (constraint) {
       if (constraint.minimum) {
