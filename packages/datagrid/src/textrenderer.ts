@@ -34,6 +34,7 @@ class TextRenderer extends CellRenderer {
     this.verticalAlignment = options.verticalAlignment || 'center';
     this.horizontalAlignment = options.horizontalAlignment || 'left';
     this.format = options.format || TextRenderer.formatGeneric();
+    this.elideDirection = options.elideDirection || 'right';
   }
 
   /**
@@ -65,6 +66,11 @@ class TextRenderer extends CellRenderer {
    * The format function for the cell value.
    */
   readonly format: TextRenderer.FormatFunc;
+
+  /**
+   * Which side to draw the ellipsis.
+   */
+  readonly elideDirection: CellRenderer.ConfigOption<TextRenderer.ElideDirection>;
 
   /**
    * Paint the content for a cell.
@@ -136,6 +142,9 @@ class TextRenderer extends CellRenderer {
     let vAlign = CellRenderer.resolveOption(this.verticalAlignment, config);
     let hAlign = CellRenderer.resolveOption(this.horizontalAlignment, config);
 
+    // Resolve the elision direction
+    let elideDirection = CellRenderer.resolveOption(this.elideDirection, config);
+
     // Compute the padded text box height for the specified alignment.
     let boxHeight = config.height - (vAlign === 'center' ? 1 : 2);
 
@@ -150,6 +159,7 @@ class TextRenderer extends CellRenderer {
     // Set up the text position variables.
     let textX: number;
     let textY: number;
+    let boxWidth: number;
 
     // Compute the Y position for the text.
     switch (vAlign) {
@@ -169,13 +179,16 @@ class TextRenderer extends CellRenderer {
     // Compute the X position for the text.
     switch (hAlign) {
     case 'left':
-      textX = config.x + 2;
+      textX = config.x + 8;
+      boxWidth = config.width - 14;
       break;
     case 'center':
       textX = config.x + config.width / 2;
+      boxWidth = config.width;
       break;
     case 'right':
-      textX = config.x + config.width - 3;
+      textX = config.x + config.width - 8;
+      boxWidth = config.width - 14;
       break;
     default:
       throw 'unreachable';
@@ -193,6 +206,35 @@ class TextRenderer extends CellRenderer {
     gc.fillStyle = color;
     gc.textAlign = hAlign;
     gc.textBaseline = 'bottom';
+
+    // Elide text that is too long
+    let elide = '\u2026';
+    let textWidth = gc.measureText(text).width;
+
+    // Compute elided text
+    if (elideDirection === 'right') {
+      while ((textWidth > boxWidth) && (text.length > 1)) {
+        if (text.length > 4 && textWidth >= 2 * boxWidth) {
+          // If text width is substantially bigger, take half the string
+          text = text.substring(0, (text.length / 2) + 1) + elide;
+        } else {
+          // Otherwise incrementally remove the last character
+          text = text.substring(0, text.length - 2) + elide;
+        }
+        textWidth = gc.measureText(text).width;
+      } 
+    } else {
+      while ((textWidth > boxWidth) && (text.length > 1)) {
+        if (text.length > 4 && textWidth >= 2 * boxWidth) {
+          // If text width is substantially bigger, take half the string
+          text = elide + text.substring((text.length / 2));
+        } else {
+          // Otherwise incrementally remove the last character
+          text = elide + text.substring(2);
+        }
+        textWidth = gc.measureText(text).width;
+      }
+    }
 
     // Draw the text for the cell.
     gc.fillText(text, textX, textY);
@@ -216,6 +258,12 @@ namespace TextRenderer {
    */
   export
   type HorizontalAlignment = 'left' | 'center' | 'right';
+
+  /**
+   * A type alias for the supported ellipsis sides.
+   */
+  export
+  type ElideDirection = 'left' | 'right';
 
   /**
    * An options object for initializing a text renderer.
@@ -263,6 +311,14 @@ namespace TextRenderer {
      * The default is `TextRenderer.formatGeneric()`.
      */
     format?: FormatFunc;
+
+    /**
+     * The ellipsis direction for the cell text.
+     *
+     * The default is `'right'`.
+     */
+    elideDirection?: CellRenderer.ConfigOption<ElideDirection>;
+
   }
 
   /**

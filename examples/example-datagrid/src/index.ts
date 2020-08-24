@@ -436,6 +436,10 @@ function main(): void {
     horizontalAlignment: 'right'
   });
 
+  let elideFloatRenderer = new TextRenderer({
+    elideDirection: ({ column }) => (column % 2 === 0) ? 'right' : 'left',
+  });
+
   let grid1 = new DataGrid({ style: blueStripeStyle });
   grid1.dataModel = model1;
   grid1.keyHandler = new BasicKeyHandler();
@@ -443,6 +447,7 @@ function main(): void {
   grid1.selectionModel = new BasicSelectionModel({ dataModel: model1 });
 
   let grid2 = new DataGrid({ style: brownStripeStyle });
+  grid2.cellRenderers.update({ 'body': elideFloatRenderer });
   grid2.dataModel = model2;
   grid2.keyHandler = new BasicKeyHandler();
   grid2.mouseHandler = new BasicMouseHandler();
