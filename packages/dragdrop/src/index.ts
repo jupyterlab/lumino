@@ -264,22 +264,18 @@ class Drag implements IDisposable {
    */
   handleEvent(event: Event): void {
     switch(event.type) {
+    case 'touchmove':
+      event = Drag.convertTouchToMouseEvent(event as TouchEvent);
     case 'mousemove':
       this._evtMouseMove(event as MouseEvent);
       break;
+    case 'touchend':
+      event = Drag.convertTouchToMouseEvent(event as TouchEvent);
     case 'mouseup':
       this._evtMouseUp(event as MouseEvent);
       break;
     case 'keydown':
       this._evtKeyDown(event as KeyboardEvent);
-      break;
-    case 'touchmove':
-      let touchMoveEvent = this._convertTouchEvent('mousemove', event as TouchEvent);
-      this._evtMouseMove(touchMoveEvent);
-      break;
-    case 'touchend':
-      let touchEndEvent = this._convertTouchEvent('mouseup', event as TouchEvent);
-      this._evtMouseUp(touchEndEvent);
       break;
     default:
       // Stop all other events during drag-drop.
@@ -287,20 +283,6 @@ class Drag implements IDisposable {
       event.stopPropagation();
       break;
     }
-  }
-
-  private _convertTouchEvent(name: string, event: TouchEvent): MouseEvent {
-    let touches = event.touches;
-    if (touches.length === 0) touches = event.changedTouches; // touchEnd has no touches :facepalm:
-    let mouse = new MouseEvent(name, {
-      button: 0, // why not be a left click :shrug:
-      clientX: touches[0].clientX,
-      clientY: touches[0].clientY,
-    });
-    // TODO: bind preventDefault
-    // TODO: bind stopPropagation
-    // TODO: bind target
-    return mouse;
   }
 
   /**
@@ -754,6 +736,21 @@ namespace Drag {
         /* </DEPRECATED> */
       }
     });
+  }
+
+  export
+  function convertTouchToMouseEvent(touch: TouchEvent): MouseEvent {
+    let touches = touch.touches;
+    if (touches.length === 0) touches = touch.changedTouches; // touchEnd has no touches :facepalm:
+    let mouse = new MouseEvent('fake-mouse', {
+      button: 0, // why not be a left click :shrug:
+      clientX: touches[0].clientX,
+      clientY: touches[0].clientY,
+    });
+    // TODO: bind preventDefault
+    // TODO: bind stopPropagation
+    // TODO: bind target
+    return mouse;
   }
 
   /**

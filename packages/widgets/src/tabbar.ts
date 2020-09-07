@@ -517,26 +517,20 @@ class TabBar<T> extends Widget {
    */
   handleEvent(event: Event): void {
     switch (event.type) {
+    case 'touchstart':
+      event = Drag.convertTouchToMouseEvent(event as TouchEvent);
     case 'mousedown':
       this._evtMouseDown(event as MouseEvent);
       break;
+    case 'touchmove':
+      event = Drag.convertTouchToMouseEvent(event as TouchEvent);
     case 'mousemove':
       this._evtMouseMove(event as MouseEvent);
       break;
+    case 'touchend':
+      event = Drag.convertTouchToMouseEvent(event as TouchEvent);
     case 'mouseup':
       this._evtMouseUp(event as MouseEvent);
-      break;
-    case 'touchstart':
-      let touchStartEvent = this._convertTouchEvent('mousedown', event as TouchEvent);
-      this._evtMouseDown(touchStartEvent);
-      break;
-    case 'touchmove':
-      let touchMoveEvent = this._convertTouchEvent('mousemove', event as TouchEvent);
-      this._evtMouseMove(touchMoveEvent);
-      break;
-    case 'touchend':
-      let touchEndEvent = this._convertTouchEvent('mouseup', event as TouchEvent);
-      this._evtMouseUp(touchEndEvent);
       break;
     case 'dblclick':
       this._evtDblClick(event as MouseEvent);
@@ -662,20 +656,6 @@ class TabBar<T> extends Widget {
     if (event.keyCode === 27) {
       this._releaseMouse();
     }
-  }
-
-  private _convertTouchEvent(name: string, event: TouchEvent): MouseEvent {
-    let touches = event.touches;
-    if (touches.length === 0) touches = event.changedTouches; // touchEnd has no touches :facepalm:
-    let mouse = new MouseEvent(name, {
-      button: 0, // why not be a left click :shrug:
-      clientX: touches[0].clientX,
-      clientY: touches[0].clientY,
-    });
-    // TODO: bind preventDefault
-    // TODO: bind stopPropagation
-    // TODO: bind target
-    return mouse;
   }
 
   /**
