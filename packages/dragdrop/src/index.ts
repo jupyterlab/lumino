@@ -273,12 +273,34 @@ class Drag implements IDisposable {
     case 'keydown':
       this._evtKeyDown(event as KeyboardEvent);
       break;
+    case 'touchmove':
+      let touchMoveEvent = this._convertTouchEvent('mousemove', event as TouchEvent);
+      this._evtMouseMove(touchMoveEvent);
+      break;
+    case 'touchend':
+      let touchEndEvent = this._convertTouchEvent('mouseup', event as TouchEvent);
+      this._evtMouseUp(touchEndEvent);
+      break;
     default:
       // Stop all other events during drag-drop.
       event.preventDefault();
       event.stopPropagation();
       break;
     }
+  }
+
+  private _convertTouchEvent(name: string, event: TouchEvent): MouseEvent {
+    let touches = event.touches;
+    if (touches.length === 0) touches = event.changedTouches; // touchEnd has no touches :facepalm:
+    let mouse = new MouseEvent(name, {
+      button: 0, // why not be a left click :shrug:
+      clientX: touches[0].clientX,
+      clientY: touches[0].clientY,
+    });
+    // TODO: bind preventDefault
+    // TODO: bind stopPropagation
+    // TODO: bind target
+    return mouse;
   }
 
   /**
@@ -377,6 +399,9 @@ class Drag implements IDisposable {
     document.addEventListener('mouseleave', this, true);
     document.addEventListener('mouseover', this, true);
     document.addEventListener('mouseout', this, true);
+    document.addEventListener('touchstart', this, true);
+    document.addEventListener('touchmove', this, true);
+    document.addEventListener('touchend', this, true);
     document.addEventListener('keydown', this, true);
     document.addEventListener('keyup', this, true);
     document.addEventListener('keypress', this, true);
@@ -394,6 +419,9 @@ class Drag implements IDisposable {
     document.removeEventListener('mouseleave', this, true);
     document.removeEventListener('mouseover', this, true);
     document.removeEventListener('mouseout', this, true);
+    document.removeEventListener('touchstart', this, true);
+    document.removeEventListener('touchmove', this, true);
+    document.removeEventListener('touchend', this, true);
     document.removeEventListener('keydown', this, true);
     document.removeEventListener('keyup', this, true);
     document.removeEventListener('keypress', this, true);
