@@ -403,12 +403,18 @@ class DockPanel extends Widget {
     case 'lm-drop':
       this._evtDrop(event as IDragEvent);
       break;
+    case 'touchstart':
+      event = Drag.convertTouchToMouseEvent(event as TouchEvent);
     case 'mousedown':
       this._evtMouseDown(event as MouseEvent);
       break;
+    case 'touchmove':
+      event = Drag.convertTouchToMouseEvent(event as TouchEvent);
     case 'mousemove':
       this._evtMouseMove(event as MouseEvent);
       break;
+    case 'touchend':
+      event = Drag.convertTouchToMouseEvent(event as TouchEvent);
     case 'mouseup':
       this._evtMouseUp(event as MouseEvent);
       break;
@@ -431,6 +437,7 @@ class DockPanel extends Widget {
     this.node.addEventListener('lm-dragover', this);
     this.node.addEventListener('lm-drop', this);
     this.node.addEventListener('mousedown', this);
+    this.node.addEventListener('touchstart', this);
   }
 
   /**
@@ -442,6 +449,7 @@ class DockPanel extends Widget {
     this.node.removeEventListener('lm-dragover', this);
     this.node.removeEventListener('lm-drop', this);
     this.node.removeEventListener('mousedown', this);
+    this.node.removeEventListener('touchstart', this);
     this._releaseMouse();
   }
 
@@ -667,7 +675,9 @@ class DockPanel extends Widget {
     // Add the extra document listeners.
     document.addEventListener('keydown', this, true);
     document.addEventListener('mouseup', this, true);
+    document.addEventListener('touchend', this, true);
     document.addEventListener('mousemove', this, true);
+    document.addEventListener('touchmove', this, true);
     document.addEventListener('contextmenu', this, true);
 
     // Compute the offset deltas for the handle press.
@@ -740,7 +750,9 @@ class DockPanel extends Widget {
     // Remove the extra document listeners.
     document.removeEventListener('keydown', this, true);
     document.removeEventListener('mouseup', this, true);
+    document.removeEventListener('touchend', this, true);
     document.removeEventListener('mousemove', this, true);
+    document.removeEventListener('touchmove', this, true);
     document.removeEventListener('contextmenu', this, true);
   }
 

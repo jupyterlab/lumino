@@ -738,6 +738,9 @@ namespace Drag {
     });
   }
 
+  /**
+   * Converts a TouchEvent to a MouseEvent to simplify mobile touch event handling.
+   */
   export
   function convertTouchToMouseEvent(touch: TouchEvent): MouseEvent {
     let touches = touch.touches;
@@ -747,9 +750,14 @@ namespace Drag {
       clientX: touches[0].clientX,
       clientY: touches[0].clientY,
     });
-    // TODO: bind preventDefault
-    // TODO: bind stopPropagation
-    // TODO: bind target
+
+    // Forcefully add mouse event properties.
+    (mouse as any).preventDefault = touch.preventDefault;
+    (mouse as any).stopPropagation = touch.stopPropagation;
+
+    // target is supposed to be readOnly, set it with js hackery
+    Object.defineProperty(mouse, 'target', {value: touch.target, writable: false});
+
     return mouse;
   }
 
