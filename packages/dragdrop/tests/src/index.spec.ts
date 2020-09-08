@@ -585,6 +585,32 @@ describe('@lumino/dragdrop', () => {
 
     });
 
+    describe('.convertTouchToMouseEvent()', () => {
+
+      it('should produce a mouse event from a touch event', () => {
+        let touch = generate('touchstart') as TouchEvent;
+        (touch as any).touches = [{clientX: 1, clientY: 2}];
+        let mouse = Drag.convertTouchToMouseEvent(touch);
+        expect(mouse.button).to.equal(0);
+        expect(mouse.clientX).to.equal(1);
+        expect(mouse.clientY).to.equal(2);
+        expect(mouse.preventDefault).to.equal(touch.preventDefault);
+        expect(mouse.stopPropagation).to.equal(touch.stopPropagation);
+        expect(mouse.target).to.equal(touch.target);
+      });
+
+      it('should produce valid clientX/Y on touchend events', () => {
+        let touch = generate('touchstart') as TouchEvent;
+        (touch as any).touches = [];
+        (touch as any).changedTouches = [{clientX: 1, clientY: 2}];
+        let mouse = Drag.convertTouchToMouseEvent(touch);
+        expect(mouse.button).to.equal(0);
+        expect(mouse.clientX).to.equal(1);
+        expect(mouse.clientY).to.equal(2);
+      });
+
+    });
+
   });
 
 });
