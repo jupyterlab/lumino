@@ -11,7 +11,9 @@ import {
   ISignal, Signal
 } from '@lumino/signaling';
 
-
+import {
+  CellGroup
+} from './cellgroup';
 /**
  * An object which provides the data for a data grid.
  *
@@ -71,6 +73,14 @@ abstract class DataModel {
   abstract data(region: DataModel.CellRegion, row: number, column: number): any;
 
   /**
+   * Group count in region
+   * @param region 
+   */
+  groupCount(region: DataModel.CellRegion): number {
+    return 0;
+  }
+
+  /**
    * Get the metadata for a cell in the data model.
    *
    * @param region - The cell region of interest.
@@ -90,6 +100,10 @@ abstract class DataModel {
    */
   metadata(region: DataModel.CellRegion, row: number, column: number): DataModel.Metadata {
     return DataModel.emptyMetadata;
+  }
+  
+  group(region: DataModel.CellRegion, groupIndex: number): CellGroup | null {
+    return null;
   }
 
   /**

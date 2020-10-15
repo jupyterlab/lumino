@@ -35,6 +35,10 @@ import {
   CellEditor
 } from './celleditor';
 
+import { 
+  CellGroup 
+} from './cellgroup';
+
 /**
  * A basic implementation of a data grid mouse handler.
  *
@@ -310,6 +314,15 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
     } else if (region === 'row-header') {
       r1 = accel ? row : shift ? model.cursorRow : row;
       r2 = row;
+
+      const selectionGroup: CellGroup = {startRow: r1, startColumn: 0, endRow: r2, endColumn: 0};
+      const joinedGroup = CellGroup.joinCellGroupsIntersectingAtAxis(grid.dataModel!, ["row-header", "body"], "row", selectionGroup);
+      // Check if there are any merges
+      if (joinedGroup.startRow != Number.MAX_VALUE) {
+        r1 = joinedGroup.startRow;
+        r2 = joinedGroup.endRow;
+      }
+      
       c1 = 0;
       c2 = Infinity;
       cursorRow = accel ? row : shift ? model.cursorRow : row;
@@ -320,6 +333,15 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
       r2 = Infinity;
       c1 = accel ? column : shift ? model.cursorColumn : column;
       c2 = column;
+
+      const selectionGroup: CellGroup = {startRow: 0, startColumn: c1, endRow: 0, endColumn: c2};
+      const joinedGroup = CellGroup.joinCellGroupsIntersectingAtAxis(grid.dataModel!, ["column-header", "body"], "column", selectionGroup);
+      // Check if there are any merges
+      if (joinedGroup.startColumn != Number.MAX_VALUE) {
+        c1 = joinedGroup.startColumn;
+        c2 = joinedGroup.endColumn;
+      }
+
       cursorRow = accel ? 0 : shift ? model.cursorRow : 0;
       cursorColumn = accel ? column : shift ? model.cursorColumn : column;
       clear = accel ? 'none' : shift ? 'current' : 'all';
@@ -464,6 +486,16 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
     if (data.region === 'row-header' || mode === 'row') {
       r1 = data.row;
       r2 = grid.rowAt('body', vy);
+
+      const selectionGroup: CellGroup = {startRow: r1, startColumn: 0, endRow: r2, endColumn: 0};
+      const joinedGroup = CellGroup.joinCellGroupsIntersectingAtAxis(grid.dataModel!, ["row-header", "body"], "row", selectionGroup);
+      // Check if there are any merges
+      if (joinedGroup.startRow != Number.MAX_VALUE) {
+        r1 = Math.min(r1, joinedGroup.startRow);
+        r2 = Math.max(r2, joinedGroup.endRow);
+      }
+
+
       c1 = 0;
       c2 = Infinity;
     } else if (data.region === 'column-header' || mode === 'column') {
@@ -471,6 +503,15 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
       r2 = Infinity;
       c1 = data.column;
       c2 = grid.columnAt('body', vx);
+
+      const selectionGroup: CellGroup = {startRow: 0, startColumn: c1, endRow: 0, endColumn: c2};
+      const joinedGroup = CellGroup.joinCellGroupsIntersectingAtAxis(grid.dataModel!, ["column-header", "body"], "column", selectionGroup);
+      // Check if there are any merges
+      if (joinedGroup.startColumn != Number.MAX_VALUE) {
+        c1 = joinedGroup.startColumn;
+        c2 = joinedGroup.endColumn;
+      }
+
     } else {
       r1 = cursorRow;
       r2 = grid.rowAt('body', vy);

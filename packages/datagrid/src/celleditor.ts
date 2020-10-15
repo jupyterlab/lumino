@@ -29,6 +29,9 @@ import {
   Notification
 } from './notification';
 
+import { CellGroup 
+} from './cellgroup';
+
 /**
  * A response object returned from cell input validator
  */
@@ -582,12 +585,31 @@ abstract class CellEditor implements ICellEditor, IDisposable {
    */
   protected getCellInfo(cell: CellEditor.CellConfig): Private.ICellInfo {
     const { grid, row, column } = cell;
-    const data = grid.dataModel!.data('body', row, column);
+    let data, columnX, rowY, width, height;
+    const cellGroup = CellGroup.getGroup(grid.dataModel!, "body", row, column);
 
-    const columnX = grid.headerWidth - grid.scrollX + grid.columnOffset('body', column);
-    const rowY = grid.headerHeight - grid.scrollY + grid.rowOffset('body', row);
-    const width = grid.columnSize('body', column);
-    const height = grid.rowSize('body', row);
+    if (cellGroup) {
+      columnX = grid.headerWidth - grid.scrollX + grid.columnOffset('body', cellGroup.startColumn);
+      rowY = grid.headerHeight - grid.scrollY + grid.rowOffset('body', cellGroup.startRow);
+      width = 0;
+      height = 0;
+
+      for (let r = cellGroup.startRow; r <= cellGroup.endRow; r++) {
+        height += grid.rowSize('body', r);
+      }
+
+      for (let c = cellGroup.startColumn; c <= cellGroup.endColumn; c++) {
+        width += grid.columnSize('body', c);
+      }
+
+      data = grid.dataModel!.data('body', cellGroup.startRow, cellGroup.startColumn);
+    } else {
+      columnX = grid.headerWidth - grid.scrollX + grid.columnOffset('body', column);
+      rowY = grid.headerHeight - grid.scrollY + grid.rowOffset('body', row);
+      width = grid.columnSize('body', column);
+      height = grid.rowSize('body', row);
+      data = grid.dataModel!.data('body', row, column);
+    }
 
     return {
       grid: grid,
