@@ -73,7 +73,7 @@ abstract class DataModel {
   abstract data(region: DataModel.CellRegion, row: number, column: number): any;
 
   /**
-   * Get the count of merged cell groups pertainign to a given
+   * Get the count of merged cell groups pertaining to a given
    * cell region.
    * @param region the target cell region. 
    */
