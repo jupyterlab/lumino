@@ -144,6 +144,8 @@ class Drag implements IDisposable {
     this.proposedAction = options.proposedAction || 'copy';
     this.supportedActions = options.supportedActions || 'all';
     this.source = options.source || null;
+    this._dragAdjustX = options.dragAdjustX || 0;
+    this._dragAdjustY = options.dragAdjustY || 0;
   }
 
   /**
@@ -233,6 +235,9 @@ class Drag implements IDisposable {
       return this._promise;
     }
 
+    this._dragOffsetX = (this._dragAdjustX) ? this._dragAdjustX - clientX : 0;
+    this._dragOffsetY = (this._dragAdjustY) ? this._dragAdjustY - clientY : 0;
+
     // Install the document listeners for the drag object.
     this._addListeners();
 
@@ -291,8 +296,8 @@ class Drag implements IDisposable {
       return;
     }
     let style = this.dragImage.style;
-    style.top = `${clientY}px`;
-    style.left = `${clientX}px`;
+    style.top = `${clientY + this.dragOffsetY}px`;
+    style.left = `${clientX + this.dragOffsetX}px`;
   }
 
   /**
@@ -311,7 +316,7 @@ class Drag implements IDisposable {
 
     // Move the drag image to the specified client position. This is
     // performed *after* dispatching to prevent unnecessary reflows.
-    this.moveDragImage(event.clientX, event.clientY);
+    this.moveDragImage(event.clientX + this.dragOffsetX, event.clientY + this.dragOffsetY);
   }
 
   /**
@@ -405,7 +410,7 @@ class Drag implements IDisposable {
    */
   private _updateDragScroll(event: MouseEvent): void {
     // Find the scroll target under the mouse.
-    let target = Private.findScrollTarget(event);
+    let target = Private.findScrollTarget(event, this.dragOffsetX, this.dragOffsetY);
 
     // Bail if there is nothing to scroll.
     if (!this._scrollTarget && !target) {
@@ -601,6 +606,14 @@ class Drag implements IDisposable {
     requestAnimationFrame(this._onScrollFrame);
   };
 
+  get dragOffsetX(): number {
+    return this._dragOffsetX;
+  }
+
+  get dragOffsetY(): number {
+    return this._dragOffsetY;
+  }
+
   private _disposed = false;
   private _dropAction: DropAction = 'none';
   private _override: IDisposable | null = null;
@@ -609,6 +622,10 @@ class Drag implements IDisposable {
   private _promise: Promise<DropAction> | null = null;
   private _scrollTarget: Private.IScrollTarget | null = null;
   private _resolve: ((value: DropAction) => void) | null = null;
+  private _dragAdjustX: number;
+  private _dragAdjustY: number;
+  private _dragOffsetX: number;
+  private _dragOffsetY: number;
 }
 
 
@@ -681,6 +698,20 @@ namespace Drag {
      * The default value is `null`.
      */
     source?: any;
+
+    /**
+     * How many pixels to offset the drag/image in the x direction.
+     *
+     * The default value is 0.
+     */
+    dragAdjustX?: number;
+
+    /**
+     * How many pixels to offset the drag/image in the y direction.
+     *
+     * The default value is 0.
+     */
+    dragAdjustY?: number;
   }
 
   /**
@@ -797,12 +828,18 @@ namespace Private {
 
   /**
    * Find the drag scroll target under the mouse, if any.
+   * 
+   * @param event - The mouse event related to the action.
+   * 
+   * @param dragOffsetX - the number of pixels to offset the drag in the x direction.
+   * 
+   * @param dragOffsetY - the number of pixels to offset the drag in the y direction.
    */
   export
-  function findScrollTarget(event: MouseEvent): IScrollTarget | null {
+  function findScrollTarget(event: MouseEvent, dragOffsetX?: number, dragOffsetY?: number): IScrollTarget | null {
     // Look up the client mouse position.
-    let x = event.clientX;
-    let y = event.clientY;
+    const x = event.clientX + (dragOffsetX !== undefined ? dragOffsetX : 0);
+    const y = event.clientY + (dragOffsetY !== undefined ? dragOffsetY : 0);
 
     // Get the element under the mouse.
     let element: Element | null = document.elementFromPoint(x, y);
@@ -810,6 +847,7 @@ namespace Private {
     // Search for a scrollable target based on the mouse position.
     // The null assert in third clause of for-loop is required due to:
     // https://github.com/Microsoft/TypeScript/issues/14143
+
     for (; element; element = element!.parentElement) {
       // Ignore elements which are not marked as scrollable.
       let scrollable = element.hasAttribute('data-lm-dragscroll');
@@ -1174,8 +1212,8 @@ namespace Private {
     // Initialize the mouse event data.
     dragEvent.initMouseEvent(
       type, true, true, window, 0,
-      event.screenX, event.screenY,
-      event.clientX, event.clientY,
+      event.screenX + drag.dragOffsetX, event.screenY + drag.dragOffsetY,
+      event.clientX + drag.dragOffsetX, event.clientY + drag.dragOffsetY,
       event.ctrlKey, event.altKey,
       event.shiftKey, event.metaKey,
       event.button, related
