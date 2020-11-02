@@ -121,7 +121,7 @@
 
 
 /* <DEPRECATED> */
-.p-TabBar.p-mod-dragging .p-TabBar-tab.p-mod-dragging
+.p-TabBar.p-mod-dragging .p-TabBar-tab.p-mod-dragging,
 /* </DEPRECATED> */
 .lm-TabBar.lm-mod-dragging .lm-TabBar-tab.lm-mod-dragging {
   transition: none;
