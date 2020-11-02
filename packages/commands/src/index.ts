@@ -64,9 +64,9 @@ class CommandRegistry {
    * A signal emitted when a command has executed.
    *
    * #### Notes
-   * Care should be taken when consuming this signal. It is intended to
-   * be used largely for debugging and logging purposes. It should not
-   * be (ab)used for general purpose spying on command execution.
+   * Care should be taken when consuming this signal. The command system is used
+   * by many components for many user actions. Handlers registered with this
+   * signal must return quickly to ensure the overall application remains responsive.
    */
   get commandExecuted(): ISignal<this, CommandRegistry.ICommandExecutedArgs> {
     return this._commandExecuted;
