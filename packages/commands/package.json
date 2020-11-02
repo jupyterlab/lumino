@@ -1,6 +1,6 @@
 {
   "name": "@lumino/commands",
-  "version": "1.11.3",
+  "version": "1.11.4",
   "description": "Lumino Commands",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
