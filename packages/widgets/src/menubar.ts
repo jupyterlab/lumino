@@ -851,6 +851,13 @@ namespace MenuBar {
       return data.title.dataset;
     }
 
+    /**
+     * Create the aria attributes for menu bar item.
+     * 
+     * @param data - The data to use for the aria attributes.
+     * 
+     * @returns The aria attributes object for the item.
+     */
     createItemARIA(data: IRenderData): ElementARIAAttrs {
       return {role: 'menuitem', 'aria-haspopup': 'true'};
     }

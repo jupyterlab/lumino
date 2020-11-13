@@ -1319,7 +1319,14 @@ namespace Menu {
       let extra = data.item.iconClass;
       return extra ? `${name} ${extra}` : name;
     }
-
+    
+    /**
+     * Create the aria attributes for menu item.
+     * 
+     * @param data - The data to use for the aria attributes.
+     * 
+     * @returns The aria attributes object for the item.
+     */
     createItemARIA(data: IRenderData): ElementARIAAttrs {
       let aria: {[T in ARIAAttrNames]?: string} = {};
       switch (data.item.type) {
