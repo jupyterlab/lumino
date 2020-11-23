@@ -154,7 +154,7 @@ describe('@lumino/widgets', () => {
         }
 
         expect(palette.items.length).to.equal(0);
-        palette.addItems(defaultOptions.concat([item]));
+        palette.addItems([defaultOptions, item]);
         expect(palette.items.length).to.equal(2);
         expect(palette.items[0].command).to.equal('test');
         expect(palette.items[1].command).to.equal('test2');
