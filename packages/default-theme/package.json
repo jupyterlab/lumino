@@ -19,7 +19,8 @@
     "src/*",
     "types/*",
     "images/*.png",
-    "style/*.css"
+    "style/*.css",
+    "style/index.js"
   ],
   "style": "style/index.css",
   "repository": {
