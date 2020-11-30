@@ -142,6 +142,26 @@ describe('@lumino/widgets', () => {
 
     });
 
+    describe('#addItems()', () => {
+
+      it('should add items to a command palette using options', () => {
+
+        const item =  {
+          command: 'test2',
+          category: 'Test Category',
+          args: { foo: 'bar' },
+          rank: 100
+        }
+
+        expect(palette.items.length).to.equal(0);
+        palette.addItems([defaultOptions, item]);
+        expect(palette.items.length).to.equal(2);
+        expect(palette.items[0].command).to.equal('test');
+        expect(palette.items[1].command).to.equal('test2');
+      });
+
+    })
+
     describe('#addItem()', () => {
 
       it('should add an item to a command palette using options', () => {
