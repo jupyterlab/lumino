@@ -22,7 +22,8 @@
     "dist/*",
     "src/*",
     "types/*",
-    "style/*.css"
+    "style/*.css",
+    "style/index.js"
   ],
   "main": "dist/index.js",
   "unpkg": "dist/index.min.js",
