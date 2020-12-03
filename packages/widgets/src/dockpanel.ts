@@ -74,13 +74,16 @@ class DockPanel extends Widget {
     if (options.tabsMovable !== undefined) {
       this._tabsMovable = options.tabsMovable;
     }
+    if(options.tabsConstrained !== undefined){
+      this._tabsConstrained = options.tabsConstrained;
+    }
 
     // Toggle the CSS mode attribute.
     this.dataset['mode'] = this._mode;
 
     // Create the delegate renderer for the layout.
     let renderer: DockPanel.IRenderer = {
-      createTabBar: () => this._createTabBar(),
+      createTabBar: () => this._createTabBar(this._tabsMovable),
       createHandle: () => this._createHandle()
     };
 
@@ -204,13 +207,28 @@ class DockPanel extends Widget {
   get tabsMovable(): boolean {
     return this._tabsMovable;
   }
+  
 
   /**
    * Enable / Disable draggable / movable tabs.
    */
   set tabsMovable(value: boolean) {
     this._tabsMovable = value;
-    each(this.tabBars(), (tabbar) => { tabbar.tabsMovable = value });
+    each(this.tabBars(), (tabbar) => tabbar.tabsMovable = value);
+  }
+
+  /**
+   * Whether the tabs are constrained to their source dock panel
+   */
+  get tabsConstrained(): boolean{
+    return this._tabsConstrained;
+  }
+
+  /**
+   * Constrain/Allow tabs to be dragged outside of this dock panel
+   */
+  set tabsConstrained(value:boolean) {
+    this._tabsConstrained = value;
   }
 
   /**
@@ -516,7 +534,7 @@ class DockPanel extends Widget {
 
     // Show the drop indicator overlay and update the drop
     // action based on the drop target zone under the mouse.
-    if (this._showOverlay(event.clientX, event.clientY) === 'invalid') {
+    if ((this._tabsConstrained && event.source !== this) || this._showOverlay(event.clientX, event.clientY) === 'invalid') {
       event.dropAction = 'none';
     } else {
       event.dropAction = event.proposedAction;
@@ -858,7 +876,7 @@ class DockPanel extends Widget {
   /**
    * Create a new tab bar for use by the panel.
    */
-  private _createTabBar(): TabBar<Widget> {
+  private _createTabBar(tabsMovable: boolean): TabBar<Widget> {
     // Create the tab bar.
     let tabBar = this._renderer.createTabBar();
 
@@ -872,7 +890,7 @@ class DockPanel extends Widget {
 
     // Enforce necessary tab bar behavior.
     // TODO do we really want to enforce *all* of these?
-    tabBar.tabsMovable = this._tabsMovable;
+    tabBar.tabsMovable = tabsMovable;
     tabBar.allowDeselect = false;
     tabBar.removeBehavior = 'select-previous-tab';
     tabBar.insertBehavior = 'select-tab-if-needed';
@@ -970,6 +988,7 @@ class DockPanel extends Widget {
       mimeData, dragImage,
       proposedAction: 'move',
       supportedActions: 'move',
+      source: this
     });
 
     // Hide the tab node in the original tab.
@@ -996,6 +1015,7 @@ class DockPanel extends Widget {
   private _drag: Drag | null = null;
   private _renderer: DockPanel.IRenderer;
   private _tabsMovable: boolean = true;
+  private _tabsConstrained: boolean = false;
   private _pressData: Private.IPressData | null = null;
   private _layoutModified = new Signal<this, void>(this);
 }
@@ -1035,7 +1055,7 @@ namespace DockPanel {
     /**
      * The mode for the dock panel.
      *
-     * The deafult is `'multiple-document'`.
+     * The default is `'multiple-document'`.
      */
     mode?: DockPanel.Mode;
 
@@ -1051,6 +1071,13 @@ namespace DockPanel {
      * The default is `'true'`.
      */
     tabsMovable?: boolean;
+
+    /**
+     * Constrain tabs to this dock panel
+     * 
+     * The default is `'false'`.
+     */
+    tabsConstrained?: boolean;
   }
 
   /**
