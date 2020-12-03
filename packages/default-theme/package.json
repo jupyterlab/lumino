@@ -23,6 +23,7 @@
     "style/index.js"
   ],
   "style": "style/index.css",
+  "styleModule": "style/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/jupyterlab/lumino.git"
