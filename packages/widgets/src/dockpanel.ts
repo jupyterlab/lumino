@@ -83,7 +83,7 @@ class DockPanel extends Widget {
 
     // Create the delegate renderer for the layout.
     let renderer: DockPanel.IRenderer = {
-      createTabBar: () => this._createTabBar(this._tabsMovable),
+      createTabBar: () => this._createTabBar(),
       createHandle: () => this._createHandle()
     };
 
@@ -214,7 +214,7 @@ class DockPanel extends Widget {
    */
   set tabsMovable(value: boolean) {
     this._tabsMovable = value;
-    each(this.tabBars(), (tabbar) => tabbar.tabsMovable = value);
+    each(this.tabBars(), (tabbar) => { tabbar.tabsMovable = value });
   }
 
   /**
@@ -876,7 +876,7 @@ class DockPanel extends Widget {
   /**
    * Create a new tab bar for use by the panel.
    */
-  private _createTabBar(tabsMovable: boolean): TabBar<Widget> {
+  private _createTabBar(): TabBar<Widget> {
     // Create the tab bar.
     let tabBar = this._renderer.createTabBar();
 
@@ -890,7 +890,7 @@ class DockPanel extends Widget {
 
     // Enforce necessary tab bar behavior.
     // TODO do we really want to enforce *all* of these?
-    tabBar.tabsMovable = tabsMovable;
+    tabBar.tabsMovable = this._tabsMovable;
     tabBar.allowDeselect = false;
     tabBar.removeBehavior = 'select-previous-tab';
     tabBar.insertBehavior = 'select-tab-if-needed';
