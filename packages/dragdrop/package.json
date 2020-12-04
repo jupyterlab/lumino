@@ -30,6 +30,7 @@
   "module": "dist/index.es6",
   "types": "types/index.d.ts",
   "style": "style/index.css",
+  "styleModule": "style/index.js",
   "scripts": {
     "api": "api-extractor run --local --verbose",
     "build": "tsc --build && rollup -c",
