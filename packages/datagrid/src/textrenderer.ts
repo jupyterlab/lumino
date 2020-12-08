@@ -35,6 +35,7 @@ class TextRenderer extends CellRenderer {
     this.horizontalAlignment = options.horizontalAlignment || 'left';
     this.format = options.format || TextRenderer.formatGeneric();
     this.elideDirection = options.elideDirection || 'right';
+    this.wrapText = options.wrapText || false;
   }
 
   /**
@@ -71,6 +72,11 @@ class TextRenderer extends CellRenderer {
    * Which side to draw the ellipsis.
    */
   readonly elideDirection: CellRenderer.ConfigOption<TextRenderer.ElideDirection>;
+
+  /**
+   * Which side to draw the ellipsis.
+   */
+  readonly wrapText: CellRenderer.ConfigOption<boolean>;
 
   /**
    * Paint the content for a cell.
@@ -145,6 +151,9 @@ class TextRenderer extends CellRenderer {
     // Resolve the elision direction
     let elideDirection = CellRenderer.resolveOption(this.elideDirection, config);
 
+    // Resolve the elision direction
+    let wrapText = CellRenderer.resolveOption(this.wrapText, config);
+
     // Compute the padded text box height for the specified alignment.
     let boxHeight = config.height - (vAlign === 'center' ? 1 : 2);
 
@@ -207,9 +216,71 @@ class TextRenderer extends CellRenderer {
     gc.textAlign = hAlign;
     gc.textBaseline = 'bottom';
 
+
+    let textWidth = gc.measureText(text).width;
+
+    //////////////////////////////////////
+    // Text wrapping for column headers //
+    //////////////////////////////////////
+    if (wrapText && textWidth > boxWidth) {
+      // Make sure box clipping happens.
+      gc.beginPath();
+      gc.rect(config.x, config.y, config.width, config.height - 1);
+      gc.clip();
+
+      // Split column name to words based on
+      // whitespace preceding a word boundary.
+      // "Hello  world" --> ["Hello  ", "world"]
+      const wordsInColumn = text.split(/\s(?=\b)/);
+
+      // Y-coordinate offset for any additional lines
+      let curY = textY;
+      let textInCurrentLine = wordsInColumn.shift()!
+
+      // Single word. Applying text wrap on word by splitting
+      // it into characters and fitting the maximum number of
+      // characters possible per line (box width).
+      if (wordsInColumn.length === 0) {
+        let curLineTextWidth = gc.measureText(textInCurrentLine).width;
+        while (curLineTextWidth > boxWidth && textInCurrentLine !== "") {
+          for (let i = textInCurrentLine.length; i > 0; i--) {
+            const curSubString = textInCurrentLine.substring(0,i);
+            const curSubStringWidth = gc.measureText(curSubString).width;
+            if (curSubStringWidth < boxWidth || curSubString.length === 1) {
+              const nextLineText = textInCurrentLine.substring(i, textInCurrentLine.length);
+              textInCurrentLine = nextLineText;
+              curLineTextWidth = gc.measureText(textInCurrentLine).width;
+              gc.fillText(curSubString, textX, curY);
+              curY += textHeight;
+              break;
+            }
+          }
+        }
+      }
+
+      // Multiple words in column name. Fitting maximum number of
+       // words possible per line (box width).
+      else {
+        while (wordsInColumn.length !== 0) {
+          const curWord = wordsInColumn.shift();
+          const incrementedText = [textInCurrentLine, curWord].join(" ");
+          const incrementedTextWidth = gc.measureText(incrementedText).width;
+          if (incrementedTextWidth > boxWidth) {
+            gc.fillText(textInCurrentLine, textX, curY);
+            curY += textHeight;
+            textInCurrentLine = curWord!;
+          } 
+          else {
+            textInCurrentLine = incrementedText;
+          }
+        }
+      }
+      gc.fillText(textInCurrentLine!, textX, curY);
+      return;
+    }
+
     // Elide text that is too long
     let elide = '\u2026';
-    let textWidth = gc.measureText(text).width;
 
     // Compute elided text
     if (elideDirection === 'right') {
@@ -319,6 +390,12 @@ namespace TextRenderer {
      */
     elideDirection?: CellRenderer.ConfigOption<ElideDirection>;
 
+    /**
+     * The ellipsis direction for the cell text.
+     *
+     * The default is `'right'`.
+     */
+    wrapText?: CellRenderer.ConfigOption<boolean>;
   }
 
   /**
