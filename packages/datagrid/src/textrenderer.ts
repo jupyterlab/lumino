@@ -74,7 +74,7 @@ class TextRenderer extends CellRenderer {
   readonly elideDirection: CellRenderer.ConfigOption<TextRenderer.ElideDirection>;
 
   /**
-   * Which side to draw the ellipsis.
+   * Boolean flag for applying text wrapping.
    */
   readonly wrapText: CellRenderer.ConfigOption<boolean>;
 
@@ -151,7 +151,7 @@ class TextRenderer extends CellRenderer {
     // Resolve the elision direction
     let elideDirection = CellRenderer.resolveOption(this.elideDirection, config);
 
-    // Resolve the elision direction
+    // Resolve the text wrapping flag
     let wrapText = CellRenderer.resolveOption(this.wrapText, config);
 
     // Compute the padded text box height for the specified alignment.
@@ -216,12 +216,10 @@ class TextRenderer extends CellRenderer {
     gc.textAlign = hAlign;
     gc.textBaseline = 'bottom';
 
-
+    // The current text width in pixels.
     let textWidth = gc.measureText(text).width;
 
-    //////////////////////////////////////
-    // Text wrapping for column headers //
-    //////////////////////////////////////
+    // Apply text wrapping if enabled.
     if (wrapText && textWidth > boxWidth) {
       // Make sure box clipping happens.
       gc.beginPath();
@@ -243,39 +241,58 @@ class TextRenderer extends CellRenderer {
       if (wordsInColumn.length === 0) {
         let curLineTextWidth = gc.measureText(textInCurrentLine).width;
         while (curLineTextWidth > boxWidth && textInCurrentLine !== "") {
+          // Iterating from the end of the string until we find a
+          // substring (0,i) which has a width less than the box width.
           for (let i = textInCurrentLine.length; i > 0; i--) {
             const curSubString = textInCurrentLine.substring(0,i);
             const curSubStringWidth = gc.measureText(curSubString).width;
             if (curSubStringWidth < boxWidth || curSubString.length === 1) {
+              // Found a substring which has a width less than the current
+              // box width. Rendering that substring on the current line
+              // and setting the remainder of the parent string as the next
+              // string to iterate on for the next line.
               const nextLineText = textInCurrentLine.substring(i, textInCurrentLine.length);
               textInCurrentLine = nextLineText;
               curLineTextWidth = gc.measureText(textInCurrentLine).width;
               gc.fillText(curSubString, textX, curY);
               curY += textHeight;
+              // No need to continue iterating after we identified
+              // an index to break the string on.
               break;
             }
           }
         }
       }
-
-      // Multiple words in column name. Fitting maximum number of
-       // words possible per line (box width).
+      
+      // Multiple words in column header. Fitting maximum 
+      // number of words possible per line (box width).
       else {
         while (wordsInColumn.length !== 0) {
+          // Processing the next word in the queue.
           const curWord = wordsInColumn.shift();
+          // Joining that word with the existing text for
+          // the current line.
           const incrementedText = [textInCurrentLine, curWord].join(" ");
           const incrementedTextWidth = gc.measureText(incrementedText).width;
           if (incrementedTextWidth > boxWidth) {
+            // If the newly combined text has a width larger than
+            // the box width, we render the line before the current
+            // word was added. We set the current word as the next
+            // line.
             gc.fillText(textInCurrentLine, textX, curY);
             curY += textHeight;
             textInCurrentLine = curWord!;
           } 
           else {
+            // The combined text hasd a width less than the box width. We
+            // set the the current line text to be the new combined text.
             textInCurrentLine = incrementedText;
           }
         }
       }
       gc.fillText(textInCurrentLine!, textX, curY);
+      // Terminating the call here as we don't want
+      // to apply text eliding when wrapping is active.
       return;
     }
 
@@ -391,9 +408,9 @@ namespace TextRenderer {
     elideDirection?: CellRenderer.ConfigOption<ElideDirection>;
 
     /**
-     * The ellipsis direction for the cell text.
+     * Whether or not to apply text wrapping.
      *
-     * The default is `'right'`.
+     * The default is `'false'`.
      */
     wrapText?: CellRenderer.ConfigOption<boolean>;
   }
