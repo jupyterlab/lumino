@@ -40,11 +40,17 @@ describe('@lumino/widgets', () => {
         let renderer = Object.create(TabBar.defaultRenderer);
         let panel = new DockPanel({
           tabsMovable: true,
-          renderer
+          renderer,
+          tabsConstrained:true
         });
         each(panel.tabBars(), (tabBar) => { expect(tabBar.tabsMovable).to.equal(true); });
         each(panel.tabBars(), (tabBar) => { expect(tabBar.renderer).to.equal(renderer); });
       });
+
+      it('should not have tabs constrained by default', ()=>{
+        let panel = new DockPanel();
+        expect(panel.tabsConstrained).to.equal(false);
+      })
 
       it('should add a `lm-DockPanel` class', () => {
         let panel = new DockPanel();
