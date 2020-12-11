@@ -1,0 +1,56 @@
+name: Tests
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    name: JS
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+
+      # Cache yarn
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: Cache yarn
+        uses: actions/cache@v1
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install dependencies
+        run: |
+          npm install -g yarn
+          yarn
+
+      - name: Build
+        run: |
+            pushd packages/widgets
+            yarn build
+            yarn minimize
+            popd
+            yarn clean
+            yarn build
+            yarn minimize
+            yarn build:test
+
+      - name: Tests
+        uses: GabrielBB/xvfb-action@v1
+        with:
+          run: |
+            yarn test
+
+      - name: Docs
+        run: |
+          yarn docs
