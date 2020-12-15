@@ -717,7 +717,7 @@ class DataGrid extends Widget {
 
   /**
    * Whether the grid cells are editable.
-   * 
+   *
    * `editingEnabled` flag must be on and grid must have required
    * selection model, editor controller and data model properties.
    */
@@ -743,7 +743,7 @@ class DataGrid extends Widget {
   }
 
   /**
-   * The column sections of the data grid. 
+   * The column sections of the data grid.
    */
   protected get columnSections(): SectionList {
     return this._columnSections;
@@ -933,7 +933,7 @@ class DataGrid extends Widget {
   /**
    * Move cursor down/up/left/right while making sure it remains
    * within the bounds of selected rectangles
-   * 
+   *
    * @param direction - The direction of the movement.
    */
   moveCursor(direction: SelectionModel.CursorMoveDirection): void {
@@ -2012,7 +2012,7 @@ class DataGrid extends Widget {
   /**
    * Schedule a repaint of specific grid content.
    */
-  private _repaintRegion(region: DataModel.CellRegion, r1: number, c1: number, r2: number, c2: number): void {
+  protected repaintRegion(region: DataModel.CellRegion, r1: number, c1: number, r2: number, c2: number): void {
     let msg = new Private.PaintRequest(region, r1, c1, r2, c2);
     MessageLoop.postMessage(this._viewport, msg);
   }
@@ -2710,11 +2710,11 @@ class DataGrid extends Widget {
 
     // Schedule a repaint of the dirty cells.
     if (region === 'body') {
-      this._repaintRegion('body', r1, 0, r2, Infinity);
-      this._repaintRegion('row-header', r1, 0, r2, Infinity);
+      this.repaintRegion('body', r1, 0, r2, Infinity);
+      this.repaintRegion('row-header', r1, 0, r2, Infinity);
     } else {
-      this._repaintRegion('column-header', r1, 0, r2, Infinity);
-      this._repaintRegion('corner-header', r1, 0, r2, Infinity);
+      this.repaintRegion('column-header', r1, 0, r2, Infinity);
+      this.repaintRegion('corner-header', r1, 0, r2, Infinity);
     }
 
     // Sync the viewport.
@@ -2768,11 +2768,11 @@ class DataGrid extends Widget {
 
     // Schedule a repaint of the dirty cells.
     if (region === 'body') {
-      this._repaintRegion('body', 0, c1, Infinity, c2);
-      this._repaintRegion('column-header', 0, c1, Infinity, c2);
+      this.repaintRegion('body', 0, c1, Infinity, c2);
+      this.repaintRegion('column-header', 0, c1, Infinity, c2);
     } else {
-      this._repaintRegion('row-header', 0, c1, Infinity, c2);
-      this._repaintRegion('corner-header', 0, c1, Infinity, c2);
+      this.repaintRegion('row-header', 0, c1, Infinity, c2);
+      this.repaintRegion('corner-header', 0, c1, Infinity, c2);
     }
 
     // Sync the viewport.
@@ -2798,7 +2798,7 @@ class DataGrid extends Widget {
     let c2 = c1 + columnSpan - 1;
 
     // Schedule a repaint of the cell content.
-    this._repaintRegion(region, r1, c1, r2, c2);
+    this.repaintRegion(region, r1, c1, r2, c2);
   }
 
   /**
