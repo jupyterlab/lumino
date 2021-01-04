@@ -609,7 +609,7 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
   /**
    * Get the current pressData
    */
-  get pressData (): PressData.PressData | null {
+  get pressData(): PressData.PressData | null {
     return this._pressData;
   }
 
