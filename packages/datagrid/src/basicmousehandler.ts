@@ -599,28 +599,36 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
     grid.scrollBy(dx, dy);
   }
 
-/**
-* Convert a resize handle into a cursor.
-*/
-cursorForHandle(handle: ResizeHandle): string {
-  return Private.cursorMap[handle];
-}
+  /**
+   * Convert a resize handle into a cursor.
+   */
+  cursorForHandle(handle: ResizeHandle): string {
+    return Private.cursorMap[handle];
+  }
+
+  /**
+   * Get the current pressData
+   */
+  get pressData(): PressData.PressData | null {
+    return this._pressData;
+  }
 
   private _disposed = false;
-  private _pressData: Private.PressData | null;
+  private _pressData: PressData.PressData | null = null;
 }
 
 /**
 * A type alias for the resize handle types.
 */
-  export
-  type ResizeHandle = 'top' | 'left' | 'right' | 'bottom' | 'none';
+export
+type ResizeHandle = 'top' | 'left' | 'right' | 'bottom' | 'none';
 
 
 /**
- * The namespace for the module implementation details.
+ * The namespace for the pressdata.
  */
-namespace Private {
+export
+namespace PressData {
   /**
    * A type alias for the row resize data.
    */
@@ -744,7 +752,13 @@ namespace Private {
    */
   export
   type PressData = RowResizeData | ColumnResizeData | SelectData ;
+}
 
+/**
+ * The namespace for the module implementation details.
+ */
+export
+namespace Private {
   /**
    * Get the resize handle for a grid hit test.
    */
@@ -826,7 +840,7 @@ namespace Private {
    * @param data - The select data of interest.
    */
   export
-  function autoselect(grid: DataGrid, data: SelectData): void {
+  function autoselect(grid: DataGrid, data: PressData.SelectData): void {
     // Bail early if the timeout has been reset.
     if (data.timeout < 0) {
       return;
