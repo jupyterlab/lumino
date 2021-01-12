@@ -5798,12 +5798,6 @@ namespace Private {
   const ScrollRequest = new ConflatableMessage('scroll-request');
 
   /**
-   * A singleton `section-resize-request` conflatable message.
-   */
-  export
-  const SectionResizeRequest = new ConflatableMessage('section-resize-request');
-
-  /**
    * A singleton `overlay-paint-request` conflatable message.
    */
   export
