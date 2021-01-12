@@ -653,6 +653,11 @@ namespace CommandPalette {
     readonly isToggled: boolean;
 
     /**
+     * Whether the command item is toggleable.
+     */
+    readonly isToggleable: boolean;
+
+    /**
      * Whether the command item is visible.
      */
     readonly isVisible: boolean;
@@ -1549,6 +1554,13 @@ namespace Private {
      */
     get isToggled(): boolean {
       return this._commands.isToggled(this.command, this.args);
+    }
+
+    /**
+     * Whether the command item is toggleable.
+     */
+    get isToggleable(): boolean {
+      return this._commands.isToggleable(this.command, this.args);
     }
 
     /**
