@@ -739,6 +739,14 @@ namespace Widget {
      * The default is a new `<div>`.
      */
     node?: HTMLElement;
+
+    /**
+     * The optional element tag, used for constructing the widget's node.
+     *
+     * If a pre-constructed node is provided via the `node` arg, this
+     * value is ignored.
+     */
+    tag?: keyof HTMLElementTagNameMap;
   }
 
   /**
@@ -1061,6 +1069,6 @@ namespace Private {
    */
   export
   function createNode(options: Widget.IOptions): HTMLElement {
-    return options.node || document.createElement('div');
+    return options.node || document.createElement(options.tag || 'div');
   }
 }
