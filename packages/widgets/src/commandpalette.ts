@@ -784,8 +784,24 @@ namespace CommandPalette {
     renderItem(data: IItemRenderData): VirtualElement {
       let className = this.createItemClass(data);
       let dataset = this.createItemDataset(data);
+      if (data.item.isToggleable) {
+        return (
+          h.li({
+            className,
+            dataset,
+            role: 'checkbox',
+            'aria-checked': `${data.item.isToggleable}`
+          },
+          this.renderItemIcon(data),
+          this.renderItemContent(data),
+          this.renderItemShortcut(data))
+        )
+      }
       return (
-        h.li({ className, dataset },
+        h.li({
+            className,
+            dataset
+          },
           this.renderItemIcon(data),
           this.renderItemContent(data),
           this.renderItemShortcut(data),
