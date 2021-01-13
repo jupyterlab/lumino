@@ -790,7 +790,7 @@ namespace CommandPalette {
             className,
             dataset,
             role: 'checkbox',
-            'aria-checked': `${data.item.isToggleable}`
+            'aria-checked': `${data.item.isToggled}`
           },
           this.renderItemIcon(data),
           this.renderItemContent(data),
