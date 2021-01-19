@@ -653,6 +653,11 @@ namespace CommandPalette {
     readonly isToggled: boolean;
 
     /**
+     * Whether the command item is toggleable.
+     */
+    readonly isToggleable: boolean;
+
+    /**
      * Whether the command item is visible.
      */
     readonly isVisible: boolean;
@@ -779,8 +784,24 @@ namespace CommandPalette {
     renderItem(data: IItemRenderData): VirtualElement {
       let className = this.createItemClass(data);
       let dataset = this.createItemDataset(data);
+      if (data.item.isToggleable) {
+        return (
+          h.li({
+            className,
+            dataset,
+            role: 'checkbox',
+            'aria-checked': `${data.item.isToggled}`
+          },
+          this.renderItemIcon(data),
+          this.renderItemContent(data),
+          this.renderItemShortcut(data))
+        )
+      }
       return (
-        h.li({ className, dataset },
+        h.li({
+            className,
+            dataset
+          },
           this.renderItemIcon(data),
           this.renderItemContent(data),
           this.renderItemShortcut(data),
@@ -1549,6 +1570,13 @@ namespace Private {
      */
     get isToggled(): boolean {
       return this._commands.isToggled(this.command, this.args);
+    }
+
+    /**
+     * Whether the command item is toggleable.
+     */
+    get isToggleable(): boolean {
+      return this._commands.isToggleable(this.command, this.args);
     }
 
     /**
