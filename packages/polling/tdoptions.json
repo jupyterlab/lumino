@@ -4,7 +4,7 @@
   "target": "es5",
   "module": "es5",
   "lib": ["lib.es2015.d.ts", "lib.es2015.collection.d.ts", "lib.es2015.promise.d.ts", "lib.dom.d.ts"],
-  "out": "../../docs/api/disposable",
+  "out": "../../docs/api/polling",
   "baseUrl": ".",
   "paths": {
     "@lumino/*": ["node_modules/@lumino/*"]
