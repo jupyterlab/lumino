@@ -32,7 +32,7 @@ import {
 } from '@lumino/signaling';
 
 import {
-  ElementDataset, ElementInlineStyle, VirtualDOM, VirtualElement, h
+  ElementARIAAttrs, ElementDataset, ElementInlineStyle, VirtualDOM, VirtualElement, h
 } from '@lumino/virtualdom';
 
 import {
@@ -65,15 +65,16 @@ class TabBar<T> extends Widget {
     /* <DEPRECATED> */
     this.addClass('p-TabBar');
     /* </DEPRECATED> */
+    this.contentNode.setAttribute('role', 'tablist');
     this.setFlag(Widget.Flag.DisallowLayout);
     this.tabsMovable = options.tabsMovable || false;
     this.titlesEditable = options.titlesEditable || false;
     this.allowDeselect = options.allowDeselect || false;
     this.insertBehavior = options.insertBehavior || 'select-tab-if-needed';
+    this.name = options.name || '';
+    this.orientation = options.orientation || 'horizontal';
     this.removeBehavior = options.removeBehavior || 'select-tab-after';
     this.renderer = options.renderer || TabBar.defaultRenderer;
-    this._orientation = options.orientation || 'horizontal';
-    this.dataset['orientation'] = this._orientation;
   }
 
   /**
@@ -269,6 +270,25 @@ class TabBar<T> extends Widget {
   }
 
   /**
+   * Get the name of the tab bar.
+   */
+  get name(): string {
+    return this._name;
+  }
+
+  /**
+   * Set the name of the tab bar.
+   */
+  set name(value: string) {
+    this._name = value;
+    if (value) {
+      this.contentNode.setAttribute('aria-label', value);
+    } else {
+      this.contentNode.removeAttribute('aria-label');
+    }
+  }
+
+  /**
    * Get the orientation of the tab bar.
    *
    * #### Notes
@@ -296,6 +316,7 @@ class TabBar<T> extends Widget {
     // Toggle the orientation values.
     this._orientation = value;
     this.dataset['orientation'] = value;
+    this.contentNode.setAttribute('aria-orientation', value);
   }
 
   /**
@@ -997,6 +1018,9 @@ class TabBar<T> extends Widget {
     let ci = this._currentIndex;
     let bh = this.insertBehavior;
 
+
+    // TODO: do we need to do an update to update the aria-selected attribute?
+
     // Handle the behavior where the new tab is always selected,
     // or the behavior where the new tab is selected if needed.
     if (bh === 'select-tab' || (bh === 'select-tab-if-needed' && ci === -1)) {
@@ -1049,6 +1073,8 @@ class TabBar<T> extends Widget {
       }
       return;
     }
+
+    // TODO: do we need to do an update to adjust the aria-selected value?
 
     // No tab gets selected if the tab bar is empty.
     if (this._titles.length === 0) {
@@ -1110,6 +1136,7 @@ class TabBar<T> extends Widget {
     this.update();
   }
 
+  private _name: string;
   private _currentIndex = -1;
   private _titles: Title<T>[] = [];
   private _orientation: TabBar.Orientation;
@@ -1201,6 +1228,13 @@ namespace TabBar {
    */
   export
   interface IOptions<T> {
+    /**
+     * Name of the tab bar.
+     *
+     * This is used for accessibility reasons. The default is the empty string.
+     */
+    name?: string;
+
     /**
      * The layout orientation of the tab bar.
      *
@@ -1430,11 +1464,13 @@ namespace TabBar {
     renderTab(data: IRenderData<any>): VirtualElement {
       let title = data.title.caption;
       let key = this.createTabKey(data);
+      let id = key;
       let style = this.createTabStyle(data);
       let className = this.createTabClass(data);
       let dataset = this.createTabDataset(data);
+      let aria = this.createTabARIA(data);
       return (
-        h.li({ key, className, title, style, dataset },
+        h.li({ id, key, className, title, style, dataset, ...aria },
           this.renderIcon(data),
           this.renderLabel(data),
           this.renderCloseIcon(data)
@@ -1566,6 +1602,17 @@ namespace TabBar {
      */
     createTabDataset(data: IRenderData<any>): ElementDataset {
       return data.title.dataset;
+    }
+
+    /**
+     * Create the ARIA attributes for a tab.
+     *
+     * @param data - The data to use for the tab.
+     *
+     * @returns The ARIA attributes for the tab.
+     */
+    createTabARIA(data: IRenderData<any>): ElementARIAAttrs {
+      return {role: 'tab', 'aria-selected': data.current.toString()};
     }
 
     /**
@@ -1730,6 +1777,7 @@ namespace Private {
   function createNode(): HTMLDivElement {
     let node = document.createElement('div');
     let content = document.createElement('ul');
+    content.setAttribute('role', 'tablist');
     content.className = 'lm-TabBar-content';
     /* <DEPRECATED> */
     content.classList.add('p-TabBar-content');

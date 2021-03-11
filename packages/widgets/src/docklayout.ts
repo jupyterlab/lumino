@@ -639,6 +639,8 @@ class DockLayout extends Layout {
       return;
     }
 
+    Private.removeAria(widget);
+
     // If there are multiple tabs, just remove the widget's tab.
     if (tabNode.tabBar.titles.length > 1) {
       tabNode.tabBar.removeTab(widget.title);
@@ -770,6 +772,7 @@ class DockLayout extends Layout {
       let tabNode = new Private.TabLayoutNode(this._createTabBar());
       tabNode.tabBar.addTab(widget.title);
       this._root = tabNode;
+      Private.addAria(widget, tabNode.tabBar);
       return;
     }
 
@@ -795,6 +798,7 @@ class DockLayout extends Layout {
 
     // Insert the widget's tab relative to the target index.
     refNode.tabBar.insertTab(index + (after ? 1 : 0), widget.title);
+    Private.addAria(widget, refNode.tabBar);
   }
 
   /**
@@ -815,6 +819,7 @@ class DockLayout extends Layout {
     // Create the tab layout node to hold the widget.
     let tabNode = new Private.TabLayoutNode(this._createTabBar());
     tabNode.tabBar.addTab(widget.title);
+    Private.addAria(widget, tabNode.tabBar);
 
     // Set the root if it does not exist.
     if (!this._root) {
@@ -1988,6 +1993,22 @@ namespace Private {
     }
   }
 
+  export
+  function addAria(widget: Widget, tabBar: TabBar<Widget>) {
+    widget.node.setAttribute('role', 'tabpanel');
+    let renderer = tabBar.renderer;
+    if (renderer instanceof TabBar.Renderer) {
+      let tabId = renderer.createTabKey({ title: widget.title, current: false, zIndex: 0 });
+      widget.node.setAttribute('aria-labelledby', tabId);  
+    }
+  }
+
+  export
+  function removeAria(widget: Widget) {
+    widget.node.removeAttribute('role');
+    widget.node.removeAttribute('aria-labelledby');
+  }
+
   /**
    * Normalize a tab area config and collect the visited widgets.
    */
@@ -2077,6 +2098,7 @@ namespace Private {
     each(config.widgets, widget => {
       widget.hide();
       tabBar.addTab(widget.title);
+      Private.addAria(widget, tabBar);
     });
 
     // Set the current index of the tab bar.
