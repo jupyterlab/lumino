@@ -1,5 +1,15 @@
 # Changelog
 
+## 2021-3-11
+
+    @lumino/application: 1.15.0 => 1.16.0
+    @lumino/datagrid: 0.19.0 => 0.20.0
+    @lumino/default-theme: 0.9.0 => 0.10.0
+    @lumino/widgets: 1.18.0 => 1.19.0
+
+- Bump elliptic from 6.5.3 to 6.5.4 [#156](https://github.com/jupyterlab/lumino/pull/156) ([@dependabot](https://github.com/dependabot))
+- Add ARIA roles to tabs - lumino update [#132](https://github.com/jupyterlab/lumino/pull/132) ([@telamonian](https://github.com/telamonian))
+
 ## 2021-1-19
 
     @lumino/widgets@1.18.0
