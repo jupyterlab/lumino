@@ -8,7 +8,7 @@ import { IPoll, Poll } from '@lumino/polling';
 /**
  * Return a promise that resolves in the given milliseconds with the given value.
  */
-function sleep<T>(milliseconds: number = 0, value?: T): Promise<T> {
+function sleep<T>(milliseconds: number = 0, value?: T): Promise<T | undefined> {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       resolve(value);
@@ -197,7 +197,7 @@ describe('Poll', () => {
       };
       void poll.tick.then(tock);
       void poll.start();
-      await sleep(250); // Sleep for longer than the interval.
+      await sleep(300); // Sleep for longer than the interval.
       expect(ticker.join(' ')).to.equal(expected);
     });
 

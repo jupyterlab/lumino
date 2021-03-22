@@ -17,7 +17,7 @@
     "clean:examples": "lerna run clean --scope \"@lumino/example-*\"",
     "clean:src": "lerna run clean --scope \"@lumino/!(test-|example-)*\"",
     "clean:tests": "lerna run clean:tests",
-    "docs": "rimraf docs/api && lerna run docs",
+    "docs": "rimraf docs/api && typedoc --options typedoc.js",
     "get:dependency": "get-dependency",
     "publish": "npm run clean && npm run build && npm run minimize && lerna publish -m \"Publish\" from-package",
     "remove:dependency": "remove-dependency",
@@ -31,6 +31,7 @@
   "dependencies": {},
   "devDependencies": {
     "@jupyterlab/buildutils": "^1.0.0",
-    "lerna": "^3.19.0"
+    "lerna": "^3.19.0",
+    "typedoc": "^0.20.32"
   }
 }

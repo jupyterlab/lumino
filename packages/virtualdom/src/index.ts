@@ -1584,7 +1584,7 @@ namespace Private {
     let elemStyle = element.style;
     let name: keyof ElementInlineStyle;
     for (name in style) {
-      elemStyle[name] = style[name];
+      (elemStyle as any)[name] = style[name];
     }
   }
 
@@ -1596,12 +1596,12 @@ namespace Private {
     let name: keyof ElementInlineStyle;
     for (name in oldStyle) {
       if (!(name in newStyle)) {
-        elemStyle[name] = '';
+        (elemStyle as any)[name] = '';
       }
     }
     for (name in newStyle) {
       if (oldStyle[name] !== newStyle[name]) {
-        elemStyle[name] = newStyle[name];
+        (elemStyle as any)[name] = newStyle[name];
       }
     }
   }
