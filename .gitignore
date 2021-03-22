@@ -9,6 +9,12 @@ build
 review/api/temp
 *.tsbuildinfo
 
+# copied changelog file
+docs/source/changelog.md
+
+# generated api files
+docs/api
+
 # jetbrains ide stuff
 *.iml
 .idea/
@@ -17,4 +23,3 @@ review/api/temp
 *.code-workspace
 .history
 .vscode
-

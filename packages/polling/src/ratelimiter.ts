@@ -75,7 +75,7 @@ export abstract class RateLimiter<T, U> implements IRateLimiter<T, U> {
   /**
    * Invoke the rate limited function.
    */
-  abstract async invoke(): Promise<T>;
+  abstract invoke(): Promise<T>;
 
   /**
    * Stop the function if it is mid-flight.

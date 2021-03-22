@@ -48,7 +48,6 @@ namespace WSAdapterMessages {
       'history-request' | 'history-reply' |
       'fetch-transaction-request' | 'fetch-transaction-reply'
     );
-    parentId: undefined;
 
     readonly content: ReadonlyJSONObject;
   }
