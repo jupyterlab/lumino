@@ -1,7 +1,7 @@
 # Lumino
 
 [![Build Status](https://github.com/jupyterlab/jupyterlab/workflows/Windows%20Tests/badge.svg)](https://github.com/jupyterlab/jupyterlab/actions?query=branch%3Amaster+workflow%3A%22tests%22)
-[![Documentation Status](https://readthedocs.org/projects/jupyterlab/badge/?version=stable)](http://lumino.readthedocs.io/en/latest/)
+[![Documentation Status](https://readthedocs.org/projects/jupyterlab/badge/?version=stable)](http://lumino.readthedocs.io/en/stable/)
 [![GitHub](https://img.shields.io/badge/issue_tracking-github-blue.svg)](https://github.com/jupyterlab/lumino/issues)
 [![Discourse](https://img.shields.io/badge/help_forum-discourse-blue.svg)](https://discourse.jupyter.org/c/jupyterlab)
 
