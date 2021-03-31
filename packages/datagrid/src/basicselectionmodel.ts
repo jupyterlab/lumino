@@ -195,18 +195,18 @@ class BasicSelectionModel extends SelectionModel {
       c1 = 0;
       c2 = columnCount - 1;
       alreadySelected = this._selections.filter(selection => selection.r1 === r1).length !== 0;
-      if (alreadySelected) {
-        // Remove from selection if already selected
-        this._selections = this._selections.filter(selection => selection.r1 !== r1);
-      }
+      // Remove from selections if already selected.
+      this._selections = alreadySelected
+        ? this._selections.filter(selection => selection.r1 !== r1)
+        : this._selections;
     } else if (this.selectionMode === 'column') {
       r1 = 0;
       r2 = rowCount - 1;
       alreadySelected = this._selections.filter(selection => selection.c1 === c1).length !== 0;
-      if (alreadySelected) {
-        // Remove from selection if already selected
-        this._selections = this._selections.filter(selection => selection.c1 !== c1);
-      }
+      // Remove from selections if already selected.
+      this._selections = alreadySelected
+        ? this._selections.filter(selection => selection.c1 !== c1)
+        : this._selections;
     }
 
     // Alias the cursor row and column.
