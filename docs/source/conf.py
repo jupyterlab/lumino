@@ -115,7 +115,6 @@ def build_api_docs(out_dir):
         check_call(npm + ['install', '-g', 'yarn'], cwd=root)
         yarn = [shutil.which('yarn')]
         check_call(yarn, cwd=root)
-        check_call(yarn + ["build:src"], cwd=root)
         check_call(yarn + ["docs"], cwd=root)
 
     dest_dir = osp.join(out_dir, "api")

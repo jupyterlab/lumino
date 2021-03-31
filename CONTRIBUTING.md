@@ -32,8 +32,16 @@ yarn test  # optionally test:chrome, test:firefox, or test:ie
 Lumino examples are in the `examples/` folder.  To build and run an example:
 
 ```bash
+yarn build:src
+yarn minimize
 yarn build:examples
 cd example/dockpanel
 ```
 
 Open the `index.html` file in a browser to see the running example.
+
+There are also tests in some of the examples.  These can be run as:
+
+```bash
+yarn test:examples
+```
