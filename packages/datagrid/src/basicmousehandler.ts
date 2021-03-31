@@ -71,18 +71,18 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
    */
   release(): void {
     // Bail early if the is no press data.
-    if (!this._pressData) {
+    if (!this.pressData) {
       return;
     }
 
     // Clear the autoselect timeout.
-    if (this._pressData.type === 'select') {
-      this._pressData.timeout = -1;
+    if (this.pressData.type === 'select') {
+      this.pressData.timeout = -1;
     }
 
     // Clear the press data.
-    this._pressData.override.dispose();
-    this._pressData = null;
+    this.pressData.override.dispose();
+    this.pressData = null;
   }
 
   /**
@@ -162,7 +162,7 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
       let override = Drag.overrideCursor('default');
 
       // Set up the press data.
-      this._pressData = {
+      this.pressData = {
         type: 'select', region, row, column, override,
         localX: -1, localY: -1, timeout: -1
       };
@@ -241,7 +241,7 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
       let override = Drag.overrideCursor(cursor);
 
       // Create the temporary press data.
-      this._pressData = { type, region: rgn, index, size, clientX, override };
+      this.pressData = { type, region: rgn, index, size, clientX, override };
 
       // Done.
       return;
@@ -267,7 +267,7 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
       let override = Drag.overrideCursor(cursor);
 
       // Create the temporary press data.
-      this._pressData = { type, region: rgn, index, size, clientY, override };
+      this.pressData = { type, region: rgn, index, size, clientY, override };
 
       // Done.
       return;
@@ -287,7 +287,7 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
     let override = Drag.overrideCursor('default');
 
     // Set up the press data.
-    this._pressData = {
+    this.pressData = {
       type: 'select', region, row, column, override,
       localX: -1, localY: -1, timeout: -1
     };
@@ -362,7 +362,7 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
    */
   onMouseMove(grid: DataGrid, event: MouseEvent): void {
     // Fetch the press data.
-    const data = this._pressData;
+    const data = this.pressData;
 
     // Bail early if there is no press data.
     if (!data) {
@@ -570,7 +570,7 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
    */
   onWheel(grid: DataGrid, event: WheelEvent): void {
     // Bail if a mouse press is in progress.
-    if (this._pressData) {
+    if (this.pressData) {
       return;
     }
 
@@ -606,15 +606,8 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
     return Private.cursorMap[handle];
   }
 
-  /**
-   * Get the current pressData
-   */
-  get pressData(): PressData.PressData | null {
-    return this._pressData;
-  }
-
   private _disposed = false;
-  protected _pressData: PressData.PressData | null = null;
+  protected pressData: PressData.PressData | null = null;
 }
 
 /**
