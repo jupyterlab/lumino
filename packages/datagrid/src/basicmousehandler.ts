@@ -613,7 +613,7 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
     return this._pressData;
   }
 
-  protected _disposed = false;
+  private _disposed = false;
   protected _pressData: PressData.PressData | null = null;
 }
 
