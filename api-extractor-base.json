@@ -45,7 +45,7 @@
    *
    * SUPPORTED TOKENS: <projectFolder>, <packageName>, <unscopedPackageName>
    */
-  "mainEntryPointFilePath": "<projectFolder>/lib/index.d.ts",
+  "mainEntryPointFilePath": "<projectFolder>/types/index.d.ts",
 
   /**
    * A list of NPM package names whose exports should be treated as part of this package.
@@ -357,16 +357,23 @@
      */
     "tsdocMessageReporting": {
       "default": {
+        // Should be a low threshold to setting this to "none":
         "logLevel": "warning",
         // "addToApiReportFile": false
+      },
+
+      "tsdoc-undefined-tag": {
+        "logLevel": "none"
+      },
+
+      "tsdoc-unsupported-tag": {
+        "logLevel": "none"
+      },
+
+      "tsdoc-param-tag-with-invalid-name": {
+        "logLevel": "none"
       }
 
-      // "tsdoc-link-tag-unescaped-text": {
-      //   "logLevel": "warning",
-      //   "addToApiReportFile": true
-      // },
-      //
-      // . . .
     }
   }
 

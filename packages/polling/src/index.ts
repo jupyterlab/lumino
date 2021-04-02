@@ -73,7 +73,7 @@ export namespace IPoll {
    * Essentially, if consecutive retries are needed, we choose an integer:
    * `sleep = min(max, rand(interval, backoff * sleep))`
    * This ensures that the poll is never less than `interval`, and nicely
-   * spreads out retries for consecutive tries. Over time, if (interval < max),
+   * spreads out retries for consecutive tries. Over time, if (interval \< max),
    * the random number will be above `max` about (1 - 1/backoff) of the time
    * (sleeping the `max`), and the rest of the time the sleep will be a random
    * number below `max`, decorrelating our trigger time from other pollers.
@@ -81,7 +81,7 @@ export namespace IPoll {
   export type Frequency = {
     /**
      * Whether poll frequency backs off (boolean) or the backoff growth rate
-     * (float > 1).
+     * (float \> 1).
      *
      * #### Notes
      * If `true`, the default backoff growth rate is `3`.

@@ -32,8 +32,8 @@ namespace Random {
    * The following RNGs are supported, listed in order of precedence:
    *   - `window.crypto.getRandomValues`
    *   - `window.msCrypto.getRandomValues`
-   *   - `require('crypto').randomFillSync
-   *   - `require('crypto').randomBytes
+   *   - `require('crypto').randomFillSync`
+   *   - `require('crypto').randomBytes`
    *   - `Math.random`
    */
   export

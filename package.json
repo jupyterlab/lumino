@@ -7,7 +7,8 @@
     "tests/*"
   ],
   "scripts": {
-    "api": "lerna run api",
+    "api": "lerna run api --parallel --no-sort --no-bail",
+    "api:check": "lerna run api:check --parallel --no-sort",
     "minimize": "lerna run minimize",
     "build": "lerna run build",
     "build:examples": "lerna run build --scope \"@lumino/example-*\"",

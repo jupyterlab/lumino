@@ -22,3 +22,4 @@ script:
     yarn build:test;
     yarn test;
     yarn docs;
+    yarn api:check

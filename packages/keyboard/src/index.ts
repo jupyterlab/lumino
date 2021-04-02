@@ -70,7 +70,7 @@ function getKeyboardLayout(): IKeyboardLayout {
 /**
  * Set the global application keyboard layout instance.
  *
- * @param - The keyboard layout for use by the application.
+ * @param layout - The keyboard layout for use by the application.
  *
  * #### Notes
  * The keyboard layout should typically be set on application startup

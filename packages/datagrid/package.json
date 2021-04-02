@@ -27,7 +27,8 @@
   "module": "dist/index.es6",
   "types": "types/index.d.ts",
   "scripts": {
-    "api": "api-extractor run --local --verbose",
+    "api": "api-extractor run --local",
+    "api:check": "api-extractor run --verbose",
     "build": "tsc --build && rollup -c",
     "clean": "rimraf ./lib && rimraf *.tsbuildinfo && rimraf ./types && rimraf ./dist",
     "docs": "typedoc --options tdoptions.json src",

@@ -1,0 +1,126 @@
+name: API Reports
+
+on: [pull_request]
+
+jobs:
+  base_report:
+    name: Base
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.base_ref }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - name: Cache yarn
+        uses: actions/cache@v1
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install dependencies
+        run: |
+          yarn
+
+      - name: Build packages
+        run: |
+          yarn build:src
+
+      - name: Generate report
+        continue-on-error: true   # Allows to match against old jobs
+        run: |
+          yarn api
+
+      - name: Fallback
+        if: ${{ failure() }}
+        # We still fail if canary report is missing:
+        run: |
+          test -f review/api/algorithm.api.md && echo "::warning ::Failed to generate fresh report"
+
+      - name: Upload API report
+        uses: actions/upload-artifact@v2
+        with:
+          name: base-api-report
+          path: review/api/*.api.md
+
+
+  head_report:
+    name: Head
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - name: Cache yarn
+        uses: actions/cache@v1
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install dependencies
+        run: |
+          yarn
+
+      - name: Build packages
+        run: |
+          yarn build:src
+
+      - name: Generate report
+        run: |
+          yarn api
+
+      - name: Upload API report
+        uses: actions/upload-artifact@v2
+        with:
+          name: head-api-report
+          path: review/api/*.api.md
+
+
+  compare:
+    name: Compare
+    needs: [base_report, head_report]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download base report
+        uses: actions/download-artifact@v2
+        continue-on-error: true   # Allows to match against old jobs
+        with:
+          name: base-api-report
+          path: review/api/
+
+      - name: Fallback
+        if: ${{ failure() }}
+        uses: actions/checkout@v2
+
+      - name: Download head report
+        uses: actions/download-artifact@v2
+        with:
+          name: head-api-report
+          path: review-head/api/
+
+      - name: Compare Reports
+        run: |
+          export DIFF_OUTPUT=$(diff -rub review/api/ review-head/api/)
+          [ -n "$DIFF_OUTPUT" ] && echo "::warning file=package.json,line=1 ::API reports differ" && echo "${DIFF_OUTPUT}"

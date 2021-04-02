@@ -704,9 +704,9 @@ namespace Datastore {
    * A helper function to wrap an update to the datastore in calls to
    * `beginTransaction` and `endTransaction`.
    *
-   * @param datastore: the datastore to which to apply the update.
+   * @param datastore - the datastore to which to apply the update.
    *
-   * @param update: A function that performs the update on the datastore.
+   * @param update - A function that performs the update on the datastore.
    *   The function is called with a transaction id string, in case the
    *   user wishes to store the transaction ID for later use.
    *
@@ -788,9 +788,9 @@ namespace Datastore {
   /**
    * Get a given table by its location.
    *
-   * @param datastore: the datastore in which the table resides.
+   * @param datastore - the datastore in which the table resides.
    *
-   * @param loc: The table location.
+   * @param loc - The table location.
    *
    * @returns the table.
    */
@@ -804,9 +804,9 @@ namespace Datastore {
   /**
    * Get a given record by its location.
    *
-   * @param datastore: the datastore in which the record resides.
+   * @param datastore - the datastore in which the record resides.
    *
-   * @param loc: The record location.
+   * @param loc - The record location.
    *
    * @returns the record, or undefined if it does not exist.
    */
@@ -820,9 +820,9 @@ namespace Datastore {
   /**
    * Get a given field by its location.
    *
-   * @param datastore: the datastore in which the field resides.
+   * @param datastore - the datastore in which the field resides.
    *
-   * @param loc: the field location.
+   * @param loc - the field location.
    *
    * @returns the field in question.
    *
@@ -843,11 +843,11 @@ namespace Datastore {
   /**
    * Update a table.
    *
-   * @param datastore: the datastore in which the table resides.
+   * @param datastore - the datastore in which the table resides.
    *
-   * @param loc: the table location.
+   * @param loc - the table location.
    *
-   * @param update: the update to the table.
+   * @param update - the update to the table.
    *
    * #### Notes
    * This does not begin a transaction, so usage of this function should be
@@ -865,11 +865,11 @@ namespace Datastore {
   /**
    * Update a record in a table.
    *
-   * @param datastore: the datastore in which the record resides.
+   * @param datastore - the datastore in which the record resides.
    *
-   * @param loc: the record location.
+   * @param loc - the record location.
    *
-   * @param update: the update to the record.
+   * @param update - the update to the record.
    *
    * #### Notes
    * This does not begin a transaction, so usage of this function should be
@@ -889,11 +889,11 @@ namespace Datastore {
   /**
    * Update a field in a table.
    *
-   * @param datastore: the datastore in which the field resides.
+   * @param datastore - the datastore in which the field resides.
    *
-   * @param loc: the field location.
+   * @param loc - the field location.
    *
-   * @param update: the update to the field.
+   * @param update - the update to the field.
    *
    * #### Notes
    * This does not begin a transaction, so usage of this function should be
@@ -917,11 +917,11 @@ namespace Datastore {
   /**
    * Listen to changes in a table. Changes to other tables are ignored.
    *
-   * @param datastore: the datastore in which the table resides.
+   * @param datastore - the datastore in which the table resides.
    *
-   * @param loc: the table location.
+   * @param loc - the table location.
    *
-   * @param slot: a callback function to invoke when the table changes.
+   * @param slot - a callback function to invoke when the table changes.
    *
    * @returns an `IDisposable` that can be disposed to remove the listener.
    */
@@ -951,11 +951,11 @@ namespace Datastore {
    * Listen to changes in a record in a table. Changes to other tables and
    * other records in the same table are ignored.
    *
-   * @param datastore: the datastore in which the record resides.
+   * @param datastore - the datastore in which the record resides.
    *
-   * @param loc: the record location.
+   * @param loc - the record location.
    *
-   * @param slot: a callback function to invoke when the record changes.
+   * @param slot - a callback function to invoke when the record changes.
    *
    * @returns an `IDisposable` that can be disposed to remove the listener.
    */
@@ -988,11 +988,11 @@ namespace Datastore {
    * Listen to changes in a fields in a table. Changes to other tables, other
    * records in the same table, and other fields in the same record are ignored.
    *
-   * @param datastore: the datastore in which the field resides.
+   * @param datastore - the datastore in which the field resides.
    *
-   * @param loc: the field location.
+   * @param loc - the field location.
    *
-   * @param slot: a callback function to invoke when the field changes.
+   * @param slot - a callback function to invoke when the field changes.
    *
    * @returns an `IDisposable` that can be disposed to remove the listener.
    */

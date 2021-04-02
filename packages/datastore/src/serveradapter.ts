@@ -40,14 +40,14 @@ interface IServerAdapter extends IDisposable {
    * but the undo is not actually done until the datastore recieves the
    * corresponding transaction and applies it.
    *
-   * @param id: the transaction to undo.
+   * @param id - the transaction to undo.
    */
   undo(id: string): Promise<void>;
 
   /**
    * Redo a transaction by id.
    *
-   * @param id: the transaction to redo.
+   * @param id - the transaction to redo.
    */
   redo(id: string): Promise<void>;
 
