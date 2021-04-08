@@ -29,7 +29,8 @@
   "types": "types/index.d.ts",
   "scripts": {
     "api": "api-extractor run --local --verbose",
-    "build": "tsc --build && rollup -c",
+    "build": "npm run build:src && rollup -c",
+    "build:src": "tsc --build",
     "build:test": "tsc --build tests && cd tests && webpack",
     "clean": "rimraf ./lib && rimraf *.tsbuildinfo && rimraf ./types && rimraf ./dist",
     "clean:test": "rimraf tests/build",
