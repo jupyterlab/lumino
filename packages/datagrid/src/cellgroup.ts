@@ -1,18 +1,21 @@
 import { DataModel } from "./datamodel";
-import { SectionList } from './sectionlist';
+import { SectionList } from "./sectionlist";
 
-export
-interface CellGroup {
+/**
+ * An interface describing a merged cell group.
+ */
+export interface CellGroup {
   startRow: number;
   endRow: number;
   startColumn: number;
   endColumn: number;
 }
 
-export
-namespace CellGroup {
-  export 
-  function areCellsMerged(
+/**
+ * A collection of helper functions relating to merged cell groups
+ */
+export namespace CellGroup {
+  export function areCellsMerged(
     dataModel: DataModel,
     rgn: DataModel.CellRegion,
     cell1: number[],
@@ -41,24 +44,22 @@ namespace CellGroup {
   }
 
   /**
-   * Calculates the cell boundary offsets needed for 
-   * a row or column at the given index by taking 
+   * Calculates the cell boundary offsets needed for
+   * a row or column at the given index by taking
    * into account merged cell groups in the region.
-   * @param dataModel 
-   * @param regions 
-   * @param axis 
-   * @param sectionList 
-   * @param index 
+   * @param dataModel
+   * @param regions
+   * @param axis
+   * @param sectionList
+   * @param index
    */
-  export
-  function calculateMergeOffsets(
+  export function calculateMergeOffsets(
     dataModel: DataModel,
     regions: DataModel.CellRegion[],
     axis: "row" | "column",
     sectionList: SectionList,
     index: number
   ): [number, number, CellGroup] {
-
     let mergeStartOffset = 0;
     let mergeEndOffset = 0;
     let mergedCellGroups: CellGroup[] = [];
@@ -121,12 +122,11 @@ namespace CellGroup {
   /**
    * Checks if two cell-groups are intersecting
    * in the given axis.
-   * @param group1 
-   * @param group2 
-   * @param axis 
+   * @param group1
+   * @param group2
+   * @param axis
    */
-  export
-  function areCellGroupsIntersectingAtAxis(
+  export function areCellGroupsIntersectingAtAxis(
     group1: CellGroup,
     group2: CellGroup,
     axis: "row" | "column"
@@ -155,11 +155,10 @@ namespace CellGroup {
 
   /**
    * Checks if cell-groups are intersecting.
-   * @param group1 
-   * @param group2 
+   * @param group1
+   * @param group2
    */
-  export
-  function areCellGroupsIntersecting(
+  export function areCellGroupsIntersecting(
     group1: CellGroup,
     group2: CellGroup
   ): boolean {
@@ -181,37 +180,48 @@ namespace CellGroup {
     );
   }
 
-  
   /**
    * Retrieves the index of the cell-group to which
    * the cell at the given row, column belongs.
-   * @param dataModel 
-   * @param rgn 
-   * @param row 
-   * @param column 
+   * @param dataModel
+   * @param rgn
+   * @param row
+   * @param column
    */
-  export
-  function getGroupIndex(dataModel: DataModel, rgn: DataModel.CellRegion, row: number, column: number): number {
+  export function getGroupIndex(
+    dataModel: DataModel,
+    rgn: DataModel.CellRegion,
+    row: number,
+    column: number
+  ): number {
     const numGroups = dataModel.groupCount(rgn);
     for (let i = 0; i < numGroups; i++) {
       const group = dataModel.group(rgn, i)!;
-      if (row >= group.startRow && row <= group.endRow && 
-          column >= group.startColumn && column <= group.endColumn) {
-            return i;
-          }
+      if (
+        row >= group.startRow &&
+        row <= group.endRow &&
+        column >= group.startColumn &&
+        column <= group.endColumn
+      ) {
+        return i;
+      }
     }
     return -1;
   }
 
   /**
    * Returns a cell-group for the given row/index coordinates.
-   * @param dataModel 
-   * @param rgn 
-   * @param row 
-   * @param column 
+   * @param dataModel
+   * @param rgn
+   * @param row
+   * @param column
    */
-  export
-  function getGroup(dataModel: DataModel, rgn: DataModel.CellRegion, row: number, column: number): CellGroup | null {
+  export function getGroup(
+    dataModel: DataModel,
+    rgn: DataModel.CellRegion,
+    row: number,
+    column: number
+  ): CellGroup | null {
     const groupIndex = getGroupIndex(dataModel, rgn, row, column);
     if (groupIndex === -1) {
       return null;
@@ -223,11 +233,10 @@ namespace CellGroup {
   /**
    * Returns all cell groups which belong to
    * a given cell cell region.
-   * @param dataModel 
-   * @param rgn 
+   * @param dataModel
+   * @param rgn
    */
-  export
-  function getCellGroupsAtRegion(
+  export function getCellGroupsAtRegion(
     dataModel: DataModel,
     rgn: DataModel.CellRegion
   ): CellGroup[] {
@@ -244,10 +253,9 @@ namespace CellGroup {
   /**
    * Calculates and returns a merged cell-group from
    * two cell-group objects.
-   * @param groups 
+   * @param groups
    */
-  export
-  function joinCellGroups(groups: CellGroup[]): CellGroup {
+  export function joinCellGroups(groups: CellGroup[]): CellGroup {
     let startRow = Number.MAX_VALUE;
     let endRow = Number.MIN_VALUE;
     let startColumn = Number.MAX_VALUE;
@@ -263,15 +271,25 @@ namespace CellGroup {
     return { startRow, endRow, startColumn, endColumn };
   }
 
-  export
-  function joinCellGroupWithMergedCellGroups(
+  /**
+   * Merges a cell group with other cells groups in the
+   * same region if they intersect.
+   * @param dataModel the data model of the grid.
+   * @param group the target cell group.
+   * @param region the region wer're of the cell group.
+   * @returns a new cell group after merging has happened.
+   */
+  export function joinCellGroupWithMergedCellGroups(
     dataModel: DataModel,
     group: CellGroup,
     region: DataModel.CellRegion
   ): CellGroup {
     let joinedGroup: CellGroup = { ...group };
 
-    const mergedCellGroups: CellGroup[] = getCellGroupsAtRegion(dataModel, region);
+    const mergedCellGroups: CellGroup[] = getCellGroupsAtRegion(
+      dataModel,
+      region
+    );
 
     for (let g = 0; g < mergedCellGroups.length; g++) {
       const mergedGroup = mergedCellGroups[g];
@@ -283,8 +301,15 @@ namespace CellGroup {
     return joinedGroup;
   }
 
-  export
-  function getCellGroupsAtRow(
+  /**
+   * Retrieves a list of cell groups intersecting at
+   * a given row.
+   * @param dataModel data model of the grid.
+   * @param rgn the cell region.
+   * @param row the target row to look for intersections at.
+   * @returns all cell groups intersecting with the row.
+   */
+  export function getCellGroupsAtRow(
     dataModel: DataModel,
     rgn: DataModel.CellRegion,
     row: number
@@ -301,8 +326,15 @@ namespace CellGroup {
     return groupsAtRow;
   }
 
-  export
-  function getCellGroupsAtColumn(
+  /**
+   * Retrieves a list of cell groups intersecting at
+   * a given column.
+   * @param dataModel data model of the grid.
+   * @param rgn the cell region.
+   * @param column the target column to look for intersections at.
+   * @returns all cell groups intersecting with the column.
+   */
+  export function getCellGroupsAtColumn(
     dataModel: DataModel,
     rgn: DataModel.CellRegion,
     column: number
@@ -319,18 +351,39 @@ namespace CellGroup {
     return groupsAtColumn;
   }
 
-  export
-  function isCellGroupAbove(group1: CellGroup, group2: CellGroup): boolean {
+  /**
+   * Checks if cell group 1 is above cell group 2.
+   * @param group1 cell group 1.
+   * @param group2 cell group 2.
+   * @returns boolean.
+   */
+  export function isCellGroupAbove(
+    group1: CellGroup,
+    group2: CellGroup
+  ): boolean {
     return group2.endRow >= group1.startRow;
   }
 
-  export
-  function isCellGroupBelow(group1: CellGroup, group2: CellGroup): boolean {
+  /**
+   * Checks if cell group 1 is below cell group 2.
+   */
+  export function isCellGroupBelow(
+    group1: CellGroup,
+    group2: CellGroup
+  ): boolean {
     return group2.startRow <= group1.endRow;
   }
 
-  export
-  function joinCellGroupsIntersectingAtAxis(
+  /**
+   * Merges a target cell group with any cell groups
+   * it intersects with at a given row or column.
+   * @param dataModel data model of the grid.
+   * @param regions list of cell regions.
+   * @param axis row or column.
+   * @param group the target cell group.
+   * @returns a new merged cell group.
+   */
+  export function joinCellGroupsIntersectingAtAxis(
     dataModel: DataModel,
     regions: DataModel.CellRegion[],
     axis: "row" | "column",

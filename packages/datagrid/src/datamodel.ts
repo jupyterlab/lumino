@@ -73,8 +73,9 @@ abstract class DataModel {
   abstract data(region: DataModel.CellRegion, row: number, column: number): any;
 
   /**
-   * Group count in region
-   * @param region 
+   * Get the count of merged cell groups pertainign to a given
+   * cell region.
+   * @param region the target cell region. 
    */
   groupCount(region: DataModel.CellRegion): number {
     return 0;
@@ -102,6 +103,12 @@ abstract class DataModel {
     return DataModel.emptyMetadata;
   }
   
+  /**
+   * Get the merged cell group corresponding to a region and index number.
+   * @param region the cell region of cell group.
+   * @param groupIndex the group index of the cell group.
+   * @returns a cell group.
+   */
   group(region: DataModel.CellRegion, groupIndex: number): CellGroup | null {
     return null;
   }
