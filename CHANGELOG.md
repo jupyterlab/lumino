@@ -1,5 +1,45 @@
 # Changelog
 
+## 2021-5-9
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/2021.3.11...f991ecd1a00df02fa6716e8b0b9f2a2f79a6237e))
+
+    @lumino/algorithm: 1.3.3 => 1.4.0
+    @lumino/application: 1.16.0 => 1.17.0
+    @lumino/collections: 1.3.3 => 1.4.0
+    @lumino/commands: 1.12.0 => 1.13.0
+    @lumino/coreutils: 1.5.3 => 1.6.0
+    @lumino/datagrid: 0.20.0 => 0.21.0
+    @lumino/datastore: 0.11.0 => 0.12.0
+    @lumino/default-theme: 0.10.0 => 0.11.0
+    @lumino/disposable: 1.4.3 => 1.5.0
+    @lumino/domutils: 1.2.3 => 1.3.0
+    @lumino/dragdrop: 1.7.1 => 1.8.0
+    @lumino/keyboard: 1.2.3 => 1.3.0
+    @lumino/messaging: 1.4.3 => 1.5.0
+    @lumino/polling: 1.3.3 => 1.4.0
+    @lumino/properties: 1.2.3 => 1.3.0
+    @lumino/signaling: 1.4.3 => 1.5.0
+    @lumino/virtualdom: 1.8.0 => 1.9.0
+    @lumino/widgets: 1.19.0 => 1.20.0
+
+### Merged PRs
+
+- Clean Up CI [#166](https://github.com/jupyterlab/lumino/pull/166) ([@jtpio](https://github.com/jtpio))
+- Bump y18n from 4.0.0 to 4.0.1 [#164](https://github.com/jupyterlab/lumino/pull/164) ([@dependabot](https://github.com/dependabot))
+- Ctrl-click to toggle single row or column selections [#163](https://github.com/jupyterlab/lumino/pull/163) ([@ibdafna](https://github.com/ibdafna))
+- Update documentation badge [#162](https://github.com/jupyterlab/lumino/pull/162) ([@blink1073](https://github.com/blink1073))
+- Change one BasicMouseHandler properties from private to protected  [#161](https://github.com/jupyterlab/lumino/pull/161) ([@ibdafna](https://github.com/ibdafna))
+- Update RTD Link to Point to Stable Version [#159](https://github.com/jupyterlab/lumino/pull/159) ([@blink1073](https://github.com/blink1073))
+- Update Badges in Readme [#158](https://github.com/jupyterlab/lumino/pull/158) ([@blink1073](https://github.com/blink1073))
+- Fix docs target for polling [#155](https://github.com/jupyterlab/lumino/pull/155) ([@bollwyvl](https://github.com/bollwyvl))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2021-03-23&to=2021-04-09&type=c))
+
+[@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2021-03-23..2021-04-09&type=Issues) | [@bollwyvl](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Abollwyvl+updated%3A2021-03-23..2021-04-09&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2021-03-23..2021-04-09&type=Issues) | [@ibdafna](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aibdafna+updated%3A2021-03-23..2021-04-09&type=Issues) | [@jtpio](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajtpio+updated%3A2021-03-23..2021-04-09&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Awelcome+updated%3A2021-03-23..2021-04-09&type=Issues)
+
 ## 2021-3-11
 
     @lumino/application: 1.15.0 => 1.16.0
