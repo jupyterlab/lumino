@@ -10,6 +10,7 @@ git clean -dfx
 yarn
 yarn run version
 # Update the changelog with published packages (minor or higher) and included PRs.
+# Tag the release with the date, e.g. 2021.4.9
 #
 yarn run publish
 # Push any changes to master
