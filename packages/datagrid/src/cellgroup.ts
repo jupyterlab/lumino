@@ -390,7 +390,6 @@ export namespace CellGroup {
     group: CellGroup
   ): CellGroup {
     let groupsAtAxis: CellGroup[] = [];
-    // TODO: optimize this to break after first one found
     if (axis === "row") {
       for (const region of regions) {
         for (let r = group.startRow; r <= group.endRow; r++) {
