@@ -1,13 +1,13 @@
 {
   "name": "@lumino/example-datagrid",
-  "version": "0.18.0",
+  "version": "0.18.1",
   "private": true,
   "scripts": {
     "build": "tsc && webpack",
     "clean": "rimraf build"
   },
   "dependencies": {
-    "@lumino/datagrid": "^0.21.0",
+    "@lumino/datagrid": "^0.21.1",
     "@lumino/default-theme": "^0.11.0",
     "@lumino/dragdrop": "^1.8.0",
     "@lumino/widgets": "^1.20.0",
