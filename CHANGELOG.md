@@ -1,6 +1,22 @@
 # Changelog
 
-## 2021-5-9
+## 2021-4-12
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/2021.4.9...bcb9734e2f01e625a51de0e58a6c3e5577090d3b))
+
+    @lumino/datagrid: 0.21.0 => 0.21.1
+
+### Merged PRs
+
+- Restore getter for `_pressData` [#167](https://github.com/jupyterlab/lumino/pull/167) ([@ibdafna](https://github.com/ibdafna))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2021-04-09&to=2021-04-12&type=c))
+
+[@ibdafna](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aibdafna+updated%3A2021-04-09..2021-04-12&type=Issues)
+
+## 2021-4-9
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/2021.3.11...f991ecd1a00df02fa6716e8b0b9f2a2f79a6237e))
 
