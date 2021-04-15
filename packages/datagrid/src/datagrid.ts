@@ -3178,7 +3178,7 @@ class DataGrid extends Widget {
       let y = hh + this._rowSections.offsetOf(r);
       this.paintContent(0, y, vw, vh - y);
     } else if (delta < 0) {
-      this.paintContent(0, vh + delta, vw, -delta);
+      this.paintContent(0, vh + delta, vw, -delta + 1);
     }
 
     // Paint the overlay.
@@ -3371,10 +3371,6 @@ class DataGrid extends Widget {
     // Blit the valid content to the destination.
     this._blitContent(this._canvas, sx + mergeEndOffset, sy, sw - mergeEndOffset, sh, dx + mergeEndOffset, dy);
 
-
-    // Blit the valid contents to the destination.
-    this._blitContent(this._canvas, sx, sy, sw, sh, dx, dy);
-
     // Repaint the header section if needed.
     if (newSize > 0) {
       this.paintContent(offset - mergeStartOffset, 0, newSize + mergeStartOffset + mergeEndOffset, vh);
@@ -3386,7 +3382,7 @@ class DataGrid extends Widget {
       let x = this.headerWidth + this._columnSections.offsetOf(c);
       this.paintContent(x, 0, vw - x, vh);
     } else if (delta < 0) {
-      this.paintContent(vw + delta, 0, -delta, vh);
+      this.paintContent(vw + delta, 0, -delta + 1, vh);
     }
 
     // Paint the overlay.
@@ -3479,7 +3475,7 @@ class DataGrid extends Widget {
       let y = this.headerHeight + this._rowSections.offsetOf(r);
       this.paintContent(0, y, vw, vh - y);
     } else if (delta < 0) {
-      this.paintContent(0, vh + delta, vw, -delta);
+      this.paintContent(0, vh + delta, vw, -delta + 1);
     }
 
     // Paint the overlay.
