@@ -63,6 +63,7 @@
     @lumino/default-theme: 0.9.0 => 0.10.0
     @lumino/widgets: 1.18.0 => 1.19.0
 
+- Add Sphinx Documentation [#157](https://github.com/jupyterlab/lumino/pull/157) ([@afshin](https://github.com/afshin))
 - Bump elliptic from 6.5.3 to 6.5.4 [#156](https://github.com/jupyterlab/lumino/pull/156) ([@dependabot](https://github.com/dependabot))
 - Add ARIA roles to tabs - lumino update [#132](https://github.com/jupyterlab/lumino/pull/132) ([@telamonian](https://github.com/telamonian))
 
