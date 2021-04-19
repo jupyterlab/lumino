@@ -1,5 +1,43 @@
 # Changelog
 
+## 2021-4-19
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/2021.4.12...fc0c0ddf950d38e957bfd1e076ffb937a679009f))
+
+    @lumino/algorithm: 1.4.0 => 1.5.0
+    @lumino/application: 1.17.0 => 1.18.0
+    @lumino/collections: 1.4.0 => 1.5.0
+    @lumino/commands: 1.13.0 => 1.14.0
+    @lumino/coreutils: 1.6.0 => 1.7.0
+    @lumino/datagrid: 0.21.1 => 0.22.0
+    @lumino/datastore: 0.12.0 => 0.13.0
+    @lumino/default-theme: 0.11.0 => 0.12.0
+    @lumino/disposable: 1.5.0 => 1.6.0
+    @lumino/domutils: 1.3.0 => 1.4.0
+    @lumino/dragdrop: 1.8.0 => 1.9.0
+    @lumino/keyboard: 1.3.0 => 1.4.0
+    @lumino/messaging: 1.5.0 => 1.6.0
+    @lumino/polling: 1.4.0 => 1.5.0
+    @lumino/properties: 1.3.0 => 1.4.0
+    @lumino/signaling: 1.5.0 => 1.6.0
+    @lumino/virtualdom: 1.9.0 => 1.10.0
+    @lumino/widgets: 1.20.0 => 1.21.0
+
+
+### Merged PRs
+
+- Add missing PR to changelog [#171](https://github.com/jupyterlab/lumino/pull/171) ([@blink1073](https://github.com/blink1073))
+- Bump ssri from 6.0.1 to 6.0.2 [#173](https://github.com/jupyterlab/lumino/pull/173) ([@dependabot](https://github.com/dependabot))
+- Switch to TypeScript 3.9 [#172](https://github.com/jupyterlab/lumino/pull/172) ([@jtpio](https://github.com/jtpio))
+- Add exports for sectionlist and celleditorcontroller [#169](https://github.com/jupyterlab/lumino/pull/169) ([@ibdafna](https://github.com/ibdafna))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2021-04-12&to=2021-04-19&type=c))
+
+[@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2021-04-12..2021-04-19&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2021-04-12..2021-04-19&type=Issues) | [@ibdafna](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aibdafna+updated%3A2021-04-12..2021-04-19&type=Issues) | [@jtpio](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajtpio+updated%3A2021-04-12..2021-04-19&type=Issues) | [@vidartf](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Avidartf+updated%3A2021-04-12..2021-04-19&type=Issues)
+
+
 ## 2021-4-12
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/2021.4.9...bcb9734e2f01e625a51de0e58a6c3e5577090d3b))
