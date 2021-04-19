@@ -20,6 +20,7 @@
     "types": [
       "@types/node"
     ],
+    "baseUrl": ".",
     "paths": {
       "@lumino/*": ["./packages/*/src"]
     }
