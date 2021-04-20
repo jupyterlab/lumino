@@ -937,7 +937,7 @@ namespace Private {
     /* </DEPRECATED> */
     node.appendChild(content);
     content.setAttribute('role', 'menubar');
-    node.tabIndex = -1;
+    node.tabIndex = 0;
     return node;
   }
 
