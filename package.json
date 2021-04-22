@@ -17,7 +17,7 @@
     "clean:examples": "lerna run clean --scope \"@lumino/example-*\"",
     "clean:src": "lerna run clean --scope \"@lumino/!(test-|example-)*\"",
     "clean:tests": "lerna run clean:tests",
-    "docs": "rimraf docs/api && lerna run build:src --concurrency 1 && typedoc --options typedoc.js",
+    "docs": "rimraf docs/api && lerna run build:src --concurrency 1 && lerna run docs",
     "get:dependency": "get-dependency",
     "minimize": "lerna run minimize",
     "publish": "npm run clean && npm run build:dist && lerna publish --yes -m \"Publish\" from-package",

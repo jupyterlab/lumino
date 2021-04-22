@@ -123,6 +123,9 @@ def build_api_docs(out_dir):
         shutil.rmtree(dest_dir)
     shutil.copytree(docs_api, dest_dir)
 
+    dest = osp.join(dest_dir, 'index.html')
+    shutil.copy(osp.join(HERE, 'api_index.html'), dest)
+
 
 # -- Options for HTML output ----------------------------------------------
 

@@ -59,7 +59,7 @@
     "terser": "^4.6.2",
     "tslib": "1.10.0",
     "typedoc": "~0.15.0",
-    "typescript": "~3.9.0",
+    "typescript": "~3.6.0",
     "webpack-cli": "^3.3.10"
   },
   "publishConfig": {
