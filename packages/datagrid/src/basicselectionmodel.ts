@@ -30,7 +30,7 @@ import {
 export
 class BasicSelectionModel extends SelectionModel {
   /**
-   * Weather the selection model is empty.
+   * Whether the selection model is empty.
    */
   get isEmpty(): boolean {
     return this._selections.length === 0;
