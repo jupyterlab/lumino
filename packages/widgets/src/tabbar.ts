@@ -1469,13 +1469,22 @@ namespace TabBar {
       let className = this.createTabClass(data);
       let dataset = this.createTabDataset(data);
       let aria = this.createTabARIA(data);
-      return (
-        h.li({ id, key, className, title, style, dataset, ...aria },
-          this.renderIcon(data),
-          this.renderLabel(data),
-          this.renderCloseIcon(data)
-        )
-      );
+      if (data.title.closable) {
+        return (
+          h.li({ id, key, className, title, style, dataset, ...aria },
+            this.renderIcon(data),
+            this.renderLabel(data),
+            this.renderCloseIcon(data)
+          )
+        );
+      } else {
+        return (
+          h.li({ id, key, className, title, style, dataset, ...aria },
+            this.renderIcon(data),
+            this.renderLabel(data),
+          )
+        );
+      }
     }
 
     /**
