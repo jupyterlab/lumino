@@ -18,7 +18,7 @@ import {
 } from '@lumino/messaging';
 
 import {
-  BoxPanel, CommandPalette, ContextMenu, DockPanel, Menu, MenuBar, Widget
+  BoxPanel, CommandPalette, ContextMenu, DockPanel, Menu, MenuBar, Widget, TabBar
 } from '@lumino/widgets';
 
 import '../style/index.css';
@@ -355,9 +355,9 @@ function main(): void {
   dock.addWidget(b2, { mode: 'split-right', ref: y1 });
   dock.id = 'dock';
 
-  dock.widgetAddRequested.connect((sender: DockPanel, args: DockPanel.IWidgetAddRequestedArgs<Widget>) => {
+  dock.addRequested.connect((sender: DockPanel, arg: TabBar<Widget>) => {
     let w = new ContentWidget("Green");
-    sender.addWidget(w, { ref: args.tabBar.titles[0].owner });
+    sender.addWidget(w, { ref: arg.titles[0].owner });
   });
 
   let savedLayouts: DockPanel.ILayoutConfig[] = [];

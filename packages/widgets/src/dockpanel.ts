@@ -136,8 +136,8 @@ class DockPanel extends Widget {
    * A signal emitted when the add button on a tab bar is clicked.
    *
    */
-  get widgetAddRequested(): ISignal<this, DockPanel.IWidgetAddRequestedArgs<Widget>> {
-    return this._widgetAddRequested;
+  get addRequested(): ISignal<this, TabBar<Widget>> {
+    return this._addRequested;
   }
 
   /**
@@ -978,9 +978,7 @@ class DockPanel extends Widget {
    * Handle the `tabAddRequested` signal from the tab bar.
    */
   private _onTabAddRequested(sender: TabBar<Widget>, args: void): void {
-    this._widgetAddRequested.emit({
-      tabBar: sender
-    });
+    this._addRequested.emit(sender);
   }
 
   /**
@@ -1057,7 +1055,7 @@ class DockPanel extends Widget {
   private _pressData: Private.IPressData | null = null;
   private _layoutModified = new Signal<this, void>(this);
 
-  private _widgetAddRequested = new Signal<this, DockPanel.IWidgetAddRequestedArgs<Widget>>(this);
+  private _addRequested = new Signal<this, TabBar<Widget>>(this);
 
 }
 
@@ -1402,18 +1400,6 @@ namespace DockPanel {
    */
   export
   const defaultRenderer = new Renderer();
-
-
-  /**
-   * The arguments object for the `addRequested` signal.
-   */
-  export
-  interface IWidgetAddRequestedArgs<T> {
-    /**
-     * The tabbar.
-     */
-    tabBar: TabBar<T>;
-  }
 }
 
 

@@ -238,8 +238,8 @@ class TabPanel extends Widget {
    * A signal emitted when the add button on a tab bar is clicked.
    *
    */
-  get widgetAddRequested(): ISignal<this, TabPanel.IWidgetAddRequestedArgs<Widget>> {
-    return this._widgetAddRequested;
+  get addRequested(): ISignal<this, TabBar<Widget>> {
+    return this._addRequested;
   }
 
   /**
@@ -343,9 +343,7 @@ class TabPanel extends Widget {
    * Handle the `tabAddRequested` signal from the tab bar.
    */
   private _onTabAddRequested(sender: TabBar<Widget>, args: void): void {
-    this._widgetAddRequested.emit({
-      tabBar: sender
-    });
+    this._addRequested.emit(sender);
   }
 
   /**
@@ -381,7 +379,7 @@ class TabPanel extends Widget {
   private _tabPlacement: TabPanel.TabPlacement;
   private _currentChanged = new Signal<this, TabPanel.ICurrentChangedArgs>(this);
 
-  private _widgetAddRequested = new Signal<this, TabPanel.IWidgetAddRequestedArgs<Widget>>(this);
+  private _addRequested = new Signal<this, TabBar<Widget>>(this);
 
 }
 
@@ -475,17 +473,6 @@ namespace TabPanel {
      * The currently selected widget.
      */
     currentWidget: Widget | null;
-  }
-
-  /**
-   * The arguments object for the `addRequested` signal.
-   */
-  export
-  interface IWidgetAddRequestedArgs<T> {
-    /**
-     * The tabbar.
-     */
-    tabBar: TabBar<T>;
   }
 }
 
