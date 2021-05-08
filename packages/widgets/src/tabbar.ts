@@ -132,8 +132,8 @@ class TabBar<T> extends Widget {
    * A signal emitted when the tabbar add button is clicked.
    *
    */
-  get tabAddRequested(): ISignal<this, TabBar.ITabAddRequestedArgs> {
-    return this._tabAddRequested;
+  get addRequested(): ISignal<this, void> {
+    return this._addRequested;
   }
 
   /**
@@ -922,7 +922,7 @@ class TabBar<T> extends Widget {
 
       // Handle clicking on the add button
       if (this.addButtonEnabled && this.addButtonNode.contains(event.target as HTMLElement)) {
-        this._tabAddRequested.emit({});
+        this._addRequested.emit(undefined);
         return;
       }
 
@@ -1207,8 +1207,8 @@ class TabBar<T> extends Widget {
   private _addButtonEnabled: boolean = false;
   private _tabMoved = new Signal<this, TabBar.ITabMovedArgs<T>>(this);
   private _currentChanged = new Signal<this, TabBar.ICurrentChangedArgs<T>>(this);
+  private _addRequested = new Signal<this, void>(this);
   private _tabCloseRequested = new Signal<this, TabBar.ITabCloseRequestedArgs<T>>(this);
-  private _tabAddRequested = new Signal<this, TabBar.ITabAddRequestedArgs>(this);
   private _tabDetachRequested = new Signal<this, TabBar.ITabDetachRequestedArgs<T>>(this);
   private _tabActivateRequested = new Signal<this, TabBar.ITabActivateRequestedArgs<T>>(this);
 }
@@ -1432,13 +1432,6 @@ namespace TabBar {
      * The title for the tab.
      */
     readonly title: Title<T>;
-  }
-
-  /**
-   * The arguments object for the `tabAddRequested` signal.
-   */
-  export
-  interface ITabAddRequestedArgs {
   }
 
   /**

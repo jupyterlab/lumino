@@ -76,8 +76,7 @@ class TabPanel extends Widget {
     this.tabBar.currentChanged.connect(this._onCurrentChanged, this);
     this.tabBar.tabCloseRequested.connect(this._onTabCloseRequested, this);
     this.tabBar.tabActivateRequested.connect(this._onTabActivateRequested, this);
-    this.tabBar.tabAddRequested.connect(this._onTabAddRequested, this);
-    this.tabBar.tabAddRequested.connect(this._onTabAddRequested, this);
+    this.tabBar.addRequested.connect(this._onTabAddRequested, this);
 
     // Connect the stacked panel signal handlers.
     this.stackedPanel.widgetRemoved.connect(this._onWidgetRemoved, this);
@@ -343,7 +342,7 @@ class TabPanel extends Widget {
   /**
    * Handle the `tabAddRequested` signal from the tab bar.
    */
-  private _onTabAddRequested(sender: TabBar<Widget>, args: TabBar.ITabAddRequestedArgs): void {
+  private _onTabAddRequested(sender: TabBar<Widget>, args: void): void {
     this._widgetAddRequested.emit({
       tabBar: sender
     });

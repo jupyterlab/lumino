@@ -928,7 +928,7 @@ class DockPanel extends Widget {
     tabBar.tabCloseRequested.connect(this._onTabCloseRequested, this);
     tabBar.tabDetachRequested.connect(this._onTabDetachRequested, this);
     tabBar.tabActivateRequested.connect(this._onTabActivateRequested, this);
-    tabBar.tabAddRequested.connect(this._onTabAddRequested, this);
+    tabBar.addRequested.connect(this._onTabAddRequested, this);
 
     // Return the initialized tab bar.
     return tabBar;
@@ -977,7 +977,7 @@ class DockPanel extends Widget {
   /**
    * Handle the `tabAddRequested` signal from the tab bar.
    */
-  private _onTabAddRequested(sender: TabBar<Widget>, args: TabBar.ITabAddRequestedArgs): void {
+  private _onTabAddRequested(sender: TabBar<Widget>, args: void): void {
     this._widgetAddRequested.emit({
       tabBar: sender
     });
