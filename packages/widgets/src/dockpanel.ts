@@ -218,7 +218,7 @@ class DockPanel extends Widget {
   get tabsMovable(): boolean {
     return this._tabsMovable;
   }
-  
+
 
   /**
    * Enable / Disable draggable / movable tabs.
@@ -243,18 +243,18 @@ class DockPanel extends Widget {
   }
 
   /**
-   * Whether the add buttons for each tab bar are enableds.
+   * Whether the add buttons for each tab bar are enabled.
    */
   get addButtonEnabled(): boolean {
     return this._addButtonEnabled;
   }
 
   /**
-   * Enable / Disable add button.
+   * Set whether the add buttons for each tab bar are enabled.
    */
   set addButtonEnabled(value: boolean) {
     this._addButtonEnabled = value;
-    each(this.tabBars(), (tabbar) => { tabbar.addButtonEnabled = value });
+    each(this.tabBars(), tabbar => { tabbar.addButtonEnabled = value; });
   }
 
   /**
@@ -975,9 +975,9 @@ class DockPanel extends Widget {
   }
 
   /**
-   * Handle the `tabAddRequested` signal from the tab bar.
+   * Handle the `addRequested` signal from a tab bar.
    */
-  private _onTabAddRequested(sender: TabBar<Widget>, args: void): void {
+  private _onTabAddRequested(sender: TabBar<Widget>): void {
     this._addRequested.emit(sender);
   }
 
@@ -1113,13 +1113,13 @@ namespace DockPanel {
 
     /**
      * Constrain tabs to this dock panel
-     * 
+     *
      * The default is `'false'`.
      */
     tabsConstrained?: boolean;
 
     /**
-     * Show add buttons to each tab bar.
+     * Enable add buttons in each of the dock panel's tab bars.
      *
      * The default is `'false'`.
      */

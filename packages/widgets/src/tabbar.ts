@@ -129,8 +129,7 @@ class TabBar<T> extends Widget {
   }
 
   /**
-   * A signal emitted when the tabbar add button is clicked.
-   *
+   * A signal emitted when the tab bar add button is clicked.
    */
   get addRequested(): ISignal<this, void> {
     return this._addRequested;
@@ -329,16 +328,14 @@ class TabBar<T> extends Widget {
   }
 
   /**
-   * Get the currently selected title.
-   *
+   * Whether the add button is enabled.
    */
   get addButtonEnabled(): boolean {
     return this._addButtonEnabled;
   }
 
   /**
-   * Set the currently selected title.
-   *
+   * Set whether the add button is enabled.
    */
   set addButtonEnabled(value: boolean) {
     // Do nothing if the value does not change.
@@ -375,7 +372,7 @@ class TabBar<T> extends Widget {
 
 
   /**
-   * The tab bar add node.
+   * The tab bar add button node.
    *
    * #### Notes
    * This is the node which holds the add button.
@@ -733,11 +730,9 @@ class TabBar<T> extends Widget {
       return;
     }
 
-    // Handle clicking on the add button
-    let addButtonClicked = false;
-    if (this.addButtonEnabled && this.addButtonNode.contains(event.target as HTMLElement)) {
-      addButtonClicked = true;
-    }
+    // Check if the add button was clicked.
+    let addButtonClicked = this.addButtonEnabled &&
+      this.addButtonNode.contains(event.target as HTMLElement);
 
     // Lookup the tab nodes.
     let tabs = this.contentNode.children;
@@ -747,7 +742,7 @@ class TabBar<T> extends Widget {
       return ElementExt.hitTest(tab, event.clientX, event.clientY);
     });
 
-    // Do nothing if the press is not on a tab.
+    // Do nothing if the press is not on a tab or the add button.
     if (index === -1 && !addButtonClicked) {
       return;
     }
@@ -777,8 +772,7 @@ class TabBar<T> extends Widget {
     // Add the document mouse up listener.
     document.addEventListener('mouseup', this, true);
 
-    // Do nothing else if the middle button is clicked
-    // or tabbar add button is clicked
+    // Do nothing else if the middle button or add button is clicked.
     if (event.button === 1 || addButtonClicked) {
       return;
     }
@@ -920,8 +914,10 @@ class TabBar<T> extends Widget {
       // Clear the drag data.
       this._dragData = null;
 
-      // Handle clicking on the add button
-      if (this.addButtonEnabled && this.addButtonNode.contains(event.target as HTMLElement)) {
+      // Handle clicking the add button.
+      let addButtonClicked = this.addButtonEnabled &&
+        this.addButtonNode.contains(event.target as HTMLElement);
+      if (addButtonClicked) {
         this._addRequested.emit(undefined);
         return;
       }
@@ -1712,7 +1708,7 @@ namespace TabBar {
   const defaultRenderer = new Renderer();
 
   /**
-   * A selector which matches the close icon node in a tab.
+   * A selector which matches the add button node in the tab bar.
    */
   export
   const addButtonSelector = '.lm-TabBar-addButton';

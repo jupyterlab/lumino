@@ -356,7 +356,7 @@ function main(): void {
   dock.id = 'dock';
 
   dock.addRequested.connect((sender: DockPanel, arg: TabBar<Widget>) => {
-    let w = new ContentWidget("Green");
+    let w = new ContentWidget('Green');
     sender.addWidget(w, { ref: arg.titles[0].owner });
   });
 
