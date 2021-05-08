@@ -390,7 +390,7 @@ describe('@lumino/widgets', () => {
         let rect = addButton.getBoundingClientRect();
         bar.addRequested.connect((sender, args) => {
           expect(sender).to.equal(bar);
-          expect(args).to.eql({});
+          expect(args).to.equal(undefined);
           called = true;
         });
         simulate(addButton, 'mousedown', { clientX: rect.left, clientY: rect.top, button: 0 });
@@ -404,7 +404,7 @@ describe('@lumino/widgets', () => {
         let rect = addButton.getBoundingClientRect();
         bar.addRequested.connect((sender, args) => {
           expect(sender).to.equal(bar);
-          expect(args).to.eql({});
+          expect(args).to.equal(undefined);
           called = true;
         });
         simulate(addButton, 'mousedown', { clientX: rect.left, clientY: rect.top, button: 0 });
