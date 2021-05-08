@@ -374,7 +374,7 @@ describe('@lumino/widgets', () => {
     });
 
 
-    describe('#tabAddRequested', () => {
+    describe('#addRequested', () => {
 
       let addButton: Element;
 
@@ -388,7 +388,7 @@ describe('@lumino/widgets', () => {
         bar.addButtonEnabled = true;
         let called = false;
         let rect = addButton.getBoundingClientRect();
-        bar.tabAddRequested.connect((sender, args) => {
+        bar.addRequested.connect((sender, args) => {
           expect(sender).to.equal(bar);
           expect(args).to.eql({});
           called = true;
@@ -402,7 +402,7 @@ describe('@lumino/widgets', () => {
         bar.addButtonEnabled = false;
         let called = false;
         let rect = addButton.getBoundingClientRect();
-        bar.tabAddRequested.connect((sender, args) => {
+        bar.addRequested.connect((sender, args) => {
           expect(sender).to.equal(bar);
           expect(args).to.eql({});
           called = true;
