@@ -147,6 +147,7 @@ describe('@lumino/widgets', () => {
           orientation: 'horizontal',
           tabsMovable: true,
           allowDeselect: true,
+          addButtonEnabled: true,
           insertBehavior: 'select-tab',
           removeBehavior: 'select-previous-tab',
           renderer
@@ -154,6 +155,7 @@ describe('@lumino/widgets', () => {
         expect(newBar).to.be.an.instanceof(TabBar);
         expect(newBar.tabsMovable).to.equal(true);
         expect(newBar.renderer).to.equal(renderer);
+        expect(newBar.addButtonEnabled).to.equal(true);
       });
 
       it('should add the `lm-TabBar` class', () => {
@@ -371,6 +373,47 @@ describe('@lumino/widgets', () => {
 
     });
 
+
+    describe('#addRequested', () => {
+
+      let addButton: Element;
+
+      beforeEach(() => {
+        populateBar(bar);
+        bar.currentIndex = 0;
+        addButton = bar.addButtonNode;
+      });
+
+      it('should be emitted when the add button is clicked', () => {
+        bar.addButtonEnabled = true;
+        let called = false;
+        let rect = addButton.getBoundingClientRect();
+        bar.addRequested.connect((sender, args) => {
+          expect(sender).to.equal(bar);
+          expect(args).to.equal(undefined);
+          called = true;
+        });
+        simulate(addButton, 'mousedown', { clientX: rect.left, clientY: rect.top, button: 0 });
+        simulate(addButton, 'mouseup', { clientX: rect.left, clientY: rect.top, button: 0 });
+        expect(called).to.equal(true);
+      });
+
+      it('should not be emitted if addButtonEnabled is `false`', () => {
+        bar.addButtonEnabled = false;
+        let called = false;
+        let rect = addButton.getBoundingClientRect();
+        bar.addRequested.connect((sender, args) => {
+          expect(sender).to.equal(bar);
+          expect(args).to.equal(undefined);
+          called = true;
+        });
+        simulate(addButton, 'mousedown', { clientX: rect.left, clientY: rect.top, button: 0 });
+        simulate(addButton, 'mouseup', { clientX: rect.left, clientY: rect.top, button: 0 });
+        expect(called).to.equal(false);
+      });
+
+    });
+
     describe('#tabDetachRequested', () => {
 
       let tab: HTMLElement;
@@ -473,6 +516,30 @@ describe('@lumino/widgets', () => {
         let titles = bar.titles.slice();
         bar.insertTab(2, titles[0]);
         expect(bar.titles[2]).to.equal(titles[0]);
+      });
+
+    });
+
+    describe('#addButtonEnabled', () => {
+
+      it('should get whether the add button is enabled', () => {
+        let bar = new TabBar<Widget>();
+        expect(bar.addButtonEnabled).to.equal(false);
+      });
+
+      it('should set whether the add button is enabled', () => {
+        let bar = new TabBar<Widget>();
+        bar.addButtonEnabled = true;
+        expect(bar.addButtonEnabled).to.equal(true);
+      });
+
+      it('should not show the add button if not set', () => {
+        populateBar(bar);
+        expect(bar.addButtonNode.classList.contains('lm-mod-hidden')).to.equal(true);
+
+        bar.addButtonEnabled = true;
+        expect(bar.addButtonNode.classList.contains('lm-mod-hidden')).to.equal(false);
+
       });
 
     });

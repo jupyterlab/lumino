@@ -93,11 +93,22 @@
 }
 
 
+.lm-TabBar .lm-TabBar-addButton {
+  padding: 0px 6px;
+  border-bottom: 1px solid #C0C0C0;
+}
+
+
 /* <DEPRECATED> */
 .p-TabBar-tab.p-mod-closable > .p-TabBar-tabCloseIcon:before,
 /* </DEPRECATED> */
 .lm-TabBar-tab.lm-mod-closable > .lm-TabBar-tabCloseIcon:before {
   content: '\f00d';
+  font-family: FontAwesome;
+}
+
+.lm-TabBar .lm-TabBar-addButton:before {
+  content: '\f067';
   font-family: FontAwesome;
 }
 

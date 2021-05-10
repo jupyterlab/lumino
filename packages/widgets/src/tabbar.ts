@@ -70,6 +70,7 @@ class TabBar<T> extends Widget {
     this.tabsMovable = options.tabsMovable || false;
     this.titlesEditable = options.titlesEditable || false;
     this.allowDeselect = options.allowDeselect || false;
+    this.addButtonEnabled = options.addButtonEnabled || false;
     this.insertBehavior = options.insertBehavior || 'select-tab-if-needed';
     this.name = options.name || '';
     this.orientation = options.orientation || 'horizontal';
@@ -125,6 +126,13 @@ class TabBar<T> extends Widget {
    */
   get tabActivateRequested(): ISignal<this, TabBar.ITabActivateRequestedArgs<T>> {
     return this._tabActivateRequested;
+  }
+
+  /**
+   * A signal emitted when the tab bar add button is clicked.
+   */
+  get addRequested(): ISignal<this, void> {
+    return this._addRequested;
   }
 
   /**
@@ -320,6 +328,30 @@ class TabBar<T> extends Widget {
   }
 
   /**
+   * Whether the add button is enabled.
+   */
+  get addButtonEnabled(): boolean {
+    return this._addButtonEnabled;
+  }
+
+  /**
+   * Set whether the add button is enabled.
+   */
+  set addButtonEnabled(value: boolean) {
+    // Do nothing if the value does not change.
+    if (this._addButtonEnabled === value) {
+      return;
+    }
+
+    this._addButtonEnabled = value;
+    if (value) {
+      this.addButtonNode.classList.remove('lm-mod-hidden');
+    } else {
+      this.addButtonNode.classList.add('lm-mod-hidden');
+    }
+  }
+
+  /**
    * A read-only array of the titles in the tab bar.
    */
   get titles(): ReadonlyArray<Title<T>> {
@@ -336,6 +368,19 @@ class TabBar<T> extends Widget {
    */
   get contentNode(): HTMLUListElement {
     return this.node.getElementsByClassName('lm-TabBar-content')[0] as HTMLUListElement;
+  }
+
+
+  /**
+   * The tab bar add button node.
+   *
+   * #### Notes
+   * This is the node which holds the add button.
+   *
+   * Modifying this node directly can lead to undefined behavior.
+   */
+  get addButtonNode(): HTMLDivElement {
+    return this.node.getElementsByClassName('lm-TabBar-addButton')[0] as HTMLDivElement;
   }
 
   /**
@@ -685,6 +730,10 @@ class TabBar<T> extends Widget {
       return;
     }
 
+    // Check if the add button was clicked.
+    let addButtonClicked = this.addButtonEnabled &&
+      this.addButtonNode.contains(event.target as HTMLElement);
+
     // Lookup the tab nodes.
     let tabs = this.contentNode.children;
 
@@ -693,8 +742,8 @@ class TabBar<T> extends Widget {
       return ElementExt.hitTest(tab, event.clientX, event.clientY);
     });
 
-    // Do nothing if the press is not on a tab.
-    if (index === -1) {
+    // Do nothing if the press is not on a tab or the add button.
+    if (index === -1 && !addButtonClicked) {
       return;
     }
 
@@ -723,8 +772,8 @@ class TabBar<T> extends Widget {
     // Add the document mouse up listener.
     document.addEventListener('mouseup', this, true);
 
-    // Do nothing else if the middle button is clicked.
-    if (event.button === 1) {
+    // Do nothing else if the middle button or add button is clicked.
+    if (event.button === 1 || addButtonClicked) {
       return;
     }
 
@@ -864,6 +913,14 @@ class TabBar<T> extends Widget {
     if (!data.dragActive) {
       // Clear the drag data.
       this._dragData = null;
+
+      // Handle clicking the add button.
+      let addButtonClicked = this.addButtonEnabled &&
+        this.addButtonNode.contains(event.target as HTMLElement);
+      if (addButtonClicked) {
+        this._addRequested.emit(undefined);
+        return;
+      }
 
       // Lookup the tab nodes.
       let tabs = this.contentNode.children;
@@ -1143,8 +1200,10 @@ class TabBar<T> extends Widget {
   private _titlesEditable: boolean = false;
   private _previousTitle: Title<T> | null = null;
   private _dragData: Private.IDragData | null = null;
+  private _addButtonEnabled: boolean = false;
   private _tabMoved = new Signal<this, TabBar.ITabMovedArgs<T>>(this);
   private _currentChanged = new Signal<this, TabBar.ICurrentChangedArgs<T>>(this);
+  private _addRequested = new Signal<this, void>(this);
   private _tabCloseRequested = new Signal<this, TabBar.ITabCloseRequestedArgs<T>>(this);
   private _tabDetachRequested = new Signal<this, TabBar.ITabDetachRequestedArgs<T>>(this);
   private _tabActivateRequested = new Signal<this, TabBar.ITabActivateRequestedArgs<T>>(this);
@@ -1262,6 +1321,13 @@ namespace TabBar {
      * The default is `false`.
      */
     titlesEditable?: boolean;
+
+    /**
+     * Whether the add button is enabled.
+     *
+     * The default is `false`.
+     */
+    addButtonEnabled?: boolean;
 
     /**
      * The selection behavior when inserting a tab.
@@ -1649,6 +1715,13 @@ namespace TabBar {
    */
   export
   const defaultRenderer = new Renderer();
+
+  /**
+   * A selector which matches the add button node in the tab bar.
+   */
+  export
+  const addButtonSelector = '.lm-TabBar-addButton';
+
 }
 
 
@@ -1792,6 +1865,10 @@ namespace Private {
     content.classList.add('p-TabBar-content');
     /* </DEPRECATED> */
     node.appendChild(content);
+
+    let add = document.createElement('div');
+    add.className = 'lm-TabBar-addButton lm-mod-hidden';
+    node.appendChild(add);
     return node;
   }
 
