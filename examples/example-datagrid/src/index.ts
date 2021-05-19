@@ -16,13 +16,83 @@ import {
 
 import {
   DockPanel, StackedPanel, Widget
-} from '@lumino/widgets';
+} from "../../../packages/widgets";
+
+import { CellGroup } from "../../../packages/datagrid/src/cellgroup";
 
 import {
   getKeyboardLayout
 } from '@lumino/keyboard';
 
 import '../style/index.css';
+
+
+class MergedCellModel extends DataModel {
+  rowCount(region: DataModel.RowRegion): number {
+    return region === "body" ? 20 : 3;
+  }
+
+  columnCount(region: DataModel.ColumnRegion): number {
+    return region === "body" ? 6 : 3;
+  }
+
+  data(region: DataModel.CellRegion, row: number, column: number): any {
+    if (region === "row-header") {
+      return `R: ${row}, ${column}`;
+    }
+    if (region === "column-header") {
+      return `C: ${row}, ${column}`;
+    }
+    if (region === "corner-header") {
+      return `N: ${row}, ${column}`;
+    }
+    return `(${row}, ${column})`;
+  }
+
+  groupCount(region: DataModel.RowRegion): number {
+    if (region === "body") {
+      return 3;
+    } else if (region === "column-header") {
+      return 1;
+    } else if (region === "row-header") {
+      return 2;
+    } else if (region === "corner-header") {
+      return 1;
+    }
+    return 0;
+  }
+
+  group(region: DataModel.CellRegion, groupIndex: number): CellGroup | null {
+    if (region === "body") {
+      return [
+        { startRow: 1, startColumn: 1, endRow: 2, endColumn: 2 },
+        { startRow: 5, startColumn: 1, endRow: 5, endColumn: 2 },
+        { startRow: 3, startColumn: 5, endRow: 4, endColumn: 5 },
+      ][groupIndex];
+    }
+
+    if (region === "column-header") {
+      return [{ startRow: 0, startColumn: 4, endRow: 1, endColumn: 4 }][
+        groupIndex
+      ];
+    }
+
+    if (region === "row-header") {
+      return [
+        { startRow: 0, startColumn: 0, endRow: 1, endColumn: 1 },
+        { startRow: 4, startColumn: 0, endRow: 5, endColumn: 0 },
+      ][groupIndex];
+    }
+
+    if (region === "corner-header") {
+      return [{ startRow: 0, startColumn: 0, endRow: 1, endColumn: 1 }][
+        groupIndex
+      ];
+    }
+
+    return null;
+  }
+}
 
 
 class LargeDataModel extends DataModel {
@@ -397,6 +467,7 @@ function main(): void {
   let model4 = new RandomDataModel(80, 80);
   let model5 = new JSONModel(Data.cars);
   let model6 = new MutableJSONModel(Data.editable_test_data);
+  let model7 = new MergedCellModel();
 
   let blueStripeStyle: DataGrid.Style = {
     ...DataGrid.defaultStyle,
@@ -518,6 +589,12 @@ function main(): void {
   let grid7 = new DataGrid();
   grid7.dataModel = model6;
 
+  let grid8 = new DataGrid();
+  grid8.dataModel = model7;
+  grid8.keyHandler = new BasicKeyHandler();
+  grid8.mouseHandler = new BasicMouseHandler();
+  grid8.selectionModel = new BasicSelectionModel({ dataModel: model7, selectionMode: 'cell' });
+
   let wrapper1 = createWrapper(grid1, 'Trillion Rows/Cols');
   let wrapper2 = createWrapper(grid2, 'Streaming Rows');
   let wrapper3 = createWrapper(grid3, 'Random Ticks 1');
@@ -525,6 +602,7 @@ function main(): void {
   let wrapper5 = createWrapper(grid5, 'JSON Data');
   let wrapper6 = createWrapper(grid6, 'Editable Grid');
   let wrapper7 = createWrapper(grid7, 'Copy');
+  let wrapper8 = createWrapper(grid8, 'Merged Cells');
 
   let dock = new DockPanel();
   dock.id = 'dock';
@@ -536,6 +614,7 @@ function main(): void {
   dock.addWidget(wrapper5, { mode: 'split-bottom', ref: wrapper2 });
   dock.addWidget(wrapper6, { mode: 'tab-before', ref: wrapper1 });
   dock.addWidget(wrapper7, { mode: 'split-bottom', ref: wrapper6 });
+  dock.addWidget(wrapper8, { mode: 'tab-after', ref: wrapper1 });
   dock.activateWidget(wrapper6);
 
   window.onresize = () => { dock.update(); };
