@@ -4,10 +4,10 @@
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/2021.4.27...f8466b274fe801bb06931572893fb938808eb2b8))
 
-   @lumino/application: 1.19.0 => 1.20.0
-   @lumino/datagrid: 0.23.0 => 0.24.0
-   @lumino/default-theme: 0.13.0 => 0.14.0
-   @lumino/widgets: 1.22.0 => 1.23.0
+    @lumino/application: 1.19.0 => 1.20.0
+    @lumino/datagrid: 0.23.0 => 0.24.0
+    @lumino/default-theme: 0.13.0 => 0.14.0
+    @lumino/widgets: 1.22.0 => 1.23.0
 
 ### Enhancements made
 
