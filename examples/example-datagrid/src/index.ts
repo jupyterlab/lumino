@@ -10,15 +10,13 @@
 import 'es6-promise/auto';  // polyfill Promise on IE
 
 import {
-  BasicKeyHandler, BasicMouseHandler, BasicSelectionModel, CellRenderer,
+  BasicKeyHandler, BasicMouseHandler, BasicSelectionModel, CellRenderer, CellGroup,
   DataGrid, DataModel, JSONModel, TextRenderer, MutableDataModel, CellEditor, ICellEditor
 } from '@lumino/datagrid';
 
 import {
   DockPanel, StackedPanel, Widget
-} from "../../../packages/widgets";
-
-import { CellGroup } from "../../../packages/datagrid/src/cellgroup";
+} from '@lumino/widgets';
 
 import {
   getKeyboardLayout
