@@ -1,5 +1,33 @@
 # Changelog
 
+## 2021-5-10
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/2021.4.27...f8466b274fe801bb06931572893fb938808eb2b8))
+
+   @lumino/application: 1.19.0 => 1.20.0
+   @lumino/datagrid: 0.23.0 => 0.24.0
+   @lumino/default-theme: 0.13.0 => 0.14.0
+   @lumino/widgets: 1.22.0 => 1.23.0
+
+### Enhancements made
+
+- Implement plus button on TabBar [#108](https://github.com/jupyterlab/lumino/pull/108) ([@nmichaud](https://github.com/nmichaud))
+
+### Bugs fixed
+
+- Fix selection mode [#179](https://github.com/jupyterlab/lumino/pull/179) ([@ibdafna](https://github.com/ibdafna))
+
+### Maintenance and upkeep improvements
+
+- Respect closable attribute on title [#178](https://github.com/jupyterlab/lumino/pull/178) ([@nmichaud](https://github.com/nmichaud))
+- Bump underscore from 1.9.1 to 1.13.1 [#181](https://github.com/jupyterlab/lumino/pull/181) ([@dependabot](https://github.com/dependabot))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2021-04-27&to=2021-05-10&type=c))
+
+[@afshin](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aafshin+updated%3A2021-04-27..2021-05-10&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2021-04-27..2021-05-10&type=Issues) | [@ellisonbg](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aellisonbg+updated%3A2021-04-27..2021-05-10&type=Issues) | [@ibdafna](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aibdafna+updated%3A2021-04-27..2021-05-10&type=Issues) | [@nmichaud](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Anmichaud+updated%3A2021-04-27..2021-05-10&type=Issues)
+
 ## 2021-4-27
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/2012.4.19...f4d7e30f37e3bb362b89865a6ce24779c11e91bc))
