@@ -1,5 +1,32 @@
 # Changelog
 
+## 2021-5-20
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/2021.5.10...e2b775392b42e98d5c58b9afdc74e92b1631739b))
+
+    @lumino/datagrid: 0.24.0 => 0.25.0
+
+### Enhancements made
+
+- Cell merging [#124](https://github.com/jupyterlab/lumino/pull/124) ([@ibdafna](https://github.com/ibdafna))
+
+### Maintenance and upkeep improvements
+
+- Bump codemirror from 5.49.2 to 5.58.2 [#183](https://github.com/jupyterlab/lumino/pull/183) ([@dependabot](https://github.com/dependabot))
+- Bump hosted-git-info from 2.8.5 to 2.8.9 [#182](https://github.com/jupyterlab/lumino/pull/182) ([@dependabot](https://github.com/dependabot))
+
+### Documentation improvements
+
+- Fix changelog formatting for 2021-5-10 entry [#185](https://github.com/jupyterlab/lumino/pull/185) ([@blink1073](https://github.com/blink1073))
+- Add changelog entry for 2021.5.10 [#184](https://github.com/jupyterlab/lumino/pull/184) ([@blink1073](https://github.com/blink1073))
+
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2021-05-10&to=2021-05-20&type=c))
+
+[@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2021-05-10..2021-05-20&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2021-05-10..2021-05-20&type=Issues) | [@ibdafna](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aibdafna+updated%3A2021-05-10..2021-05-20&type=Issues)
+
 ## 2021-5-10
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/2021.4.27...f8466b274fe801bb06931572893fb938808eb2b8))
