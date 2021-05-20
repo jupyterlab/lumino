@@ -3583,11 +3583,11 @@ class DataGrid extends Widget {
     }
 
     const _isCellGroupAbove = (group1: CellGroup, group2: CellGroup): boolean => {
-      return group2.endRow >= group1.startRow;
+      return group2.r2 >= group1.r1;
     };
 
     const _isCellGroupBelow = (group1: CellGroup, group2: CellGroup): boolean => {
-      return group2.startRow <= group1.endRow;
+      return group2.r1 <= group1.r2;
     };
 
     let borderY = dy > 0 ?
@@ -3622,11 +3622,11 @@ class DataGrid extends Widget {
           g = 0;
         }
       }
-      if (mergedGroupAtAxis.startRow !== Number.MAX_VALUE) {
+      if (mergedGroupAtAxis.r1 !== Number.MAX_VALUE) {
         if (dy > 0) {
-          borderY = this._rowSections.offsetOf(mergedGroupAtAxis.startRow) - this._scrollY;
+          borderY = this._rowSections.offsetOf(mergedGroupAtAxis.r1) - this._scrollY;
         } else {
-          borderY = this._rowSections.offsetOf(mergedGroupAtAxis.endRow + 1);
+          borderY = this._rowSections.offsetOf(mergedGroupAtAxis.r2 + 1);
         }
       }
     }
@@ -3698,11 +3698,11 @@ class DataGrid extends Widget {
     }
 
     const _isCellGroupBefore = (group1: CellGroup, group2: CellGroup): boolean => {
-      return group2.endColumn >= group1.startColumn;
+      return group2.c2 >= group1.c1;
     };
 
     const _isCellGroupAfter = (group1: CellGroup, group2: CellGroup): boolean => {
-      return group2.startColumn <= group1.endColumn;
+      return group2.c1 <= group1.c2;
     };
 
     let borderX = dx > 0 ?
@@ -3737,11 +3737,11 @@ class DataGrid extends Widget {
           g = 0;
         }
       }
-      if (mergedGroupAtAxis.startColumn !== Number.MAX_VALUE) {
+      if (mergedGroupAtAxis.c1 !== Number.MAX_VALUE) {
         if (dx > 0) {
-          borderX = this._columnSections.offsetOf(mergedGroupAtAxis.startColumn) - this._scrollX;
+          borderX = this._columnSections.offsetOf(mergedGroupAtAxis.c1) - this._scrollX;
         } else {
-          borderX = this._columnSections.offsetOf(mergedGroupAtAxis.endColumn + 1);
+          borderX = this._columnSections.offsetOf(mergedGroupAtAxis.c2 + 1);
         }
       }
     }
@@ -4526,23 +4526,23 @@ class DataGrid extends Widget {
     rgn = JSONExt.deepCopy(rgn);
 
     const joinedGroup = CellGroup.joinCellGroupWithMergedCellGroups(this.dataModel!, {
-      startRow: rgn.row, endRow: rgn.row + rgn.rowSizes.length - 1,
-      startColumn: rgn.column, endColumn: rgn.column + rgn.columnSizes.length - 1
+      r1: rgn.row, r2: rgn.row + rgn.rowSizes.length - 1,
+      c1: rgn.column, c2: rgn.column + rgn.columnSizes.length - 1
     }, rgn.region);
 
-    for (let r = joinedGroup.startRow; r < rgn.row; r++) {
+    for (let r = joinedGroup.r1; r < rgn.row; r++) {
       const h = this._getRowSize(rgn.region, r);
       rgn.y -= h;
       rgn.rowSizes = [h].concat(rgn.rowSizes);
     }
-    rgn.row = joinedGroup.startRow;
+    rgn.row = joinedGroup.r1;
 
-    for (let c = joinedGroup.startColumn; c < rgn.column; c++) {
+    for (let c = joinedGroup.c1; c < rgn.column; c++) {
       const w = this._getColumnSize(rgn.region, c);
       rgn.x -= w;
       rgn.columnSizes = [w].concat(rgn.columnSizes);
     }
-    rgn.column = joinedGroup.startColumn;
+    rgn.column = joinedGroup.c1;
 
     // Set up the cell config object for rendering.
     let config = {
@@ -4606,14 +4606,14 @@ class DataGrid extends Widget {
          */
         if (groupIndex !== -1) {
           const group = this.dataModel!.group(config.region, groupIndex)!;
-          if (group.startRow === row && group.startColumn === column) {
+          if (group.r1 === row && group.c1 === column) {
             width = 0;
-            for (let c = group.startColumn; c <= group.endColumn; c++) {
+            for (let c = group.c1; c <= group.c2; c++) {
               width += this._getColumnSize(config.region, c);
             }
 
             height = 0;
-            for (let r = group.startRow; r <= group.endRow; r++) {
+            for (let r = group.r1; r <= group.r2; r++) {
               height += this._getRowSize(config.region, r);
             }
           }
@@ -5003,14 +5003,14 @@ class DataGrid extends Widget {
 
       const joinedGroup = CellGroup.joinCellGroupWithMergedCellGroups(
         this.dataModel!,
-        {startRow: sr1, endRow: sr2, startColumn: sc1, endColumn: sc2},
+        {r1: sr1, r2: sr2, c1: sc1, c2: sc2},
         "body"
       );
 
-      sr1 = joinedGroup.startRow;
-      sr2 = joinedGroup.endRow;
-      sc1 = joinedGroup.startColumn;
-      sc2 = joinedGroup.endColumn;
+      sr1 = joinedGroup.r1;
+      sr2 = joinedGroup.r2;
+      sc1 = joinedGroup.c1;
+      sc2 = joinedGroup.c2;
 
       // Convert to pixel coordinates.
       let x1 = this._columnSections.offsetOf(sc1) - sx + hw;
@@ -5298,14 +5298,14 @@ class DataGrid extends Widget {
 
     const joinedGroup = CellGroup.joinCellGroupWithMergedCellGroups(
       this.dataModel!,
-      {startRow, endRow, startColumn, endColumn},
+      {r1: startRow, r2: endRow, c1: startColumn, c2: endColumn},
       "body"
     );
 
-    startRow = joinedGroup.startRow;
-    endRow = joinedGroup.endRow;
-    startColumn = joinedGroup.startColumn;
-    endColumn = joinedGroup.endColumn;
+    startRow = joinedGroup.r1;
+    endRow = joinedGroup.r2;
+    startColumn = joinedGroup.c1;
+    endColumn = joinedGroup.c2;
 
     // Fetch geometry.
     let sx = this._scrollX;

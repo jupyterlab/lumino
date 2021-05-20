@@ -3,12 +3,16 @@ import { SectionList } from "./sectionlist";
 
 /**
  * An interface describing a merged cell group.
+ * r1: start row
+ * r2: end row
+ * c1: start column
+ * c2: end column
  */
 export interface CellGroup {
-  startRow: number;
-  endRow: number;
-  startColumn: number;
-  endColumn: number;
+  r1: number;
+  r2: number;
+  c1: number;
+  c2: number;
 }
 
 /**
@@ -28,14 +32,14 @@ export namespace CellGroup {
     for (let i = 0; i < numGroups; i++) {
       const group = dataModel.group(rgn, i)!;
       if (
-        row1 >= group.startRow &&
-        row1 <= group.endRow &&
-        column1 >= group.startColumn &&
-        column1 <= group.endColumn &&
-        row2 >= group.startRow &&
-        row2 <= group.endRow &&
-        column2 >= group.startColumn &&
-        column2 <= group.endColumn
+        row1 >= group.r1 &&
+        row1 <= group.r2 &&
+        column1 >= group.c1 &&
+        column1 <= group.c2 &&
+        row2 >= group.r1 &&
+        row2 <= group.r2 &&
+        column2 >= group.c1 &&
+        column2 <= group.c2
       ) {
         return true;
       }
@@ -87,11 +91,7 @@ export namespace CellGroup {
     }
 
     if (groupsAtAxis.length === 0) {
-      return [
-        0,
-        0,
-        { startRow: -1, endRow: -1, startColumn: -1, endColumn: -1 },
-      ];
+      return [0, 0, { r1: -1, r2: -1, c1: -1, c2: -1 }];
     }
 
     let joinedGroup = groupsAtAxis[0];
@@ -105,8 +105,8 @@ export namespace CellGroup {
       }
     }
 
-    let minRow = joinedGroup.startRow;
-    let maxRow = joinedGroup.endRow;
+    let minRow = joinedGroup.r1;
+    let maxRow = joinedGroup.r2;
 
     for (let r = index - 1; r >= minRow; r--) {
       mergeStartOffset += sectionList.sizeOf(r);
@@ -133,23 +133,17 @@ export namespace CellGroup {
   ): boolean {
     if (axis === "row") {
       return (
-        (group1.startRow >= group2.startRow &&
-          group1.startRow <= group2.endRow) ||
-        (group1.endRow >= group2.startRow && group1.endRow <= group2.endRow) ||
-        (group2.startRow >= group1.startRow &&
-          group2.startRow <= group1.endRow) ||
-        (group2.endRow >= group1.startRow && group2.endRow <= group1.endRow)
+        (group1.r1 >= group2.r1 && group1.r1 <= group2.r2) ||
+        (group1.r2 >= group2.r1 && group1.r2 <= group2.r2) ||
+        (group2.r1 >= group1.r1 && group2.r1 <= group1.r2) ||
+        (group2.r2 >= group1.r1 && group2.r2 <= group1.r2)
       );
     }
     return (
-      (group1.startColumn >= group2.startColumn &&
-        group1.startColumn <= group2.endColumn) ||
-      (group1.endColumn >= group2.startColumn &&
-        group1.endColumn <= group2.endColumn) ||
-      (group2.startColumn >= group1.startColumn &&
-        group2.startColumn <= group1.endColumn) ||
-      (group2.endColumn >= group1.startColumn &&
-        group2.endColumn <= group1.endColumn)
+      (group1.c1 >= group2.c1 && group1.c1 <= group2.c2) ||
+      (group1.c2 >= group2.c1 && group1.c2 <= group2.c2) ||
+      (group2.c1 >= group1.c1 && group2.c1 <= group1.c2) ||
+      (group2.c2 >= group1.c1 && group2.c2 <= group1.c2)
     );
   }
 
@@ -163,20 +157,14 @@ export namespace CellGroup {
     group2: CellGroup
   ): boolean {
     return (
-      ((group1.startRow >= group2.startRow &&
-        group1.startRow <= group2.endRow) ||
-        (group1.endRow >= group2.startRow && group1.endRow <= group2.endRow) ||
-        (group2.startRow >= group1.startRow &&
-          group2.startRow <= group1.endRow) ||
-        (group2.endRow >= group1.startRow && group2.endRow <= group1.endRow)) &&
-      ((group1.startColumn >= group2.startColumn &&
-        group1.startColumn <= group2.endColumn) ||
-        (group1.endColumn >= group2.startColumn &&
-          group1.endColumn <= group2.endColumn) ||
-        (group2.startColumn >= group1.startColumn &&
-          group2.startColumn <= group1.endColumn) ||
-        (group2.endColumn >= group1.startColumn &&
-          group2.endColumn <= group1.endColumn))
+      ((group1.r1 >= group2.r1 && group1.r1 <= group2.r2) ||
+        (group1.r2 >= group2.r1 && group1.r2 <= group2.r2) ||
+        (group2.r1 >= group1.r1 && group2.r1 <= group1.r2) ||
+        (group2.r2 >= group1.r1 && group2.r2 <= group1.r2)) &&
+      ((group1.c1 >= group2.c1 && group1.c1 <= group2.c2) ||
+        (group1.c2 >= group2.c1 && group1.c2 <= group2.c2) ||
+        (group2.c1 >= group1.c1 && group2.c1 <= group1.c2) ||
+        (group2.c2 >= group1.c1 && group2.c2 <= group1.c2))
     );
   }
 
@@ -198,10 +186,10 @@ export namespace CellGroup {
     for (let i = 0; i < numGroups; i++) {
       const group = dataModel.group(rgn, i)!;
       if (
-        row >= group.startRow &&
-        row <= group.endRow &&
-        column >= group.startColumn &&
-        column <= group.endColumn
+        row >= group.r1 &&
+        row <= group.r2 &&
+        column >= group.c1 &&
+        column <= group.c2
       ) {
         return i;
       }
@@ -262,13 +250,13 @@ export namespace CellGroup {
     let endColumn = Number.MIN_VALUE;
 
     for (const group of groups) {
-      startRow = Math.min(startRow, group.startRow);
-      endRow = Math.max(endRow, group.endRow);
-      startColumn = Math.min(startColumn, group.startColumn);
-      endColumn = Math.max(endColumn, group.endColumn);
+      startRow = Math.min(startRow, group.r1);
+      endRow = Math.max(endRow, group.r2);
+      startColumn = Math.min(startColumn, group.c1);
+      endColumn = Math.max(endColumn, group.c2);
     }
 
-    return { startRow, endRow, startColumn, endColumn };
+    return { r1: startRow, r2: endRow, c1: startColumn, c2: endColumn };
   }
 
   /**
@@ -319,7 +307,7 @@ export namespace CellGroup {
 
     for (let i = 0; i < numGroups; i++) {
       const group = dataModel.group(rgn, i)!;
-      if (row >= group.startRow && row <= group.endRow) {
+      if (row >= group.r1 && row <= group.r2) {
         groupsAtRow.push(group);
       }
     }
@@ -344,7 +332,7 @@ export namespace CellGroup {
 
     for (let i = 0; i < numGroups; i++) {
       const group = dataModel.group(rgn, i)!;
-      if (column >= group.startColumn && column <= group.endColumn) {
+      if (column >= group.c1 && column <= group.c2) {
         groupsAtColumn.push(group);
       }
     }
@@ -361,7 +349,7 @@ export namespace CellGroup {
     group1: CellGroup,
     group2: CellGroup
   ): boolean {
-    return group2.endRow >= group1.startRow;
+    return group2.r2 >= group1.r1;
   }
 
   /**
@@ -371,7 +359,7 @@ export namespace CellGroup {
     group1: CellGroup,
     group2: CellGroup
   ): boolean {
-    return group2.startRow <= group1.endRow;
+    return group2.r1 <= group1.r2;
   }
 
   /**
@@ -392,7 +380,7 @@ export namespace CellGroup {
     let groupsAtAxis: CellGroup[] = [];
     if (axis === "row") {
       for (const region of regions) {
-        for (let r = group.startRow; r <= group.endRow; r++) {
+        for (let r = group.r1; r <= group.r2; r++) {
           groupsAtAxis = groupsAtAxis.concat(
             CellGroup.getCellGroupsAtRow(dataModel, region, r)
           );
@@ -400,7 +388,7 @@ export namespace CellGroup {
       }
     } else {
       for (const region of regions) {
-        for (let c = group.startColumn; c <= group.endColumn; c++) {
+        for (let c = group.c1; c <= group.c2; c++) {
           groupsAtAxis = groupsAtAxis.concat(
             CellGroup.getCellGroupsAtColumn(dataModel, region, c)
           );

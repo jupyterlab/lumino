@@ -589,20 +589,20 @@ abstract class CellEditor implements ICellEditor, IDisposable {
     const cellGroup = CellGroup.getGroup(grid.dataModel!, "body", row, column);
 
     if (cellGroup) {
-      columnX = grid.headerWidth - grid.scrollX + grid.columnOffset('body', cellGroup.startColumn);
-      rowY = grid.headerHeight - grid.scrollY + grid.rowOffset('body', cellGroup.startRow);
+      columnX = grid.headerWidth - grid.scrollX + grid.columnOffset('body', cellGroup.c1);
+      rowY = grid.headerHeight - grid.scrollY + grid.rowOffset('body', cellGroup.r1);
       width = 0;
       height = 0;
 
-      for (let r = cellGroup.startRow; r <= cellGroup.endRow; r++) {
+      for (let r = cellGroup.r1; r <= cellGroup.r2; r++) {
         height += grid.rowSize('body', r);
       }
 
-      for (let c = cellGroup.startColumn; c <= cellGroup.endColumn; c++) {
+      for (let c = cellGroup.c1; c <= cellGroup.c2; c++) {
         width += grid.columnSize('body', c);
       }
 
-      data = grid.dataModel!.data('body', cellGroup.startRow, cellGroup.startColumn);
+      data = grid.dataModel!.data('body', cellGroup.r1, cellGroup.c1);
     } else {
       columnX = grid.headerWidth - grid.scrollX + grid.columnOffset('body', column);
       rowY = grid.headerHeight - grid.scrollY + grid.rowOffset('body', row);

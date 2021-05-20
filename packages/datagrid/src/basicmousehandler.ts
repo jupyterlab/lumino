@@ -315,12 +315,12 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
       r1 = accel ? row : shift ? model.cursorRow : row;
       r2 = row;
 
-      const selectionGroup: CellGroup = {startRow: r1, startColumn: 0, endRow: r2, endColumn: 0};
+      const selectionGroup: CellGroup = {r1: r1, c1: 0, r2: r2, c2: 0};
       const joinedGroup = CellGroup.joinCellGroupsIntersectingAtAxis(grid.dataModel!, ["row-header", "body"], "row", selectionGroup);
       // Check if there are any merges
-      if (joinedGroup.startRow != Number.MAX_VALUE) {
-        r1 = joinedGroup.startRow;
-        r2 = joinedGroup.endRow;
+      if (joinedGroup.r1 != Number.MAX_VALUE) {
+        r1 = joinedGroup.r1;
+        r2 = joinedGroup.r2;
       }
       
       c1 = 0;
@@ -334,12 +334,12 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
       c1 = accel ? column : shift ? model.cursorColumn : column;
       c2 = column;
 
-      const selectionGroup: CellGroup = {startRow: 0, startColumn: c1, endRow: 0, endColumn: c2};
+      const selectionGroup: CellGroup = {r1: 0, c1: c1, r2: 0, c2: c2};
       const joinedGroup = CellGroup.joinCellGroupsIntersectingAtAxis(grid.dataModel!, ["column-header", "body"], "column", selectionGroup);
       // Check if there are any merges
-      if (joinedGroup.startColumn != Number.MAX_VALUE) {
-        c1 = joinedGroup.startColumn;
-        c2 = joinedGroup.endColumn;
+      if (joinedGroup.c1 != Number.MAX_VALUE) {
+        c1 = joinedGroup.c1;
+        c2 = joinedGroup.c2;
       }
 
       cursorRow = accel ? 0 : shift ? model.cursorRow : 0;
@@ -487,12 +487,12 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
       r1 = data.row;
       r2 = grid.rowAt('body', vy);
 
-      const selectionGroup: CellGroup = {startRow: r1, startColumn: 0, endRow: r2, endColumn: 0};
+      const selectionGroup: CellGroup = {r1: r1, c1: 0, r2: r2, c2: 0};
       const joinedGroup = CellGroup.joinCellGroupsIntersectingAtAxis(grid.dataModel!, ["row-header", "body"], "row", selectionGroup);
       // Check if there are any merges
-      if (joinedGroup.startRow != Number.MAX_VALUE) {
-        r1 = Math.min(r1, joinedGroup.startRow);
-        r2 = Math.max(r2, joinedGroup.endRow);
+      if (joinedGroup.r1 != Number.MAX_VALUE) {
+        r1 = Math.min(r1, joinedGroup.r1);
+        r2 = Math.max(r2, joinedGroup.r2);
       }
 
 
@@ -504,12 +504,12 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
       c1 = data.column;
       c2 = grid.columnAt('body', vx);
 
-      const selectionGroup: CellGroup = {startRow: 0, startColumn: c1, endRow: 0, endColumn: c2};
+      const selectionGroup: CellGroup = {r1: 0, c1: c1, r2: 0, c2: c2};
       const joinedGroup = CellGroup.joinCellGroupsIntersectingAtAxis(grid.dataModel!, ["column-header", "body"], "column", selectionGroup);
       // Check if there are any merges
-      if (joinedGroup.startColumn != Number.MAX_VALUE) {
-        c1 = joinedGroup.startColumn;
-        c2 = joinedGroup.endColumn;
+      if (joinedGroup.c1 != Number.MAX_VALUE) {
+        c1 = joinedGroup.c1;
+        c2 = joinedGroup.c2;
       }
 
     } else {

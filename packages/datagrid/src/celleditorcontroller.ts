@@ -192,8 +192,8 @@ class CellEditorController implements ICellEditorController {
 
     const cellGroup = CellGroup.getGroup(grid.dataModel!, "body", row, column);
     if (cellGroup) {
-      row = cellGroup.startRow;
-      column = cellGroup.startColumn;
+      row = cellGroup.r1;
+      column = cellGroup.c1;
     }
 
     dataModel.setData('body', row, column, response.value);

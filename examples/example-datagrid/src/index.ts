@@ -63,27 +63,27 @@ class MergedCellModel extends DataModel {
   group(region: DataModel.CellRegion, groupIndex: number): CellGroup | null {
     if (region === "body") {
       return [
-        { startRow: 1, startColumn: 1, endRow: 2, endColumn: 2 },
-        { startRow: 5, startColumn: 1, endRow: 5, endColumn: 2 },
-        { startRow: 3, startColumn: 5, endRow: 4, endColumn: 5 },
+        { r1: 1, c1: 1, r2: 2, c2: 2 },
+        { r1: 5, c1: 1, r2: 5, c2: 2 },
+        { r1: 3, c1: 5, r2: 4, c2: 5 },
       ][groupIndex];
     }
 
     if (region === "column-header") {
-      return [{ startRow: 0, startColumn: 4, endRow: 1, endColumn: 4 }][
+      return [{ r1: 0, c1: 4, r2: 1, c2: 4 }][
         groupIndex
       ];
     }
 
     if (region === "row-header") {
       return [
-        { startRow: 0, startColumn: 0, endRow: 1, endColumn: 1 },
-        { startRow: 4, startColumn: 0, endRow: 5, endColumn: 0 },
+        { r1: 0, c1: 0, r2: 1, c2: 1 },
+        { r1: 4, c1: 0, r2: 5, c2: 0 },
       ][groupIndex];
     }
 
     if (region === "corner-header") {
-      return [{ startRow: 0, startColumn: 0, endRow: 1, endColumn: 1 }][
+      return [{ r1: 0, c1: 0, r2: 1, c2: 1 }][
         groupIndex
       ];
     }
