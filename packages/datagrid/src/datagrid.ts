@@ -3292,7 +3292,7 @@ class DataGrid extends Widget {
       let x = hw + this._columnSections.offsetOf(c);
       this.paintContent(x, 0, vw - x, vh);
     } else if (delta < 0) {
-      this.paintContent(0, vh + delta, vw, -delta);
+      this.paintContent(0, 0, vw, vh);
     }
 
     // Paint the overlay.
