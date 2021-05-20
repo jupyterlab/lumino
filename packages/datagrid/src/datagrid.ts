@@ -36,6 +36,10 @@ import {
 } from './datamodel';
 
 import {
+  CellGroup
+} from './cellgroup';
+
+import {
   GraphicsContext
 } from './graphicscontext';
 
@@ -56,6 +60,9 @@ import {
   CellEditorController
 } from './celleditorcontroller';
 
+import {
+  JSONExt
+} from '@lumino/coreutils';
 
 /**
  * A widget which implements a high-performance tabular data grid.
@@ -2282,7 +2289,7 @@ class DataGrid extends Widget {
       let x = Math.min(this.headerWidth + bx, oldWidth);
       this.paintContent(x, 0, width - x, height);
     } else if (width > oldWidth) {
-      this.paintContent(oldWidth, 0, width - oldWidth, height);
+      this.paintContent(oldWidth, 0, width - oldWidth + 1, height);
     }
 
     // Paint the bottom edge as needed.
@@ -2291,7 +2298,7 @@ class DataGrid extends Widget {
       let y = Math.min(this.headerHeight + by, oldHeight);
       this.paintContent(0, y, width, height - y);
     } else if (height > oldHeight) {
-      this.paintContent(0, oldHeight, width, height - oldHeight);
+      this.paintContent(0, oldHeight, width, height - oldHeight + 1);
     }
 
     // Paint the overlay.
@@ -3154,12 +3161,15 @@ class DataGrid extends Widget {
       dy = sy + delta;
     }
 
+    // Offset values
+    const [mergeStartOffset, mergeEndOffset] = CellGroup.calculateMergeOffsets(this.dataModel!, ['body','row-header'], 'row', list, index);
+
     // Blit the valid content to the destination.
-    this._blitContent(this._canvas, sx, sy, sw, sh, dx, dy);
+    this._blitContent(this._canvas, sx, sy + mergeEndOffset, sw, sh - mergeEndOffset, dx, dy + mergeEndOffset);
 
     // Repaint the section if needed.
     if (newSize > 0 && offset + newSize > hh) {
-      this.paintContent(0, pos, vw, offset + newSize - pos);
+      this.paintContent(0, pos - mergeStartOffset, vw, offset + newSize - pos + mergeStartOffset + mergeEndOffset);
     }
 
     // Paint the trailing space as needed.
@@ -3168,7 +3178,7 @@ class DataGrid extends Widget {
       let y = hh + this._rowSections.offsetOf(r);
       this.paintContent(0, y, vw, vh - y);
     } else if (delta < 0) {
-      this.paintContent(0, vh + delta, vw, -delta);
+      this.paintContent(0, vh + delta, vw, -delta + 1);
     }
 
     // Paint the overlay.
@@ -3266,12 +3276,14 @@ class DataGrid extends Widget {
       dx = sx + delta;
     }
 
+    const [mergeStartOffset, mergeEndOffset] = CellGroup.calculateMergeOffsets(this.dataModel!, ['body','column-header'], 'column', list, index);
+
     // Blit the valid content to the destination.
-    this._blitContent(this._canvas, sx, sy, sw, sh, dx, dy);
+    this._blitContent(this._canvas, sx + mergeEndOffset, sy, sw - mergeEndOffset, sh, dx + mergeEndOffset, dy);
 
     // Repaint the section if needed.
     if (newSize > 0 && offset + newSize > hw) {
-      this.paintContent(pos, 0, offset + newSize - pos, vh);
+      this.paintContent(pos - mergeStartOffset, 0, offset + newSize - pos + mergeStartOffset + mergeEndOffset, vh);
     }
 
     // Paint the trailing space as needed.
@@ -3280,7 +3292,7 @@ class DataGrid extends Widget {
       let x = hw + this._columnSections.offsetOf(c);
       this.paintContent(x, 0, vw - x, vh);
     } else if (delta < 0) {
-      this.paintContent(vw + delta, 0, -delta, vh);
+      this.paintContent(0, 0, vw, vh);
     }
 
     // Paint the overlay.
@@ -3354,12 +3366,14 @@ class DataGrid extends Widget {
     let dx = sx + delta;
     let dy = 0;
 
-    // Blit the valid contents to the destination.
-    this._blitContent(this._canvas, sx, sy, sw, sh, dx, dy);
+    const [mergeStartOffset, mergeEndOffset] = CellGroup.calculateMergeOffsets(this.dataModel!, ['row-header'], 'column', list, index);
+
+    // Blit the valid content to the destination.
+    this._blitContent(this._canvas, sx + mergeEndOffset, sy, sw - mergeEndOffset, sh, dx + mergeEndOffset, dy);
 
     // Repaint the header section if needed.
     if (newSize > 0) {
-      this.paintContent(offset, 0, newSize, vh);
+      this.paintContent(offset - mergeStartOffset, 0, newSize + mergeStartOffset + mergeEndOffset, vh);
     }
 
     // Paint the trailing space as needed.
@@ -3368,7 +3382,7 @@ class DataGrid extends Widget {
       let x = this.headerWidth + this._columnSections.offsetOf(c);
       this.paintContent(x, 0, vw - x, vh);
     } else if (delta < 0) {
-      this.paintContent(vw + delta, 0, -delta, vh);
+      this.paintContent(vw + delta, 0, -delta + 1, vh);
     }
 
     // Paint the overlay.
@@ -3445,12 +3459,14 @@ class DataGrid extends Widget {
     let dx = 0;
     let dy = sy + delta;
 
+    const [mergeStartOffset, mergeEndOffset] = CellGroup.calculateMergeOffsets(this.dataModel!, ['column-header'], 'row', list, index);
+
     // Blit the valid contents to the destination.
-    this._blitContent(this._canvas, sx, sy, sw, sh, dx, dy);
+    this._blitContent(this._canvas, sx, sy + mergeEndOffset, sw, sh - mergeEndOffset, dx, dy + mergeEndOffset);
 
     // Repaint the header section if needed.
     if (newSize > 0) {
-      this.paintContent(0, offset, vw, newSize);
+      this.paintContent(0, offset - mergeStartOffset, vw, newSize + mergeStartOffset + mergeEndOffset);
     }
 
     // Paint the trailing space as needed.
@@ -3459,7 +3475,7 @@ class DataGrid extends Widget {
       let y = this.headerHeight + this._rowSections.offsetOf(r);
       this.paintContent(0, y, vw, vh - y);
     } else if (delta < 0) {
-      this.paintContent(0, vh + delta, vw, -delta);
+      this.paintContent(0, vh + delta, vw, -delta + 1);
     }
 
     // Paint the overlay.
@@ -3552,8 +3568,76 @@ class DataGrid extends Widget {
       return;
     }
 
+    const scrollYRegions:DataModel.CellRegion[] = ['body','row-header'];
+    let rowIndex = this._rowSections.indexOf(dy < 0 ? this._scrollY : this._scrollY + contentHeight);
+    let rowGroupAtAxis: CellGroup[] = [];
+    let rowAxis: 'row' | 'column' = 'row';
+    if (rowAxis === 'row') {
+      for (const region of scrollYRegions) {
+        rowGroupAtAxis = rowGroupAtAxis.concat(CellGroup.getCellGroupsAtRow(this.dataModel!, region, rowIndex));
+      }
+    } else {
+      for (const region of scrollYRegions) {
+        rowGroupAtAxis = rowGroupAtAxis.concat(CellGroup.getCellGroupsAtColumn(this.dataModel!, region, rowIndex));
+      }
+    }
+
+    const _isCellGroupAbove = (group1: CellGroup, group2: CellGroup): boolean => {
+      return group2.r2 >= group1.r1;
+    };
+
+    const _isCellGroupBelow = (group1: CellGroup, group2: CellGroup): boolean => {
+      return group2.r1 <= group1.r2;
+    };
+
+    let borderY = dy > 0 ?
+      (this._rowSections.offsetOf(rowIndex) - this._scrollY) : 
+      this._rowSections.offsetOf(rowIndex + 1);
+    
+    
+    if (rowGroupAtAxis.length > 0) {
+      let mergedGroupAtAxis:CellGroup = CellGroup.joinCellGroups(rowGroupAtAxis);
+      let mergedCellGroups: CellGroup[] = [];
+      for (const region of scrollYRegions) {
+        mergedCellGroups = mergedCellGroups.concat(CellGroup.getCellGroupsAtRegion(this.dataModel!, region));
+      }
+      
+      for (let g = 0; g < mergedCellGroups.length; g++) {
+        const group = mergedCellGroups[g];
+
+        // Scrolling down
+        if (dy > 0) {
+           if (!_isCellGroupAbove(mergedGroupAtAxis, group)) {
+             continue;
+           }
+        } else {
+          if (!_isCellGroupBelow(mergedGroupAtAxis, group)) {
+            continue;
+          }
+        }
+
+        if (CellGroup.areCellGroupsIntersectingAtAxis(mergedGroupAtAxis, group, rowAxis)) {
+          mergedGroupAtAxis = CellGroup.joinCellGroups([group, mergedGroupAtAxis]);
+          mergedCellGroups.splice(g, 1);
+          g = 0;
+        }
+      }
+      if (mergedGroupAtAxis.r1 !== Number.MAX_VALUE) {
+        if (dy > 0) {
+          borderY = this._rowSections.offsetOf(mergedGroupAtAxis.r1) - this._scrollY;
+        } else {
+          borderY = this._rowSections.offsetOf(mergedGroupAtAxis.r2 + 1);
+        }
+      }
+    }
+
+    const prevScrollY = this._scrollY;
+
     // Update the internal Y scroll position.
     this._scrollY = y;
+
+    let blitSrcX, blitSrcY, blitDstX, blitDstY, blitWidth, blitHeight;
+    let paintX, paintY, paintWidth, paintHeight;
 
     // Scroll the Y axis if needed. If the scroll distance exceeds
     // the visible height, paint everything. Otherwise, blit the
@@ -3562,14 +3646,107 @@ class DataGrid extends Widget {
       if (Math.abs(dy) >= contentHeight) {
         this.paintContent(0, contentY, width, contentHeight);
       } else {
-        let x = 0;
-        let y = dy < 0 ? contentY : contentY + dy;
-        let w = width;
-        let h = contentHeight - Math.abs(dy);
-        this._blitContent(this._canvas, x, y, w, h, x, y - dy);
-        this.paintContent(0, dy < 0 ? contentY : height - dy, width, Math.abs(dy));
+        // Scrolling down
+        if (dy > 0) {
+
+          blitSrcX = 0;
+          blitSrcY = contentY + dy;
+          blitDstX = 0;
+          blitDstY = contentY;
+          blitWidth = width;
+          blitHeight = borderY - dy;
+          paintX = 0;
+          paintY = contentY + borderY - dy;
+          paintWidth = width;
+          paintHeight = contentHeight - borderY + dy;
+  
+          this._blitContent(this._canvas, blitSrcX, blitSrcY, blitWidth, blitHeight, blitDstX, blitDstY);
+          this.paintContent(paintX, paintY, paintWidth, paintHeight);
+        } else {
+          blitSrcX = 0;
+          blitSrcY = contentY + borderY - prevScrollY;
+          blitDstX = 0;
+          blitDstY = contentY + borderY - prevScrollY - dy;
+          blitWidth = width;
+          blitHeight = contentHeight - borderY + prevScrollY;
+          paintX = 0;
+          paintY = contentY;
+          paintWidth = width;
+          paintHeight = borderY - prevScrollY - dy;
+
+          this._blitContent(this._canvas, blitSrcX, blitSrcY, blitWidth, blitHeight, blitDstX, blitDstY);
+          this.paintContent(paintX, paintY, paintWidth, paintHeight);
+        }
       }
     }
+
+    /**
+     * Horizontal scrolling logic
+     */
+    const scrollXRegions:DataModel.CellRegion[] = ['body','column-header'];
+    let columnIndex = this._columnSections.indexOf(dx < 0 ? this._scrollX : this._scrollX + contentWidth);
+    let columnGroupAtAxis: CellGroup[] = [];
+    let columnAxis: 'column' | 'row' = 'column';
+    if (columnAxis === 'column') {
+      for (const region of scrollXRegions) {
+        columnGroupAtAxis = columnGroupAtAxis.concat(CellGroup.getCellGroupsAtColumn(this.dataModel!, region, columnIndex));
+      }
+    } else {
+      for (const region of scrollXRegions) {
+        columnGroupAtAxis = columnGroupAtAxis.concat(CellGroup.getCellGroupsAtColumn(this.dataModel!, region, columnIndex));
+      }
+    }
+
+    const _isCellGroupBefore = (group1: CellGroup, group2: CellGroup): boolean => {
+      return group2.c2 >= group1.c1;
+    };
+
+    const _isCellGroupAfter = (group1: CellGroup, group2: CellGroup): boolean => {
+      return group2.c1 <= group1.c2;
+    };
+
+    let borderX = dx > 0 ?
+      (this._columnSections.offsetOf(columnIndex) - this._scrollX) : 
+      this._columnSections.offsetOf(columnIndex + 1);
+    
+    
+    if (columnGroupAtAxis.length > 0) {
+      let mergedGroupAtAxis:CellGroup = CellGroup.joinCellGroups(columnGroupAtAxis);
+      let mergedCellGroups: CellGroup[] = [];
+      for (const region of scrollXRegions) {
+        mergedCellGroups = mergedCellGroups.concat(CellGroup.getCellGroupsAtRegion(this.dataModel!, region));
+      }
+      
+      for (let g = 0; g < mergedCellGroups.length; g++) {
+        const group = mergedCellGroups[g];
+
+        // Scrolling right
+        if (dx > 0) {
+           if (!_isCellGroupBefore(mergedGroupAtAxis, group)) {
+             continue;
+           }
+        } else {
+          if (!_isCellGroupAfter(mergedGroupAtAxis, group)) {
+            continue;
+          }
+        }
+
+        if (CellGroup.areCellGroupsIntersectingAtAxis(mergedGroupAtAxis, group, columnAxis)) {
+          mergedGroupAtAxis = CellGroup.joinCellGroups([group, mergedGroupAtAxis]);
+          mergedCellGroups.splice(g, 1);
+          g = 0;
+        }
+      }
+      if (mergedGroupAtAxis.c1 !== Number.MAX_VALUE) {
+        if (dx > 0) {
+          borderX = this._columnSections.offsetOf(mergedGroupAtAxis.c1) - this._scrollX;
+        } else {
+          borderX = this._columnSections.offsetOf(mergedGroupAtAxis.c2 + 1);
+        }
+      }
+    }
+
+    const prevScrollX = this._scrollX;
 
     // Update the internal X scroll position.
     this._scrollX = x;
@@ -3581,12 +3758,37 @@ class DataGrid extends Widget {
       if (Math.abs(dx) >= contentWidth) {
         this.paintContent(contentX, 0, contentWidth, height);
       } else {
-        let x = dx < 0 ? contentX : contentX + dx;
-        let y = 0;
-        let w = contentWidth - Math.abs(dx);
-        let h = height;
-        this._blitContent(this._canvas, x, y, w, h, x - dx, y);
-        this.paintContent(dx < 0 ? contentX : width - dx, 0, Math.abs(dx), height);
+        // Scrolling right
+        if (dx > 0) {
+
+          blitSrcX = contentX + dx;//0;
+          blitSrcY = 0;//contentY + dy;
+          blitDstX = contentX;//0;
+          blitDstY = 0;//contentY;
+          blitWidth = borderX - dx;//width;
+          blitHeight = height;//borderY - dy;
+          paintX = contentX + borderX - dx;//0;
+          paintY = 0;//contentY + borderY - dy;
+          paintWidth = contentWidth - borderX + dx;//width;
+          paintHeight = height;//contentHeight - borderY + dy;
+  
+          this._blitContent(this._canvas, blitSrcX, blitSrcY, blitWidth, blitHeight, blitDstX, blitDstY);
+          this.paintContent(paintX, paintY, paintWidth, paintHeight);
+        } else {
+          blitSrcX = contentX + borderX - prevScrollX;//0;
+          blitSrcY = 0;//contentY + borderY - prevScrollY;
+          blitDstX = contentX + borderX - prevScrollX - dx;//0;
+          blitDstY = 0;//contentY + borderY - prevScrollY - dy;
+          blitWidth = contentWidth - borderX + prevScrollX;//width;
+          blitHeight = height;//contentHeight - borderY + prevScrollY;
+          paintX = contentX;//0;
+          paintY = 0;//contentY;
+          paintWidth = borderX - prevScrollX - dx;//width;
+          paintHeight = height;//borderY - prevScrollY - dy;
+
+          this._blitContent(this._canvas, blitSrcX, blitSrcY, blitWidth, blitHeight, blitDstX, blitDstY);
+          this.paintContent(paintX, paintY, paintWidth, paintHeight);
+        }
       }
     }
 
@@ -4287,6 +4489,30 @@ class DataGrid extends Widget {
   }
 
   /**
+   * Returns column size
+   * @param region 
+   * @param index 
+   */
+  private _getColumnSize(region: DataModel.CellRegion, index: number): number {
+    if (region === 'corner-header') {
+      return this._rowHeaderSections.sizeOf(index);
+    }
+    return this.columnSize(region as DataModel.ColumnRegion, index);
+  };
+
+  /**
+   * Returns row size
+   * @param region 
+   * @param index 
+   */
+  private _getRowSize(region: DataModel.CellRegion, index: number): number {
+    if (region === 'corner-header') {
+      return this._columnHeaderSections.sizeOf(index);
+    }
+    return this.rowSize(region as DataModel.RowRegion, index);
+  };
+
+  /**
    * Draw the cells for the given paint region.
    */
   private _drawCells(rgn: Private.PaintRegion): void {
@@ -4295,6 +4521,29 @@ class DataGrid extends Widget {
       return;
     }
 
+    // move the bounds of the region if edges of the region are part of a merge group.
+    // after the move, new region contains entirety of the merge groups
+    rgn = JSONExt.deepCopy(rgn);
+
+    const joinedGroup = CellGroup.joinCellGroupWithMergedCellGroups(this.dataModel!, {
+      r1: rgn.row, r2: rgn.row + rgn.rowSizes.length - 1,
+      c1: rgn.column, c2: rgn.column + rgn.columnSizes.length - 1
+    }, rgn.region);
+
+    for (let r = joinedGroup.r1; r < rgn.row; r++) {
+      const h = this._getRowSize(rgn.region, r);
+      rgn.y -= h;
+      rgn.rowSizes = [h].concat(rgn.rowSizes);
+    }
+    rgn.row = joinedGroup.r1;
+
+    for (let c = joinedGroup.c1; c < rgn.column; c++) {
+      const w = this._getColumnSize(rgn.region, c);
+      rgn.x -= w;
+      rgn.columnSizes = [w].concat(rgn.columnSizes);
+    }
+    rgn.column = joinedGroup.c1;
+
     // Set up the cell config object for rendering.
     let config = {
       x: 0, y: 0, width: 0, height: 0,
@@ -4302,18 +4551,21 @@ class DataGrid extends Widget {
       value: (null as any), metadata: DataModel.emptyMetadata
     };
 
+    let groupIndex = -1;
+
     // Save the buffer gc before wrapping.
     this._bufferGC.save();
 
     // Wrap the buffer gc for painting the cells.
     let gc = new GraphicsContext(this._bufferGC);
 
-    // Compute the actual Y bounds for the cell range.
-    let y1 = Math.max(rgn.yMin, rgn.y);
-    let y2 = Math.min(rgn.y + rgn.height - 1, rgn.yMax);
+    let height = 0;
 
     // Loop over the columns in the region.
     for (let x = rgn.x, i = 0, n = rgn.columnSizes.length; i < n; ++i) {
+      let xOffset = 0;
+      let yOffset = 0;
+      
       // Fetch the size of the column.
       let width = rgn.columnSizes[i];
 
@@ -4322,6 +4574,8 @@ class DataGrid extends Widget {
         continue;
       }
 
+      xOffset = width;
+
       // Compute the column index.
       let column = rgn.column + i;
 
@@ -4329,17 +4583,11 @@ class DataGrid extends Widget {
       config.x = x;
       config.width = width;
       config.column = column;
-
-      // Clear the buffer rect for the column.
-      gc.clearRect(x, rgn.y, width, rgn.height);
-
-      // Save the GC state.
-      gc.save();
-
+      
       // Loop over the rows in the column.
-      for (let y = rgn.y, j = 0, n = rgn.rowSizes.length; j < n; ++j) {
+      for (let y = rgn.y, j = 0, n = rgn.rowSizes.length; j < n; ++j) {        
         // Fetch the size of the row.
-        let height = rgn.rowSizes[j];
+        height = rgn.rowSizes[j];
 
         // Skip zero sized rows.
         if (height === 0) {
@@ -4348,6 +4596,38 @@ class DataGrid extends Widget {
 
         // Compute the row index.
         let row = rgn.row + j;
+        
+        groupIndex = CellGroup.getGroupIndex(this.dataModel!, config.region, row, column);
+        yOffset = height;
+
+        /**
+         * For merged cell regions, only rendering the merged region
+         * if the "parent" cell is the one being painted. Bail otherwise.
+         */
+        if (groupIndex !== -1) {
+          const group = this.dataModel!.group(config.region, groupIndex)!;
+          if (group.r1 === row && group.c1 === column) {
+            width = 0;
+            for (let c = group.c1; c <= group.c2; c++) {
+              width += this._getColumnSize(config.region, c);
+            }
+
+            height = 0;
+            for (let r = group.r1; r <= group.r2; r++) {
+              height += this._getRowSize(config.region, r);
+            }
+          }
+          else {
+            y += yOffset;
+            continue;
+          }
+        }
+
+        // Clear the buffer rect for the cell.
+        gc.clearRect(x, y, width, height);
+
+        // Save the GC state.
+        gc.save();
 
         // Get the value for the cell.
         let value: any;
@@ -4370,6 +4650,7 @@ class DataGrid extends Widget {
         // Update the config for the current cell.
         config.y = y;
         config.height = height;
+        config.width = width;
         config.row = row;
         config.value = value;
         config.metadata = metadata;
@@ -4390,27 +4671,27 @@ class DataGrid extends Widget {
         // Restore the GC state.
         gc.restore();
 
+        // Compute the actual X bounds for the cell.
+        let x1 = Math.max(rgn.xMin, config.x);
+        let x2 = Math.min(config.x + config.width - 1, rgn.xMax);
+        
+        // Compute the actual Y bounds for the cell.
+        let y1 = Math.max(rgn.yMin, config.y);
+        let y2 = Math.min(config.y + config.height - 1, rgn.yMax);
+
+        if (x2 > x1 && y2 > y1) {
+          this._blitContent(this._buffer, x1, y1, x2 - x1 + 1, y2 - y1 + 1, x1, y1);
+        }
+
         // Increment the running Y coordinate.
-        y += height;
+        y += yOffset;
       }
 
       // Restore the GC state.
       gc.restore();
 
-      // Compute the actual X bounds for the column.
-      let x1 = Math.max(rgn.xMin, x);
-      let x2 = Math.min(x + width - 1, rgn.xMax);
-
-      // Blit the off-screen buffer column into the on-screen canvas.
-      //
-      // This is *much* faster than drawing directly into the on-screen
-      // canvas with a clip rect on the column. Managed column clipping
-      // is required to prevent cell renderers from needing to set up a
-      // clip rect for handling horizontal overflow text (slow!).
-      this._blitContent(this._buffer, x1, y1, x2 - x1 + 1, y2 - y1 + 1, x1, y1);
-
       // Increment the running X coordinate.
-      x += width;
+      x += xOffset;
     }
 
     // Dispose of the wrapped gc.
@@ -4431,7 +4712,6 @@ class DataGrid extends Widget {
 
     // Compute the X bounds for the horizontal lines.
     let x1 = Math.max(rgn.xMin, rgn.x);
-    let x2 = Math.min(rgn.x + rgn.width, rgn.xMax + 1);
 
     // Begin the path for the grid lines.
     this._canvasGC.beginPath();
@@ -4463,13 +4743,47 @@ class DataGrid extends Widget {
         continue;
       }
 
+      let xStart = 0;
+      let lineStarted = false;
+      let lines = [];
+      let leftCurrent = x1;
+
+      for (let c = rgn.column; c < rgn.column + rgn.columnSizes.length; c++) {
+        const cIndex = c - rgn.column;
+        const cellUp = [rgn.row + j, c];
+        const cellDown = [rgn.row + j + 1, c];
+
+        if (CellGroup.areCellsMerged(this.dataModel!, rgn.region, cellUp, cellDown)) {
+          if (lineStarted) {
+            lines.push([xStart, leftCurrent]);
+          }
+          lineStarted = false;
+        } else {
+          if (!lineStarted) {
+            lineStarted = true;
+            xStart = leftCurrent;
+          }
+        }
+
+        leftCurrent += rgn.columnSizes[cIndex];
+        if (c === rgn.column) {
+          leftCurrent -= (rgn.xMin - rgn.x);
+        }
+      }
+
+      if (lineStarted) {
+        lines.push([xStart, rgn.x + rgn.width]);
+      }
+
       // Compute the Y position of the line.
       let pos = y + size - 1;
 
       // Draw the line if it's in range of the dirty rect.
       if (pos >= rgn.yMin && pos <= rgn.yMax) {
-        this._canvasGC.moveTo(x1, pos + 0.5);
-        this._canvasGC.lineTo(x2, pos + 0.5);
+        for (const line of lines) {
+          this._canvasGC.moveTo(line[0], pos + 0.5);
+          this._canvasGC.lineTo(line[1], pos + 0.5);
+        }
       }
 
       // Increment the running Y coordinate.
@@ -4492,7 +4806,6 @@ class DataGrid extends Widget {
 
     // Compute the Y bounds for the vertical lines.
     let y1 = Math.max(rgn.yMin, rgn.y);
-    let y2 = Math.min(rgn.y + rgn.height, rgn.yMax + 1);
 
     // Begin the path for the grid lines
     this._canvasGC.beginPath();
@@ -4524,13 +4837,48 @@ class DataGrid extends Widget {
         continue;
       }
 
+      let yStart = 0;
+      let lineStarted = false;
+      let lines = [];
+      let topCurrent = y1;
+
+      for (let r = rgn.row; r < rgn.row + rgn.rowSizes.length; r++) {
+        const rIndex = r - rgn.row;
+        const cellLeft = [r, rgn.column + i];
+        const cellRight = [r, rgn.column + i + 1];
+
+        if (CellGroup.areCellsMerged(this.dataModel!, rgn.region, cellLeft, cellRight)) {
+          if (lineStarted) {
+            lines.push([yStart, topCurrent]);
+          }
+          lineStarted = false;
+        } else {
+          if (!lineStarted) {
+            lineStarted = true;
+            yStart = topCurrent;
+          }
+        }
+
+        topCurrent += rgn.rowSizes[rIndex];
+        if (r === rgn.row) {
+          topCurrent -= (rgn.yMin - rgn.y); 
+        }
+      }
+
+      if (lineStarted) {
+        lines.push([yStart, rgn.yMax + 1]);
+      }
+
       // Compute the X position of the line.
       let pos = x + size - 1;
 
       // Draw the line if it's in range of the dirty rect.
       if (pos >= rgn.xMin && pos <= rgn.xMax) {
-        this._canvasGC.moveTo(pos + 0.5, y1);
-        this._canvasGC.lineTo(pos + 0.5, y2);
+        for (const line of lines) {
+          this._canvasGC.strokeStyle = color;
+          this._canvasGC.moveTo(pos + 0.5, line[0]);
+          this._canvasGC.lineTo(pos + 0.5, line[1]);
+        }
       }
 
       // Increment the running X coordinate.
@@ -4652,6 +5000,17 @@ class DataGrid extends Widget {
         sc1 = sc2;
         sc2 = tmp;
       }
+
+      const joinedGroup = CellGroup.joinCellGroupWithMergedCellGroups(
+        this.dataModel!,
+        {r1: sr1, r2: sr2, c1: sc1, c2: sc2},
+        "body"
+      );
+
+      sr1 = joinedGroup.r1;
+      sr2 = joinedGroup.r2;
+      sc1 = joinedGroup.c1;
+      sc2 = joinedGroup.c2;
 
       // Convert to pixel coordinates.
       let x1 = this._columnSections.offsetOf(sc1) - sx + hw;
@@ -4919,20 +5278,34 @@ class DataGrid extends Widget {
     }
 
     // Fetch the cursor location.
-    let row = model.cursorRow;
-    let column = model.cursorColumn;
+    let startRow = model.cursorRow;
+    let startColumn = model.cursorColumn;
 
     // Fetch the max row and column.
     let maxRow = this._rowSections.count - 1;
     let maxColumn = this._columnSections.count - 1;
 
     // Bail early if the cursor is out of bounds.
-    if (row < 0 || row > maxRow) {
+    if (startRow < 0 || startRow > maxRow) {
       return;
     }
-    if (column < 0 || column > maxColumn) {
+    if (startColumn < 0 || startColumn > maxColumn) {
       return;
     }
+
+    let endRow = startRow;
+    let endColumn = startColumn;
+
+    const joinedGroup = CellGroup.joinCellGroupWithMergedCellGroups(
+      this.dataModel!,
+      {r1: startRow, r2: endRow, c1: startColumn, c2: endColumn},
+      "body"
+    );
+
+    startRow = joinedGroup.r1;
+    endRow = joinedGroup.r2;
+    startColumn = joinedGroup.c1;
+    endColumn = joinedGroup.c2;
 
     // Fetch geometry.
     let sx = this._scrollX;
@@ -4947,18 +5320,18 @@ class DataGrid extends Widget {
     let vh = this._viewportHeight;
 
     // Get the cursor bounds in viewport coordinates.
-    let x1 = this._columnSections.offsetOf(column) - sx + hw;
-    let x2 = this._columnSections.extentOf(column) - sx + hw;
-    let y1 = this._rowSections.offsetOf(row) - sy + hh;
-    let y2 = this._rowSections.extentOf(row) - sy + hh;
+    let x1 = this._columnSections.offsetOf(startColumn) - sx + hw;
+    let x2 = this._columnSections.extentOf(endColumn) - sx + hw;
+    let y1 = this._rowSections.offsetOf(startRow) - sy + hh;
+    let y2 = this._rowSections.extentOf(endRow) - sy + hh;
 
     // Adjust the trailing X coordinate for column stretch.
-    if (this._stretchLastColumn && pw > bw && column === maxColumn) {
+    if (this._stretchLastColumn && pw > bw && startColumn === maxColumn) {
       x2 = vw - 1;
     }
 
     // Adjust the trailing Y coordinate for row stretch.
-    if (this._stretchLastRow && ph > bh && row === maxRow) {
+    if (this._stretchLastRow && ph > bh && startRow === maxRow) {
       y2 = vh - 1;
     }
 
