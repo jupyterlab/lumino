@@ -2289,7 +2289,7 @@ class DataGrid extends Widget {
       let x = Math.min(this.headerWidth + bx, oldWidth);
       this.paintContent(x, 0, width - x, height);
     } else if (width > oldWidth) {
-      this.paintContent(oldWidth, 0, width - oldWidth, height);
+      this.paintContent(oldWidth, 0, width - oldWidth + 1, height);
     }
 
     // Paint the bottom edge as needed.
@@ -2298,7 +2298,7 @@ class DataGrid extends Widget {
       let y = Math.min(this.headerHeight + by, oldHeight);
       this.paintContent(0, y, width, height - y);
     } else if (height > oldHeight) {
-      this.paintContent(0, oldHeight, width, height - oldHeight);
+      this.paintContent(0, oldHeight, width, height - oldHeight + 1);
     }
 
     // Paint the overlay.
@@ -4866,9 +4866,8 @@ class DataGrid extends Widget {
         }
       }
 
-      // TODO: decide whether to use rgn.yMax or y2 (defined above)
       if (lineStarted) {
-        lines.push([yStart, rgn.yMax]);
+        lines.push([yStart, rgn.yMax + 1]);
       }
 
       // Compute the X position of the line.
