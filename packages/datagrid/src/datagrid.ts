@@ -3292,7 +3292,7 @@ class DataGrid extends Widget {
       let x = hw + this._columnSections.offsetOf(c);
       this.paintContent(x, 0, vw - x, vh);
     } else if (delta < 0) {
-      this.paintContent(0, 0, vw, vh); // TODO: check this.
+      this.paintContent(0, vh + delta, vw, -delta);
     }
 
     // Paint the overlay.
@@ -4494,7 +4494,6 @@ class DataGrid extends Widget {
    * @param index 
    */
   private _getColumnSize(region: DataModel.CellRegion, index: number): number {
-    // TODO: check if needed for other regions
     if (region === 'corner-header') {
       return this._rowHeaderSections.sizeOf(index);
     }
