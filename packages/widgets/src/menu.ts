@@ -220,6 +220,11 @@ class Menu extends Widget {
     // Update the active index.
     this._activeIndex = value;
 
+    // Make active element in focus
+    if (this._activeIndex >= 0) {
+      (this.contentNode.childNodes[this._activeIndex] as HTMLElement)!.focus();
+    }
+
     // schedule an update of the items.
     this.update();
   }
@@ -520,15 +525,6 @@ class Menu extends Widget {
   }
 
   /**
-   * A message handler invoked on an `'activate-request'` message.
-   */
-  protected onActivateRequest(msg: Message): void {
-    if (this.isAttached) {
-      this.node.focus();
-    }
-  }
-
-  /**
    * A message handler invoked on an `'update-request'` message.
    */
   protected onUpdateRequest(msg: Message): void {
@@ -541,7 +537,14 @@ class Menu extends Widget {
       let item = items[i];
       let active = i === activeIndex;
       let collapsed = collapsedFlags[i];
-      content[i] = renderer.renderItem({ item, active, collapsed });
+      content[i] = renderer.renderItem({
+        item,
+        active,
+        collapsed,
+        onfocus: () => {
+          this.activeIndex = i;
+        }
+      });
     }
     VirtualDOM.render(content, this.contentNode);
   }
@@ -627,7 +630,7 @@ class Menu extends Widget {
     }
 
     // Right Arrow
-    if (kc === 39) {
+    if (kc === 39 || kc === 9) {
       let item = this.activeItem;
       if (item && item.type === 'submenu') {
         this.triggerActiveItem();
@@ -638,7 +641,7 @@ class Menu extends Widget {
     }
 
     // Down Arrow
-    if (kc === 40) {
+    if (kc === 40 || kc === 9) {
       this.activateNextItem();
       return;
     }
@@ -1109,6 +1112,11 @@ namespace Menu {
      * Whether the item should be collapsed.
      */
     readonly collapsed: boolean;
+
+    /**
+     * Handler for when element is in focus.
+     */
+    readonly onfocus?: () => void;
   }
 
   /**
@@ -1151,7 +1159,14 @@ namespace Menu {
       let dataset = this.createItemDataset(data);
       let aria = this.createItemARIA(data);
       return (
-        h.li({ className, dataset, ...aria },
+        h.li(
+          {
+            className,
+            dataset,
+            tabindex: '0',
+            onfocus: data.onfocus,
+            ...aria
+          },
           this.renderIcon(data),
           this.renderLabel(data),
           this.renderShortcut(data),
@@ -1335,8 +1350,14 @@ namespace Menu {
         break;
       case 'submenu':
         aria['aria-haspopup'] = 'true';
+        if (!data.item.isEnabled) {
+          aria['aria-disabled'] = 'true';
+        }
         break;
       default:
+        if (!data.item.isEnabled) {
+          aria['aria-disabled'] = 'true';
+        }
         aria.role = 'menuitem';
       }
       return aria;
@@ -1425,7 +1446,6 @@ namespace Private {
     /* </DEPRECATED> */
     node.appendChild(content);
     content.setAttribute('role', 'menu');
-    node.tabIndex = -1;
     return node;
   }
 

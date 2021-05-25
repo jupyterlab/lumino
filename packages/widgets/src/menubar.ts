@@ -143,6 +143,11 @@ class MenuBar extends Widget {
     // Update the active index.
     this._activeIndex = value;
 
+    // Update focus to new active index
+    if (this._activeIndex >= 0 && this._childMenu) {
+      (this.contentNode.childNodes[this._activeIndex] as HTMLElement)!.focus();
+    }
+
     // Schedule an update of the items.
     this.update();
   }
@@ -403,7 +408,14 @@ class MenuBar extends Widget {
     for (let i = 0, n = menus.length; i < n; ++i) {
       let title = menus[i].title;
       let active = i === activeIndex;
-      content[i] = renderer.renderItem({ title, active });
+      content[i] = renderer.renderItem({
+        title,
+        active,
+        onfocus: () => {
+          this.activeIndex = i;
+          this.openActiveMenu();
+        }
+      });
     }
     VirtualDOM.render(content, this.contentNode);
   }
@@ -441,8 +453,8 @@ class MenuBar extends Widget {
       return;
     }
 
-    // Right Arrow
-    if (kc === 39) {
+    // Right Arrow or tab
+    if (kc === 39 || kc === 9) {
       let i = this._activeIndex;
       let n = this._menus.length;
       this.activeIndex = i === n - 1 ? 0 : i + 1;
@@ -730,6 +742,8 @@ namespace MenuBar {
      * Whether the item is the active item.
      */
     readonly active: boolean;
+
+    readonly onfocus?: (event: FocusEvent) => void;
   }
 
   /**
@@ -772,7 +786,7 @@ namespace MenuBar {
       let dataset = this.createItemDataset(data);
       let aria = this.createItemARIA(data);
       return (
-        h.li({ className, dataset, ...aria },
+        h.li({ className, dataset, tabindex: '0', onfocus: data.onfocus, ...aria },
           this.renderIcon(data),
           this.renderLabel(data)
         )
@@ -938,6 +952,7 @@ namespace Private {
     node.appendChild(content);
     content.setAttribute('role', 'menubar');
     node.tabIndex = 0;
+    content.tabIndex = 0;
     return node;
   }
 
