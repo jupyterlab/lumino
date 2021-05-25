@@ -23,3 +23,5 @@ docs/api
 *.code-workspace
 .history
 .vscode
+
+.jupyter_releaser_checkout

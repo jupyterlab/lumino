@@ -1,5 +1,7 @@
 # Changelog
 
+<!-- <START NEW CHANGELOG ENTRY> -->
+
 ## 2021-5-20
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/2021.5.10...e2b775392b42e98d5c58b9afdc74e92b1631739b))
@@ -20,12 +22,13 @@
 - Fix changelog formatting for 2021-5-10 entry [#185](https://github.com/jupyterlab/lumino/pull/185) ([@blink1073](https://github.com/blink1073))
 - Add changelog entry for 2021.5.10 [#184](https://github.com/jupyterlab/lumino/pull/184) ([@blink1073](https://github.com/blink1073))
 
-
 ### Contributors to this release
 
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2021-05-10&to=2021-05-20&type=c))
 
 [@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2021-05-10..2021-05-20&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2021-05-10..2021-05-20&type=Issues) | [@ibdafna](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aibdafna+updated%3A2021-05-10..2021-05-20&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2021-5-10
 
@@ -428,8 +431,8 @@
     @lumino/application@1.10.1
     @lumino/algorithm@1.3.1
 
-- fix columnCount signature [#82](https://github.com/jupyterlab/lumino/pull/82) ([@mbektasbbg](https://github.com/mbektasbbg))
-- unsubscribe from grid wheel events on editor dispose [#80](https://github.com/jupyterlab/lumino/pull/80) ([@mbektasbbg](https://github.com/mbektasbbg))
+- fix columnCount signature [#82](https://github.com/jupyterlab/lumino/pull/82) ([@mbektas](https://github.com/mbektas))
+- unsubscribe from grid wheel events on editor dispose [#80](https://github.com/jupyterlab/lumino/pull/80) ([@mbektas](https://github.com/mbektas))
 - chore(build): Bump Typescript to 3.9.2 [#75](https://github.com/jupyterlab/lumino/pull/75) ([@GordonSmith](https://github.com/GordonSmith))
 
 ## 2020-5-23
@@ -582,7 +585,7 @@
 
 - Remove 'sourceMap' from tsconfig in `@lumino/virtualdom` [#41](https://github.com/jupyterlab/lumino/pull/41) ([@zemeolotu](https://github.com/zemeolotu))
 - Start a change log [#38](https://github.com/jupyterlab/lumino/pull/38) ([@blink1073](https://github.com/blink1073))
-- DataGrid Cell Editing [#14](https://github.com/jupyterlab/lumino/pull/14) ([@mbektasbbg](https://github.com/mbektasbbg))
+- DataGrid Cell Editing [#14](https://github.com/jupyterlab/lumino/pull/14) ([@mbektas](https://github.com/mbektas))
 
 ## 2020-1-8
 

@@ -1,5 +1,6 @@
 {
-  "version": "0.0.0",
+  "version": "2021.4.27",
+  "name": "lumino-top-level",
   "private": true,
   "workspaces": [
     "examples/*",
@@ -20,7 +21,7 @@
     "docs": "rimraf docs/api && lerna run build:src --concurrency 1 && lerna run docs",
     "get:dependency": "get-dependency",
     "minimize": "lerna run minimize",
-    "publish": "npm run clean && npm run build:dist && lerna publish --yes -m \"Publish\" from-package",
+    "publish": "npm run clean && npm run build:dist && node scripts/tag-versions.js && lerna publish --yes -m \"Publish\" from-package",
     "remove:dependency": "remove-dependency",
     "test": "lerna run test --scope \"@lumino/!(example-)*\"",
     "test:examples": "lerna run test --scope \"@lumino/example-*\"",
@@ -28,12 +29,21 @@
     "test:firefox": "lerna run test:firefox",
     "test:ie": "lerna run test:ie --concurrency 1",
     "update:dependency": "update-dependency --lerna",
-    "version": "lerna version"
+    "update:versions": "lerna version --no-push --no-git-tag-version"
   },
   "dependencies": {},
   "devDependencies": {
     "@jupyterlab/buildutils": "^1.0.0",
     "lerna": "^3.19.0",
     "typedoc": "^0.20.32"
+  },
+  "jupyter-releaser": {
+    "options": {
+      "ignore-links": ["./api/index.html"]
+    },
+    "hooks": {
+      "after-build-changelog": "node scripts/format-changelog.js",
+      "before-build-npm": ["yarn build:dist", "node scripts/tag-versions.js"]
+    }
   }
 }
