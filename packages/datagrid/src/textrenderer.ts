@@ -263,8 +263,8 @@ class TextRenderer extends CellRenderer {
           }
         }
       }
-      
-      // Multiple words in column header. Fitting maximum 
+
+      // Multiple words in column header. Fitting maximum
       // number of words possible per line (box width).
       else {
         while (wordsInColumn.length !== 0) {
@@ -282,7 +282,7 @@ class TextRenderer extends CellRenderer {
             gc.fillText(textInCurrentLine, textX, curY);
             curY += textHeight;
             textInCurrentLine = curWord!;
-          } 
+          }
           else {
             // The combined text hasd a width less than the box width. We
             // set the the current line text to be the new combined text.
@@ -310,7 +310,7 @@ class TextRenderer extends CellRenderer {
           text = text.substring(0, text.length - 2) + elide;
         }
         textWidth = gc.measureText(text).width;
-      } 
+      }
     } else {
       while ((textWidth > boxWidth) && (text.length > 1)) {
         if (text.length > 4 && textWidth >= 2 * boxWidth) {
