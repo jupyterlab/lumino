@@ -38,7 +38,7 @@ describe('@lumino/widgets', () => {
 
   function createWidget(): Widget {
     let widget = new Widget();
-    widget.node.tabIndex = 0;
+    widget.node.tabIndex = -1;
     Widget.attach(widget, document.body);
     _widgets.push(widget);
     return widget;
