@@ -258,7 +258,7 @@ describe('@lumino/widgets', () => {
         let panel = new TabPanel();
         let widgets = [new LogWidget(), new LogWidget(), new LogWidget()];
         each(widgets, w => { panel.addWidget(w); });
-        each(widgets, w => { w.node.tabIndex = 0; });
+        each(widgets, w => { w.node.tabIndex = -1; });
         Widget.attach(panel, document.body);
         panel.tabBar.currentChanged.connect((sender, args) => {
           expect(widgets[args.previousIndex].isVisible).to.equal(false);
