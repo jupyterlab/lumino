@@ -2,6 +2,36 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2021.6.10
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/2021.5.20...6c6cf684d121896d971b9f970a095e2a127fe2cb))
+
+### Bugs fixed
+
+- Remove Chrome default scroll on focus [#190](https://github.com/jupyterlab/lumino/pull/190) ([@ibdafna](https://github.com/ibdafna))
+
+### Maintenance and upkeep improvements
+
+- Bump dot-prop from 4.2.0 to 4.2.1 [#194](https://github.com/jupyterlab/lumino/pull/194) ([@dependabot](https://github.com/dependabot))
+- Bump lodash from 4.17.19 to 4.17.21 [#193](https://github.com/jupyterlab/lumino/pull/193) ([@dependabot](https://github.com/dependabot))
+- Bump handlebars from 4.5.3 to 4.7.7 [#192](https://github.com/jupyterlab/lumino/pull/192) ([@dependabot](https://github.com/dependabot))
+- Update Lerna Dependency [#191](https://github.com/jupyterlab/lumino/pull/191) ([@afshin](https://github.com/afshin))
+- Use Jupyter releaser [#186](https://github.com/jupyterlab/lumino/pull/186) ([@afshin](https://github.com/afshin))
+
+### Documentation improvements
+
+### Other merged PRs
+
+- Bump browserslist from 4.8.3 to 4.16.6 [#188](https://github.com/jupyterlab/lumino/pull/188) ([@dependabot](https://github.com/dependabot))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2021-05-20&to=2021-06-10&type=c))
+
+[@afshin](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aafshin+updated%3A2021-05-20..2021-06-10&type=Issues) | [@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2021-05-20..2021-06-10&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2021-05-20..2021-06-10&type=Issues) | [@ibdafna](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aibdafna+updated%3A2021-05-20..2021-06-10&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2021-5-20
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/2021.5.10...e2b775392b42e98d5c58b9afdc74e92b1631739b))
@@ -27,8 +57,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2021-05-10&to=2021-05-20&type=c))
 
 [@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2021-05-10..2021-05-20&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2021-05-10..2021-05-20&type=Issues) | [@ibdafna](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aibdafna+updated%3A2021-05-10..2021-05-20&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2021-5-10
 
