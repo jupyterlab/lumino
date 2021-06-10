@@ -1,5 +1,5 @@
 {
-  "version": "2021.4.27",
+  "version": "2021.6.10",
   "name": "lumino-top-level",
   "private": true,
   "workspaces": [
@@ -39,11 +39,16 @@
   },
   "jupyter-releaser": {
     "options": {
-      "ignore-links": ["./api/index.html"]
+      "ignore-links": [
+        "./api/index.html"
+      ]
     },
     "hooks": {
       "after-build-changelog": "node scripts/format-changelog.js",
-      "before-build-npm": ["yarn build:dist", "node scripts/tag-versions.js"]
+      "before-build-npm": [
+        "yarn build:dist",
+        "node scripts/tag-versions.js"
+      ]
     }
   }
 }
