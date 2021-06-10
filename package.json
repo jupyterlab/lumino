@@ -34,7 +34,7 @@
   "dependencies": {},
   "devDependencies": {
     "@jupyterlab/buildutils": "^1.0.0",
-    "lerna": "^3.19.0",
+    "lerna": "^4.0.0",
     "typedoc": "^0.20.32"
   },
   "jupyter-releaser": {
