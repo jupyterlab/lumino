@@ -2,6 +2,34 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2021.6.10
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/2021.5.20...e68e21223fa9435161d8d3bc91ee6fd79c651ac1))
+
+### Bugs fixed
+
+- Remove Chrome default scroll on focus [#190](https://github.com/jupyterlab/lumino/pull/190) ([@ibdafna](https://github.com/ibdafna))
+
+### Maintenance and upkeep improvements
+
+- Bump dot-prop from 4.2.0 to 4.2.1 [#194](https://github.com/jupyterlab/lumino/pull/194) ([@dependabot](https://github.com/dependabot))
+- Bump lodash from 4.17.19 to 4.17.21 [#193](https://github.com/jupyterlab/lumino/pull/193) ([@dependabot](https://github.com/dependabot))
+- Bump handlebars from 4.5.3 to 4.7.7 [#192](https://github.com/jupyterlab/lumino/pull/192) ([@dependabot](https://github.com/dependabot))
+- Update Lerna Dependency [#191](https://github.com/jupyterlab/lumino/pull/191) ([@afshin](https://github.com/afshin))
+- Use Jupyter releaser [#186](https://github.com/jupyterlab/lumino/pull/186) ([@afshin](https://github.com/afshin))
+
+### Other merged PRs
+
+- Bump browserslist from 4.8.3 to 4.16.6 [#188](https://github.com/jupyterlab/lumino/pull/188) ([@dependabot](https://github.com/dependabot))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2021-05-20&to=2021-06-10&type=c))
+
+[@afshin](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aafshin+updated%3A2021-05-20..2021-06-10&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2021-05-20..2021-06-10&type=Issues) | [@ibdafna](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aibdafna+updated%3A2021-05-20..2021-06-10&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2021-5-20
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/2021.5.10...e2b775392b42e98d5c58b9afdc74e92b1631739b))
@@ -27,8 +55,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2021-05-10&to=2021-05-20&type=c))
 
 [@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2021-05-10..2021-05-20&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2021-05-10..2021-05-20&type=Issues) | [@ibdafna](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aibdafna+updated%3A2021-05-10..2021-05-20&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2021-5-10
 
@@ -123,7 +149,6 @@
     @lumino/virtualdom: 1.9.0 => 1.10.0
     @lumino/widgets: 1.20.0 => 1.21.0
 
-
 ### Merged PRs
 
 - Add missing PR to changelog [#171](https://github.com/jupyterlab/lumino/pull/171) ([@blink1073](https://github.com/blink1073))
@@ -136,7 +161,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2021-04-12&to=2021-04-19&type=c))
 
 [@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2021-04-12..2021-04-19&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2021-04-12..2021-04-19&type=Issues) | [@ibdafna](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aibdafna+updated%3A2021-04-12..2021-04-19&type=Issues) | [@jtpio](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajtpio+updated%3A2021-04-12..2021-04-19&type=Issues) | [@vidartf](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Avidartf+updated%3A2021-04-12..2021-04-19&type=Issues)
-
 
 ## 2021-4-12
 
