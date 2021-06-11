@@ -1,0 +1,40 @@
+{
+  "name": "benchmarks",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CRDT benchmarks",
+  "scripts": {
+    "clean": "rm -rf dist",
+    "dist": "npm run clean; rollup -c; gzip --keep dist/*",
+    "start": "npm run dist && node dist/benchmark.js",
+    "watch": "npm run dist && rollup -wc",
+    "lint": "standard && tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dmonad/crdt-benchmarks.git"
+  },
+  "keywords": [
+    "CRDT",
+    "benchmark"
+  ],
+  "author": "Kevin Jahns",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dmonad/crdt-benchmarks/issues"
+  },
+  "homepage": "https://github.com/dmonad/crdt-benchmarks#readme",
+  "dependencies": {
+    "yjs": "13.0.0-102",
+    "lib0": "^0.1.6",
+    "automerge": "^0.10.1",
+    "rollup": "^1.10.1",
+    "rollup-plugin-commonjs": "^8.3.4",
+    "rollup-plugin-node-resolve": "^4.2.3",
+    "rollup-plugin-terser": "^4.0.4"
+  },
+  "devDependencies": {
+    "standard": "^13.1.0",
+    "typescript": "^3.5.3"
+  }
+}

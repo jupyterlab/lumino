@@ -23,5 +23,6 @@ docs/api
 *.code-workspace
 .history
 .vscode
+.ipynb_checkpoints
 
 .jupyter_releaser_checkout
