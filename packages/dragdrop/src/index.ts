@@ -264,9 +264,13 @@ class Drag implements IDisposable {
    */
   handleEvent(event: Event): void {
     switch(event.type) {
+    case 'touchmove':
+      event = Drag.convertTouchToMouseEvent(event as TouchEvent);
     case 'mousemove':
       this._evtMouseMove(event as MouseEvent);
       break;
+    case 'touchend':
+      event = Drag.convertTouchToMouseEvent(event as TouchEvent);
     case 'mouseup':
       this._evtMouseUp(event as MouseEvent);
       break;
@@ -377,6 +381,9 @@ class Drag implements IDisposable {
     document.addEventListener('mouseleave', this, true);
     document.addEventListener('mouseover', this, true);
     document.addEventListener('mouseout', this, true);
+    document.addEventListener('touchstart', this, true);
+    document.addEventListener('touchmove', this, true);
+    document.addEventListener('touchend', this, true);
     document.addEventListener('keydown', this, true);
     document.addEventListener('keyup', this, true);
     document.addEventListener('keypress', this, true);
@@ -394,6 +401,9 @@ class Drag implements IDisposable {
     document.removeEventListener('mouseleave', this, true);
     document.removeEventListener('mouseover', this, true);
     document.removeEventListener('mouseout', this, true);
+    document.removeEventListener('touchstart', this, true);
+    document.removeEventListener('touchmove', this, true);
+    document.removeEventListener('touchend', this, true);
     document.removeEventListener('keydown', this, true);
     document.removeEventListener('keyup', this, true);
     document.removeEventListener('keypress', this, true);
@@ -726,6 +736,29 @@ namespace Drag {
         /* </DEPRECATED> */
       }
     });
+  }
+
+  /**
+   * Converts a TouchEvent to a MouseEvent to simplify mobile touch event handling.
+   */
+  export
+  function convertTouchToMouseEvent(touch: TouchEvent): MouseEvent {
+    let touches = touch.touches;
+    if (touches.length === 0) touches = touch.changedTouches; // touchEnd has no touches :facepalm:
+    let mouse = new MouseEvent('fake-mouse', {
+      button: 0, // why not be a left click :shrug:
+      clientX: touches[0].clientX,
+      clientY: touches[0].clientY,
+    });
+
+    // Forcefully add mouse event properties.
+    (mouse as any).preventDefault = touch.preventDefault;
+    (mouse as any).stopPropagation = touch.stopPropagation;
+
+    // target is supposed to be readOnly, set it with js hackery
+    Object.defineProperty(mouse, 'target', {value: touch.target, writable: false});
+
+    return mouse;
   }
 
   /**
