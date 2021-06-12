@@ -20,7 +20,7 @@ import {
 } from './field';
 
 import {
-  createDuplexId
+  createDuplexId, encodeId, decodeId
 } from './utilities';
 
 
@@ -205,6 +205,28 @@ class MapField<T extends ReadonlyJSONValue> extends Field<MapField.Value<T>, Map
 
     // Return the patch result.
     return { value: clone, change };
+  }
+
+  /**
+   * Encode a system patch so that it can be sent across a network.
+   *
+   * @param patch - The patch to encode.
+   *
+   * @returns a JSON value that can be sent across the network.
+   */
+  encodePatch(patch: MapField.Patch<T>): MapField.Patch<T> {
+    return { ...patch, id: encodeId(patch.id) };
+  }
+
+  /**
+   * Decode a system patch from the network.
+   *
+   * @param patch - The object to decode.
+   *
+   * @returns a JSON value that can be sent across the network.
+   */
+  decodePatch(patch: MapField.Patch<T>): MapField.Patch<T> {
+    return { ...patch, id: decodeId(patch.id) };
   }
 
   /**

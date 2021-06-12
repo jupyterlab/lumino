@@ -8,7 +8,6 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
-
 /**
  * Create a duplex string identifier.
  *
@@ -131,7 +130,6 @@ function createTriplexId(version: number, store: number, lower: string, upper: s
   return id.slice();
 }
 
-
 /**
  * Create the multiple triplex identifiers.
  *
@@ -168,6 +166,38 @@ function createTriplexIds(n: number, version: number, store: number, lower: stri
   return ids;
 }
 
+/**
+ * Encode an identifier so that it may be serialized across the network.
+ *
+ * The ID generation scheme in this module can generate unpaired surrogate
+ * characters, which are invalid unicode. The encoding function must be
+ * called for each ID before transmitting it, otherwise it may be
+ * corrupted.
+ *
+ * @param id - the identifier.
+ *
+ * @returns a valid id string to be transmitted.
+ */
+export
+function encodeId(str: string): string {
+  return Private.btoaUTF16(str);
+}
+
+
+/**
+ * Decode an identifier from the network.
+ *
+ * This removes any dummy surrogate characters that have been inserted in
+ * encodeId.
+ *
+ * @param id - the identifier.
+ *
+ * @returns a valid id string to be transmitted.
+ */
+export
+function decodeId(str: string): string {
+  return Private.atobUTF16(str);
+}
 
 /**
  * The namespace for the module implementation details.
@@ -281,5 +311,53 @@ namespace Private {
   export
   function randomPath(min: number, max: number): number {
     return min + Math.round(Math.random() * Math.sqrt(max - min));
+  }
+
+  /**
+   * Encode a DOMString to base64. Modified from
+   * https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/Base64_encoding_and_decoding#Solution_3_–_JavaScript's_UTF-16_>_binary_string_>_base64
+   *
+   * @param str: The DOMString to encode.
+   *
+   * @returns base64 encoded data.
+   */
+  export
+  function btoaUTF16 (str: string) {
+	  let codeUnits = new Uint16Array(str.length);
+    Array.prototype.forEach.call(
+      codeUnits,
+      (el: number, idx: number, arr: number[]) => {
+        arr[idx] = str.charCodeAt(idx);
+      }
+    );
+    return btoa(String.fromCharCode.apply(
+      null,
+      new Uint8Array(codeUnits.buffer)
+    ));
+
+  }
+
+  /**
+   * Encode a DOMString to base64. Modified from
+   * https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/Base64_encoding_and_decoding#Solution_3_–_JavaScript's_UTF-16_>_binary_string_>_base64
+   *
+   * @param str: The DOMString to encode.
+   *
+   * @returns base64 encoded data.
+   */
+  export
+  function atobUTF16 (str: string) {
+    let binaryString = atob(str);
+    let binaryView = new Uint8Array(binaryString.length);
+    Array.prototype.forEach.call(
+      binaryView,
+      (el: number, idx: number, arr: number[]) => {
+        arr[idx] = binaryString.charCodeAt(idx);
+      }
+    );
+    return String.fromCharCode.apply(
+      null,
+      new Uint16Array(binaryView.buffer)
+    );
   }
 }

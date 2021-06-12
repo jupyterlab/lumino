@@ -20,7 +20,7 @@ import {
 } from './field';
 
 import {
-  createTriplexIds
+  createTriplexIds, encodeId, decodeId
 } from './utilities';
 
 
@@ -166,6 +166,36 @@ class ListField<T extends ReadonlyJSONValue> extends Field<ListField.Value<T>, L
 
     // Return the patch result.
     return { value: clone, change };
+  }
+
+  /**
+   * Encode a system patch so that it can be sent across a network.
+   *
+   * @param patch - The patch to encode.
+   *
+   * @returns a JSON value that can be sent across the network.
+   */
+  encodePatch(patch: ListField.Patch<T>): ListField.Patch<T> {
+    return patch.map(part => ({
+      ...part,
+      removedIds: part.removedIds.map(id => encodeId(id)),
+      insertedIds: part.insertedIds.map(id => encodeId(id))
+    }));
+  }
+
+  /**
+   * Decode a system patch from the network.
+   *
+   * @param patch - The object to decode.
+   *
+   * @returns a JSON value that can be sent across the network.
+   */
+  decodePatch(patch: ListField.Patch<T>): ListField.Patch<T> {
+    return patch.map(part => ({
+      ...part,
+      removedIds: part.removedIds.map(id => decodeId(id)),
+      insertedIds: part.insertedIds.map(id => decodeId(id))
+    }));
   }
 
   /**

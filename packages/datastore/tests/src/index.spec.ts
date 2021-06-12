@@ -15,3 +15,4 @@ import './mapfield.spec';
 import './registerfield.spec';
 import './table.spec';
 import './textfield.spec';
+import './utilities.spec';

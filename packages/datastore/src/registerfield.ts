@@ -20,7 +20,7 @@ import {
 } from './field';
 
 import {
-  createDuplexId
+  createDuplexId, encodeId, decodeId
 } from './utilities';
 
 
@@ -136,6 +136,28 @@ class RegisterField<T extends ReadonlyJSONValue> extends Field<RegisterField.Val
 
     // Return the result of the patch.
     return { value, change };
+  }
+
+  /**
+   * Encode a system patch so that it can be sent across a network.
+   *
+   * @param patch - The patch to encode.
+   *
+   * @returns a JSON value that can be sent across the network.
+   */
+  encodePatch(patch: RegisterField.Patch<T>): RegisterField.Patch<T> {
+    return { ...patch, id: encodeId(patch.id) };
+  }
+
+  /**
+   * Decode a system patch from the network.
+   *
+   * @param patch - The object to decode.
+   *
+   * @returns a JSON value that can be sent across the network.
+   */
+  decodePatch(patch: RegisterField.Patch<T>): RegisterField.Patch<T> {
+    return { ...patch, id: decodeId(patch.id) };
   }
 
   /**

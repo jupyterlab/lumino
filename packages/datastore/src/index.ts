@@ -18,3 +18,4 @@ export * from './schema';
 export * from './serveradapter';
 export * from './table';
 export * from './textfield';
+export * from './utilities';

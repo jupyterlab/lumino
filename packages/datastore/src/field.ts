@@ -125,6 +125,24 @@ abstract class Field<Value extends ReadonlyJSONValue, Update extends ReadonlyJSO
   abstract unapplyPatch(args: Field.PatchArgs<Value, Patch, Metadata>): Field.PatchResult<Value, Change>;
 
   /**
+   * Encode a system patch so that it can be sent across a network.
+   *
+   * @param patch - The patch to encode.
+   *
+   * @returns a JSON value that can be sent across the network.
+   */
+  abstract encodePatch(patch: Patch): Patch;
+
+  /**
+   * Decode a system patch from the network.
+   *
+   * @param patch - The object to decode.
+   *
+   * @returns a JSON value that can be sent across the network.
+   */
+  abstract decodePatch(patch: Patch): Patch;
+
+  /**
    * Merge two change objects into a single change object.
    *
    * @param first - The first change object of interest.
