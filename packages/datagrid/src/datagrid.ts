@@ -4628,7 +4628,7 @@ class DataGrid extends Widget {
            * which is not part of a merged cell group.
            */
           if (rgn.region == 'column-header') {
-            width = this._getColumnSize(config.region, row);
+            width = rgn.columnSizes[i];
           }
         }
 
