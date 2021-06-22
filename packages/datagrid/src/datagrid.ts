@@ -4622,6 +4622,15 @@ class DataGrid extends Widget {
             continue;
           }
         }
+        else {
+          /**
+           * Reset column width if we're rendering a column-header
+           * which is not part of a merged cell group.
+           */
+          if (rgn.region == 'column-header') {
+            width = this._getColumnSize(config.region, row);
+          }
+        }
 
         // Clear the buffer rect for the cell.
         gc.clearRect(x, y, width, height);
