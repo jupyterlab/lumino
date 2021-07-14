@@ -69,12 +69,60 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
           set -eux
-          git checkout -b release
           npm install -g verdaccio
           verdaccio --config .github/scripts/verdaccio.yml &
           npm set registry http://localhost:4873/
           yarn config set registry http://localhost:4873/
           git config --global user.email "you@example.com"
           git config --global user.name "Your Name"
-          yarn run version patch --no-push --yes
+          yarn run update:versions patch --yes
+          git commit -a -m "Update versions"
           yarn run publish
+
+  check_release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '14.x'
+
+      # Cache yarn
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: Cache yarn
+        uses: actions/cache@v2
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          set -eux
+          npm install -g yarn
+          yarn
+
+      - name: Cache checked links
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pytest-link-check
+          key: ${{ runner.os }}-linkcheck-${{ hashFiles('**/.md') }}-md-links
+          restore-keys: |
+            ${{ runner.os }}-linkcheck-
+
+      - name: Install Dependencies
+        run: |
+          yarn
+
+      - name: Check Release
+        uses: jupyter-server/jupyter_releaser/.github/actions/check-release@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}

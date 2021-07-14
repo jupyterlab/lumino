@@ -1955,7 +1955,7 @@ class DataGrid extends Widget {
    * A message handler invoked on an `'activate-request'` message.
    */
   protected onActivateRequest(msg: Message): void {
-    this.viewport.node.focus();
+    this.viewport.node.focus({preventScroll: true});
   }
 
   /**
