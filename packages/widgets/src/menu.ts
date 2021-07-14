@@ -527,7 +527,7 @@ class Menu extends Widget {
   /**
    * A message handler invoked on an `'activate-request'` message.
    */
-   protected onActivateRequest(msg: Message): void {
+  protected onActivateRequest(msg: Message): void {
     if (this.isAttached) {
       this.node.focus();
     }
