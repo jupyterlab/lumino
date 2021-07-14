@@ -525,6 +525,15 @@ class Menu extends Widget {
   }
 
   /**
+   * A message handler invoked on an `'activate-request'` message.
+   */
+   protected onActivateRequest(msg: Message): void {
+    if (this.isAttached) {
+      this.node.focus();
+    }
+  }
+
+  /**
    * A message handler invoked on an `'update-request'` message.
    */
   protected onUpdateRequest(msg: Message): void {
@@ -630,7 +639,7 @@ class Menu extends Widget {
     }
 
     // Right Arrow
-    if (kc === 39 || kc === 9) {
+    if (kc === 39) {
       let item = this.activeItem;
       if (item && item.type === 'submenu') {
         this.triggerActiveItem();
@@ -641,7 +650,7 @@ class Menu extends Widget {
     }
 
     // Down Arrow
-    if (kc === 40 || kc === 9) {
+    if (kc === 40) {
       this.activateNextItem();
       return;
     }

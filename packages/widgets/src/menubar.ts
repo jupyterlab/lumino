@@ -453,8 +453,8 @@ class MenuBar extends Widget {
       return;
     }
 
-    // Right Arrow or tab
-    if (kc === 39 || kc === 9) {
+    // Right Arrow
+    if (kc === 39) {
       let i = this._activeIndex;
       let n = this._menus.length;
       this.activeIndex = i === n - 1 ? 0 : i + 1;
