@@ -144,7 +144,7 @@ class MenuBar extends Widget {
     this._activeIndex = value;
 
     // Update focus to new active index
-    if (this.contentNode.childNodes[this._activeIndex]) {
+    if (this._activeIndex >= 0 && this.contentNode.childNodes[this._activeIndex]) {
       (this.contentNode.childNodes[this._activeIndex] as HTMLElement).focus();
     }
 
