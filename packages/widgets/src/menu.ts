@@ -221,8 +221,8 @@ class Menu extends Widget {
     this._activeIndex = value;
 
     // Make active element in focus
-    if (this._activeIndex >= 0) {
-      (this.contentNode.childNodes[this._activeIndex] as HTMLElement)!.focus();
+    if (this.contentNode.childNodes[this._activeIndex]) {
+      (this.contentNode.childNodes[this._activeIndex] as HTMLElement).focus();
     }
 
     // schedule an update of the items.
