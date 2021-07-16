@@ -4413,6 +4413,12 @@ class DataGrid extends Widget {
       return;
     }
 
+    // Determine if the cell intersects with a merged group at row or column
+    let intersectingColumnGroups = CellGroup.getCellGroupsAtColumn(this._dataModel!, 
+      rgn.region, rgn.column);
+    let intersectingRowGroups = CellGroup.getCellGroupsAtRow(this._dataModel!, 
+      rgn.region, rgn.row);
+
     // move the bounds of the region if edges of the region are part of a merge group.
     // after the move, new region contains entirety of the merge groups
     rgn = JSONExt.deepCopy(rgn);
@@ -4580,7 +4586,13 @@ class DataGrid extends Widget {
         let y1 = Math.max(rgn.yMin, config.y);
         let y2 = Math.min(config.y + config.height - 1, rgn.yMax);
 
-        if (x2 > x1 && y2 > y1) {
+        if (intersectingColumnGroups.length !== 0  
+          || intersectingRowGroups.length !== 0) {
+          if (x2 > x1 && y2 > y1) {
+            this._blitContent(this._buffer, x1, y1, x2 - x1 + 1, y2 - y1 + 1, x1, y1);
+          }
+        }
+        else {
           this._blitContent(this._buffer, x1, y1, x2 - x1 + 1, y2 - y1 + 1, x1, y1);
         }
 
