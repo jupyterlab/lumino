@@ -4662,17 +4662,7 @@ class DataGrid extends Widget {
       // Draw the line if it's in range of the dirty rect.
       if (pos >= rgn.yMin && pos <= rgn.yMax) {
         // Render entire grid if scrolling merged cells grid
-        const colGroups = CellGroup.getCellGroupsAtRegion(this.dataModel!, 'column-header');
-        const rowHeaderGroups = CellGroup.getCellGroupsAtRegion(this.dataModel!, 'row-header');
-        const cornerHeaderGroups = CellGroup.getCellGroupsAtRegion(this.dataModel!, 'corner-header');
-        const bodyGroups = CellGroup.getCellGroupsAtRegion(this.dataModel!, 'body');
-        const extendLines = (
-             colGroups.length > 0 
-          || rowHeaderGroups.length > 0 
-          || cornerHeaderGroups.length > 0
-          || bodyGroups.length > 0
-        );
-
+        const extendLines = Private.shouldPaintEverything(this._dataModel!);
         if (extendLines) {
           for (const line of lines) {
             this._canvasGC.moveTo(line[0], pos + 0.5);
@@ -4774,16 +4764,7 @@ class DataGrid extends Widget {
       // Draw the line if it's in range of the dirty rect.
       if (pos >= rgn.xMin && pos <= rgn.xMax) {
         // Render entire grid if scrolling merged cells grid
-        const colGroups = CellGroup.getCellGroupsAtRegion(this.dataModel!, 'column-header');
-        const rowHeaderGroups = CellGroup.getCellGroupsAtRegion(this.dataModel!, 'row-header');
-        const cornerHeaderGroups = CellGroup.getCellGroupsAtRegion(this.dataModel!, 'corner-header');
-        const bodyGroups = CellGroup.getCellGroupsAtRegion(this.dataModel!, 'body');
-        const extendLines = (
-              colGroups.length > 0 
-          || rowHeaderGroups.length > 0 
-          || cornerHeaderGroups.length > 0
-          || bodyGroups.length > 0
-        );
+        const extendLines = Private.shouldPaintEverything(this._dataModel!);
         if (extendLines) {
           for (const line of lines) {
             // this._canvasGC.strokeStyle = color;
