@@ -3110,15 +3110,7 @@ class DataGrid extends Widget {
     }
 
     // Render entire grid if scrolling merged cells grid
-    const colGroups = CellGroup.getCellGroupsAtRegion(this.dataModel!, 'column-header');
-    const rowHeaderGroups = CellGroup.getCellGroupsAtRegion(this.dataModel!, 'row-header');
-    const cornerHeaderGroups = CellGroup.getCellGroupsAtRegion(this.dataModel!, 'corner-header');
-    const bodyGroups = CellGroup.getCellGroupsAtRegion(this.dataModel!, 'body');
-    const paintEverything = (
-         colGroups.length > 0 
-      || rowHeaderGroups.length > 0 
-      || cornerHeaderGroups.length > 0
-      || bodyGroups.length > 0);
+    const paintEverything = Private.shouldPaintEverything(this._dataModel!);
 
     if (paintEverything) {
       this.paintContent(0, 0, vw, vh);
@@ -3240,15 +3232,7 @@ class DataGrid extends Widget {
     }
 
     // Render entire grid if scrolling merged cells grid
-    const colGroups = CellGroup.getCellGroupsAtRegion(this.dataModel!, 'column-header');
-    const rowHeaderGroups = CellGroup.getCellGroupsAtRegion(this.dataModel!, 'row-header');
-    const cornerHeaderGroups = CellGroup.getCellGroupsAtRegion(this.dataModel!, 'corner-header');
-    const bodyGroups = CellGroup.getCellGroupsAtRegion(this.dataModel!, 'body');
-    const paintEverything = (
-         colGroups.length > 0 
-      || rowHeaderGroups.length > 0 
-      || cornerHeaderGroups.length > 0
-      || bodyGroups.length > 0);
+    const paintEverything = Private.shouldPaintEverything(this._dataModel!);
       
     if (paintEverything) {
       this.paintContent(0, 0, vw, vh);
@@ -3370,15 +3354,7 @@ class DataGrid extends Widget {
     }
 
     // Render entire grid if scrolling merged cells grid
-    const colGroups = CellGroup.getCellGroupsAtRegion(this.dataModel!, 'column-header');
-    const rowHeaderGroups = CellGroup.getCellGroupsAtRegion(this.dataModel!, 'row-header');
-    const cornerHeaderGroups = CellGroup.getCellGroupsAtRegion(this.dataModel!, 'corner-header');
-    const bodyGroups = CellGroup.getCellGroupsAtRegion(this.dataModel!, 'body');
-    const paintEverything = (
-         colGroups.length > 0 
-      || rowHeaderGroups.length > 0 
-      || cornerHeaderGroups.length > 0
-      || bodyGroups.length > 0);
+    const paintEverything = Private.shouldPaintEverything(this._dataModel!);
       
     if (paintEverything) {
       this.paintContent(0, 0, vw, vh);
@@ -3476,15 +3452,7 @@ class DataGrid extends Widget {
     }
 
     // Render entire grid if scrolling merged cells grid
-    const colGroups = CellGroup.getCellGroupsAtRegion(this.dataModel!, 'column-header');
-    const rowHeaderGroups = CellGroup.getCellGroupsAtRegion(this.dataModel!, 'row-header');
-    const cornerHeaderGroups = CellGroup.getCellGroupsAtRegion(this.dataModel!, 'corner-header');
-    const bodyGroups = CellGroup.getCellGroupsAtRegion(this.dataModel!, 'body');
-    const paintEverything = (
-         colGroups.length > 0 
-      || rowHeaderGroups.length > 0 
-      || cornerHeaderGroups.length > 0
-      || bodyGroups.length > 0);
+    const paintEverything = Private.shouldPaintEverything(this._dataModel!);
       
     if (paintEverything) {
       this.paintContent(0, 0, vw, vh);
@@ -3556,17 +3524,9 @@ class DataGrid extends Widget {
     if (!this.dataModel) {
       return;
     }
-    
+
     // Render entire grid if scrolling merged cells grid
-    const colGroups = CellGroup.getCellGroupsAtRegion(this.dataModel!, 'column-header');
-    const rowHeaderGroups = CellGroup.getCellGroupsAtRegion(this.dataModel!, 'row-header');
-    const cornerHeaderGroups = CellGroup.getCellGroupsAtRegion(this.dataModel!, 'corner-header');
-    const bodyGroups = CellGroup.getCellGroupsAtRegion(this.dataModel!, 'body');
-    const paintEverything = (
-         colGroups.length > 0 
-      || rowHeaderGroups.length > 0 
-      || cornerHeaderGroups.length > 0
-      || bodyGroups.length > 0);
+    const paintEverything = Private.shouldPaintEverything(this._dataModel!);
 
     // Floor and clamp the position to the allowable range.
     x = Math.max(0, Math.min(Math.floor(x), this.maxScrollX));
@@ -6142,6 +6102,25 @@ namespace Private {
     canvas.width = 0;
     canvas.height = 0;
     return canvas;
+  }
+
+  /**
+   * A function to check whether the entire grid should be rendered
+   * when dealing with merged cell regions.
+   * @param dataModel grid's data model.
+   * @returns boolean.
+   */
+  export
+  function shouldPaintEverything(dataModel: DataModel): boolean {
+    const colGroups = CellGroup.getCellGroupsAtRegion(dataModel!, 'column-header');
+    const rowHeaderGroups = CellGroup.getCellGroupsAtRegion(dataModel!, 'row-header');
+    const cornerHeaderGroups = CellGroup.getCellGroupsAtRegion(dataModel!, 'corner-header');
+    const bodyGroups = CellGroup.getCellGroupsAtRegion(dataModel!, 'body');
+    return (
+         colGroups.length > 0 
+      || rowHeaderGroups.length > 0 
+      || cornerHeaderGroups.length > 0
+      || bodyGroups.length > 0);
   }
 
   /**
