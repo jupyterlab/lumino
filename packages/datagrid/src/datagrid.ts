@@ -3552,6 +3552,11 @@ class DataGrid extends Widget {
    * Scroll immediately to the specified offset position.
    */
   private _scrollTo(x: number, y: number): void {
+    // Bail if no data model found.
+    if (!this.dataModel) {
+      return;
+    }
+    
     // Render entire grid if scrolling merged cells grid
     const colGroups = CellGroup.getCellGroupsAtRegion(this.dataModel!, 'column-header');
     const rowHeaderGroups = CellGroup.getCellGroupsAtRegion(this.dataModel!, 'row-header');
