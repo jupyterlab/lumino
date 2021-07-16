@@ -264,7 +264,7 @@ export namespace CellGroup {
    * same region if they intersect.
    * @param dataModel the data model of the grid.
    * @param group the target cell group.
-   * @param region the region wer're of the cell group.
+   * @param region the region of the cell group.
    * @returns a new cell group after merging has happened.
    */
   export function joinCellGroupWithMergedCellGroups(
