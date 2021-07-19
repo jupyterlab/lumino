@@ -4,17 +4,20 @@
 
 ## 2021.7.19
 
-([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2021.6.10...1e757e4e47367a1a0ac90753ce837ced7f321d1f))
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2021.6.10...52aee424552e8af82d65fcd8a18b6e80ca5fab77))
 
-### Merged PRs
+### Documentation improvements
 
+### Other merged PRs
+
+- Bump color-string from 1.5.3 to 1.6.0 [#200](https://github.com/jupyterlab/lumino/pull/200) ([@dependabot](https://github.com/dependabot))
 - Simplify rendering logic for grids with merged cells [#197](https://github.com/jupyterlab/lumino/pull/197) ([@ibdafna](https://github.com/ibdafna))
 
 ### Contributors to this release
 
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2021-06-10&to=2021-07-19&type=c))
 
-[@ibdafna](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aibdafna+updated%3A2021-06-10..2021-07-19&type=Issues)
+[@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2021-06-10..2021-07-19&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2021-06-10..2021-07-19&type=Issues) | [@ibdafna](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aibdafna+updated%3A2021-06-10..2021-07-19&type=Issues)
 
 <!-- <END NEW CHANGELOG ENTRY> -->
 
