@@ -2,6 +2,22 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2021.7.19
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2021.6.10...1e757e4e47367a1a0ac90753ce837ced7f321d1f))
+
+### Merged PRs
+
+- Simplify rendering logic for grids with merged cells [#197](https://github.com/jupyterlab/lumino/pull/197) ([@ibdafna](https://github.com/ibdafna))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2021-06-10&to=2021-07-19&type=c))
+
+[@ibdafna](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aibdafna+updated%3A2021-06-10..2021-07-19&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2021.6.10
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/2021.5.20...6c6cf684d121896d971b9f970a095e2a127fe2cb))
@@ -29,8 +45,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2021-05-20&to=2021-06-10&type=c))
 
 [@afshin](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aafshin+updated%3A2021-05-20..2021-06-10&type=Issues) | [@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2021-05-20..2021-06-10&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2021-05-20..2021-06-10&type=Issues) | [@ibdafna](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aibdafna+updated%3A2021-05-20..2021-06-10&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2021-5-20
 
