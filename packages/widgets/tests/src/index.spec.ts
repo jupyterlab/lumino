@@ -15,6 +15,7 @@ import './boxengine.spec';
 import './boxlayout.spec';
 import './boxpanel.spec';
 import './commandpalette.spec';
+import './contextmenu.spec';
 import './docklayout.spec';
 import './dockpanel.spec';
 import './focustracker.spec';
