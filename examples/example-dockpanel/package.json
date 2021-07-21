@@ -1,6 +1,6 @@
 {
   "name": "@lumino/example-dockpanel",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "private": true,
   "scripts": {
     "build": "tsc && webpack",
@@ -8,10 +8,10 @@
   },
   "dependencies": {
     "@lumino/commands": "^1.15.0",
-    "@lumino/default-theme": "^0.14.0",
+    "@lumino/default-theme": "^0.15.0",
     "@lumino/dragdrop": "^1.10.0",
     "@lumino/messaging": "^1.7.0",
-    "@lumino/widgets": "^1.23.0",
+    "@lumino/widgets": "^1.24.0",
     "es6-promise": "^4.0.5"
   },
   "devDependencies": {
