@@ -413,7 +413,6 @@ class MenuBar extends Widget {
         active,
         onfocus: () => {
           this.activeIndex = i;
-          this.openActiveMenu();
         }
       });
     }

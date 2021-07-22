@@ -1455,6 +1455,7 @@ namespace Private {
     /* </DEPRECATED> */
     node.appendChild(content);
     content.setAttribute('role', 'menu');
+    node.tabIndex = 0;
     return node;
   }
 
