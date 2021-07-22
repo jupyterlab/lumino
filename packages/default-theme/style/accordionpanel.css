@@ -1,0 +1,26 @@
+.lm-AccordionPanel .lm-AccordionPanel-title {
+  box-sizing: border-box;
+  padding: 0px 10px;
+  background: #E5E5E5;
+  border: 1px solid #C0C0C0;
+  border-bottom: none;
+  font: 12px Helvetica, Arial, sans-serif;
+  min-height: 22px;
+  max-height: 22px;
+  min-width: 35px;
+  line-height: 20px;
+}
+
+.lm-AccordionPanel .lm-AccordionPanel-title.lm-mod-expanded .lm-AccordionPanel-titleCollapser:before {
+  content: "\f0d7";
+  font-family: FontAwesome;
+}
+
+.lm-AccordionPanel .lm-AccordionPanel-title .lm-AccordionPanel-titleCollapser:before {
+  content: "\f0da";
+  font-family: FontAwesome;
+}
+
+.lm-AccordionPanel .lm-AccordionPanel-titleLabel {
+  padding: 0px 5px;
+}

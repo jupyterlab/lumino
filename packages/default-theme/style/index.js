@@ -7,6 +7,7 @@
 |----------------------------------------------------------------------------*/
 import '@lumino/dragdrop/style/index';
 import '@lumino/widgets/style/index';
+import './accordionpanel.css';
 import './commandpalette.css';
 import './datagrid.css';
 import './dockpanel.css';

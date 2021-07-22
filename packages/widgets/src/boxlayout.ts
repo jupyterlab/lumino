@@ -35,6 +35,8 @@ import {
   PanelLayout
 } from './panellayout';
 
+import Utils from './utils';
+
 import {
   Widget
 } from './widget';
@@ -59,7 +61,7 @@ class BoxLayout extends PanelLayout {
       this._alignment = options.alignment;
     }
     if (options.spacing !== undefined) {
-      this._spacing = Private.clampSpacing(options.spacing);
+      this._spacing = Utils.clampDimension(options.spacing);
     }
   }
 
@@ -146,7 +148,7 @@ class BoxLayout extends PanelLayout {
    * Set the inter-element spacing for the box layout.
    */
   set spacing(value: number) {
-    value = Private.clampSpacing(value);
+    value = Utils.clampDimension(value);
     if (this._spacing === value) {
       return;
     }

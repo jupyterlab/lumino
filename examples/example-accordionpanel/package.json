@@ -1,0 +1,25 @@
+{
+  "name": "@lumino/example-accordionpanel",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc && webpack",
+    "clean": "rimraf build"
+  },
+  "dependencies": {
+    "@lumino/datagrid": "^0.25.2",
+    "@lumino/default-theme": "^0.14.0",
+    "@lumino/dragdrop": "^1.10.0",
+    "@lumino/widgets": "^1.23.0",
+    "es6-promise": "^4.0.5"
+  },
+  "devDependencies": {
+    "css-loader": "^3.4.0",
+    "file-loader": "^5.0.2",
+    "rimraf": "^2.5.2",
+    "style-loader": "^1.0.2",
+    "typescript": "~3.6.0",
+    "webpack": "^4.41.3",
+    "webpack-cli": "^3.3.10"
+  }
+}

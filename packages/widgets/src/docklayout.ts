@@ -31,6 +31,8 @@ import {
   TabBar
 } from './tabbar';
 
+import Utils from './utils';
+
 import {
   Widget
 } from './widget';
@@ -55,7 +57,7 @@ class DockLayout extends Layout {
     super();
     this.renderer = options.renderer;
     if (options.spacing !== undefined) {
-      this._spacing = Private.clampSpacing(options.spacing);
+      this._spacing = Utils.clampDimension(options.spacing);
     }
   }
 
@@ -100,7 +102,7 @@ class DockLayout extends Layout {
    * Set the inter-element spacing for the dock layout.
    */
   set spacing(value: number) {
-    value = Private.clampSpacing(value);
+    value = Utils.clampDimension(value);
     if (this._spacing === value) {
       return;
     }
@@ -1379,14 +1381,6 @@ namespace Private {
    */
   export
   type ItemMap = Map<Widget, LayoutItem>;
-
-  /**
-   * Clamp a spacing value to an integer >= 0.
-   */
-  export
-  function clampSpacing(value: number): number {
-    return Math.max(0, Math.floor(value));
-  }
 
   /**
    * Create a box sizer with an initial size hint.
