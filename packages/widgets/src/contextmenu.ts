@@ -7,15 +7,15 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { ArrayExt, each } from "@lumino/algorithm";
+import { ArrayExt, each } from '@lumino/algorithm';
 
-import { CommandRegistry } from "@lumino/commands";
+import { CommandRegistry } from '@lumino/commands';
 
-import { DisposableDelegate, IDisposable } from "@lumino/disposable";
+import { DisposableDelegate, IDisposable } from '@lumino/disposable';
 
-import { Selector } from "@lumino/domutils";
+import { Selector } from '@lumino/domutils';
 
-import { Menu } from "./menu";
+import { Menu } from './menu';
 
 /**
  * An object which implements a universal context menu.
@@ -33,8 +33,9 @@ export class ContextMenu {
    * @param options - The options for initializing the menu.
    */
   constructor(options: ContextMenu.IOptions) {
-    const { sortBySelector, ...others } = options;
+    const { groupByTarget, sortBySelector, ...others } = options;
     this.menu = new Menu(others);
+    this._groupByTarget = groupByTarget !== false;
     this._sortBySelector = sortBySelector !== false;
   }
 
@@ -86,7 +87,12 @@ export class ContextMenu {
     }
 
     // Find the matching items for the event.
-    let items = Private.matchItems(this._items, event, this._sortBySelector);
+    let items = Private.matchItems(
+      this._items,
+      event,
+      this._groupByTarget,
+      this._sortBySelector
+    );
 
     // Bail if there are no matching items.
     if (!items || items.length === 0) {
@@ -105,6 +111,7 @@ export class ContextMenu {
     return true;
   }
 
+  private _groupByTarget: boolean = true;
   private _idTick = 0;
   private _items: Private.IItem[] = [];
   private _sortBySelector: boolean = true;
@@ -134,6 +141,17 @@ export namespace ContextMenu {
      * Default true.
      */
     sortBySelector?: boolean;
+
+    /**
+     * Whether to group items following the DOM hierarchy.
+     *
+     * Default true.
+     *
+     * #### Note
+     * If true, when the mouse event occurs on element `span` within `div.top`,
+     * the items matching `div.top` will be shown before the ones matching `body`.
+     */
+    groupByTarget?: boolean;
   }
 
   /**
@@ -212,7 +230,8 @@ namespace Private {
   export function matchItems(
     items: IItem[],
     event: MouseEvent,
-    sortBySelector: boolean,
+    groupByTarget: boolean,
+    sortBySelector: boolean
   ): IItem[] | null {
     // Look up the target of the event.
     let target = event.target as Element | null;
@@ -276,7 +295,9 @@ namespace Private {
 
       // Sort the matches for this level and add them to the results.
       if (matches.length !== 0) {
-        matches.sort(sortBySelector ? itemCmp : itemCmpRank);
+        if (groupByTarget) {
+          matches.sort(sortBySelector ? itemCmp : itemCmpRank);
+        }
         result.push(...matches);
       }
 
@@ -287,6 +308,10 @@ namespace Private {
 
       // Step to the parent DOM level.
       target = target.parentElement;
+    }
+
+    if (!groupByTarget) {
+      result.sort(sortBySelector ? itemCmp : itemCmpRank);
     }
 
     // Return the matched and sorted results.
@@ -300,7 +325,7 @@ namespace Private {
    * invalid or contains commas.
    */
   function validateSelector(selector: string): string {
-    if (selector.indexOf(",") !== -1) {
+    if (selector.indexOf(',') !== -1) {
       throw new Error(`Selector cannot contain commas: ${selector}`);
     }
     if (!Selector.isValid(selector)) {
@@ -334,7 +359,7 @@ namespace Private {
     if (s1 !== s2) {
       return s2 - s1;
     }
-    
+
     // If specificities are equal
     return itemCmpRank(a, b);
   }
