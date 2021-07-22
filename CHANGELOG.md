@@ -2,6 +2,23 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2017.7.22
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/example-datagrid@0.23.0...04b0cf32e49d1371f1c68228850a3941e5b0c6a2))
+
+### Enhancements made
+
+- Added option to force items' position [#208](https://github.com/jupyterlab/lumino/pull/208) ([@hbcarlos](https://github.com/hbcarlos))
+- Add option to not group context menu item by target [#206](https://github.com/jupyterlab/lumino/pull/206) ([@fcollonval](https://github.com/fcollonval))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2021-07-21&to=2021-07-22&type=c))
+
+[@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2021-07-21..2021-07-22&type=Issues) | [@hbcarlos](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ahbcarlos+updated%3A2021-07-21..2021-07-22&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Awelcome+updated%3A2021-07-21..2021-07-22&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2021.7.21
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/example-datagrid@0.22.2...d09f1fc86a97f7b48ae21b1a32b9ad9578675087))
@@ -15,8 +32,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2021-07-19&to=2021-07-21&type=c))
 
 [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2021-07-19..2021-07-21&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Awelcome+updated%3A2021-07-19..2021-07-21&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2021.7.19
 
