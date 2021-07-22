@@ -58,6 +58,7 @@ class MenuBar extends Widget {
     /* </DEPRECATED> */
     this.setFlag(Widget.Flag.DisallowLayout);
     this.renderer = options.renderer || MenuBar.defaultRenderer;
+    this._forceItemsPosition = options.forceItemsPosition || { forceX: true, forceY: true };
   }
 
   /**
@@ -599,7 +600,7 @@ class MenuBar extends Widget {
     let { left, bottom } = (itemNode as HTMLElement).getBoundingClientRect();
 
     // Open the new menu at the computed location.
-    newMenu.open(left, bottom, { forceX: true, forceY: true });
+    newMenu.open(left, bottom, this._forceItemsPosition);
   }
 
   /**
@@ -693,6 +694,7 @@ class MenuBar extends Widget {
   }
 
   private _activeIndex = -1;
+  private _forceItemsPosition: Menu.IOpenOptions;
   private _menus: Menu[] = [];
   private _childMenu: Menu | null = null;
 }
@@ -714,6 +716,16 @@ namespace MenuBar {
      * The default is a shared renderer instance.
      */
     renderer?: IRenderer;
+    /**
+     * Whether to force the position of the menu. The MenuBar forces the
+     * coordinates of its menus by default. With this option you can disable it.
+     *
+     * Setting to `false` will enable the logic which repositions the
+     * coordinates of the menu if it will not fit entirely on screen.
+     *
+     * The default is `true`.
+     */
+    forceItemsPosition?: Menu.IOpenOptions;
   }
 
   /**
