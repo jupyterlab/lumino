@@ -40,20 +40,6 @@
 
 [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2021-07-21..2021-07-22&type=Issues) | [@hbcarlos](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ahbcarlos+updated%3A2021-07-21..2021-07-22&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Awelcome+updated%3A2021-07-21..2021-07-22&type=Issues)
 
-## 2021.7.21
-
-([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/example-datagrid@0.22.2...d09f1fc86a97f7b48ae21b1a32b9ad9578675087))
-
-### Enhancements made
-
-- Don't sort context menu item by selector [#203](https://github.com/jupyterlab/lumino/pull/203) ([@fcollonval](https://github.com/fcollonval))
-
-### Contributors to this release
-
-([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2021-07-19&to=2021-07-21&type=c))
-
-[@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2021-07-19..2021-07-21&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Awelcome+updated%3A2021-07-19..2021-07-21&type=Issues)
-
 ## 2021.7.19
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2021.6.10...52aee424552e8af82d65fcd8a18b6e80ca5fab77))
