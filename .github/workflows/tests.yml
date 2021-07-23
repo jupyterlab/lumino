@@ -90,6 +90,25 @@ jobs:
         with:
           node-version: '14.x'
 
+      - name: Install Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+          architecture: "x64"
+
+      - name: Get pip cache dir
+        id: pip-cache
+        run: |
+          echo "::set-output name=dir::$(pip cache dir)"
+      - name: Cache pip
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.pip-cache.outputs.dir }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('setup.cfg') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+            ${{ runner.os }}-pip-
+
       # Cache yarn
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
@@ -114,7 +133,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.cache/pytest-link-check
-          key: ${{ runner.os }}-linkcheck-${{ hashFiles('**/.md') }}-md-links
+          key: ${{ runner.os }}-linkcheck-${{ hashFiles('**/*.md') }}-md-links
           restore-keys: |
             ${{ runner.os }}-linkcheck-
 
