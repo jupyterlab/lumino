@@ -7,23 +7,23 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { ArrayExt, each } from '@lumino/algorithm';
+import { ArrayExt, each } from "@lumino/algorithm";
 
-import { ElementExt } from '@lumino/domutils';
+import { ElementExt } from "@lumino/domutils";
 
-import { Message, MessageLoop } from '@lumino/messaging';
+import { Message, MessageLoop } from "@lumino/messaging";
 
-import { AttachedProperty } from '@lumino/properties';
+import { AttachedProperty } from "@lumino/properties";
 
-import { BoxEngine, BoxSizer } from './boxengine';
+import { BoxEngine, BoxSizer } from "./boxengine";
 
-import { LayoutItem } from './layout';
+import { LayoutItem } from "./layout";
 
-import { PanelLayout } from './panellayout';
+import { PanelLayout } from "./panellayout";
 
-import { Utils } from './utils';
+import { Utils } from "./utils";
 
-import { Widget } from './widget';
+import { Widget } from "./widget";
 
 /**
  * A layout which arranges its widgets into resizable sections.
@@ -90,7 +90,7 @@ export class SplitLayout extends PanelLayout {
     if (!this.parent) {
       return;
     }
-    this.parent.dataset['orientation'] = value;
+    this.parent.dataset["orientation"] = value;
     this.parent.fit();
   }
 
@@ -124,7 +124,7 @@ export class SplitLayout extends PanelLayout {
     if (!this.parent) {
       return;
     }
-    this.parent.dataset['alignment'] = value;
+    this.parent.dataset["alignment"] = value;
     this.parent.update();
   }
 
@@ -225,13 +225,13 @@ export class SplitLayout extends PanelLayout {
   moveHandle(index: number, position: number): void {
     // Bail if the index is invalid or the handle is hidden.
     let handle = this._handles[index];
-    if (!handle || handle.classList.contains('lm-mod-hidden')) {
+    if (!handle || handle.classList.contains("lm-mod-hidden")) {
       return;
     }
 
     // Compute the desired delta movement for the handle.
     let delta: number;
-    if (this._orientation === 'horizontal') {
+    if (this._orientation === "horizontal") {
       delta = position - handle.offsetLeft;
     } else {
       delta = position - handle.offsetTop;
@@ -262,8 +262,8 @@ export class SplitLayout extends PanelLayout {
    * Perform layout initialization which requires the parent widget.
    */
   protected init(): void {
-    this.parent!.dataset['orientation'] = this.orientation;
-    this.parent!.dataset['alignment'] = this.alignment;
+    this.parent!.dataset["orientation"] = this.orientation;
+    this.parent!.dataset["alignment"] = this.alignment;
     super.init();
   }
 
@@ -473,14 +473,14 @@ export class SplitLayout extends PanelLayout {
     let lastHandleIndex = -1;
     for (let i = 0, n = this._items.length; i < n; ++i) {
       if (this._items[i].isHidden) {
-        this._handles[i].classList.add('lm-mod-hidden');
+        this._handles[i].classList.add("lm-mod-hidden");
         /* <DEPRECATED> */
-        this._handles[i].classList.add('p-mod-hidden');
+        this._handles[i].classList.add("p-mod-hidden");
         /* </DEPRECATED> */
       } else {
-        this._handles[i].classList.remove('lm-mod-hidden');
+        this._handles[i].classList.remove("lm-mod-hidden");
         /* <DEPRECATED> */
-        this._handles[i].classList.remove('p-mod-hidden');
+        this._handles[i].classList.remove("p-mod-hidden");
         /* </DEPRECATED> */
         lastHandleIndex = i;
         nVisible++;
@@ -489,9 +489,9 @@ export class SplitLayout extends PanelLayout {
 
     // Hide the handle for the last visible widget.
     if (lastHandleIndex !== -1) {
-      this._handles[lastHandleIndex].classList.add('lm-mod-hidden');
+      this._handles[lastHandleIndex].classList.add("lm-mod-hidden");
       /* <DEPRECATED> */
-      this._handles[lastHandleIndex].classList.add('p-mod-hidden');
+      this._handles[lastHandleIndex].classList.add("p-mod-hidden");
       /* </DEPRECATED> */
     }
 
@@ -501,7 +501,7 @@ export class SplitLayout extends PanelLayout {
       this.widgetOffset * this._items.length;
 
     // Setup the computed minimum size.
-    let horz = this._orientation === 'horizontal';
+    let horz = this._orientation === "horizontal";
     let minW = horz ? this._fixed : 0;
     let minH = horz ? 0 : this._fixed;
 
@@ -585,8 +585,8 @@ export class SplitLayout extends PanelLayout {
     }
 
     // Bail early if there are no visible items to layout.
-    if (nVisible === 0) {
-      return; // TODO handle all widgets collapsed
+    if (nVisible === 0 && this.widgetOffset === 0) {
+      return;
     }
 
     // Measure the parent if the offset dimensions are unknown.
@@ -608,51 +608,53 @@ export class SplitLayout extends PanelLayout {
     let width = offsetWidth - this._box.horizontalSum;
     let height = offsetHeight - this._box.verticalSum;
 
-    // Compute the adjusted layout space.
-    let space: number;
-    let horz = this._orientation === 'horizontal';
-    if (horz) {
-      // left += this.widgetOffset;
-      space = Math.max(0, width - this._fixed);
-    } else {
-      // top += this.widgetOffset;
-      space = Math.max(0, height - this._fixed);
-    }
-
-    // Scale the size hints if they are normalized.
-    if (this._hasNormedSizes) {
-      for (let sizer of this._sizers) {
-        sizer.sizeHint *= space;
-      }
-      this._hasNormedSizes = false;
-    }
-
-    // Distribute the layout space to the box sizers.
-    let delta = BoxEngine.calc(this._sizers, space);
-
     // Set up the variables for justification and alignment offset.
     let extra = 0;
     let offset = 0;
+    let horz = this._orientation === "horizontal";
 
-    // Account for alignment if there is extra layout space.
-    if (delta > 0) {
-      switch (this._alignment) {
-        case 'start':
-          break;
-        case 'center':
-          extra = 0;
-          offset = delta / 2;
-          break;
-        case 'end':
-          extra = 0;
-          offset = delta;
-          break;
-        case 'justify':
-          extra = delta / nVisible;
-          offset = 0;
-          break;
-        default:
-          throw 'unreachable';
+    if (nVisible > 0) {
+      // Compute the adjusted layout space.
+      let space: number;
+      if (horz) {
+        // left += this.widgetOffset;
+        space = Math.max(0, width - this._fixed);
+      } else {
+        // top += this.widgetOffset;
+        space = Math.max(0, height - this._fixed);
+      }
+
+      // Scale the size hints if they are normalized.
+      if (this._hasNormedSizes) {
+        for (let sizer of this._sizers) {
+          sizer.sizeHint *= space;
+        }
+        this._hasNormedSizes = false;
+      }
+
+      // Distribute the layout space to the box sizers.
+      let delta = BoxEngine.calc(this._sizers, space);
+
+      // Account for alignment if there is extra layout space.
+      if (delta > 0) {
+        switch (this._alignment) {
+          case "start":
+            break;
+          case "center":
+            extra = 0;
+            offset = delta / 2;
+            break;
+          case "end":
+            extra = 0;
+            offset = delta;
+            break;
+          case "justify":
+            extra = delta / nVisible;
+            offset = 0;
+            break;
+          default:
+            throw "unreachable";
+        }
       }
     }
 
@@ -676,7 +678,7 @@ export class SplitLayout extends PanelLayout {
 
       const fullOffset =
         this.widgetOffset +
-        (this._handles[i].classList.contains('lm-mod-hidden')
+        (this._handles[i].classList.contains("lm-mod-hidden")
           ? 0
           : this._spacing);
 
@@ -697,8 +699,8 @@ export class SplitLayout extends PanelLayout {
   private _items: LayoutItem[] = [];
   private _handles: HTMLDivElement[] = [];
   private _box: ElementExt.IBoxSizing | null = null;
-  private _alignment: SplitLayout.Alignment = 'start';
-  private _orientation: SplitLayout.Orientation = 'horizontal';
+  private _alignment: SplitLayout.Alignment = "start";
+  private _orientation: SplitLayout.Orientation = "horizontal";
 }
 
 /**
@@ -708,12 +710,12 @@ export namespace SplitLayout {
   /**
    * A type alias for a split layout orientation.
    */
-  export type Orientation = 'horizontal' | 'vertical';
+  export type Orientation = "horizontal" | "vertical";
 
   /**
    * A type alias for a split layout alignment.
    */
-  export type Alignment = 'start' | 'center' | 'end' | 'justify';
+  export type Alignment = "start" | "center" | "end" | "justify";
 
   /**
    * An options object for initializing a split layout.
@@ -789,7 +791,7 @@ namespace Private {
    * The property descriptor for a widget stretch factor.
    */
   export const stretchProperty = new AttachedProperty<Widget, number>({
-    name: 'stretch',
+    name: "stretch",
     create: () => 0,
     coerce: (owner, value) => Math.max(0, Math.floor(value)),
     changed: onChildSizingChanged,
@@ -811,7 +813,7 @@ namespace Private {
     renderer: SplitLayout.IRenderer
   ): HTMLDivElement {
     let handle = renderer.createHandle();
-    handle.style.position = 'absolute';
+    handle.style.position = "absolute";
     return handle;
   }
 

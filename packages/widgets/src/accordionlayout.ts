@@ -76,25 +76,10 @@ export class AccordionLayout extends SplitLayout {
   protected attachWidget(index: number, widget: Widget): void {
     const title = Private.createTitle(this.renderer, widget.title);
     title.style.position = 'absolute';
-    title.setAttribute("role", "button");
     title.setAttribute("aria-label", `${widget.title.label} Section`);
     title.setAttribute("aria-expanded", "true");
     title.setAttribute("aria-controls", widget.id);
-    title.classList.add("lm-mod-expanded")
-
-    const onClick = () => {
-      if (widget.isHidden) {
-        title.classList.add("lm-mod-expanded")
-        title.setAttribute("aria-expanded", "true");
-        widget.show();
-      } else {
-        title.classList.remove("lm-mod-expanded")
-        title.setAttribute("aria-expanded", "false");
-        widget.hide();
-      }
-    };
-    ArrayExt.insert(this._onClickTitles, index, onClick);
-    title.addEventListener('click', onClick);
+    title.classList.add("lm-mod-expanded");
 
     ArrayExt.insert(this._titles, index, title);
 
@@ -137,11 +122,7 @@ export class AccordionLayout extends SplitLayout {
    */
   protected detachWidget(index: number, widget: Widget): void {
     const title = ArrayExt.removeAt(this._titles, index);
-
-    title!.removeEventListener(
-      'click',
-      ArrayExt.removeAt(this._onClickTitles, index)!
-    );
+    
     this.parent!.node.removeChild(title!);
 
     super.detachWidget(index, widget);
@@ -174,7 +155,6 @@ export class AccordionLayout extends SplitLayout {
   }
 
   private _titles: HTMLElement[] = [];
-  private _onClickTitles: (() => void)[] = [];
 }
 
 export namespace AccordionLayout {
@@ -209,6 +189,11 @@ export namespace AccordionLayout {
    * A renderer for use with an accordion layout.
    */
   export interface IRenderer extends SplitLayout.IRenderer {
+    /**
+     * Common class name for all accordion titles.
+     */
+    readonly titleClassName: string;
+
     /**
      * Render the element for a section title.
      *
