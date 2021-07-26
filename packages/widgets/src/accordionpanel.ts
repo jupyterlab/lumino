@@ -1,12 +1,13 @@
 // Copyright (c) Jupyter Development Team.
 // Distributed under the terms of the Modified BSD License.
 
-import { Message } from "@lumino/messaging";
-import { AccordionLayout } from "./accordionlayout";
-import { SplitLayout } from "./splitlayout";
-import { SplitPanel } from "./splitpanel";
-import { Title } from "./title";
-import { Widget } from "./widget";
+import { ArrayExt } from '@lumino/algorithm';
+import { Message } from '@lumino/messaging';
+import { AccordionLayout } from './accordionlayout';
+import { SplitLayout } from './splitlayout';
+import { SplitPanel } from './splitpanel';
+import { Title } from './title';
+import { Widget } from './widget';
 
 /**
  * A panel which arranges its widgets into resizable sections separated by a title widget.
@@ -22,7 +23,7 @@ export class AccordionPanel extends SplitPanel {
    */
   constructor(options: AccordionPanel.IOptions = {}) {
     super({ ...options, layout: Private.createLayout(options) });
-    this.addClass("lm-AccordionPanel");
+    this.addClass('lm-AccordionPanel');
   }
 
   /**
@@ -66,10 +67,10 @@ export class AccordionPanel extends SplitPanel {
   handleEvent(event: Event): void {
     super.handleEvent(event);
     switch (event.type) {
-      case "click":
+      case 'click':
         this._evtClick(event as MouseEvent);
         break;
-      case "keydown":
+      case 'keydown':
         this._eventKeyDown(event as KeyboardEvent);
         break;
     }
@@ -79,8 +80,8 @@ export class AccordionPanel extends SplitPanel {
    * A message handler invoked on a `'before-attach'` message.
    */
   protected onBeforeAttach(msg: Message): void {
-    this.node.addEventListener("click", this);
-    this.node.addEventListener("keydown", this);
+    this.node.addEventListener('click', this);
+    this.node.addEventListener('keydown', this);
     super.onBeforeAttach(msg);
   }
 
@@ -89,8 +90,8 @@ export class AccordionPanel extends SplitPanel {
    */
   protected onAfterDetach(msg: Message): void {
     super.onAfterDetach(msg);
-    this.node.removeEventListener("click", this);
-    this.node.removeEventListener("keydown", this);
+    this.node.removeEventListener('click', this);
+    this.node.removeEventListener('keydown', this);
   }
 
   /**
@@ -98,26 +99,32 @@ export class AccordionPanel extends SplitPanel {
    */
   private _evtClick(event: MouseEvent): void {
     const target = event.target as HTMLElement | null;
-    if (target && target.classList.contains(this.renderer.titleClassName)) {
-      event.preventDefault();
-      event.stopPropagation();
 
-      const index = this.titles.indexOf(target);
-      const widget = (this.layout as AccordionLayout).widgets[index];
-      if (widget.isHidden) {
-        target.classList.add("lm-mod-expanded");
-        target.setAttribute("aria-expanded", "true");
-        widget.show();
-      } else {
-        target.classList.remove("lm-mod-expanded");
-        target.setAttribute("aria-expanded", "false");
-        widget.hide();
+    if (target) {
+      const index = ArrayExt.findFirstIndex(this.titles, (title) => {
+        return title.contains(target);
+      });
+
+      if (index >= 0) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const widget = (this.layout as AccordionLayout).widgets[index];
+        if (widget.isHidden) {
+          target.classList.add('lm-mod-expanded');
+          target.setAttribute('aria-expanded', 'true');
+          widget.show();
+        } else {
+          target.classList.remove('lm-mod-expanded');
+          target.setAttribute('aria-expanded', 'false');
+          widget.hide();
+        }
       }
     }
   }
 
   /**
-   * Handle the `'keydown'` event for the split panel.
+   * Handle the `'keydown'` event for the accordion panel.
    */
   private _eventKeyDown(event: KeyboardEvent): void {
     if (event.defaultPrevented) {
@@ -126,39 +133,47 @@ export class AccordionPanel extends SplitPanel {
 
     const target = event.target as HTMLElement | null;
     let handled = false;
-    if (target && target.classList.contains(this.renderer.titleClassName)) {
-      const keyCode = event.keyCode.toString();
+    if (target) {
+      const index = ArrayExt.findFirstIndex(this.titles, (title) => {
+        return title.contains(target);
+      });
 
-      // If Space or Enter is pressed on title, emulate click event
-      if (event.key.match(/Space|Enter/) || keyCode.match(/13|32/)) {
-        target.click();
-        handled = true;
-      } else if (
-        event.key.match(/ArrowUp|ArrowDown/) ||
-        keyCode.match(/38|40/)
-      ) {
-        // If Up or Down is pressed on title, loop on titles
-        const index = this.titles.indexOf(target);
-        const direction =
-          event.key.match(/ArrowUp/) || keyCode === "38" ? -1 : 1;
-        const length = this.titles.length;
-        const newIndex = (index + length + direction) % length;
+      if (index >= 0) {
+        const keyCode = event.keyCode.toString();
 
-        this.titles[newIndex].focus();
-        handled = true;
-      } else if (event.key === "End" || keyCode === "35") {
-        // If End is pressed on title, focus on the last title
-        this.titles[this.titles.length - 1].focus();
-        handled = true;
-      } else if (event.key === "Home" || keyCode === "36") {
-        // If Home is pressed on title, focus on the first title
-        this.titles[0].focus();
-        handled = true;
+        // If Space or Enter is pressed on title, emulate click event
+        if (event.key.match(/Space|Enter/) || keyCode.match(/13|32/)) {
+          target.click();
+          handled = true;
+        } else if (
+          this.orientation === 'horizontal'
+            ? event.key.match(/ArrowLeft|ArrowRight/) || keyCode.match(/37|39/)
+            : event.key.match(/ArrowUp|ArrowDown/) || keyCode.match(/38|40/)
+        ) {
+          // If Up or Down (for vertical) / Left or Right (for horizontal) is pressed on title, loop on titles
+          const direction =
+            event.key.match(/ArrowLeft|ArrowUp/) || keyCode.match(/37|38/)
+              ? -1
+              : 1;
+          const length = this.titles.length;
+          const newIndex = (index + length + direction) % length;
+
+          this.titles[newIndex].focus();
+          handled = true;
+        } else if (event.key === 'End' || keyCode === '35') {
+          // If End is pressed on title, focus on the last title
+          this.titles[this.titles.length - 1].focus();
+          handled = true;
+        } else if (event.key === 'Home' || keyCode === '36') {
+          // If Home is pressed on title, focus on the first title
+          this.titles[0].focus();
+          handled = true;
+        }
       }
-    }
 
-    if(handled){
-      event.preventDefault();
+      if (handled) {
+        event.preventDefault();
+      }
     }
   }
 }
@@ -168,22 +183,22 @@ export class AccordionPanel extends SplitPanel {
  */
 export namespace AccordionPanel {
   /**
-   * A type alias for a split panel orientation.
+   * A type alias for a accordion panel orientation.
    */
   export type Orientation = SplitLayout.Orientation;
 
   /**
-   * A type alias for a split panel alignment.
+   * A type alias for a accordion panel alignment.
    */
   export type Alignment = SplitLayout.Alignment;
 
   /**
-   * A type alias for a split panel renderer.
+   * A type alias for a accordion panel renderer.
    */
   export type IRenderer = AccordionLayout.IRenderer;
 
   /**
-   * An options object for initializing a split panel.
+   * An options object for initializing a accordion panel.
    */
   export interface IOptions extends Partial<AccordionLayout.IOptions> {
     /**
@@ -203,7 +218,7 @@ export namespace AccordionPanel {
     /**
      * A selector which matches any title node in the accordion.
      */
-    readonly titleClassName = "lm-AccordionPanel-title";
+    readonly titleClassName = 'lm-AccordionPanel-title';
 
     /**
      * Render the collapse indicator for a section title.
@@ -213,7 +228,7 @@ export namespace AccordionPanel {
      * @returns A element representing the collapse indicator.
      */
     createCollapseIcon(data: Title<Widget>): HTMLElement {
-      return document.createElement("span");
+      return document.createElement('span');
     }
 
     /**
@@ -224,9 +239,9 @@ export namespace AccordionPanel {
      * @returns A element representing the section title.
      */
     createSectionTitle(data: Title<Widget>): HTMLElement {
-      const handle = document.createElement("h3");
-      handle.setAttribute("role", "button");
-      handle.setAttribute("tabindex", "0");
+      const handle = document.createElement('h3');
+      handle.setAttribute('role', 'button');
+      handle.setAttribute('tabindex', '0');
       handle.id = this.createTitleKey(data);
       handle.className = this.titleClassName;
       handle.title = data.caption;
@@ -235,10 +250,10 @@ export namespace AccordionPanel {
       }
 
       const collapser = handle.appendChild(this.createCollapseIcon(data));
-      collapser.className = "lm-AccordionPanel-titleCollapser";
+      collapser.className = 'lm-AccordionPanel-titleCollapser';
 
-      const label = handle.appendChild(document.createElement("span"));
-      label.className = "lm-AccordionPanel-titleLabel";
+      const label = handle.appendChild(document.createElement('span'));
+      label.className = 'lm-AccordionPanel-titleLabel';
       label.textContent = data.label;
 
       return handle;

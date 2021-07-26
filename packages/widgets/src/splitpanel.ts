@@ -7,19 +7,19 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { ArrayExt } from "@lumino/algorithm";
+import { ArrayExt } from '@lumino/algorithm';
 
-import { IDisposable } from "@lumino/disposable";
+import { IDisposable } from '@lumino/disposable';
 
-import { Drag } from "@lumino/dragdrop";
+import { Drag } from '@lumino/dragdrop';
 
-import { Message } from "@lumino/messaging";
+import { Message } from '@lumino/messaging';
 
-import { Panel } from "./panel";
+import { Panel } from './panel';
 
-import { SplitLayout } from "./splitlayout";
+import { SplitLayout } from './splitlayout';
 
-import { Widget } from "./widget";
+import { Widget } from './widget';
 
 /**
  * A panel which arranges its widgets into resizable sections.
@@ -35,9 +35,9 @@ export class SplitPanel extends Panel {
    */
   constructor(options: SplitPanel.IOptions = {}) {
     super({ layout: Private.createLayout(options) });
-    this.addClass("lm-SplitPanel");
+    this.addClass('lm-SplitPanel');
     /* <DEPRECATED> */
-    this.addClass("p-SplitPanel");
+    this.addClass('p-SplitPanel');
     /* </DEPRECATED> */
   }
 
@@ -158,19 +158,19 @@ export class SplitPanel extends Panel {
    */
   handleEvent(event: Event): void {
     switch (event.type) {
-      case "mousedown":
+      case 'mousedown':
         this._evtMouseDown(event as MouseEvent);
         break;
-      case "mousemove":
+      case 'mousemove':
         this._evtMouseMove(event as MouseEvent);
         break;
-      case "mouseup":
+      case 'mouseup':
         this._evtMouseUp(event as MouseEvent);
         break;
-      case "keydown":
+      case 'keydown':
         this._evtKeyDown(event as KeyboardEvent);
         break;
-      case "contextmenu":
+      case 'contextmenu':
         event.preventDefault();
         event.stopPropagation();
         break;
@@ -181,14 +181,14 @@ export class SplitPanel extends Panel {
    * A message handler invoked on a `'before-attach'` message.
    */
   protected onBeforeAttach(msg: Message): void {
-    this.node.addEventListener("mousedown", this);
+    this.node.addEventListener('mousedown', this);
   }
 
   /**
    * A message handler invoked on an `'after-detach'` message.
    */
   protected onAfterDetach(msg: Message): void {
-    this.node.removeEventListener("mousedown", this);
+    this.node.removeEventListener('mousedown', this);
     this._releaseMouse();
   }
 
@@ -196,9 +196,9 @@ export class SplitPanel extends Panel {
    * A message handler invoked on a `'child-added'` message.
    */
   protected onChildAdded(msg: Widget.ChildMessage): void {
-    msg.child.addClass("lm-SplitPanel-child");
+    msg.child.addClass('lm-SplitPanel-child');
     /* <DEPRECATED> */
-    msg.child.addClass("p-SplitPanel-child");
+    msg.child.addClass('p-SplitPanel-child');
     /* </DEPRECATED> */
     this._releaseMouse();
   }
@@ -207,9 +207,9 @@ export class SplitPanel extends Panel {
    * A message handler invoked on a `'child-removed'` message.
    */
   protected onChildRemoved(msg: Widget.ChildMessage): void {
-    msg.child.removeClass("lm-SplitPanel-child");
+    msg.child.removeClass('lm-SplitPanel-child');
     /* <DEPRECATED> */
-    msg.child.removeClass("p-SplitPanel-child");
+    msg.child.removeClass('p-SplitPanel-child');
     /* </DEPRECATED> */
     this._releaseMouse();
   }
@@ -255,16 +255,16 @@ export class SplitPanel extends Panel {
     event.stopPropagation();
 
     // Add the extra document listeners.
-    document.addEventListener("mouseup", this, true);
-    document.addEventListener("mousemove", this, true);
-    document.addEventListener("keydown", this, true);
-    document.addEventListener("contextmenu", this, true);
+    document.addEventListener('mouseup', this, true);
+    document.addEventListener('mousemove', this, true);
+    document.addEventListener('keydown', this, true);
+    document.addEventListener('contextmenu', this, true);
 
     // Compute the offset delta for the handle press.
     let delta: number;
     let handle = layout.handles[index];
     let rect = handle.getBoundingClientRect();
-    if (layout.orientation === "horizontal") {
+    if (layout.orientation === 'horizontal') {
       delta = event.clientX - rect.left;
     } else {
       delta = event.clientY - rect.top;
@@ -288,7 +288,7 @@ export class SplitPanel extends Panel {
     let pos: number;
     let layout = this.layout as SplitLayout;
     let rect = this.node.getBoundingClientRect();
-    if (layout.orientation === "horizontal") {
+    if (layout.orientation === 'horizontal') {
       pos = event.clientX - rect.left - this._pressData!.delta;
     } else {
       pos = event.clientY - rect.top - this._pressData!.delta;
@@ -329,10 +329,10 @@ export class SplitPanel extends Panel {
     this._pressData = null;
 
     // Remove the extra document listeners.
-    document.removeEventListener("mouseup", this, true);
-    document.removeEventListener("mousemove", this, true);
-    document.removeEventListener("keydown", this, true);
-    document.removeEventListener("contextmenu", this, true);
+    document.removeEventListener('mouseup', this, true);
+    document.removeEventListener('mousemove', this, true);
+    document.removeEventListener('keydown', this, true);
+    document.removeEventListener('contextmenu', this, true);
   }
 
   private _pressData: Private.IPressData | null = null;
@@ -409,10 +409,10 @@ export namespace SplitPanel {
      * @returns A new handle element for a split panel.
      */
     createHandle(): HTMLDivElement {
-      let handle = document.createElement("div");
-      handle.className = "lm-SplitPanel-handle";
+      let handle = document.createElement('div');
+      handle.className = 'lm-SplitPanel-handle';
       /* <DEPRECATED> */
-      handle.classList.add("p-SplitPanel-handle");
+      handle.classList.add('p-SplitPanel-handle');
       /* </DEPRECATED> */
       return handle;
     }

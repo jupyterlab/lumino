@@ -76,18 +76,18 @@ export class AccordionLayout extends SplitLayout {
   protected attachWidget(index: number, widget: Widget): void {
     const title = Private.createTitle(this.renderer, widget.title);
     title.style.position = 'absolute';
-    title.setAttribute("aria-label", `${widget.title.label} Section`);
-    title.setAttribute("aria-expanded", "true");
-    title.setAttribute("aria-controls", widget.id);
-    title.classList.add("lm-mod-expanded");
+    title.setAttribute('aria-label', `${widget.title.label} Section`);
+    title.setAttribute('aria-expanded', 'true');
+    title.setAttribute('aria-controls', widget.id);
+    title.classList.add('lm-mod-expanded');
 
     ArrayExt.insert(this._titles, index, title);
 
     // Add the title node to the parent before the widget.
     this.parent!.node.appendChild(title);
 
-    widget.node.setAttribute("role", "region")
-    widget.node.setAttribute("aria-labelledby", title.id)
+    widget.node.setAttribute('role', 'region')
+    widget.node.setAttribute('aria-labelledby', title.id)
 
     super.attachWidget(index, widget);
   }
@@ -128,6 +128,17 @@ export class AccordionLayout extends SplitLayout {
     super.detachWidget(index, widget);
   }
 
+  /**
+   * Update the item position.
+   * 
+   * @param i Item index
+   * @param isHorizontal Whether the layout is horizontal or not
+   * @param left Left position in pixels
+   * @param top Top position in pixels
+   * @param height Item height
+   * @param width Item width
+   * @param size Item size
+   */
   protected updateItemPosition(
     i: number,
     isHorizontal: boolean,
@@ -173,7 +184,7 @@ export namespace AccordionLayout {
    */
   export interface IOptions extends SplitLayout.IOptions {
     /**
-     * The renderer to use for the split layout.
+     * The renderer to use for the accordion layout.
      */
     renderer: IRenderer;
 
@@ -206,6 +217,13 @@ export namespace AccordionLayout {
 }
 
 namespace Private {
+  /**
+   * Create the title HTML element.
+   *
+   * @param renderer Accordion renderer
+   * @param data Widget title
+   * @returns Title HTML element
+   */
   export function createTitle(
     renderer: AccordionLayout.IRenderer,
     data: Title<Widget>
