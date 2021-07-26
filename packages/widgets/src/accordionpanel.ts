@@ -13,7 +13,7 @@ import { Widget } from './widget';
  * A panel which arranges its widgets into resizable sections separated by a title widget.
  *
  * #### Notes
- * This class provides a convenience wrapper around [[AccordionLayout]]. // TODO
+ * This class provides a convenience wrapper around [[AccordionLayout]].
  */
 export class AccordionPanel extends SplitPanel {
   /**
@@ -34,15 +34,14 @@ export class AccordionPanel extends SplitPanel {
   }
 
   /**
-   * Get the section title height.
+   * The section title space.
+   * 
+   * This is the height if the panel is vertical and the width if it is
+   * horizontal.
    */
   get titleSpace(): number {
     return (this.layout as AccordionLayout).titleSpace;
   }
-
-  /**
-   * Set the section title height.
-   */
   set titleSpace(value: number) {
     (this.layout as AccordionLayout).titleSpace = value;
   }
