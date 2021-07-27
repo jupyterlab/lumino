@@ -12,12 +12,14 @@ export class AccordionLayout extends SplitLayout {
    * Construct a new accordion layout.
    *
    * @param options - The options for initializing the layout.
-   * 
-   * #### Note
+   *
+   * #### Notes
    * The default orientation will be vertical.
+   *
+   * Titles must be rotated for horizontal accordion panel using CSS: see accordionpanel.css
    */
   constructor(options: AccordionLayout.IOptions) {
-    super({...options, orientation: options.orientation || 'vertical'});
+    super({ ...options, orientation: options.orientation || 'vertical' });
     this.titleSpace = options.titleSpace || 22;
   }
 
@@ -86,8 +88,8 @@ export class AccordionLayout extends SplitLayout {
     // Add the title node to the parent before the widget.
     this.parent!.node.appendChild(title);
 
-    widget.node.setAttribute('role', 'region')
-    widget.node.setAttribute('aria-labelledby', title.id)
+    widget.node.setAttribute('role', 'region');
+    widget.node.setAttribute('aria-labelledby', title.id);
 
     super.attachWidget(index, widget);
   }
@@ -122,7 +124,7 @@ export class AccordionLayout extends SplitLayout {
    */
   protected detachWidget(index: number, widget: Widget): void {
     const title = ArrayExt.removeAt(this._titles, index);
-    
+
     this.parent!.node.removeChild(title!);
 
     super.detachWidget(index, widget);
@@ -130,7 +132,7 @@ export class AccordionLayout extends SplitLayout {
 
   /**
    * Update the item position.
-   * 
+   *
    * @param i Item index
    * @param isHorizontal Whether the layout is horizontal or not
    * @param left Left position in pixels
@@ -150,16 +152,14 @@ export class AccordionLayout extends SplitLayout {
   ): void {
     const titleStyle = this._titles[i].style;
 
+    // Titles must be rotated for horizontal accordion panel using CSS: see accordionpanel.css
+    titleStyle.top = `${top}px`;
+    titleStyle.left = `${left}px`;
+    titleStyle.height = `${this.widgetOffset}px`;
     if (isHorizontal) {
-      titleStyle.top = `${top}px`;
-      titleStyle.left = `${left}px`;
-      titleStyle.width = `${this.widgetOffset}px`;
-      titleStyle.height = `${height}px`;
+      titleStyle.width = `${height}px`;
     } else {
-      titleStyle.top = `${top}px`;
-      titleStyle.left = `${left}px`;
       titleStyle.width = `${width}px`;
-      titleStyle.height = `${this.widgetOffset}px`;
     }
 
     super.updateItemPosition(i, isHorizontal, left, top, height, width, size);
