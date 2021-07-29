@@ -7,34 +7,19 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  ArrayExt
-} from '@lumino/algorithm';
+import { ArrayExt } from '@lumino/algorithm';
 
-import {
-  IDisposable
-} from '@lumino/disposable';
+import { IDisposable } from '@lumino/disposable';
 
-import {
-  Drag
-} from '@lumino/dragdrop';
+import { Drag } from '@lumino/dragdrop';
 
-import {
-  Message
-} from '@lumino/messaging';
+import { Message } from '@lumino/messaging';
 
-import {
-  Panel
-} from './panel';
+import { Panel } from './panel';
 
-import {
-  SplitLayout
-} from './splitlayout';
+import { SplitLayout } from './splitlayout';
 
-import {
-  Widget
-} from './widget';
-
+import { Widget } from './widget';
 
 /**
  * A panel which arranges its widgets into resizable sections.
@@ -42,8 +27,7 @@ import {
  * #### Notes
  * This class provides a convenience wrapper around a [[SplitLayout]].
  */
-export
-class SplitPanel extends Panel {
+export class SplitPanel extends Panel {
   /**
    * Construct a new split panel.
    *
@@ -174,22 +158,22 @@ class SplitPanel extends Panel {
    */
   handleEvent(event: Event): void {
     switch (event.type) {
-    case 'mousedown':
-      this._evtMouseDown(event as MouseEvent);
-      break;
-    case 'mousemove':
-      this._evtMouseMove(event as MouseEvent);
-      break;
-    case 'mouseup':
-      this._evtMouseUp(event as MouseEvent);
-      break;
-    case 'keydown':
-      this._evtKeyDown(event as KeyboardEvent);
-      break;
-    case 'contextmenu':
-      event.preventDefault();
-      event.stopPropagation();
-      break;
+      case 'mousedown':
+        this._evtMouseDown(event as MouseEvent);
+        break;
+      case 'mousemove':
+        this._evtMouseMove(event as MouseEvent);
+        break;
+      case 'mouseup':
+        this._evtMouseUp(event as MouseEvent);
+        break;
+      case 'keydown':
+        this._evtKeyDown(event as KeyboardEvent);
+        break;
+      case 'contextmenu':
+        event.preventDefault();
+        event.stopPropagation();
+        break;
     }
   }
 
@@ -235,8 +219,10 @@ class SplitPanel extends Panel {
    */
   private _evtKeyDown(event: KeyboardEvent): void {
     // Stop input events during drag.
-    event.preventDefault();
-    event.stopPropagation();
+    if (this._pressData) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
 
     // Release the mouse if `Escape` is pressed.
     if (event.keyCode === 27) {
@@ -255,7 +241,7 @@ class SplitPanel extends Panel {
 
     // Find the handle which contains the mouse target, if any.
     let layout = this.layout as SplitLayout;
-    let index = ArrayExt.findFirstIndex(layout.handles, handle => {
+    let index = ArrayExt.findFirstIndex(layout.handles, (handle) => {
       return handle.contains(event.target as HTMLElement);
     });
 
@@ -352,35 +338,29 @@ class SplitPanel extends Panel {
   private _pressData: Private.IPressData | null = null;
 }
 
-
 /**
  * The namespace for the `SplitPanel` class statics.
  */
-export
-namespace SplitPanel {
+export namespace SplitPanel {
   /**
    * A type alias for a split panel orientation.
    */
-  export
-  type Orientation = SplitLayout.Orientation;
+  export type Orientation = SplitLayout.Orientation;
 
   /**
    * A type alias for a split panel alignment.
    */
-  export
-  type Alignment = SplitLayout.Alignment;
+  export type Alignment = SplitLayout.Alignment;
 
   /**
    * A type alias for a split panel renderer.
    */
-  export
-  type IRenderer = SplitLayout.IRenderer;
+  export type IRenderer = SplitLayout.IRenderer;
 
   /**
    * An options object for initializing a split panel.
    */
-  export
-  interface IOptions {
+  export interface IOptions {
     /**
      * The renderer to use for the split panel.
      *
@@ -422,8 +402,7 @@ namespace SplitPanel {
   /**
    * The default implementation of `IRenderer`.
    */
-  export
-  class Renderer implements IRenderer {
+  export class Renderer implements IRenderer {
     /**
      * Create a new handle for use with a split panel.
      *
@@ -442,8 +421,7 @@ namespace SplitPanel {
   /**
    * The default `Renderer` instance.
    */
-  export
-  const defaultRenderer = new Renderer();
+  export const defaultRenderer = new Renderer();
 
   /**
    * Get the split panel stretch factor for the given widget.
@@ -452,8 +430,7 @@ namespace SplitPanel {
    *
    * @returns The split panel stretch factor for the widget.
    */
-  export
-  function getStretch(widget: Widget): number {
+  export function getStretch(widget: Widget): number {
     return SplitLayout.getStretch(widget);
   }
 
@@ -464,12 +441,10 @@ namespace SplitPanel {
    *
    * @param value - The value for the stretch factor.
    */
-  export
-  function setStretch(widget: Widget, value: number): void {
+  export function setStretch(widget: Widget, value: number): void {
     SplitLayout.setStretch(widget, value);
   }
 }
-
 
 /**
  * The namespace for the module implementation details.
@@ -478,8 +453,7 @@ namespace Private {
   /**
    * An object which holds mouse press data.
    */
-  export
-  interface IPressData {
+  export interface IPressData {
     /**
      * The index of the pressed handle.
      */
@@ -499,13 +473,15 @@ namespace Private {
   /**
    * Create a split layout for the given panel options.
    */
-  export
-  function createLayout(options: SplitPanel.IOptions): SplitLayout {
-    return options.layout || new SplitLayout({
-      renderer: options.renderer || SplitPanel.defaultRenderer,
-      orientation: options.orientation,
-      alignment: options.alignment,
-      spacing: options.spacing
-    });
+  export function createLayout(options: SplitPanel.IOptions): SplitLayout {
+    return (
+      options.layout ||
+      new SplitLayout({
+        renderer: options.renderer || SplitPanel.defaultRenderer,
+        orientation: options.orientation,
+        alignment: options.alignment,
+        spacing: options.spacing,
+      })
+    );
   }
 }

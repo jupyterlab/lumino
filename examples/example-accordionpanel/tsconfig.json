@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "declaration": false,
+    "noImplicitAny": true,
+    "noEmitOnError": true,
+    "noUnusedLocals": true,
+    "strictNullChecks": true,
+    "sourceMap": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "ES5",
+    "outDir": "./build",
+    "lib": ["ES5", "ES2015.Promise", "ES2015.Iterable", "DOM"],
+    "types": []
+  },
+  "include": ["src/*"]
+}

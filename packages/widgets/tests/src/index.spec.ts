@@ -11,6 +11,8 @@ import 'es6-promise/auto';  // polyfill Promise on IE
 
 import '@lumino/widgets/style/index.css';
 
+import './accordionlayout.spec';
+import './accordionpanel.spec';
 import './boxengine.spec';
 import './boxlayout.spec';
 import './boxpanel.spec';

@@ -7,6 +7,7 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 @import './widget.css';
+@import './accordionpanel.css';
 @import './commandpalette.css';
 @import './dockpanel.css';
 @import './menu.css';

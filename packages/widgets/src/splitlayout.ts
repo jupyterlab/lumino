@@ -7,44 +7,28 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  ArrayExt, each
-} from '@lumino/algorithm';
+import { ArrayExt, each } from '@lumino/algorithm';
 
-import {
-  ElementExt
-} from '@lumino/domutils';
+import { ElementExt } from '@lumino/domutils';
 
-import {
-  Message, MessageLoop
-} from '@lumino/messaging';
+import { Message, MessageLoop } from '@lumino/messaging';
 
-import {
-  AttachedProperty
-} from '@lumino/properties';
+import { AttachedProperty } from '@lumino/properties';
 
-import {
-  BoxEngine, BoxSizer
-} from './boxengine';
+import { BoxEngine, BoxSizer } from './boxengine';
 
-import {
-  LayoutItem
-} from './layout';
+import { LayoutItem } from './layout';
 
-import {
-  PanelLayout
-} from './panellayout';
+import { PanelLayout } from './panellayout';
 
-import {
-  Widget
-} from './widget';
+import { Utils } from './utils';
 
+import { Widget } from './widget';
 
 /**
  * A layout which arranges its widgets into resizable sections.
  */
-export
-class SplitLayout extends PanelLayout {
+export class SplitLayout extends PanelLayout {
   /**
    * Construct a new split layout.
    *
@@ -60,7 +44,7 @@ class SplitLayout extends PanelLayout {
       this._alignment = options.alignment;
     }
     if (options.spacing !== undefined) {
-      this._spacing = Private.clampSpacing(options.spacing);
+      this._spacing = Utils.clampDimension(options.spacing);
     }
   }
 
@@ -69,7 +53,9 @@ class SplitLayout extends PanelLayout {
    */
   dispose(): void {
     // Dispose of the layout items.
-    each(this._items, item => { item.dispose(); });
+    each(this._items, (item) => {
+      item.dispose();
+    });
 
     // Clear the layout state.
     this._box = null;
@@ -153,7 +139,7 @@ class SplitLayout extends PanelLayout {
    * Set the inter-element spacing for the split layout.
    */
   set spacing(value: number) {
-    value = Private.clampSpacing(value);
+    value = Utils.clampDimension(value);
     if (this._spacing === value) {
       return;
     }
@@ -183,7 +169,7 @@ class SplitLayout extends PanelLayout {
    * This method **does not** measure the DOM nodes.
    */
   relativeSizes(): number[] {
-    return Private.normalize(this._sizers.map(sizer => sizer.size));
+    return Private.normalize(this._sizers.map((sizer) => sizer.size));
   }
 
   /**
@@ -333,7 +319,11 @@ class SplitLayout extends PanelLayout {
    * #### Notes
    * This is a reimplementation of the superclass method.
    */
-  protected moveWidget(fromIndex: number, toIndex: number, widget: Widget): void {
+  protected moveWidget(
+    fromIndex: number,
+    toIndex: number,
+    widget: Widget
+  ): void {
     // Move the item, sizer, and handle for the widget.
     ArrayExt.move(this._items, fromIndex, toIndex);
     ArrayExt.move(this._sizers, fromIndex, toIndex);
@@ -438,6 +428,54 @@ class SplitLayout extends PanelLayout {
   }
 
   /**
+   * Update the item position.
+   * 
+   * @param i Item index
+   * @param isHorizontal Whether the layout is horizontal or not
+   * @param left Left position in pixels
+   * @param top Top position in pixels
+   * @param height Item height
+   * @param width Item width
+   * @param size Item size
+   */
+  protected updateItemPosition(
+    i: number,
+    isHorizontal: boolean,
+    left: number,
+    top: number,
+    height: number,
+    width: number,
+    size: number
+  ): void {
+    const item = this._items[i];
+    if (item.isHidden) {
+      return;
+    }
+
+    // Fetch the style for the handle.
+    let handleStyle = this._handles[i].style;
+
+    // Update the widget and handle, and advance the relevant edge.
+    if (isHorizontal) {
+      left += this.widgetOffset;
+      item.update(left, top, size, height);
+      left += size;
+      handleStyle.top = `${top}px`;
+      handleStyle.left = `${left}px`;
+      handleStyle.width = `${this._spacing}px`;
+      handleStyle.height = `${height}px`;
+    } else {
+      top += this.widgetOffset;
+      item.update(left, top, width, size);
+      top += size;
+      handleStyle.top = `${top}px`;
+      handleStyle.left = `${left}px`;
+      handleStyle.width = `${width}px`;
+      handleStyle.height = `${this._spacing}px`;
+    }
+  }
+
+  /**
    * Fit the layout to the total size required by the widgets.
    */
   private _fit(): void {
@@ -469,7 +507,9 @@ class SplitLayout extends PanelLayout {
     }
 
     // Update the fixed space for the visible items.
-    this._fixed = this._spacing * Math.max(0, nVisible - 1);
+    this._fixed =
+      this._spacing * Math.max(0, nVisible - 1) +
+      this.widgetOffset * this._items.length;
 
     // Setup the computed minimum size.
     let horz = this._orientation === 'horizontal';
@@ -515,7 +555,7 @@ class SplitLayout extends PanelLayout {
     }
 
     // Update the box sizing and add it to the computed min size.
-    let box = this._box = ElementExt.boxSizing(this.parent!.node);
+    let box = (this._box = ElementExt.boxSizing(this.parent!.node));
     minW += box.horizontalSum;
     minH += box.verticalSum;
 
@@ -556,7 +596,7 @@ class SplitLayout extends PanelLayout {
     }
 
     // Bail early if there are no visible items to layout.
-    if (nVisible === 0) {
+    if (nVisible === 0 && this.widgetOffset === 0) {
       return;
     }
 
@@ -579,89 +619,89 @@ class SplitLayout extends PanelLayout {
     let width = offsetWidth - this._box.horizontalSum;
     let height = offsetHeight - this._box.verticalSum;
 
-    // Compute the adjusted layout space.
-    let space: number;
-    let horz = this._orientation === 'horizontal';
-    if (horz) {
-      space = Math.max(0, width - this._fixed);
-    } else {
-      space = Math.max(0, height - this._fixed);
-    }
-
-    // Scale the size hints if they are normalized.
-    if (this._hasNormedSizes) {
-      for (let sizer of this._sizers) {
-        sizer.sizeHint *= space;
-      }
-      this._hasNormedSizes = false;
-    }
-
-    // Distribute the layout space to the box sizers.
-    let delta = BoxEngine.calc(this._sizers, space);
-
     // Set up the variables for justification and alignment offset.
     let extra = 0;
     let offset = 0;
+    let horz = this._orientation === 'horizontal';
 
-    // Account for alignment if there is extra layout space.
-    if (delta > 0) {
-      switch (this._alignment) {
-      case 'start':
-        break;
-      case 'center':
-        extra = 0;
-        offset = delta / 2;
-        break;
-      case 'end':
-        extra = 0;
-        offset = delta;
-        break;
-      case 'justify':
-        extra = delta / nVisible;
-        offset = 0;
-        break;
-      default:
-        throw 'unreachable';
+    if (nVisible > 0) {
+      // Compute the adjusted layout space.
+      let space: number;
+      if (horz) {
+        // left += this.widgetOffset;
+        space = Math.max(0, width - this._fixed);
+      } else {
+        // top += this.widgetOffset;
+        space = Math.max(0, height - this._fixed);
+      }
+
+      // Scale the size hints if they are normalized.
+      if (this._hasNormedSizes) {
+        for (let sizer of this._sizers) {
+          sizer.sizeHint *= space;
+        }
+        this._hasNormedSizes = false;
+      }
+
+      // Distribute the layout space to the box sizers.
+      let delta = BoxEngine.calc(this._sizers, space);
+
+      // Account for alignment if there is extra layout space.
+      if (delta > 0) {
+        switch (this._alignment) {
+          case 'start':
+            break;
+          case 'center':
+            extra = 0;
+            offset = delta / 2;
+            break;
+          case 'end':
+            extra = 0;
+            offset = delta;
+            break;
+          case 'justify':
+            extra = delta / nVisible;
+            offset = 0;
+            break;
+          default:
+            throw 'unreachable';
+        }
       }
     }
 
     // Layout the items using the computed box sizes.
     for (let i = 0, n = this._items.length; i < n; ++i) {
       // Fetch the item.
-      let item = this._items[i];
-
-      // Ignore hidden items.
-      if (item.isHidden) {
-        continue;
-      }
+      const item = this._items[i];
 
       // Fetch the computed size for the widget.
-      let size = this._sizers[i].size;
+      const size = item.isHidden ? 0 : this._sizers[i].size + extra;
 
-      // Fetch the style for the handle.
-      let handleStyle = this._handles[i].style;
+      this.updateItemPosition(
+        i,
+        horz,
+        horz ? left + offset : left,
+        horz ? top : top + offset,
+        height,
+        width,
+        size
+      );
 
-      // Update the widget and handle, and advance the relevant edge.
+      const fullOffset =
+        this.widgetOffset +
+        (this._handles[i].classList.contains('lm-mod-hidden')
+          ? 0
+          : this._spacing);
+
       if (horz) {
-        item.update(left + offset, top, size + extra, height);
-        left += size + extra;
-        handleStyle.top = `${top}px`;
-        handleStyle.left = `${left + offset}px`;
-        handleStyle.width = `${this._spacing}px`;
-        handleStyle.height = `${height}px`;
-        left += this._spacing;
+        left += size + fullOffset;
       } else {
-        item.update(left, top + offset, width, size + extra);
-        top += size + extra;
-        handleStyle.top = `${top + offset}px`;
-        handleStyle.left = `${left}px`;
-        handleStyle.width = `${width}px`;
-        handleStyle.height = `${this._spacing}px`;
-        top += this._spacing;
+        top += size + fullOffset;
       }
     }
   }
 
+  protected widgetOffset = 0;
   private _fixed = 0;
   private _spacing = 4;
   private _dirty = false;
@@ -674,29 +714,24 @@ class SplitLayout extends PanelLayout {
   private _orientation: SplitLayout.Orientation = 'horizontal';
 }
 
-
 /**
  * The namespace for the `SplitLayout` class statics.
  */
-export
-namespace SplitLayout {
+export namespace SplitLayout {
   /**
    * A type alias for a split layout orientation.
    */
-  export
-  type Orientation = 'horizontal' | 'vertical';
+  export type Orientation = 'horizontal' | 'vertical';
 
   /**
    * A type alias for a split layout alignment.
    */
-  export
-  type Alignment = 'start' | 'center' | 'end' | 'justify';
+  export type Alignment = 'start' | 'center' | 'end' | 'justify';
 
   /**
    * An options object for initializing a split layout.
    */
-  export
-  interface IOptions {
+  export interface IOptions {
     /**
      * The renderer to use for the split layout.
      */
@@ -727,8 +762,7 @@ namespace SplitLayout {
   /**
    * A renderer for use with a split layout.
    */
-  export
-  interface IRenderer {
+  export interface IRenderer {
     /**
      * Create a new handle for use with a split layout.
      *
@@ -744,8 +778,7 @@ namespace SplitLayout {
    *
    * @returns The split layout stretch factor for the widget.
    */
-  export
-  function getStretch(widget: Widget): number {
+  export function getStretch(widget: Widget): number {
     return Private.stretchProperty.get(widget);
   }
 
@@ -756,12 +789,10 @@ namespace SplitLayout {
    *
    * @param value - The value for the stretch factor.
    */
-  export
-  function setStretch(widget: Widget, value: number): void {
+  export function setStretch(widget: Widget, value: number): void {
     Private.stretchProperty.set(widget, value);
   }
 }
-
 
 /**
  * The namespace for the module implementation details.
@@ -770,19 +801,17 @@ namespace Private {
   /**
    * The property descriptor for a widget stretch factor.
    */
-  export
-  const stretchProperty = new AttachedProperty<Widget, number>({
+  export const stretchProperty = new AttachedProperty<Widget, number>({
     name: 'stretch',
     create: () => 0,
     coerce: (owner, value) => Math.max(0, Math.floor(value)),
-    changed: onChildSizingChanged
+    changed: onChildSizingChanged,
   });
 
   /**
    * Create a new box sizer with the given size hint.
    */
-  export
-  function createSizer(size: number): BoxSizer {
+  export function createSizer(size: number): BoxSizer {
     let sizer = new BoxSizer();
     sizer.sizeHint = Math.floor(size);
     return sizer;
@@ -791,40 +820,31 @@ namespace Private {
   /**
    * Create a new split handle node using the given renderer.
    */
-  export
-  function createHandle(renderer: SplitLayout.IRenderer): HTMLDivElement {
+  export function createHandle(
+    renderer: SplitLayout.IRenderer
+  ): HTMLDivElement {
     let handle = renderer.createHandle();
     handle.style.position = 'absolute';
     return handle;
   }
 
   /**
-   * Clamp a spacing value to an integer >= 0.
-   */
-  export
-  function clampSpacing(value: number): number {
-    return Math.max(0, Math.floor(value));
-  }
-
-  /**
    * Compute the average size of an array of box sizers.
    */
-  export
-  function averageSize(sizers: BoxSizer[]): number {
+  export function averageSize(sizers: BoxSizer[]): number {
     return sizers.reduce((v, s) => v + s.size, 0) / sizers.length || 0;
   }
 
   /**
    * Normalize an array of values.
    */
-  export
-  function normalize(values: number[]): number[] {
+  export function normalize(values: number[]): number[] {
     let n = values.length;
     if (n === 0) {
       return [];
     }
     let sum = values.reduce((a, b) => a + Math.abs(b), 0);
-    return sum === 0 ? values.map(v => 1 / n) : values.map(v => v / sum);
+    return sum === 0 ? values.map((v) => 1 / n) : values.map((v) => v / sum);
   }
 
   /**
