@@ -2,6 +2,30 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2021.8.3
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/application@1.22.0...d54b9ebc5bc28fa3676c9482da3db5656840934b))
+
+### Enhancements made
+
+- Add accordion panel [#205](https://github.com/jupyterlab/lumino/pull/205) ([@fcollonval](https://github.com/fcollonval))
+
+### Maintenance and upkeep improvements
+
+- Make focus consistent with active element in menus [#187](https://github.com/jupyterlab/lumino/pull/187) ([@marthacryan](https://github.com/marthacryan))
+
+### Documentation improvements
+
+- Remove Errant Changelog Entry [#212](https://github.com/jupyterlab/lumino/pull/212) ([@blink1073](https://github.com/blink1073))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2021-07-23&to=2021-08-03&type=c))
+
+[@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2021-07-23..2021-08-03&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2021-07-23..2021-08-03&type=Issues) | [@marthacryan](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Amarthacryan+updated%3A2021-07-23..2021-08-03&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2021.7.23
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/example-datagrid@0.23.0...eee4eb491d5df940bead38b9dff7cba0a94ec482))
@@ -22,8 +46,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2021-07-21&to=2021-07-23&type=c))
 
 [@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2021-07-21..2021-07-23&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2021-07-21..2021-07-23&type=Issues) | [@hbcarlos](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ahbcarlos+updated%3A2021-07-21..2021-07-23&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Awelcome+updated%3A2021-07-21..2021-07-23&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2017.7.22
 
