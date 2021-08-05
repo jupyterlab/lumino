@@ -1,6 +1,6 @@
 {
-  "version": "2021.8.3",
   "name": "lumino-top-level",
+  "version": "2021.8.3",
   "private": true,
   "workspaces": [
     "examples/*",
@@ -24,8 +24,8 @@
     "publish": "npm run clean && npm run build:dist && node scripts/tag-versions.js && lerna publish --yes -m \"Publish\" from-package",
     "remove:dependency": "remove-dependency",
     "test": "lerna run test --scope \"@lumino/!(example-)*\"",
-    "test:examples": "lerna run test --scope \"@lumino/example-*\"",
     "test:chrome": "lerna run test:chrome",
+    "test:examples": "lerna run test --scope \"@lumino/example-*\"",
     "test:firefox": "lerna run test:firefox",
     "test:ie": "lerna run test:ie --concurrency 1",
     "update:dependency": "update-dependency --lerna",
@@ -33,9 +33,9 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@jupyterlab/buildutils": "^1.0.0",
+    "@jupyterlab/buildutils": "^3.0.0",
     "lerna": "^4.0.0",
-    "typedoc": "^0.20.32"
+    "typedoc": "~0.15.0"
   },
   "jupyter-releaser": {
     "options": {
@@ -44,7 +44,7 @@
       ]
     },
     "hooks": {
-      "after-build-changelog": "node scripts/format-changelog.js",
+      "after-build-changelog": ["yarn build:dist", "node scripts/format-changelog.js"],
       "before-build-npm": "yarn build:dist",
       "before-draft-release": "node scripts/tag-versions.js"
     }
