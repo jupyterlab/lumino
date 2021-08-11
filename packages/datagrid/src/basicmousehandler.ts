@@ -196,6 +196,9 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
         // Open the hyperlink only if user hit Ctrl+Click.
         if (accel) {
           window.open(url);
+          // Reset cursor default after clicking
+          const cursor = this.cursorForHandle('none');
+          grid.viewport.node.style.cursor = cursor;
           // Not applying selections if navigating away.
           return;
         }
