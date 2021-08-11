@@ -8,8 +8,16 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 import {
-    CellRenderer, TextRenderer, GraphicsContext
-} from '.';
+    CellRenderer
+} from './cellrenderer';
+
+import {
+    GraphicsContext
+} from './graphicscontext';
+
+import {
+    TextRenderer
+} from './textrenderer';
 
 
 
@@ -28,8 +36,14 @@ export
         options.textColor = options.textColor || 'navy';
         options.font = options.font || 'bold 12px sans-serif';
         super(options);
+        this.url = options.url;
         this.urlName = options.urlName;
     }
+
+    /**
+     * The URL address.
+     */
+    readonly url: CellRenderer.ConfigOption<string> | undefined;
 
     /**
      * The friendly link name.
@@ -96,7 +110,7 @@ export
             return;
         }
 
-        let format = this.format;
+        const format = this.format;
         let text;
 
         // If we have a friendly URL name, use that.
@@ -325,6 +339,10 @@ namespace HyperlinkRenderer {
      */
     export
         interface IOptions extends TextRenderer.IOptions {
+        /**
+         * The URL address
+         */
+        url?: CellRenderer.ConfigOption<string> | undefined;
         /**
          * The friendly link name.
          *
