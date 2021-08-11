@@ -51,39 +51,6 @@ export
     readonly urlName: CellRenderer.ConfigOption<string> | undefined;
 
     /**
-     * Paint the content for a cell.
-     *
-     * @param gc - The graphics context to use for drawing.
-     *
-     * @param config - The configuration data for the cell.
-     */
-    paint(gc: GraphicsContext, config: CellRenderer.CellConfig): void {
-        this.drawBackground(gc, config);
-        this.drawText(gc, config);
-    }
-
-    /**
-     * Draw the background for the cell.
-     *
-     * @param gc - The graphics context to use for drawing.
-     *
-     * @param config - The configuration data for the cell.
-     */
-    drawBackground(gc: GraphicsContext, config: CellRenderer.CellConfig): void {
-        // Resolve the background color for the cell.
-        let color = CellRenderer.resolveOption(this.backgroundColor, config);
-
-        // Bail if there is no background color to draw.
-        if (!color) {
-            return;
-        }
-
-        // Fill the cell with the background color.
-        gc.fillStyle = color;
-        gc.fillRect(config.x, config.y, config.width, config.height);
-    }
-
-    /**
      * Draw the text for the cell.
      *
      * @param gc - The graphics context to use for drawing.
