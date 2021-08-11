@@ -21,4 +21,5 @@ export * from './renderermap';
 export * from './selectionmodel';
 export * from './sectionlist';
 export * from './textrenderer';
+export * from './hyperlinkrenderer';
 export * from './cellgroup';
