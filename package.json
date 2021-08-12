@@ -1,6 +1,6 @@
 {
   "name": "lumino-top-level",
-  "version": "2021.8.12",
+  "version": "2021.8.3",
   "private": true,
   "workspaces": [
     "examples/*",
@@ -44,10 +44,7 @@
       ]
     },
     "hooks": {
-      "after-build-changelog": [
-        "yarn build:dist",
-        "node scripts/format-changelog.js"
-      ],
+      "after-build-changelog": ["yarn build:dist", "node scripts/format-changelog.js"],
       "before-build-npm": "yarn build:dist",
       "before-draft-release": "node scripts/tag-versions.js"
     }
