@@ -2,6 +2,31 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2021.8.12
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/application@1.23.0...5bd6fe37c0351e48c7e72a9ccb01927a30473020))
+
+### Enhancements made
+
+- New renderer: HyperlinkRenderer [#218](https://github.com/jupyterlab/lumino/pull/218) ([@ibdafna](https://github.com/ibdafna))
+
+### Maintenance and upkeep improvements
+
+- Update dependencies [#217](https://github.com/jupyterlab/lumino/pull/217) ([@afshin](https://github.com/afshin))
+- Fix handling of pip cache in CI [#216](https://github.com/jupyterlab/lumino/pull/216) ([@blink1073](https://github.com/blink1073))
+
+### Other merged PRs
+
+- Bump tar from 4.4.13 to 4.4.15 [#215](https://github.com/jupyterlab/lumino/pull/215) ([@dependabot](https://github.com/dependabot))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2021-08-03&to=2021-08-12&type=c))
+
+[@afshin](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aafshin+updated%3A2021-08-03..2021-08-12&type=Issues) | [@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2021-08-03..2021-08-12&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2021-08-03..2021-08-12&type=Issues) | [@ibdafna](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aibdafna+updated%3A2021-08-03..2021-08-12&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2021.8.3
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/application@1.22.0...d54b9ebc5bc28fa3676c9482da3db5656840934b))
@@ -23,8 +48,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2021-07-23&to=2021-08-03&type=c))
 
 [@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2021-07-23..2021-08-03&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2021-07-23..2021-08-03&type=Issues) | [@marthacryan](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Amarthacryan+updated%3A2021-07-23..2021-08-03&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2021.7.23
 
