@@ -10,7 +10,16 @@ done manually as follows:
 ```bash
 yarn
 yarn run update:versions
-git push origin
+git commit -a -m "Update versions"
+git push origin master
+```
+
+If you forget to bump the versions and need to undo:
+
+```bash
+git revert <version-bump-commit-sha>
+git push origin master
+push --delete origin <version-tag>
 ```
 
 ## Manual Release
