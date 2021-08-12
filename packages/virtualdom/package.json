@@ -1,6 +1,6 @@
 {
   "name": "@lumino/virtualdom",
-  "version": "1.11.0",
+  "version": "1.11.1",
   "description": "Lumino Virtual DOM",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -51,7 +51,7 @@
     "watch": "tsc --build --watch"
   },
   "dependencies": {
-    "@lumino/algorithm": "^1.6.0"
+    "@lumino/algorithm": "^1.6.1"
   },
   "devDependencies": {
     "@microsoft/api-extractor": "^7.6.0",

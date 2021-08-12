@@ -1,6 +1,6 @@
 {
   "name": "@lumino/application",
-  "version": "1.23.0",
+  "version": "1.23.1",
   "description": "Lumino Pluggable Application",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -44,9 +44,9 @@
     "watch": "tsc --build --watch"
   },
   "dependencies": {
-    "@lumino/commands": "^1.15.0",
-    "@lumino/coreutils": "^1.8.0",
-    "@lumino/widgets": "^1.26.0"
+    "@lumino/commands": "^1.15.1",
+    "@lumino/coreutils": "^1.8.1",
+    "@lumino/widgets": "^1.26.1"
   },
   "devDependencies": {
     "@microsoft/api-extractor": "^7.6.0",
