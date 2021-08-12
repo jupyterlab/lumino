@@ -24,6 +24,10 @@ import {
 } from './datagrid';
 
 import {
+  HyperlinkRenderer
+} from './hyperlinkrenderer';
+
+import {
   DataModel
 } from './datamodel';
 
@@ -35,9 +39,17 @@ import {
   CellEditor
 } from './celleditor';
 
-import { 
-  CellGroup 
+import {
+  CellGroup
 } from './cellgroup';
+
+import {
+  CellRenderer
+} from './cellrenderer';
+
+import { 
+  TextRenderer 
+} from './textrenderer';
 
 /**
  * A basic implementation of a data grid mouse handler.
@@ -106,6 +118,17 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
     // Fetch the cursor for the handle.
     let cursor = this.cursorForHandle(handle);
 
+    // Hyperlink logic.
+    const config = Private.createCellConfigObject(grid, hit);
+
+    if (config) {
+      // Retrieve renderer for hovered cell.
+      const renderer = grid.cellRenderers.get(config);      
+      if (renderer instanceof HyperlinkRenderer) {
+        cursor = this.cursorForHandle('hyperlink');
+      }
+    }
+
     // Update the viewport cursor based on the part.
     grid.viewport.node.style.cursor = cursor;
 
@@ -141,7 +164,7 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
     let hit = grid.hitTest(clientX, clientY);
 
     // Unpack the hit test.
-    let { region, row, column } = hit;
+    const { region, row, column } = hit;
 
     // Bail if the hit test is on an uninteresting region.
     if (region === 'void') {
@@ -151,6 +174,37 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
     // Fetch the modifier flags.
     let shift = event.shiftKey;
     let accel = Platform.accelKey(event);
+
+    // Hyperlink logic.
+    if (grid) {
+      // Create cell config object.
+      const config = Private.createCellConfigObject(grid, hit);
+
+      // Retrieve cell renderer.
+      let renderer = grid.cellRenderers.get(config!);
+
+      // Only process hyperlink renderers.
+      if (renderer instanceof HyperlinkRenderer) {
+        // Use the url param if it exists.
+        let url = CellRenderer.resolveOption(renderer.url, config!);
+        // Otherwise assume cell value is the URL.
+        if (!url) {
+          const format = TextRenderer.formatGeneric();
+          url = format(config!);
+        }
+
+        // Open the hyperlink only if user hit Ctrl+Click.
+        if (accel) {
+          window.open(url);
+          // Reset cursor default after clicking
+          const cursor = this.cursorForHandle('none');
+          grid.viewport.node.style.cursor = cursor;
+          // Not applying selections if navigating away.
+          return;
+        }
+      }
+    }
+
 
     // If the hit test is the body region, the only option is select.
     if (region === 'body') {
@@ -646,7 +700,7 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
 * A type alias for the resize handle types.
 */
 export
-type ResizeHandle = 'top' | 'left' | 'right' | 'bottom' | 'none';
+type ResizeHandle = 'top' | 'left' | 'right' | 'bottom' | 'none' | 'hyperlink';
 
 
 /**
@@ -784,6 +838,32 @@ namespace PressData {
  */
 export
 namespace Private {
+  /**
+   * Creates a CellConfig object from a hit region.
+   */
+  export
+    function createCellConfigObject(grid: DataGrid, hit: DataGrid.HitTestResult): CellRenderer.CellConfig | undefined {
+    const { region, row, column } = hit;
+
+    // Terminate call if region is void.
+    if (region === "void") {
+      return undefined;
+    }
+
+    // Augment hit region params with value and metadata.
+    const value = grid.dataModel!.data(region, row, column)
+    const metadata = grid.dataModel!.metadata(region, row, column)
+
+    // Create cell config object to retrieve cell renderer.
+    const config = {
+      ...hit,
+      value: value,
+      metadata: metadata
+    } as CellRenderer.CellConfig;
+
+    return config;
+  }
+
   /**
    * Get the resize handle for a grid hit test.
    */
@@ -964,6 +1044,7 @@ namespace Private {
     left: 'ew-resize',
     right: 'ew-resize',
     bottom: 'ns-resize',
+    hyperlink: 'pointer',
     none: 'default'
   };
 }

@@ -11,7 +11,7 @@ import 'es6-promise/auto';  // polyfill Promise on IE
 
 import {
   BasicKeyHandler, BasicMouseHandler, BasicSelectionModel, CellRenderer, CellGroup,
-  DataGrid, DataModel, JSONModel, TextRenderer, MutableDataModel, CellEditor, ICellEditor
+  DataGrid, DataModel, JSONModel, TextRenderer, HyperlinkRenderer, MutableDataModel, CellEditor, ICellEditor
 } from '@lumino/datagrid';
 
 import {
@@ -582,6 +582,24 @@ function main(): void {
   const columnIdentifier = {'name': 'Corp. Data'};
   grid6.editorController!.setEditor(columnIdentifier, (config: CellEditor.CellConfig): ICellEditor => {
     return new JSONCellEditor();
+  });
+
+  const hyperlinkRenderer = new HyperlinkRenderer({
+    url: (config: CellRenderer.CellConfig) => {
+      return config.value[0];
+    },
+    urlName: (config: CellRenderer.CellConfig) => {
+      return config.value[1];
+    }
+  });
+
+  grid6.cellRenderers.update({
+    'body': (config: CellRenderer.CellConfig) => {
+      if (config.metadata.name === "link") {
+        return hyperlinkRenderer
+      }
+      return undefined;
+    }
   });
 
   let grid7 = new DataGrid();
@@ -1329,6 +1347,7 @@ namespace Data {
     "data": [
       {
         "index": 0,
+        "link": ["https://www.chevrolet.com/", "Chevrolet"],
         "Name": "Chevrolet",
         "Contact": "info@chevrolet.com",
         "Origin": "USA",
@@ -1342,6 +1361,7 @@ namespace Data {
       },
       {
         "index": 1,
+        "link": ["https://www.bmw.com/", "BMW"],
         "Name": "BMW",
         "Contact": "info@bmw.com",
         "Origin": "Germany",
@@ -1355,6 +1375,7 @@ namespace Data {
       },
       {
         "index": 2,
+        "link": ["https://www.mercedes-benz.com/", "Mercedes"],
         "Name": "Mercedes",
         "Contact": "info@mbusa.com",
         "Origin": "Germany",
@@ -1368,6 +1389,7 @@ namespace Data {
       },
       {
         "index": 3,
+        "link": ["https://www.honda.com/", "Honda"],
         "Name": "Honda",
         "Contact": "info@honda.com",
         "Origin": "Japan",
@@ -1381,6 +1403,7 @@ namespace Data {
       },
       {
         "index": 4,
+        "link": ["https://www.toyota.com/", "Toyota"],
         "Name": "Toyota",
         "Contact": "info@toyota.com",
         "Origin": "Japan",
@@ -1394,6 +1417,7 @@ namespace Data {
       },
       {
         "index": 5,
+        "link": ["https://www.renaultgroup.com/", "Renault"],
         "Name": "Renault",
         "Contact": "info@renault.com",
         "Origin": "France",
@@ -1414,6 +1438,10 @@ namespace Data {
         {
           "name": "index",
           "type": "integer"
+        },
+        {
+          "name": "link",
+          "type": "object"
         },
         {
           "name": "Name",
