@@ -38,6 +38,7 @@
     "typedoc": "~0.15.0"
   },
   "jupyter-releaser": {
+    "skip": ["check-links"],
     "options": {
       "ignore-links": [
         "./api/index.html"
