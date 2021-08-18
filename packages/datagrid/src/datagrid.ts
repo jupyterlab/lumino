@@ -1536,11 +1536,11 @@ class DataGrid extends Widget {
           } else {
             /*
               Otherwise the entire body column count can be resized.
-              Resize all body columns and subtract from remaining
-              column resize allowance.
+              Resize based on the smallest number between remaining
+              resize allowance and body column count.
             */
-            this._fitBodyColumnHeaders(this.dataModel, bodyColumnCount);
-            colsRemaining = colsRemaining - bodyColumnCount;
+            this._fitBodyColumnHeaders(this.dataModel,
+              Math.min(colsRemaining, bodyColumnCount));
           }
         } else {
           // No column resize cap passed - resizing all columns.
