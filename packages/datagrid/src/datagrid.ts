@@ -3723,6 +3723,56 @@ class DataGrid extends Widget {
   }
 
   /**
+   * Resizes body column headers so their text fits
+   * without clipping or wrapping.
+   * @param dataModel 
+   */
+   private _fitBodyColumnHeaders(dataModel: DataModel): void {
+    // Get the body column count
+    const bodyColumnCount = dataModel.columnCount('body');
+    for (let i = 0; i < bodyColumnCount; i++) {
+      /* 
+        if we're working with nested column headers,
+        retrieve the nested levels and iterate on them.
+      */
+      const numRows = dataModel.rowCount('column-header');
+
+      /*
+        Calculate the maximum text width vertically, across
+        all nested rows under a given column number.
+      */
+      let maxWidth = 0;
+      for (let j = 0; j < numRows; j++) {
+        const cellValue = dataModel.data('column-header', j, i);
+
+        // Basic CellConfig object to get the renderer for that cell
+        let config = {
+          x: 0, y: 0, width: 0, height: 0,
+          region: 'column-header' as DataModel.CellRegion, row: 0, column: i,
+          value: (null as any), metadata: DataModel.emptyMetadata
+        };
+
+        // Get the renderer for the given cell
+        const renderer = this.cellRenderers.get(config) as TextRenderer;
+
+        // Use the canvas context to measure the cell's text width
+        const gc = this.canvasGC;
+        gc.font = CellRenderer.resolveOption(renderer.font, config);
+        const textWidth = gc.measureText(cellValue).width;
+
+        // Update the maximum width for that column.
+        maxWidth = Math.max(maxWidth, textWidth);
+      }
+
+      /*
+        Send a resize message with new width for the given column.
+        Using a padding of 15 pixels to leave some room.
+      */
+      this.resizeColumn('body', i, maxWidth + 15);
+    }
+  }
+
+  /**
    * Paint the overlay content for the entire grid.
    *
    * This is the primary overlay paint entry point. The individual
