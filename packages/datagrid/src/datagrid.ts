@@ -1482,6 +1482,22 @@ class DataGrid extends Widget {
   }
 
   /**
+   * Auto sizes column widths based on their text content.
+   * @param area 
+   */
+   fitColumnNames(area: DataGrid.ColumnFitType = 'all'): void {
+    // Attempt resizing only if a data model is present.
+    if (this.dataModel) {
+      if (area === 'body' || area === 'all') {
+        this._fitBodyColumnHeaders(this.dataModel);
+      }
+      if (area === 'row-header' || area === 'all') {
+        this._fitRowColumnHeaders(this.dataModel);
+      }
+    }
+  }
+
+  /**
    * Map a client position to local viewport coordinates.
    *
    * @param clientX - The client X position of the mouse.
