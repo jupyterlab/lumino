@@ -3801,7 +3801,6 @@ class DataGrid extends Widget {
     const rowColumnCount = dataModel.columnCount('row-header');
     for (let i = 0; i < rowColumnCount; i++) {
       const numCols = dataModel.rowCount('column-header');
-      console.log(numCols);
       /*
         Calculate the maximum text width vertically, across
         all nested columns under a given row index.
