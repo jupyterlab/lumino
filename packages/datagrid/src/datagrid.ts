@@ -5694,6 +5694,12 @@ namespace DataGrid {
   type HeaderVisibility = 'all' | 'row' | 'column' | 'none';
 
   /**
+   * A type alias for the supported column auto resize modes.
+   */
+  export
+  type ColumnFitType = 'all' | 'row-header' | 'body';
+
+  /**
    * A type alias for the arguments to a copy format function.
    */
   export
