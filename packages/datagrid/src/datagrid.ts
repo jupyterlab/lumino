@@ -1485,14 +1485,67 @@ class DataGrid extends Widget {
    * Auto sizes column widths based on their text content.
    * @param area 
    */
-   fitColumnNames(area: DataGrid.ColumnFitType = 'all'): void {
+  fitColumnNames(area: DataGrid.ColumnFitType = 'all', numCols?: number): void {
     // Attempt resizing only if a data model is present.
     if (this.dataModel) {
-      if (area === 'body' || area === 'all') {
-        this._fitBodyColumnHeaders(this.dataModel);
-      }
+      // Tracking remaining columns to be resized if numCols arg passed.
+      let colsRemaining = (numCols === undefined) || (numCols < 0) 
+        ? undefined 
+        : numCols;
+
       if (area === 'row-header' || area === 'all') {
-        this._fitRowColumnHeaders(this.dataModel);
+        // Respecting any column resize cap, if one has been passed. 
+        if (colsRemaining !== undefined) {
+          const rowColumnCount = this.dataModel.columnCount('row-header');
+          /*
+            If we have more row-header columns than columns available
+            for resize, resize only remaining columns as per allowance
+            and set remaining resize allowance number to 0.
+          */
+          if (colsRemaining - rowColumnCount < 0) {
+            this._fitRowColumnHeaders(this.dataModel, colsRemaining)
+            colsRemaining = 0;
+          } else {
+            /*
+              Otherwise the entire row-header column count can be resized.
+              Resize all row-header columns and subtract from remaining
+              column resize allowance.
+            */
+            this._fitRowColumnHeaders(this.dataModel, rowColumnCount);
+            colsRemaining = colsRemaining - rowColumnCount;
+          }
+        } else {
+          // No column resize cap passed - resizing all columns.
+          this._fitRowColumnHeaders(this.dataModel);
+        }
+
+      }
+
+      if (area === 'body' || area === 'all') {
+        // Respecting any column resize cap, if one has been passed. 
+        if (colsRemaining !== undefined) {
+          const bodyColumnCount = this.dataModel.columnCount('body');
+          /*
+            If we have more body columns than columns available
+            for resize, resize only remaining columns as per allowance
+            and set remaining resize allowance number to 0.
+          */
+          if (colsRemaining - bodyColumnCount < 0) {
+            this._fitBodyColumnHeaders(this.dataModel, colsRemaining);
+            colsRemaining = 0;
+          } else {
+            /*
+              Otherwise the entire body column count can be resized.
+              Resize all body columns and subtract from remaining
+              column resize allowance.
+            */
+            this._fitBodyColumnHeaders(this.dataModel, bodyColumnCount);
+            colsRemaining = colsRemaining - bodyColumnCount;
+          }
+        } else {
+          // No column resize cap passed - resizing all columns.
+          this._fitBodyColumnHeaders(this.dataModel);
+        }
       }
     }
   }
@@ -3743,9 +3796,12 @@ class DataGrid extends Widget {
    * without clipping or wrapping.
    * @param dataModel 
    */
-   private _fitBodyColumnHeaders(dataModel: DataModel): void {
+   private _fitBodyColumnHeaders(dataModel: DataModel, numCols?: number): void {
     // Get the body column count
-    const bodyColumnCount = dataModel.columnCount('body');
+    const bodyColumnCount = numCols === undefined 
+      ? dataModel.columnCount('body')
+      : numCols;
+
     for (let i = 0; i < bodyColumnCount; i++) {
       /* 
         if we're working with nested column headers,
@@ -3793,12 +3849,15 @@ class DataGrid extends Widget {
    * without clipping or wrapping.
    * @param dataModel 
    */
-   private _fitRowColumnHeaders(dataModel: DataModel): void {
+   private _fitRowColumnHeaders(dataModel: DataModel, numCols?: number): void {
     /*
       if we're working with nested row headers,
       retrieve the nested levels and iterate on them.
     */
-    const rowColumnCount = dataModel.columnCount('row-header');
+    const rowColumnCount = numCols === undefined 
+      ? dataModel.columnCount('row-header')
+      : numCols;
+
     for (let i = 0; i < rowColumnCount; i++) {
       const numCols = dataModel.rowCount('column-header');
       /*
