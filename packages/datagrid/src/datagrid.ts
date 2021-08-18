@@ -64,6 +64,10 @@ import {
   JSONExt
 } from '@lumino/coreutils';
 
+import { 
+  TextRenderer 
+} from './textrenderer';
+
 /**
  * A widget which implements a high-performance tabular data grid.
  *
