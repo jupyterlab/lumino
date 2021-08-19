@@ -64,6 +64,10 @@ import {
   JSONExt
 } from '@lumino/coreutils';
 
+import { 
+  TextRenderer 
+} from './textrenderer';
+
 /**
  * A widget which implements a high-performance tabular data grid.
  *
@@ -1475,6 +1479,75 @@ class DataGrid extends Widget {
     }
     this.repaintContent();
     this.repaintOverlay();
+  }
+
+  /**
+   * Auto sizes column widths based on their text content.
+   * @param area 
+   */
+  fitColumnNames(area: DataGrid.ColumnFitType = 'all', numCols?: number): void {
+    // Attempt resizing only if a data model is present.
+    if (this.dataModel) {
+      // Tracking remaining columns to be resized if numCols arg passed.
+      let colsRemaining = (numCols === undefined) || (numCols < 0) 
+        ? undefined 
+        : numCols;
+
+      if (area === 'row-header' || area === 'all') {
+        // Respecting any column resize cap, if one has been passed. 
+        if (colsRemaining !== undefined) {
+          const rowColumnCount = this.dataModel.columnCount('row-header');
+          /*
+            If we have more row-header columns than columns available
+            for resize, resize only remaining columns as per allowance
+            and set remaining resize allowance number to 0.
+          */
+          if (colsRemaining - rowColumnCount < 0) {
+            this._fitRowColumnHeaders(this.dataModel, colsRemaining)
+            colsRemaining = 0;
+          } else {
+            /*
+              Otherwise the entire row-header column count can be resized.
+              Resize all row-header columns and subtract from remaining
+              column resize allowance.
+            */
+            this._fitRowColumnHeaders(this.dataModel, rowColumnCount);
+            colsRemaining = colsRemaining - rowColumnCount;
+          }
+        } else {
+          // No column resize cap passed - resizing all columns.
+          this._fitRowColumnHeaders(this.dataModel);
+        }
+
+      }
+
+      if (area === 'body' || area === 'all') {
+        // Respecting any column resize cap, if one has been passed. 
+        if (colsRemaining !== undefined) {
+          const bodyColumnCount = this.dataModel.columnCount('body');
+          /*
+            If we have more body columns than columns available
+            for resize, resize only remaining columns as per allowance
+            and set remaining resize allowance number to 0.
+          */
+          if (colsRemaining - bodyColumnCount < 0) {
+            this._fitBodyColumnHeaders(this.dataModel, colsRemaining);
+            colsRemaining = 0;
+          } else {
+            /*
+              Otherwise the entire body column count can be resized.
+              Resize based on the smallest number between remaining
+              resize allowance and body column count.
+            */
+            this._fitBodyColumnHeaders(this.dataModel,
+              Math.min(colsRemaining, bodyColumnCount));
+          }
+        } else {
+          // No column resize cap passed - resizing all columns.
+          this._fitBodyColumnHeaders(this.dataModel);
+        }
+      }
+    }
   }
 
   /**
@@ -3719,6 +3792,108 @@ class DataGrid extends Widget {
   }
 
   /**
+   * Resizes body column headers so their text fits
+   * without clipping or wrapping.
+   * @param dataModel 
+   */
+   private _fitBodyColumnHeaders(dataModel: DataModel, numCols?: number): void {
+    // Get the body column count
+    const bodyColumnCount = numCols === undefined 
+      ? dataModel.columnCount('body')
+      : numCols;
+
+    for (let i = 0; i < bodyColumnCount; i++) {
+      /* 
+        if we're working with nested column headers,
+        retrieve the nested levels and iterate on them.
+      */
+      const numRows = dataModel.rowCount('column-header');
+
+      /*
+        Calculate the maximum text width vertically, across
+        all nested rows under a given column number.
+      */
+      let maxWidth = 0;
+      for (let j = 0; j < numRows; j++) {
+        const cellValue = dataModel.data('column-header', j, i);
+
+        // Basic CellConfig object to get the renderer for that cell
+        let config = {
+          x: 0, y: 0, width: 0, height: 0,
+          region: 'column-header' as DataModel.CellRegion, row: 0, column: i,
+          value: (null as any), metadata: DataModel.emptyMetadata
+        };
+
+        // Get the renderer for the given cell
+        const renderer = this.cellRenderers.get(config) as TextRenderer;
+
+        // Use the canvas context to measure the cell's text width
+        const gc = this.canvasGC;
+        gc.font = CellRenderer.resolveOption(renderer.font, config);
+        const textWidth = gc.measureText(cellValue).width;
+
+        // Update the maximum width for that column.
+        maxWidth = Math.max(maxWidth, textWidth);
+      }
+
+      /*
+        Send a resize message with new width for the given column.
+        Using a padding of 15 pixels to leave some room.
+      */
+      this.resizeColumn('body', i, maxWidth + 15);
+    }
+  }
+
+  /**
+   * Resizes row header columns so their text fits
+   * without clipping or wrapping.
+   * @param dataModel 
+   */
+   private _fitRowColumnHeaders(dataModel: DataModel, numCols?: number): void {
+    /*
+      if we're working with nested row headers,
+      retrieve the nested levels and iterate on them.
+    */
+    const rowColumnCount = numCols === undefined 
+      ? dataModel.columnCount('row-header')
+      : numCols;
+
+    for (let i = 0; i < rowColumnCount; i++) {
+      const numCols = dataModel.rowCount('column-header');
+      /*
+        Calculate the maximum text width vertically, across
+        all nested columns under a given row index.
+      */
+      let maxWidth = 0;
+      for (let j = 0; j < numCols; j++) {
+        const cellValue = dataModel.data('corner-header', j, i);
+
+        // Basic CellConfig object to get the renderer for that cell.
+        let config = {
+          x: 0, y: 0, width: 0, height: 0,
+          region: 'column-header' as DataModel.CellRegion, row: 0, column: i,
+          value: (null as any), metadata: DataModel.emptyMetadata
+        };
+
+        // Get the renderer for the given cell.
+        const renderer = this.cellRenderers.get(config) as TextRenderer;
+
+        // Use the canvas context to measure the cell's text width
+        const gc = this.canvasGC;
+        gc.font = CellRenderer.resolveOption(renderer.font, config);
+        const textWidth = gc.measureText(cellValue).width;
+        maxWidth = Math.max(maxWidth, textWidth);
+      }
+
+      /*
+        Send a resize message with new width for the given column.
+        Using a padding of 15 pixels to leave some room.
+      */
+      this.resizeColumn('row-header', i, maxWidth + 15);
+    }
+  }
+
+  /**
    * Paint the overlay content for the entire grid.
    *
    * This is the primary overlay paint entry point. The individual
@@ -5692,6 +5867,12 @@ namespace DataGrid {
    */
   export
   type HeaderVisibility = 'all' | 'row' | 'column' | 'none';
+
+  /**
+   * A type alias for the supported column auto resize modes.
+   */
+  export
+  type ColumnFitType = 'all' | 'row-header' | 'body';
 
   /**
    * A type alias for the arguments to a copy format function.
