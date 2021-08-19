@@ -1481,11 +1481,14 @@ class DataGrid extends Widget {
     this.repaintOverlay();
   }
 
+
   /**
    * Auto sizes column widths based on their text content.
-   * @param area 
+   * @param area which area to resize: 'body', 'row-header' or 'all'.
+   * @param padding padding added to resized columns (pixels).
+   * @param numCols specify cap on the number of column resizes (optional).
    */
-  fitColumnNames(area: DataGrid.ColumnFitType = 'all', numCols?: number): void {
+  fitColumnNames(area: DataGrid.ColumnFitType = 'all', padding: number = 15, numCols?: number): void {
     // Attempt resizing only if a data model is present.
     if (this.dataModel) {
       // Tracking remaining columns to be resized if numCols arg passed.
@@ -1503,7 +1506,7 @@ class DataGrid extends Widget {
             and set remaining resize allowance number to 0.
           */
           if (colsRemaining - rowColumnCount < 0) {
-            this._fitRowColumnHeaders(this.dataModel, colsRemaining)
+            this._fitRowColumnHeaders(this.dataModel, padding, colsRemaining)
             colsRemaining = 0;
           } else {
             /*
@@ -1511,12 +1514,12 @@ class DataGrid extends Widget {
               Resize all row-header columns and subtract from remaining
               column resize allowance.
             */
-            this._fitRowColumnHeaders(this.dataModel, rowColumnCount);
+            this._fitRowColumnHeaders(this.dataModel, padding, rowColumnCount);
             colsRemaining = colsRemaining - rowColumnCount;
           }
         } else {
           // No column resize cap passed - resizing all columns.
-          this._fitRowColumnHeaders(this.dataModel);
+          this._fitRowColumnHeaders(this.dataModel, padding);
         }
 
       }
@@ -1531,7 +1534,7 @@ class DataGrid extends Widget {
             and set remaining resize allowance number to 0.
           */
           if (colsRemaining - bodyColumnCount < 0) {
-            this._fitBodyColumnHeaders(this.dataModel, colsRemaining);
+            this._fitBodyColumnHeaders(this.dataModel, padding, colsRemaining);
             colsRemaining = 0;
           } else {
             /*
@@ -1539,12 +1542,12 @@ class DataGrid extends Widget {
               Resize based on the smallest number between remaining
               resize allowance and body column count.
             */
-            this._fitBodyColumnHeaders(this.dataModel,
+            this._fitBodyColumnHeaders(this.dataModel, padding,
               Math.min(colsRemaining, bodyColumnCount));
           }
         } else {
           // No column resize cap passed - resizing all columns.
-          this._fitBodyColumnHeaders(this.dataModel);
+          this._fitBodyColumnHeaders(this.dataModel, padding);
         }
       }
     }
@@ -3796,7 +3799,7 @@ class DataGrid extends Widget {
    * without clipping or wrapping.
    * @param dataModel 
    */
-   private _fitBodyColumnHeaders(dataModel: DataModel, numCols?: number): void {
+   private _fitBodyColumnHeaders(dataModel: DataModel, padding: number, numCols?: number): void {
     // Get the body column count
     const bodyColumnCount = numCols === undefined 
       ? dataModel.columnCount('body')
@@ -3840,7 +3843,7 @@ class DataGrid extends Widget {
         Send a resize message with new width for the given column.
         Using a padding of 15 pixels to leave some room.
       */
-      this.resizeColumn('body', i, maxWidth + 15);
+      this.resizeColumn('body', i, maxWidth + padding);
     }
   }
 
@@ -3849,7 +3852,7 @@ class DataGrid extends Widget {
    * without clipping or wrapping.
    * @param dataModel 
    */
-   private _fitRowColumnHeaders(dataModel: DataModel, numCols?: number): void {
+   private _fitRowColumnHeaders(dataModel: DataModel, padding: number, numCols?: number): void {
     /*
       if we're working with nested row headers,
       retrieve the nested levels and iterate on them.
@@ -3889,7 +3892,7 @@ class DataGrid extends Widget {
         Send a resize message with new width for the given column.
         Using a padding of 15 pixels to leave some room.
       */
-      this.resizeColumn('row-header', i, maxWidth + 15);
+      this.resizeColumn('row-header', i, maxWidth + padding);
     }
   }
 
