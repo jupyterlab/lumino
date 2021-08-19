@@ -92,6 +92,9 @@ class DataGrid extends Widget {
     this.addClass('p-DataGrid');
     /* </DEPRECATED> */
 
+    //@ts-ignore
+    window.datagrid = this;
+
     // Parse the simple options.
     this._style = options.style || DataGrid.defaultStyle;
     this._stretchLastRow = options.stretchLastRow || false;
@@ -1506,7 +1509,7 @@ class DataGrid extends Widget {
             and set remaining resize allowance number to 0.
           */
           if (colsRemaining - rowColumnCount < 0) {
-            this._fitRowColumnHeaders(this.dataModel, colsRemaining, padding)
+            this._fitRowColumnHeaders(this.dataModel, padding, colsRemaining)
             colsRemaining = 0;
           } else {
             /*
@@ -1514,7 +1517,7 @@ class DataGrid extends Widget {
               Resize all row-header columns and subtract from remaining
               column resize allowance.
             */
-            this._fitRowColumnHeaders(this.dataModel, rowColumnCount, padding);
+            this._fitRowColumnHeaders(this.dataModel, padding, rowColumnCount);
             colsRemaining = colsRemaining - rowColumnCount;
           }
         } else {
@@ -1534,7 +1537,7 @@ class DataGrid extends Widget {
             and set remaining resize allowance number to 0.
           */
           if (colsRemaining - bodyColumnCount < 0) {
-            this._fitBodyColumnHeaders(this.dataModel, colsRemaining, padding);
+            this._fitBodyColumnHeaders(this.dataModel, padding, colsRemaining);
             colsRemaining = 0;
           } else {
             /*
@@ -1542,8 +1545,8 @@ class DataGrid extends Widget {
               Resize based on the smallest number between remaining
               resize allowance and body column count.
             */
-            this._fitBodyColumnHeaders(this.dataModel,
-              Math.min(colsRemaining, bodyColumnCount), padding);
+            this._fitBodyColumnHeaders(this.dataModel, padding,
+              Math.min(colsRemaining, bodyColumnCount));
           }
         } else {
           // No column resize cap passed - resizing all columns.
