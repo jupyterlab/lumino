@@ -92,9 +92,6 @@ class DataGrid extends Widget {
     this.addClass('p-DataGrid');
     /* </DEPRECATED> */
 
-    //@ts-ignore
-    window.datagrid = this;
-
     // Parse the simple options.
     this._style = options.style || DataGrid.defaultStyle;
     this._stretchLastRow = options.stretchLastRow || false;
