@@ -2,6 +2,34 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2021.8.23
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/algorithm@1.6.1...f765c6160f2a4be5ffaccbc590bf7e0d54675ab5))
+
+### Enhancements made
+
+- Add 'padding' argument to fitColumnNames function [#223](https://github.com/jupyterlab/lumino/pull/223) ([@ibdafna](https://github.com/ibdafna))
+
+### Maintenance and upkeep improvements
+
+- Use Check Links Action [#222](https://github.com/jupyterlab/lumino/pull/222) ([@blink1073](https://github.com/blink1073))
+
+### Documentation improvements
+
+- Update release notes [#220](https://github.com/jupyterlab/lumino/pull/220) ([@blink1073](https://github.com/blink1073))
+
+### Other merged PRs
+
+- Add auto-resize function for column widths [#221](https://github.com/jupyterlab/lumino/pull/221) ([@ibdafna](https://github.com/ibdafna))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2021-08-12&to=2021-08-23&type=c))
+
+[@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2021-08-12..2021-08-23&type=Issues) | [@ibdafna](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aibdafna+updated%3A2021-08-12..2021-08-23&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2021.8.12
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/application@1.23.0...5bd6fe37c0351e48c7e72a9ccb01927a30473020))
@@ -24,8 +52,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2021-08-03&to=2021-08-12&type=c))
 
 [@afshin](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aafshin+updated%3A2021-08-03..2021-08-12&type=Issues) | [@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2021-08-03..2021-08-12&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2021-08-03..2021-08-12&type=Issues) | [@ibdafna](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aibdafna+updated%3A2021-08-03..2021-08-12&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2021.8.3
 
