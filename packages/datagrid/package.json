@@ -1,6 +1,6 @@
 {
   "name": "@lumino/datagrid",
-  "version": "0.29.0",
+  "version": "0.30.0",
   "description": "Lumino Tabular Data Grid",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -37,15 +37,15 @@
     "watch": "tsc --build --watch"
   },
   "dependencies": {
-    "@lumino/algorithm": "^1.6.1",
-    "@lumino/coreutils": "^1.8.1",
-    "@lumino/disposable": "^1.7.1",
-    "@lumino/domutils": "^1.5.1",
-    "@lumino/dragdrop": "^1.10.1",
-    "@lumino/keyboard": "^1.5.1",
-    "@lumino/messaging": "^1.7.1",
-    "@lumino/signaling": "^1.7.1",
-    "@lumino/widgets": "^1.26.1"
+    "@lumino/algorithm": "^1.6.2",
+    "@lumino/coreutils": "^1.8.2",
+    "@lumino/disposable": "^1.7.2",
+    "@lumino/domutils": "^1.5.2",
+    "@lumino/dragdrop": "^1.10.2",
+    "@lumino/keyboard": "^1.5.2",
+    "@lumino/messaging": "^1.7.2",
+    "@lumino/signaling": "^1.7.2",
+    "@lumino/widgets": "^1.26.2"
   },
   "devDependencies": {
     "rimraf": "^3.0.2",
