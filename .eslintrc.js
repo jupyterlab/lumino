@@ -14,8 +14,8 @@ module.exports = {
     beforeAll: 'readonly',
     afterAll: 'readonly',
     beforeEach: 'readonly',
-    afterEach: 'readonly',
-  },  
+    afterEach: 'readonly'
+  },
   root: true,
   extends: [
     'eslint:recommended',
