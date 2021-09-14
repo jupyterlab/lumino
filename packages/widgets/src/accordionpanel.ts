@@ -108,14 +108,15 @@ export class AccordionPanel extends SplitPanel {
         event.preventDefault();
         event.stopPropagation();
 
+        const title = this.titles[index];
         const widget = (this.layout as AccordionLayout).widgets[index];
         if (widget.isHidden) {
-          target.classList.add('lm-mod-expanded');
-          target.setAttribute('aria-expanded', 'true');
+          title.classList.add('lm-mod-expanded');
+          title.setAttribute('aria-expanded', 'true');
           widget.show();
         } else {
-          target.classList.remove('lm-mod-expanded');
-          target.setAttribute('aria-expanded', 'false');
+          title.classList.remove('lm-mod-expanded');
+          title.setAttribute('aria-expanded', 'false');
           widget.hide();
         }
       }
