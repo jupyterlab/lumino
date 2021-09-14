@@ -1,0 +1,16 @@
+**/build
+**/dist
+**/node_modules
+**/lib
+**/package.json
+**/static
+**/types
+**/.ipynb_checkpoints
+tests/**/coverage
+
+# jetbrains IDE stuff
+.idea/
+
+# ms IDE stuff
+.history/
+.vscode/
