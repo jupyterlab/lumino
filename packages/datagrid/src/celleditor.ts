@@ -5,38 +5,24 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  IDisposable
-} from '@lumino/disposable';
+import { IDisposable } from '@lumino/disposable';
 
-import {
-  DataGrid
-} from './datagrid';
+import { DataGrid } from './datagrid';
 
-import {
-  SelectionModel
-} from './selectionmodel';
+import { SelectionModel } from './selectionmodel';
 
-import {
-  getKeyboardLayout
-} from '@lumino/keyboard';
+import { getKeyboardLayout } from '@lumino/keyboard';
 
-import {
-  Signal
-} from '@lumino/signaling';
+import { Signal } from '@lumino/signaling';
 
-import {
-  Notification
-} from './notification';
+import { Notification } from './notification';
 
-import { CellGroup 
-} from './cellgroup';
+import { CellGroup } from './cellgroup';
 
 /**
  * A response object returned from cell input validator
  */
-export
-interface ICellInputValidatorResponse {
+export interface ICellInputValidatorResponse {
   /**
    * Flag indicating cell input is valid or not
    */
@@ -50,8 +36,7 @@ interface ICellInputValidatorResponse {
 /**
  * An object which validates cell input values.
  */
-export
-interface ICellInputValidator {
+export interface ICellInputValidator {
   /**
    * Validate cell input.
    *
@@ -61,14 +46,16 @@ interface ICellInputValidator {
    *
    * @returns An object with validation result.
    */
-  validate(cell: CellEditor.CellConfig, value: any): ICellInputValidatorResponse;
+  validate(
+    cell: CellEditor.CellConfig,
+    value: any
+  ): ICellInputValidatorResponse;
 }
 
 /**
  * An object returned from cell editor after a successful edit.
  */
-export
-interface ICellEditResponse {
+export interface ICellEditResponse {
   /**
    * An object which holds the configuration data for a cell.
    */
@@ -86,8 +73,7 @@ interface ICellEditResponse {
 /**
  * An object implementing cell editing.
  */
-export
-interface ICellEditor {
+export interface ICellEditor {
   /**
    * Start editing the cell.
    *
@@ -103,22 +89,31 @@ interface ICellEditor {
 }
 
 // default validation error message
-const DEFAULT_INVALID_INPUT_MESSAGE = "Invalid input!";
+const DEFAULT_INVALID_INPUT_MESSAGE = 'Invalid input!';
 
 // A type alias for available cell data types
-export
-type CellDataType = 'string' | 'number' | 'integer' | 'boolean' | 'date' |
-                    'string:option' | 'number:option' | 'integer:option'| 'date:option'|
-                    'string:dynamic-option' | 'number:dynamic-option' | 'integer:dynamic-option' | 'date:dynamic-option';
+export type CellDataType =
+  | 'string'
+  | 'number'
+  | 'integer'
+  | 'boolean'
+  | 'date'
+  | 'string:option'
+  | 'number:option'
+  | 'integer:option'
+  | 'date:option'
+  | 'string:dynamic-option'
+  | 'number:dynamic-option'
+  | 'integer:dynamic-option'
+  | 'date:dynamic-option';
 
 /**
  * An object containing cell editing options.
  */
-export
-interface ICellEditOptions {
+export interface ICellEditOptions {
   /**
    * Cell editor to use for editing.
-   * 
+   *
    * #### Notes
    * This object is only used by cell editor controller.
    * If not set, controller picks the most suitable editor
@@ -142,8 +137,7 @@ interface ICellEditOptions {
 /**
  * A cell input validator object which always returns valid.
  */
-export
-class PassInputValidator implements ICellInputValidator {
+export class PassInputValidator implements ICellInputValidator {
   /**
    * Validate cell input.
    *
@@ -153,7 +147,10 @@ class PassInputValidator implements ICellInputValidator {
    *
    * @returns An object with validation result.
    */
-  validate(cell: CellEditor.CellConfig, value: any): ICellInputValidatorResponse {
+  validate(
+    cell: CellEditor.CellConfig,
+    value: any
+  ): ICellInputValidatorResponse {
     return { valid: true };
   }
 }
@@ -161,8 +158,7 @@ class PassInputValidator implements ICellInputValidator {
 /**
  * Text cell input validator.
  */
-export
-class TextInputValidator implements ICellInputValidator {
+export class TextInputValidator implements ICellInputValidator {
   /**
    * Validate cell input.
    *
@@ -172,7 +168,10 @@ class TextInputValidator implements ICellInputValidator {
    *
    * @returns An object with validation result.
    */
-  validate(cell: CellEditor.CellConfig, value: string): ICellInputValidatorResponse {
+  validate(
+    cell: CellEditor.CellConfig,
+    value: string
+  ): ICellInputValidatorResponse {
     if (value === null) {
       return { valid: true };
     }
@@ -210,19 +209,19 @@ class TextInputValidator implements ICellInputValidator {
 
   /**
    * Minimum text length
-   * 
+   *
    * The default is Number.NaN, meaning no minimum constraint
    */
   minLength: number = Number.NaN;
   /**
    * Maximum text length
-   * 
+   *
    * The default is Number.NaN, meaning no maximum constraint
    */
   maxLength: number = Number.NaN;
   /**
    * Required text pattern as regular expression
-   * 
+   *
    * The default is null, meaning no pattern constraint
    */
   pattern: RegExp | null = null;
@@ -231,8 +230,7 @@ class TextInputValidator implements ICellInputValidator {
 /**
  * Integer cell input validator.
  */
-export
-class IntegerInputValidator implements ICellInputValidator {
+export class IntegerInputValidator implements ICellInputValidator {
   /**
    * Validate cell input.
    *
@@ -242,12 +240,15 @@ class IntegerInputValidator implements ICellInputValidator {
    *
    * @returns An object with validation result.
    */
-  validate(cell: CellEditor.CellConfig, value: number): ICellInputValidatorResponse {
+  validate(
+    cell: CellEditor.CellConfig,
+    value: number
+  ): ICellInputValidatorResponse {
     if (value === null) {
       return { valid: true };
     }
 
-    if (isNaN(value) || (value % 1 !== 0)) {
+    if (isNaN(value) || value % 1 !== 0) {
       return {
         valid: false,
         message: 'Input must be valid integer'
@@ -273,13 +274,13 @@ class IntegerInputValidator implements ICellInputValidator {
 
   /**
    * Minimum value
-   * 
+   *
    * The default is Number.NaN, meaning no minimum constraint
    */
   min: number = Number.NaN;
   /**
    * Maximum value
-   * 
+   *
    * The default is Number.NaN, meaning no maximum constraint
    */
   max: number = Number.NaN;
@@ -288,8 +289,7 @@ class IntegerInputValidator implements ICellInputValidator {
 /**
  * Real number cell input validator.
  */
-export
-class NumberInputValidator implements ICellInputValidator {
+export class NumberInputValidator implements ICellInputValidator {
   /**
    * Validate cell input.
    *
@@ -299,7 +299,10 @@ class NumberInputValidator implements ICellInputValidator {
    *
    * @returns An object with validation result.
    */
-  validate(cell: CellEditor.CellConfig, value: number): ICellInputValidatorResponse {
+  validate(
+    cell: CellEditor.CellConfig,
+    value: number
+  ): ICellInputValidatorResponse {
     if (value === null) {
       return { valid: true };
     }
@@ -330,18 +333,17 @@ class NumberInputValidator implements ICellInputValidator {
 
   /**
    * Minimum value
-   * 
+   *
    * The default is Number.NaN, meaning no minimum constraint
    */
   min: number = Number.NaN;
   /**
    * Maximum value
-   * 
+   *
    * The default is Number.NaN, meaning no maximum constraint
    */
   max: number = Number.NaN;
 }
-
 
 /**
  * An abstract base class that provides the most of the functionality
@@ -349,8 +351,7 @@ class NumberInputValidator implements ICellInputValidator {
  * for various cell types are derived from this base class. Custom cell editors
  * can be easily implemented by extending this class.
  */
-export
-abstract class CellEditor implements ICellEditor, IDisposable {
+export abstract class CellEditor implements ICellEditor, IDisposable {
   /**
    * Construct a new cell editor.
    */
@@ -376,7 +377,10 @@ abstract class CellEditor implements ICellEditor, IDisposable {
     }
 
     if (this._gridWheelEventHandler) {
-      this.cell.grid.node.removeEventListener('wheel', this._gridWheelEventHandler);
+      this.cell.grid.node.removeEventListener(
+        'wheel',
+        this._gridWheelEventHandler
+      );
       this._gridWheelEventHandler = null;
     }
 
@@ -398,7 +402,10 @@ abstract class CellEditor implements ICellEditor, IDisposable {
     this.onCommit = options && options.onCommit;
     this.onCancel = options && options.onCancel;
 
-    this.validator = (options && options.validator) ? options.validator : this.createValidatorBasedOnType();
+    this.validator =
+      options && options.validator
+        ? options.validator
+        : this.createValidatorBasedOnType();
 
     this._gridWheelEventHandler = () => {
       this._closeValidityNotification();
@@ -463,7 +470,10 @@ abstract class CellEditor implements ICellEditor, IDisposable {
       if (result.valid) {
         this.setValidity(true);
       } else {
-        this.setValidity(false, result.message || DEFAULT_INVALID_INPUT_MESSAGE);
+        this.setValidity(
+          false,
+          result.message || DEFAULT_INVALID_INPUT_MESSAGE
+        );
       }
     } else {
       this.setValidity(true);
@@ -476,11 +486,11 @@ abstract class CellEditor implements ICellEditor, IDisposable {
    * @param valid - Whether the input is valid.
    *
    * @param message - Notification message to show.
-   * 
+   *
    * If message is set to empty string (which is the default)
    * existing notification popup is removed if any.
    */
-  protected setValidity(valid: boolean, message: string = "") {
+  protected setValidity(valid: boolean, message: string = '') {
     this._validInput = valid;
 
     this._closeValidityNotification();
@@ -491,7 +501,7 @@ abstract class CellEditor implements ICellEditor, IDisposable {
       this.editorContainer.classList.add('lm-mod-invalid');
 
       // show a notification popup
-      if (message !== "") {
+      if (message !== '') {
         this.validityNotification = new Notification({
           target: this.editorContainer,
           message: message,
@@ -509,20 +519,28 @@ abstract class CellEditor implements ICellEditor, IDisposable {
    */
   protected createValidatorBasedOnType(): ICellInputValidator | undefined {
     const cell = this.cell;
-    const metadata = cell.grid.dataModel!.metadata('body', cell.row, cell.column);
+    const metadata = cell.grid.dataModel!.metadata(
+      'body',
+      cell.row,
+      cell.column
+    );
 
     switch (metadata && metadata.type) {
       case 'string':
         {
           const validator = new TextInputValidator();
-          if (typeof(metadata!.format) === 'string') {
+          if (typeof metadata!.format === 'string') {
             const format = metadata!.format;
             switch (format) {
               case 'email':
-                validator.pattern = new RegExp("^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$");
+                validator.pattern = new RegExp(
+                  '^([a-z0-9_.-]+)@([da-z.-]+).([a-z.]{2,6})$'
+                );
                 break;
               case 'uuid':
-                validator.pattern = new RegExp("[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}");
+                validator.pattern = new RegExp(
+                  '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'
+                );
                 break;
               case 'uri':
                 // TODO
@@ -540,7 +558,7 @@ abstract class CellEditor implements ICellEditor, IDisposable {
             if (metadata!.constraint.maxLength !== undefined) {
               validator.maxLength = metadata!.constraint.maxLength;
             }
-            if (typeof(metadata!.constraint.pattern) === 'string') {
+            if (typeof metadata!.constraint.pattern === 'string') {
               validator.pattern = new RegExp(metadata!.constraint.pattern);
             }
           }
@@ -586,11 +604,15 @@ abstract class CellEditor implements ICellEditor, IDisposable {
   protected getCellInfo(cell: CellEditor.CellConfig): Private.ICellInfo {
     const { grid, row, column } = cell;
     let data, columnX, rowY, width, height;
-    const cellGroup = CellGroup.getGroup(grid.dataModel!, "body", row, column);
+    const cellGroup = CellGroup.getGroup(grid.dataModel!, 'body', row, column);
 
     if (cellGroup) {
-      columnX = grid.headerWidth - grid.scrollX + grid.columnOffset('body', cellGroup.c1);
-      rowY = grid.headerHeight - grid.scrollY + grid.rowOffset('body', cellGroup.r1);
+      columnX =
+        grid.headerWidth -
+        grid.scrollX +
+        grid.columnOffset('body', cellGroup.c1);
+      rowY =
+        grid.headerHeight - grid.scrollY + grid.rowOffset('body', cellGroup.r1);
       width = 0;
       height = 0;
 
@@ -604,7 +626,8 @@ abstract class CellEditor implements ICellEditor, IDisposable {
 
       data = grid.dataModel!.data('body', cellGroup.r1, cellGroup.c1);
     } else {
-      columnX = grid.headerWidth - grid.scrollX + grid.columnOffset('body', column);
+      columnX =
+        grid.headerWidth - grid.scrollX + grid.columnOffset('body', column);
       rowY = grid.headerHeight - grid.scrollY + grid.rowOffset('body', row);
       width = grid.columnSize('body', column);
       height = grid.rowSize('body', row);
@@ -634,26 +657,29 @@ abstract class CellEditor implements ICellEditor, IDisposable {
 
     this.viewportOccluder.style.top = headerHeight + 'px';
     this.viewportOccluder.style.left = headerWidth + 'px';
-    this.viewportOccluder.style.width = (grid.viewportWidth - headerWidth) + 'px';
-    this.viewportOccluder.style.height = (grid.viewportHeight - headerHeight) + 'px';
+    this.viewportOccluder.style.width = grid.viewportWidth - headerWidth + 'px';
+    this.viewportOccluder.style.height =
+      grid.viewportHeight - headerHeight + 'px';
     this.viewportOccluder.style.position = 'absolute';
 
-    this.editorContainer.style.left = (cellInfo.x - 1 - headerWidth) + 'px';
-    this.editorContainer.style.top = (cellInfo.y - 1 - headerHeight) + 'px';
-    this.editorContainer.style.width = (cellInfo.width + 1) + 'px';
-    this.editorContainer.style.height = (cellInfo.height + 1) + 'px';
+    this.editorContainer.style.left = cellInfo.x - 1 - headerWidth + 'px';
+    this.editorContainer.style.top = cellInfo.y - 1 - headerHeight + 'px';
+    this.editorContainer.style.width = cellInfo.width + 1 + 'px';
+    this.editorContainer.style.height = cellInfo.height + 1 + 'px';
     this.editorContainer.style.visibility = 'visible';
     this.editorContainer.style.position = 'absolute';
   }
 
   /**
    * Commit the edited value.
-   * 
+   *
    * @param cursorMovement - Cursor move direction based on keys pressed to end the edit.
-   * 
+   *
    * @returns true on valid input, false otherwise.
    */
-  protected commit(cursorMovement: SelectionModel.CursorMoveDirection = 'none'): boolean {
+  protected commit(
+    cursorMovement: SelectionModel.CursorMoveDirection = 'none'
+  ): boolean {
     this.validate();
 
     if (!this._validInput) {
@@ -696,7 +722,9 @@ abstract class CellEditor implements ICellEditor, IDisposable {
 
     // update mouse event pass-through state based on input validity
     this.editorContainer.addEventListener('mouseleave', (event: MouseEvent) => {
-      this.viewportOccluder.style.pointerEvents = this._validInput ? 'none' : 'auto';
+      this.viewportOccluder.style.pointerEvents = this._validInput
+        ? 'none'
+        : 'auto';
     });
     this.editorContainer.addEventListener('mouseenter', (event: MouseEvent) => {
       this.viewportOccluder.style.pointerEvents = 'none';
@@ -756,15 +784,16 @@ abstract class CellEditor implements ICellEditor, IDisposable {
   /**
    * Grid wheel event handler.
    */
-  private _gridWheelEventHandler: ((this: HTMLElement, ev: WheelEvent) => any) | null = null;
+  private _gridWheelEventHandler:
+    | ((this: HTMLElement, ev: WheelEvent) => any)
+    | null = null;
 }
 
 /**
  * Abstract base class with shared functionality
  * for cell editors which use HTML Input widget as editor.
  */
-export
-abstract class InputCellEditor extends CellEditor {
+export abstract class InputCellEditor extends CellEditor {
   /**
    * Handle the DOM events for the editor.
    *
@@ -884,8 +913,7 @@ abstract class InputCellEditor extends CellEditor {
 /**
  * Cell editor for text cells.
  */
-export
-class TextCellEditor extends InputCellEditor {
+export class TextCellEditor extends InputCellEditor {
   /**
    * Return the current text input entered.
    */
@@ -899,8 +927,7 @@ class TextCellEditor extends InputCellEditor {
 /**
  * Cell editor for real number cells.
  */
-export
-class NumberCellEditor extends InputCellEditor {
+export class NumberCellEditor extends InputCellEditor {
   /**
    * Start editing the cell.
    */
@@ -911,7 +938,11 @@ class NumberCellEditor extends InputCellEditor {
 
     const cell = this.cell;
 
-    const metadata = cell.grid.dataModel!.metadata('body', cell.row, cell.column);
+    const metadata = cell.grid.dataModel!.metadata(
+      'body',
+      cell.row,
+      cell.column
+    );
     const constraint = metadata.constraint;
     if (constraint) {
       if (constraint.minimum) {
@@ -947,8 +978,7 @@ class NumberCellEditor extends InputCellEditor {
 /**
  * Cell editor for integer cells.
  */
-export
-class IntegerCellEditor extends InputCellEditor {
+export class IntegerCellEditor extends InputCellEditor {
   /**
    * Start editing the cell.
    */
@@ -959,7 +989,11 @@ class IntegerCellEditor extends InputCellEditor {
 
     const cell = this.cell;
 
-    const metadata = cell.grid.dataModel!.metadata('body', cell.row, cell.column);
+    const metadata = cell.grid.dataModel!.metadata(
+      'body',
+      cell.row,
+      cell.column
+    );
     const constraint = metadata.constraint;
     if (constraint) {
       if (constraint.minimum) {
@@ -995,8 +1029,7 @@ class IntegerCellEditor extends InputCellEditor {
 /**
  * Cell editor for date cells.
  */
-export
-class DateCellEditor extends CellEditor {
+export class DateCellEditor extends CellEditor {
   /**
    * Handle the DOM events for the editor.
    *
@@ -1059,7 +1092,7 @@ class DateCellEditor extends CellEditor {
   private _createWidget() {
     const input = document.createElement('input');
     input.type = 'date';
-    input.pattern = "\d{4}-\d{2}-\d{2}";
+    input.pattern = 'd{4}-d{2}-d{2}';
     input.classList.add('lm-DataGrid-cellEditorWidget');
     input.classList.add('lm-DataGrid-cellEditorInput');
 
@@ -1112,8 +1145,7 @@ class DateCellEditor extends CellEditor {
 /**
  * Cell editor for boolean cells.
  */
-export
-class BooleanCellEditor extends CellEditor {
+export class BooleanCellEditor extends CellEditor {
   /**
    * Handle the DOM events for the editor.
    *
@@ -1234,16 +1266,14 @@ class BooleanCellEditor extends CellEditor {
   private _input: HTMLInputElement;
 }
 
-
 /**
  * Cell editor for option cells.
- * 
+ *
  * It supports multiple option selection. If cell metadata contains
  * type attribute 'array', then it behaves as a multi select.
  * In that case cell data is expected to be list of string values.
  */
-export
-class OptionCellEditor extends CellEditor {
+export class OptionCellEditor extends CellEditor {
   /**
    * Dispose of the resources held by cell editor.
    */
@@ -1265,7 +1295,11 @@ class OptionCellEditor extends CellEditor {
   protected startEditing() {
     const cell = this.cell;
     const cellInfo = this.getCellInfo(cell);
-    const metadata = cell.grid.dataModel!.metadata('body', cell.row, cell.column);
+    const metadata = cell.grid.dataModel!.metadata(
+      'body',
+      cell.row,
+      cell.column
+    );
     this._isMultiSelect = metadata.type === 'array';
     this._createWidget();
 
@@ -1320,7 +1354,7 @@ class OptionCellEditor extends CellEditor {
     const editorContainerRect = this.editorContainer.getBoundingClientRect();
 
     this._select.style.left = editorContainerRect.left + 'px';
-    this._select.style.top = (editorContainerRect.top + cellInfo.height) + 'px';
+    this._select.style.top = editorContainerRect.top + cellInfo.height + 'px';
     this._select.style.width = editorContainerRect.width + 'px';
     this._select.style.maxHeight = '60px';
 
@@ -1347,13 +1381,17 @@ class OptionCellEditor extends CellEditor {
 
   private _createWidget() {
     const cell = this.cell;
-    const metadata = cell.grid.dataModel!.metadata('body', cell.row, cell.column);
+    const metadata = cell.grid.dataModel!.metadata(
+      'body',
+      cell.row,
+      cell.column
+    );
     const items = metadata.constraint.enum;
 
     const select = document.createElement('select');
     select.classList.add('lm-DataGrid-cellEditorWidget');
     for (let item of items) {
-      const option = document.createElement("option");
+      const option = document.createElement('option');
       option.value = item;
       option.text = item;
       select.appendChild(option);
@@ -1405,8 +1443,7 @@ class OptionCellEditor extends CellEditor {
  * Cell editor for option cells whose value can be any value
  * from set of pre-defined options or values that can be input by user.
  */
-export
-class DynamicOptionCellEditor extends CellEditor {
+export class DynamicOptionCellEditor extends CellEditor {
   /**
    * Handle the DOM events for the editor.
    *
@@ -1487,7 +1524,7 @@ class DynamicOptionCellEditor extends CellEditor {
       }
     }
     valueSet.forEach((value: string) => {
-      const option = document.createElement("option");
+      const option = document.createElement('option');
       option.value = value;
       option.text = value;
       list.appendChild(option);
@@ -1541,17 +1578,14 @@ class DynamicOptionCellEditor extends CellEditor {
   private _input: HTMLInputElement;
 }
 
-
 /**
  * The namespace for the `CellEditor` class statics.
  */
-export
-namespace CellEditor {
+export namespace CellEditor {
   /**
    * An object which holds the configuration data for a cell.
    */
-  export
-  type CellConfig = {
+  export type CellConfig = {
     /**
      * The grid containing the cell.
      */
@@ -1576,13 +1610,13 @@ namespace Private {
    * A type alias for cell properties.
    */
   export type ICellInfo = {
-    grid: DataGrid,
-    row: number,
-    column: number,
-    data: any,
-    x: number,
-    y: number,
-    width: number,
-    height: number
+    grid: DataGrid;
+    row: number;
+    column: number;
+    data: any;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
   };
 }

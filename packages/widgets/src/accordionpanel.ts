@@ -35,7 +35,7 @@ export class AccordionPanel extends SplitPanel {
 
   /**
    * The section title space.
-   * 
+   *
    * This is the height if the panel is vertical and the width if it is
    * horizontal.
    */
@@ -100,7 +100,7 @@ export class AccordionPanel extends SplitPanel {
     const target = event.target as HTMLElement | null;
 
     if (target) {
-      const index = ArrayExt.findFirstIndex(this.titles, (title) => {
+      const index = ArrayExt.findFirstIndex(this.titles, title => {
         return title.contains(target);
       });
 
@@ -133,7 +133,7 @@ export class AccordionPanel extends SplitPanel {
     const target = event.target as HTMLElement | null;
     let handled = false;
     if (target) {
-      const index = ArrayExt.findFirstIndex(this.titles, (title) => {
+      const index = ArrayExt.findFirstIndex(this.titles, title => {
         return title.contains(target);
       });
 
@@ -305,7 +305,7 @@ namespace Private {
         orientation: options.orientation,
         alignment: options.alignment,
         spacing: options.spacing,
-        titleSpace: options.titleSpace,
+        titleSpace: options.titleSpace
       })
     );
   }

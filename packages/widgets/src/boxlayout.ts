@@ -7,46 +7,28 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  ArrayExt, each
-} from '@lumino/algorithm';
+import { ArrayExt, each } from '@lumino/algorithm';
 
-import {
-  ElementExt
-} from '@lumino/domutils';
+import { ElementExt } from '@lumino/domutils';
 
-import {
-  Message, MessageLoop
-} from '@lumino/messaging';
+import { Message, MessageLoop } from '@lumino/messaging';
 
-import {
-  AttachedProperty
-} from '@lumino/properties';
+import { AttachedProperty } from '@lumino/properties';
 
-import {
-  BoxEngine, BoxSizer
-} from './boxengine';
+import { BoxEngine, BoxSizer } from './boxengine';
 
-import {
-  LayoutItem
-} from './layout';
+import { LayoutItem } from './layout';
 
-import {
-  PanelLayout
-} from './panellayout';
+import { PanelLayout } from './panellayout';
 
 import Utils from './utils';
 
-import {
-  Widget
-} from './widget';
-
+import { Widget } from './widget';
 
 /**
  * A layout which arranges its widgets in a single row or column.
  */
-export
-class BoxLayout extends PanelLayout {
+export class BoxLayout extends PanelLayout {
   /**
    * Construct a new box layout.
    *
@@ -70,7 +52,9 @@ class BoxLayout extends PanelLayout {
    */
   dispose(): void {
     // Dispose of the layout items.
-    each(this._items, item => { item.dispose(); });
+    each(this._items, item => {
+      item.dispose();
+    });
 
     // Clear the layout state.
     this._box = null;
@@ -214,7 +198,11 @@ class BoxLayout extends PanelLayout {
    * #### Notes
    * This is a reimplementation of the superclass method.
    */
-  protected moveWidget(fromIndex: number, toIndex: number, widget: Widget): void {
+  protected moveWidget(
+    fromIndex: number,
+    toIndex: number,
+    widget: Widget
+  ): void {
     // Move the layout item for the widget.
     ArrayExt.move(this._items, fromIndex, toIndex);
 
@@ -372,7 +360,7 @@ class BoxLayout extends PanelLayout {
     }
 
     // Update the box sizing and add it to the computed min size.
-    let box = this._box = ElementExt.boxSizing(this.parent!.node);
+    let box = (this._box = ElementExt.boxSizing(this.parent!.node));
     minW += box.horizontalSum;
     minH += box.verticalSum;
 
@@ -439,22 +427,22 @@ class BoxLayout extends PanelLayout {
     // Distribute the layout space and adjust the start position.
     let delta: number;
     switch (this._direction) {
-    case 'left-to-right':
-      delta = BoxEngine.calc(this._sizers, Math.max(0, width - this._fixed));
-      break;
-    case 'top-to-bottom':
-      delta = BoxEngine.calc(this._sizers, Math.max(0, height - this._fixed));
-      break;
-    case 'right-to-left':
-      delta = BoxEngine.calc(this._sizers, Math.max(0, width - this._fixed));
-      left += width;
-      break;
-    case 'bottom-to-top':
-      delta = BoxEngine.calc(this._sizers, Math.max(0, height - this._fixed));
-      top += height;
-      break;
-    default:
-      throw 'unreachable';
+      case 'left-to-right':
+        delta = BoxEngine.calc(this._sizers, Math.max(0, width - this._fixed));
+        break;
+      case 'top-to-bottom':
+        delta = BoxEngine.calc(this._sizers, Math.max(0, height - this._fixed));
+        break;
+      case 'right-to-left':
+        delta = BoxEngine.calc(this._sizers, Math.max(0, width - this._fixed));
+        left += width;
+        break;
+      case 'bottom-to-top':
+        delta = BoxEngine.calc(this._sizers, Math.max(0, height - this._fixed));
+        top += height;
+        break;
+      default:
+        throw 'unreachable';
     }
 
     // Setup the variables for justification and alignment offset.
@@ -464,22 +452,22 @@ class BoxLayout extends PanelLayout {
     // Account for alignment if there is extra layout space.
     if (delta > 0) {
       switch (this._alignment) {
-      case 'start':
-        break;
-      case 'center':
-        extra = 0;
-        offset = delta / 2;
-        break;
-      case 'end':
-        extra = 0;
-        offset = delta;
-        break;
-      case 'justify':
-        extra = delta / nVisible;
-        offset = 0;
-        break;
-      default:
-        throw 'unreachable';
+        case 'start':
+          break;
+        case 'center':
+          extra = 0;
+          offset = delta / 2;
+          break;
+        case 'end':
+          extra = 0;
+          offset = delta;
+          break;
+        case 'justify':
+          extra = delta / nVisible;
+          offset = 0;
+          break;
+        default:
+          throw 'unreachable';
       }
     }
 
@@ -498,24 +486,24 @@ class BoxLayout extends PanelLayout {
 
       // Update the widget geometry and advance the relevant edge.
       switch (this._direction) {
-      case 'left-to-right':
-        item.update(left + offset, top, size + extra, height);
-        left += size + extra + this._spacing;
-        break;
-      case 'top-to-bottom':
-        item.update(left, top + offset, width, size + extra);
-        top += size + extra + this._spacing;
-        break;
-      case 'right-to-left':
-        item.update(left - offset - size - extra, top, size + extra, height);
-        left -= size + extra + this._spacing;
-        break;
-      case 'bottom-to-top':
-        item.update(left, top - offset - size - extra, width, size + extra);
-        top -= size + extra + this._spacing;
-        break;
-      default:
-        throw 'unreachable';
+        case 'left-to-right':
+          item.update(left + offset, top, size + extra, height);
+          left += size + extra + this._spacing;
+          break;
+        case 'top-to-bottom':
+          item.update(left, top + offset, width, size + extra);
+          top += size + extra + this._spacing;
+          break;
+        case 'right-to-left':
+          item.update(left - offset - size - extra, top, size + extra, height);
+          left -= size + extra + this._spacing;
+          break;
+        case 'bottom-to-top':
+          item.update(left, top - offset - size - extra, width, size + extra);
+          top -= size + extra + this._spacing;
+          break;
+        default:
+          throw 'unreachable';
       }
     }
   }
@@ -530,31 +518,28 @@ class BoxLayout extends PanelLayout {
   private _direction: BoxLayout.Direction = 'top-to-bottom';
 }
 
-
 /**
  * The namespace for the `BoxLayout` class statics.
  */
-export
-namespace BoxLayout {
+export namespace BoxLayout {
   /**
    * A type alias for a box layout direction.
    */
-  export
-  type Direction = (
-    'left-to-right' | 'right-to-left' | 'top-to-bottom' | 'bottom-to-top'
-  );
+  export type Direction =
+    | 'left-to-right'
+    | 'right-to-left'
+    | 'top-to-bottom'
+    | 'bottom-to-top';
 
   /**
    * A type alias for a box layout alignment.
    */
-  export
-  type Alignment = 'start' | 'center' | 'end' | 'justify';
+  export type Alignment = 'start' | 'center' | 'end' | 'justify';
 
   /**
    * An options object for initializing a box layout.
    */
-  export
-  interface IOptions {
+  export interface IOptions {
     /**
      * The direction of the layout.
      *
@@ -584,8 +569,7 @@ namespace BoxLayout {
    *
    * @returns The box layout stretch factor for the widget.
    */
-  export
-  function getStretch(widget: Widget): number {
+  export function getStretch(widget: Widget): number {
     return Private.stretchProperty.get(widget);
   }
 
@@ -596,8 +580,7 @@ namespace BoxLayout {
    *
    * @param value - The value for the stretch factor.
    */
-  export
-  function setStretch(widget: Widget, value: number): void {
+  export function setStretch(widget: Widget, value: number): void {
     Private.stretchProperty.set(widget, value);
   }
 
@@ -608,8 +591,7 @@ namespace BoxLayout {
    *
    * @returns The box layout size basis for the widget.
    */
-  export
-  function getSizeBasis(widget: Widget): number {
+  export function getSizeBasis(widget: Widget): number {
     return Private.sizeBasisProperty.get(widget);
   }
 
@@ -620,12 +602,10 @@ namespace BoxLayout {
    *
    * @param value - The value for the size basis.
    */
-  export
-  function setSizeBasis(widget: Widget, value: number): void {
+  export function setSizeBasis(widget: Widget, value: number): void {
     Private.sizeBasisProperty.set(widget, value);
   }
 }
-
 
 /**
  * The namespace for the module implementation details.
@@ -634,8 +614,7 @@ namespace Private {
   /**
    * The property descriptor for a widget stretch factor.
    */
-  export
-  const stretchProperty = new AttachedProperty<Widget, number>({
+  export const stretchProperty = new AttachedProperty<Widget, number>({
     name: 'stretch',
     create: () => 0,
     coerce: (owner, value) => Math.max(0, Math.floor(value)),
@@ -645,8 +624,7 @@ namespace Private {
   /**
    * The property descriptor for a widget size basis.
    */
-  export
-  const sizeBasisProperty = new AttachedProperty<Widget, number>({
+  export const sizeBasisProperty = new AttachedProperty<Widget, number>({
     name: 'sizeBasis',
     create: () => 0,
     coerce: (owner, value) => Math.max(0, Math.floor(value)),
@@ -656,16 +634,14 @@ namespace Private {
   /**
    * Test whether a direction has horizontal orientation.
    */
-  export
-  function isHorizontal(dir: BoxLayout.Direction): boolean {
+  export function isHorizontal(dir: BoxLayout.Direction): boolean {
     return dir === 'left-to-right' || dir === 'right-to-left';
   }
 
   /**
    * Clamp a spacing value to an integer >= 0.
    */
-  export
-  function clampSpacing(value: number): number {
+  export function clampSpacing(value: number): number {
     return Math.max(0, Math.floor(value));
   }
 

@@ -8,9 +8,7 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
-import {
-  UUID
-} from '@lumino/coreutils';
+import { UUID } from '@lumino/coreutils';
 
 // A unique id for this collaborator.
 export const COLLABORATOR_ID = UUID.uuid4();
@@ -64,11 +62,9 @@ const NAMES = [
 ];
 
 // A random color for the current collaborator.
-export const COLLABORATOR_COLOR =  COLORS[
-  Math.floor(Math.random() * COLORS.length)
-];
+export const COLLABORATOR_COLOR =
+  COLORS[Math.floor(Math.random() * COLORS.length)];
 
 // A random name for the current collaborator.
-export const COLLABORATOR_NAME =  NAMES[
-  Math.floor(Math.random() * NAMES.length)
-];
+export const COLLABORATOR_NAME =
+  NAMES[Math.floor(Math.random() * NAMES.length)];

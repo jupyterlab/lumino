@@ -7,30 +7,17 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  ArrayExt, each
-} from '@lumino/algorithm';
+import { ArrayExt, each } from '@lumino/algorithm';
 
-import {
-  ElementExt
-} from '@lumino/domutils';
+import { ElementExt } from '@lumino/domutils';
 
-import {
-  Message, MessageLoop
-} from '@lumino/messaging';
+import { Message, MessageLoop } from '@lumino/messaging';
 
-import {
-  LayoutItem
-} from './layout';
+import { LayoutItem } from './layout';
 
-import {
-  PanelLayout
-} from './panellayout';
+import { PanelLayout } from './panellayout';
 
-import {
-  Widget
-} from './widget';
-
+import { Widget } from './widget';
 
 /**
  * A layout where visible widgets are stacked atop one another.
@@ -38,14 +25,15 @@ import {
  * #### Notes
  * The Z-order of the visible widgets follows their layout order.
  */
-export
-class StackedLayout extends PanelLayout {
+export class StackedLayout extends PanelLayout {
   /**
    * Dispose of the resources held by the layout.
    */
   dispose(): void {
     // Dispose of the layout items.
-    each(this._items, item => { item.dispose(); });
+    each(this._items, item => {
+      item.dispose();
+    });
 
     // Clear the layout state.
     this._box = null;
@@ -98,7 +86,11 @@ class StackedLayout extends PanelLayout {
    * #### Notes
    * This is a reimplementation of the superclass method.
    */
-  protected moveWidget(fromIndex: number, toIndex: number, widget: Widget): void {
+  protected moveWidget(
+    fromIndex: number,
+    toIndex: number,
+    widget: Widget
+  ): void {
     // Move the layout item for the widget.
     ArrayExt.move(this._items, fromIndex, toIndex);
 
@@ -227,7 +219,7 @@ class StackedLayout extends PanelLayout {
     }
 
     // Update the box sizing and add it to the computed min size.
-    let box = this._box = ElementExt.boxSizing(this.parent!.node);
+    let box = (this._box = ElementExt.boxSizing(this.parent!.node));
     minW += box.horizontalSum;
     minH += box.verticalSum;
 

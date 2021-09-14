@@ -333,7 +333,7 @@
 - Bump y18n from 4.0.0 to 4.0.1 [#164](https://github.com/jupyterlab/lumino/pull/164) ([@dependabot](https://github.com/dependabot))
 - Ctrl-click to toggle single row or column selections [#163](https://github.com/jupyterlab/lumino/pull/163) ([@ibdafna](https://github.com/ibdafna))
 - Update documentation badge [#162](https://github.com/jupyterlab/lumino/pull/162) ([@blink1073](https://github.com/blink1073))
-- Change one BasicMouseHandler properties from private to protected  [#161](https://github.com/jupyterlab/lumino/pull/161) ([@ibdafna](https://github.com/ibdafna))
+- Change one BasicMouseHandler properties from private to protected [#161](https://github.com/jupyterlab/lumino/pull/161) ([@ibdafna](https://github.com/ibdafna))
 - Update RTD Link to Point to Stable Version [#159](https://github.com/jupyterlab/lumino/pull/159) ([@blink1073](https://github.com/blink1073))
 - Update Badges in Readme [#158](https://github.com/jupyterlab/lumino/pull/158) ([@blink1073](https://github.com/blink1073))
 - Fix docs target for polling [#155](https://github.com/jupyterlab/lumino/pull/155) ([@bollwyvl](https://github.com/bollwyvl))
@@ -375,7 +375,7 @@
     @lumino/datagrid@0.18.0
 
 - DataGrid mouse handler: Expose pressData for subclasses [#146](https://github.com/jupyterlab/lumino/pull/146) ([@martinRenou](https://github.com/martinRenou))
-- Make _repaintRegion a protected method [#145](https://github.com/jupyterlab/lumino/pull/145) ([@martinRenou](https://github.com/martinRenou))
+- Make \_repaintRegion a protected method [#145](https://github.com/jupyterlab/lumino/pull/145) ([@martinRenou](https://github.com/martinRenou))
 - Bump ini from 1.3.5 to 1.3.7 [#143](https://github.com/jupyterlab/lumino/pull/143) ([@dependabot](https://github.com/dependabot))
 
 ## 2020-12-11
@@ -456,7 +456,7 @@
     @lumino/example-datagrid@0.11.0
     @lumino/datagrid@0.14.0
 
-- Make private _drawCornerHeaderRegion protected drawCornerHeaderRegion [#116](https://github.com/jupyterlab/lumino/pull/116) ([@lmcnichols](https://github.com/lmcnichols))
+- Make private \_drawCornerHeaderRegion protected drawCornerHeaderRegion [#116](https://github.com/jupyterlab/lumino/pull/116) ([@lmcnichols](https://github.com/lmcnichols))
 - Text eliding with ellipsis on datagrid text renderer [#105](https://github.com/jupyterlab/lumino/pull/105) ([@nmichaud](https://github.com/nmichaud))
 
 ## 2020-8-20
@@ -488,7 +488,7 @@
     @lumino/datagrid@0.12.0
     @lumino/application@1.10.4
 
-- Change the Drag class's private method _moveDragImage to a public method moveDragImage. [#96](https://github.com/jupyterlab/lumino/pull/96) ([@lmcnichols](https://github.com/lmcnichols))
+- Change the Drag class's private method \_moveDragImage to a public method moveDragImage. [#96](https://github.com/jupyterlab/lumino/pull/96) ([@lmcnichols](https://github.com/lmcnichols))
 
 ## 2020-7-21
 

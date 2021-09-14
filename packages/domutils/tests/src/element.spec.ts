@@ -7,16 +7,11 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  expect
-} from 'chai';
+import { expect } from 'chai';
 
-import {
-  ElementExt
-} from '@lumino/domutils';
+import { ElementExt } from '@lumino/domutils';
 
-
-const STYLE_TEXT = (`
+const STYLE_TEXT = `
 .box-sizing {
   border-top: solid 10px black;
   border-left: solid 15px black;
@@ -62,13 +57,10 @@ const STYLE_TEXT = (`
   width: 100px;
   height: 100px;
 }
-`);
-
+`;
 
 describe('@lumino/domutils', () => {
-
   describe('ElementExt', () => {
-
     const styleNode = document.createElement('style');
 
     before(() => {
@@ -92,7 +84,6 @@ describe('@lumino/domutils', () => {
     });
 
     describe('boxSizing()', () => {
-
       it('should return a box sizing with correct values', () => {
         div.className = 'box-sizing';
         let box = ElementExt.boxSizing(div);
@@ -121,11 +112,9 @@ describe('@lumino/domutils', () => {
         expect(sizing.verticalSum).to.equal(0);
         expect(sizing.horizontalSum).to.equal(0);
       });
-
     });
 
     describe('sizeLimits()', () => {
-
       it('should return a size limits object with correct parameters', () => {
         div.className = 'size-limits';
         let limits = ElementExt.sizeLimits(div);
@@ -142,11 +131,9 @@ describe('@lumino/domutils', () => {
         expect(limits.maxWidth).to.equal(Infinity);
         expect(limits.maxHeight).to.equal(Infinity);
       });
-
     });
 
     describe('hitTest()', () => {
-
       it('should return `true` when point is inside the node', () => {
         div.className = 'hit-test';
         expect(ElementExt.hitTest(div, 50, 50)).to.equal(true);
@@ -167,11 +154,9 @@ describe('@lumino/domutils', () => {
         expect(ElementExt.hitTest(div, 100, 100)).to.equal(false);
         expect(ElementExt.hitTest(div, 99, 99)).to.equal(true);
       });
-
     });
 
     describe('scrollIntoViewIfNeeded()', () => {
-
       let elemA: HTMLElement = null!;
       let elemB: HTMLElement = null!;
 
@@ -239,9 +224,6 @@ describe('@lumino/domutils', () => {
         ElementExt.scrollIntoViewIfNeeded(div, elemB);
         expect(div.scrollTop).to.equal(100);
       });
-
     });
-
   });
-
 });

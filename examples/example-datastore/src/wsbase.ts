@@ -8,20 +8,15 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
-import {
-  PromiseDelegate, JSONValue
-} from '@lumino/coreutils';
+import { JSONValue, PromiseDelegate } from '@lumino/coreutils';
 
-import {
-  IDisposable
-} from '@lumino/disposable';
-
+import { IDisposable } from '@lumino/disposable';
 
 /**
  * Abstract base for a class that sends/receives messages over websocket.
  */
-export
-abstract class WSConnection<T extends JSONValue, U extends JSONValue> implements IDisposable {
+export abstract class WSConnection<T extends JSONValue, U extends JSONValue>
+  implements IDisposable {
   /**
    * Create a new websocket based connection.
    */
@@ -30,7 +25,6 @@ abstract class WSConnection<T extends JSONValue, U extends JSONValue> implements
     this._ready = new PromiseDelegate<void>();
     this._createSocket();
   }
-
 
   /**
    * Dispose of the resources held by the adapter.
@@ -90,7 +84,7 @@ abstract class WSConnection<T extends JSONValue, U extends JSONValue> implements
     this._ws.onopen = this._onWSOpen.bind(this);
     this._ws.onclose = this._onWSClose.bind(this);
     this._ws.onerror = this._onWSClose.bind(this);
-  }
+  };
 
   /**
    * Clear the socket state.
@@ -107,7 +101,6 @@ abstract class WSConnection<T extends JSONValue, U extends JSONValue> implements
       this._ws = null;
     }
   }
-
 
   /**
    * Handle the websocket opening.
@@ -160,18 +153,17 @@ abstract class WSConnection<T extends JSONValue, U extends JSONValue> implements
   private _wsStopped: boolean;
   private _isDisposed = false;
   private _ready: PromiseDelegate<void>;
-  private _noOp = () => { /* no-op */};
+  private _noOp = () => {
+    /* no-op */
+  };
 }
-
 
 /**
  * The namespace for WSConnection statics.
  */
-export
-namespace WSConnection {
+export namespace WSConnection {
   /**
    * A websocket factory function.
    */
-  export
-  type WSFactory = () => WebSocket;
+  export type WSFactory = () => WebSocket;
 }

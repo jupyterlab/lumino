@@ -7,28 +7,24 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  ArrayExt, StringExt
-} from '@lumino/algorithm';
+import { ArrayExt, StringExt } from '@lumino/algorithm';
 
-import {
-  ReadonlyJSONValue
-} from '@lumino/coreutils';
+import { ReadonlyJSONValue } from '@lumino/coreutils';
 
-import {
-  Field
-} from './field';
+import { Field } from './field';
 
-import {
-  createTriplexIds
-} from './utilities';
-
+import { createTriplexIds } from './utilities';
 
 /**
  * A field which represents a collaborative list of values.
  */
-export
-class ListField<T extends ReadonlyJSONValue> extends Field<ListField.Value<T>, ListField.Update<T>, ListField.Metadata<T>, ListField.Change<T>, ListField.Patch<T>> {
+export class ListField<T extends ReadonlyJSONValue> extends Field<
+  ListField.Value<T>,
+  ListField.Update<T>,
+  ListField.Metadata<T>,
+  ListField.Change<T>,
+  ListField.Patch<T>
+> {
   /**
    * Construct a new list field.
    *
@@ -70,7 +66,17 @@ class ListField<T extends ReadonlyJSONValue> extends Field<ListField.Value<T>, L
    *
    * @returns The result of applying the update.
    */
-  applyUpdate(args: Field.UpdateArgs<ListField.Value<T>, ListField.Update<T>, ListField.Metadata<T>>): Field.UpdateResult<ListField.Value<T>, ListField.Change<T>, ListField.Patch<T>> {
+  applyUpdate(
+    args: Field.UpdateArgs<
+      ListField.Value<T>,
+      ListField.Update<T>,
+      ListField.Metadata<T>
+    >
+  ): Field.UpdateResult<
+    ListField.Value<T>,
+    ListField.Change<T>,
+    ListField.Patch<T>
+  > {
     // Unpack the arguments.
     let { previous, update, metadata, version, storeId } = args;
 
@@ -109,7 +115,13 @@ class ListField<T extends ReadonlyJSONValue> extends Field<ListField.Value<T>, L
    *
    * @returns The result of applying the patch.
    */
-  applyPatch(args: Field.PatchArgs<ListField.Value<T>, ListField.Patch<T>, ListField.Metadata<T>>): Field.PatchResult<ListField.Value<T>, ListField.Change<T>> {
+  applyPatch(
+    args: Field.PatchArgs<
+      ListField.Value<T>,
+      ListField.Patch<T>,
+      ListField.Metadata<T>
+    >
+  ): Field.PatchResult<ListField.Value<T>, ListField.Change<T>> {
     // Unpack the arguments.
     let { previous, patch, metadata } = args;
 
@@ -139,7 +151,13 @@ class ListField<T extends ReadonlyJSONValue> extends Field<ListField.Value<T>, L
    *
    * @returns The result of unapplying the patch.
    */
-  unapplyPatch(args: Field.PatchArgs<ListField.Value<T>, ListField.Patch<T>, ListField.Metadata<T>>): Field.PatchResult<ListField.Value<T>, ListField.Change<T>> {
+  unapplyPatch(
+    args: Field.PatchArgs<
+      ListField.Value<T>,
+      ListField.Patch<T>,
+      ListField.Metadata<T>
+    >
+  ): Field.PatchResult<ListField.Value<T>, ListField.Change<T>> {
     // Unpack the arguments.
     let { previous, patch, metadata } = args;
 
@@ -177,7 +195,10 @@ class ListField<T extends ReadonlyJSONValue> extends Field<ListField.Value<T>, L
    *
    * @returns A new change object which represents both changes.
    */
-  mergeChange(first: ListField.Change<T>, second: ListField.Change<T>): ListField.Change<T> {
+  mergeChange(
+    first: ListField.Change<T>,
+    second: ListField.Change<T>
+  ): ListField.Change<T> {
     return [...first, ...second];
   }
 
@@ -190,34 +211,33 @@ class ListField<T extends ReadonlyJSONValue> extends Field<ListField.Value<T>, L
    *
    * @returns A new patch object which represents both patches.
    */
-  mergePatch(first: ListField.Patch<T>, second: ListField.Patch<T>): ListField.Patch<T> {
+  mergePatch(
+    first: ListField.Patch<T>,
+    second: ListField.Patch<T>
+  ): ListField.Patch<T> {
     return [...first, ...second];
   }
 }
 
-
 /**
  * The namespace for the `ListField` class statics.
  */
-export
-namespace ListField {
+export namespace ListField {
   /**
    * An options object for initializing a list field.
    */
-  export
-  interface IOptions<T extends ReadonlyJSONValue> extends Field.IOptions { }
+  export interface IOptions<T extends ReadonlyJSONValue>
+    extends Field.IOptions {}
 
   /**
    * A type alias for the list field value type.
    */
-  export
-  type Value<T extends ReadonlyJSONValue> = ReadonlyArray<T>;
+  export type Value<T extends ReadonlyJSONValue> = ReadonlyArray<T>;
 
   /**
    * A type alias for a list field splice.
    */
-  export
-  type Splice<T extends ReadonlyJSONValue> = {
+  export type Splice<T extends ReadonlyJSONValue> = {
     /**
      * The index of the splice.
      */
@@ -237,14 +257,14 @@ namespace ListField {
   /**
    * A type alias for the list field update type.
    */
-  export
-  type Update<T extends ReadonlyJSONValue> = Splice<T> | ReadonlyArray<Splice<T>>;
+  export type Update<T extends ReadonlyJSONValue> =
+    | Splice<T>
+    | ReadonlyArray<Splice<T>>;
 
   /**
    * A type alias for the list field metadata type.
    */
-  export
-  type Metadata<T extends ReadonlyJSONValue> = {
+  export type Metadata<T extends ReadonlyJSONValue> = {
     /**
      * An array of ids corresponding to the list elements.
      */
@@ -259,8 +279,7 @@ namespace ListField {
   /**
    * A type alias for a list field change part.
    */
-  export
-  type ChangePart<T extends ReadonlyJSONValue> = {
+  export type ChangePart<T extends ReadonlyJSONValue> = {
     /**
      * The index of the modification.
      */
@@ -280,14 +299,14 @@ namespace ListField {
   /**
    * A type alias for the list field change type.
    */
-  export
-  type Change<T extends ReadonlyJSONValue> = ReadonlyArray<ChangePart<T>>;
+  export type Change<T extends ReadonlyJSONValue> = ReadonlyArray<
+    ChangePart<T>
+  >;
 
   /**
    * A type alias for the list field patch part.
    */
-  export
-  type PatchPart<T extends ReadonlyJSONValue> = {
+  export type PatchPart<T extends ReadonlyJSONValue> = {
     /**
      * The ids that were removed.
      */
@@ -312,10 +331,8 @@ namespace ListField {
   /**
    * A type alias for the list field patch type.
    */
-  export
-  type Patch<T extends ReadonlyJSONValue> = ReadonlyArray<PatchPart<T>>;
+  export type Patch<T extends ReadonlyJSONValue> = ReadonlyArray<PatchPart<T>>;
 }
-
 
 /**
  * The namespace for the module implementation details.
@@ -324,16 +341,16 @@ namespace Private {
   /**
    * A type-guard function for a list field update type.
    */
-  export
-  function isSplice<T extends ReadonlyJSONValue>(value: ListField.Update<T>): value is ListField.Splice<T> {
+  export function isSplice<T extends ReadonlyJSONValue>(
+    value: ListField.Update<T>
+  ): value is ListField.Splice<T> {
     return !Array.isArray(value);
   }
 
   /**
    * A type alias for the result of a splice operation.
    */
-  export
-  type SpliceResult<T extends ReadonlyJSONValue> = {
+  export type SpliceResult<T extends ReadonlyJSONValue> = {
     /**
      * The user-facing change part for the splice.
      */
@@ -360,8 +377,13 @@ namespace Private {
    *
    * @returns The result of the splice operation.
    */
-  export
-  function applySplice<T extends ReadonlyJSONValue>(array: T[], splice: ListField.Splice<T>, metadata: ListField.Metadata<T>, version: number, storeId: number): SpliceResult<T> {
+  export function applySplice<T extends ReadonlyJSONValue>(
+    array: T[],
+    splice: ListField.Splice<T>,
+    metadata: ListField.Metadata<T>,
+    version: number,
+    storeId: number
+  ): SpliceResult<T> {
     // Unpack the splice.
     let { index, remove, values } = splice;
 
@@ -390,7 +412,12 @@ namespace Private {
     let change = { index, removed: removedValues, inserted: values };
 
     // Create the patch object.
-    let patch = { removedIds, removedValues, insertedIds: ids, insertedValues: values };
+    let patch = {
+      removedIds,
+      removedValues,
+      insertedIds: ids,
+      insertedValues: values
+    };
 
     // Return the splice result.
     return { change, patch };
@@ -407,8 +434,11 @@ namespace Private {
    *
    * @returns The user-facing change array for the patch.
    */
-  export
-  function applyPatch<T extends ReadonlyJSONValue>(value: T[], patch: ListField.PatchPart<T>, metadata: ListField.Metadata<T>): ListField.Change<T> {
+  export function applyPatch<T extends ReadonlyJSONValue>(
+    value: T[],
+    patch: ListField.PatchPart<T>,
+    metadata: ListField.Metadata<T>
+  ): ListField.Change<T> {
     // Unpack the patch.
     let { removedIds, insertedIds, insertedValues } = patch;
 
@@ -486,7 +516,10 @@ namespace Private {
    * #### Notes
    * The metadata may be mutated if concurrently removed chunks are encountered.
    */
-  function findRemovedChunks(ids: ReadonlyArray<string>, metadata: ListField.Metadata<any>): RemoveChunk[] {
+  function findRemovedChunks(
+    ids: ReadonlyArray<string>,
+    metadata: ListField.Metadata<any>
+  ): RemoveChunk[] {
     // Set up the chunks array.
     let chunks: RemoveChunk[] = [];
 
@@ -565,14 +598,18 @@ namespace Private {
    * #### Notes
    * The metadata may be mutated if concurrently removed chunks are encountered.
    */
-  function findInsertedChunks<T extends ReadonlyJSONValue>(ids: ReadonlyArray<string>, values: ReadonlyArray<T>, metadata: ListField.Metadata<any>): InsertChunk<T>[] {
+  function findInsertedChunks<T extends ReadonlyJSONValue>(
+    ids: ReadonlyArray<string>,
+    values: ReadonlyArray<T>,
+    metadata: ListField.Metadata<any>
+  ): InsertChunk<T>[] {
     let indices: number[] = [];
     let insertIds: string[] = [];
     let insertValues: T[] = [];
 
-     for (let i = 0; i < ids.length; i++) {
-       // Check if the id has been concurrently deleted. If so, update
-       // the cemetery, and continue processing without inserting the id.
+    for (let i = 0; i < ids.length; i++) {
+      // Check if the id has been concurrently deleted. If so, update
+      // the cemetery, and continue processing without inserting the id.
       if (checkCemeteryForInsert(ids[i], metadata.cemetery)) {
         continue;
       }
@@ -597,7 +634,11 @@ namespace Private {
    *
    * @returns The ordered chunks to insert.
    */
-  function chunkifyInsertions<T extends ReadonlyJSONValue>(ids: ReadonlyArray<string>, values: ReadonlyArray<T>, indices: ReadonlyArray<number>): InsertChunk<T>[] {
+  function chunkifyInsertions<T extends ReadonlyJSONValue>(
+    ids: ReadonlyArray<string>,
+    values: ReadonlyArray<T>,
+    indices: ReadonlyArray<number>
+  ): InsertChunk<T>[] {
     // Set up the chunks array.
     let chunks: InsertChunk<T>[] = [];
 
@@ -636,7 +677,10 @@ namespace Private {
    * If the ID *is* found in the cemetery, its value in the cemetery is decremented,
    * reflecting that it is closer to being shown.
    */
-  function checkCemeteryForInsert(id: string, cemetery: { [x: string]: number }): boolean {
+  function checkCemeteryForInsert(
+    id: string,
+    cemetery: { [x: string]: number }
+  ): boolean {
     let count = cemetery[id] || 0;
     if (count === 1) {
       delete cemetery[id];
@@ -667,7 +711,12 @@ namespace Private {
    *
    * @returns an array of the deleted elements.
    */
-  function spliceArray<T>(arr: T[], start: number, deleteCount?: number, items?: ReadonlyArray<T>): ReadonlyArray<T> {
+  function spliceArray<T>(
+    arr: T[],
+    start: number,
+    deleteCount?: number,
+    items?: ReadonlyArray<T>
+  ): ReadonlyArray<T> {
     if (!items) {
       return arr.splice(start, deleteCount);
     }

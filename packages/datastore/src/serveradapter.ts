@@ -8,13 +8,9 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
-import {
-  IDisposable
-} from '@lumino/disposable';
+import { IDisposable } from '@lumino/disposable';
 
-import {
-  Datastore
-} from './datastore';
+import { Datastore } from './datastore';
 
 /**
  * An interface for a bridge between a datastore and a patch server.
@@ -22,8 +18,7 @@ import {
  * outgoing patches from a given store, and delivers incoming patches to a
  * store.
  */
-export
-interface IServerAdapter extends IDisposable {
+export interface IServerAdapter extends IDisposable {
   /**
    * Broadcast a transaction from a datastore to collaborators.
    *

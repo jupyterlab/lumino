@@ -1,4 +1,4 @@
-.lm-AccordionPanel[data-orientation="horizontal"] > .lm-AccordionPanel-title {
+.lm-AccordionPanel[data-orientation='horizontal'] > .lm-AccordionPanel-title {
   /* Title is rotated for horizontal accordion panel using CSS */
   display: block;
   transform-origin: top left;

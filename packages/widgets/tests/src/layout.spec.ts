@@ -7,29 +7,17 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  expect
-} from 'chai';
+import { expect } from 'chai';
 
-import {
-  ArrayExt, IIterator, every, iter, toArray
-} from '@lumino/algorithm';
+import { ArrayExt, every, IIterator, iter, toArray } from '@lumino/algorithm';
 
-import {
-  Message, MessageLoop
-} from '@lumino/messaging';
+import { Message, MessageLoop } from '@lumino/messaging';
 
-import {
-  Layout, Widget
-} from '@lumino/widgets';
+import { Layout, Widget } from '@lumino/widgets';
 
-import {
-  LogWidget
-} from './widget.spec';
-
+import { LogWidget } from './widget.spec';
 
 class LogLayout extends Layout {
-
   methods: string[] = [];
 
   widgets = [new LogWidget(), new LogWidget()];
@@ -101,22 +89,16 @@ class LogLayout extends Layout {
   }
 }
 
-
 describe('@lumino/widgets', () => {
-
   describe('Layout', () => {
-
     describe('#iter()', () => {
-
       it('should create an iterator over the widgets in the layout', () => {
         let layout = new LogLayout();
         expect(every(layout, child => child instanceof Widget)).to.equal(true);
       });
-
     });
 
     describe('#removeWidget()', () => {
-
       it("should be invoked when a child widget's `parent` property is set to `null`", () => {
         let parent = new Widget();
         let layout = new LogLayout();
@@ -124,11 +106,9 @@ describe('@lumino/widgets', () => {
         layout.widgets[0].parent = null;
         expect(layout.methods).to.contain('removeWidget');
       });
-
     });
 
     describe('#dispose()', () => {
-
       it('should dispose of the resource held by the layout', () => {
         let widget = new Widget();
         let layout = new LogLayout();
@@ -147,22 +127,18 @@ describe('@lumino/widgets', () => {
         expect(layout.parent).to.equal(null);
         expect(layout.isDisposed).to.equal(true);
       });
-
     });
 
     describe('#isDisposed', () => {
-
       it('should test whether the layout is disposed', () => {
         let layout = new LogLayout();
         expect(layout.isDisposed).to.equal(false);
         layout.dispose();
         expect(layout.isDisposed).to.equal(true);
       });
-
     });
 
     describe('#parent', () => {
-
       it('should get the parent widget of the layout', () => {
         let layout = new LogLayout();
         let parent = new Widget();
@@ -174,14 +150,18 @@ describe('@lumino/widgets', () => {
         let layout = new LogLayout();
         let parent = new Widget();
         parent.layout = layout;
-        expect(() => { layout.parent = null; }).to.throw(Error);
+        expect(() => {
+          layout.parent = null;
+        }).to.throw(Error);
       });
 
-      it ('should throw an error if set to a different value', () => {
+      it('should throw an error if set to a different value', () => {
         let layout = new LogLayout();
         let parent = new Widget();
         parent.layout = layout;
-        expect(() => { layout.parent = new Widget(); }).to.throw(Error);
+        expect(() => {
+          layout.parent = new Widget();
+        }).to.throw(Error);
       });
 
       it('should be a no-op if the parent is set to the same value', () => {
@@ -191,11 +171,9 @@ describe('@lumino/widgets', () => {
         layout.parent = parent;
         expect(layout.parent).to.equal(parent);
       });
-
     });
 
     describe('#init()', () => {
-
       it('should be invoked when the layout is installed on its parent widget', () => {
         let widget = new Widget();
         let layout = new LogLayout();
@@ -209,11 +187,9 @@ describe('@lumino/widgets', () => {
         widget.layout = layout;
         expect(every(layout, child => child.parent === widget)).to.equal(true);
       });
-
     });
 
     describe('#onResize()', () => {
-
       it('should be invoked on a `resize` message', () => {
         let layout = new LogLayout();
         let parent = new Widget();
@@ -231,11 +207,9 @@ describe('@lumino/widgets', () => {
         expect(layout.widgets[0].methods).to.contain('onResize');
         expect(layout.widgets[1].methods).to.contain('onResize');
       });
-
     });
 
     describe('#onUpdateRequest()', () => {
-
       it('should be invoked on an `update-request` message', () => {
         let layout = new LogLayout();
         let parent = new Widget();
@@ -253,11 +227,9 @@ describe('@lumino/widgets', () => {
         expect(layout.widgets[0].methods).to.contain('onResize');
         expect(layout.widgets[1].methods).to.contain('onResize');
       });
-
     });
 
     describe('#onAfterAttach()', () => {
-
       it('should be invoked on an `after-attach` message', () => {
         let layout = new LogLayout();
         let parent = new Widget();
@@ -275,11 +247,9 @@ describe('@lumino/widgets', () => {
         expect(layout.widgets[0].methods).to.contain('onAfterAttach');
         expect(layout.widgets[1].methods).to.contain('onAfterAttach');
       });
-
     });
 
     describe('#onBeforeDetach()', () => {
-
       it('should be invoked on an `before-detach` message', () => {
         let layout = new LogLayout();
         let parent = new Widget();
@@ -297,11 +267,9 @@ describe('@lumino/widgets', () => {
         expect(layout.widgets[0].methods).to.contain('onBeforeDetach');
         expect(layout.widgets[1].methods).to.contain('onBeforeDetach');
       });
-
     });
 
     describe('#onAfterShow()', () => {
-
       it('should be invoked on an `after-show` message', () => {
         let layout = new LogLayout();
         let parent = new Widget();
@@ -320,11 +288,9 @@ describe('@lumino/widgets', () => {
         expect(layout.widgets[0].methods).to.not.contain('onAfterShow');
         expect(layout.widgets[1].methods).to.contain('onAfterShow');
       });
-
     });
 
     describe('#onBeforeHide()', () => {
-
       it('should be invoked on a `before-hide` message', () => {
         let layout = new LogLayout();
         let parent = new Widget();
@@ -343,11 +309,9 @@ describe('@lumino/widgets', () => {
         expect(layout.widgets[0].methods).to.not.contain('onBeforeHide');
         expect(layout.widgets[1].methods).to.contain('onBeforeHide');
       });
-
     });
 
     describe('#onFitRequest()', () => {
-
       it('should be invoked on an `fit-request` message', () => {
         let layout = new LogLayout();
         let parent = new Widget();
@@ -355,11 +319,9 @@ describe('@lumino/widgets', () => {
         MessageLoop.sendMessage(parent, Widget.Msg.FitRequest);
         expect(layout.methods).to.contain('onFitRequest');
       });
-
     });
 
     describe('#onChildShown()', () => {
-
       it('should be invoked on an `child-shown` message', () => {
         let layout = new LogLayout();
         let parent = new Widget();
@@ -368,11 +330,9 @@ describe('@lumino/widgets', () => {
         MessageLoop.sendMessage(parent, msg);
         expect(layout.methods).to.contain('onChildShown');
       });
-
     });
 
     describe('#onChildHidden()', () => {
-
       it('should be invoked on an `child-hidden` message', () => {
         let layout = new LogLayout();
         let parent = new Widget();
@@ -381,9 +341,6 @@ describe('@lumino/widgets', () => {
         MessageLoop.sendMessage(parent, msg);
         expect(layout.methods).to.contain('onChildHidden');
       });
-
     });
-
   });
-
 });

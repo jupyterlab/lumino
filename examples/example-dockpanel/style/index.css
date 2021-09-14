@@ -8,7 +8,6 @@
 @import '~@lumino/default-theme/style/index.css';
 @import './content.css';
 
-
 body {
   display: flex;
   flex-direction: column;
@@ -22,22 +21,18 @@ body {
   overflow: hidden;
 }
 
-
 #menuBar {
   flex: 0 0 auto;
 }
-
 
 #main {
   flex: 1 1 auto;
 }
 
-
 #palette {
   min-width: 300px;
-  border-right: 1px solid #DDDDDD;
+  border-right: 1px solid #dddddd;
 }
-
 
 #dock {
   padding: 4px;

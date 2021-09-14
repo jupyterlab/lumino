@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 // Copyright (c) Jupyter Development Team.
 // Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
@@ -7,156 +8,118 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  expect
-} from 'chai';
+import { expect } from 'chai';
 
-import {
-  VirtualDOM, VirtualElement, VirtualText, h
-} from '@lumino/virtualdom';
-
+import { h, VirtualDOM, VirtualElement, VirtualText } from '@lumino/virtualdom';
 
 describe('@lumino/virtualdom', () => {
-
   describe('VirtualText', () => {
-
     describe('#constructor()', () => {
-
       it('should create a virtual text node', () => {
         let vnode = new VirtualText('foo');
         expect(vnode).to.be.an.instanceof(VirtualText);
       });
-
     });
 
     describe('#type', () => {
-
       it('should be `text`', () => {
         let vnode = new VirtualText('foo');
         expect(vnode.type).to.equal('text');
       });
-
     });
 
     describe('#content', () => {
-
       it('should be the text content', () => {
         let vnode = new VirtualText('foo');
         expect(vnode.content).to.equal('foo');
       });
-
     });
-
   });
 
   describe('VirtualElement', () => {
-
     describe('#constructor()', () => {
-
       it('should create a virtual element node', () => {
         let vnode = new VirtualElement('img', {}, []);
         expect(vnode).to.be.an.instanceof(VirtualElement);
       });
-
     });
 
     describe('#type', () => {
-
       it('should be `element`', () => {
         let vnode = new VirtualElement('img', {}, []);
         expect(vnode.type).to.equal('element');
       });
-
     });
 
     describe('#tag', () => {
-
       it('should be the element tag name', () => {
         let vnode = new VirtualElement('img', {}, []);
         expect(vnode.tag).to.equal('img');
       });
-
     });
 
     describe('#attrs', () => {
-
       it('should be the element attrs', () => {
         let attrs = { className: 'bar' };
         let vnode = new VirtualElement('img', attrs, []);
         expect(vnode.attrs).to.deep.equal(attrs);
       });
-
     });
 
     describe('#children', () => {
-
       it('should be the element children', () => {
         let children = [h.a(), h.img()];
         let vnode = new VirtualElement('div', {}, children);
         expect(vnode.children).to.equal(children);
       });
-
     });
-
   });
 
   describe('VirtualElement with custom .renderer', () => {
     let mockRenderer = {
       render: (host: HTMLElement) => {},
-      unrender: (host: HTMLElement) =>{}
+      unrender: (host: HTMLElement) => {}
     };
 
     describe('#constructor()', () => {
-
       it('should create a virtual element node', () => {
         let vnode = new VirtualElement('div', {}, [], mockRenderer);
         expect(vnode).to.be.an.instanceof(VirtualElement);
       });
-
     });
 
     describe('#type', () => {
-
       it('should be `element`', () => {
         let vnode = new VirtualElement('div', {}, [], mockRenderer);
         expect(vnode.type).to.equal('element');
       });
-
     });
 
     describe('#tag', () => {
-
       it('should be the element tag name', () => {
         let vnode = new VirtualElement('img', {}, [], mockRenderer);
         expect(vnode.tag).to.equal('img');
       });
-
     });
 
     describe('#attrs', () => {
-
       it('should be the element attrs', () => {
         let attrs = { className: 'baz' };
         let vnode = new VirtualElement('img', attrs, [], mockRenderer);
         expect(vnode.attrs).to.deep.equal(attrs);
       });
-
     });
 
     describe('#renderer', () => {
-
       it('should be the element children renderer', () => {
         let vnode = new VirtualElement('div', {}, [], mockRenderer);
         expect(vnode.renderer!.render).to.equal(mockRenderer.render);
         expect(vnode.renderer!.unrender).to.equal(mockRenderer.unrender);
       });
-
     });
-
   });
 
   describe('h()', () => {
-
     it('should create a new virtual element node', () => {
       let vnode = h('a');
       expect(vnode).to.be.an.instanceof(VirtualElement);
@@ -238,11 +201,9 @@ describe('@lumino/virtualdom', () => {
       let vnode = h('img', attrs);
       expect(vnode.attrs).to.deep.equal(attrs);
     });
-
   });
 
   describe('h', () => {
-
     it('should create the appropriate element tag', () => {
       expect(h.a().tag).to.equal('a');
       expect(h.abbr().tag).to.equal('abbr');
@@ -342,7 +303,6 @@ describe('@lumino/virtualdom', () => {
       expect(h.video().tag).to.equal('video');
       expect(h.wbr().tag).to.equal('wbr');
     });
-
   });
 
   describe('h() with IRenderer param', () => {
@@ -350,15 +310,11 @@ describe('@lumino/virtualdom', () => {
     let attrs = { className: 'baz' };
     let mockRenderer = {
       render: (host: HTMLElement) => {},
-      unrender: (host: HTMLElement) =>{}
+      unrender: (host: HTMLElement) => {}
     };
 
     it('should create a new virtual element with custom renderer', () => {
-      let vnode = h(
-        tag,
-        attrs,
-        mockRenderer
-      );
+      let vnode = h(tag, attrs, mockRenderer);
       expect(vnode).to.be.an.instanceof(VirtualElement);
       expect(vnode.tag).to.equal(tag);
       expect(vnode.attrs).to.deep.equal(attrs);
@@ -367,10 +323,7 @@ describe('@lumino/virtualdom', () => {
     });
 
     it('should create a virtual element with custom renderer and without attrs', () => {
-      let vnode = h(
-        'div',
-        mockRenderer
-      );
+      let vnode = h('div', mockRenderer);
       expect(vnode).to.be.an.instanceof(VirtualElement);
       expect(vnode.tag).to.equal('div');
       expect(vnode.attrs).to.deep.equal({});
@@ -379,10 +332,7 @@ describe('@lumino/virtualdom', () => {
     });
 
     it('should create a virtual element without custom renderer and with attrs', () => {
-      let vnode = h(
-        'div',
-        attrs
-      );
+      let vnode = h('div', attrs);
       expect(vnode).to.be.an.instanceof(VirtualElement);
       expect(vnode.tag).to.equal(tag);
       expect(vnode.attrs).to.deep.equal(attrs);
@@ -390,31 +340,25 @@ describe('@lumino/virtualdom', () => {
     });
 
     it('should create a virtual element without custom renderer or attrs', () => {
-      let vnode = h(
-        'div'
-      );
+      let vnode = h('div');
       expect(vnode).to.be.an.instanceof(VirtualElement);
       expect(vnode.tag).to.equal('div');
       expect(vnode.attrs).to.deep.equal({});
       expect(vnode.renderer).to.equal(undefined);
     });
-
   });
 
   describe('VirtualDOM', () => {
     describe('realize()', () => {
-
       it('should create a real DOM node from a virtual DOM node', () => {
         let node = VirtualDOM.realize(h.div([h.a(), h.img()]));
         expect(node.nodeName.toLowerCase()).to.equal('div');
         expect(node.children[0].nodeName.toLowerCase()).to.equal('a');
         expect(node.children[1].nodeName.toLowerCase()).to.equal('img');
       });
-
     });
 
     describe('render()', () => {
-
       it('should render virtual DOM content into a host elememnt', () => {
         let host = document.createElement('div');
         VirtualDOM.render(h.img(), host);
@@ -447,12 +391,19 @@ describe('@lumino/virtualdom', () => {
       it('should update attributes', () => {
         let host = document.createElement('div');
         let attrs1 = {
-          alt: 'foo', height: '100', style: { color: 'white' },
-          dataset: { foo: '2', bar: '2' }, onload: () => { }, srcset: 'foo'
+          alt: 'foo',
+          height: '100',
+          style: { color: 'white' },
+          dataset: { foo: '2', bar: '2' },
+          onload: () => {},
+          srcset: 'foo'
         };
         let attrs2 = {
-          alt: 'bar', width: '100', style: { border: '1px' },
-          dataset: { bar: '1', baz: '3' }, sizes: 'baz'
+          alt: 'bar',
+          width: '100',
+          style: { border: '1px' },
+          dataset: { bar: '1', baz: '3' },
+          sizes: 'baz'
         };
         VirtualDOM.render([h.a(), h.img(attrs1)], host);
         VirtualDOM.render([h.a(), h.img(attrs2)], host);
@@ -528,9 +479,7 @@ describe('@lumino/virtualdom', () => {
         expect(host.children[0]).to.equal(div);
         expect(div.textContent).to.equal('bar');
       });
-
     });
-
   });
 
   describe('VirtualDOM with custom renderer', () => {
@@ -546,7 +495,7 @@ describe('@lumino/virtualdom', () => {
           host.removeChild(host.lastChild as HTMLElement);
           record.cleanedUp = true;
         }
-      }
+      };
     };
 
     describe('realize()', () => {
@@ -556,7 +505,6 @@ describe('@lumino/virtualdom', () => {
         expect(node.children[0].tagName.toLowerCase()).to.equal('div');
         expect(node.children[0].className).to.equal('p-render');
       });
-
     });
 
     describe('render()', () => {
@@ -565,26 +513,38 @@ describe('@lumino/virtualdom', () => {
 
         VirtualDOM.render(h('span', rendererClosure()), host);
         expect(host.children[0].tagName.toLowerCase()).to.equal('span');
-        expect(host.children[0].children[0].tagName.toLowerCase()).to.equal('div');
+        expect(host.children[0].children[0].tagName.toLowerCase()).to.equal(
+          'div'
+        );
         expect(host.children[0].children[0].className).to.equal('p-render');
       });
 
       it('should render child node', () => {
         let host = document.createElement('div');
-        let record: any = {child: undefined, cleanedUp: false};
+        let record: any = { child: undefined, cleanedUp: false };
 
-        let children = [h.a(), h.span(), h.div(h.div(), h('span', rendererClosure(record)), h.div())];
+        let children = [
+          h.a(),
+          h.span(),
+          h.div(h.div(), h('span', rendererClosure(record)), h.div())
+        ];
         VirtualDOM.render(children, host);
         expect(host.children[2].children[1].children[0]).to.equal(record.child);
-        expect(host.children[2].children[1].children[0].className).to.equal('p-render');
+        expect(host.children[2].children[1].children[0].className).to.equal(
+          'p-render'
+        );
       });
 
       it('should cleanup child node', () => {
         let host = document.createElement('div');
-        let record: any = {child: undefined, cleanedUp: false};
+        let record: any = { child: undefined, cleanedUp: false };
 
         // first pass, render the custom children
-        let children0 = [h.a(), h.span(), h.div(h.div(), h('span', rendererClosure(record)), h.div())];
+        let children0 = [
+          h.a(),
+          h.span(),
+          h.div(h.div(), h('span', rendererClosure(record)), h.div())
+        ];
         VirtualDOM.render(children0, host);
 
         // second pass, explicitly unrender the custom children
@@ -593,7 +553,5 @@ describe('@lumino/virtualdom', () => {
         expect(record.cleanedUp).to.equal(true);
       });
     });
-
   });
-
 });

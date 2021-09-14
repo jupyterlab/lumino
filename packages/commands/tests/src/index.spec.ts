@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 // Copyright (c) Jupyter Development Team.
 // Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
@@ -7,38 +8,26 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import 'es6-promise/auto';  // polyfill Promise on IE
+import 'es6-promise/auto'; // polyfill Promise on IE
 
-import {
-  expect
-} from 'chai';
+import { expect } from 'chai';
 
-import {
-  generate
-} from 'simulate-event';
+import { generate } from 'simulate-event';
 
-import {
-  CommandRegistry
-} from '@lumino/commands';
+import { CommandRegistry } from '@lumino/commands';
 
-import {
-  JSONObject
-} from '@lumino/coreutils';
+import { JSONObject } from '@lumino/coreutils';
 
-import {
-  Platform
-} from '@lumino/domutils';
-
+import { Platform } from '@lumino/domutils';
 
 const NULL_COMMAND = {
-  execute: (args: JSONObject) => { return args; }
+  execute: (args: JSONObject) => {
+    return args;
+  }
 };
 
-
 describe('@lumino/commands', () => {
-
   describe('CommandRegistry', () => {
-
     let registry: CommandRegistry = null!;
 
     beforeEach(() => {
@@ -46,15 +35,12 @@ describe('@lumino/commands', () => {
     });
 
     describe('#constructor()', () => {
-
       it('should take no arguments', () => {
         expect(registry).to.be.an.instanceof(CommandRegistry);
       });
-
     });
 
     describe('#commandChanged', () => {
-
       it('should be emitted when a command is added', () => {
         let called = false;
         registry.commandChanged.connect((reg, args) => {
@@ -92,11 +78,9 @@ describe('@lumino/commands', () => {
         disposable.dispose();
         expect(called).to.equal(true);
       });
-
     });
 
     describe('#commandExecuted', () => {
-
       it('should be emitted when a command is executed', () => {
         let called = false;
         registry.addCommand('test', NULL_COMMAND);
@@ -110,13 +94,11 @@ describe('@lumino/commands', () => {
         registry.execute('test');
         expect(called).to.equal(true);
       });
-
     });
 
     describe('#keyBindings', () => {
-
       it('should be the keybindings in the palette', () => {
-        registry.addCommand('test', { execute: () => { } });
+        registry.addCommand('test', { execute: () => {} });
         registry.addKeyBinding({
           keys: ['Ctrl ;'],
           selector: `body`,
@@ -125,11 +107,9 @@ describe('@lumino/commands', () => {
         expect(registry.keyBindings.length).to.equal(1);
         expect(registry.keyBindings[0].command).to.equal('test');
       });
-
     });
 
     describe('#listCommands()', () => {
-
       it('should list the ids of the registered commands', () => {
         registry.addCommand('test0', NULL_COMMAND);
         registry.addCommand('test1', NULL_COMMAND);
@@ -143,21 +123,17 @@ describe('@lumino/commands', () => {
         cmds.push('test2');
         expect(registry.listCommands()).to.deep.equal(['test0', 'test1']);
       });
-
     });
 
     describe('#hasCommand()', () => {
-
       it('should test whether a specific command is registerd', () => {
         registry.addCommand('test', NULL_COMMAND);
         expect(registry.hasCommand('test')).to.equal(true);
         expect(registry.hasCommand('foo')).to.equal(false);
       });
-
     });
 
     describe('#addCommand()', () => {
-
       it('should add a command to the registry', () => {
         registry.addCommand('test', NULL_COMMAND);
         expect(registry.hasCommand('test')).to.equal(true);
@@ -178,18 +154,18 @@ describe('@lumino/commands', () => {
 
       it('should clone the `cmd` before adding it to the registry', () => {
         let cmd = {
-          execute: (args: JSONObject) => { return args; },
+          execute: (args: JSONObject) => {
+            return args;
+          },
           label: 'foo'
         };
         registry.addCommand('test', cmd);
         cmd.label = 'bar';
         expect(registry.label('test')).to.equal('foo');
       });
-
     });
 
     describe('#notifyCommandChanged()', () => {
-
       it('should emit the `commandChanged` signal for the command', () => {
         let called = false;
         registry.addCommand('test', NULL_COMMAND);
@@ -208,14 +184,14 @@ describe('@lumino/commands', () => {
           registry.notifyCommandChanged('foo');
         }).to.throw(Error);
       });
-
     });
 
     describe('#label()', () => {
-
       it('should get the display label for a specific command', () => {
         let cmd = {
-          execute: (args: JSONObject) => { return args; },
+          execute: (args: JSONObject) => {
+            return args;
+          },
           label: 'foo'
         };
         registry.addCommand('test', cmd);
@@ -224,8 +200,12 @@ describe('@lumino/commands', () => {
 
       it('should give the appropriate label given arguments', () => {
         let cmd = {
-          execute: (args: JSONObject) => { return args; },
-          label: (args: JSONObject) => { return JSON.stringify(args); }
+          execute: (args: JSONObject) => {
+            return args;
+          },
+          label: (args: JSONObject) => {
+            return JSON.stringify(args);
+          }
         };
         registry.addCommand('test', cmd);
         expect(registry.label('test', {})).to.equal('{}');
@@ -239,14 +219,14 @@ describe('@lumino/commands', () => {
         registry.addCommand('test', NULL_COMMAND);
         expect(registry.label('test')).to.equal('');
       });
-
     });
 
     describe('#mnemonic()', () => {
-
       it('should get the mnemonic index for a specific command', () => {
         let cmd = {
-          execute: (args: JSONObject) => { return args; },
+          execute: (args: JSONObject) => {
+            return args;
+          },
           mnemonic: 1
         };
         registry.addCommand('test', cmd);
@@ -255,8 +235,12 @@ describe('@lumino/commands', () => {
 
       it('should give the appropriate mnemonic given arguments', () => {
         let cmd = {
-          execute: (args: JSONObject) => { return args; },
-          mnemonic: (args: JSONObject) => { return JSON.stringify(args).length; }
+          execute: (args: JSONObject) => {
+            return args;
+          },
+          mnemonic: (args: JSONObject) => {
+            return JSON.stringify(args).length;
+          }
         };
         registry.addCommand('test', cmd);
         expect(registry.mnemonic('test', {})).to.equal(2);
@@ -270,11 +254,9 @@ describe('@lumino/commands', () => {
         registry.addCommand('test', NULL_COMMAND);
         expect(registry.mnemonic('test')).to.equal(-1);
       });
-
     });
 
     describe('#icon()', () => {
-
       const iconRenderer = {
         render: (host: HTMLElement, options?: any) => {
           const renderNode = document.createElement('div');
@@ -285,7 +267,9 @@ describe('@lumino/commands', () => {
 
       it('should get the icon for a specific command', () => {
         let cmd = {
-          execute: (args: JSONObject) => { return args; },
+          execute: (args: JSONObject) => {
+            return args;
+          },
           icon: iconRenderer
         };
         registry.addCommand('test', cmd);
@@ -294,8 +278,12 @@ describe('@lumino/commands', () => {
 
       it('should give the appropriate icon given arguments', () => {
         let cmd = {
-          execute: (args: JSONObject) => { return args; },
-          icon: (args: JSONObject) => { return JSON.stringify(args); }
+          execute: (args: JSONObject) => {
+            return args;
+          },
+          icon: (args: JSONObject) => {
+            return JSON.stringify(args);
+          }
         };
         registry.addCommand('test', cmd);
         expect(registry.icon('test', {})).to.equal('{}');
@@ -313,7 +301,9 @@ describe('@lumino/commands', () => {
       /* <DEPRECATED> */
       it('should be able to return a string value', () => {
         let cmd = {
-          execute: (args: JSONObject) => { return args; },
+          execute: (args: JSONObject) => {
+            return args;
+          },
           icon: 'foo'
         };
         registry.addCommand('test', cmd);
@@ -322,7 +312,9 @@ describe('@lumino/commands', () => {
 
       it('should alias .iconClass() if cmd.icon is unset', () => {
         let cmd = {
-          execute: (args: JSONObject) => { return args; },
+          execute: (args: JSONObject) => {
+            return args;
+          },
           iconClass: 'foo'
         };
         registry.addCommand('test', cmd);
@@ -332,10 +324,11 @@ describe('@lumino/commands', () => {
     });
 
     describe('#caption()', () => {
-
       it('should get the caption for a specific command', () => {
         let cmd = {
-          execute: (args: JSONObject) => { return args; },
+          execute: (args: JSONObject) => {
+            return args;
+          },
           caption: 'foo'
         };
         registry.addCommand('test', cmd);
@@ -344,8 +337,12 @@ describe('@lumino/commands', () => {
 
       it('should give the appropriate caption given arguments', () => {
         let cmd = {
-          execute: (args: JSONObject) => { return args; },
-          caption: (args: JSONObject) => { return JSON.stringify(args); }
+          execute: (args: JSONObject) => {
+            return args;
+          },
+          caption: (args: JSONObject) => {
+            return JSON.stringify(args);
+          }
         };
         registry.addCommand('test', cmd);
         expect(registry.caption('test', {})).to.equal('{}');
@@ -359,14 +356,14 @@ describe('@lumino/commands', () => {
         registry.addCommand('test', NULL_COMMAND);
         expect(registry.caption('test')).to.equal('');
       });
-
     });
 
     describe('#usage()', () => {
-
       it('should get the usage text for a specific command', () => {
         let cmd = {
-          execute: (args: JSONObject) => { return args; },
+          execute: (args: JSONObject) => {
+            return args;
+          },
           usage: 'foo'
         };
         registry.addCommand('test', cmd);
@@ -375,8 +372,12 @@ describe('@lumino/commands', () => {
 
       it('should give the appropriate usage text given arguments', () => {
         let cmd = {
-          execute: (args: JSONObject) => { return args; },
-          usage: (args: JSONObject) => { return JSON.stringify(args); }
+          execute: (args: JSONObject) => {
+            return args;
+          },
+          usage: (args: JSONObject) => {
+            return JSON.stringify(args);
+          }
         };
         registry.addCommand('test', cmd);
         expect(registry.usage('test', {})).to.equal('{}');
@@ -390,14 +391,14 @@ describe('@lumino/commands', () => {
         registry.addCommand('test', NULL_COMMAND);
         expect(registry.usage('test')).to.equal('');
       });
-
     });
 
     describe('#className()', () => {
-
       it('should get the extra class name for a specific command', () => {
         let cmd = {
-          execute: (args: JSONObject) => { return args; },
+          execute: (args: JSONObject) => {
+            return args;
+          },
           className: 'foo'
         };
         registry.addCommand('test', cmd);
@@ -406,8 +407,12 @@ describe('@lumino/commands', () => {
 
       it('should give the appropriate class name given arguments', () => {
         let cmd = {
-          execute: (args: JSONObject) => { return args; },
-          className: (args: JSONObject) => { return JSON.stringify(args); }
+          execute: (args: JSONObject) => {
+            return args;
+          },
+          className: (args: JSONObject) => {
+            return JSON.stringify(args);
+          }
         };
         registry.addCommand('test', cmd);
         expect(registry.className('test', {})).to.equal('{}');
@@ -421,15 +426,17 @@ describe('@lumino/commands', () => {
         registry.addCommand('test', NULL_COMMAND);
         expect(registry.className('test')).to.equal('');
       });
-
     });
 
     describe('#isEnabled()', () => {
-
       it('should test whether a specific command is enabled', () => {
         let cmd = {
-          execute: (args: JSONObject) => { return args; },
-          isEnabled: (args: JSONObject) => { return args.enabled as boolean; }
+          execute: (args: JSONObject) => {
+            return args;
+          },
+          isEnabled: (args: JSONObject) => {
+            return args.enabled as boolean;
+          }
         };
         registry.addCommand('test', cmd);
         expect(registry.isEnabled('test', { enabled: true })).to.equal(true);
@@ -444,15 +451,17 @@ describe('@lumino/commands', () => {
         registry.addCommand('test', NULL_COMMAND);
         expect(registry.isEnabled('test')).to.equal(true);
       });
-
     });
 
     describe('#isToggled()', () => {
-
       it('should test whether a specific command is toggled', () => {
         let cmd = {
-          execute: (args: JSONObject) => { return args; },
-          isToggled: (args: JSONObject) => { return args.toggled as boolean; }
+          execute: (args: JSONObject) => {
+            return args;
+          },
+          isToggled: (args: JSONObject) => {
+            return args.toggled as boolean;
+          }
         };
         registry.addCommand('test', cmd);
         expect(registry.isToggled('test', { toggled: true })).to.equal(true);
@@ -467,15 +476,17 @@ describe('@lumino/commands', () => {
         registry.addCommand('test', NULL_COMMAND);
         expect(registry.isToggled('test')).to.equal(false);
       });
-
     });
 
     describe('#isVisible()', () => {
-
       it('should test whether a specific command is visible', () => {
         let cmd = {
-          execute: (args: JSONObject) => { return args; },
-          isVisible: (args: JSONObject) => { return args.visible as boolean; }
+          execute: (args: JSONObject) => {
+            return args;
+          },
+          isVisible: (args: JSONObject) => {
+            return args.visible as boolean;
+          }
         };
         registry.addCommand('test', cmd);
         expect(registry.isVisible('test', { visible: true })).to.equal(true);
@@ -490,24 +501,26 @@ describe('@lumino/commands', () => {
         registry.addCommand('test', NULL_COMMAND);
         expect(registry.isVisible('test')).to.equal(true);
       });
-
     });
 
     describe('#execute()', () => {
-
       it('should execute a specific command', () => {
         let called = false;
         let cmd = {
-          execute: (args: JSONObject) => { called = true; },
+          execute: (args: JSONObject) => {
+            called = true;
+          }
         };
         registry.addCommand('test', cmd);
         registry.execute('test');
         expect(called).to.equal(true);
       });
 
-      it('should resolve with the result of the command', (done) => {
+      it('should resolve with the result of the command', done => {
         let cmd = {
-          execute: (args: JSONObject) => { return args; },
+          execute: (args: JSONObject) => {
+            return args;
+          }
         };
         registry.addCommand('test', cmd);
         registry.execute('test', { foo: 12 }).then(result => {
@@ -516,9 +529,11 @@ describe('@lumino/commands', () => {
         });
       });
 
-      it('should reject if the command throws an error', (done) => {
+      it('should reject if the command throws an error', done => {
         let cmd = {
-          execute: (args: JSONObject) => { throw new Error(''); },
+          execute: (args: JSONObject) => {
+            throw new Error('');
+          }
         };
         registry.addCommand('test', cmd);
         registry.execute('test').catch(() => {
@@ -526,12 +541,11 @@ describe('@lumino/commands', () => {
         });
       });
 
-      it('should reject if the command is not registered', (done) => {
+      it('should reject if the command is not registered', done => {
         registry.execute('foo').catch(() => {
           done();
         });
       });
-
     });
 
     let elemID = 0;
@@ -555,11 +569,12 @@ describe('@lumino/commands', () => {
     });
 
     describe('#addKeyBinding()', () => {
-
       it('should add key bindings to the registry', () => {
         let called = false;
         registry.addCommand('test', {
-          execute: () => { called = true; }
+          execute: () => {
+            called = true;
+          }
         });
         registry.addKeyBinding({
           keys: ['Ctrl ;'],
@@ -574,7 +589,9 @@ describe('@lumino/commands', () => {
       it('should remove a binding when disposed', () => {
         let called = false;
         registry.addCommand('test', {
-          execute: () => { called = true; }
+          execute: () => {
+            called = true;
+          }
         });
         let binding = registry.addKeyBinding({
           keys: ['Ctrl ;'],
@@ -589,7 +606,7 @@ describe('@lumino/commands', () => {
 
       it('should emit a key binding changed signal when added and removed', () => {
         let added = false;
-        registry.addCommand('test', { execute: () => { } });
+        registry.addCommand('test', { execute: () => {} });
         registry.keyBindingChanged.connect((sender, args) => {
           added = args.type === 'added';
         });
@@ -605,17 +622,19 @@ describe('@lumino/commands', () => {
 
       it('should throw an error if binding has an invalid selector', () => {
         let options = { keys: ['Ctrl ;'], selector: '..', command: 'test' };
-        expect(() => { registry.addKeyBinding(options); }).to.throw(Error);
+        expect(() => {
+          registry.addKeyBinding(options);
+        }).to.throw(Error);
       });
-
     });
 
     describe('#processKeydownEvent()', () => {
-
       it('should dispatch on a correct keyboard event', () => {
         let called = false;
         registry.addCommand('test', {
-          execute: () => { called = true; }
+          execute: () => {
+            called = true;
+          }
         });
         registry.addKeyBinding({
           keys: ['Ctrl ;'],
@@ -630,7 +649,9 @@ describe('@lumino/commands', () => {
       it('should not dispatch on a suppressed node', () => {
         let called = false;
         registry.addCommand('test', {
-          execute: () => { called = true; }
+          execute: () => {
+            called = true;
+          }
         });
         registry.addKeyBinding({
           keys: ['Ctrl ;'],
@@ -646,7 +667,9 @@ describe('@lumino/commands', () => {
       it('should not dispatch on a non-matching keyboard event', () => {
         let called = false;
         registry.addCommand('test', {
-          execute: () => { called = true; }
+          execute: () => {
+            called = true;
+          }
         });
         registry.addKeyBinding({
           keys: ['Ctrl ;'],
@@ -661,7 +684,9 @@ describe('@lumino/commands', () => {
       it('should not dispatch with non-matching modifiers', () => {
         let count = 0;
         registry.addCommand('test', {
-          execute: () => { count++; }
+          execute: () => {
+            count++;
+          }
         });
         registry.addKeyBinding({
           keys: ['Ctrl S'],
@@ -679,7 +704,9 @@ describe('@lumino/commands', () => {
       it('should dispatch with multiple chords in a key sequence', () => {
         let count = 0;
         registry.addCommand('test', {
-          execute: () => { count++; }
+          execute: () => {
+            count++;
+          }
         });
         registry.addKeyBinding({
           keys: ['Ctrl K', 'Ctrl L'],
@@ -703,7 +730,9 @@ describe('@lumino/commands', () => {
       it('should not execute handler without matching selector', () => {
         let count = 0;
         registry.addCommand('test', {
-          execute: () => { count++; }
+          execute: () => {
+            count++;
+          }
         });
         registry.addKeyBinding({
           keys: ['Shift P'],
@@ -719,7 +748,9 @@ describe('@lumino/commands', () => {
       it('should not execute a handler when missing a modifier', () => {
         let count = 0;
         registry.addCommand('test', {
-          execute: () => { count++; }
+          execute: () => {
+            count++;
+          }
         });
         registry.addKeyBinding({
           keys: ['Ctrl P'],
@@ -736,10 +767,14 @@ describe('@lumino/commands', () => {
         let count1 = 0;
         let count2 = 0;
         registry.addCommand('test1', {
-          execute: () => { count1++; }
+          execute: () => {
+            count1++;
+          }
         });
         registry.addCommand('test2', {
-          execute: () => { count2++; }
+          execute: () => {
+            count2++;
+          }
         });
         registry.addKeyBinding({
           keys: ['Ctrl S'],
@@ -767,10 +802,14 @@ describe('@lumino/commands', () => {
         let count1 = 0;
         let count2 = 0;
         registry.addCommand('test1', {
-          execute: () => { count1++; }
+          execute: () => {
+            count1++;
+          }
         });
         registry.addCommand('test2', {
-          execute: () => { count2++; }
+          execute: () => {
+            count2++;
+          }
         });
         registry.addKeyBinding({
           keys: ['Shift Alt Ctrl T'],
@@ -804,11 +843,15 @@ describe('@lumino/commands', () => {
 
       it('should play back a partial match that was not completed', () => {
         let codes: number[] = [];
-        let keydown = (event: KeyboardEvent) => { codes.push(event.keyCode); };
+        let keydown = (event: KeyboardEvent) => {
+          codes.push(event.keyCode);
+        };
         document.body.addEventListener('keydown', keydown);
         let called = false;
         registry.addCommand('test', {
-          execute: () => { called = true; }
+          execute: () => {
+            called = true;
+          }
         });
         registry.addKeyBinding({
           keys: ['D', 'D'],
@@ -825,13 +868,17 @@ describe('@lumino/commands', () => {
         document.body.removeEventListener('keydown', keydown);
       });
 
-      it('should play back a partial match that times out', (done) => {
+      it('should play back a partial match that times out', done => {
         let codes: number[] = [];
-        let keydown = (event: KeyboardEvent) => { codes.push(event.keyCode); };
+        let keydown = (event: KeyboardEvent) => {
+          codes.push(event.keyCode);
+        };
         document.body.addEventListener('keydown', keydown);
         let called = false;
         registry.addCommand('test', {
-          execute: () => { called = true; }
+          execute: () => {
+            called = true;
+          }
         });
         registry.addKeyBinding({
           keys: ['D', 'D'],
@@ -849,14 +896,18 @@ describe('@lumino/commands', () => {
         }, 1300);
       });
 
-      it('should resolve an exact match of partial match time out', (done) => {
+      it('should resolve an exact match of partial match time out', done => {
         let called1 = false;
         let called2 = false;
         registry.addCommand('test1', {
-          execute: () => { called1 = true; }
+          execute: () => {
+            called1 = true;
+          }
         });
         registry.addCommand('test2', {
-          execute: () => { called2 = true; }
+          execute: () => {
+            called2 = true;
+          }
         });
         registry.addKeyBinding({
           keys: ['D', 'D'],
@@ -884,10 +935,14 @@ describe('@lumino/commands', () => {
         let called1 = false;
         let called2 = false;
         registry.addCommand('test1', {
-          execute: () => { called1 = true; }
+          execute: () => {
+            called1 = true;
+          }
         });
         registry.addCommand('test2', {
-          execute: () => { called2 = true; }
+          execute: () => {
+            called2 = true;
+          }
         });
         registry.addKeyBinding({
           keys: ['Ctrl ;'],
@@ -913,7 +968,9 @@ describe('@lumino/commands', () => {
         document.body.addEventListener('keydown', keydown);
         let called = false;
         registry.addCommand('test', {
-          execute: () => { called = true; }
+          execute: () => {
+            called = true;
+          }
         });
         registry.addKeyBinding({
           keys: ['D', 'D'],
@@ -935,7 +992,9 @@ describe('@lumino/commands', () => {
         document.body.addEventListener('keydown', keydown);
         let called = false;
         registry.addCommand('test', {
-          execute: () => { called = true; }
+          execute: () => {
+            called = true;
+          }
         });
         registry.addKeyBinding({
           keys: ['D'],
@@ -948,11 +1007,9 @@ describe('@lumino/commands', () => {
         expect(called).to.equal(false);
         document.body.removeEventListener('keydown', keydown);
       });
-
     });
 
     describe('.parseKeystroke()', () => {
-
       it('should parse a keystroke into its parts', () => {
         let parts = CommandRegistry.parseKeystroke('Ctrl Shift Alt S');
         expect(parts.cmd).to.equal(false);
@@ -970,11 +1027,9 @@ describe('@lumino/commands', () => {
         expect(parts.shift).to.equal(true);
         expect(parts.key).to.equal('K');
       });
-
     });
 
     describe('.normalizeKeystroke()', () => {
-
       it('should normalize and validate a keystroke', () => {
         let stroke = CommandRegistry.normalizeKeystroke('Ctrl S');
         expect(stroke).to.equal('Ctrl S');
@@ -999,14 +1054,14 @@ describe('@lumino/commands', () => {
           expect(stroke).to.equal('Ctrl S');
         }
       });
-
     });
 
     describe('.keystrokeForKeydownEvent()', () => {
-
       it('should create a normalized keystroke', () => {
         let event = generate('keydown', { ctrlKey: true, keyCode: 83 });
-        let keystroke = CommandRegistry.keystrokeForKeydownEvent(event as KeyboardEvent);
+        let keystroke = CommandRegistry.keystrokeForKeydownEvent(
+          event as KeyboardEvent
+        );
         expect(keystroke).to.equal('Ctrl S');
       });
 
@@ -1017,18 +1072,19 @@ describe('@lumino/commands', () => {
           shiftKey: true,
           keyCode: 83
         });
-        let keystroke = CommandRegistry.keystrokeForKeydownEvent(event as KeyboardEvent);
+        let keystroke = CommandRegistry.keystrokeForKeydownEvent(
+          event as KeyboardEvent
+        );
         expect(keystroke).to.equal('Ctrl Alt Shift S');
       });
 
       it('should fail on an invalid shortcut', () => {
         let event = generate('keydown', { keyCode: -1 });
-        let keystroke = CommandRegistry.keystrokeForKeydownEvent(event as KeyboardEvent);
+        let keystroke = CommandRegistry.keystrokeForKeydownEvent(
+          event as KeyboardEvent
+        );
         expect(keystroke).to.equal('');
       });
-
     });
-
   });
-
 });

@@ -7,44 +7,32 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  ArrayExt
-} from '@lumino/algorithm';
+import { ArrayExt } from '@lumino/algorithm';
+
+import { ElementExt } from '@lumino/domutils';
+
+import { getKeyboardLayout } from '@lumino/keyboard';
+
+import { Message, MessageLoop } from '@lumino/messaging';
 
 import {
-  ElementExt
-} from '@lumino/domutils';
-
-import {
-  getKeyboardLayout
-} from '@lumino/keyboard';
-
-import {
-  Message, MessageLoop
-} from '@lumino/messaging';
-
-import {
-  ElementARIAAttrs, ElementDataset, VirtualDOM, VirtualElement, h
+  ElementARIAAttrs,
+  ElementDataset,
+  h,
+  VirtualDOM,
+  VirtualElement
 } from '@lumino/virtualdom';
 
-import {
-  Menu
-} from './menu';
+import { Menu } from './menu';
 
-import {
-  Title
-} from './title';
+import { Title } from './title';
 
-import {
-  Widget
-} from './widget';
-
+import { Widget } from './widget';
 
 /**
  * A widget which displays menus as a canonical menu bar.
  */
-export
-class MenuBar extends Widget {
+export class MenuBar extends Widget {
   /**
    * Construct a new menu bar.
    *
@@ -58,7 +46,10 @@ class MenuBar extends Widget {
     /* </DEPRECATED> */
     this.setFlag(Widget.Flag.DisallowLayout);
     this.renderer = options.renderer || MenuBar.defaultRenderer;
-    this._forceItemsPosition = options.forceItemsPosition || { forceX: true, forceY: true };
+    this._forceItemsPosition = options.forceItemsPosition || {
+      forceX: true,
+      forceY: true
+    };
   }
 
   /**
@@ -94,7 +85,9 @@ class MenuBar extends Widget {
    * Modifying this node directly can lead to undefined behavior.
    */
   get contentNode(): HTMLUListElement {
-    return this.node.getElementsByClassName('lm-MenuBar-content')[0] as HTMLUListElement;
+    return this.node.getElementsByClassName(
+      'lm-MenuBar-content'
+    )[0] as HTMLUListElement;
   }
 
   /**
@@ -145,7 +138,10 @@ class MenuBar extends Widget {
     this._activeIndex = value;
 
     // Update focus to new active index
-    if (this._activeIndex >= 0 && this.contentNode.childNodes[this._activeIndex]) {
+    if (
+      this._activeIndex >= 0 &&
+      this.contentNode.childNodes[this._activeIndex]
+    ) {
       (this.contentNode.childNodes[this._activeIndex] as HTMLElement).focus();
     }
 
@@ -347,22 +343,22 @@ class MenuBar extends Widget {
    */
   handleEvent(event: Event): void {
     switch (event.type) {
-    case 'keydown':
-      this._evtKeyDown(event as KeyboardEvent);
-      break;
-    case 'mousedown':
-      this._evtMouseDown(event as MouseEvent);
-      break;
-    case 'mousemove':
-      this._evtMouseMove(event as MouseEvent);
-      break;
-    case 'mouseleave':
-      this._evtMouseLeave(event as MouseEvent);
-      break;
-    case 'contextmenu':
-      event.preventDefault();
-      event.stopPropagation();
-      break;
+      case 'keydown':
+        this._evtKeyDown(event as KeyboardEvent);
+        break;
+      case 'mousedown':
+        this._evtMouseDown(event as MouseEvent);
+        break;
+      case 'mousemove':
+        this._evtMouseMove(event as MouseEvent);
+        break;
+      case 'mouseleave':
+        this._evtMouseLeave(event as MouseEvent);
+        break;
+      case 'contextmenu':
+        event.preventDefault();
+        event.stopPropagation();
+        break;
     }
   }
 
@@ -685,12 +681,12 @@ class MenuBar extends Widget {
 
     // Active the next requested index.
     switch (args) {
-    case 'next':
-      this.activeIndex = i === n - 1 ? 0 : i + 1;
-      break;
-    case 'previous':
-      this.activeIndex = i === 0 ? n - 1 : i - 1;
-      break;
+      case 'next':
+        this.activeIndex = i === n - 1 ? 0 : i + 1;
+        break;
+      case 'previous':
+        this.activeIndex = i === 0 ? n - 1 : i - 1;
+        break;
     }
 
     // Open the active menu.
@@ -710,17 +706,14 @@ class MenuBar extends Widget {
   private _childMenu: Menu | null = null;
 }
 
-
 /**
  * The namespace for the `MenuBar` class statics.
  */
-export
-namespace MenuBar {
+export namespace MenuBar {
   /**
    * An options object for creating a menu bar.
    */
-  export
-  interface IOptions {
+  export interface IOptions {
     /**
      * A custom renderer for creating menu bar content.
      *
@@ -742,8 +735,7 @@ namespace MenuBar {
   /**
    * An object which holds the data to render a menu bar item.
    */
-  export
-  interface IRenderData {
+  export interface IRenderData {
     /**
      * The title to be rendered.
      */
@@ -760,8 +752,7 @@ namespace MenuBar {
   /**
    * A renderer for use with a menu bar.
    */
-  export
-  interface IRenderer {
+  export interface IRenderer {
     /**
      * Render the virtual element for a menu bar item.
      *
@@ -778,13 +769,7 @@ namespace MenuBar {
    * #### Notes
    * Subclasses are free to reimplement rendering methods as needed.
    */
-  export
-  class Renderer implements IRenderer {
-    /**
-     * Construct a new renderer.
-     */
-    constructor() { }
-
+  export class Renderer implements IRenderer {
     /**
      * Render the virtual element for a menu bar item.
      *
@@ -796,11 +781,10 @@ namespace MenuBar {
       let className = this.createItemClass(data);
       let dataset = this.createItemDataset(data);
       let aria = this.createItemARIA(data);
-      return (
-        h.li({ className, dataset, tabindex: '0', onfocus: data.onfocus, ...aria },
-          this.renderIcon(data),
-          this.renderLabel(data)
-        )
+      return h.li(
+        { className, dataset, tabindex: '0', onfocus: data.onfocus, ...aria },
+        this.renderIcon(data),
+        this.renderLabel(data)
       );
     }
 
@@ -816,12 +800,12 @@ namespace MenuBar {
 
       /* <DEPRECATED> */
       if (typeof data.title.icon === 'string') {
-        return h.div({className}, data.title.iconLabel);
+        return h.div({ className }, data.title.iconLabel);
       }
       /* </DEPRECATED> */
 
       // if data.title.icon is undefined, it will be ignored
-      return h.div({className}, data.title.icon!, data.title.iconLabel);
+      return h.div({ className }, data.title.icon!, data.title.iconLabel);
     }
 
     /**
@@ -833,12 +817,16 @@ namespace MenuBar {
      */
     renderLabel(data: IRenderData): VirtualElement {
       let content = this.formatLabel(data);
-      return h.div({ className:
-        'lm-MenuBar-itemLabel'
-          /* <DEPRECATED> */
-            + ' p-MenuBar-itemLabel'
+      return h.div(
+        {
+          className:
+            'lm-MenuBar-itemLabel' +
+            /* <DEPRECATED> */
+            ' p-MenuBar-itemLabel'
           /* </DEPRECATED> */
-      }, content);
+        },
+        content
+      );
     }
 
     /**
@@ -858,9 +846,9 @@ namespace MenuBar {
       }
       if (data.active) {
         name += ' lm-mod-active';
-      /* <DEPRECATED> */
-      name += ' p-mod-active';
-      /* </DEPRECATED> */
+        /* <DEPRECATED> */
+        name += ' p-mod-active';
+        /* </DEPRECATED> */
       }
       return name;
     }
@@ -878,13 +866,13 @@ namespace MenuBar {
 
     /**
      * Create the aria attributes for menu bar item.
-     * 
+     *
      * @param data - The data to use for the aria attributes.
-     * 
+     *
      * @returns The aria attributes object for the item.
      */
     createItemARIA(data: IRenderData): ElementARIAAttrs {
-      return {role: 'menuitem', 'aria-haspopup': 'true'};
+      return { role: 'menuitem', 'aria-haspopup': 'true' };
     }
 
     /**
@@ -925,12 +913,16 @@ namespace MenuBar {
       let char = label[mnemonic];
 
       // Wrap the mnemonic character in a span.
-      let span = h.span({
-        className: 'lm-MenuBar-itemMnemonic'
-          /* <DEPRECATED> */
-          + ' p-MenuBar-itemMnemonic'
+      let span = h.span(
+        {
+          className:
+            'lm-MenuBar-itemMnemonic' +
+            /* <DEPRECATED> */
+            ' p-MenuBar-itemMnemonic'
           /* </DEPRECATED> */
-      }, char);
+        },
+        char
+      );
 
       // Return the content parts.
       return [prefix, span, suffix];
@@ -940,10 +932,8 @@ namespace MenuBar {
   /**
    * The default `Renderer` instance.
    */
-  export
-  const defaultRenderer = new Renderer();
+  export const defaultRenderer = new Renderer();
 }
-
 
 /**
  * The namespace for the module implementation details.
@@ -952,8 +942,7 @@ namespace Private {
   /**
    * Create the DOM node for a menu bar.
    */
-  export
-  function createNode(): HTMLDivElement {
+  export function createNode(): HTMLDivElement {
     let node = document.createElement('div');
     let content = document.createElement('ul');
     content.className = 'lm-MenuBar-content';
@@ -970,8 +959,7 @@ namespace Private {
   /**
    * The results of a mnemonic search.
    */
-  export
-  interface IMnemonicResult {
+  export interface IMnemonicResult {
     /**
      * The index of the first matching mnemonic item, or `-1`.
      */
@@ -993,8 +981,11 @@ namespace Private {
    *
    * The search starts at the given index and wraps around.
    */
-  export
-  function findMnemonic(menus: ReadonlyArray<Menu>, key: string, start: number): IMnemonicResult {
+  export function findMnemonic(
+    menus: ReadonlyArray<Menu>,
+    key: string,
+    start: number
+  ): IMnemonicResult {
     // Setup the result variables.
     let index = -1;
     let auto = -1;

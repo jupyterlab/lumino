@@ -7,12 +7,9 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  ISignal, Signal
-} from '@lumino/signaling';
+import { ISignal, Signal } from '@lumino/signaling';
 
-import { VirtualElement } from "@lumino/virtualdom";
-
+import { VirtualElement } from '@lumino/virtualdom';
 
 /**
  * An object which holds data related to an object's title.
@@ -22,8 +19,7 @@ import { VirtualElement } from "@lumino/virtualdom";
  * header for a particular object. A common example is the `TabPanel`,
  * which uses the widget title to populate the tab for a child widget.
  */
-export
-class Title<T> {
+export class Title<T> {
   /**
    * Construct a new title.
    *
@@ -39,22 +35,20 @@ class Title<T> {
     }
     if (options.icon !== undefined) {
       /* <DEPRECATED> */
-      if (typeof options.icon === "string") {
+      if (typeof options.icon === 'string') {
         // when ._icon is null, the .icon getter will alias .iconClass
         this._icon = null;
         this._iconClass = options.icon;
       } else {
-      /* </DEPRECATED> */
+        /* </DEPRECATED> */
 
-      this._icon = options.icon;
+        this._icon = options.icon;
 
-      /* <DEPRECATED> */
+        /* <DEPRECATED> */
       }
       /* </DEPRECATED> */
-    }
-
-    /* <DEPRECATED> */
-    else {
+    } else {
+      /* <DEPRECATED> */
       // if unset, default to aliasing .iconClass
       this._icon = null;
     }
@@ -144,13 +138,15 @@ class Title<T> {
    * DEPRECATED: if set to a string value, the .icon field will function as
    * an alias for the .iconClass field, for backwards compatibility
    */
-  get icon(): VirtualElement.IRenderer| undefined
-  /* <DEPRECATED> */ | string /* </DEPRECATED> */
-  {
+  get icon():
+    | VirtualElement.IRenderer
+    | undefined
+    /* <DEPRECATED> */
+    | string /* </DEPRECATED> */ {
     /* <DEPRECATED> */
     if (this._icon === null) {
       // only alias .iconClass if ._icon has been explicitly nulled
-      return this.iconClass
+      return this.iconClass;
     }
     /* </DEPRECATED> */
 
@@ -166,24 +162,28 @@ class Title<T> {
    * DEPRECATED: if set to a string value, the .icon field will function as
    * an alias for the .iconClass field, for backwards compatibility
    */
-  set icon(value: VirtualElement.IRenderer | undefined
-  /* <DEPRECATED> */ | string /* </DEPRECATED> */
+  set icon(
+    value:
+      | VirtualElement.IRenderer
+      | undefined
+      /* <DEPRECATED> */
+      | string /* </DEPRECATED> */
   ) {
     /* <DEPRECATED> */
-    if (typeof value === "string") {
+    if (typeof value === 'string') {
       // when ._icon is null, the .icon getter will alias .iconClass
       this._icon = null;
       this.iconClass = value;
     } else {
-    /* </DEPRECATED> */
+      /* </DEPRECATED> */
 
-    if (this._icon === value) {
-      return;
-    }
-    this._icon = value;
-    this._changed.emit(undefined);
+      if (this._icon === value) {
+        return;
+      }
+      this._icon = value;
+      this._changed.emit(undefined);
 
-    /* <DEPRECATED> */
+      /* <DEPRECATED> */
     }
     /* </DEPRECATED> */
   }
@@ -347,8 +347,11 @@ class Title<T> {
   private _caption = '';
   private _mnemonic = -1;
 
-  private _icon: VirtualElement.IRenderer | undefined
-  /* <DEPRECATED> */ | null /* </DEPRECATED> */;
+  private _icon:
+    | VirtualElement.IRenderer
+    | undefined
+    /* <DEPRECATED> */
+    | null /* </DEPRECATED> */;
 
   private _iconClass = '';
   private _iconLabel = '';
@@ -358,23 +361,19 @@ class Title<T> {
   private _changed = new Signal<this, void>(this);
 }
 
-
 /**
  * The namespace for the `Title` class statics.
  */
-export
-namespace Title {
+export namespace Title {
   /**
    * A type alias for a simple immutable string dataset.
    */
-  export
-  type Dataset = { readonly [key: string]: string };
+  export type Dataset = { readonly [key: string]: string };
 
   /**
    * An options object for initializing a title.
    */
-  export
-  interface IOptions<T> {
+  export interface IOptions<T> {
     /**
      * The object which owns the title.
      */

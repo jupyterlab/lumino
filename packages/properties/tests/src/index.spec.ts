@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 // Copyright (c) Jupyter Development Team.
 // Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
@@ -7,51 +8,38 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  expect
-} from 'chai';
+import { expect } from 'chai';
 
-import {
-  AttachedProperty
-} from '@lumino/properties';
-
+import { AttachedProperty } from '@lumino/properties';
 
 class Model {
   dummyValue = 42;
 }
 
-
 describe('@lumino/properties', () => {
-
   describe('AttachedProperty', () => {
-
     describe('#constructor()', () => {
-
       it('should accept a single options argument', () => {
         let p = new AttachedProperty<Model, number>({
           name: 'p',
-          create: (owner) => 42,
+          create: owner => 42,
           coerce: (owner, value) => Math.max(0, value),
           compare: (oldValue, newValue) => oldValue === newValue,
-          changed: (owner, oldValue, newValue) => { }
+          changed: (owner, oldValue, newValue) => {}
         });
         expect(p).to.be.an.instanceof(AttachedProperty);
       });
-
     });
 
     describe('#name', () => {
-
       it('should be the name provided to the constructor', () => {
         let create = () => 0;
         let p = new AttachedProperty<Model, number>({ name: 'p', create });
         expect(p.name).to.equal('p');
       });
-
     });
 
     describe('#get()', () => {
-
       it('should return the current value of the property', () => {
         let tick = 42;
         let create = () => tick++;
@@ -75,10 +63,22 @@ describe('@lumino/properties', () => {
       it('should not invoke the coerce function', () => {
         let called = false;
         let create = () => 0;
-        let coerce = (m: Model, v: number) => (called = true,  v);
-        let p1 = new AttachedProperty<Model, number>({ name: 'p1', create, coerce });
-        let p2 = new AttachedProperty<Model, number>({ name: 'p2', create, coerce });
-        let p3 = new AttachedProperty<Model, number>({ name: 'p3', create, coerce });
+        let coerce = (m: Model, v: number) => ((called = true), v);
+        let p1 = new AttachedProperty<Model, number>({
+          name: 'p1',
+          create,
+          coerce
+        });
+        let p2 = new AttachedProperty<Model, number>({
+          name: 'p2',
+          create,
+          coerce
+        });
+        let p3 = new AttachedProperty<Model, number>({
+          name: 'p3',
+          create,
+          coerce
+        });
         let m1 = new Model();
         let m2 = new Model();
         let m3 = new Model();
@@ -97,10 +97,22 @@ describe('@lumino/properties', () => {
       it('should not invoke the compare function', () => {
         let called = false;
         let create = () => 0;
-        let compare = (v1: number, v2: number) => (called = true,  v1 === v2);
-        let p1 = new AttachedProperty<Model, number>({ name: 'p1', create, compare });
-        let p2 = new AttachedProperty<Model, number>({ name: 'p2', create, compare });
-        let p3 = new AttachedProperty<Model, number>({ name: 'p3', create, compare });
+        let compare = (v1: number, v2: number) => ((called = true), v1 === v2);
+        let p1 = new AttachedProperty<Model, number>({
+          name: 'p1',
+          create,
+          compare
+        });
+        let p2 = new AttachedProperty<Model, number>({
+          name: 'p2',
+          create,
+          compare
+        });
+        let p3 = new AttachedProperty<Model, number>({
+          name: 'p3',
+          create,
+          compare
+        });
         let m1 = new Model();
         let m2 = new Model();
         let m3 = new Model();
@@ -119,10 +131,24 @@ describe('@lumino/properties', () => {
       it('should not invoke the changed function', () => {
         let called = false;
         let create = () => 0;
-        let changed = () => { called = true; };
-        let p1 = new AttachedProperty<Model, number>({ name: 'p1', create, changed });
-        let p2 = new AttachedProperty<Model, number>({ name: 'p2', create, changed });
-        let p3 = new AttachedProperty<Model, number>({ name: 'p3', create, changed });
+        let changed = () => {
+          called = true;
+        };
+        let p1 = new AttachedProperty<Model, number>({
+          name: 'p1',
+          create,
+          changed
+        });
+        let p2 = new AttachedProperty<Model, number>({
+          name: 'p2',
+          create,
+          changed
+        });
+        let p3 = new AttachedProperty<Model, number>({
+          name: 'p3',
+          create,
+          changed
+        });
         let m1 = new Model();
         let m2 = new Model();
         let m3 = new Model();
@@ -137,11 +163,9 @@ describe('@lumino/properties', () => {
         p3.get(m3);
         expect(called).to.equal(false);
       });
-
     });
 
     describe('#set()', () => {
-
       it('should set the current value of the property', () => {
         let create = () => 0;
         let p1 = new AttachedProperty<Model, number>({ name: 'p1', create });
@@ -178,9 +202,21 @@ describe('@lumino/properties', () => {
           newvals.push(n);
         };
         let create = () => 0;
-        let p1 = new AttachedProperty<Model, number>({ name: 'p1', create, changed });
-        let p2 = new AttachedProperty<Model, number>({ name: 'p2', create, changed });
-        let p3 = new AttachedProperty<Model, number>({ name: 'p3', create, changed });
+        let p1 = new AttachedProperty<Model, number>({
+          name: 'p1',
+          create,
+          changed
+        });
+        let p2 = new AttachedProperty<Model, number>({
+          name: 'p2',
+          create,
+          changed
+        });
+        let p3 = new AttachedProperty<Model, number>({
+          name: 'p3',
+          create,
+          changed
+        });
         let m1 = new Model();
         let m2 = new Model();
         let m3 = new Model();
@@ -200,7 +236,11 @@ describe('@lumino/properties', () => {
       it('should invoke the coerce function on the new value', () => {
         let create = () => 0;
         let coerce = (o: Model, v: number) => Math.max(0, v);
-        let p = new AttachedProperty<Model, number>({ name: 'p', create, coerce });
+        let p = new AttachedProperty<Model, number>({
+          name: 'p',
+          create,
+          coerce
+        });
         let m = new Model();
         p.set(m, -10);
         expect(p.get(m)).to.equal(0);
@@ -217,8 +257,12 @@ describe('@lumino/properties', () => {
       it('should not invoke the compare function if there is no changed function', () => {
         let called = false;
         let create = () => 0;
-        let compare = (v1: number, v2: number) => (called = true, v1 === v2);
-        let p = new AttachedProperty<Model, number>({ name: 'p', create, compare });
+        let compare = (v1: number, v2: number) => ((called = true), v1 === v2);
+        let p = new AttachedProperty<Model, number>({
+          name: 'p',
+          create,
+          compare
+        });
         let m = new Model();
         p.set(m, 42);
         expect(called).to.equal(false);
@@ -227,9 +271,14 @@ describe('@lumino/properties', () => {
       it('should invoke the compare function if there is a changed function', () => {
         let called = false;
         let create = () => 0;
-        let changed = () => { };
-        let compare = (v1: number, v2: number) => (called = true, v1 === v2);
-        let p = new AttachedProperty<Model, number>({ name: 'p', create, compare, changed });
+        let changed = () => {};
+        let compare = (v1: number, v2: number) => ((called = true), v1 === v2);
+        let p = new AttachedProperty<Model, number>({
+          name: 'p',
+          create,
+          compare,
+          changed
+        });
         let m = new Model();
         p.set(m, 42);
         expect(called).to.equal(true);
@@ -238,10 +287,21 @@ describe('@lumino/properties', () => {
       it('should not invoke the changed function if the value does not change', () => {
         let called = false;
         let create = () => 1;
-        let changed = () => { called = true; };
+        let changed = () => {
+          called = true;
+        };
         let compare = (v1: number, v2: number) => true;
-        let p1 = new AttachedProperty<Model, number>({ name: 'p1', create, changed });
-        let p2 = new AttachedProperty<Model, number>({ name: 'p2', create, compare, changed });
+        let p1 = new AttachedProperty<Model, number>({
+          name: 'p1',
+          create,
+          changed
+        });
+        let p2 = new AttachedProperty<Model, number>({
+          name: 'p2',
+          create,
+          compare,
+          changed
+        });
         let m = new Model();
         p1.set(m, 1);
         p1.set(m, 1);
@@ -251,17 +311,19 @@ describe('@lumino/properties', () => {
         p2.set(m, 4);
         expect(called).to.equal(false);
       });
-
     });
 
     describe('#coerce()', () => {
-
       it('should coerce the current value of the property', () => {
         let min = 20;
         let max = 50;
         let create = () => 0;
         let coerce = (m: Model, v: number) => Math.max(min, Math.min(v, max));
-        let p = new AttachedProperty<Model, number>({ name: 'p', create, coerce });
+        let p = new AttachedProperty<Model, number>({
+          name: 'p',
+          create,
+          coerce
+        });
         let m = new Model();
         p.set(m, 10);
         expect(p.get(m)).to.equal(20);
@@ -278,8 +340,15 @@ describe('@lumino/properties', () => {
         let called = false;
         let create = () => 0;
         let coerce = (m: Model, v: number) => Math.max(20, v);
-        let changed = () => { called = true };
-        let p = new AttachedProperty<Model, number>({ name: 'p', create, coerce, changed });
+        let changed = () => {
+          called = true;
+        };
+        let p = new AttachedProperty<Model, number>({
+          name: 'p',
+          create,
+          coerce,
+          changed
+        });
         let m = new Model();
         p.coerce(m);
         expect(called).to.equal(true);
@@ -290,8 +359,16 @@ describe('@lumino/properties', () => {
         let newval = -1;
         let create = () => 0;
         let coerce = (m: Model, v: number) => Math.max(20, v);
-        let changed = (m: Model, o: number, n: number) => { oldval = o; newval = n; };
-        let p = new AttachedProperty<Model, number>({ name: 'p', create, coerce, changed });
+        let changed = (m: Model, o: number, n: number) => {
+          oldval = o;
+          newval = n;
+        };
+        let p = new AttachedProperty<Model, number>({
+          name: 'p',
+          create,
+          coerce,
+          changed
+        });
         let m = new Model();
         p.coerce(m);
         expect(oldval).to.equal(0);
@@ -301,8 +378,12 @@ describe('@lumino/properties', () => {
       it('should not invoke the compare function if there is no changed function', () => {
         let called = false;
         let create = () => 0;
-        let compare = (v1: number, v2: number) => (called = true,  v1 === v2);
-        let p = new AttachedProperty<Model, number>({ name: 'p', create, compare });
+        let compare = (v1: number, v2: number) => ((called = true), v1 === v2);
+        let p = new AttachedProperty<Model, number>({
+          name: 'p',
+          create,
+          compare
+        });
         let m = new Model();
         p.coerce(m);
         expect(called).to.equal(false);
@@ -311,9 +392,14 @@ describe('@lumino/properties', () => {
       it('should invoke the compare function if there is a changed function', () => {
         let called = false;
         let create = () => 0;
-        let changed = () => { };
-        let compare = (v1: number, v2: number) => (called = true, v1 === v2);
-        let p = new AttachedProperty<Model, number>({ name: 'p', create, compare, changed });
+        let changed = () => {};
+        let compare = (v1: number, v2: number) => ((called = true), v1 === v2);
+        let p = new AttachedProperty<Model, number>({
+          name: 'p',
+          create,
+          compare,
+          changed
+        });
         let m = new Model();
         p.coerce(m);
         expect(called).to.equal(true);
@@ -322,17 +408,21 @@ describe('@lumino/properties', () => {
       it('should not invoke the changed function if the value does not change', () => {
         let called = false;
         let create = () => 0;
-        let changed = () => { called = true; };
-        let p = new AttachedProperty<Model, number>({ name: 'p', create, changed });
+        let changed = () => {
+          called = true;
+        };
+        let p = new AttachedProperty<Model, number>({
+          name: 'p',
+          create,
+          changed
+        });
         let m = new Model();
         p.coerce(m);
         expect(called).to.equal(false);
       });
-
     });
 
     describe('.clearData()', () => {
-
       it('should clear all property data for a property owner', () => {
         let create = () => 42;
         let p1 = new AttachedProperty<Model, number>({ name: 'p1', create });
@@ -390,9 +480,6 @@ describe('@lumino/properties', () => {
         expect(p3.get(m2)).to.equal(42);
         expect(p3.get(m3)).to.equal(42);
       });
-
     });
-
   });
-
 });

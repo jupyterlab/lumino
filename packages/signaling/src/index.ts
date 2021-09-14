@@ -7,11 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  ArrayExt, each, find
-} from '@lumino/algorithm';
-
-
+import { ArrayExt, each, find } from '@lumino/algorithm';
 
 /**
  * A type alias for a slot function.
@@ -23,9 +19,7 @@ import {
  * #### Notes
  * A slot is invoked when a signal to which it is connected is emitted.
  */
-export
-type Slot<T, U> = (sender: T, args: U) => void;
-
+export type Slot<T, U> = (sender: T, args: U) => void;
 
 /**
  * An object used for type-safe inter-object communication.
@@ -36,8 +30,7 @@ type Slot<T, U> = (sender: T, args: U) => void;
  * and consumers connect callbacks (subscribers) to those signals. The
  * subscribers are invoked whenever the publisher emits the signal.
  */
-export
-interface ISignal<T, U> {
+export interface ISignal<T, U> {
   /**
    * Connect a slot to the signal.
    *
@@ -79,7 +72,6 @@ interface ISignal<T, U> {
    */
   disconnect(slot: Slot<T, U>, thisArg?: any): boolean;
 }
-
 
 /**
  * A concrete implementation of `ISignal`.
@@ -130,8 +122,7 @@ interface ISignal<T, U> {
  * m2.value = 17;  // logs: bar 17
  * ```
  */
-export
-class Signal<T, U> implements ISignal<T, U> {
+export class Signal<T, U> implements ISignal<T, U> {
   /**
    * Construct a new signal.
    *
@@ -189,12 +180,10 @@ class Signal<T, U> implements ISignal<T, U> {
   }
 }
 
-
 /**
  * The namespace for the `Signal` class statics.
  */
-export
-namespace Signal {
+export namespace Signal {
   /**
    * Remove all connections between a sender and receiver.
    *
@@ -207,8 +196,7 @@ namespace Signal {
    * is considered the receiver. Otherwise, the `slot` is considered
    * the receiver.
    */
-  export
-  function disconnectBetween(sender: any, receiver: any): void {
+  export function disconnectBetween(sender: any, receiver: any): void {
     Private.disconnectBetween(sender, receiver);
   }
 
@@ -217,8 +205,7 @@ namespace Signal {
    *
    * @param sender - The sender object of interest.
    */
-  export
-  function disconnectSender(sender: any): void {
+  export function disconnectSender(sender: any): void {
     Private.disconnectSender(sender);
   }
 
@@ -232,8 +219,7 @@ namespace Signal {
    * is considered the receiver. Otherwise, the `slot` is considered
    * the receiver.
    */
-  export
-  function disconnectReceiver(receiver: any): void {
+  export function disconnectReceiver(receiver: any): void {
     Private.disconnectReceiver(receiver);
   }
 
@@ -247,8 +233,7 @@ namespace Signal {
    * is considered the receiver. Otherwise, the `slot` is considered
    * the receiver.
    */
-  export
-  function disconnectAll(object: any): void {
+  export function disconnectAll(object: any): void {
     Private.disconnectAll(object);
   }
 
@@ -261,16 +246,14 @@ namespace Signal {
    * This removes all signal connections and any other signal data
    * associated with the object.
    */
-  export
-  function clearData(object: any): void {
+  export function clearData(object: any): void {
     Private.disconnectAll(object);
   }
 
   /**
    * A type alias for the exception handler function.
    */
-  export
-  type ExceptionHandler = (err: Error) => void;
+  export type ExceptionHandler = (err: Error) => void;
 
   /**
    * Get the signal exception handler.
@@ -280,8 +263,7 @@ namespace Signal {
    * #### Notes
    * The default exception handler is `console.error`.
    */
-  export
-  function getExceptionHandler(): ExceptionHandler {
+  export function getExceptionHandler(): ExceptionHandler {
     return Private.exceptionHandler;
   }
 
@@ -295,14 +277,14 @@ namespace Signal {
    * #### Notes
    * The exception handler is invoked when a slot throws an exception.
    */
-  export
-  function setExceptionHandler(handler: ExceptionHandler): ExceptionHandler {
+  export function setExceptionHandler(
+    handler: ExceptionHandler
+  ): ExceptionHandler {
     let old = Private.exceptionHandler;
     Private.exceptionHandler = handler;
     return old;
   }
 }
-
 
 /**
  * The namespace for the module implementation details.
@@ -311,8 +293,7 @@ namespace Private {
   /**
    * The signal exception handler function.
    */
-  export
-  let exceptionHandler: Signal.ExceptionHandler = (err: Error) => {
+  export let exceptionHandler: Signal.ExceptionHandler = (err: Error) => {
     console.error(err);
   };
 
@@ -328,8 +309,11 @@ namespace Private {
    *
    * @returns `true` if the connection succeeds, `false` otherwise.
    */
-  export
-  function connect<T, U>(signal: Signal<T, U>, slot: Slot<T, U>, thisArg?: any): boolean {
+  export function connect<T, U>(
+    signal: Signal<T, U>,
+    slot: Slot<T, U>,
+    thisArg?: any
+  ): boolean {
     // Coerce a `null` `thisArg` to `undefined`.
     thisArg = thisArg || undefined;
 
@@ -376,8 +360,11 @@ namespace Private {
    *
    * @returns `true` if the connection is removed, `false` otherwise.
    */
-  export
-  function disconnect<T, U>(signal: Signal<T, U>, slot: Slot<T, U>, thisArg?: any): boolean {
+  export function disconnect<T, U>(
+    signal: Signal<T, U>,
+    slot: Slot<T, U>,
+    thisArg?: any
+  ): boolean {
     // Coerce a `null` `thisArg` to `undefined`.
     thisArg = thisArg || undefined;
 
@@ -415,8 +402,7 @@ namespace Private {
    *
    * @param receiver - The receiver object of interest.
    */
-  export
-  function disconnectBetween(sender: any, receiver: any): void {
+  export function disconnectBetween(sender: any, receiver: any): void {
     // If there are no receivers, there is nothing to do.
     let receivers = receiversForSender.get(sender);
     if (!receivers || receivers.length === 0) {
@@ -452,8 +438,7 @@ namespace Private {
    *
    * @param sender - The sender object of interest.
    */
-  export
-  function disconnectSender(sender: any): void {
+  export function disconnectSender(sender: any): void {
     // If there are no receivers, there is nothing to do.
     let receivers = receiversForSender.get(sender);
     if (!receivers || receivers.length === 0) {
@@ -486,8 +471,7 @@ namespace Private {
    *
    * @param receiver - The receiver object of interest.
    */
-  export
-  function disconnectReceiver(receiver: any): void {
+  export function disconnectReceiver(receiver: any): void {
     // If there are no senders, there is nothing to do.
     let senders = sendersForReceiver.get(receiver);
     if (!senders || senders.length === 0) {
@@ -520,8 +504,7 @@ namespace Private {
    *
    * @param object - The object of interest.
    */
-  export
-  function disconnectAll(object: any): void {
+  export function disconnectAll(object: any): void {
     // Remove all connections where the given object is the sender.
     disconnectSender(object);
     // Remove all connections where the given object is the receiver.
@@ -540,8 +523,7 @@ namespace Private {
    *
    * Exceptions thrown by connected slots will be caught and logged.
    */
-  export
-  function emit<T, U>(signal: Signal<T,  U>, args: U): void {
+  export function emit<T, U>(signal: Signal<T, U>, args: U): void {
     // If there are no receivers, there is nothing to do.
     let receivers = receiversForSender.get(signal.sender);
     if (!receivers || receivers.length === 0) {
@@ -607,12 +589,19 @@ namespace Private {
   /**
    * Find a connection which matches the given parameters.
    */
-  function findConnection(connections: IConnection[], signal: Signal<any, any>, slot: Slot<any, any>, thisArg: any): IConnection | undefined {
-    return find(connections, connection => (
-      connection.signal === signal &&
-      connection.slot === slot &&
-      connection.thisArg === thisArg
-    ));
+  function findConnection(
+    connections: IConnection[],
+    signal: Signal<any, any>,
+    slot: Slot<any, any>,
+    thisArg: any
+  ): IConnection | undefined {
+    return find(
+      connections,
+      connection =>
+        connection.signal === signal &&
+        connection.slot === slot &&
+        connection.thisArg === thisArg
+    );
   }
 
   /**

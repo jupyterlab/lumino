@@ -241,7 +241,7 @@ export class SplitPanel extends Panel {
 
     // Find the handle which contains the mouse target, if any.
     let layout = this.layout as SplitLayout;
-    let index = ArrayExt.findFirstIndex(layout.handles, (handle) => {
+    let index = ArrayExt.findFirstIndex(layout.handles, handle => {
       return handle.contains(event.target as HTMLElement);
     });
 
@@ -480,7 +480,7 @@ namespace Private {
         renderer: options.renderer || SplitPanel.defaultRenderer,
         orientation: options.orientation,
         alignment: options.alignment,
-        spacing: options.spacing,
+        spacing: options.spacing
       })
     );
   }

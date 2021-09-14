@@ -7,8 +7,8 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
-
-/* <DEPRECATED> */ .p-ScrollBar, /* </DEPRECATED> */
+/* <DEPRECATED> */
+.p-ScrollBar, /* </DEPRECATED> */
 .lm-ScrollBar {
   display: flex;
   -webkit-user-select: none;
@@ -17,14 +17,12 @@
   user-select: none;
 }
 
-
 /* <DEPRECATED> */
 .p-ScrollBar[data-orientation='horizontal'],
 /* </DEPRECATED> */
 .lm-ScrollBar[data-orientation='horizontal'] {
   flex-direction: row;
 }
-
 
 /* <DEPRECATED> */
 .p-ScrollBar[data-orientation='vertical'],
@@ -33,15 +31,15 @@
   flex-direction: column;
 }
 
-
-/* <DEPRECATED> */ .p-ScrollBar-button, /* </DEPRECATED> */
+/* <DEPRECATED> */
+.p-ScrollBar-button, /* </DEPRECATED> */
 .lm-ScrollBar-button {
   box-sizing: border-box;
   flex: 0 0 auto;
 }
 
-
-/* <DEPRECATED> */ .p-ScrollBar-track, /* </DEPRECATED> */
+/* <DEPRECATED> */
+.p-ScrollBar-track, /* </DEPRECATED> */
 .lm-ScrollBar-track {
   box-sizing: border-box;
   position: relative;
@@ -49,8 +47,8 @@
   flex: 1 1 auto;
 }
 
-
-/* <DEPRECATED> */ .p-ScrollBar-thumb, /* </DEPRECATED> */
+/* <DEPRECATED> */
+.p-ScrollBar-thumb, /* </DEPRECATED> */
 .lm-ScrollBar-thumb {
   box-sizing: border-box;
   position: absolute;

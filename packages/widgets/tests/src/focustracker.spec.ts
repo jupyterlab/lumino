@@ -7,26 +7,15 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  expect
-} from 'chai';
+import { expect } from 'chai';
 
-import {
-  simulate
-} from 'simulate-event';
+import { simulate } from 'simulate-event';
 
-import {
-  Platform
-} from '@lumino/domutils';
+import { Platform } from '@lumino/domutils';
 
-import {
-  FocusTracker, Widget
-} from '@lumino/widgets';
-
-
+import { FocusTracker, Widget } from '@lumino/widgets';
 
 describe('@lumino/widgets', () => {
-
   let _trackers: FocusTracker<Widget>[] = [];
   let _widgets: Widget[] = [];
 
@@ -70,18 +59,14 @@ describe('@lumino/widgets', () => {
   });
 
   describe('FocusTracker', () => {
-
     describe('#constructor()', () => {
-
       it('should create a FocusTracker', () => {
         let tracker = new FocusTracker<Widget>();
         expect(tracker).to.be.an.instanceof(FocusTracker);
       });
-
     });
 
     describe('#dispose()', () => {
-
       it('should dispose of the resources held by the tracker', () => {
         let tracker = new FocusTracker<Widget>();
         tracker.add(createWidget());
@@ -95,11 +80,9 @@ describe('@lumino/widgets', () => {
         tracker.dispose();
         expect(tracker.isDisposed).to.equal(true);
       });
-
     });
 
     describe('#currentChanged', () => {
-
       it('should be emitted when the current widget has changed', () => {
         let tracker = createTracker();
         let widget0 = createWidget();
@@ -130,11 +113,9 @@ describe('@lumino/widgets', () => {
         focusWidget(widget);
         expect(emitArgs).to.equal(null);
       });
-
     });
 
     describe('#activeChanged', () => {
-
       it('should be emitted when the active widget has changed', () => {
         let tracker = createTracker();
         let widget0 = createWidget();
@@ -166,22 +147,18 @@ describe('@lumino/widgets', () => {
         expect(emitArgs!.oldValue).to.equal(widget);
         expect(emitArgs!.newValue).to.equal(null);
       });
-
     });
 
     describe('#isDisposed', () => {
-
       it('should indicate whether the tracker is disposed', () => {
         let tracker = new FocusTracker<Widget>();
         expect(tracker.isDisposed).to.equal(false);
         tracker.dispose();
         expect(tracker.isDisposed).to.equal(true);
       });
-
     });
 
     describe('#currentWidget', () => {
-
       it('should get the current widget in the tracker', () => {
         let tracker = createTracker();
         let widget = createWidget();
@@ -235,11 +212,9 @@ describe('@lumino/widgets', () => {
         widget.dispose();
         expect(tracker.currentWidget).to.equal(null);
       });
-
     });
 
     describe('#activeWidget', () => {
-
       it('should get the active widget in the tracker', () => {
         let tracker = createTracker();
         let widget = createWidget();
@@ -280,11 +255,9 @@ describe('@lumino/widgets', () => {
         widget.dispose();
         expect(tracker.activeWidget).to.equal(null);
       });
-
     });
 
     describe('#widgets', () => {
-
       it('should be a read-only sequence of the widgets being tracked', () => {
         let tracker = createTracker();
         expect(tracker.widgets.length).to.equal(0);
@@ -293,11 +266,9 @@ describe('@lumino/widgets', () => {
         expect(tracker.widgets.length).to.equal(1);
         expect(tracker.widgets[0]).to.equal(widget);
       });
-
     });
 
     describe('#focusNumber()', () => {
-
       it('should get the focus number for a particular widget in the tracker', () => {
         let tracker = createTracker();
         let widget = createWidget();
@@ -339,11 +310,9 @@ describe('@lumino/widgets', () => {
         focusWidget(widget0);
         expect(tracker.focusNumber(widget0)).to.equal(2);
       });
-
     });
 
     describe('#has()', () => {
-
       it('should test whether the focus tracker contains a given widget', () => {
         let tracker = createTracker();
         let widget = createWidget();
@@ -351,11 +320,9 @@ describe('@lumino/widgets', () => {
         tracker.add(widget);
         expect(tracker.has(widget)).to.equal(true);
       });
-
     });
 
     describe('#add()', () => {
-
       it('should add a widget to the focus tracker', () => {
         let tracker = createTracker();
         let widget = createWidget();
@@ -386,11 +353,9 @@ describe('@lumino/widgets', () => {
         tracker.add(widget);
         expect(tracker.has(widget)).to.equal(true);
       });
-
     });
 
     describe('#remove()', () => {
-
       it('should remove a widget from the focus tracker', () => {
         let tracker = createTracker();
         let widget = createWidget();
@@ -420,9 +385,6 @@ describe('@lumino/widgets', () => {
         tracker.remove(widget);
         expect(tracker.has(widget)).to.equal(false);
       });
-
     });
-
   });
-
 });

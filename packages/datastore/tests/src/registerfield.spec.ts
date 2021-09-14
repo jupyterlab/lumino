@@ -7,68 +7,53 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  expect
-} from 'chai';
+import { expect } from 'chai';
 
-import {
-  RegisterField
-} from '@lumino/datastore';
+import { RegisterField } from '@lumino/datastore';
 
 type RegisterValue = { value: string };
 
 describe('@lumino/datastore', () => {
-
   describe('RegisterField', () => {
-
     let field: RegisterField<RegisterValue>;
 
     beforeEach(() => {
-        field = new RegisterField<RegisterValue>({
-          value: { value: 'a' }
-        });
+      field = new RegisterField<RegisterValue>({
+        value: { value: 'a' }
+      });
     });
 
     describe('constructor()', () => {
-
       it('should accept options', () => {
         expect(field.value.value).to.equal('a');
       });
-
     });
 
     describe('type', () => {
-
       it('should return the type of the field', () => {
         expect(field.type).to.equal('register');
       });
-
     });
 
     describe('createValue()', () => {
-
       it('should create an initial value for the field', () => {
         let value = field.createValue();
         expect(value.value).to.equal('a');
       });
-
     });
 
     describe('createMetadata()', () => {
-
       it('should create initial metadata for the field', () => {
         let metadata = field.createMetadata();
         expect(metadata.ids.length).to.equal(0);
         expect(metadata.values.length).to.equal(0);
       });
-
     });
 
     describe('applyUpdate', () => {
-
       it('should return the result of the update', () => {
         let newValue = {
-            value: 'updated'
+          value: 'updated'
         };
         let update = {
           previous: field.value,
@@ -85,11 +70,9 @@ describe('@lumino/datastore', () => {
         expect(patch.id).to.not.equal('');
         expect(patch.value).to.eql(newValue);
       });
-
     });
 
     describe('applyPatch', () => {
-
       it('should return the result of the patch', () => {
         let metadata = field.createMetadata();
         let update = field.applyUpdate({
@@ -145,11 +128,9 @@ describe('@lumino/datastore', () => {
         expect(patch2.change.current.value).to.equal('updated-later');
         expect(patch2.change.previous.value).to.equal('updated-later');
       });
-
     });
 
     describe('unapplyPatch', () => {
-
       it('should remove a patch from a field', () => {
         // Create the patch
         let metadata = field.createMetadata();
@@ -203,12 +184,9 @@ describe('@lumino/datastore', () => {
         expect(unpatched2.change.current.value).to.equal('a');
         expect(unpatched2.change.previous.value).to.equal('updated');
       });
-
     });
 
-
     describe('mergeChange', () => {
-
       it('should merge two successive changes', () => {
         let change1 = {
           previous: field.value,
@@ -222,20 +200,15 @@ describe('@lumino/datastore', () => {
         expect(merged.previous.value).to.equal('a');
         expect(merged.current.value).to.equal('second-change');
       });
-
     });
 
     describe('mergePatch', () => {
-
       it('should merge two successive patches by choosing the second', () => {
         let patch1 = { id: 'first', value: { value: 'first' } };
         let patch2 = { id: 'second', value: { value: 'second' } };
         let merged = field.mergePatch(patch1, patch2);
         expect(merged).to.eql(patch2);
       });
-
     });
-
   });
-
 });

@@ -7,8 +7,8 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
-
-/* <DEPRECATED> */ body.p-mod-override-cursor *, /* </DEPRECATED> */
+/* <DEPRECATED> */
+body.p-mod-override-cursor *, /* </DEPRECATED> */
 body.lm-mod-override-cursor * {
   cursor: inherit !important;
 }

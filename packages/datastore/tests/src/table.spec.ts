@@ -7,52 +7,52 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  expect
-} from 'chai';
+import { expect } from 'chai';
+
+import { toArray } from '@lumino/algorithm';
 
 import {
-  toArray
-} from '@lumino/algorithm';
-
-import {
-  Datastore, Fields, ListField, RegisterField, Table, TextField
+  Datastore,
+  Fields,
+  ListField,
+  RegisterField,
+  Table,
+  TextField
 } from '@lumino/datastore';
-
 
 type CustomMetadata = { id: string };
 
 type TestSchema = {
   id: string;
   fields: {
-    content: TextField,
-    count: RegisterField<number>,
-    enabled: RegisterField<boolean>,
-    links: ListField<string>,
-    metadata: RegisterField<CustomMetadata>
-  }
-}
+    content: TextField;
+    count: RegisterField<number>;
+    enabled: RegisterField<boolean>;
+    links: ListField<string>;
+    metadata: RegisterField<CustomMetadata>;
+  };
+};
 
 let schema: TestSchema = {
   id: 'test-schema',
   fields: {
     content: Fields.Text(),
-    count:Fields.Number(),
+    count: Fields.Number(),
     enabled: Fields.Boolean(),
     links: Fields.List<string>(),
-    metadata: Fields.Register<CustomMetadata>({ value: { id: 'identifier' }})
+    metadata: Fields.Register<CustomMetadata>({ value: { id: 'identifier' } })
   }
 };
 
 /**
  * Remove readonly guards from Context for testing purposes.
  */
-type MutableContext = { -readonly [K in keyof Datastore.Context]: Datastore.Context[K] };
+type MutableContext = {
+  -readonly [K in keyof Datastore.Context]: Datastore.Context[K];
+};
 
 describe('@lumino/datastore', () => {
-
   describe('Table', () => {
-
     let table: Table<TestSchema>;
     let context: MutableContext;
 
@@ -69,24 +69,19 @@ describe('@lumino/datastore', () => {
     });
 
     describe('create()', () => {
-
       it('should create a new table', () => {
         let table = Table.create(schema, context);
         expect(table).to.be.instanceof(Table);
       });
-
     });
 
     describe('schema', () => {
-
       it('should be the schema for the table', () => {
         expect(table.schema).to.equal(schema);
       });
-
     });
 
     describe('isEmpty', () => {
-
       it('should return whether the table is empty', () => {
         expect(table.isEmpty).to.be.true;
         context.inTransaction = true;
@@ -95,13 +90,10 @@ describe('@lumino/datastore', () => {
         });
         context.inTransaction = false;
         expect(table.isEmpty).to.be.false;
-
       });
-
     });
 
     describe('size', () => {
-
       it('should return the size of the table', () => {
         expect(table.size).to.equal(0);
         context.inTransaction = true;
@@ -113,28 +105,23 @@ describe('@lumino/datastore', () => {
         context.inTransaction = false;
         expect(table.size).to.equal(3);
       });
-
     });
 
     describe('iter()', () => {
-
       it('should return an iterator over the records in the table', () => {
         context.inTransaction = true;
         table.update({
-          'my-record': { },
-          'my-other-record': { },
-          'my-other-other-record': { }
+          'my-record': {},
+          'my-other-record': {},
+          'my-other-other-record': {}
         });
         context.inTransaction = false;
         let arr = toArray(table.iter());
         expect(arr.length).to.equal(3);
-
       });
-
     });
 
     describe('has()', () => {
-
       it('should return whether the table has a given record', () => {
         expect(table.has('my-record')).to.be.false;
         context.inTransaction = true;
@@ -143,16 +130,13 @@ describe('@lumino/datastore', () => {
         });
         context.inTransaction = false;
         expect(table.has('my-record')).to.be.true;
-
       });
-
     });
 
     describe('get()', () => {
-
       it('should return undefined if the record does not exist', () => {
         expect(table.get('my-record')).to.be.undefined;
-      })
+      });
 
       it('should get an existing record from a table', () => {
         context.inTransaction = true;
@@ -165,18 +149,15 @@ describe('@lumino/datastore', () => {
         expect(record.enabled).to.be.true;
         expect(record.count).to.equal(1);
       });
-
     });
 
     describe('update()', () => {
-
       it('should raise if the table is not in a transaction', () => {
         expect(() => {
           table.update({
             'my-record': { enabled: true, count: 1 }
           });
         }).to.throw('A table can only be updated during a transaction');
-
       });
 
       it('should create a record if it does not exist', () => {
@@ -188,13 +169,12 @@ describe('@lumino/datastore', () => {
         let record = table.get('my-record')!;
         expect(record.$id).to.equal('my-record');
         expect(record['@@metadata']).to.not.equal(undefined);
-
       });
 
       it('should initialize values appropriately', () => {
         context.inTransaction = true;
         table.update({
-          'my-record': { }
+          'my-record': {}
         });
         context.inTransaction = false;
         let record = table.get('my-record')!;
@@ -203,7 +183,6 @@ describe('@lumino/datastore', () => {
         expect(record.count).to.equal(0);
         expect(record.links).to.eql([]);
         expect(record.metadata).to.eql({ id: 'identifier' });
-
       });
 
       it('should update the records in the table', () => {
@@ -232,11 +211,9 @@ describe('@lumino/datastore', () => {
         expect(record.links).to.eql(['a', 'b', 'c']);
         expect(record.metadata).to.eql({ id: 'new-identifier' });
       });
-
     });
 
     describe('patch()', () => {
-
       it('should create a record if it does not exist', () => {
         expect(table.get('my-record')).to.be.undefined;
         let patch = { 'my-record': { count: { id: 'unique-id', value: 2 } } };
@@ -262,11 +239,9 @@ describe('@lumino/datastore', () => {
         expect(change['my-record']!.enabled!.previous).to.be.false;
         expect(change['my-record']!.enabled!.current).to.be.true;
       });
-
     });
 
     describe('unpatch()', () => {
-
       it('should create a record if it does not exist', () => {
         expect(table.get('my-record')).to.be.undefined;
         let patch = { 'my-record': { count: { id: 'unique-id', value: 2 } } };
@@ -294,9 +269,6 @@ describe('@lumino/datastore', () => {
         expect(change['my-record']!.enabled!.previous).to.be.true;
         expect(change['my-record']!.enabled!.current).to.be.false;
       });
-
     });
-
   });
-
 });

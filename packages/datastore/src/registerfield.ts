@@ -7,28 +7,24 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  ArrayExt, StringExt
-} from '@lumino/algorithm';
+import { ArrayExt, StringExt } from '@lumino/algorithm';
 
-import {
-  ReadonlyJSONValue
-} from '@lumino/coreutils';
+import { ReadonlyJSONValue } from '@lumino/coreutils';
 
-import {
-  Field
-} from './field';
+import { Field } from './field';
 
-import {
-  createDuplexId
-} from './utilities';
-
+import { createDuplexId } from './utilities';
 
 /**
  * A field which represents a collaborative atomic value.
  */
-export
-class RegisterField<T extends ReadonlyJSONValue> extends Field<RegisterField.Value<T>, RegisterField.Update<T>, RegisterField.Metadata<T>, RegisterField.Change<T>, RegisterField.Patch<T>> {
+export class RegisterField<T extends ReadonlyJSONValue> extends Field<
+  RegisterField.Value<T>,
+  RegisterField.Update<T>,
+  RegisterField.Metadata<T>,
+  RegisterField.Change<T>,
+  RegisterField.Patch<T>
+> {
   /**
    * Construct a new register field.
    *
@@ -76,7 +72,17 @@ class RegisterField<T extends ReadonlyJSONValue> extends Field<RegisterField.Val
    *
    * @returns The result of applying the update.
    */
-  applyUpdate(args: Field.UpdateArgs<RegisterField.Value<T>, RegisterField.Update<T>, RegisterField.Metadata<T>>): Field.UpdateResult<RegisterField.Value<T>, RegisterField.Change<T>, RegisterField.Patch<T>> {
+  applyUpdate(
+    args: Field.UpdateArgs<
+      RegisterField.Value<T>,
+      RegisterField.Update<T>,
+      RegisterField.Metadata<T>
+    >
+  ): Field.UpdateResult<
+    RegisterField.Value<T>,
+    RegisterField.Change<T>,
+    RegisterField.Patch<T>
+  > {
     // Unpack the arguments.
     let { previous, update, metadata, version, storeId } = args;
 
@@ -103,7 +109,13 @@ class RegisterField<T extends ReadonlyJSONValue> extends Field<RegisterField.Val
    *
    * @returns The result of applying the patch.
    */
-  applyPatch(args: Field.PatchArgs<RegisterField.Value<T>, RegisterField.Patch<T>, RegisterField.Metadata<T>>): Field.PatchResult<RegisterField.Value<T>, RegisterField.Change<T>> {
+  applyPatch(
+    args: Field.PatchArgs<
+      RegisterField.Value<T>,
+      RegisterField.Patch<T>,
+      RegisterField.Metadata<T>
+    >
+  ): Field.PatchResult<RegisterField.Value<T>, RegisterField.Change<T>> {
     // Unpack the arguments.
     let { previous, patch, metadata } = args;
 
@@ -124,7 +136,13 @@ class RegisterField<T extends ReadonlyJSONValue> extends Field<RegisterField.Val
    *
    * @returns The result of unapplying the patch.
    */
-  unapplyPatch(args: Field.PatchArgs<RegisterField.Value<T>, RegisterField.Patch<T>, RegisterField.Metadata<T>>): Field.PatchResult<RegisterField.Value<T>, RegisterField.Change<T>> {
+  unapplyPatch(
+    args: Field.PatchArgs<
+      RegisterField.Value<T>,
+      RegisterField.Patch<T>,
+      RegisterField.Metadata<T>
+    >
+  ): Field.PatchResult<RegisterField.Value<T>, RegisterField.Change<T>> {
     // Unpack the arguments.
     let { previous, patch, metadata } = args;
 
@@ -147,7 +165,10 @@ class RegisterField<T extends ReadonlyJSONValue> extends Field<RegisterField.Val
    *
    * @returns A new change object which represents both changes.
    */
-  mergeChange(first: RegisterField.Change<T>, second: RegisterField.Change<T>): RegisterField.Change<T> {
+  mergeChange(
+    first: RegisterField.Change<T>,
+    second: RegisterField.Change<T>
+  ): RegisterField.Change<T> {
     return { previous: first.previous, current: second.current };
   }
 
@@ -160,22 +181,23 @@ class RegisterField<T extends ReadonlyJSONValue> extends Field<RegisterField.Val
    *
    * @returns A new patch object which represents both patches.
    */
-  mergePatch(first: RegisterField.Patch<T>, second: RegisterField.Patch<T>): RegisterField.Patch<T> {
+  mergePatch(
+    first: RegisterField.Patch<T>,
+    second: RegisterField.Patch<T>
+  ): RegisterField.Patch<T> {
     return second;
   }
 }
 
-
 /**
  * The namespace for the `RegisterField` class statics.
  */
-export
-namespace RegisterField {
+export namespace RegisterField {
   /**
    * An options object for initializing a register field.
    */
-  export
-  interface IOptions<T extends ReadonlyJSONValue> extends Field.IOptions {
+  export interface IOptions<T extends ReadonlyJSONValue>
+    extends Field.IOptions {
     /**
      * The initial value for the field.
      */
@@ -185,20 +207,17 @@ namespace RegisterField {
   /**
    * A type alias for the register field value type.
    */
-  export
-  type Value<T extends ReadonlyJSONValue> = T;
+  export type Value<T extends ReadonlyJSONValue> = T;
 
   /**
    * A type alias for the register field update type.
    */
-  export
-  type Update<T extends ReadonlyJSONValue> = T;
+  export type Update<T extends ReadonlyJSONValue> = T;
 
   /**
    * A type alias for the register field change type.
    */
-  export
-  type Change<T extends ReadonlyJSONValue> = {
+  export type Change<T extends ReadonlyJSONValue> = {
     /**
      * The previous value of the field.
      */
@@ -213,8 +232,7 @@ namespace RegisterField {
   /**
    * A type alias for the register field patch type.
    */
-  export
-  type Patch<T extends ReadonlyJSONValue> = {
+  export type Patch<T extends ReadonlyJSONValue> = {
     /**
      * The unique id for the value.
      */
@@ -229,8 +247,7 @@ namespace RegisterField {
   /**
    * A type alias for the register field metadata type.
    */
-  export
-  type Metadata<T extends ReadonlyJSONValue> = {
+  export type Metadata<T extends ReadonlyJSONValue> = {
     /**
      * An array of id history.
      */
@@ -242,7 +259,6 @@ namespace RegisterField {
     readonly values: Array<T>;
   };
 }
-
 
 /**
  * The namespace for the module implementation details.
@@ -262,8 +278,11 @@ namespace Private {
    * #### Notes
    * If the id already exists, the old value will be overwritten.
    */
-  export
-  function insertIntoMetadata<T extends ReadonlyJSONValue>(metadata: RegisterField.Metadata<T>, id: string, value: T): T {
+  export function insertIntoMetadata<T extends ReadonlyJSONValue>(
+    metadata: RegisterField.Metadata<T>,
+    id: string,
+    value: T
+  ): T {
     // Unpack the metadata.
     let { ids, values } = metadata;
 
@@ -296,8 +315,11 @@ namespace Private {
    * #### Notes
    * If the id does not exist in the metadata, this is a no-op.
    */
-  export
-  function removeFromMetadata<T extends ReadonlyJSONValue>(metadata: RegisterField.Metadata<T>, id: string, initial: T): T {
+  export function removeFromMetadata<T extends ReadonlyJSONValue>(
+    metadata: RegisterField.Metadata<T>,
+    id: string,
+    initial: T
+  ): T {
     // Unpack the metadata.
     let { ids, values } = metadata;
 

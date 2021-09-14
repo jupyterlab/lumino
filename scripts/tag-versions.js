@@ -7,10 +7,12 @@ const tags = utils.run('git tag', { stdio: 'pipe' }, true).split('\n');
 
 // For each package, compare the local version to the published version
 fs.readdirSync('packages').forEach(pkgName => {
-    const localPath = path.join('packages', pkgName, 'package.json');
-    const localPackage = JSON.parse(fs.readFileSync(localPath, { encoding: 'utf-8' }));
-    const tag = `${localPackage.name}@${localPackage.version}`;
-    if (tags.indexOf(tag) === -1) {
-        utils.run(`git tag ${tag} -a -m "Release ${tag}"`)
-    }
+  const localPath = path.join('packages', pkgName, 'package.json');
+  const localPackage = JSON.parse(
+    fs.readFileSync(localPath, { encoding: 'utf-8' })
+  );
+  const tag = `${localPackage.name}@${localPackage.version}`;
+  if (tags.indexOf(tag) === -1) {
+    utils.run(`git tag ${tag} -a -m "Release ${tag}"`);
+  }
 });

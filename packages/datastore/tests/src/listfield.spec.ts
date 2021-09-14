@@ -7,13 +7,9 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  expect
-} from 'chai';
+import { expect } from 'chai';
 
-import {
-  ListField
-} from '@lumino/datastore';
+import { ListField } from '@lumino/datastore';
 
 type ListValue = number;
 
@@ -30,54 +26,43 @@ function shuffle<T>(array: ReadonlyArray<T>): T[] {
 }
 
 describe('@lumino/datastore', () => {
-
   describe('ListField', () => {
-
     let field: ListField<ListValue>;
 
     beforeEach(() => {
-        field = new ListField<ListValue>({
-          description: 'A list field storing numbers'
-        });
+      field = new ListField<ListValue>({
+        description: 'A list field storing numbers'
+      });
     });
 
     describe('constructor()', () => {
-
       it('should create a list field', () => {
         expect(field).to.be.instanceof(ListField);
       });
-
     });
 
     describe('type', () => {
-
       it('should return the type of the field', () => {
         expect(field.type).to.equal('list');
       });
-
     });
 
     describe('createValue()', () => {
-
       it('should create an initial value for the field', () => {
         let value = field.createValue();
         expect(value).to.eql([]);
       });
-
     });
 
     describe('createMetadata()', () => {
-
       it('should create initial metadata for the field', () => {
         let metadata = field.createMetadata();
         expect(metadata.ids).to.eql([]);
         expect(metadata.cemetery).to.eql({});
       });
-
     });
 
     describe('applyUpdate', () => {
-
       it('should return the result of the update', () => {
         let previous = field.createValue();
         let metadata = field.createMetadata();
@@ -94,7 +79,11 @@ describe('@lumino/datastore', () => {
           storeId: 1
         });
         expect(value).to.eql([1, 2, 3]);
-        expect(change[0]).to.eql({ index: 0, removed: [], inserted: [1, 2, 3]});
+        expect(change[0]).to.eql({
+          index: 0,
+          removed: [],
+          inserted: [1, 2, 3]
+        });
         expect(patch.length).to.equal(1);
         expect(patch[0].removedValues.length).to.equal(splice.remove);
         expect(patch[0].insertedValues).to.eql(splice.values);
@@ -124,8 +113,12 @@ describe('@lumino/datastore', () => {
         });
         expect(value).to.eql([1, 4, 5, 3]);
         expect(change.length).to.eql(2);
-        expect(change[0]).to.eql({ index: 0, removed: [], inserted: [1, 2, 3]});
-        expect(change[1]).to.eql({ index: 1, removed: [2], inserted: [4, 5]});
+        expect(change[0]).to.eql({
+          index: 0,
+          removed: [],
+          inserted: [1, 2, 3]
+        });
+        expect(change[1]).to.eql({ index: 1, removed: [2], inserted: [4, 5] });
         expect(patch.length).to.equal(2);
         expect(patch[0].removedValues.length).to.equal(splice1.remove);
         expect(patch[0].insertedValues).to.eql(splice1.values);
@@ -156,11 +149,9 @@ describe('@lumino/datastore', () => {
         });
         expect(value).to.eql(values);
       });
-
     });
 
     describe('applyPatch', () => {
-
       it('should return the result of the patch', () => {
         let previous = field.createValue();
         let metadata = field.createMetadata();
@@ -282,7 +273,7 @@ describe('@lumino/datastore', () => {
             previous: current,
             metadata,
             update: {
-              index: i+1,
+              index: i + 1,
               remove: 2,
               values: []
             },
@@ -292,7 +283,7 @@ describe('@lumino/datastore', () => {
           version++;
           current = u2.value;
           patches.push(u2.patch);
-        };
+        }
         expect(current).to.eql(values);
         // Shuffle the patches and apply them in a random order to
         // a new ListField. We try this multiple times to ensure we
@@ -398,27 +389,25 @@ describe('@lumino/datastore', () => {
         let values = new Array(250000).fill(0);
         // Create a patch
         let { patch } = field.applyUpdate({
-            previous,
-            update: { index: 0, remove: 0, values },
-            metadata,
-            version: 1,
-            storeId: 1
+          previous,
+          update: { index: 0, remove: 0, values },
+          metadata,
+          version: 1,
+          storeId: 1
         });
         // Reset the metadata
         metadata = field.createMetadata();
         // Apply the patch
         let patched = field.applyPatch({
-            previous,
-            metadata,
-            patch
+          previous,
+          metadata,
+          patch
         });
         expect(patched.value.length).to.eql(values.length);
-      })
-
+      });
     });
 
     describe('unapplyPatch', () => {
-
       it('should remove a patch from the history', () => {
         let previous = field.createValue();
         let metadata = field.createMetadata();
@@ -504,12 +493,9 @@ describe('@lumino/datastore', () => {
         expect(patched.value).to.eql([]);
         expect(patched.change.length).to.equal(0);
       });
-
     });
 
-
     describe('mergeChange', () => {
-
       it('should merge two successive changes', () => {
         let change1 = [
           {
@@ -528,11 +514,9 @@ describe('@lumino/datastore', () => {
         let result = field.mergeChange(change1, change2);
         expect(result).to.eql([...change1, ...change2]);
       });
-
     });
 
     describe('mergePatch', () => {
-
       it('should merge two successive patches', () => {
         let patch1 = [
           {
@@ -553,9 +537,6 @@ describe('@lumino/datastore', () => {
         let result = field.mergePatch(patch1, patch2);
         expect(result).to.eql([...patch1, ...patch2]);
       });
-
     });
-
   });
-
 });

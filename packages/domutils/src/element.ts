@@ -8,17 +8,14 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
-
 /**
  * The namespace for element related utilities.
  */
-export
-namespace ElementExt {
+export namespace ElementExt {
   /**
    * An object which holds the border and padding data for an element.
    */
-  export
-  interface IBoxSizing {
+  export interface IBoxSizing {
     /**
      * The top border width, in pixels.
      */
@@ -77,8 +74,7 @@ namespace ElementExt {
    *
    * @returns The box sizing data for the specified element.
    */
-  export
-  function boxSizing(element: Element): IBoxSizing {
+  export function boxSizing(element: Element): IBoxSizing {
     let style = window.getComputedStyle(element);
     let bt = parseFloat(style.borderTopWidth!) || 0;
     let bl = parseFloat(style.borderLeftWidth!) || 0;
@@ -107,8 +103,7 @@ namespace ElementExt {
   /**
    * An object which holds the min and max size data for an element.
    */
-  export
-  interface ISizeLimits {
+  export interface ISizeLimits {
     /**
      * The minimum width, in pixels.
      */
@@ -137,8 +132,7 @@ namespace ElementExt {
    *
    * @returns The size limit data for the specified element.
    */
-  export
-  function sizeLimits(element: Element): ISizeLimits {
+  export function sizeLimits(element: Element): ISizeLimits {
     let style = window.getComputedStyle(element);
     let minWidth = parseFloat(style.minWidth!) || 0;
     let minHeight = parseFloat(style.minHeight!) || 0;
@@ -160,8 +154,11 @@ namespace ElementExt {
    *
    * @returns Whether the point is within the given element.
    */
-  export
-  function hitTest(element: Element, clientX: number, clientY: number): boolean {
+  export function hitTest(
+    element: Element,
+    clientX: number,
+    clientY: number
+  ): boolean {
     let rect = element.getBoundingClientRect();
     return (
       clientX >= rect.left &&
@@ -187,8 +184,10 @@ namespace ElementExt {
    * within the visible area, no scrolling will take place. Otherwise,
    * the nearest edges of the area and element are aligned.
    */
-  export
-  function scrollIntoViewIfNeeded(area: Element, element: Element): void {
+  export function scrollIntoViewIfNeeded(
+    area: Element,
+    element: Element
+  ): void {
     let ar = area.getBoundingClientRect();
     let er = element.getBoundingClientRect();
     if (er.top <= ar.top && er.bottom >= ar.bottom) {

@@ -8,126 +8,114 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
-
 /**
  * A type alias for a JSON primitive.
  */
-export
-type JSONPrimitive = boolean | number | string | null;
-
+export type JSONPrimitive = boolean | number | string | null;
 
 /**
  * A type alias for a JSON value.
  */
-export
-type JSONValue = JSONPrimitive | JSONObject | JSONArray;
-
+export type JSONValue = JSONPrimitive | JSONObject | JSONArray;
 
 /**
  * A type definition for a JSON object.
  */
-export
-interface JSONObject { [key: string]: JSONValue; }
-
+export interface JSONObject {
+  [key: string]: JSONValue;
+}
 
 /**
  * A type definition for a JSON array.
  */
-export
-interface JSONArray extends Array<JSONValue> { }
-
+export interface JSONArray extends Array<JSONValue> {}
 
 /**
  * A type definition for a readonly JSON object.
  */
-export
-interface ReadonlyJSONObject { readonly [key: string]: ReadonlyJSONValue; }
-
+export interface ReadonlyJSONObject {
+  readonly [key: string]: ReadonlyJSONValue;
+}
 
 /**
  * A type definition for a readonly JSON array.
  */
-export
-interface ReadonlyJSONArray extends ReadonlyArray<ReadonlyJSONValue> { }
-
+export interface ReadonlyJSONArray extends ReadonlyArray<ReadonlyJSONValue> {}
 
 /**
  * A type alias for a readonly JSON value.
  */
-export
-type ReadonlyJSONValue = JSONPrimitive | ReadonlyJSONObject | ReadonlyJSONArray;
-
+export type ReadonlyJSONValue =
+  | JSONPrimitive
+  | ReadonlyJSONObject
+  | ReadonlyJSONArray;
 
 /**
  * A type alias for a partial JSON value.
  *
  * Note: Partial here means that JSON object attributes can be `undefined`.
  */
-export
-type PartialJSONValue = JSONPrimitive | PartialJSONObject | PartialJSONArray;
-
+export type PartialJSONValue =
+  | JSONPrimitive
+  | PartialJSONObject
+  | PartialJSONArray;
 
 /**
  * A type definition for a partial JSON object.
  *
  * Note: Partial here means that the JSON object attributes can be `undefined`.
  */
-export
-interface PartialJSONObject { [key: string]: PartialJSONValue | undefined; }
-
+export interface PartialJSONObject {
+  [key: string]: PartialJSONValue | undefined;
+}
 
 /**
  * A type definition for a partial JSON array.
  *
  * Note: Partial here means that JSON object attributes can be `undefined`.
  */
-export
-interface PartialJSONArray extends Array<PartialJSONValue> { }
-
+export interface PartialJSONArray extends Array<PartialJSONValue> {}
 
 /**
  * A type definition for a readonly partial JSON object.
  *
  * Note: Partial here means that JSON object attributes can be `undefined`.
  */
-export
-interface ReadonlyPartialJSONObject { readonly [key: string]: ReadonlyPartialJSONValue | undefined; }
-
+export interface ReadonlyPartialJSONObject {
+  readonly [key: string]: ReadonlyPartialJSONValue | undefined;
+}
 
 /**
  * A type definition for a readonly partial JSON array.
  *
  * Note: Partial here means that JSON object attributes can be `undefined`.
  */
-export
-interface ReadonlyPartialJSONArray extends ReadonlyArray<ReadonlyPartialJSONValue> { }
-
+export interface ReadonlyPartialJSONArray
+  extends ReadonlyArray<ReadonlyPartialJSONValue> {}
 
 /**
  * A type alias for a readonly partial JSON value.
  *
  * Note: Partial here means that JSON object attributes can be `undefined`.
  */
-export
-type ReadonlyPartialJSONValue = JSONPrimitive | ReadonlyPartialJSONObject | ReadonlyPartialJSONArray;
-
+export type ReadonlyPartialJSONValue =
+  | JSONPrimitive
+  | ReadonlyPartialJSONObject
+  | ReadonlyPartialJSONArray;
 
 /**
  * The namespace for JSON-specific functions.
  */
-export
-namespace JSONExt {
+export namespace JSONExt {
   /**
    * A shared frozen empty JSONObject
    */
-  export
-  const emptyObject = Object.freeze({}) as ReadonlyJSONObject;
+  export const emptyObject = Object.freeze({}) as ReadonlyJSONObject;
 
   /**
    * A shared frozen empty JSONArray
    */
-  export
-  const emptyArray = Object.freeze([]) as ReadonlyJSONArray;
+  export const emptyArray = Object.freeze([]) as ReadonlyJSONArray;
 
   /**
    * Test whether a JSON value is a primitive.
@@ -136,8 +124,9 @@ namespace JSONExt {
    *
    * @returns `true` if the value is a primitive,`false` otherwise.
    */
-  export
-  function isPrimitive(value: ReadonlyPartialJSONValue): value is JSONPrimitive {
+  export function isPrimitive(
+    value: ReadonlyPartialJSONValue
+  ): value is JSONPrimitive {
     return (
       value === null ||
       typeof value === 'boolean' ||
@@ -153,16 +142,13 @@ namespace JSONExt {
    *
    * @returns `true` if the value is a an array, `false` otherwise.
    */
-  export
-  function isArray(value: JSONValue): value is JSONArray;
-  export
-  function isArray(value: ReadonlyJSONValue): value is ReadonlyJSONArray;
-  export
-  function isArray(value: PartialJSONValue): value is PartialJSONArray;
-  export
-  function isArray(value: ReadonlyPartialJSONValue): value is ReadonlyPartialJSONArray;
-  export
-  function isArray(value: ReadonlyPartialJSONValue): boolean {
+  export function isArray(value: JSONValue): value is JSONArray;
+  export function isArray(value: ReadonlyJSONValue): value is ReadonlyJSONArray;
+  export function isArray(value: PartialJSONValue): value is PartialJSONArray;
+  export function isArray(
+    value: ReadonlyPartialJSONValue
+  ): value is ReadonlyPartialJSONArray;
+  export function isArray(value: ReadonlyPartialJSONValue): boolean {
     return Array.isArray(value);
   }
 
@@ -173,16 +159,15 @@ namespace JSONExt {
    *
    * @returns `true` if the value is a an object, `false` otherwise.
    */
-  export
-  function isObject(value: JSONValue): value is JSONObject;
-  export
-  function isObject(value: ReadonlyJSONValue): value is ReadonlyJSONObject;
-  export
-  function isObject(value: PartialJSONValue): value is PartialJSONObject;
-  export
-  function isObject(value: ReadonlyPartialJSONValue): value is ReadonlyPartialJSONObject;
-  export
-  function isObject(value: ReadonlyPartialJSONValue): boolean {
+  export function isObject(value: JSONValue): value is JSONObject;
+  export function isObject(
+    value: ReadonlyJSONValue
+  ): value is ReadonlyJSONObject;
+  export function isObject(value: PartialJSONValue): value is PartialJSONObject;
+  export function isObject(
+    value: ReadonlyPartialJSONValue
+  ): value is ReadonlyPartialJSONObject;
+  export function isObject(value: ReadonlyPartialJSONValue): boolean {
     return !isPrimitive(value) && !isArray(value);
   }
 
@@ -195,8 +180,10 @@ namespace JSONExt {
    *
    * @returns `true` if the values are equivalent, `false` otherwise.
    */
-  export
-  function deepEqual(first: ReadonlyPartialJSONValue, second: ReadonlyPartialJSONValue): boolean {
+  export function deepEqual(
+    first: ReadonlyPartialJSONValue,
+    second: ReadonlyPartialJSONValue
+  ): boolean {
     // Check referential and primitive equality first.
     if (first === second) {
       return true;
@@ -218,11 +205,17 @@ namespace JSONExt {
 
     // If they are both arrays, compare them.
     if (a1 && a2) {
-      return deepArrayEqual(first as ReadonlyPartialJSONArray, second as ReadonlyPartialJSONArray);
+      return deepArrayEqual(
+        first as ReadonlyPartialJSONArray,
+        second as ReadonlyPartialJSONArray
+      );
     }
 
     // At this point, they must both be objects.
-    return deepObjectEqual(first as ReadonlyPartialJSONObject, second as ReadonlyPartialJSONObject);
+    return deepObjectEqual(
+      first as ReadonlyPartialJSONObject,
+      second as ReadonlyPartialJSONObject
+    );
   }
 
   /**
@@ -232,8 +225,7 @@ namespace JSONExt {
    *
    * @returns A deep copy of the given JSON value.
    */
-  export
-  function deepCopy<T extends ReadonlyPartialJSONValue>(value: T): T {
+  export function deepCopy<T extends ReadonlyPartialJSONValue>(value: T): T {
     // Do nothing for primitive values.
     if (isPrimitive(value)) {
       return value;
@@ -251,7 +243,10 @@ namespace JSONExt {
   /**
    * Compare two JSON arrays for deep equality.
    */
-  function deepArrayEqual(first: ReadonlyPartialJSONArray, second: ReadonlyPartialJSONArray): boolean {
+  function deepArrayEqual(
+    first: ReadonlyPartialJSONArray,
+    second: ReadonlyPartialJSONArray
+  ): boolean {
     // Check referential equality first.
     if (first === second) {
       return true;
@@ -276,7 +271,10 @@ namespace JSONExt {
   /**
    * Compare two JSON objects for deep equality.
    */
-  function deepObjectEqual(first: ReadonlyPartialJSONObject, second: ReadonlyPartialJSONObject): boolean {
+  function deepObjectEqual(
+    first: ReadonlyPartialJSONObject,
+    second: ReadonlyPartialJSONObject
+  ): boolean {
     // Check referential equality first.
     if (first === second) {
       return true;

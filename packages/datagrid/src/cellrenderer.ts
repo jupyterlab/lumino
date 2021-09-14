@@ -7,14 +7,9 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  DataModel
-} from './datamodel';
+import { DataModel } from './datamodel';
 
-import {
-  GraphicsContext
-} from './graphicscontext';
-
+import { GraphicsContext } from './graphicscontext';
 
 /**
  * An object which renders the cells of a data grid.
@@ -27,8 +22,7 @@ import {
  * The data grid renders cells in column-major order, by region. The
  * region order is: body, row header, column header, corner header.
  */
-export
-abstract class CellRenderer {
+export abstract class CellRenderer {
   /**
    * Paint the content for a cell.
    *
@@ -49,17 +43,14 @@ abstract class CellRenderer {
   abstract paint(gc: GraphicsContext, config: CellRenderer.CellConfig): void;
 }
 
-
 /**
  * The namespace for the `CellRenderer` class statics.
  */
-export
-namespace CellRenderer {
+export namespace CellRenderer {
   /**
    * An object which holds the configuration data for a cell.
    */
-  export
-  type CellConfig = {
+  export type CellConfig = {
     /**
      * The X position of the cell rectangle, in viewport coordinates.
      */
@@ -111,16 +102,14 @@ namespace CellRenderer {
    *
    * This type is used to compute a value from a cell config object.
    */
-  export
-  type ConfigFunc<T> = (config: CellConfig) => T;
+  export type ConfigFunc<T> = (config: CellConfig) => T;
 
   /**
    * A type alias for a cell renderer config option.
    *
    * A config option can be a static value or a config function.
    */
-  export
-  type ConfigOption<T> = T | ConfigFunc<T>;
+  export type ConfigOption<T> = T | ConfigFunc<T>;
 
   /**
    * Resolve a config option for a cell renderer.
@@ -131,8 +120,12 @@ namespace CellRenderer {
    *
    * @returns The resolved value for the option.
    */
-  export
-  function resolveOption<T>(option: ConfigOption<T>, config: CellConfig): T {
-    return typeof option === 'function' ? (option as ConfigFunc<T>)(config) : option;
+  export function resolveOption<T>(
+    option: ConfigOption<T>,
+    config: CellConfig
+  ): T {
+    return typeof option === 'function'
+      ? (option as ConfigFunc<T>)(config)
+      : option;
   }
 }

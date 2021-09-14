@@ -7,39 +7,27 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  expect
-} from 'chai';
+import { expect } from 'chai';
 
-import {
-  PromiseDelegate
-} from '@lumino/coreutils';
-
+import { PromiseDelegate } from '@lumino/coreutils';
 
 describe('@lumino/coreutils', () => {
-
   describe('PromiseDelegate', () => {
-
     describe('#constructor()', () => {
-
       it('should create a new promise delegate', () => {
         let delegate = new PromiseDelegate<number>();
         expect(delegate).to.be.an.instanceof(PromiseDelegate);
       });
-
     });
 
     describe('#promise', () => {
-
       it('should get the underlying promise', () => {
         let delegate = new PromiseDelegate<number>();
         expect(delegate.promise).to.be.an.instanceof(Promise);
       });
-
     });
 
     describe('#resolve()', () => {
-
       it('should resolve the underlying promise', done => {
         let delegate = new PromiseDelegate<number>();
         delegate.promise.then(value => {
@@ -57,11 +45,9 @@ describe('@lumino/coreutils', () => {
         });
         delegate.resolve(Promise.resolve(4));
       });
-
     });
 
     describe('#reject()', () => {
-
       it('should reject the underlying promise', done => {
         let delegate = new PromiseDelegate<number>();
         delegate.promise.catch(reason => {
@@ -70,9 +56,6 @@ describe('@lumino/coreutils', () => {
         });
         delegate.reject('foo');
       });
-
     });
-
   });
-
 });

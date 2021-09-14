@@ -9,18 +9,11 @@
     "moduleResolution": "node",
     "target": "ES5",
     "outDir": "build",
-    "lib": [
-      "ES5"
-    ],
-    "types": [
-      "chai",
-      "mocha"
-    ],
+    "lib": ["ES5"],
+    "types": ["chai", "mocha"],
     "rootDir": "src"
   },
-  "include": [
-    "src/*"
-  ],
+  "include": ["src/*"],
   "references": [
     {
       "path": "../../commands"

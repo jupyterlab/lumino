@@ -7,16 +7,12 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  Random
-} from './random';
-
+import { Random } from './random';
 
 /**
  * The namespace for UUID related functionality.
  */
-export
-namespace UUID {
+export namespace UUID {
   /**
    * A function which generates UUID v4 identifiers.
    *
@@ -29,8 +25,7 @@ namespace UUID {
    * turn will use the underlying `crypto` module of the platform if
    * it is available. The fallback for randomness is `Math.random`.
    */
-  export
-  const uuid4 = (() => {
+  export const uuid4 = (() => {
     // Create a 16 byte array to hold the random values.
     const bytes = new Uint8Array(16);
 
@@ -53,10 +48,10 @@ namespace UUID {
       Random.getRandomValues(bytes);
 
       // Set the UUID version number to 4.
-      bytes[6] = 0x40 | (bytes[6] & 0x0F);
+      bytes[6] = 0x40 | (bytes[6] & 0x0f);
 
       // Set the clock sequence bit to the RFC spec.
-      bytes[8] = 0x80 | (bytes[8] & 0x3F);
+      bytes[8] = 0x80 | (bytes[8] & 0x3f);
 
       // Assemble the UUID string.
       return (
@@ -64,16 +59,16 @@ namespace UUID {
         lut[bytes[1]] +
         lut[bytes[2]] +
         lut[bytes[3]] +
-        '-'           +
+        '-' +
         lut[bytes[4]] +
         lut[bytes[5]] +
-        '-'           +
+        '-' +
         lut[bytes[6]] +
         lut[bytes[7]] +
-        '-'           +
+        '-' +
         lut[bytes[8]] +
         lut[bytes[9]] +
-        '-'           +
+        '-' +
         lut[bytes[10]] +
         lut[bytes[11]] +
         lut[bytes[12]] +
@@ -81,6 +76,6 @@ namespace UUID {
         lut[bytes[14]] +
         lut[bytes[15]]
       );
-    }
+    };
   })();
 }

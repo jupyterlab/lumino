@@ -11,15 +11,13 @@
 /**
  * The namespace for clipboard related functionality.
  */
-export
-namespace ClipboardExt {
+export namespace ClipboardExt {
   /**
    * Copy text to the system clipboard.
    *
    * @param text - The text to copy to the clipboard.
    */
-  export
-  function copyText(text: string): void {
+  export function copyText(text: string): void {
     // Fetch the document body.
     const body = document.body;
 

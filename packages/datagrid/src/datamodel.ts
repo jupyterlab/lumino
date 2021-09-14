@@ -7,13 +7,9 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  ISignal, Signal
-} from '@lumino/signaling';
+import { ISignal, Signal } from '@lumino/signaling';
 
-import {
-  CellGroup
-} from './cellgroup';
+import { CellGroup } from './cellgroup';
 /**
  * An object which provides the data for a data grid.
  *
@@ -21,8 +17,7 @@ import {
  * If the predefined data models are insufficient for a particular use
  * case, a custom model can be defined which derives from this class.
  */
-export
-abstract class DataModel {
+export abstract class DataModel {
   /**
    * A signal emitted when the data model has changed.
    */
@@ -75,7 +70,7 @@ abstract class DataModel {
   /**
    * Get the count of merged cell groups pertaining to a given
    * cell region.
-   * @param region the target cell region. 
+   * @param region the target cell region.
    */
   groupCount(region: DataModel.CellRegion): number {
     return 0;
@@ -99,10 +94,14 @@ abstract class DataModel {
    *
    * The default implementation returns `{}`.
    */
-  metadata(region: DataModel.CellRegion, row: number, column: number): DataModel.Metadata {
+  metadata(
+    region: DataModel.CellRegion,
+    row: number,
+    column: number
+  ): DataModel.Metadata {
     return DataModel.emptyMetadata;
   }
-  
+
   /**
    * Get the merged cell group corresponding to a region and index number.
    * @param region the cell region of cell group.
@@ -134,8 +133,7 @@ abstract class DataModel {
  * This object is an extension to `DataModel` and it only adds ability to
  * change data for cells.
  */
-export
-abstract class MutableDataModel extends DataModel {
+export abstract class MutableDataModel extends DataModel {
   /**
    * Set the data value for a cell in the data model.
    *
@@ -148,44 +146,46 @@ abstract class MutableDataModel extends DataModel {
    * @returns true if succeeds, false otherwise.
    *
    */
-  abstract setData(region: DataModel.CellRegion, row: number, column: number, value: any): boolean;
+  abstract setData(
+    region: DataModel.CellRegion,
+    row: number,
+    column: number,
+    value: any
+  ): boolean;
 }
-
 
 /**
  * The namespace for the `DataModel` class statics.
  */
-export
-namespace DataModel {
+export namespace DataModel {
   /**
    * A type alias for the data model row regions.
    */
-  export
-  type RowRegion = 'body' | 'column-header';
+  export type RowRegion = 'body' | 'column-header';
 
   /**
    * A type alias for the data model column regions.
    */
-  export
-  type ColumnRegion = 'body' | 'row-header';
+  export type ColumnRegion = 'body' | 'row-header';
 
   /**
    * A type alias for the data model cell regions.
    */
-  export
-  type CellRegion = 'body' | 'row-header' | 'column-header' | 'corner-header';
+  export type CellRegion =
+    | 'body'
+    | 'row-header'
+    | 'column-header'
+    | 'corner-header';
 
   /**
    * The metadata for a column in a data model.
    */
-  export
-  type Metadata = { [key: string]: any };
+  export type Metadata = { [key: string]: any };
 
   /**
    * A singleton empty metadata object.
    */
-  export
-  const emptyMetadata: Metadata = Object.freeze({});
+  export const emptyMetadata: Metadata = Object.freeze({});
 
   /**
    * An arguments object for the `changed` signal.
@@ -194,8 +194,7 @@ namespace DataModel {
    * Data models should emit the `changed` signal with this args object
    * type when rows are inserted or removed.
    */
-  export
-  type RowsChangedArgs = {
+  export type RowsChangedArgs = {
     /**
      * The discriminated type of the args object.
      */
@@ -224,8 +223,7 @@ namespace DataModel {
    * Data models should emit the `changed` signal with this args object
    * type when columns are inserted or removed.
    */
-  export
-  type ColumnsChangedArgs = {
+  export type ColumnsChangedArgs = {
     /**
      * The discriminated type of the args object.
      */
@@ -254,8 +252,7 @@ namespace DataModel {
    * Data models should emit the `changed` signal with this args object
    * type when rows are moved.
    */
-  export
-  type RowsMovedArgs = {
+  export type RowsMovedArgs = {
     /**
      * The discriminated type of the args object.
      */
@@ -289,8 +286,7 @@ namespace DataModel {
    * Data models should emit the `changed` signal with this args object
    * type when columns are moved.
    */
-  export
-  type ColumnsMovedArgs = {
+  export type ColumnsMovedArgs = {
     /**
      * The discriminated type of the args object.
      */
@@ -324,8 +320,7 @@ namespace DataModel {
    * Data models should emit the `changed` signal with this args object
    * type when cells are changed in-place.
    */
-  export
-  type CellsChangedArgs = {
+  export type CellsChangedArgs = {
     /**
      * The discriminated type of the args object.
      */
@@ -369,8 +364,7 @@ namespace DataModel {
    * data grid to perform a full reset. The other changed args types
    * should be used whenever possible.
    */
-  export
-  type ModelResetArgs = {
+  export type ModelResetArgs = {
     /**
      * The discriminated type of the args object.
      */
@@ -380,13 +374,11 @@ namespace DataModel {
   /**
    * A type alias for the args objects of the `changed` signal.
    */
-  export
-  type ChangedArgs = (
-    RowsChangedArgs |
-    ColumnsChangedArgs |
-    RowsMovedArgs |
-    ColumnsMovedArgs |
-    CellsChangedArgs |
-    ModelResetArgs
-  );
+  export type ChangedArgs =
+    | RowsChangedArgs
+    | ColumnsChangedArgs
+    | RowsMovedArgs
+    | ColumnsMovedArgs
+    | CellsChangedArgs
+    | ModelResetArgs;
 }

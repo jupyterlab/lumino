@@ -8,45 +8,38 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 import {
-  each, IIterable, IIterator, iterItems, map, StringExt, toArray, toObject
+  each,
+  IIterable,
+  IIterator,
+  iterItems,
+  map,
+  StringExt,
+  toArray,
+  toObject
 } from '@lumino/algorithm';
 
-import {
-  BPlusTree, LinkedList
-} from '@lumino/collections';
+import { BPlusTree, LinkedList } from '@lumino/collections';
+
+import { DisposableDelegate, IDisposable } from '@lumino/disposable';
 
 import {
-  DisposableDelegate, IDisposable
-} from '@lumino/disposable';
-
-import {
-  IMessageHandler, Message, MessageLoop, ConflatableMessage
+  ConflatableMessage,
+  IMessageHandler,
+  Message,
+  MessageLoop
 } from '@lumino/messaging';
 
-import {
-  ISignal, Signal
-} from '@lumino/signaling';
+import { ISignal, Signal } from '@lumino/signaling';
 
-import {
-  Record
-} from './record';
+import { Record } from './record';
 
-import {
-  Schema, validateSchema
-} from './schema';
+import { Schema, validateSchema } from './schema';
 
-import {
-  IServerAdapter
-} from './serveradapter';
+import { IServerAdapter } from './serveradapter';
 
-import {
-  Table
-} from './table';
+import { Table } from './table';
 
-import {
-  createDuplexId
-} from './utilities';
-
+import { createDuplexId } from './utilities';
 
 /**
  * A multi-user collaborative datastore.
@@ -59,9 +52,8 @@ import {
  * https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type
  * https://hal.inria.fr/file/index/docid/555588/filename/techreport.pdf
  */
-export
-class Datastore implements IDisposable, IIterable<Table<Schema>>, IMessageHandler {
-
+export class Datastore
+  implements IDisposable, IIterable<Table<Schema>>, IMessageHandler {
   /**
    * Create a new datastore.
    *
@@ -72,17 +64,17 @@ class Datastore implements IDisposable, IIterable<Table<Schema>>, IMessageHandle
    * @throws An exception if any of the schema definitions are invalid.
    */
   static create(options: Datastore.IOptions): Datastore {
-    let {schemas} = options;
+    let { schemas } = options;
     // Throws an error for invalid schemas:
     Private.validateSchemas(schemas);
 
-    let context =  {
+    let context = {
       inTransaction: false,
       transactionId: '',
       version: 0,
       storeId: options.id,
       change: {},
-      patch: {},
+      patch: {}
     };
 
     let tables = new BPlusTree<Table<Schema>>(Private.recordCmp);
@@ -90,14 +82,18 @@ class Datastore implements IDisposable, IIterable<Table<Schema>>, IMessageHandle
       // If passed state to restore, pass the intital state to recreate each
       // table
       let state = JSON.parse(options.restoreState);
-      tables.assign(map(schemas, s => {
-        return Table.recreate(s, context, state[s.id] || []);
-      }));
+      tables.assign(
+        map(schemas, s => {
+          return Table.recreate(s, context, state[s.id] || []);
+        })
+      );
     } else {
       // Otherwise, simply create a new, empty table
-      tables.assign(map(schemas, s => {
-        return Table.create(s, context);
-      }));
+      tables.assign(
+        map(schemas, s => {
+          return Table.create(s, context);
+        })
+      );
     }
 
     return new Datastore(context, tables, options.adapter);
@@ -241,7 +237,7 @@ class Datastore implements IDisposable, IIterable<Table<Schema>>, IMessageHandle
    */
   endTransaction(): void {
     this._finalizeTransaction();
-    let {patch, change, storeId, transactionId, version} = this._context;
+    let { patch, change, storeId, transactionId, version } = this._context;
     // Possibly broadcast the transaction to collaborators.
     if (this._adapter && !Private.isPatchEmpty(patch)) {
       this._adapter.broadcast({
@@ -259,7 +255,7 @@ class Datastore implements IDisposable, IIterable<Table<Schema>>, IMessageHandle
         storeId,
         transactionId,
         type: 'transaction',
-        change,
+        change
       });
     }
   }
@@ -268,13 +264,11 @@ class Datastore implements IDisposable, IIterable<Table<Schema>>, IMessageHandle
    * Handle a message.
    */
   processMessage(msg: Message): void {
-    switch(msg.type) {
+    switch (msg.type) {
       case 'transaction-begun':
         if (this._context.inTransaction) {
           console.warn(
-            `Automatically ending transaction (did you forget to end it?): ${
-              this._context.transactionId
-            }`
+            `Automatically ending transaction (did you forget to end it?): ${this._context.transactionId}`
           );
           this.endTransaction();
         }
@@ -348,11 +342,13 @@ class Datastore implements IDisposable, IIterable<Table<Schema>>, IMessageHandle
    * @returns The serialized state.
    */
   toString(): string {
-    return JSON.stringify(toObject(
-      map(this, (table): [string, Record<Schema>[]] => {
-        return [table.schema.id, toArray(table)];
-      })
-    ));
+    return JSON.stringify(
+      toObject(
+        map(this, (table): [string, Record<Schema>[]] => {
+          return [table.schema.id, toArray(table)];
+        })
+      )
+    );
   }
 
   /**
@@ -409,8 +405,11 @@ class Datastore implements IDisposable, IIterable<Table<Schema>>, IMessageHandle
    * #### Notes
    * If changes are made, the `changed` signal will be emitted.
    */
-  private _processTransaction(transaction: Datastore.Transaction, type: Datastore.TransactionType): void {
-    let {storeId, patch} = transaction;
+  private _processTransaction(
+    transaction: Datastore.Transaction,
+    type: Datastore.TransactionType
+  ): void {
+    let { storeId, patch } = transaction;
 
     try {
       this._initTransaction(
@@ -429,13 +428,12 @@ class Datastore implements IDisposable, IIterable<Table<Schema>>, IMessageHandle
         let table = this._tables.get(schemaId, Private.recordIdCmp);
         if (table === undefined) {
           console.warn(
-            `Missing table for schema id '${
-              schemaId
-            }' in transaction '${transaction.id}'`);
+            `Missing table for schema id '${schemaId}' in transaction '${transaction.id}'`
+          );
           this._finalizeTransaction();
           return;
         }
-        if ( type === 'transaction' || type === 'redo') {
+        if (type === 'transaction' || type === 'redo') {
           let count = this._cemetery[transaction.id];
           if (count === undefined) {
             this._cemetery[transaction.id] = 1;
@@ -469,7 +467,7 @@ class Datastore implements IDisposable, IIterable<Table<Schema>>, IMessageHandle
         storeId,
         transactionId: transaction.id,
         type,
-        change,
+        change
       });
     }
   }
@@ -479,7 +477,10 @@ class Datastore implements IDisposable, IIterable<Table<Schema>>, IMessageHandle
    *
    * @param transaction - the transaction to queue.
    */
-  private _queueTransaction(transaction: Datastore.Transaction, type: Datastore.TransactionType): void {
+  private _queueTransaction(
+    transaction: Datastore.Transaction,
+    type: Datastore.TransactionType
+  ): void {
     this._transactionQueue.addLast([transaction, type]);
     MessageLoop.postMessage(this, new ConflatableMessage('queued-transaction'));
   }
@@ -501,6 +502,7 @@ class Datastore implements IDisposable, IIterable<Table<Schema>>, IMessageHandle
     queue.addLast(sentinel as any);
 
     // Enter the processing loop.
+    // eslint-disable-next-line no-constant-condition
     while (true) {
       // Remove the first transaction in the queue.
       let [transaction, type] = queue.removeFirst()!;
@@ -526,7 +528,9 @@ class Datastore implements IDisposable, IIterable<Table<Schema>>, IMessageHandle
   private _initTransaction(id: string, newVersion: number): void {
     let context = this._context as Private.MutableContext;
     if (context.inTransaction) {
-      throw new Error(`Already in a transaction: ${this._context.transactionId}`);
+      throw new Error(
+        `Already in a transaction: ${this._context.transactionId}`
+      );
     }
     context.inTransaction = true;
     context.change = {};
@@ -555,18 +559,15 @@ class Datastore implements IDisposable, IIterable<Table<Schema>>, IMessageHandle
   private _context: Datastore.Context;
   private _changed = new Signal<Datastore, Datastore.IChangedArgs>(this);
   private _transactionIdFactory: Datastore.TransactionIdFactory;
-  private _transactionQueue = new LinkedList<[
-    Datastore.Transaction,
-    Datastore.TransactionType
-  ]>();
+  private _transactionQueue = new LinkedList<
+    [Datastore.Transaction, Datastore.TransactionType]
+  >();
 }
-
 
 /**
  * The namespace for the `Datastore` class statics.
  */
-export
-namespace Datastore {
+export namespace Datastore {
   /**
    * A type alias for kinds of transactions.
    */
@@ -575,8 +576,7 @@ namespace Datastore {
   /**
    * An options object for initializing a datastore.
    */
-  export
-  interface IOptions {
+  export interface IOptions {
     /**
      * The unique id of the datastore.
      */
@@ -606,8 +606,7 @@ namespace Datastore {
   /**
    * The arguments object for the store `changed` signal.
    */
-  export
-  interface IChangedArgs {
+  export interface IChangedArgs {
     /**
      * Whether the change was generated by transaction, undo, or redo.
      */
@@ -632,41 +631,35 @@ namespace Datastore {
   /**
    * A type alias for a store change.
    */
-  export
-  type Change = {
+  export type Change = {
     readonly [schemaId: string]: Table.Change<Schema>;
   };
 
   /**
    * A type alias for a store patch.
    */
-  export
-  type Patch = {
+  export type Patch = {
     readonly [schemaId: string]: Table.Patch<Schema>;
   };
 
   /**
    * @internal
    */
-  export
-  type MutableChange = {
+  export type MutableChange = {
     [schemaId: string]: Table.MutableChange<Schema>;
   };
 
   /**
    * @internal
    */
-  export
-  type MutablePatch = {
+  export type MutablePatch = {
     [schemaId: string]: Table.MutablePatch<Schema>;
   };
 
   /**
    * An object representing a datastore transaction.
    */
-  export
-  type Transaction = {
-
+  export type Transaction = {
     /**
      * The id of the transaction.
      */
@@ -686,19 +679,20 @@ namespace Datastore {
      * The version of the source datastore.
      */
     readonly version: number;
-  }
+  };
 
   /**
    * @internal
    */
-  export
-  type Context = Readonly<Private.MutableContext>;
+  export type Context = Readonly<Private.MutableContext>;
 
   /**
    * A factory function for generating a unique transaction id.
    */
-  export
-  type TransactionIdFactory = (version: number, storeId: number) => string;
+  export type TransactionIdFactory = (
+    version: number,
+    storeId: number
+  ) => string;
 
   /**
    * A helper function to wrap an update to the datastore in calls to
@@ -1022,13 +1016,11 @@ namespace Datastore {
   }
 }
 
-
 namespace Private {
   /**
    * Validates all schemas, and throws an error if any are invalid.
    */
-  export
-  function validateSchemas(schemas: ReadonlyArray<Schema>) {
+  export function validateSchemas(schemas: ReadonlyArray<Schema>) {
     let errors = [];
     for (let s of schemas) {
       let err = validateSchema(s);
@@ -1044,21 +1036,24 @@ namespace Private {
   /**
    * A three-way record comparison function.
    */
-  export
-  function recordCmp<S extends Schema>(a: Table<S>, b: Table<S>): number {
+  export function recordCmp<S extends Schema>(
+    a: Table<S>,
+    b: Table<S>
+  ): number {
     return StringExt.cmp(a.schema.id, b.schema.id);
   }
 
   /**
    * A three-way record id comparison function.
    */
-  export
-  function recordIdCmp<S extends Schema>(table: Table<S>, id: string): number {
+  export function recordIdCmp<S extends Schema>(
+    table: Table<S>,
+    id: string
+  ): number {
     return StringExt.cmp(table.schema.id, id);
   }
 
-  export
-  type MutableContext = {
+  export type MutableContext = {
     /**
      * Whether the datastore currently in a transaction.
      */
@@ -1088,21 +1083,19 @@ namespace Private {
      * The current patch object of the transaction.
      */
     patch: Datastore.MutablePatch;
-  }
+  };
 
   /**
    * Checks if a patch is empty.
    */
-  export
-  function isPatchEmpty(patch: Datastore.Patch): boolean {
+  export function isPatchEmpty(patch: Datastore.Patch): boolean {
     return Object.keys(patch).length === 0;
   }
 
   /**
    * Checks if a change is empty.
    */
-  export
-  function isChangeEmpty(change: Datastore.Change): boolean {
+  export function isChangeEmpty(change: Datastore.Change): boolean {
     return Object.keys(change).length === 0;
   }
 }

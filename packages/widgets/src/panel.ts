@@ -7,14 +7,9 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  PanelLayout
-} from './panellayout';
+import { PanelLayout } from './panellayout';
 
-import {
-  Widget
-} from './widget';
-
+import { Widget } from './widget';
 
 /**
  * A simple and convenient panel widget class.
@@ -26,8 +21,7 @@ import {
  *
  * This class provides a convenience wrapper around a [[PanelLayout]].
  */
-export
-class Panel extends Widget {
+export class Panel extends Widget {
   /**
    * Construct a new panel.
    *
@@ -76,17 +70,14 @@ class Panel extends Widget {
   }
 }
 
-
 /**
  * The namespace for the `Panel` class statics.
  */
-export
-namespace Panel {
+export namespace Panel {
   /**
    * An options object for creating a panel.
    */
-  export
-  interface IOptions {
+  export interface IOptions {
     /**
      * The panel layout to use for the panel.
      *
@@ -96,7 +87,6 @@ namespace Panel {
   }
 }
 
-
 /**
  * The namespace for the module implementation details.
  */
@@ -104,8 +94,7 @@ namespace Private {
   /**
    * Create a panel layout for the given panel options.
    */
-  export
-  function createLayout(options: Panel.IOptions): PanelLayout {
+  export function createLayout(options: Panel.IOptions): PanelLayout {
     return options.layout || new PanelLayout();
   }
 }

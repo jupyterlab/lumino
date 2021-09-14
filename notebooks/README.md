@@ -31,4 +31,3 @@ At this point you should be able to launch JupyterLab:
 ```
 jupyter lab
 ```
-

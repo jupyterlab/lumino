@@ -174,5 +174,5 @@ export namespace Throttler {
      * Defaults to `leading`.
      */
     edge?: 'leading' | 'trailing';
-  };
+  }
 }

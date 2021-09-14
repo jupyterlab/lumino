@@ -15,7 +15,7 @@ import { simulate } from 'simulate-event';
 const renderer: AccordionPanel.IRenderer = {
   titleClassName: '.lm-AccordionTitle',
   createHandle: () => document.createElement('div'),
-  createSectionTitle: (title: Title<Widget>) => document.createElement('h3'),
+  createSectionTitle: (title: Title<Widget>) => document.createElement('h3')
 };
 
 class LogAccordionPanel extends AccordionPanel {
@@ -40,7 +40,7 @@ describe('@lumino/widgets', () => {
           orientation: 'horizontal',
           spacing: 5,
           titleSpace: 42,
-          renderer,
+          renderer
         });
         expect(panel.orientation).to.equal('horizontal');
         expect(panel.spacing).to.equal(5);
@@ -62,7 +62,7 @@ describe('@lumino/widgets', () => {
           orientation: 'horizontal',
           spacing: 5,
           titleSpace: 42,
-          renderer: ignored,
+          renderer: ignored
         });
         expect(panel.layout).to.equal(layout);
         expect(panel.orientation).to.equal('vertical');
@@ -82,14 +82,14 @@ describe('@lumino/widgets', () => {
         let panel = new LogAccordionPanel();
         let layout = panel.layout as AccordionLayout;
         let widgets = [new Widget(), new Widget(), new Widget()];
-        widgets.forEach((w) => {
+        widgets.forEach(w => {
           panel.addWidget(w);
         });
         Widget.attach(panel, document.body);
 
         panel.dispose();
 
-        expect(every(widgets, (w) => w.isDisposed));
+        expect(every(widgets, w => w.isDisposed));
         expect(layout.titles).to.have.length(0);
       });
     });
@@ -118,7 +118,7 @@ describe('@lumino/widgets', () => {
       it('should get the read-only sequence of the accordion titles in the panel', () => {
         let panel = new AccordionPanel();
         let widgets = [new Widget(), new Widget(), new Widget()];
-        widgets.forEach((w) => {
+        widgets.forEach(w => {
           panel.addWidget(w);
         });
         expect(panel.titles.length).to.equal(widgets.length);
@@ -133,7 +133,7 @@ describe('@lumino/widgets', () => {
         panel = new LogAccordionPanel();
         layout = panel.layout as AccordionLayout;
         let widgets = [new Widget(), new Widget(), new Widget()];
-        widgets.forEach((w) => {
+        widgets.forEach(w => {
           panel.addWidget(w);
         });
         panel.setRelativeSizes([10, 10, 10, 20]);
@@ -153,7 +153,8 @@ describe('@lumino/widgets', () => {
           expect(layout.titles[0].getAttribute('aria-expanded')).to.equal(
             'false'
           );
-          expect(layout.titles[0].classList.contains('lm-mod-expanded')).to.be.false;
+          expect(layout.titles[0].classList.contains('lm-mod-expanded')).to.be
+            .false;
           expect(layout.widgets[0].isHidden).to.be.true;
         });
 
@@ -166,7 +167,8 @@ describe('@lumino/widgets', () => {
           expect(layout.titles[0].getAttribute('aria-expanded')).to.equal(
             'true'
           );
-          expect(layout.titles[0].classList.contains('lm-mod-expanded')).to.be.true;
+          expect(layout.titles[0].classList.contains('lm-mod-expanded')).to.be
+            .true;
           expect(layout.widgets[0].isHidden).to.be.false;
         });
       });
@@ -179,7 +181,8 @@ describe('@lumino/widgets', () => {
           expect(layout.titles[0].getAttribute('aria-expanded')).to.equal(
             'false'
           );
-          expect(layout.titles[0].classList.contains('lm-mod-expanded')).to.be.false;
+          expect(layout.titles[0].classList.contains('lm-mod-expanded')).to.be
+            .false;
           expect(layout.widgets[0].isHidden).to.be.true;
 
           simulate(layout.titles[0], 'keydown', { key: 'Space' });
@@ -188,7 +191,8 @@ describe('@lumino/widgets', () => {
           expect(layout.titles[0].getAttribute('aria-expanded')).to.equal(
             'true'
           );
-          expect(layout.titles[0].classList.contains('lm-mod-expanded')).to.be.true;
+          expect(layout.titles[0].classList.contains('lm-mod-expanded')).to.be
+            .true;
           expect(layout.widgets[0].isHidden).to.be.false;
         });
 
@@ -199,7 +203,8 @@ describe('@lumino/widgets', () => {
           expect(layout.titles[0].getAttribute('aria-expanded')).to.equal(
             'false'
           );
-          expect(layout.titles[0].classList.contains('lm-mod-expanded')).to.be.false;
+          expect(layout.titles[0].classList.contains('lm-mod-expanded')).to.be
+            .false;
           expect(layout.widgets[0].isHidden).to.be.true;
 
           simulate(layout.titles[0], 'keydown', { key: 'Enter' });
@@ -208,7 +213,8 @@ describe('@lumino/widgets', () => {
           expect(layout.titles[0].getAttribute('aria-expanded')).to.equal(
             'true'
           );
-          expect(layout.titles[0].classList.contains('lm-mod-expanded')).to.be.true;
+          expect(layout.titles[0].classList.contains('lm-mod-expanded')).to.be
+            .true;
           expect(layout.widgets[0].isHidden).to.be.false;
         });
 

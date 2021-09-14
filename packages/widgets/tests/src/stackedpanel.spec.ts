@@ -7,21 +7,13 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  expect
-} from 'chai';
+import { expect } from 'chai';
 
-import {
-  StackedPanel, StackedLayout, Widget
-} from '@lumino/widgets';
-
+import { StackedLayout, StackedPanel, Widget } from '@lumino/widgets';
 
 describe('@lumino/widgets', () => {
-
   describe('StackedPanel', () => {
-
     describe('#constructor()', () => {
-
       it('should take no arguments', () => {
         let panel = new StackedPanel();
         expect(panel).to.be.an.instanceof(StackedPanel);
@@ -37,11 +29,9 @@ describe('@lumino/widgets', () => {
         let panel = new StackedPanel();
         expect(panel.hasClass('lm-StackedPanel')).to.equal(true);
       });
-
     });
 
     describe('#widgetRemoved', () => {
-
       it('should be emitted when a widget is removed from a stacked panel', () => {
         let panel = new StackedPanel();
         let widget = new Widget();
@@ -52,22 +42,18 @@ describe('@lumino/widgets', () => {
         });
         widget.parent = null;
       });
-
     });
 
     describe('#onChildAdded()', () => {
-
       it('should add a class to the child widget', () => {
         let panel = new StackedPanel();
         let widget = new Widget();
         panel.addWidget(widget);
         expect(widget.hasClass('lm-StackedPanel-child')).to.equal(true);
       });
-
     });
 
     describe('#onChildRemoved()', () => {
-
       it('should remove a class to the child widget', () => {
         let panel = new StackedPanel();
         let widget = new Widget();
@@ -75,9 +61,6 @@ describe('@lumino/widgets', () => {
         widget.parent = null;
         expect(widget.hasClass('lm-StackedPanel-child')).to.equal(false);
       });
-
     });
-
   });
-
 });

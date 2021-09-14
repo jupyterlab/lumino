@@ -7,26 +7,26 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
-
-/* <DEPRECATED> */ .p-SplitPanel-child, /* </DEPRECATED> */
+/* <DEPRECATED> */
+.p-SplitPanel-child, /* </DEPRECATED> */
 .lm-SplitPanel-child {
   z-index: 0;
 }
 
-
-/* <DEPRECATED> */ .p-SplitPanel-handle, /* </DEPRECATED> */
+/* <DEPRECATED> */
+.p-SplitPanel-handle, /* </DEPRECATED> */
 .lm-SplitPanel-handle {
   z-index: 1;
 }
 
-
-/* <DEPRECATED> */ .p-SplitPanel-handle.p-mod-hidden, /* </DEPRECATED> */
+/* <DEPRECATED> */
+.p-SplitPanel-handle.p-mod-hidden, /* </DEPRECATED> */
 .lm-SplitPanel-handle.lm-mod-hidden {
   display: none !important;
 }
 
-
-/* <DEPRECATED> */ .p-SplitPanel-handle:after, /* </DEPRECATED> */
+/* <DEPRECATED> */
+.p-SplitPanel-handle:after, /* </DEPRECATED> */
 .lm-SplitPanel-handle:after {
   position: absolute;
   top: 0;
@@ -36,7 +36,6 @@
   content: '';
 }
 
-
 /* <DEPRECATED> */
 .p-SplitPanel[data-orientation='horizontal'] > .p-SplitPanel-handle,
 /* </DEPRECATED> */
@@ -44,14 +43,12 @@
   cursor: ew-resize;
 }
 
-
 /* <DEPRECATED> */
 .p-SplitPanel[data-orientation='vertical'] > .p-SplitPanel-handle,
 /* </DEPRECATED> */
 .lm-SplitPanel[data-orientation='vertical'] > .lm-SplitPanel-handle {
   cursor: ns-resize;
 }
-
 
 /* <DEPRECATED> */
 .p-SplitPanel[data-orientation='horizontal'] > .p-SplitPanel-handle:after,
@@ -61,7 +58,6 @@
   min-width: 8px;
   transform: translateX(-50%);
 }
-
 
 /* <DEPRECATED> */
 .p-SplitPanel[data-orientation='vertical'] > .p-SplitPanel-handle:after,
