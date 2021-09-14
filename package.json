@@ -70,8 +70,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged",
-      "pre-push": "yarn run integrity --force"
+      "pre-commit": "lint-staged"
     }
   }
 }
