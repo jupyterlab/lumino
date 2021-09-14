@@ -13,7 +13,7 @@ import { ElementExt } from '@lumino/domutils';
 
 import { Message, MessageLoop } from '@lumino/messaging';
 
-import { LayoutItem } from './layout';
+import { Layout, LayoutItem } from './layout';
 
 import { PanelLayout } from './panellayout';
 
@@ -26,6 +26,14 @@ import { Widget } from './widget';
  * The Z-order of the visible widgets follows their layout order.
  */
 export class StackedLayout extends PanelLayout {
+  constructor(options: StackedLayout.IOptions = {}) {
+    super(options);
+    this._hiddenMode =
+      options.hiddenMode !== undefined
+        ? options.hiddenMode
+        : Widget.HiddenMode.Class;
+  }
+
   /**
    * Dispose of the resources held by the layout.
    */
@@ -54,6 +62,11 @@ export class StackedLayout extends PanelLayout {
    * This is a reimplementation of the superclass method.
    */
   protected attachWidget(index: number, widget: Widget): void {
+    if (this._hiddenMode === Widget.HiddenMode.Composition) {
+      widget.hiddenMode = Widget.HiddenMode.Composition;
+      widget.node.style.willChange = 'transform';
+    }
+
     // Create and add a new layout item for the widget.
     ArrayExt.insert(this._items, index, new LayoutItem(widget));
 
@@ -109,6 +122,11 @@ export class StackedLayout extends PanelLayout {
    * This is a reimplementation of the superclass method.
    */
   protected detachWidget(index: number, widget: Widget): void {
+    if (this._hiddenMode === Widget.HiddenMode.Composition) {
+      widget.hiddenMode = Widget.HiddenMode.Class;
+      widget.node.style.willChange = 'auto';
+    }
+
     // Remove the layout item for the widget.
     let item = ArrayExt.removeAt(this._items, index);
 
@@ -304,4 +322,20 @@ export class StackedLayout extends PanelLayout {
   private _dirty = false;
   private _items: LayoutItem[] = [];
   private _box: ElementExt.IBoxSizing | null = null;
+  private _hiddenMode: Widget.HiddenMode;
+}
+
+/**
+ * The namespace for the `StackedLayout` class statics.
+ */
+export namespace StackedLayout {
+  /**
+   * An options object for initializing a stacked layout.
+   */
+  export interface IOptions extends Layout.IOptions {
+    /**
+     * How to hide widgets?
+     */
+    hiddenMode?: Widget.HiddenMode;
+  }
 }

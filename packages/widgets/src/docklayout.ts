@@ -53,6 +53,10 @@ export class DockLayout extends Layout {
     if (options.spacing !== undefined) {
       this._spacing = Utils.clampDimension(options.spacing);
     }
+    this._hiddenMode =
+      options.hiddenMode !== undefined
+        ? options.hiddenMode
+        : Widget.HiddenMode.Class;
   }
 
   /**
@@ -648,9 +652,19 @@ export class DockLayout extends Layout {
 
     Private.removeAria(widget);
 
+    // We don't switch back the hidden mode of the widget to avoid triggering
+    // style recomputation
+    if (this._hiddenMode === Widget.HiddenMode.Composition) {
+      widget.node.style.willChange = 'auto';
+    }
+
     // If there are multiple tabs, just remove the widget's tab.
     if (tabNode.tabBar.titles.length > 1) {
       tabNode.tabBar.removeTab(widget.title);
+      if (this._hiddenMode === Widget.HiddenMode.Composition) {
+        const existingWidget = tabNode.tabBar.titles[0].owner;
+        existingWidget.node.style.willChange = 'auto';
+      }
       return;
     }
 
@@ -806,6 +820,20 @@ export class DockLayout extends Layout {
       index = refNode.tabBar.titles.indexOf(ref.title);
     } else {
       index = refNode.tabBar.currentIndex;
+    }
+
+    if (
+      this._hiddenMode === Widget.HiddenMode.Composition &&
+      refNode.tabBar.titles.length > 0
+    ) {
+      if (refNode.tabBar.titles.length == 1) {
+        const existingWidget = refNode.tabBar.titles[0].owner;
+        existingWidget.hiddenMode = Widget.HiddenMode.Composition;
+        existingWidget.node.style.willChange = 'transform';
+      }
+
+      widget.hiddenMode = Widget.HiddenMode.Composition;
+      widget.node.style.willChange = 'transform';
     }
 
     // Insert the widget's tab relative to the target index.
@@ -1089,6 +1117,7 @@ export class DockLayout extends Layout {
   private _dirty = false;
   private _root: Private.LayoutNode | null = null;
   private _box: ElementExt.IBoxSizing | null = null;
+  private _hiddenMode: Widget.HiddenMode;
   private _items: Private.ItemMap = new Map<Widget, LayoutItem>();
 }
 
@@ -1100,6 +1129,11 @@ export namespace DockLayout {
    * An options object for creating a dock layout.
    */
   export interface IOptions {
+    /**
+     * How to hide widgets?
+     */
+    hiddenMode?: Widget.HiddenMode;
+
     /**
      * The renderer to use for the dock layout.
      */

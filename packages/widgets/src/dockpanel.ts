@@ -67,7 +67,11 @@ export class DockPanel extends Widget {
     };
 
     // Set up the dock layout for the panel.
-    this.layout = new DockLayout({ renderer, spacing: options.spacing });
+    this.layout = new DockLayout({
+      renderer,
+      spacing: options.spacing,
+      hiddenMode: options.hiddenMode
+    });
 
     // Set up the overlay drop indicator.
     this.overlay = options.overlay || new DockPanel.Overlay();
@@ -1093,6 +1097,11 @@ export namespace DockPanel {
      * If not given, default values will be used.
      */
     edges?: IEdges;
+
+    /**
+     * How to hide widgets?
+     */
+    hiddenMode?: Widget.HiddenMode;
 
     /**
      * Allow tabs to be draggable / movable by user.

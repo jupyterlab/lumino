@@ -270,7 +270,7 @@ describe('@lumino/widgets', () => {
       });
     });
 
-    describe('#datset', () => {
+    describe('#dataset', () => {
       it('should get the dataset of the widget node', () => {
         let widget = new Widget();
         expect(widget.dataset).to.equal(widget.node.dataset);
@@ -696,6 +696,48 @@ describe('@lumino/widgets', () => {
         widget.setHidden(false);
         expect(widget.isHidden).to.equal(false);
         expect(widget.messages).to.contain('after-show');
+        widget.dispose();
+      });
+    });
+
+    describe('#hiddenMode', () => {
+      it('should use class to hide the widget by default', () => {
+        let widget = new Widget();
+        Widget.attach(widget, document.body);
+        widget.hide();
+        expect(widget.hasClass('lm-mod-hidden')).to.equal(true);
+        expect(widget.node.style.transform).to.be.equal('');
+        widget.dispose();
+      });
+
+      it('should use transformation if in "composition" mode', () => {
+        let widget = new Widget();
+        Widget.attach(widget, document.body);
+        widget.hiddenMode = Widget.HiddenMode.Composition;
+        widget.hide();
+        expect(widget.hasClass('lm-mod-hidden')).to.equal(false);
+        expect(widget.node.style.transform).to.equal('scale(0)');
+        widget.dispose();
+      });
+
+      it('should remove class when switching from class to composition', () => {
+        let widget = new Widget();
+        Widget.attach(widget, document.body);
+        widget.hide();
+        widget.hiddenMode = Widget.HiddenMode.Composition;
+        expect(widget.hasClass('lm-mod-hidden')).to.equal(false);
+        expect(widget.node.style.transform).to.equal('scale(0)');
+        widget.dispose();
+      });
+
+      it('should add class when switching from composition to class', () => {
+        let widget = new Widget();
+        Widget.attach(widget, document.body);
+        widget.hiddenMode = Widget.HiddenMode.Composition;
+        widget.hide();
+        widget.hiddenMode = Widget.HiddenMode.Class;
+        expect(widget.hasClass('lm-mod-hidden')).to.equal(true);
+        expect(widget.node.style.transform).to.equal('');
         widget.dispose();
       });
     });

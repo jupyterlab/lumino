@@ -167,6 +167,33 @@ export class Widget implements IMessageHandler, IObservableDisposable {
   }
 
   /**
+   * Mode to hide the widget
+   */
+  get hiddenMode(): Widget.HiddenMode {
+    return this._hiddenMode;
+  }
+  set hiddenMode(value: Widget.HiddenMode) {
+    if (value !== this._hiddenMode) {
+      if (this.isHidden) {
+        if (value === Widget.HiddenMode.Class) {
+          this.addClass('lm-mod-hidden');
+          /* <DEPRECATED> */
+          this.addClass('p-mod-hidden');
+          /* </DEPRECATED> */
+          this.node.style.transform = '';
+        } else {
+          this.node.style.transform = 'scale(0)';
+          this.removeClass('lm-mod-hidden');
+          /* <DEPRECATED> */
+          this.removeClass('p-mod-hidden');
+          /* </DEPRECATED> */
+        }
+      }
+      this._hiddenMode = value;
+    }
+  }
+
+  /**
    * Get the parent of the widget.
    */
   get parent(): Widget | null {
@@ -389,10 +416,16 @@ export class Widget implements IMessageHandler, IObservableDisposable {
       MessageLoop.sendMessage(this, Widget.Msg.BeforeShow);
     }
     this.clearFlag(Widget.Flag.IsHidden);
-    this.removeClass('lm-mod-hidden');
-    /* <DEPRECATED> */
-    this.removeClass('p-mod-hidden');
-    /* </DEPRECATED> */
+    this.node.removeAttribute('aria-hidden');
+    if (this.hiddenMode === Widget.HiddenMode.Class) {
+      this.removeClass('lm-mod-hidden');
+      /* <DEPRECATED> */
+      this.removeClass('p-mod-hidden');
+      /* </DEPRECATED> */
+    } else {
+      this.node.style.transform = '';
+    }
+
     if (this.isAttached && (!this.parent || this.parent.isVisible)) {
       MessageLoop.sendMessage(this, Widget.Msg.AfterShow);
     }
@@ -418,10 +451,16 @@ export class Widget implements IMessageHandler, IObservableDisposable {
       MessageLoop.sendMessage(this, Widget.Msg.BeforeHide);
     }
     this.setFlag(Widget.Flag.IsHidden);
-    this.addClass('lm-mod-hidden');
-    /* <DEPRECATED> */
-    this.addClass('p-mod-hidden');
-    /* </DEPRECATED> */
+    this.node.setAttribute('aria-hidden', 'true');
+    if (this.hiddenMode === Widget.HiddenMode.Class) {
+      this.addClass('lm-mod-hidden');
+      /* <DEPRECATED> */
+      this.addClass('p-mod-hidden');
+      /* </DEPRECATED> */
+    } else {
+      this.node.style.transform = 'scale(0)'
+    }
+
     if (this.isAttached && (!this.parent || this.parent.isVisible)) {
       MessageLoop.sendMessage(this, Widget.Msg.AfterHide);
     }
@@ -707,6 +746,7 @@ export class Widget implements IMessageHandler, IObservableDisposable {
   private _layout: Layout | null = null;
   private _parent: Widget | null = null;
   private _disposed = new Signal<this, void>(this);
+  private _hiddenMode: Widget.HiddenMode = Widget.HiddenMode.Class;
 }
 
 /**
@@ -734,6 +774,29 @@ export namespace Widget {
      * value is ignored.
      */
     tag?: keyof HTMLElementTagNameMap;
+  }
+
+  /**
+   * Mode to hide the widget
+   * 
+   * Using the Composition has a positive effect on performance as most browser
+   * will not trigger style computation for the transform action. But it should
+   * be use sparingly because using it too often can have the opposite effect.
+   * 
+   * To ensure the transformation does not trigger style recomputation, you may
+   * need to set the style 'will-change': 'transform'. This should be used only
+   * when needed as it may overwhelm the browser with a high number of layer.
+   * See https://developer.mozilla.org/en-US/docs/Web/CSS/will-change
+   */
+  export enum HiddenMode {
+    /**
+     * Set a 'lm-mod-hidden' class to deal with the widget visibility
+     */
+    Class = 0,
+    /**
+     * Set 'transform' to 'scale(0)' to hide it
+     */
+    Composition
   }
 
   /**
