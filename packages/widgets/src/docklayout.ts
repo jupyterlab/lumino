@@ -94,6 +94,34 @@ export class DockLayout extends Layout {
   readonly renderer: DockLayout.IRenderer;
 
   /**
+   * Stacked widget hiding mode
+   */
+  get hiddenMode() : Widget.HiddenMode {
+    return this._hiddenMode;
+  }
+  set hiddenMode(v : Widget.HiddenMode) {
+    if(this._hiddenMode !== v){
+      this._hiddenMode = v;
+      each(this.tabBars(), bar => {
+        if(bar.titles.length > 1){
+          bar.titles.forEach(title => {
+            title.owner.hiddenMode = this._hiddenMode;
+
+            switch(this._hiddenMode) {
+              case Widget.HiddenMode.Class:
+                title.owner.node.style.willChange = 'auto';
+                break;
+              case Widget.HiddenMode.Composition:
+                title.owner.node.style.willChange = 'transform';
+                break;
+            }
+          })
+        }
+      })
+    }
+  }
+
+  /**
    * Get the inter-element spacing for the dock layout.
    */
   get spacing(): number {

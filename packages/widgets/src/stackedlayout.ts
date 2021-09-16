@@ -35,6 +35,30 @@ export class StackedLayout extends PanelLayout {
   }
 
   /**
+   * Stacked widget hiding mode
+   */
+  get hiddenMode() : Widget.HiddenMode {
+    return this._hiddenMode;
+  }
+  set hiddenMode(v : Widget.HiddenMode) {
+    if(this._hiddenMode !== v){
+      this._hiddenMode = v;
+      this.widgets.forEach(w => {
+        w.hiddenMode = this._hiddenMode;
+
+        switch(this._hiddenMode) {
+          case Widget.HiddenMode.Class:
+            w.node.style.willChange = 'auto';
+            break;
+          case Widget.HiddenMode.Composition:
+            w.node.style.willChange = 'transform';
+            break;
+        }
+      })
+    }
+  }
+
+  /**
    * Dispose of the resources held by the layout.
    */
   dispose(): void {

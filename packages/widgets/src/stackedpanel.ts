@@ -36,6 +36,16 @@ export class StackedPanel extends Panel {
   }
 
   /**
+   * Stacked widget hiding mode
+   */
+  get hiddenMode() : Widget.HiddenMode {
+    return (this.layout as StackedLayout).hiddenMode;
+  }
+  set hiddenMode(v : Widget.HiddenMode) {
+    (this.layout as StackedLayout).hiddenMode = v;
+  }
+
+  /**
    * A signal emitted when a widget is removed from a stacked panel.
    */
   get widgetRemoved(): ISignal<this, Widget> {

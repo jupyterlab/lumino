@@ -98,6 +98,16 @@ export class DockPanel extends Widget {
   }
 
   /**
+   * Stacked widget hiding mode
+   */
+  get hiddenMode() : Widget.HiddenMode {
+    return (this.layout as DockLayout).hiddenMode;
+  }
+  set hiddenMode(v : Widget.HiddenMode) {
+    (this.layout as DockLayout).hiddenMode = v;
+  }
+
+  /**
    * A signal emitted when the layout configuration is modified.
    *
    * #### Notes
