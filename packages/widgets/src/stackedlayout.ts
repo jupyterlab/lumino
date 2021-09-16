@@ -28,10 +28,7 @@ import { Widget } from './widget';
 export class StackedLayout extends PanelLayout {
   constructor(options: StackedLayout.IOptions = {}) {
     super(options);
-    this._hiddenMode =
-      options.hiddenMode !== undefined
-        ? options.hiddenMode
-        : Widget.HiddenMode.Class;
+    this._hiddenMode = options.hiddenMode !== undefined ? options.hiddenMode : Widget.HiddenMode.Display;
   }
 
   /**
@@ -47,10 +44,10 @@ export class StackedLayout extends PanelLayout {
         w.hiddenMode = this._hiddenMode;
 
         switch(this._hiddenMode) {
-          case Widget.HiddenMode.Class:
+          case Widget.HiddenMode.Display:
             w.node.style.willChange = 'auto';
             break;
-          case Widget.HiddenMode.Composition:
+          case Widget.HiddenMode.Scale:
             w.node.style.willChange = 'transform';
             break;
         }
@@ -86,8 +83,8 @@ export class StackedLayout extends PanelLayout {
    * This is a reimplementation of the superclass method.
    */
   protected attachWidget(index: number, widget: Widget): void {
-    if (this._hiddenMode === Widget.HiddenMode.Composition) {
-      widget.hiddenMode = Widget.HiddenMode.Composition;
+    if(this._hiddenMode === Widget.HiddenMode.Scale){
+      widget.hiddenMode = Widget.HiddenMode.Scale;
       widget.node.style.willChange = 'transform';
     }
 
@@ -146,8 +143,8 @@ export class StackedLayout extends PanelLayout {
    * This is a reimplementation of the superclass method.
    */
   protected detachWidget(index: number, widget: Widget): void {
-    if (this._hiddenMode === Widget.HiddenMode.Composition) {
-      widget.hiddenMode = Widget.HiddenMode.Class;
+    if (this._hiddenMode === Widget.HiddenMode.Scale) {
+      widget.hiddenMode = Widget.HiddenMode.Display;
       widget.node.style.willChange = 'auto';
     }
 

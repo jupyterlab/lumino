@@ -713,7 +713,7 @@ describe('@lumino/widgets', () => {
       it('should use transformation if in "composition" mode', () => {
         let widget = new Widget();
         Widget.attach(widget, document.body);
-        widget.hiddenMode = Widget.HiddenMode.Composition;
+        widget.hiddenMode = Widget.HiddenMode.Scale;
         widget.hide();
         expect(widget.hasClass('lm-mod-hidden')).to.equal(false);
         expect(widget.node.style.transform).to.equal('scale(0)');
@@ -724,7 +724,7 @@ describe('@lumino/widgets', () => {
         let widget = new Widget();
         Widget.attach(widget, document.body);
         widget.hide();
-        widget.hiddenMode = Widget.HiddenMode.Composition;
+        widget.hiddenMode = Widget.HiddenMode.Scale;
         expect(widget.hasClass('lm-mod-hidden')).to.equal(false);
         expect(widget.node.style.transform).to.equal('scale(0)');
         widget.dispose();
@@ -733,9 +733,9 @@ describe('@lumino/widgets', () => {
       it('should add class when switching from composition to class', () => {
         let widget = new Widget();
         Widget.attach(widget, document.body);
-        widget.hiddenMode = Widget.HiddenMode.Composition;
+        widget.hiddenMode = Widget.HiddenMode.Scale;
         widget.hide();
-        widget.hiddenMode = Widget.HiddenMode.Class;
+        widget.hiddenMode = Widget.HiddenMode.Display;
         expect(widget.hasClass('lm-mod-hidden')).to.equal(true);
         expect(widget.node.style.transform).to.equal('');
         widget.dispose();

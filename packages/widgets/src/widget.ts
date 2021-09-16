@@ -175,7 +175,7 @@ export class Widget implements IMessageHandler, IObservableDisposable {
   set hiddenMode(value: Widget.HiddenMode) {
     if (value !== this._hiddenMode) {
       if (this.isHidden) {
-        if (value === Widget.HiddenMode.Class) {
+        if (value === Widget.HiddenMode.Display) {
           this.addClass('lm-mod-hidden');
           /* <DEPRECATED> */
           this.addClass('p-mod-hidden');
@@ -417,7 +417,7 @@ export class Widget implements IMessageHandler, IObservableDisposable {
     }
     this.clearFlag(Widget.Flag.IsHidden);
     this.node.removeAttribute('aria-hidden');
-    if (this.hiddenMode === Widget.HiddenMode.Class) {
+    if (this.hiddenMode === Widget.HiddenMode.Display) {
       this.removeClass('lm-mod-hidden');
       /* <DEPRECATED> */
       this.removeClass('p-mod-hidden');
@@ -452,7 +452,7 @@ export class Widget implements IMessageHandler, IObservableDisposable {
     }
     this.setFlag(Widget.Flag.IsHidden);
     this.node.setAttribute('aria-hidden', 'true');
-    if (this.hiddenMode === Widget.HiddenMode.Class) {
+    if (this.hiddenMode === Widget.HiddenMode.Display) {
       this.addClass('lm-mod-hidden');
       /* <DEPRECATED> */
       this.addClass('p-mod-hidden');
@@ -746,7 +746,7 @@ export class Widget implements IMessageHandler, IObservableDisposable {
   private _layout: Layout | null = null;
   private _parent: Widget | null = null;
   private _disposed = new Signal<this, void>(this);
-  private _hiddenMode: Widget.HiddenMode = Widget.HiddenMode.Class;
+  private _hiddenMode: Widget.HiddenMode = Widget.HiddenMode.Display;
 }
 
 /**
@@ -792,11 +792,11 @@ export namespace Widget {
     /**
      * Set a 'lm-mod-hidden' class to deal with the widget visibility
      */
-    Class = 0,
+    Display = 0,
     /**
      * Set 'transform' to 'scale(0)' to hide it
      */
-    Composition
+    Scale
   }
 
   /**
