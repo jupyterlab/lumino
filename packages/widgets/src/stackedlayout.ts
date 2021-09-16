@@ -33,25 +33,30 @@ export class StackedLayout extends PanelLayout {
 
   /**
    * Stacked widget hiding mode
+   * 
+   * ### Note
+   * If the hiddenMode is Scale, it will be applied only if the panel has 2 widgets or more.
    */
   get hiddenMode() : Widget.HiddenMode {
     return this._hiddenMode;
   }
   set hiddenMode(v : Widget.HiddenMode) {
-    if(this._hiddenMode !== v){
+    if (this._hiddenMode !== v) {
       this._hiddenMode = v;
-      this.widgets.forEach(w => {
-        w.hiddenMode = this._hiddenMode;
+      if (this.widgets.length > 1) {
+        this.widgets.forEach(w => {
+          w.hiddenMode = this._hiddenMode;
 
-        switch(this._hiddenMode) {
-          case Widget.HiddenMode.Display:
-            w.node.style.willChange = 'auto';
-            break;
-          case Widget.HiddenMode.Scale:
-            w.node.style.willChange = 'transform';
-            break;
-        }
-      })
+          switch(this._hiddenMode) {
+            case Widget.HiddenMode.Display:
+              w.node.style.willChange = 'auto';
+              break;
+            case Widget.HiddenMode.Scale:
+              w.node.style.willChange = 'transform';
+              break;
+          }
+        });
+      }
     }
   }
 
@@ -83,7 +88,11 @@ export class StackedLayout extends PanelLayout {
    * This is a reimplementation of the superclass method.
    */
   protected attachWidget(index: number, widget: Widget): void {
-    if(this._hiddenMode === Widget.HiddenMode.Scale){
+    if (this._items.length > 1 && this._hiddenMode === Widget.HiddenMode.Scale) {
+      if (this._items.length === 1) {
+        this.widgets[0].hiddenMode = Widget.HiddenMode.Scale;
+        this.widgets[0].node.style.willChange = 'transform';
+      }
       widget.hiddenMode = Widget.HiddenMode.Scale;
       widget.node.style.willChange = 'transform';
     }
@@ -143,13 +152,19 @@ export class StackedLayout extends PanelLayout {
    * This is a reimplementation of the superclass method.
    */
   protected detachWidget(index: number, widget: Widget): void {
-    if (this._hiddenMode === Widget.HiddenMode.Scale) {
-      widget.hiddenMode = Widget.HiddenMode.Display;
-      widget.node.style.willChange = 'auto';
-    }
 
     // Remove the layout item for the widget.
     let item = ArrayExt.removeAt(this._items, index);
+
+    if (this._hiddenMode === Widget.HiddenMode.Scale) {
+      widget.hiddenMode = Widget.HiddenMode.Display;
+      widget.node.style.willChange = 'auto';
+
+      if (this._items.length === 1) {
+        this.widgets[0].hiddenMode = Widget.HiddenMode.Display;
+        this.widgets[0].node.style.willChange = 'auto';        
+      }
+    }
 
     // Send a `'before-detach'` message if the parent is attached.
     if (this.parent!.isAttached) {

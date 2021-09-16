@@ -12,10 +12,10 @@ import { expect } from 'chai';
 
 import { each } from '@lumino/algorithm';
 
-import { DockPanel, TabBar, Widget } from '@lumino/widgets';
+import {
+  TabBar, DockPanel, Widget
+} from '@lumino/widgets';
 
-import //  LogWidget
-'./widget.spec';
 
 describe('@lumino/widgets', () => {
   describe('DockPanel', () => {
@@ -60,6 +60,62 @@ describe('@lumino/widgets', () => {
         panel.dispose();
         expect(panel.isDisposed).to.equal(true);
       });
+    });
+
+    describe("hiddenMode", () => {
+      let panel: DockPanel;
+      let widgets: Widget[] = [];
+
+      beforeEach(() => {
+        panel = new DockPanel();
+
+        // Create two stacked widgets
+        widgets.push(new Widget());
+        panel.addWidget(widgets[0]);
+        widgets.push(new Widget());
+        panel.addWidget(widgets[1], {mode: 'tab-after'});
+      });
+
+      afterEach(() => {
+        panel.dispose();
+      });
+
+      it("should be 'class' mode by default", () => {
+        expect(panel.hiddenMode).to.equal(Widget.HiddenMode.Display);
+      });
+
+      it("should switch to 'scale'", () => {
+        widgets[0].hiddenMode = Widget.HiddenMode.Scale;
+
+        panel.hiddenMode = Widget.HiddenMode.Scale;
+
+        expect(widgets[0].hiddenMode).to.equal(Widget.HiddenMode.Scale);
+        expect(widgets[0].node.style.willChange).to.equal('transform');
+        expect(widgets[1].hiddenMode).to.equal(Widget.HiddenMode.Scale);
+        expect(widgets[1].node.style.willChange).to.equal('transform');
+      });
+
+      it("should switch to 'display'", () => {
+        widgets[0].hiddenMode = Widget.HiddenMode.Scale;
+
+        panel.hiddenMode = Widget.HiddenMode.Scale;
+        panel.hiddenMode = Widget.HiddenMode.Display;
+
+        expect(widgets[0].hiddenMode).to.equal(Widget.HiddenMode.Display);
+        expect(widgets[0].node.style.willChange).to.equal('auto');
+        expect(widgets[1].hiddenMode).to.equal(Widget.HiddenMode.Display);
+        expect(widgets[1].node.style.willChange).to.equal('auto');
+      });
+
+      it("should not set 'scale' if only one widget", () => {
+        panel.layout!.removeWidget(widgets[1]);
+
+        panel.hiddenMode = Widget.HiddenMode.Scale;
+
+        expect(widgets[0].hiddenMode).to.equal(Widget.HiddenMode.Display);
+        expect(widgets[0].node.style.willChange).to.equal('auto');
+      });
+
     });
 
     describe('#tabsMovable', () => {

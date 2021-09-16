@@ -99,6 +99,9 @@ export class DockPanel extends Widget {
 
   /**
    * Stacked widget hiding mode
+   *
+   * ### Note
+   * If the hiddenMode is Scale, it will be applied only if the panel has 2 widgets or more.
    */
   get hiddenMode() : Widget.HiddenMode {
     return (this.layout as DockLayout).hiddenMode;
