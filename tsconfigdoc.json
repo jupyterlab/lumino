@@ -1,6 +1,6 @@
 {
   "$schema": "http://json.schemastore.org/tsconfig",
-    "compilerOptions": {
+  "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "composite": true,
     "declaration": true,
@@ -17,9 +17,7 @@
     "sourceMap": true,
     "strictNullChecks": true,
     "target": "es2017",
-    "types": [
-      "@types/node"
-    ],
+    "types": ["@types/node"],
     "baseUrl": ".",
     "paths": {
       "@lumino/*": ["./packages/*/src"]

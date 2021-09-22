@@ -7,10 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  AnyField
-} from './field';
-
+import { AnyField } from './field';
 
 /**
  * A type definition for a table schema.
@@ -22,8 +19,7 @@ import {
  * The schema `id` must be changed whenever changes are made to the
  * schema, or undefined behavior will result.
  */
-export
-type Schema = {
+export type Schema = {
   /**
    * The unique identifier for the schema.
    */
@@ -43,8 +39,7 @@ const invalidFieldnameLeads = ['$', '@'];
 /**
  * Validate a schema definition.
  */
-export
-function validateSchema(schema: Schema): string[] {
+export function validateSchema(schema: Schema): string[] {
   const errors = [];
   // Ensure that field names do not begin with `$` or `@`.
   for (let name in schema.fields) {

@@ -14,6 +14,5 @@ module.exports = {
       { test: /\.png$/, use: 'file-loader' }
     ]
   },
-  plugins: [
-  ]
+  plugins: []
 };

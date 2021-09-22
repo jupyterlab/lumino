@@ -19,8 +19,14 @@
     "clean:src": "lerna run clean --scope \"@lumino/!(test-|example-)*\"",
     "clean:tests": "lerna run clean:tests",
     "docs": "rimraf docs/api && lerna run build:src --concurrency 1 && lerna run docs",
+    "eslint": "eslint --ext .js,.jsx,.ts,.tsx --cache --fix .",
+    "eslint:check": "eslint --ext .js,.jsx,.ts,.tsx --cache .",
     "get:dependency": "get-dependency",
+    "lint": "yarn && yarn run prettier && yarn run eslint",
+    "lint:check": "yarn run prettier:check && yarn run eslint:check",
     "minimize": "lerna run minimize",
+    "prettier": "prettier --write \"**/*{.ts,.tsx,.js,.jsx,.css,.json,.md}\"",
+    "prettier:check": "prettier --check \"**/*{.ts,.tsx,.js,.jsx,.css,.json,.md}\"",
     "publish": "npm run clean && npm run build:dist && node scripts/tag-versions.js && lerna publish --yes -m \"Publish\" from-package",
     "remove:dependency": "remove-dependency",
     "test": "lerna run test --scope \"@lumino/!(example-)*\"",
@@ -34,7 +40,16 @@
   "dependencies": {},
   "devDependencies": {
     "@jupyterlab/buildutils": "^3.0.0",
+    "@typescript-eslint/eslint-plugin": "~4.8.1",
+    "@typescript-eslint/parser": "~4.8.1",
+    "eslint": "~7.14.0",
+    "eslint-config-prettier": "~6.15.0",
+    "eslint-plugin-prettier": "~3.1.4",
+    "husky": "^4.2.5",
     "lerna": "^4.0.0",
+    "lint-staged": "^10.2.13",
+    "prettier": "~2.1.1",
+    "shell-quote": "^1.7.2",
     "typedoc": "~0.15.0"
   },
   "jupyter-releaser": {
@@ -51,6 +66,11 @@
       ],
       "before-build-npm": "yarn build:dist",
       "before-draft-release": "node scripts/tag-versions.js"
+    }
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
     }
   }
 }

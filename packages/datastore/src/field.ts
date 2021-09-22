@@ -7,16 +7,18 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  ReadonlyJSONValue
-} from '@lumino/coreutils';
-
+import { ReadonlyJSONValue } from '@lumino/coreutils';
 
 /**
  * An abstract base class for datastore field types.
  */
-export
-abstract class Field<Value extends ReadonlyJSONValue, Update extends ReadonlyJSONValue, Metadata extends ReadonlyJSONValue, Change extends ReadonlyJSONValue, Patch extends ReadonlyJSONValue> {
+export abstract class Field<
+  Value extends ReadonlyJSONValue,
+  Update extends ReadonlyJSONValue,
+  Metadata extends ReadonlyJSONValue,
+  Change extends ReadonlyJSONValue,
+  Patch extends ReadonlyJSONValue
+> {
   /**
    * Construct a new field.
    *
@@ -104,7 +106,9 @@ abstract class Field<Value extends ReadonlyJSONValue, Update extends ReadonlyJSO
    *
    * @returns The result of applying the update.
    */
-  abstract applyUpdate(args: Field.UpdateArgs<Value, Update, Metadata>): Field.UpdateResult<Value, Change, Patch>;
+  abstract applyUpdate(
+    args: Field.UpdateArgs<Value, Update, Metadata>
+  ): Field.UpdateResult<Value, Change, Patch>;
 
   /**
    * Apply a system patch to the field.
@@ -113,7 +117,9 @@ abstract class Field<Value extends ReadonlyJSONValue, Update extends ReadonlyJSO
    *
    * @returns The result of applying the patch.
    */
-  abstract applyPatch(args: Field.PatchArgs<Value, Patch, Metadata>): Field.PatchResult<Value, Change>;
+  abstract applyPatch(
+    args: Field.PatchArgs<Value, Patch, Metadata>
+  ): Field.PatchResult<Value, Change>;
 
   /**
    * Unapply a system patch to the field.
@@ -122,7 +128,9 @@ abstract class Field<Value extends ReadonlyJSONValue, Update extends ReadonlyJSO
    *
    * @returns The result of unapplying the patch.
    */
-  abstract unapplyPatch(args: Field.PatchArgs<Value, Patch, Metadata>): Field.PatchResult<Value, Change>;
+  abstract unapplyPatch(
+    args: Field.PatchArgs<Value, Patch, Metadata>
+  ): Field.PatchResult<Value, Change>;
 
   /**
    * Merge two change objects into a single change object.
@@ -147,17 +155,14 @@ abstract class Field<Value extends ReadonlyJSONValue, Update extends ReadonlyJSO
   abstract mergePatch(first: Patch, second: Patch): Patch;
 }
 
-
 /**
  * The namespace for the `Field` class statics.
  */
-export
-namespace Field {
+export namespace Field {
   /**
    * An options object for initializing a field.
    */
-  export
-  interface IOptions {
+  export interface IOptions {
     /**
      * The human-readable description of the field.
      *
@@ -169,8 +174,7 @@ namespace Field {
   /**
    * A type alias for the arguments to an update operation.
    */
-  export
-  type UpdateArgs<Value, Update, Metadata> = {
+  export type UpdateArgs<Value, Update, Metadata> = {
     /**
      * The previous value of the field.
      */
@@ -200,8 +204,7 @@ namespace Field {
   /**
    * A type alias for the result of an update operation.
    */
-  export
-  type UpdateResult<Value, Change, Patch> = {
+  export type UpdateResult<Value, Change, Patch> = {
     /**
      * The new value of the field.
      */
@@ -221,8 +224,7 @@ namespace Field {
   /**
    * A type alias for the arguments to a patch operation.
    */
-  export
-  type PatchArgs<Value, Patch, Metadata> = {
+  export type PatchArgs<Value, Patch, Metadata> = {
     /**
      * The previous value of the field.
      */
@@ -242,8 +244,7 @@ namespace Field {
   /**
    * A type alias for the result of a patch operation.
    */
-  export
-  type PatchResult<Value, Change> = {
+  export type PatchResult<Value, Change> = {
     /**
      * The new value of the field.
      */
@@ -256,9 +257,13 @@ namespace Field {
   };
 }
 
-
 /**
  * A type alias which is compatible with any field type.
  */
-export
-type AnyField = Field<ReadonlyJSONValue, ReadonlyJSONValue, ReadonlyJSONValue, ReadonlyJSONValue, ReadonlyJSONValue>;
+export type AnyField = Field<
+  ReadonlyJSONValue,
+  ReadonlyJSONValue,
+  ReadonlyJSONValue,
+  ReadonlyJSONValue,
+  ReadonlyJSONValue
+>;

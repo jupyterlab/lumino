@@ -1,0 +1,21 @@
+examples/
+node_modules
+review
+**/build
+**/dist
+**/lib
+**/node_modules
+**/static
+**/typings
+**/types
+coverage
+*.map.js
+*.bundle.js
+*.config.js
+
+# jetbrains IDE stuff
+.idea/
+
+# ms IDE stuff
+.history/
+.vscode/

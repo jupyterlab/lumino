@@ -9,17 +9,9 @@
     "moduleResolution": "node",
     "target": "ES5",
     "outDir": "build",
-    "lib": [
-      "ES5",
-      "DOM"
-    ],
-    "types": [
-      "chai",
-      "mocha"
-    ],
+    "lib": ["ES5", "DOM"],
+    "types": ["chai", "mocha"],
     "rootDir": "src"
   },
-  "include": [
-    "src/*"
-  ]
+  "include": ["src/*"]
 }

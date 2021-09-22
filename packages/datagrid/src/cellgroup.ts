@@ -1,5 +1,5 @@
-import { DataModel } from "./datamodel";
-import { SectionList } from "./sectionlist";
+import { DataModel } from './datamodel';
+import { SectionList } from './sectionlist';
 
 /**
  * An interface describing a merged cell group.
@@ -60,7 +60,7 @@ export namespace CellGroup {
   export function calculateMergeOffsets(
     dataModel: DataModel,
     regions: DataModel.CellRegion[],
-    axis: "row" | "column",
+    axis: 'row' | 'column',
     sectionList: SectionList,
     index: number
   ): [number, number, CellGroup] {
@@ -76,7 +76,7 @@ export namespace CellGroup {
 
     let groupsAtAxis: CellGroup[] = [];
 
-    if (axis === "row") {
+    if (axis === 'row') {
       for (const region of regions) {
         groupsAtAxis = groupsAtAxis.concat(
           getCellGroupsAtRow(dataModel, region, index)
@@ -129,9 +129,9 @@ export namespace CellGroup {
   export function areCellGroupsIntersectingAtAxis(
     group1: CellGroup,
     group2: CellGroup,
-    axis: "row" | "column"
+    axis: 'row' | 'column'
   ): boolean {
-    if (axis === "row") {
+    if (axis === 'row') {
       return (
         (group1.r1 >= group2.r1 && group1.r1 <= group2.r2) ||
         (group1.r2 >= group2.r1 && group1.r2 <= group2.r2) ||
@@ -374,11 +374,11 @@ export namespace CellGroup {
   export function joinCellGroupsIntersectingAtAxis(
     dataModel: DataModel,
     regions: DataModel.CellRegion[],
-    axis: "row" | "column",
+    axis: 'row' | 'column',
     group: CellGroup
   ): CellGroup {
     let groupsAtAxis: CellGroup[] = [];
-    if (axis === "row") {
+    if (axis === 'row') {
       for (const region of regions) {
         for (let r = group.r1; r <= group.r2; r++) {
           groupsAtAxis = groupsAtAxis.concat(
@@ -417,7 +417,7 @@ export namespace CellGroup {
         ) {
           mergedGroupAtAxis = CellGroup.joinCellGroups([
             group,
-            mergedGroupAtAxis,
+            mergedGroupAtAxis
           ]);
           mergedCellGroups.splice(g, 1);
           g = 0;

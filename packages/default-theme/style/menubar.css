@@ -7,36 +7,35 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
-
-/* <DEPRECATED> */ .p-MenuBar, /* </DEPRECATED> */
+/* <DEPRECATED> */
+.p-MenuBar, /* </DEPRECATED> */
 .lm-MenuBar {
   padding-left: 5px;
-  background: #FAFAFA;
+  background: #fafafa;
   color: rgba(0, 0, 0, 0.87);
-  border-bottom: 1px solid #DDDDDD;
+  border-bottom: 1px solid #dddddd;
   font: 13px Helvetica, Arial, sans-serif;
 }
 
-
-/* <DEPRECATED> */ .p-MenuBar-menu, /* </DEPRECATED> */
+/* <DEPRECATED> */
+.p-MenuBar-menu, /* </DEPRECATED> */
 .lm-MenuBar-menu {
   transform: translateY(-1px);
 }
 
-
-/* <DEPRECATED> */ .p-MenuBar-item, /* </DEPRECATED> */
+/* <DEPRECATED> */
+.p-MenuBar-item, /* </DEPRECATED> */
 .lm-MenuBar-item {
   padding: 4px 8px;
   border-left: 1px solid transparent;
   border-right: 1px solid transparent;
 }
 
-
-/* <DEPRECATED> */ .p-MenuBar-item.p-mod-active, /* </DEPRECATED> */
+/* <DEPRECATED> */
+.p-MenuBar-item.p-mod-active, /* </DEPRECATED> */
 .lm-MenuBar-item.lm-mod-active {
-  background: #E5E5E5;
+  background: #e5e5e5;
 }
-
 
 /* <DEPRECATED> */
 .p-MenuBar.p-mod-active .p-MenuBar-item.p-mod-active,
@@ -44,7 +43,7 @@
 .lm-MenuBar.lm-mod-active .lm-MenuBar-item.lm-mod-active {
   z-index: 10001;
   background: white;
-  border-left: 1px solid #C0C0C0;
-  border-right: 1px solid #C0C0C0;
+  border-left: 1px solid #c0c0c0;
+  border-right: 1px solid #c0c0c0;
   box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.2);
 }

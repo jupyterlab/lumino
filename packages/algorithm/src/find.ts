@@ -7,10 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  IterableOrArrayLike, iter
-} from './iter';
-
+import { iter, IterableOrArrayLike } from './iter';
 
 /**
  * Find the first value in an iterable which matches a predicate.
@@ -44,8 +41,10 @@ import {
  * find(data, isCat).name;  // 'fluffy'
  * ```
  */
-export
-function find<T>(object: IterableOrArrayLike<T>, fn: (value: T, index: number) => boolean): T | undefined {
+export function find<T>(
+  object: IterableOrArrayLike<T>,
+  fn: (value: T, index: number) => boolean
+): T | undefined {
   let index = 0;
   let it = iter(object);
   let value: T | undefined;
@@ -56,7 +55,6 @@ function find<T>(object: IterableOrArrayLike<T>, fn: (value: T, index: number) =
   }
   return undefined;
 }
-
 
 /**
  * Find the index of the first value which matches a predicate.
@@ -90,8 +88,10 @@ function find<T>(object: IterableOrArrayLike<T>, fn: (value: T, index: number) =
  * findIndex(data, isCat);  // 1
  * ```
  */
-export
-function findIndex<T>(object: IterableOrArrayLike<T>, fn: (value: T, index: number) => boolean): number {
+export function findIndex<T>(
+  object: IterableOrArrayLike<T>,
+  fn: (value: T, index: number) => boolean
+): number {
   let index = 0;
   let it = iter(object);
   let value: T | undefined;
@@ -102,7 +102,6 @@ function findIndex<T>(object: IterableOrArrayLike<T>, fn: (value: T, index: numb
   }
   return -1;
 }
-
 
 /**
  * Find the minimum value in an iterable.
@@ -132,8 +131,10 @@ function findIndex<T>(object: IterableOrArrayLike<T>, fn: (value: T, index: numb
  * min([7, 4, 0, 3, 9, 4], numberCmp);  // 0
  * ```
  */
-export
-function min<T>(object: IterableOrArrayLike<T>, fn: (first: T, second: T) => number): T | undefined {
+export function min<T>(
+  object: IterableOrArrayLike<T>,
+  fn: (first: T, second: T) => number
+): T | undefined {
   let it = iter(object);
   let value = it.next();
   if (value === undefined) {
@@ -147,7 +148,6 @@ function min<T>(object: IterableOrArrayLike<T>, fn: (first: T, second: T) => num
   }
   return result;
 }
-
 
 /**
  * Find the maximum value in an iterable.
@@ -177,8 +177,10 @@ function min<T>(object: IterableOrArrayLike<T>, fn: (first: T, second: T) => num
  * max([7, 4, 0, 3, 9, 4], numberCmp);  // 9
  * ```
  */
-export
-function max<T>(object: IterableOrArrayLike<T>, fn: (first: T, second: T) => number): T | undefined {
+export function max<T>(
+  object: IterableOrArrayLike<T>,
+  fn: (first: T, second: T) => number
+): T | undefined {
   let it = iter(object);
   let value = it.next();
   if (value === undefined) {
@@ -192,7 +194,6 @@ function max<T>(object: IterableOrArrayLike<T>, fn: (first: T, second: T) => num
   }
   return result;
 }
-
 
 /**
  * Find the minimum and maximum values in an iterable.
@@ -222,8 +223,10 @@ function max<T>(object: IterableOrArrayLike<T>, fn: (first: T, second: T) => num
  * minmax([7, 4, 0, 3, 9, 4], numberCmp);  // [0, 9]
  * ```
  */
-export
-function minmax<T>(object: IterableOrArrayLike<T>, fn: (first: T, second: T) => number): [T, T] | undefined {
+export function minmax<T>(
+  object: IterableOrArrayLike<T>,
+  fn: (first: T, second: T) => number
+): [T, T] | undefined {
   let it = iter(object);
   let value = it.next();
   if (value === undefined) {

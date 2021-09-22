@@ -7,10 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  IIterator, IterableOrArrayLike, iter
-} from './iter';
-
+import { IIterator, iter, IterableOrArrayLike } from './iter';
 
 /**
  * Iterate several iterables in lockstep.
@@ -33,17 +30,14 @@ import {
  * toArray(stream);  // [[1, 4], [2, 5], [3, 6]]
  * ```
  */
-export
-function zip<T>(...objects: IterableOrArrayLike<T>[]): IIterator<T[]> {
+export function zip<T>(...objects: IterableOrArrayLike<T>[]): IIterator<T[]> {
   return new ZipIterator<T>(objects.map(iter));
 }
-
 
 /**
  * An iterator which iterates several sources in lockstep.
  */
-export
-class ZipIterator<T> implements IIterator<T[]> {
+export class ZipIterator<T> implements IIterator<T[]> {
   /**
    * Construct a new zip iterator.
    *

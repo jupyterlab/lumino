@@ -7,29 +7,20 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  PromiseDelegate
-} from '@lumino/coreutils';
+import { PromiseDelegate } from '@lumino/coreutils';
 
-import {
-  Datastore, IServerAdapter, Schema
-} from '@lumino/datastore';
+import { Datastore, IServerAdapter, Schema } from '@lumino/datastore';
 
-import {
-  WSAdapterMessages
-} from './messages';
+import { WSAdapterMessages } from './messages';
 
-import {
-  WSConnection
-} from './wsbase';
-
-
+import { WSConnection } from './wsbase';
 
 /**
  * A websocket based adapter for a datastore.
  */
-export
-class WSAdapter extends WSConnection<WSAdapterMessages.IMessage, WSAdapterMessages.IMessage> implements IServerAdapter {
+export class WSAdapter
+  extends WSConnection<WSAdapterMessages.IMessage, WSAdapterMessages.IMessage>
+  implements IServerAdapter {
   /**
    * Create a new websocket adapter for a datastore.
    *
@@ -37,7 +28,10 @@ class WSAdapter extends WSConnection<WSAdapterMessages.IMessage, WSAdapterMessag
    */
   constructor(wsFactory: WSConnection.WSFactory) {
     super(wsFactory);
-    this._delegates = new Map<string, PromiseDelegate<WSAdapterMessages.IReplyMessage>>();
+    this._delegates = new Map<
+      string,
+      PromiseDelegate<WSAdapterMessages.IReplyMessage>
+    >();
   }
 
   /**
@@ -69,7 +63,9 @@ class WSAdapter extends WSConnection<WSAdapterMessages.IMessage, WSAdapterMessag
    * @param transaction - the transaction to broadcast.
    */
   broadcast(transaction: Datastore.Transaction): void {
-    let msg = WSAdapterMessages.createTransactionBroadcastMessage([transaction]);
+    let msg = WSAdapterMessages.createTransactionBroadcastMessage([
+      transaction
+    ]);
     void this._requestMessageReply(msg);
   }
 
@@ -102,10 +98,14 @@ class WSAdapter extends WSConnection<WSAdapterMessages.IMessage, WSAdapterMessag
   /**
    * A callback for when a remote transaction is received by the server adapter.
    */
-  get onRemoteTransaction(): ((transaction: Datastore.Transaction) => void) | null {
+  get onRemoteTransaction():
+    | ((transaction: Datastore.Transaction) => void)
+    | null {
     return this._onRemoteTransaction;
   }
-  set onRemoteTransaction(value: ((transaction: Datastore.Transaction) => void) | null) {
+  set onRemoteTransaction(
+    value: ((transaction: Datastore.Transaction) => void) | null
+  ) {
     this._onRemoteTransaction = value;
   }
 
@@ -209,7 +209,9 @@ class WSAdapter extends WSConnection<WSAdapterMessages.IMessage, WSAdapterMessag
    *
    * @param transactions - the transactions which should be applied.
    */
-  private _handleTransactions(transactions: ReadonlyArray<Datastore.Transaction>): void {
+  private _handleTransactions(
+    transactions: ReadonlyArray<Datastore.Transaction>
+  ): void {
     if (this.isDisposed) {
       return;
     }
@@ -227,16 +229,28 @@ class WSAdapter extends WSConnection<WSAdapterMessages.IMessage, WSAdapterMessag
    *
    * @returns a the reply from the server.
    */
-  private _requestMessageReply(msg: WSAdapterMessages.IStoreIdMessageRequest): Promise<WSAdapterMessages.IStoreIdMessageReply>
-  private _requestMessageReply(msg: WSAdapterMessages.IUndoMessageRequest): Promise<WSAdapterMessages.IUndoMessageReply>
-  private _requestMessageReply(msg: WSAdapterMessages.IRedoMessageRequest): Promise<WSAdapterMessages.IRedoMessageReply>
-  private _requestMessageReply(msg: WSAdapterMessages.IHistoryRequestMessage): Promise<WSAdapterMessages.IHistoryReplyMessage>
-  private _requestMessageReply(msg: WSAdapterMessages.ITransactionBroadcastMessage): Promise<WSAdapterMessages.ITransactionAckMessage>
-  private _requestMessageReply(msg: WSAdapterMessages.IMessage): Promise<WSAdapterMessages.IReplyMessage> {
+  private _requestMessageReply(
+    msg: WSAdapterMessages.IStoreIdMessageRequest
+  ): Promise<WSAdapterMessages.IStoreIdMessageReply>;
+  private _requestMessageReply(
+    msg: WSAdapterMessages.IUndoMessageRequest
+  ): Promise<WSAdapterMessages.IUndoMessageReply>;
+  private _requestMessageReply(
+    msg: WSAdapterMessages.IRedoMessageRequest
+  ): Promise<WSAdapterMessages.IRedoMessageReply>;
+  private _requestMessageReply(
+    msg: WSAdapterMessages.IHistoryRequestMessage
+  ): Promise<WSAdapterMessages.IHistoryReplyMessage>;
+  private _requestMessageReply(
+    msg: WSAdapterMessages.ITransactionBroadcastMessage
+  ): Promise<WSAdapterMessages.ITransactionAckMessage>;
+  private _requestMessageReply(
+    msg: WSAdapterMessages.IMessage
+  ): Promise<WSAdapterMessages.IReplyMessage> {
     let delegate = new PromiseDelegate<WSAdapterMessages.IReplyMessage>();
     this._delegates.set(msg.msgId, delegate);
 
-    let promise = delegate.promise.then((reply) => {
+    let promise = delegate.promise.then(reply => {
       this._delegates.delete(msg.msgId);
       return reply;
     });
@@ -245,8 +259,13 @@ class WSAdapter extends WSConnection<WSAdapterMessages.IMessage, WSAdapterMessag
     return promise;
   }
 
-  private _delegates: Map<string, PromiseDelegate<WSAdapterMessages.IReplyMessage>>;
-  private _onRemoteTransaction: ((transaction: Datastore.Transaction) => void) | null = null
-  private _onUndo: ((transaction: Datastore.Transaction) => void) | null = null
-  private _onRedo: ((transaction: Datastore.Transaction) => void) | null = null
+  private _delegates: Map<
+    string,
+    PromiseDelegate<WSAdapterMessages.IReplyMessage>
+  >;
+  private _onRemoteTransaction:
+    | ((transaction: Datastore.Transaction) => void)
+    | null = null;
+  private _onUndo: ((transaction: Datastore.Transaction) => void) | null = null;
+  private _onRedo: ((transaction: Datastore.Transaction) => void) | null = null;
 }

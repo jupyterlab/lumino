@@ -7,10 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  IIterator
-} from './iter';
-
+import { IIterator } from './iter';
 
 /**
  * Create an iterator of evenly spaced values.
@@ -30,8 +27,11 @@ import {
  * In the two argument form of `range(start, stop)`, `step` defaults
  * to `1`.
  */
-export
-function range(start: number, stop?: number, step?: number): IIterator<number> {
+export function range(
+  start: number,
+  stop?: number,
+  step?: number
+): IIterator<number> {
   if (stop === undefined) {
     return new RangeIterator(0, start, 1);
   }
@@ -41,12 +41,10 @@ function range(start: number, stop?: number, step?: number): IIterator<number> {
   return new RangeIterator(start, stop, step);
 }
 
-
 /**
  * An iterator which produces a range of evenly spaced values.
  */
-export
-class RangeIterator implements IIterator<number> {
+export class RangeIterator implements IIterator<number> {
   /**
    * Construct a new range iterator.
    *
@@ -102,7 +100,6 @@ class RangeIterator implements IIterator<number> {
   private _step: number;
 }
 
-
 /**
  * The namespace for the module implementation details.
  */
@@ -118,8 +115,11 @@ namespace Private {
    *
    * @returns The number of steps need to traverse the range.
    */
-  export
-  function rangeLength(start: number, stop: number, step: number): number {
+  export function rangeLength(
+    start: number,
+    stop: number,
+    step: number
+  ): number {
     if (step === 0) {
       return Infinity;
     }

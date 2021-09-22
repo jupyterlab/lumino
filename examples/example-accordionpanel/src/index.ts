@@ -48,7 +48,7 @@ function main(): void {
   const r1 = new ContentWidget('Red');
   const b1 = new ContentWidget('Blue');
   const g1 = new ContentWidget('Green');
-  
+
   accordion.addWidget(r1);
   accordion.addWidget(b1);
   accordion.addWidget(g1);

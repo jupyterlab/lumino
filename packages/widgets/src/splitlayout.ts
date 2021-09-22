@@ -53,7 +53,7 @@ export class SplitLayout extends PanelLayout {
    */
   dispose(): void {
     // Dispose of the layout items.
-    each(this._items, (item) => {
+    each(this._items, item => {
       item.dispose();
     });
 
@@ -169,7 +169,7 @@ export class SplitLayout extends PanelLayout {
    * This method **does not** measure the DOM nodes.
    */
   relativeSizes(): number[] {
-    return Private.normalize(this._sizers.map((sizer) => sizer.size));
+    return Private.normalize(this._sizers.map(sizer => sizer.size));
   }
 
   /**
@@ -429,7 +429,7 @@ export class SplitLayout extends PanelLayout {
 
   /**
    * Update the item position.
-   * 
+   *
    * @param i Item index
    * @param isHorizontal Whether the layout is horizontal or not
    * @param left Left position in pixels
@@ -805,7 +805,7 @@ namespace Private {
     name: 'stretch',
     create: () => 0,
     coerce: (owner, value) => Math.max(0, Math.floor(value)),
-    changed: onChildSizingChanged,
+    changed: onChildSizingChanged
   });
 
   /**
@@ -844,7 +844,7 @@ namespace Private {
       return [];
     }
     let sum = values.reduce((a, b) => a + Math.abs(b), 0);
-    return sum === 0 ? values.map((v) => 1 / n) : values.map((v) => v / sum);
+    return sum === 0 ? values.map(v => 1 / n) : values.map(v => v / sum);
   }
 
   /**

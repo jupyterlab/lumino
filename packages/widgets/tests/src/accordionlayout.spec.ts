@@ -9,7 +9,7 @@ import { expect } from 'chai';
 const renderer: AccordionLayout.IRenderer = {
   titleClassName: '.lm-AccordionTitle',
   createHandle: () => document.createElement('div'),
-  createSectionTitle: (title: Title<Widget>) => document.createElement('h3'),
+  createSectionTitle: (title: Title<Widget>) => document.createElement('h3')
 };
 
 class LogAccordionLayout extends AccordionLayout {
@@ -71,7 +71,7 @@ describe('@lumino/widgets', () => {
         expect(layout.titleSpace).to.equal(10);
       });
 
-      it('should post a fit request to the parent widget', (done) => {
+      it('should post a fit request to the parent widget', done => {
         let layout = new LogAccordionLayout({ renderer });
         let parent = new Widget();
         parent.layout = layout;
@@ -82,7 +82,7 @@ describe('@lumino/widgets', () => {
         });
       });
 
-      it('should be a no-op if the value does not change', (done) => {
+      it('should be a no-op if the value does not change', done => {
         let layout = new LogAccordionLayout({ renderer });
         let parent = new Widget();
         parent.layout = layout;
@@ -111,7 +111,7 @@ describe('@lumino/widgets', () => {
           layout.addWidget(w);
         });
 
-        expect(every(layout.titles, (h) => h instanceof HTMLElement));
+        expect(every(layout.titles, h => h instanceof HTMLElement));
         expect(layout.titles).to.have.length(widgets.length);
       });
     });
@@ -149,7 +149,7 @@ describe('@lumino/widgets', () => {
         let widgets = [new Widget(), new Widget(), new Widget()];
         let parent = new Widget();
         parent.layout = layout;
-        widgets.forEach((w) => {
+        widgets.forEach(w => {
           layout.addWidget(w);
         });
         let widget = widgets[0];
@@ -185,7 +185,7 @@ describe('@lumino/widgets', () => {
       it('clear the titles list', () => {
         const layout = new AccordionLayout({ renderer });
         const widgets = [new Widget(), new Widget(), new Widget()];
-        widgets.forEach((w) => {
+        widgets.forEach(w => {
           layout.addWidget(w);
         });
 

@@ -7,10 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  IIterator, IterableOrArrayLike, iter
-} from './iter';
-
+import { IIterator, iter, IterableOrArrayLike } from './iter';
 
 /**
  * Filter an iterable for values which pass a test.
@@ -32,17 +29,17 @@ import {
  * toArray(stream);  // [2, 4, 6]
  * ```
  */
-export
-function filter<T>(object: IterableOrArrayLike<T>, fn: (value: T, index: number) => boolean): IIterator<T> {
+export function filter<T>(
+  object: IterableOrArrayLike<T>,
+  fn: (value: T, index: number) => boolean
+): IIterator<T> {
   return new FilterIterator<T>(iter(object), fn);
 }
-
 
 /**
  * An iterator which yields values which pass a test.
  */
-export
-class FilterIterator<T> implements IIterator<T> {
+export class FilterIterator<T> implements IIterator<T> {
   /**
    * Construct a new filter iterator.
    *

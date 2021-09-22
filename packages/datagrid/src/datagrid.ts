@@ -7,66 +7,43 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  toArray
-} from '@lumino/algorithm';
+import { toArray } from '@lumino/algorithm';
+
+import { IDisposable } from '@lumino/disposable';
+
+import { ClipboardExt, ElementExt, Platform } from '@lumino/domutils';
 
 import {
-  IDisposable
-} from '@lumino/disposable';
-
-import {
-  ClipboardExt, ElementExt, Platform
-} from '@lumino/domutils';
-
-import {
-  ConflatableMessage, IMessageHandler, Message, MessageLoop
+  ConflatableMessage,
+  IMessageHandler,
+  Message,
+  MessageLoop
 } from '@lumino/messaging';
 
-import {
-  GridLayout, ScrollBar, Widget
-} from '@lumino/widgets';
+import { GridLayout, ScrollBar, Widget } from '@lumino/widgets';
+
+import { CellRenderer } from './cellrenderer';
+
+import { DataModel, MutableDataModel } from './datamodel';
+
+import { CellGroup } from './cellgroup';
+
+import { GraphicsContext } from './graphicscontext';
+
+import { RendererMap } from './renderermap';
+
+import { SectionList } from './sectionlist';
+
+import { SelectionModel } from './selectionmodel';
 
 import {
-  CellRenderer
-} from './cellrenderer';
-
-import {
-  DataModel, MutableDataModel
-} from './datamodel';
-
-import {
-  CellGroup
-} from './cellgroup';
-
-import {
-  GraphicsContext
-} from './graphicscontext';
-
-import {
-  RendererMap
-} from './renderermap';
-
-import {
-  SectionList
-} from './sectionlist';
-
-import {
-  SelectionModel
-} from './selectionmodel';
-
-import {
-  ICellEditorController,
-  CellEditorController
+  CellEditorController,
+  ICellEditorController
 } from './celleditorcontroller';
 
-import {
-  JSONExt
-} from '@lumino/coreutils';
+import { JSONExt } from '@lumino/coreutils';
 
-import { 
-  TextRenderer 
-} from './textrenderer';
+import { TextRenderer } from './textrenderer';
 
 /**
  * A widget which implements a high-performance tabular data grid.
@@ -78,8 +55,7 @@ import {
  *
  * This class is not designed to be subclassed.
  */
-export
-class DataGrid extends Widget {
+export class DataGrid extends Widget {
   /**
    * Construct a new data grid.
    *
@@ -108,14 +84,22 @@ class DataGrid extends Widget {
     let minimumSizes = options.minimumSizes || DataGrid.minimumSizes;
 
     // Set up the sections lists.
-    this._rowSections = new SectionList({ defaultSize: defaultSizes.rowHeight,
-      minimumSize: minimumSizes.rowHeight });
-    this._columnSections = new SectionList({ defaultSize: defaultSizes.columnWidth,
-      minimumSize: minimumSizes.columnWidth});
-    this._rowHeaderSections = new SectionList({ defaultSize: defaultSizes.rowHeaderWidth,
-      minimumSize: minimumSizes.rowHeaderWidth});
-    this._columnHeaderSections = new SectionList({ defaultSize: defaultSizes.columnHeaderHeight,
-      minimumSize: minimumSizes.columnHeaderHeight});
+    this._rowSections = new SectionList({
+      defaultSize: defaultSizes.rowHeight,
+      minimumSize: minimumSizes.rowHeight
+    });
+    this._columnSections = new SectionList({
+      defaultSize: defaultSizes.columnWidth,
+      minimumSize: minimumSizes.columnWidth
+    });
+    this._rowHeaderSections = new SectionList({
+      defaultSize: defaultSizes.rowHeaderWidth,
+      minimumSize: minimumSizes.rowHeaderWidth
+    });
+    this._columnHeaderSections = new SectionList({
+      defaultSize: defaultSizes.columnHeaderHeight,
+      minimumSize: minimumSizes.columnHeaderHeight
+    });
 
     // Create the canvas, buffer, and overlay objects.
     this._canvas = Private.createCanvas();
@@ -733,10 +717,12 @@ class DataGrid extends Widget {
    * selection model, editor controller and data model properties.
    */
   get editable(): boolean {
-    return this._editingEnabled &&
+    return (
+      this._editingEnabled &&
       this._selectionModel !== null &&
       this._editorController !== null &&
-      this.dataModel instanceof MutableDataModel;
+      this.dataModel instanceof MutableDataModel
+    );
   }
 
   /**
@@ -949,9 +935,11 @@ class DataGrid extends Widget {
    */
   moveCursor(direction: SelectionModel.CursorMoveDirection): void {
     // Bail early if there is no selection
-    if (!this.dataModel ||
+    if (
+      !this.dataModel ||
       !this._selectionModel ||
-      this._selectionModel.isEmpty) {
+      this._selectionModel.isEmpty
+    ) {
       return;
     }
 
@@ -962,9 +950,7 @@ class DataGrid extends Widget {
     // then move the selection and cursor within grid bounds
     if (onlyOne) {
       const currentSel = this._selectionModel.currentSelection()!;
-      if (currentSel.r1 === currentSel.r2 &&
-        currentSel.c1 === currentSel.c2
-      ) {
+      if (currentSel.r1 === currentSel.r2 && currentSel.c1 === currentSel.c2) {
         const dr = direction === 'down' ? 1 : direction === 'up' ? -1 : 0;
         const dc = direction === 'right' ? 1 : direction === 'left' ? -1 : 0;
         let newRow = currentSel.r1 + dr;
@@ -993,9 +979,12 @@ class DataGrid extends Widget {
         }
 
         this._selectionModel.select({
-          r1: newRow, c1: newColumn,
-          r2: newRow, c2: newColumn,
-          cursorRow: newRow, cursorColumn: newColumn,
+          r1: newRow,
+          c1: newColumn,
+          r2: newRow,
+          c2: newColumn,
+          cursorRow: newRow,
+          cursorColumn: newColumn,
           clear: 'all'
         });
 
@@ -1049,20 +1038,20 @@ class DataGrid extends Widget {
     let dx = 0;
     let dy = 0;
     switch (dir) {
-    case 'up':
-      dy = -this.pageHeight;
-      break;
-    case 'down':
-      dy = this.pageHeight;
-      break;
-    case 'left':
-      dx = -this.pageWidth;
-      break;
-    case 'right':
-      dx = this.pageWidth;
-      break;
-    default:
-      throw 'unreachable';
+      case 'up':
+        dy = -this.pageHeight;
+        break;
+      case 'down':
+        dy = this.pageHeight;
+        break;
+      case 'left':
+        dx = -this.pageWidth;
+        break;
+      case 'right':
+        dx = this.pageWidth;
+        break;
+      default:
+        throw 'unreachable';
     }
     this.scrollTo(this.scrollX + dx, this.scrollY + dy);
   }
@@ -1080,24 +1069,24 @@ class DataGrid extends Widget {
     let rows = this._rowSections;
     let columns = this._columnSections;
     switch (dir) {
-    case 'up':
-      r = rows.indexOf(y - 1);
-      y = r < 0 ? y : rows.offsetOf(r);
-      break;
-    case 'down':
-      r = rows.indexOf(y);
-      y = r < 0 ? y : rows.offsetOf(r) + rows.sizeOf(r);
-      break;
-    case 'left':
-      c = columns.indexOf(x - 1);
-      x = c < 0 ? x : columns.offsetOf(c);
-      break;
-    case 'right':
-      c = columns.indexOf(x);
-      x = c < 0 ? x : columns.offsetOf(c) + columns.sizeOf(c);
-      break;
-    default:
-      throw 'unreachable';
+      case 'up':
+        r = rows.indexOf(y - 1);
+        y = r < 0 ? y : rows.offsetOf(r);
+        break;
+      case 'down':
+        r = rows.indexOf(y);
+        y = r < 0 ? y : rows.offsetOf(r) + rows.sizeOf(r);
+        break;
+      case 'left':
+        c = columns.indexOf(x - 1);
+        x = c < 0 ? x : columns.offsetOf(c);
+        break;
+      case 'right':
+        c = columns.indexOf(x);
+        x = c < 0 ? x : columns.offsetOf(c) + columns.sizeOf(c);
+        break;
+      default:
+        throw 'unreachable';
     }
     this.scrollTo(x, y);
   }
@@ -1428,7 +1417,11 @@ class DataGrid extends Widget {
    *
    * @param size - The desired size of the column.
    */
-  resizeColumn(region: DataModel.ColumnRegion, index: number, size: number): void {
+  resizeColumn(
+    region: DataModel.ColumnRegion,
+    index: number,
+    size: number
+  ): void {
     let msg = new Private.ColumnResizeRequest(region, index, size);
     MessageLoop.postMessage(this._viewport, msg);
   }
@@ -1440,18 +1433,18 @@ class DataGrid extends Widget {
    */
   resetRows(region: DataModel.RowRegion | 'all'): void {
     switch (region) {
-    case 'all':
-      this._rowSections.reset();
-      this._columnHeaderSections.reset();
-      break;
-    case 'body':
-      this._rowSections.reset();
-      break;
-    case 'column-header':
-      this._columnHeaderSections.reset();
-      break;
-    default:
-      throw 'unreachable';
+      case 'all':
+        this._rowSections.reset();
+        this._columnHeaderSections.reset();
+        break;
+      case 'body':
+        this._rowSections.reset();
+        break;
+      case 'column-header':
+        this._columnHeaderSections.reset();
+        break;
+      default:
+        throw 'unreachable';
     }
     this.repaintContent();
     this.repaintOverlay();
@@ -1464,23 +1457,22 @@ class DataGrid extends Widget {
    */
   resetColumns(region: DataModel.ColumnRegion | 'all'): void {
     switch (region) {
-    case 'all':
-      this._columnSections.reset();
-      this._rowHeaderSections.reset();
-      break;
-    case 'body':
-      this._columnSections.reset();
-      break;
-    case 'row-header':
-      this._rowHeaderSections.reset();
-      break;
-    default:
-      throw 'unreachable';
+      case 'all':
+        this._columnSections.reset();
+        this._rowHeaderSections.reset();
+        break;
+      case 'body':
+        this._columnSections.reset();
+        break;
+      case 'row-header':
+        this._rowHeaderSections.reset();
+        break;
+      default:
+        throw 'unreachable';
     }
     this.repaintContent();
     this.repaintOverlay();
   }
-
 
   /**
    * Auto sizes column widths based on their text content.
@@ -1488,16 +1480,19 @@ class DataGrid extends Widget {
    * @param padding padding added to resized columns (pixels).
    * @param numCols specify cap on the number of column resizes (optional).
    */
-  fitColumnNames(area: DataGrid.ColumnFitType = 'all', padding: number = 15, numCols?: number): void {
+  fitColumnNames(
+    area: DataGrid.ColumnFitType = 'all',
+    padding: number = 15,
+    numCols?: number
+  ): void {
     // Attempt resizing only if a data model is present.
     if (this.dataModel) {
       // Tracking remaining columns to be resized if numCols arg passed.
-      let colsRemaining = (numCols === undefined) || (numCols < 0) 
-        ? undefined 
-        : numCols;
+      let colsRemaining =
+        numCols === undefined || numCols < 0 ? undefined : numCols;
 
       if (area === 'row-header' || area === 'all') {
-        // Respecting any column resize cap, if one has been passed. 
+        // Respecting any column resize cap, if one has been passed.
         if (colsRemaining !== undefined) {
           const rowColumnCount = this.dataModel.columnCount('row-header');
           /*
@@ -1506,7 +1501,7 @@ class DataGrid extends Widget {
             and set remaining resize allowance number to 0.
           */
           if (colsRemaining - rowColumnCount < 0) {
-            this._fitRowColumnHeaders(this.dataModel, padding, colsRemaining)
+            this._fitRowColumnHeaders(this.dataModel, padding, colsRemaining);
             colsRemaining = 0;
           } else {
             /*
@@ -1521,11 +1516,10 @@ class DataGrid extends Widget {
           // No column resize cap passed - resizing all columns.
           this._fitRowColumnHeaders(this.dataModel, padding);
         }
-
       }
 
       if (area === 'body' || area === 'all') {
-        // Respecting any column resize cap, if one has been passed. 
+        // Respecting any column resize cap, if one has been passed.
         if (colsRemaining !== undefined) {
           const bodyColumnCount = this.dataModel.columnCount('body');
           /*
@@ -1542,8 +1536,11 @@ class DataGrid extends Widget {
               Resize based on the smallest number between remaining
               resize allowance and body column count.
             */
-            this._fitBodyColumnHeaders(this.dataModel, padding,
-              Math.min(colsRemaining, bodyColumnCount));
+            this._fitBodyColumnHeaders(
+              this.dataModel,
+              padding,
+              Math.min(colsRemaining, bodyColumnCount)
+            );
           }
         } else {
           // No column resize cap passed - resizing all columns.
@@ -1562,7 +1559,7 @@ class DataGrid extends Widget {
    *
    * @returns The local viewport coordinates for the position.
    */
-  mapToLocal(clientX: number, clientY: number): { lx: number, ly: number } {
+  mapToLocal(clientX: number, clientY: number): { lx: number; ly: number } {
     // Fetch the viewport rect.
     let rect = this._viewport.node.getBoundingClientRect();
 
@@ -1590,7 +1587,7 @@ class DataGrid extends Widget {
    *
    * @returns The virtual grid coordinates for the position.
    */
-  mapToVirtual(clientX: number, clientY: number): { vx: number, vy: number } {
+  mapToVirtual(clientX: number, clientY: number): { vx: number; vy: number } {
     // Convert to local coordiates.
     let { lx, ly } = this.mapToLocal(clientX, clientY);
 
@@ -1664,10 +1661,10 @@ class DataGrid extends Widget {
     }
 
     // Check for a column header hit.
-    if (ly >= 0 && ly < hh && lx >= 0 && lx < (hw + bw)) {
+    if (ly >= 0 && ly < hh && lx >= 0 && lx < hw + bw) {
       // Convert to unscrolled virtual coordinates.
       let vx = lx + this._scrollX - hw;
-      let vy = ly
+      let vy = ly;
 
       // Fetch the row and column index.
       let row = this.rowAt('column-header', vy);
@@ -1690,9 +1687,9 @@ class DataGrid extends Widget {
     }
 
     // Check for a row header hit.
-    if (lx >= 0 && lx < hw && ly >= 0 && ly < (hh + bh)) {
+    if (lx >= 0 && lx < hw && ly >= 0 && ly < hh + bh) {
       // Convert to unscrolled virtual coordinates.
-      let vx = lx
+      let vx = lx;
       let vy = ly + this._scrollY - hh;
 
       // Fetch the row and column index.
@@ -1716,9 +1713,9 @@ class DataGrid extends Widget {
     }
 
     // Check for a body hit.
-    if (lx >= hw && lx < (hw + bw) && ly >= hh && ly < (hh + bh)) {
+    if (lx >= hw && lx < hw + bw && ly >= hh && ly < hh + bh) {
       // Convert to unscrolled virtual coordinates.
-      let vx = lx + this._scrollX - hw
+      let vx = lx + this._scrollX - hw;
       let vy = ly + this._scrollY - hh;
 
       // Fetch the row and column index.
@@ -1828,24 +1825,24 @@ class DataGrid extends Widget {
     let rowCount = r2 - r1 + 1;
     let colCount = c2 - c1 + 1;
     switch (headers) {
-    case 'none':
-      rhc = 0;
-      chr = 0;
-      break;
-    case 'row':
-      chr = 0;
-      colCount += rhc;
-      break;
-    case 'column':
-      rhc = 0;
-      rowCount += chr;
-      break;
-    case 'all':
-      rowCount += chr;
-      colCount += rhc;
-      break;
-    default:
-      throw 'unreachable';
+      case 'none':
+        rhc = 0;
+        chr = 0;
+        break;
+      case 'row':
+        chr = 0;
+        colCount += rhc;
+        break;
+      case 'column':
+        rhc = 0;
+        rowCount += chr;
+        break;
+      case 'all':
+        rowCount += chr;
+        colCount += rhc;
+        break;
+      default:
+        throw 'unreachable';
     }
 
     // Compute the total cell count.
@@ -1997,33 +1994,33 @@ class DataGrid extends Widget {
    */
   handleEvent(event: Event): void {
     switch (event.type) {
-    case 'keydown':
-      this._evtKeyDown(event as KeyboardEvent);
-      break;
-    case 'mousedown':
-      this._evtMouseDown(event as MouseEvent);
-      break;
-    case 'mousemove':
-      this._evtMouseMove(event as MouseEvent);
-      break;
-    case 'mouseup':
-      this._evtMouseUp(event as MouseEvent);
-      break;
-    case 'dblclick':
-      this._evtMouseDoubleClick(event as MouseEvent);
-      break;
-    case 'mouseleave':
-      this._evtMouseLeave(event as MouseEvent);
-      break;
-    case 'contextmenu':
-      this._evtContextMenu(event as MouseEvent);
-      break;
-    case 'wheel':
-      this._evtWheel(event as WheelEvent);
-      break;
-    case 'resize':
-      this._refreshDPI();
-      break;
+      case 'keydown':
+        this._evtKeyDown(event as KeyboardEvent);
+        break;
+      case 'mousedown':
+        this._evtMouseDown(event as MouseEvent);
+        break;
+      case 'mousemove':
+        this._evtMouseMove(event as MouseEvent);
+        break;
+      case 'mouseup':
+        this._evtMouseUp(event as MouseEvent);
+        break;
+      case 'dblclick':
+        this._evtMouseDoubleClick(event as MouseEvent);
+        break;
+      case 'mouseleave':
+        this._evtMouseLeave(event as MouseEvent);
+        break;
+      case 'contextmenu':
+        this._evtContextMenu(event as MouseEvent);
+        break;
+      case 'wheel':
+        this._evtWheel(event as WheelEvent);
+        break;
+      case 'resize':
+        this._refreshDPI();
+        break;
     }
   }
 
@@ -2031,7 +2028,7 @@ class DataGrid extends Widget {
    * A message handler invoked on an `'activate-request'` message.
    */
   protected onActivateRequest(msg: Message): void {
-    this.viewport.node.focus({preventScroll: true});
+    this.viewport.node.focus({ preventScroll: true });
   }
 
   /**
@@ -2095,7 +2092,13 @@ class DataGrid extends Widget {
   /**
    * Schedule a repaint of specific grid content.
    */
-  protected repaintRegion(region: DataModel.CellRegion, r1: number, c1: number, r2: number, c2: number): void {
+  protected repaintRegion(
+    region: DataModel.CellRegion,
+    r1: number,
+    c1: number,
+    r2: number,
+    c2: number
+  ): void {
     let msg = new Private.PaintRequest(region, r1, c1, r2, c2);
     MessageLoop.postMessage(this._viewport, msg);
   }
@@ -2246,12 +2249,12 @@ class DataGrid extends Widget {
 
     // Re-test the horizontal scroll if a vertical scroll is needed.
     if (needVScroll && !needHScroll) {
-      needHScroll = (apw - vsw) < bw - 1;
+      needHScroll = apw - vsw < bw - 1;
     }
 
     // Re-test the vertical scroll if a horizontal scroll is needed.
     if (needHScroll && !needVScroll) {
-      needVScroll = (aph - hsh) < bh - 1;
+      needVScroll = aph - hsh < bh - 1;
     }
 
     // If the visibility changes, immediately refit the grid.
@@ -2289,26 +2292,26 @@ class DataGrid extends Widget {
    */
   private _processViewportMessage(msg: Message): void {
     switch (msg.type) {
-    case 'resize':
-      this._onViewportResize(msg as Widget.ResizeMessage);
-      break;
-    case 'scroll-request':
-      this._onViewportScrollRequest(msg);
-      break;
-    case 'paint-request':
-      this._onViewportPaintRequest(msg as Private.PaintRequest);
-      break;
-    case 'overlay-paint-request':
-      this._onViewportOverlayPaintRequest(msg);
-      break;
-    case 'row-resize-request':
-      this._onViewportRowResizeRequest(msg as Private.RowResizeRequest);
-      break;
-    case 'column-resize-request':
-      this._onViewportColumnResizeRequest(msg as Private.ColumnResizeRequest);
-      break;
-    default:
-      break;
+      case 'resize':
+        this._onViewportResize(msg as Widget.ResizeMessage);
+        break;
+      case 'scroll-request':
+        this._onViewportScrollRequest(msg);
+        break;
+      case 'paint-request':
+        this._onViewportPaintRequest(msg as Private.PaintRequest);
+        break;
+      case 'overlay-paint-request':
+        this._onViewportOverlayPaintRequest(msg);
+        break;
+      case 'row-resize-request':
+        this._onViewportRowResizeRequest(msg as Private.RowResizeRequest);
+        break;
+      case 'column-resize-request':
+        this._onViewportColumnResizeRequest(msg as Private.ColumnResizeRequest);
+        break;
+      default:
+        break;
     }
   }
 
@@ -2433,54 +2436,54 @@ class DataGrid extends Widget {
 
     // Fill the paint variables based on the paint region.
     switch (region) {
-    case 'all':
-      x1 = xMin;
-      y1 = yMin;
-      x2 = xMax;
-      y2 = yMax;
-      break;
-    case 'body':
-      r1 = Math.max(0, Math.min(r1, rs.count));
-      c1 = Math.max(0, Math.min(c1, cs.count));
-      r2 = Math.max(0, Math.min(r2, rs.count));
-      c2 = Math.max(0, Math.min(c2, cs.count));
-      x1 = cs.offsetOf(c1) - sx + hw;
-      y1 = rs.offsetOf(r1) - sy + hh;
-      x2 = cs.extentOf(c2) - sx + hw;
-      y2 = rs.extentOf(r2) - sy + hh;
-      break;
-    case 'row-header':
-      r1 = Math.max(0, Math.min(r1, rs.count));
-      c1 = Math.max(0, Math.min(c1, rhs.count));
-      r2 = Math.max(0, Math.min(r2, rs.count));
-      c2 = Math.max(0, Math.min(c2, rhs.count));
-      x1 = rhs.offsetOf(c1);
-      y1 = rs.offsetOf(r1) - sy + hh;
-      x2 = rhs.extentOf(c2);
-      y2 = rs.extentOf(r2) - sy + hh;
-      break;
-    case 'column-header':
-      r1 = Math.max(0, Math.min(r1, chs.count));
-      c1 = Math.max(0, Math.min(c1, cs.count));
-      r2 = Math.max(0, Math.min(r2, chs.count));
-      c2 = Math.max(0, Math.min(c2, cs.count));
-      x1 = cs.offsetOf(c1) - sx + hw;
-      y1 = chs.offsetOf(r1);
-      x2 = cs.extentOf(c2) - sx + hw;
-      y2 = chs.extentOf(r2);
-      break;
-    case 'corner-header':
-      r1 = Math.max(0, Math.min(r1, chs.count));
-      c1 = Math.max(0, Math.min(c1, rhs.count));
-      r2 = Math.max(0, Math.min(r2, chs.count));
-      c2 = Math.max(0, Math.min(c2, rhs.count));
-      x1 = rhs.offsetOf(c1);
-      y1 = chs.offsetOf(r1);
-      x2 = rhs.extentOf(c2);
-      y2 = chs.extentOf(r2);
-      break;
-    default:
-      throw 'unreachable';
+      case 'all':
+        x1 = xMin;
+        y1 = yMin;
+        x2 = xMax;
+        y2 = yMax;
+        break;
+      case 'body':
+        r1 = Math.max(0, Math.min(r1, rs.count));
+        c1 = Math.max(0, Math.min(c1, cs.count));
+        r2 = Math.max(0, Math.min(r2, rs.count));
+        c2 = Math.max(0, Math.min(c2, cs.count));
+        x1 = cs.offsetOf(c1) - sx + hw;
+        y1 = rs.offsetOf(r1) - sy + hh;
+        x2 = cs.extentOf(c2) - sx + hw;
+        y2 = rs.extentOf(r2) - sy + hh;
+        break;
+      case 'row-header':
+        r1 = Math.max(0, Math.min(r1, rs.count));
+        c1 = Math.max(0, Math.min(c1, rhs.count));
+        r2 = Math.max(0, Math.min(r2, rs.count));
+        c2 = Math.max(0, Math.min(c2, rhs.count));
+        x1 = rhs.offsetOf(c1);
+        y1 = rs.offsetOf(r1) - sy + hh;
+        x2 = rhs.extentOf(c2);
+        y2 = rs.extentOf(r2) - sy + hh;
+        break;
+      case 'column-header':
+        r1 = Math.max(0, Math.min(r1, chs.count));
+        c1 = Math.max(0, Math.min(c1, cs.count));
+        r2 = Math.max(0, Math.min(r2, chs.count));
+        c2 = Math.max(0, Math.min(c2, cs.count));
+        x1 = cs.offsetOf(c1) - sx + hw;
+        y1 = chs.offsetOf(r1);
+        x2 = cs.extentOf(c2) - sx + hw;
+        y2 = chs.extentOf(r2);
+        break;
+      case 'corner-header':
+        r1 = Math.max(0, Math.min(r1, chs.count));
+        c1 = Math.max(0, Math.min(c1, rhs.count));
+        r2 = Math.max(0, Math.min(r2, chs.count));
+        c2 = Math.max(0, Math.min(c2, rhs.count));
+        x1 = rhs.offsetOf(c1);
+        y1 = chs.offsetOf(r1);
+        x2 = rhs.extentOf(c2);
+        y2 = chs.extentOf(r2);
+        break;
+      default:
+        throw 'unreachable';
     }
 
     // Bail early if the dirty rect is outside the bounds.
@@ -2530,7 +2533,9 @@ class DataGrid extends Widget {
   /**
    * A message hook invoked on a viewport `'column-resize-request'` message.
    */
-  private _onViewportColumnResizeRequest(msg: Private.ColumnResizeRequest): void {
+  private _onViewportColumnResizeRequest(
+    msg: Private.ColumnResizeRequest
+  ): void {
     if (msg.region === 'body') {
       this._resizeColumn(msg.index, msg.size);
     } else {
@@ -2548,7 +2553,10 @@ class DataGrid extends Widget {
   /**
    * Handle the `pageRequested` signal from a scroll bar.
    */
-  private _onPageRequested(sender: ScrollBar, dir: 'decrement' | 'increment'): void {
+  private _onPageRequested(
+    sender: ScrollBar,
+    dir: 'decrement' | 'increment'
+  ): void {
     if (sender === this._vScrollBar) {
       this.scrollByPage(dir === 'decrement' ? 'up' : 'down');
     } else {
@@ -2559,7 +2567,10 @@ class DataGrid extends Widget {
   /**
    * Handle the `stepRequested` signal from a scroll bar.
    */
-  private _onStepRequested(sender: ScrollBar, dir: 'decrement' | 'increment'): void {
+  private _onStepRequested(
+    sender: ScrollBar,
+    dir: 'decrement' | 'increment'
+  ): void {
     if (sender === this._vScrollBar) {
       this.scrollByStep(dir === 'decrement' ? 'up' : 'down');
     } else {
@@ -2570,34 +2581,37 @@ class DataGrid extends Widget {
   /**
    * A signal handler for the data model `changed` signal.
    */
-  private _onDataModelChanged(sender: DataModel, args: DataModel.ChangedArgs): void {
+  private _onDataModelChanged(
+    sender: DataModel,
+    args: DataModel.ChangedArgs
+  ): void {
     switch (args.type) {
-    case 'rows-inserted':
-      this._onRowsInserted(args);
-      break;
-    case 'columns-inserted':
-      this._onColumnsInserted(args);
-      break;
-    case 'rows-removed':
-      this._onRowsRemoved(args);
-      break;
-    case 'columns-removed':
-      this._onColumnsRemoved(args);
-      break;
-    case 'rows-moved':
-      this._onRowsMoved(args);
-      break;
-    case 'columns-moved':
-      this._onColumnsMoved(args);
-      break;
-    case 'cells-changed':
-      this._onCellsChanged(args);
-      break;
-    case 'model-reset':
-      this._onModelReset(args);
-      break;
-    default:
-      throw 'unreachable';
+      case 'rows-inserted':
+        this._onRowsInserted(args);
+        break;
+      case 'columns-inserted':
+        this._onColumnsInserted(args);
+        break;
+      case 'rows-removed':
+        this._onRowsRemoved(args);
+        break;
+      case 'columns-removed':
+        this._onColumnsRemoved(args);
+        break;
+      case 'rows-moved':
+        this._onRowsMoved(args);
+        break;
+      case 'columns-moved':
+        this._onColumnsMoved(args);
+        break;
+      case 'cells-changed':
+        this._onCellsChanged(args);
+        break;
+      case 'model-reset':
+        this._onModelReset(args);
+        break;
+      default:
+        throw 'unreachable';
     }
   }
 
@@ -3309,7 +3323,7 @@ class DataGrid extends Widget {
 
     // Render entire grid if scrolling merged cells grid
     const paintEverything = Private.shouldPaintEverything(this._dataModel!);
-      
+
     if (paintEverything) {
       this.paintContent(0, 0, vw, vh);
       this._paintOverlay();
@@ -3431,7 +3445,7 @@ class DataGrid extends Widget {
 
     // Render entire grid if scrolling merged cells grid
     const paintEverything = Private.shouldPaintEverything(this._dataModel!);
-      
+
     if (paintEverything) {
       this.paintContent(0, 0, vw, vh);
       this._paintOverlay();
@@ -3529,7 +3543,7 @@ class DataGrid extends Widget {
 
     // Render entire grid if scrolling merged cells grid
     const paintEverything = Private.shouldPaintEverything(this._dataModel!);
-      
+
     if (paintEverything) {
       this.paintContent(0, 0, vw, vh);
       this._paintOverlay();
@@ -3675,7 +3689,7 @@ class DataGrid extends Widget {
     }
 
     // If the area sum is larger than the total, paint everything.
-    if ((dxArea + dyArea) >= (width * height)) {
+    if (dxArea + dyArea >= width * height) {
       this._scrollX = x;
       this._scrollY = y;
       this.paintContent(0, 0, width, height);
@@ -3701,7 +3715,12 @@ class DataGrid extends Widget {
           let w = width;
           let h = contentHeight - Math.abs(dy);
           this._blitContent(this._canvas, x, y, w, h, x, y - dy);
-          this.paintContent(0, dy < 0 ? contentY : height - dy, width, Math.abs(dy));
+          this.paintContent(
+            0,
+            dy < 0 ? contentY : height - dy,
+            width,
+            Math.abs(dy)
+          );
         }
       }
     }
@@ -3724,7 +3743,12 @@ class DataGrid extends Widget {
           let w = contentWidth - Math.abs(dx);
           let h = height;
           this._blitContent(this._canvas, x, y, w, h, x - dx, y);
-          this.paintContent(dx < 0 ? contentX : width - dx, 0, Math.abs(dx), height);
+          this.paintContent(
+            dx < 0 ? contentX : width - dx,
+            0,
+            Math.abs(dx),
+            height
+          );
         }
       }
     }
@@ -3739,7 +3763,15 @@ class DataGrid extends Widget {
    *
    * This automatically accounts for the dpi ratio.
    */
-  private _blitContent(source: HTMLCanvasElement, x: number, y: number, w: number, h: number, dx: number, dy: number): void {
+  private _blitContent(
+    source: HTMLCanvasElement,
+    x: number,
+    y: number,
+    w: number,
+    h: number,
+    dx: number,
+    dy: number
+  ): void {
     // Scale the blit coordinates by the dpi ratio.
     x *= this._dpiRatio;
     y *= this._dpiRatio;
@@ -3797,13 +3829,16 @@ class DataGrid extends Widget {
   /**
    * Resizes body column headers so their text fits
    * without clipping or wrapping.
-   * @param dataModel 
+   * @param dataModel
    */
-   private _fitBodyColumnHeaders(dataModel: DataModel, padding: number, numCols?: number): void {
+  private _fitBodyColumnHeaders(
+    dataModel: DataModel,
+    padding: number,
+    numCols?: number
+  ): void {
     // Get the body column count
-    const bodyColumnCount = numCols === undefined 
-      ? dataModel.columnCount('body')
-      : numCols;
+    const bodyColumnCount =
+      numCols === undefined ? dataModel.columnCount('body') : numCols;
 
     for (let i = 0; i < bodyColumnCount; i++) {
       /* 
@@ -3822,9 +3857,15 @@ class DataGrid extends Widget {
 
         // Basic CellConfig object to get the renderer for that cell
         let config = {
-          x: 0, y: 0, width: 0, height: 0,
-          region: 'column-header' as DataModel.CellRegion, row: 0, column: i,
-          value: (null as any), metadata: DataModel.emptyMetadata
+          x: 0,
+          y: 0,
+          width: 0,
+          height: 0,
+          region: 'column-header' as DataModel.CellRegion,
+          row: 0,
+          column: i,
+          value: null as any,
+          metadata: DataModel.emptyMetadata
         };
 
         // Get the renderer for the given cell
@@ -3850,16 +3891,19 @@ class DataGrid extends Widget {
   /**
    * Resizes row header columns so their text fits
    * without clipping or wrapping.
-   * @param dataModel 
+   * @param dataModel
    */
-   private _fitRowColumnHeaders(dataModel: DataModel, padding: number, numCols?: number): void {
+  private _fitRowColumnHeaders(
+    dataModel: DataModel,
+    padding: number,
+    numCols?: number
+  ): void {
     /*
       if we're working with nested row headers,
       retrieve the nested levels and iterate on them.
     */
-    const rowColumnCount = numCols === undefined 
-      ? dataModel.columnCount('row-header')
-      : numCols;
+    const rowColumnCount =
+      numCols === undefined ? dataModel.columnCount('row-header') : numCols;
 
     for (let i = 0; i < rowColumnCount; i++) {
       const numCols = dataModel.rowCount('column-header');
@@ -3873,9 +3917,15 @@ class DataGrid extends Widget {
 
         // Basic CellConfig object to get the renderer for that cell.
         let config = {
-          x: 0, y: 0, width: 0, height: 0,
-          region: 'column-header' as DataModel.CellRegion, row: 0, column: i,
-          value: (null as any), metadata: DataModel.emptyMetadata
+          x: 0,
+          y: 0,
+          width: 0,
+          height: 0,
+          region: 'column-header' as DataModel.CellRegion,
+          row: 0,
+          column: i,
+          value: null as any,
+          metadata: DataModel.emptyMetadata
         };
 
         // Get the renderer for the given cell.
@@ -3929,7 +3979,12 @@ class DataGrid extends Widget {
   /**
    * Draw the void region for the dirty rect.
    */
-  private _drawVoidRegion(rx: number, ry: number, rw: number, rh: number): void {
+  private _drawVoidRegion(
+    rx: number,
+    ry: number,
+    rw: number,
+    rh: number
+  ): void {
     // Look up the void color.
     let color = this._style.voidColor;
 
@@ -3946,7 +4001,12 @@ class DataGrid extends Widget {
   /**
    * Draw the body region which intersects the dirty rect.
    */
-  private _drawBodyRegion(rx: number, ry: number, rw: number, rh: number): void {
+  private _drawBodyRegion(
+    rx: number,
+    ry: number,
+    rw: number,
+    rh: number
+  ): void {
     // Get the visible content dimensions.
     let contentW = this._columnSections.length - this._scrollX;
     let contentH = this._rowSections.length - this._scrollY;
@@ -4049,11 +4109,18 @@ class DataGrid extends Widget {
     // Create the paint region object.
     let rgn: Private.PaintRegion = {
       region: 'body',
-      xMin: x1, yMin: y1,
-      xMax: x2, yMax: y2,
-      x, y, width, height,
-      row: r1, column: c1,
-      rowSizes, columnSizes
+      xMin: x1,
+      yMin: y1,
+      xMax: x2,
+      yMax: y2,
+      x,
+      y,
+      width,
+      height,
+      row: r1,
+      column: c1,
+      rowSizes,
+      columnSizes
     };
 
     // Draw the background.
@@ -4069,22 +4136,27 @@ class DataGrid extends Widget {
     this._drawCells(rgn);
 
     // Draw the horizontal grid lines.
-    this._drawHorizontalGridLines(rgn,
-      this._style.horizontalGridLineColor ||
-      this._style.gridLineColor
+    this._drawHorizontalGridLines(
+      rgn,
+      this._style.horizontalGridLineColor || this._style.gridLineColor
     );
 
     // Draw the vertical grid lines.
-    this._drawVerticalGridLines(rgn,
-      this._style.verticalGridLineColor ||
-      this._style.gridLineColor
+    this._drawVerticalGridLines(
+      rgn,
+      this._style.verticalGridLineColor || this._style.gridLineColor
     );
   }
 
   /**
    * Draw the row header region which intersects the dirty rect.
    */
-  private _drawRowHeaderRegion(rx: number, ry: number, rw: number, rh: number): void {
+  private _drawRowHeaderRegion(
+    rx: number,
+    ry: number,
+    rw: number,
+    rh: number
+  ): void {
     // Get the visible content dimensions.
     let contentW = this.headerWidth;
     let contentH = this.bodyHeight - this._scrollY;
@@ -4177,11 +4249,18 @@ class DataGrid extends Widget {
     // Create the paint region object.
     let rgn: Private.PaintRegion = {
       region: 'row-header',
-      xMin: x1, yMin: y1,
-      xMax: x2, yMax: y2,
-      x, y, width, height,
-      row: r1, column: c1,
-      rowSizes, columnSizes
+      xMin: x1,
+      yMin: y1,
+      xMax: x2,
+      yMax: y2,
+      x,
+      y,
+      width,
+      height,
+      row: r1,
+      column: c1,
+      rowSizes,
+      columnSizes
     };
 
     // Draw the background.
@@ -4191,22 +4270,28 @@ class DataGrid extends Widget {
     this._drawCells(rgn);
 
     // Draw the horizontal grid lines.
-    this._drawHorizontalGridLines(rgn,
+    this._drawHorizontalGridLines(
+      rgn,
       this._style.headerHorizontalGridLineColor ||
-      this._style.headerGridLineColor
+        this._style.headerGridLineColor
     );
 
     // Draw the vertical grid lines.
-    this._drawVerticalGridLines(rgn,
-      this._style.headerVerticalGridLineColor ||
-      this._style.headerGridLineColor
+    this._drawVerticalGridLines(
+      rgn,
+      this._style.headerVerticalGridLineColor || this._style.headerGridLineColor
     );
   }
 
   /**
    * Draw the column header region which intersects the dirty rect.
    */
-  private _drawColumnHeaderRegion(rx: number, ry: number, rw: number, rh: number): void {
+  private _drawColumnHeaderRegion(
+    rx: number,
+    ry: number,
+    rw: number,
+    rh: number
+  ): void {
     // Get the visible content dimensions.
     let contentW = this.bodyWidth - this._scrollX;
     let contentH = this.headerHeight;
@@ -4299,11 +4384,18 @@ class DataGrid extends Widget {
     // Create the paint region object.
     let rgn: Private.PaintRegion = {
       region: 'column-header',
-      xMin: x1, yMin: y1,
-      xMax: x2, yMax: y2,
-      x, y, width, height,
-      row: r1, column: c1,
-      rowSizes, columnSizes
+      xMin: x1,
+      yMin: y1,
+      xMax: x2,
+      yMax: y2,
+      x,
+      y,
+      width,
+      height,
+      row: r1,
+      column: c1,
+      rowSizes,
+      columnSizes
     };
 
     // Draw the background.
@@ -4313,22 +4405,28 @@ class DataGrid extends Widget {
     this._drawCells(rgn);
 
     // Draw the horizontal grid lines.
-    this._drawHorizontalGridLines(rgn,
+    this._drawHorizontalGridLines(
+      rgn,
       this._style.headerHorizontalGridLineColor ||
-      this._style.headerGridLineColor
+        this._style.headerGridLineColor
     );
 
     // Draw the vertical grid lines.
-    this._drawVerticalGridLines(rgn,
-      this._style.headerVerticalGridLineColor ||
-      this._style.headerGridLineColor
+    this._drawVerticalGridLines(
+      rgn,
+      this._style.headerVerticalGridLineColor || this._style.headerGridLineColor
     );
   }
 
   /**
    * Draw the corner header region which intersects the dirty rect.
    */
-  protected drawCornerHeaderRegion(rx: number, ry: number, rw: number, rh: number): void {
+  protected drawCornerHeaderRegion(
+    rx: number,
+    ry: number,
+    rw: number,
+    rh: number
+  ): void {
     // Get the visible content dimensions.
     let contentW = this.headerWidth;
     let contentH = this.headerHeight;
@@ -4405,11 +4503,18 @@ class DataGrid extends Widget {
     // Create the paint region object.
     let rgn: Private.PaintRegion = {
       region: 'corner-header',
-      xMin: x1, yMin: y1,
-      xMax: x2, yMax: y2,
-      x, y, width, height,
-      row: r1, column: c1,
-      rowSizes, columnSizes
+      xMin: x1,
+      yMin: y1,
+      xMax: x2,
+      yMax: y2,
+      x,
+      y,
+      width,
+      height,
+      row: r1,
+      column: c1,
+      rowSizes,
+      columnSizes
     };
 
     // Draw the background.
@@ -4419,22 +4524,26 @@ class DataGrid extends Widget {
     this._drawCells(rgn);
 
     // Draw the horizontal grid lines.
-    this._drawHorizontalGridLines(rgn,
+    this._drawHorizontalGridLines(
+      rgn,
       this._style.headerHorizontalGridLineColor ||
-      this._style.headerGridLineColor
+        this._style.headerGridLineColor
     );
 
     // Draw the vertical grid lines.
-    this._drawVerticalGridLines(rgn,
-      this._style.headerVerticalGridLineColor ||
-      this._style.headerGridLineColor
+    this._drawVerticalGridLines(
+      rgn,
+      this._style.headerVerticalGridLineColor || this._style.headerGridLineColor
     );
   }
 
   /**
    * Draw the background for the given paint region.
    */
-  private _drawBackground(rgn: Private.PaintRegion, color: string | undefined): void {
+  private _drawBackground(
+    rgn: Private.PaintRegion,
+    color: string | undefined
+  ): void {
     // Bail if there is no color to draw.
     if (!color) {
       return;
@@ -4451,7 +4560,10 @@ class DataGrid extends Widget {
   /**
    * Draw the row background for the given paint region.
    */
-  private _drawRowBackground(rgn: Private.PaintRegion, colorFn: ((i: number) => string) | undefined): void {
+  private _drawRowBackground(
+    rgn: Private.PaintRegion,
+    colorFn: ((i: number) => string) | undefined
+  ): void {
     // Bail if there is no color function.
     if (!colorFn) {
       return;
@@ -4490,7 +4602,10 @@ class DataGrid extends Widget {
   /**
    * Draw the column background for the given paint region.
    */
-  private _drawColumnBackground(rgn: Private.PaintRegion, colorFn: ((i: number) => string) | undefined): void {
+  private _drawColumnBackground(
+    rgn: Private.PaintRegion,
+    colorFn: ((i: number) => string) | undefined
+  ): void {
     // Bail if there is no color function.
     if (!colorFn) {
       return;
@@ -4528,27 +4643,27 @@ class DataGrid extends Widget {
 
   /**
    * Returns column size
-   * @param region 
-   * @param index 
+   * @param region
+   * @param index
    */
   private _getColumnSize(region: DataModel.CellRegion, index: number): number {
     if (region === 'corner-header') {
       return this._rowHeaderSections.sizeOf(index);
     }
     return this.columnSize(region as DataModel.ColumnRegion, index);
-  };
+  }
 
   /**
    * Returns row size
-   * @param region 
-   * @param index 
+   * @param region
+   * @param index
    */
   private _getRowSize(region: DataModel.CellRegion, index: number): number {
     if (region === 'corner-header') {
       return this._columnHeaderSections.sizeOf(index);
     }
     return this.rowSize(region as DataModel.RowRegion, index);
-  };
+  }
 
   /**
    * Draw the cells for the given paint region.
@@ -4560,19 +4675,31 @@ class DataGrid extends Widget {
     }
 
     // Determine if the cell intersects with a merged group at row or column
-    let intersectingColumnGroups = CellGroup.getCellGroupsAtColumn(this._dataModel!, 
-      rgn.region, rgn.column);
-    let intersectingRowGroups = CellGroup.getCellGroupsAtRow(this._dataModel!, 
-      rgn.region, rgn.row);
+    let intersectingColumnGroups = CellGroup.getCellGroupsAtColumn(
+      this._dataModel!,
+      rgn.region,
+      rgn.column
+    );
+    let intersectingRowGroups = CellGroup.getCellGroupsAtRow(
+      this._dataModel!,
+      rgn.region,
+      rgn.row
+    );
 
     // move the bounds of the region if edges of the region are part of a merge group.
     // after the move, new region contains entirety of the merge groups
     rgn = JSONExt.deepCopy(rgn);
 
-    const joinedGroup = CellGroup.joinCellGroupWithMergedCellGroups(this.dataModel!, {
-      r1: rgn.row, r2: rgn.row + rgn.rowSizes.length - 1,
-      c1: rgn.column, c2: rgn.column + rgn.columnSizes.length - 1
-    }, rgn.region);
+    const joinedGroup = CellGroup.joinCellGroupWithMergedCellGroups(
+      this.dataModel!,
+      {
+        r1: rgn.row,
+        r2: rgn.row + rgn.rowSizes.length - 1,
+        c1: rgn.column,
+        c2: rgn.column + rgn.columnSizes.length - 1
+      },
+      rgn.region
+    );
 
     for (let r = joinedGroup.r1; r < rgn.row; r++) {
       const h = this._getRowSize(rgn.region, r);
@@ -4590,9 +4717,15 @@ class DataGrid extends Widget {
 
     // Set up the cell config object for rendering.
     let config = {
-      x: 0, y: 0, width: 0, height: 0,
-      region: rgn.region, row: 0, column: 0,
-      value: (null as any), metadata: DataModel.emptyMetadata
+      x: 0,
+      y: 0,
+      width: 0,
+      height: 0,
+      region: rgn.region,
+      row: 0,
+      column: 0,
+      value: null as any,
+      metadata: DataModel.emptyMetadata
     };
 
     let groupIndex = -1;
@@ -4609,7 +4742,7 @@ class DataGrid extends Widget {
     for (let x = rgn.x, i = 0, n = rgn.columnSizes.length; i < n; ++i) {
       let xOffset = 0;
       let yOffset = 0;
-      
+
       // Fetch the size of the column.
       let width = rgn.columnSizes[i];
 
@@ -4627,9 +4760,9 @@ class DataGrid extends Widget {
       config.x = x;
       config.width = width;
       config.column = column;
-      
+
       // Loop over the rows in the column.
-      for (let y = rgn.y, j = 0, n = rgn.rowSizes.length; j < n; ++j) {        
+      for (let y = rgn.y, j = 0, n = rgn.rowSizes.length; j < n; ++j) {
         // Fetch the size of the row.
         height = rgn.rowSizes[j];
 
@@ -4640,8 +4773,13 @@ class DataGrid extends Widget {
 
         // Compute the row index.
         let row = rgn.row + j;
-        
-        groupIndex = CellGroup.getGroupIndex(this.dataModel!, config.region, row, column);
+
+        groupIndex = CellGroup.getGroupIndex(
+          this.dataModel!,
+          config.region,
+          row,
+          column
+        );
         yOffset = height;
 
         /**
@@ -4660,13 +4798,11 @@ class DataGrid extends Widget {
             for (let r = group.r1; r <= group.r2; r++) {
               height += this._getRowSize(config.region, r);
             }
-          }
-          else {
+          } else {
             y += yOffset;
             continue;
           }
-        }
-        else {
+        } else {
           /**
            * Reset column width if we're rendering a column-header
            * which is not part of a merged cell group.
@@ -4727,19 +4863,36 @@ class DataGrid extends Widget {
         // Compute the actual X bounds for the cell.
         let x1 = Math.max(rgn.xMin, config.x);
         let x2 = Math.min(config.x + config.width - 1, rgn.xMax);
-        
+
         // Compute the actual Y bounds for the cell.
         let y1 = Math.max(rgn.yMin, config.y);
         let y2 = Math.min(config.y + config.height - 1, rgn.yMax);
 
-        if (intersectingColumnGroups.length !== 0  
-          || intersectingRowGroups.length !== 0) {
+        if (
+          intersectingColumnGroups.length !== 0 ||
+          intersectingRowGroups.length !== 0
+        ) {
           if (x2 > x1 && y2 > y1) {
-            this._blitContent(this._buffer, x1, y1, x2 - x1 + 1, y2 - y1 + 1, x1, y1);
+            this._blitContent(
+              this._buffer,
+              x1,
+              y1,
+              x2 - x1 + 1,
+              y2 - y1 + 1,
+              x1,
+              y1
+            );
           }
-        }
-        else {
-          this._blitContent(this._buffer, x1, y1, x2 - x1 + 1, y2 - y1 + 1, x1, y1);
+        } else {
+          this._blitContent(
+            this._buffer,
+            x1,
+            y1,
+            x2 - x1 + 1,
+            y2 - y1 + 1,
+            x1,
+            y1
+          );
         }
 
         // Increment the running Y coordinate.
@@ -4763,7 +4916,10 @@ class DataGrid extends Widget {
   /**
    * Draw the horizontal grid lines for the given paint region.
    */
-  private _drawHorizontalGridLines(rgn: Private.PaintRegion, color: string | undefined): void {
+  private _drawHorizontalGridLines(
+    rgn: Private.PaintRegion,
+    color: string | undefined
+  ): void {
     // Bail if there is no color to draw.
     if (!color) {
       return;
@@ -4812,7 +4968,14 @@ class DataGrid extends Widget {
         const cellUp = [rgn.row + j, c];
         const cellDown = [rgn.row + j + 1, c];
 
-        if (CellGroup.areCellsMerged(this.dataModel!, rgn.region, cellUp, cellDown)) {
+        if (
+          CellGroup.areCellsMerged(
+            this.dataModel!,
+            rgn.region,
+            cellUp,
+            cellDown
+          )
+        ) {
           if (lineStarted) {
             lines.push([xStart, leftCurrent]);
           }
@@ -4826,7 +4989,7 @@ class DataGrid extends Widget {
 
         leftCurrent += rgn.columnSizes[cIndex];
         if (c === rgn.column) {
-          leftCurrent -= (rgn.xMin - rgn.x);
+          leftCurrent -= rgn.xMin - rgn.x;
         }
       }
 
@@ -4865,7 +5028,10 @@ class DataGrid extends Widget {
   /**
    * Draw the vertical grid lines for the given paint region.
    */
-  private _drawVerticalGridLines(rgn: Private.PaintRegion, color: string | undefined): void {
+  private _drawVerticalGridLines(
+    rgn: Private.PaintRegion,
+    color: string | undefined
+  ): void {
     // Bail if there is no color to draw.
     if (!color) {
       return;
@@ -4914,7 +5080,14 @@ class DataGrid extends Widget {
         const cellLeft = [r, rgn.column + i];
         const cellRight = [r, rgn.column + i + 1];
 
-        if (CellGroup.areCellsMerged(this.dataModel!, rgn.region, cellLeft, cellRight)) {
+        if (
+          CellGroup.areCellsMerged(
+            this.dataModel!,
+            rgn.region,
+            cellLeft,
+            cellRight
+          )
+        ) {
           if (lineStarted) {
             lines.push([yStart, topCurrent]);
           }
@@ -4928,7 +5101,7 @@ class DataGrid extends Widget {
 
         topCurrent += rgn.rowSizes[rIndex];
         if (r === rgn.row) {
-          topCurrent -= (rgn.yMin - rgn.y); 
+          topCurrent -= rgn.yMin - rgn.y;
         }
       }
 
@@ -4949,8 +5122,7 @@ class DataGrid extends Widget {
             this._canvasGC.moveTo(pos + 0.5, line[0]);
             this._canvasGC.lineTo(pos + 0.5, line[1]);
           }
-        }
-        else {
+        } else {
           let y2 = Math.min(rgn.y + rgn.height, rgn.yMax + 1);
           this._canvasGC.moveTo(pos + 0.5, y1);
           this._canvasGC.lineTo(pos + 0.5, y2);
@@ -5049,13 +5221,13 @@ class DataGrid extends Widget {
         continue;
       }
       if (s.r1 > r2 && s.r2 > r2) {
-        continue
+        continue;
       }
       if (s.c1 < c1 && s.c2 < c1) {
         continue;
       }
       if (s.c1 > c2 && s.c2 > c2) {
-        continue
+        continue;
       }
 
       // Clamp the cell to the model bounds.
@@ -5079,8 +5251,8 @@ class DataGrid extends Widget {
 
       const joinedGroup = CellGroup.joinCellGroupWithMergedCellGroups(
         this.dataModel!,
-        {r1: sr1, r2: sr2, c1: sc1, c2: sc2},
-        "body"
+        { r1: sr1, r2: sr2, c1: sc1, c2: sc2 },
+        'body'
       );
 
       sr1 = joinedGroup.r1;
@@ -5122,7 +5294,7 @@ class DataGrid extends Widget {
 
       // Stroke the rect if needed.
       if (stroke) {
-        gc.strokeRect(x1 - .5, y1 - .5, x2 - x1 + 1, y2 - y1 + 1);
+        gc.strokeRect(x1 - 0.5, y1 - 0.5, x2 - x1 + 1, y2 - y1 + 1);
       }
     }
 
@@ -5221,8 +5393,8 @@ class DataGrid extends Widget {
       // Draw the border if needed.
       if (stroke) {
         gc.beginPath();
-        gc.moveTo(hw - .5, y - 1);
-        gc.lineTo(hw - .5, y + h);
+        gc.moveTo(hw - 0.5, y - 1);
+        gc.lineTo(hw - 0.5, y + h);
         gc.stroke();
       }
     }
@@ -5322,8 +5494,8 @@ class DataGrid extends Widget {
       // Draw the border if needed.
       if (stroke) {
         gc.beginPath();
-        gc.moveTo(x - 1, hh - .5);
-        gc.lineTo(x + w, hh - .5);
+        gc.moveTo(x - 1, hh - 0.5);
+        gc.lineTo(x + w, hh - 0.5);
         gc.stroke();
       }
     }
@@ -5374,8 +5546,8 @@ class DataGrid extends Widget {
 
     const joinedGroup = CellGroup.joinCellGroupWithMergedCellGroups(
       this.dataModel!,
-      {r1: startRow, r2: endRow, c1: startColumn, c2: endColumn},
-      "body"
+      { r1: startRow, r2: endRow, c1: startColumn, c2: endColumn },
+      'body'
     );
 
     startRow = joinedGroup.r1;
@@ -5417,7 +5589,7 @@ class DataGrid extends Widget {
     }
 
     // Bail early if the cursor is off the screen.
-    if ((x1 - 1) >= vw || (y1 - 1) >= vh || (x2 + 1) < hw || (y2 + 1) < hh) {
+    if (x1 - 1 >= vw || y1 - 1 >= vh || x2 + 1 < hw || y2 + 1 < hh) {
       return;
     }
 
@@ -5441,7 +5613,7 @@ class DataGrid extends Widget {
       gc.fillStyle = fill;
 
       // Fill the cursor rect.
-      gc.fillRect(x1, y1, x2 - x1 + 1, y2 - y1 + 1)
+      gc.fillRect(x1, y1, x2 - x1 + 1, y2 - y1 + 1);
     }
 
     // Stroke the cursor border if needed.
@@ -5664,20 +5836,17 @@ class DataGrid extends Widget {
   private _editingEnabled: boolean = false;
 }
 
-
 /**
  * The namespace for the `DataGrid` class statics.
  */
-export
-namespace DataGrid {
+export namespace DataGrid {
   /**
    * An object which defines the style for a data grid.
    *
    * #### Notes
    * All style colors support the full CSS color syntax.
    */
-  export
-  type Style = {
+  export type Style = {
     /**
      * The void color for the data grid.
      *
@@ -5816,8 +5985,7 @@ namespace DataGrid {
   /**
    * An object which defines the default sizes for a data grid.
    */
-  export
-  type DefaultSizes = {
+  export type DefaultSizes = {
     /**
      * The default height of a row.
      */
@@ -5842,8 +6010,7 @@ namespace DataGrid {
   /**
    * An object which defines the minimum sizes for a data grid.
    */
-  export
-  type MinimumSizes = {
+  export type MinimumSizes = {
     /**
      * The minimum height of a row.
      */
@@ -5868,20 +6035,17 @@ namespace DataGrid {
   /**
    * A type alias for the supported header visibility modes.
    */
-  export
-  type HeaderVisibility = 'all' | 'row' | 'column' | 'none';
+  export type HeaderVisibility = 'all' | 'row' | 'column' | 'none';
 
   /**
    * A type alias for the supported column auto resize modes.
    */
-  export
-  type ColumnFitType = 'all' | 'row-header' | 'body';
+  export type ColumnFitType = 'all' | 'row-header' | 'body';
 
   /**
    * A type alias for the arguments to a copy format function.
    */
-  export
-  type CopyFormatArgs = {
+  export type CopyFormatArgs = {
     /**
      * The cell region for the value.
      */
@@ -5911,14 +6075,12 @@ namespace DataGrid {
   /**
    * A type alias for a copy format function.
    */
-  export
-  type CopyFormatFunc = (args: CopyFormatArgs) => string;
+  export type CopyFormatFunc = (args: CopyFormatArgs) => string;
 
   /**
    * A type alias for the data grid copy config.
    */
-  export
-  type CopyConfig = {
+  export type CopyConfig = {
     /**
      * The separator to use between values.
      */
@@ -5943,8 +6105,7 @@ namespace DataGrid {
   /**
    * An options object for initializing a data grid.
    */
-  export
-  interface IOptions {
+  export interface IOptions {
     /**
      * The style for the data grid.
      *
@@ -6012,8 +6173,7 @@ namespace DataGrid {
   /**
    * An object which handles keydown events for the data grid.
    */
-  export
-  interface IKeyHandler extends IDisposable {
+  export interface IKeyHandler extends IDisposable {
     /**
      * Handle the key down event for the data grid.
      *
@@ -6030,8 +6190,7 @@ namespace DataGrid {
   /**
    * An object which handles mouse events for the data grid.
    */
-  export
-  interface IMouseHandler extends IDisposable {
+  export interface IMouseHandler extends IDisposable {
     /**
      * Release any resources acquired during a mouse press.
      *
@@ -6117,8 +6276,7 @@ namespace DataGrid {
   /**
    * An object which holds the result of a grid hit test.
    */
-  export
-  type HitTestResult = {
+  export type HitTestResult = {
     /**
      * The region of the data grid that was hit.
      */
@@ -6177,8 +6335,7 @@ namespace DataGrid {
    * #### Notes
    * This function uses `String()` to coerce a value to a string.
    */
-  export
-  function copyFormatGeneric(args: CopyFormatArgs): string {
+  export function copyFormatGeneric(args: CopyFormatArgs): string {
     if (args.value === null || args.value === undefined) {
       return '';
     }
@@ -6188,8 +6345,7 @@ namespace DataGrid {
   /**
    * The default theme for a data grid.
    */
-  export
-  const defaultStyle: Style = {
+  export const defaultStyle: Style = {
     voidColor: '#F3F3F3',
     backgroundColor: '#FFFFFF',
     gridLineColor: 'rgba(20, 20, 20, 0.15)',
@@ -6204,14 +6360,14 @@ namespace DataGrid {
       size: 10,
       color1: 'rgba(0, 0, 0, 0.20)',
       color2: 'rgba(0, 0, 0, 0.05)',
-      color3: 'rgba(0, 0, 0, 0.00)' }
+      color3: 'rgba(0, 0, 0, 0.00)'
+    }
   };
 
   /**
    * The default sizes for a data grid.
    */
-  export
-  const defaultSizes: DefaultSizes = {
+  export const defaultSizes: DefaultSizes = {
     rowHeight: 20,
     columnWidth: 64,
     rowHeaderWidth: 64,
@@ -6221,8 +6377,7 @@ namespace DataGrid {
   /**
    * The default minimum sizes for a data grid.
    */
-  export
-  const minimumSizes: MinimumSizes = {
+  export const minimumSizes: MinimumSizes = {
     rowHeight: 20,
     columnWidth: 10,
     rowHeaderWidth: 10,
@@ -6232,15 +6387,13 @@ namespace DataGrid {
   /**
    * The default copy config for a data grid.
    */
-  export
-  const defaultCopyConfig: CopyConfig = {
+  export const defaultCopyConfig: CopyConfig = {
     separator: '\t',
     format: copyFormatGeneric,
     headers: 'none',
     warningThreshold: 1e6
   };
 }
-
 
 /**
  * The namespace for the module implementation details.
@@ -6249,20 +6402,19 @@ namespace Private {
   /**
    * A singleton `scroll-request` conflatable message.
    */
-  export
-  const ScrollRequest = new ConflatableMessage('scroll-request');
+  export const ScrollRequest = new ConflatableMessage('scroll-request');
 
   /**
    * A singleton `overlay-paint-request` conflatable message.
    */
-  export
-  const OverlayPaintRequest = new ConflatableMessage('overlay-paint-request');
+  export const OverlayPaintRequest = new ConflatableMessage(
+    'overlay-paint-request'
+  );
 
   /**
    * Create a new zero-sized canvas element.
    */
-  export
-  function createCanvas(): HTMLCanvasElement {
+  export function createCanvas(): HTMLCanvasElement {
     let canvas = document.createElement('canvas');
     canvas.width = 0;
     canvas.height = 0;
@@ -6275,24 +6427,32 @@ namespace Private {
    * @param dataModel grid's data model.
    * @returns boolean.
    */
-  export
-  function shouldPaintEverything(dataModel: DataModel): boolean {
-    const colGroups = CellGroup.getCellGroupsAtRegion(dataModel!, 'column-header');
-    const rowHeaderGroups = CellGroup.getCellGroupsAtRegion(dataModel!, 'row-header');
-    const cornerHeaderGroups = CellGroup.getCellGroupsAtRegion(dataModel!, 'corner-header');
+  export function shouldPaintEverything(dataModel: DataModel): boolean {
+    const colGroups = CellGroup.getCellGroupsAtRegion(
+      dataModel!,
+      'column-header'
+    );
+    const rowHeaderGroups = CellGroup.getCellGroupsAtRegion(
+      dataModel!,
+      'row-header'
+    );
+    const cornerHeaderGroups = CellGroup.getCellGroupsAtRegion(
+      dataModel!,
+      'corner-header'
+    );
     const bodyGroups = CellGroup.getCellGroupsAtRegion(dataModel!, 'body');
     return (
-         colGroups.length > 0 
-      || rowHeaderGroups.length > 0 
-      || cornerHeaderGroups.length > 0
-      || bodyGroups.length > 0);
+      colGroups.length > 0 ||
+      rowHeaderGroups.length > 0 ||
+      cornerHeaderGroups.length > 0 ||
+      bodyGroups.length > 0
+    );
   }
 
   /**
    * An object which represents a region to be painted.
    */
-  export
-  type PaintRegion = {
+  export type PaintRegion = {
     /**
      * The min X coordinate the of the dirty viewport rect.
      *
@@ -6386,8 +6546,7 @@ namespace Private {
   /**
    * A conflatable message which merges dirty paint regions.
    */
-  export
-  class PaintRequest extends ConflatableMessage {
+  export class PaintRequest extends ConflatableMessage {
     /**
      * Construct a new paint request messages.
      *
@@ -6401,7 +6560,13 @@ namespace Private {
      *
      * @param c2 - The bottom-right column of the dirty region.
      */
-    constructor(region: DataModel.CellRegion | 'all', r1: number, c1: number, r2: number, c2: number) {
+    constructor(
+      region: DataModel.CellRegion | 'all',
+      r1: number,
+      c1: number,
+      r2: number,
+      c2: number
+    ) {
       super('paint-request');
       this._region = region;
       this._r1 = r1;
@@ -6483,8 +6648,7 @@ namespace Private {
   /**
    * A conflatable message for resizing rows.
    */
-  export
-  class RowResizeRequest extends ConflatableMessage {
+  export class RowResizeRequest extends ConflatableMessage {
     /**
      * Construct a new row resize request.
      *
@@ -6541,8 +6705,7 @@ namespace Private {
   /**
    * A conflatable message for resizing columns.
    */
-  export
-  class ColumnResizeRequest extends ConflatableMessage {
+  export class ColumnResizeRequest extends ConflatableMessage {
     /**
      * Construct a new column resize request.
      *

@@ -7,25 +7,15 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  expect
-} from 'chai';
+import { expect } from 'chai';
 
-import {
-  each, every
-} from '@lumino/algorithm';
+import { each, every } from '@lumino/algorithm';
 
-import {
-  Message, MessageLoop
-} from '@lumino/messaging';
+import { Message, MessageLoop } from '@lumino/messaging';
 
-import {
-  BoxLayout, Widget
-} from '@lumino/widgets';
-
+import { BoxLayout, Widget } from '@lumino/widgets';
 
 class LogBoxLayout extends BoxLayout {
-
   methods: string[] = [];
 
   protected init(): void {
@@ -38,7 +28,11 @@ class LogBoxLayout extends BoxLayout {
     this.methods.push('attachWidget');
   }
 
-  protected moveWidget(fromIndex: number, toIndex: number, widget: Widget): void {
+  protected moveWidget(
+    fromIndex: number,
+    toIndex: number,
+    widget: Widget
+  ): void {
     super.moveWidget(fromIndex, toIndex, widget);
     this.methods.push('moveWidget');
   }
@@ -84,9 +78,7 @@ class LogBoxLayout extends BoxLayout {
   }
 }
 
-
 class LogWidget extends Widget {
-
   methods: string[] = [];
 
   protected onAfterAttach(msg: Message): void {
@@ -110,13 +102,9 @@ class LogWidget extends Widget {
   }
 }
 
-
 describe('@lumino/widgets', () => {
-
   describe('BoxLayout', () => {
-
     describe('constructor()', () => {
-
       it('should take no arguments', () => {
         let layout = new BoxLayout();
         expect(layout).to.be.an.instanceof(BoxLayout);
@@ -127,11 +115,9 @@ describe('@lumino/widgets', () => {
         expect(layout.direction).to.equal('bottom-to-top');
         expect(layout.spacing).to.equal(10);
       });
-
     });
 
     describe('#direction', () => {
-
       it('should default to `"top-to-bottom"`', () => {
         let layout = new BoxLayout();
         expect(layout.direction).to.equal('top-to-bottom');
@@ -148,16 +134,24 @@ describe('@lumino/widgets', () => {
         let layout = new BoxLayout();
         parent.layout = layout;
         layout.direction = 'top-to-bottom';
-        expect(parent.node.getAttribute('data-direction')).to.equal('top-to-bottom');
+        expect(parent.node.getAttribute('data-direction')).to.equal(
+          'top-to-bottom'
+        );
         layout.direction = 'bottom-to-top';
-        expect(parent.node.getAttribute('data-direction')).to.equal('bottom-to-top');
+        expect(parent.node.getAttribute('data-direction')).to.equal(
+          'bottom-to-top'
+        );
         layout.direction = 'left-to-right';
-        expect(parent.node.getAttribute('data-direction')).to.equal('left-to-right');
+        expect(parent.node.getAttribute('data-direction')).to.equal(
+          'left-to-right'
+        );
         layout.direction = 'right-to-left';
-        expect(parent.node.getAttribute('data-direction')).to.equal('right-to-left');
+        expect(parent.node.getAttribute('data-direction')).to.equal(
+          'right-to-left'
+        );
       });
 
-      it('should post a fit request to the parent widget', (done) => {
+      it('should post a fit request to the parent widget', done => {
         let parent = new Widget();
         let layout = new LogBoxLayout();
         parent.layout = layout;
@@ -168,7 +162,7 @@ describe('@lumino/widgets', () => {
         });
       });
 
-      it('should be a no-op if the value does not change', (done) => {
+      it('should be a no-op if the value does not change', done => {
         let parent = new Widget();
         let layout = new LogBoxLayout();
         parent.layout = layout;
@@ -178,11 +172,9 @@ describe('@lumino/widgets', () => {
           done();
         });
       });
-
     });
 
     describe('#spacing', () => {
-
       it('should default to `4`', () => {
         let layout = new BoxLayout();
         expect(layout.spacing).to.equal(4);
@@ -194,7 +186,7 @@ describe('@lumino/widgets', () => {
         expect(layout.spacing).to.equal(8);
       });
 
-      it('should post a fit request to the parent widget', (done) => {
+      it('should post a fit request to the parent widget', done => {
         let parent = new Widget();
         let layout = new LogBoxLayout();
         parent.layout = layout;
@@ -205,7 +197,7 @@ describe('@lumino/widgets', () => {
         });
       });
 
-      it('should be a no-op if the value does not change', (done) => {
+      it('should be a no-op if the value does not change', done => {
         let parent = new Widget();
         let layout = new LogBoxLayout();
         parent.layout = layout;
@@ -215,16 +207,16 @@ describe('@lumino/widgets', () => {
           done();
         });
       });
-
     });
 
     describe('#init()', () => {
-
       it('should set the direction attribute on the parent widget', () => {
         let parent = new Widget();
         let layout = new LogBoxLayout();
         parent.layout = layout;
-        expect(parent.node.getAttribute('data-direction')).to.equal('top-to-bottom');
+        expect(parent.node.getAttribute('data-direction')).to.equal(
+          'top-to-bottom'
+        );
         expect(layout.methods).to.contain('init');
         parent.dispose();
       });
@@ -233,17 +225,17 @@ describe('@lumino/widgets', () => {
         let parent = new Widget();
         let layout = new LogBoxLayout();
         let widgets = [new Widget(), new Widget(), new Widget()];
-        each(widgets, w => { layout.addWidget(w); });
+        each(widgets, w => {
+          layout.addWidget(w);
+        });
         parent.layout = layout;
         expect(every(widgets, w => w.parent === parent));
         expect(layout.methods).to.contain('attachWidget');
         parent.dispose();
       });
-
     });
 
     describe('#attachWidget()', () => {
-
       it("should attach a widget to the parent's DOM node", () => {
         let panel = new Widget();
         let layout = new LogBoxLayout();
@@ -268,7 +260,7 @@ describe('@lumino/widgets', () => {
         panel.dispose();
       });
 
-      it('should post a layout request for the parent widget', (done) => {
+      it('should post a layout request for the parent widget', done => {
         let panel = new Widget();
         let layout = new LogBoxLayout();
         panel.layout = layout;
@@ -279,12 +271,10 @@ describe('@lumino/widgets', () => {
           done();
         });
       });
-
     });
 
     describe('#moveWidget()', () => {
-
-      it('should post an update request for the parent widget', (done) => {
+      it('should post an update request for the parent widget', done => {
         let panel = new Widget();
         let layout = new LogBoxLayout();
         panel.layout = layout;
@@ -299,11 +289,9 @@ describe('@lumino/widgets', () => {
           done();
         });
       });
-
     });
 
     describe('#detachWidget()', () => {
-
       it("should detach a widget from the parent's DOM node", () => {
         let panel = new Widget();
         let layout = new LogBoxLayout();
@@ -328,7 +316,7 @@ describe('@lumino/widgets', () => {
         panel.dispose();
       });
 
-      it('should post a layout request for the parent widget', (done) => {
+      it('should post a layout request for the parent widget', done => {
         let panel = new Widget();
         let layout = new LogBoxLayout();
         let widget = new Widget();
@@ -345,12 +333,10 @@ describe('@lumino/widgets', () => {
           });
         });
       });
-
     });
 
     describe('#onAfterShow()', () => {
-
-      it('should post an update request to the parent', (done) => {
+      it('should post an update request to the parent', done => {
         let parent = new LogWidget();
         let layout = new LogBoxLayout();
         parent.layout = layout;
@@ -372,25 +358,31 @@ describe('@lumino/widgets', () => {
         parent.layout = layout;
         let widgets = [new LogWidget(), new LogWidget(), new LogWidget()];
         let hiddenWidgets = [new LogWidget(), new LogWidget()];
-        each(widgets, w => { layout.addWidget(w); });
-        each(hiddenWidgets, w => { layout.addWidget(w); });
-        each(hiddenWidgets, w => { w.hide(); });
+        each(widgets, w => {
+          layout.addWidget(w);
+        });
+        each(hiddenWidgets, w => {
+          layout.addWidget(w);
+        });
+        each(hiddenWidgets, w => {
+          w.hide();
+        });
         Widget.attach(parent, document.body);
         parent.layout = layout;
         parent.hide();
         parent.show();
         expect(every(widgets, w => w.methods.indexOf('after-show') !== -1));
-        expect(every(hiddenWidgets, w => w.methods.indexOf('after-show') === -1));
+        expect(
+          every(hiddenWidgets, w => w.methods.indexOf('after-show') === -1)
+        );
         expect(parent.methods).to.contain('onAfterShow');
         expect(layout.methods).to.contain('onAfterShow');
         parent.dispose();
       });
-
     });
 
     describe('#onAfterAttach()', () => {
-
-      it('should post a fit request to the parent', (done) => {
+      it('should post a fit request to the parent', done => {
         let parent = new LogWidget();
         let layout = new LogBoxLayout();
         parent.layout = layout;
@@ -409,25 +401,27 @@ describe('@lumino/widgets', () => {
         let layout = new LogBoxLayout();
         parent.layout = layout;
         let widgets = [new LogWidget(), new LogWidget(), new LogWidget()];
-        each(widgets, w => { layout.addWidget(w); });
+        each(widgets, w => {
+          layout.addWidget(w);
+        });
         Widget.attach(parent, document.body);
         expect(parent.methods).to.contain('onAfterAttach');
         expect(layout.methods).to.contain('onAfterAttach');
         expect(every(widgets, w => w.methods.indexOf('onAfterAttach') !== -1));
         parent.dispose();
       });
-
     });
 
     describe('#onChildShown()', () => {
-
-      it('should post or send a fit request to the parent', (done) => {
+      it('should post or send a fit request to the parent', done => {
         let parent = new LogWidget();
         let layout = new LogBoxLayout();
         parent.layout = layout;
         let widgets = [new LogWidget(), new LogWidget(), new LogWidget()];
         widgets[0].hide();
-        each(widgets, w => { layout.addWidget(w); });
+        each(widgets, w => {
+          layout.addWidget(w);
+        });
         Widget.attach(parent, document.body);
         widgets[0].show();
         expect(layout.methods).to.contain('onChildShown');
@@ -437,17 +431,17 @@ describe('@lumino/widgets', () => {
           done();
         });
       });
-
     });
 
     describe('#onChildHidden()', () => {
-
-      it('should post a fit request to the parent', (done) => {
+      it('should post a fit request to the parent', done => {
         let parent = new LogWidget();
         let layout = new LogBoxLayout();
         parent.layout = layout;
         let widgets = [new LogWidget(), new LogWidget(), new LogWidget()];
-        each(widgets, w => { layout.addWidget(w); });
+        each(widgets, w => {
+          layout.addWidget(w);
+        });
         Widget.attach(parent, document.body);
         widgets[0].hide();
         expect(layout.methods).to.contain('onChildHidden');
@@ -457,17 +451,17 @@ describe('@lumino/widgets', () => {
           done();
         });
       });
-
     });
 
     describe('#onResize()', () => {
-
       it('should be called when a resize event is sent to the parent', () => {
         let parent = new LogWidget();
         let layout = new LogBoxLayout();
         parent.layout = layout;
         let widgets = [new LogWidget(), new LogWidget(), new LogWidget()];
-        each(widgets, w => { layout.addWidget(w); });
+        each(widgets, w => {
+          layout.addWidget(w);
+        });
         Widget.attach(parent, document.body);
         MessageLoop.sendMessage(parent, Widget.ResizeMessage.UnknownSize);
         expect(layout.methods).to.contain('onResize');
@@ -484,11 +478,9 @@ describe('@lumino/widgets', () => {
         expect(layout.methods).to.contain('onResize');
         parent.dispose();
       });
-
     });
 
     describe('#onUpdateRequest()', () => {
-
       it('should be called when the parent is updated', () => {
         let parent = new Widget();
         let layout = new LogBoxLayout();
@@ -496,11 +488,9 @@ describe('@lumino/widgets', () => {
         MessageLoop.sendMessage(parent, Widget.Msg.UpdateRequest);
         expect(layout.methods).to.contain('onUpdateRequest');
       });
-
     });
 
     describe('#onFitRequest()', () => {
-
       it('should be called when the parent fit is requested', () => {
         let parent = new Widget();
         let layout = new LogBoxLayout();
@@ -508,27 +498,23 @@ describe('@lumino/widgets', () => {
         MessageLoop.sendMessage(parent, Widget.Msg.FitRequest);
         expect(layout.methods).to.contain('onFitRequest');
       });
-
     });
 
     describe('.getStretch()', () => {
-
       it('should get the box panel stretch factor for the given widget', () => {
         let widget = new Widget();
         expect(BoxLayout.getStretch(widget)).to.equal(0);
       });
-
     });
 
     describe('.setStretch()', () => {
-
       it('should set the box panel stretch factor for the given widget', () => {
         let widget = new Widget();
         BoxLayout.setStretch(widget, 8);
         expect(BoxLayout.getStretch(widget)).to.equal(8);
       });
 
-      it("should post a fit request to the widget's parent", (done) => {
+      it("should post a fit request to the widget's parent", done => {
         let parent = new Widget();
         let widget = new Widget();
         let layout = new LogBoxLayout();
@@ -540,27 +526,23 @@ describe('@lumino/widgets', () => {
           done();
         });
       });
-
     });
 
     describe('.getSizeBasis()', () => {
-
       it('should get the box panel size basis for the given widget', () => {
         let widget = new Widget();
         expect(BoxLayout.getSizeBasis(widget)).to.equal(0);
       });
-
     });
 
     describe('.setSizeBasis()', () => {
-
       it('should set the box panel size basis for the given widget', () => {
         let widget = new Widget();
         BoxLayout.setSizeBasis(widget, 8);
         expect(BoxLayout.getSizeBasis(widget)).to.equal(8);
       });
 
-      it("should post a fit request to the widget's parent", (done) => {
+      it("should post a fit request to the widget's parent", done => {
         let parent = new Widget();
         let widget = new Widget();
         let layout = new LogBoxLayout();
@@ -572,9 +554,6 @@ describe('@lumino/widgets', () => {
           done();
         });
       });
-
     });
-
   });
-
 });

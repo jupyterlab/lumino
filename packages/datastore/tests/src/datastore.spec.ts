@@ -7,9 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  expect
-} from 'chai';
+import { expect } from 'chai';
 
 import {
   Datastore,
@@ -21,38 +19,33 @@ import {
   TextField
 } from '@lumino/datastore';
 
-import {
-  MessageLoop
-} from '@lumino/messaging';
+import { MessageLoop } from '@lumino/messaging';
 
-import {
-  Signal
-} from '@lumino/signaling';
-
+import { Signal } from '@lumino/signaling';
 
 type CustomMetadata = { id: string };
 
 type TestSchema = {
   id: string;
   fields: {
-    content: TextField,
-    count: RegisterField<number>,
-    enabled: RegisterField<boolean>,
-    tags: MapField<string>,
-    links: ListField<string>,
-    metadata: RegisterField<CustomMetadata>
-  }
-}
+    content: TextField;
+    count: RegisterField<number>;
+    enabled: RegisterField<boolean>;
+    tags: MapField<string>;
+    links: ListField<string>;
+    metadata: RegisterField<CustomMetadata>;
+  };
+};
 
 let schema1: TestSchema = {
   id: 'test-schema-1',
   fields: {
     content: Fields.Text(),
-    count:Fields.Number(),
+    count: Fields.Number(),
     enabled: Fields.Boolean(),
     tags: Fields.Map<string>(),
     links: Fields.List<string>(),
-    metadata: Fields.Register<CustomMetadata>({ value: { id: 'identifier' }})
+    metadata: Fields.Register<CustomMetadata>({ value: { id: 'identifier' } })
   }
 };
 
@@ -60,11 +53,11 @@ let schema2: TestSchema = {
   id: 'test-schema-2',
   fields: {
     content: Fields.Text(),
-    count:Fields.Number(),
+    count: Fields.Number(),
     enabled: Fields.Boolean(),
     tags: Fields.Map<string>(),
     links: Fields.List<string>(),
-    metadata: Fields.Register<CustomMetadata>({ value: { id: 'identifier' }})
+    metadata: Fields.Register<CustomMetadata>({ value: { id: 'identifier' } })
   }
 };
 
@@ -156,9 +149,7 @@ class InMemoryServerAdapter implements IServerAdapter {
 }
 
 describe('@lumino/datastore', () => {
-
   describe('Datastore', () => {
-
     let datastore: Datastore;
     let adapter: InMemoryServerAdapter;
     const DATASTORE_ID = 1234;
@@ -177,7 +168,6 @@ describe('@lumino/datastore', () => {
     });
 
     describe('create()', () => {
-
       it('should create a new datastore', () => {
         let datastore = Datastore.create({ id: 1, schemas: [schema1] });
         expect(datastore).to.be.instanceof(Datastore);
@@ -187,7 +177,7 @@ describe('@lumino/datastore', () => {
         let invalid1 = {
           id: 'invalid-schema',
           fields: {
-            '@content': Fields.Text(),
+            '@content': Fields.Text()
           }
         };
         expect(() => {
@@ -196,7 +186,7 @@ describe('@lumino/datastore', () => {
         let invalid2 = {
           id: 'invalid-schema',
           fields: {
-            '$content': Fields.Text(),
+            $content: Fields.Text()
           }
         };
         expect(() => {
@@ -216,7 +206,7 @@ describe('@lumino/datastore', () => {
       });
 
       it('should restore partial state', () => {
-        let partialState = {[schema1.id]: state[schema1.id] };
+        let partialState = { [schema1.id]: state[schema1.id] };
         let datastore = Datastore.create({
           id: 1,
           schemas: [schema1, schema2],
@@ -224,17 +214,14 @@ describe('@lumino/datastore', () => {
         });
 
         let reexport = datastore.toString();
-        expect(JSON.parse(reexport)).to.eql(
-          {
-            ...partialState,
-            [schema2.id]: []
-          });
+        expect(JSON.parse(reexport)).to.eql({
+          ...partialState,
+          [schema2.id]: []
+        });
       });
-
     });
 
     describe('dispose()', () => {
-
       it('should dispose of the resources held by the datastore', () => {
         expect(datastore.adapter).to.not.be.null;
         datastore.dispose();
@@ -245,21 +232,17 @@ describe('@lumino/datastore', () => {
         datastore.dispose();
         datastore.dispose();
       });
-
     });
 
     describe('isDisposed()', () => {
-
       it('should indicate whether the datastore is disposed', () => {
         expect(datastore.isDisposed).to.be.false;
         datastore.dispose();
         expect(datastore.isDisposed).to.be.true;
       });
-
     });
 
     describe('changed', () => {
-
       it('should should emit upon changes to the datastore', () => {
         let called = false;
         let id = '';
@@ -277,19 +260,15 @@ describe('@lumino/datastore', () => {
         datastore.endTransaction();
         expect(called).to.be.true;
       });
-
     });
 
     describe('id', () => {
-
       it('should return the unique store id', () => {
         expect(datastore.id).to.equal(DATASTORE_ID);
       });
-
     });
 
     describe('inTransaction', () => {
-
       it('should indicate whether the datastore is in a transaction', () => {
         expect(datastore.inTransaction).to.be.false;
         datastore.beginTransaction();
@@ -297,11 +276,9 @@ describe('@lumino/datastore', () => {
         datastore.endTransaction();
         expect(datastore.inTransaction).to.be.false;
       });
-
     });
 
     describe('adapter', () => {
-
       it('should be the adapter for the datastore', () => {
         expect(datastore.adapter).to.equal(adapter);
       });
@@ -314,11 +291,9 @@ describe('@lumino/datastore', () => {
         datastore.endTransaction();
         expect(Object.keys(adapter.transactions).length).to.equal(1);
       });
-
     });
 
     describe('version', () => {
-
       it('should increase with each transaction', () => {
         let version = datastore.version;
         let t1 = datastore.get(schema1);
@@ -337,11 +312,9 @@ describe('@lumino/datastore', () => {
 
         expect(datastore.version).to.be.above(version);
       });
-
     });
 
     describe('iter()', () => {
-
       it('should return an iterator over the tables of the datastore', () => {
         let iterator = datastore.iter();
         let t1 = iterator.next();
@@ -350,11 +323,9 @@ describe('@lumino/datastore', () => {
         expect(t2!.schema).to.equal(schema2);
         expect(iterator.next()).to.be.undefined;
       });
-
     });
 
     describe('get()', () => {
-
       it('should return a table for a schema', () => {
         let t1 = datastore.get(schema1);
         let t2 = datastore.get(schema2);
@@ -364,13 +335,13 @@ describe('@lumino/datastore', () => {
 
       it('should throw an error for a nonexistent schema', () => {
         let schema3 = { ...schema2, id: 'new-schema' };
-        expect(() => { datastore.get(schema3); }).to.throw(/No table found/);
+        expect(() => {
+          datastore.get(schema3);
+        }).to.throw(/No table found/);
       });
-
     });
 
     describe('beginTransaction()', () => {
-
       it('should allow for mutations on the datastore', () => {
         let t1 = datastore.get(schema1);
         expect(datastore.inTransaction).to.be.false;
@@ -441,11 +412,9 @@ describe('@lumino/datastore', () => {
         MessageLoop.flush();
         expect(datastore.inTransaction).to.be.false;
       });
-
     });
 
     describe('endTransaction()', () => {
-
       it('should emit a changed signal with the user-facing changes', () => {
         let called = false;
         let id = '';
@@ -476,11 +445,9 @@ describe('@lumino/datastore', () => {
       it('should throw if there is not a transaction begun', () => {
         expect(() => datastore.endTransaction()).to.throw(/No transaction/);
       });
-
     });
 
     describe('undo()', () => {
-
       it('should be throw without a patch server', async () => {
         let datastore = Datastore.create({
           id: DATASTORE_ID,
@@ -497,7 +464,7 @@ describe('@lumino/datastore', () => {
         }
       });
 
-      it('should throw if invoked during a transaction',  async () => {
+      it('should throw if invoked during a transaction', async () => {
         let thrown = false;
         try {
           datastore.beginTransaction();
@@ -522,7 +489,7 @@ describe('@lumino/datastore', () => {
         expect(record.enabled).to.be.false;
       });
 
-      it ('should allow for multiple undos', async () => {
+      it('should allow for multiple undos', async () => {
         let t2 = datastore.get(schema2);
         let id = datastore.beginTransaction();
         t2.update({ 'my-record': { enabled: true } });
@@ -603,11 +570,9 @@ describe('@lumino/datastore', () => {
         await datastore.undo(id);
         expect(called).to.be.false;
       });
-
     });
 
     describe('redo()', () => {
-
       it('should be throw without a patch server', async () => {
         let datastore = Datastore.create({
           id: DATASTORE_ID,
@@ -624,7 +589,7 @@ describe('@lumino/datastore', () => {
         }
       });
 
-      it('should throw if invoked during a transaction',  async () => {
+      it('should throw if invoked during a transaction', async () => {
         let thrown = false;
         try {
           datastore.beginTransaction();
@@ -660,7 +625,7 @@ describe('@lumino/datastore', () => {
         expect(record.content).to.equal('hello, world');
       });
 
-      it ('should have redos winning in a tie', async () => {
+      it('should have redos winning in a tie', async () => {
         let t2 = datastore.get(schema2);
         let id = datastore.beginTransaction();
         t2.update({
@@ -687,7 +652,7 @@ describe('@lumino/datastore', () => {
         expect(record.content).to.equal('hello, world');
       });
 
-      it ('should be safe to call extra times', async () => {
+      it('should be safe to call extra times', async () => {
         let t2 = datastore.get(schema2);
         let id = datastore.beginTransaction();
         t2.update({
@@ -755,16 +720,15 @@ describe('@lumino/datastore', () => {
         // Generate transactions that add then delete a value in a map.
         let t2 = datastore.get(schema2);
         let id1 = datastore.beginTransaction();
-        t2.update({ 'record': { tags: { value: 'tagged' } } });
+        t2.update({ record: { tags: { value: 'tagged' } } });
         datastore.endTransaction();
         expect(t2.get('record')!.tags.value).to.equal('tagged');
         let id2 = datastore.beginTransaction();
-        t2.update({ 'record': { tags: { value: null } } });
+        t2.update({ record: { tags: { value: null } } });
         datastore.endTransaction();
         expect(t2.get('record')!.tags.value).to.be.undefined;
         let transaction1 = adapter.transactions[id1];
         let transaction2 = adapter.transactions[id2];
-
 
         // Design a set of undo and redo operations, after which
         // transaction1 should be showing, and transaction 2 should not.
@@ -810,11 +774,7 @@ describe('@lumino/datastore', () => {
           adapt.dispose();
           store.dispose();
         }
-
       });
-
     });
-
   });
-
 });

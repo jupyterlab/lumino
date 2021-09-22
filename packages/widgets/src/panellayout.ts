@@ -7,22 +7,13 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  ArrayExt, IIterator, each, iter
-} from '@lumino/algorithm';
+import { ArrayExt, each, IIterator, iter } from '@lumino/algorithm';
 
-import {
-  MessageLoop
-} from '@lumino/messaging';
+import { MessageLoop } from '@lumino/messaging';
 
-import {
-  Layout
-} from './layout';
+import { Layout } from './layout';
 
-import {
-  Widget
-} from './widget';
-
+import { Widget } from './widget';
 
 /**
  * A concrete layout implementation suitable for many use cases.
@@ -32,8 +23,7 @@ import {
  * layouts, but can also be used directly with standard CSS to layout a
  * collection of widgets.
  */
-export
-class PanelLayout extends Layout {
+export class PanelLayout extends Layout {
   /**
    * Dispose of the resources held by the layout.
    *
@@ -249,7 +239,11 @@ class PanelLayout extends Layout {
    * Subclasses may reimplement this method to control how the widget's
    * node is moved in the parent's node.
    */
-  protected moveWidget(fromIndex: number, toIndex: number, widget: Widget): void {
+  protected moveWidget(
+    fromIndex: number,
+    toIndex: number,
+    widget: Widget
+  ): void {
     // Send a `'before-detach'` message if the parent is attached.
     if (this.parent!.isAttached) {
       MessageLoop.sendMessage(widget, Widget.Msg.BeforeDetach);

@@ -8,7 +8,6 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
-
 /**
  * Create a duplex string identifier.
  *
@@ -21,21 +20,19 @@
  * #### Notes
  * ID format: <6-byte version><4-byte storeId>
  */
-export
-function createDuplexId(version: number, store: number): string {
+export function createDuplexId(version: number, store: number): string {
   // Split the version into 16-bit values.
-  let vc = version & 0xFFFF;
-  let vb = (((version - vc) / 0x10000) | 0) & 0xFFFF;
-  let va = (((version - vb - vc) / 0x100000000) | 0) & 0xFFFF;
+  let vc = version & 0xffff;
+  let vb = (((version - vc) / 0x10000) | 0) & 0xffff;
+  let va = (((version - vb - vc) / 0x100000000) | 0) & 0xffff;
 
   // Split the store id into 16-bit values.
-  let sb = store & 0xFFFF;
-  let sa = (((store - sb) / 0x10000) | 0) & 0xFFFF;
+  let sb = store & 0xffff;
+  let sa = (((store - sb) / 0x10000) | 0) & 0xffff;
 
   // Convert the parts into a string identifier duplex.
   return String.fromCharCode(va, vb, vc, sa, sb);
 }
-
 
 /**
  * Create a triplex string identifier between two boundaries.
@@ -55,10 +52,14 @@ function createDuplexId(version: number, store: number): string {
  * #### Notes
  * ID format: <6-byte path><6-byte version><4-byte storeId> * (N >= 1)
  */
-export
-function createTriplexId(version: number, store: number, lower: string, upper: string): string {
+export function createTriplexId(
+  version: number,
+  store: number,
+  lower: string,
+  upper: string
+): string {
   // The maximum path in a triplex id.
-  const MAX_PATH = 0xFFFFFFFFFFFF;
+  const MAX_PATH = 0xffffffffffff;
 
   // Set up the variable to hold the id.
   let id = '';
@@ -131,7 +132,6 @@ function createTriplexId(version: number, store: number, lower: string, upper: s
   return id.slice();
 }
 
-
 /**
  * Create the multiple triplex identifiers.
  *
@@ -147,8 +147,13 @@ function createTriplexId(version: number, store: number, lower: string, upper: s
  *
  * @returns The requested identifiers.
  */
-export
-function createTriplexIds(n: number, version: number, store: number, lower: string, upper: string): string[] {
+export function createTriplexIds(
+  n: number,
+  version: number,
+  store: number,
+  lower: string,
+  upper: string
+): string[] {
   // Initialize the identifiers array.
   let ids: string[] = [];
 
@@ -168,7 +173,6 @@ function createTriplexIds(n: number, version: number, store: number, lower: stri
   return ids;
 }
 
-
 /**
  * The namespace for the module implementation details.
  */
@@ -184,21 +188,24 @@ namespace Private {
    *
    * @returns The string identifier triplet.
    */
-  export
-  function createTriplet(path: number, version: number, store: number): string {
+  export function createTriplet(
+    path: number,
+    version: number,
+    store: number
+  ): string {
     // Split the path into 16-bit values.
-    let pc = path & 0xFFFF;
-    let pb = (((path - pc) / 0x10000) | 0) & 0xFFFF;
-    let pa = (((path - pb - pc) / 0x100000000) | 0) & 0xFFFF;
+    let pc = path & 0xffff;
+    let pb = (((path - pc) / 0x10000) | 0) & 0xffff;
+    let pa = (((path - pb - pc) / 0x100000000) | 0) & 0xffff;
 
     // Split the version into 16-bit values.
-    let vc = version & 0xFFFF;
-    let vb = (((version - vc) / 0x10000) | 0) & 0xFFFF;
-    let va = (((version - vb - vc) / 0x100000000) | 0) & 0xFFFF;
+    let vc = version & 0xffff;
+    let vb = (((version - vc) / 0x10000) | 0) & 0xffff;
+    let va = (((version - vb - vc) / 0x100000000) | 0) & 0xffff;
 
     // Split the store id into 16-bit values.
-    let sb = store & 0xFFFF;
-    let sa = (((store - sb) / 0x10000) | 0) & 0xFFFF;
+    let sb = store & 0xffff;
+    let sa = (((store - sb) / 0x10000) | 0) & 0xffff;
 
     // Convert the parts into a string identifier triplet.
     return String.fromCharCode(pa, pb, pc, va, vb, vc, sa, sb);
@@ -211,8 +218,7 @@ namespace Private {
    *
    * @returns The total number of triplets in the id.
    */
-  export
-  function idTripletCount(id: string): number {
+  export function idTripletCount(id: string): number {
     return id.length >> 3;
   }
 
@@ -225,8 +231,7 @@ namespace Private {
    *
    * @returns The path value for the specified triplet.
    */
-  export
-  function idPathAt(id: string, i: number): number {
+  export function idPathAt(id: string, i: number): number {
     let j = i << 3;
     let a = id.charCodeAt(j + 0);
     let b = id.charCodeAt(j + 1);
@@ -243,8 +248,7 @@ namespace Private {
    *
    * @returns The version for the specified triplet.
    */
-  export
-  function idVersionAt(id: string, i: number): number {
+  export function idVersionAt(id: string, i: number): number {
     let j = i << 3;
     let a = id.charCodeAt(j + 3);
     let b = id.charCodeAt(j + 4);
@@ -261,8 +265,7 @@ namespace Private {
    *
    * @returns The store id for the specified triplet.
    */
-  export
-  function idStoreAt(id: string, i: number): number {
+  export function idStoreAt(id: string, i: number): number {
     let j = i << 3;
     let a = id.charCodeAt(j + 6);
     let b = id.charCodeAt(j + 7);
@@ -278,8 +281,7 @@ namespace Private {
    *
    * @returns A random path in the leading bucket of the range.
    */
-  export
-  function randomPath(min: number, max: number): number {
+  export function randomPath(min: number, max: number): number {
     return min + Math.round(Math.random() * Math.sqrt(max - min));
   }
 }

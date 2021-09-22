@@ -8,12 +8,10 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
-
 /**
  * An object which represents an abstract keyboard layout.
  */
-export
-interface IKeyboardLayout {
+export interface IKeyboardLayout {
   /**
    * The human readable name of the layout.
    *
@@ -52,7 +50,6 @@ interface IKeyboardLayout {
   keyForKeydownEvent(event: KeyboardEvent): string;
 }
 
-
 /**
  * Get the global application keyboard layout instance.
  *
@@ -61,11 +58,9 @@ interface IKeyboardLayout {
  * #### Notes
  * The default keyboard layout is US-English.
  */
-export
-function getKeyboardLayout(): IKeyboardLayout {
+export function getKeyboardLayout(): IKeyboardLayout {
   return Private.keyboardLayout;
 }
-
 
 /**
  * Set the global application keyboard layout instance.
@@ -76,11 +71,9 @@ function getKeyboardLayout(): IKeyboardLayout {
  * The keyboard layout should typically be set on application startup
  * to a layout which is appropriate for the user's system.
  */
-export
-function setKeyboardLayout(layout: IKeyboardLayout): void {
+export function setKeyboardLayout(layout: IKeyboardLayout): void {
   Private.keyboardLayout = layout;
 }
-
 
 /**
  * A concrete implementation of [[IKeyboardLayout]] based on keycodes.
@@ -93,8 +86,7 @@ function setKeyboardLayout(layout: IKeyboardLayout): void {
  * This class accepts a user-defined mapping of keycode to key, which
  * allows for reliable shortcuts tailored to the user's system.
  */
-export
-class KeycodeLayout implements IKeyboardLayout {
+export class KeycodeLayout implements IKeyboardLayout {
   /**
    * Construct a new keycode layout.
    *
@@ -149,23 +141,19 @@ class KeycodeLayout implements IKeyboardLayout {
   private _codes: KeycodeLayout.CodeMap;
 }
 
-
 /**
  * The namespace for the `KeycodeLayout` class statics.
  */
-export
-namespace KeycodeLayout {
+export namespace KeycodeLayout {
   /**
    * A type alias for a keycode map.
    */
-  export
-  type CodeMap = { readonly [code: number]: string };
+  export type CodeMap = { readonly [code: number]: string };
 
   /**
    * A type alias for a key set.
    */
-  export
-  type KeySet = { readonly [key: string]: boolean };
+  export type KeySet = { readonly [key: string]: boolean };
 
   /**
    * Extract the set of keys from a code map.
@@ -174,8 +162,7 @@ namespace KeycodeLayout {
    *
    * @returns A set of the keys in the code map.
    */
-  export
-  function extractKeys(codes: CodeMap): KeySet {
+  export function extractKeys(codes: CodeMap): KeySet {
     let keys: any = Object.create(null);
     for (let c in codes) {
       keys[codes[c]] = true;
@@ -183,7 +170,6 @@ namespace KeycodeLayout {
     return keys as KeySet;
   }
 }
-
 
 /**
  * A keycode-based keyboard layout for US English keyboards.
@@ -206,8 +192,7 @@ namespace KeycodeLayout {
  *
  * Other combinations may also work, but are untested.
  */
-export
-const EN_US: IKeyboardLayout = new KeycodeLayout('en-us', {
+export const EN_US: IKeyboardLayout = new KeycodeLayout('en-us', {
   8: 'Backspace',
   9: 'Tab',
   13: 'Enter',
@@ -234,8 +219,8 @@ const EN_US: IKeyboardLayout = new KeycodeLayout('en-us', {
   55: '7',
   56: '8',
   57: '9',
-  59: ';',  // firefox
-  61: '=',  // firefox
+  59: ';', // firefox
+  61: '=', // firefox
   65: 'A',
   66: 'B',
   67: 'C',
@@ -263,21 +248,21 @@ const EN_US: IKeyboardLayout = new KeycodeLayout('en-us', {
   89: 'Y',
   90: 'Z',
   93: 'ContextMenu',
-  96: '0',   // numpad
-  97: '1',   // numpad
-  98: '2',   // numpad
-  99: '3',   // numpad
-  100: '4',  // numpad
-  101: '5',  // numpad
-  102: '6',  // numpad
-  103: '7',  // numpad
-  104: '8',  // numpad
-  105: '9',  // numpad
-  106: '*',  // numpad
-  107: '+',  // numpad
-  109: '-',  // numpad
-  110: '.',  // numpad
-  111: '/',  // numpad
+  96: '0', // numpad
+  97: '1', // numpad
+  98: '2', // numpad
+  99: '3', // numpad
+  100: '4', // numpad
+  101: '5', // numpad
+  102: '6', // numpad
+  103: '7', // numpad
+  104: '8', // numpad
+  105: '9', // numpad
+  106: '*', // numpad
+  107: '+', // numpad
+  109: '-', // numpad
+  110: '.', // numpad
+  111: '/', // numpad
   112: 'F1',
   113: 'F2',
   114: 'F3',
@@ -290,20 +275,19 @@ const EN_US: IKeyboardLayout = new KeycodeLayout('en-us', {
   121: 'F10',
   122: 'F11',
   123: 'F12',
-  173: '-',  // firefox
-  186: ';',  // non-firefox
-  187: '=',  // non-firefox
+  173: '-', // firefox
+  186: ';', // non-firefox
+  187: '=', // non-firefox
   188: ',',
-  189: '-',  // non-firefox
+  189: '-', // non-firefox
   190: '.',
   191: '/',
   192: '`',
   219: '[',
   220: '\\',
   221: ']',
-  222: '\''
+  222: "'"
 });
-
 
 /**
  * The namespace for the module implementation details.
@@ -312,6 +296,5 @@ namespace Private {
   /**
    * The global keyboard layout instance.
    */
-  export
-  let keyboardLayout = EN_US;
+  export let keyboardLayout = EN_US;
 }

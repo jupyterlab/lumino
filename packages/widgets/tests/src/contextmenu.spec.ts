@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 // Copyright (c) Jupyter Development Team.
 // Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
@@ -23,19 +24,19 @@ describe('@lumino/widgets', () => {
   before(() => {
     commands.addCommand('test-1', {
       execute: (args: JSONObject) => {},
-      label: 'Test 1 Label',
+      label: 'Test 1 Label'
     });
     commands.addCommand('test-2', {
       execute: (args: JSONObject) => {},
-      label: 'Test 2 Label',
+      label: 'Test 2 Label'
     });
     commands.addCommand('test-3', {
       execute: (args: JSONObject) => {},
-      label: 'Test 3 Label',
+      label: 'Test 3 Label'
     });
     commands.addCommand('test-4', {
       execute: (args: JSONObject) => {},
-      label: 'Test 4 Label',
+      label: 'Test 4 Label'
     });
   });
 
@@ -48,27 +49,27 @@ describe('@lumino/widgets', () => {
         menu.addItem({
           command: 'test-1',
           selector: `.${CLASSNAME}`,
-          rank: 20,
+          rank: 20
         });
         menu.addItem({
           command: 'test-2',
           selector: `.${CLASSNAME}`,
-          rank: 10,
+          rank: 10
         });
         menu.addItem({
           command: 'test-3',
           selector: `div.${CLASSNAME}`,
-          rank: 30,
+          rank: 30
         });
         menu.addItem({
           command: 'test-4',
           selector: '.menu-2',
-          rank: 1,
+          rank: 1
         });
         menu.addItem({
           command: 'test-5',
           selector: 'body',
-          rank: 15,
+          rank: 15
         });
       }
 
@@ -90,7 +91,7 @@ describe('@lumino/widgets', () => {
           target,
           currentTarget: document.body,
           clientX: bb.x,
-          clientY: bb.y,
+          clientY: bb.y
         } as any);
 
         expect(menu.menu.items).to.have.length(4);
@@ -114,7 +115,7 @@ describe('@lumino/widgets', () => {
           target,
           currentTarget: document.body,
           clientX: bb.x,
-          clientY: bb.y,
+          clientY: bb.y
         } as any);
 
         expect(menu.menu.items).to.have.length(4);
@@ -132,7 +133,7 @@ describe('@lumino/widgets', () => {
         menu = new ContextMenu({
           commands,
           groupByTarget: false,
-          sortBySelector: false,
+          sortBySelector: false
         });
         addItems(menu);
 
@@ -142,7 +143,7 @@ describe('@lumino/widgets', () => {
           target,
           currentTarget: document.body,
           clientX: bb.x,
-          clientY: bb.y,
+          clientY: bb.y
         } as any);
 
         expect(menu.menu.items).to.have.length(4);
@@ -160,7 +161,7 @@ describe('@lumino/widgets', () => {
         menu = new ContextMenu({
           commands,
           groupByTarget: false,
-          sortBySelector: false,
+          sortBySelector: false
         });
         addItems(menu);
 
@@ -170,7 +171,7 @@ describe('@lumino/widgets', () => {
           target,
           currentTarget: document.body,
           clientX: bb.x,
-          clientY: bb.y,
+          clientY: bb.y
         } as any);
 
         expect(menu.menu.items).to.have.length(4);

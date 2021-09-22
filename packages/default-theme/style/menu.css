@@ -7,61 +7,60 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
-
-/* <DEPRECATED> */ .p-Menu, /* </DEPRECATED> */
+/* <DEPRECATED> */
+.p-Menu, /* </DEPRECATED> */
 .lm-Menu {
   padding: 3px 0px;
   background: white;
   color: rgba(0, 0, 0, 0.87);
-  border: 1px solid #C0C0C0;
+  border: 1px solid #c0c0c0;
   font: 12px Helvetica, Arial, sans-serif;
   box-shadow: 0px 1px 6px rgba(0, 0, 0, 0.2);
 }
 
-
-/* <DEPRECATED> */ .p-Menu-item.p-mod-active, /* </DEPRECATED> */
+/* <DEPRECATED> */
+.p-Menu-item.p-mod-active, /* </DEPRECATED> */
 .lm-Menu-item.lm-mod-active {
-  background: #E5E5E5;
+  background: #e5e5e5;
 }
 
-
-/* <DEPRECATED> */ .p-Menu-item.p-mod-disabled, /* </DEPRECATED> */
+/* <DEPRECATED> */
+.p-Menu-item.p-mod-disabled, /* </DEPRECATED> */
 .lm-Menu-item.lm-mod-disabled {
   color: rgba(0, 0, 0, 0.25);
 }
 
-
-/* <DEPRECATED> */ .p-Menu-itemIcon, /* </DEPRECATED> */
+/* <DEPRECATED> */
+.p-Menu-itemIcon, /* </DEPRECATED> */
 .lm-Menu-itemIcon {
   width: 21px;
   padding: 4px 2px;
 }
 
-
-/* <DEPRECATED> */ .p-Menu-itemLabel, /* </DEPRECATED> */
+/* <DEPRECATED> */
+.p-Menu-itemLabel, /* </DEPRECATED> */
 .lm-Menu-itemLabel {
   padding: 4px 35px 4px 2px;
 }
 
-
-/* <DEPRECATED> */ .p-Menu-itemMnemonic, /* </DEPRECATED> */
+/* <DEPRECATED> */
+.p-Menu-itemMnemonic, /* </DEPRECATED> */
 .lm-Menu-itemMnemonic {
   text-decoration: underline;
 }
 
-
-/* <DEPRECATED> */ .p-Menu-itemShortcut, /* </DEPRECATED> */
+/* <DEPRECATED> */
+.p-Menu-itemShortcut, /* </DEPRECATED> */
 .lm-Menu-itemShortcut {
   padding: 4px 0px;
 }
 
-
-/* <DEPRECATED> */ .p-Menu-itemSubmenuIcon, /* </DEPRECATED> */
+/* <DEPRECATED> */
+.p-Menu-itemSubmenuIcon, /* </DEPRECATED> */
 .lm-Menu-itemSubmenuIcon {
   width: 16px;
   padding: 4px 0px;
 }
-
 
 /* <DEPRECATED> */
 .p-Menu-item[data-type='separator'] > div,
@@ -71,7 +70,6 @@
   height: 9px;
 }
 
-
 /* <DEPRECATED> */
 .p-Menu-item[data-type='separator'] > div::after,
 /* </DEPRECATED> */
@@ -80,9 +78,8 @@
   display: block;
   position: relative;
   top: 4px;
-  border-top: 1px solid #DDDDDD;
+  border-top: 1px solid #dddddd;
 }
-
 
 /* <DEPRECATED> */
 .p-Menu-itemIcon::before,
@@ -93,14 +90,12 @@
   font-family: FontAwesome;
 }
 
-
 /* <DEPRECATED> */
 .p-Menu-item.lm-mod-toggled > .p-Menu-itemIcon::before,
 /* </DEPRECATED> */
 .lm-Menu-item.lm-mod-toggled > .lm-Menu-itemIcon::before {
   content: '\f00c';
 }
-
 
 /* <DEPRECATED> */
 .p-Menu-item[data-type='submenu'] > .p-Menu-itemSubmenuIcon::before,

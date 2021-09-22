@@ -7,42 +7,30 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  ArrayExt, each
-} from '@lumino/algorithm';
+import { ArrayExt, each } from '@lumino/algorithm';
+
+import { IDisposable } from '@lumino/disposable';
+
+import { ElementExt } from '@lumino/domutils';
+
+import { Drag } from '@lumino/dragdrop';
+
+import { Message, MessageLoop } from '@lumino/messaging';
+
+import { ISignal, Signal } from '@lumino/signaling';
 
 import {
-  IDisposable
-} from '@lumino/disposable';
-
-import {
-  ElementExt
-} from '@lumino/domutils';
-
-import {
-  Drag
-} from '@lumino/dragdrop';
-
-import {
-  Message, MessageLoop
-} from '@lumino/messaging';
-
-import {
-  ISignal, Signal
-} from '@lumino/signaling';
-
-import {
-  ElementARIAAttrs, ElementDataset, ElementInlineStyle, VirtualDOM, VirtualElement, h
+  ElementARIAAttrs,
+  ElementDataset,
+  ElementInlineStyle,
+  h,
+  VirtualDOM,
+  VirtualElement
 } from '@lumino/virtualdom';
 
-import {
-  Title
-} from './title';
+import { Title } from './title';
 
-import {
-  Widget
-} from './widget';
-
+import { Widget } from './widget';
 
 /**
  * A widget which displays titles as a single row or column of tabs.
@@ -52,8 +40,7 @@ import {
  * text, then tab dragging will not work correctly. The `tabsMovable`
  * property should be set to `false` when rotating nodes from CSS.
  */
-export
-class TabBar<T> extends Widget {
+export class TabBar<T> extends Widget {
   /**
    * Construct a new tab bar.
    *
@@ -124,7 +111,10 @@ class TabBar<T> extends Widget {
    *
    * This signal is emitted even if the clicked tab is the current tab.
    */
-  get tabActivateRequested(): ISignal<this, TabBar.ITabActivateRequestedArgs<T>> {
+  get tabActivateRequested(): ISignal<
+    this,
+    TabBar.ITabActivateRequestedArgs<T>
+  > {
     return this._tabActivateRequested;
   }
 
@@ -272,8 +262,10 @@ class TabBar<T> extends Widget {
 
     // Emit the current changed signal.
     this._currentChanged.emit({
-      previousIndex: pi, previousTitle: pt,
-      currentIndex: ci, currentTitle: ct
+      previousIndex: pi,
+      previousTitle: pt,
+      currentIndex: ci,
+      currentTitle: ct
     });
   }
 
@@ -367,9 +359,10 @@ class TabBar<T> extends Widget {
    * Modifying this node directly can lead to undefined behavior.
    */
   get contentNode(): HTMLUListElement {
-    return this.node.getElementsByClassName('lm-TabBar-content')[0] as HTMLUListElement;
+    return this.node.getElementsByClassName(
+      'lm-TabBar-content'
+    )[0] as HTMLUListElement;
   }
-
 
   /**
    * The tab bar add button node.
@@ -380,7 +373,9 @@ class TabBar<T> extends Widget {
    * Modifying this node directly can lead to undefined behavior.
    */
   get addButtonNode(): HTMLDivElement {
-    return this.node.getElementsByClassName('lm-TabBar-addButton')[0] as HTMLDivElement;
+    return this.node.getElementsByClassName(
+      'lm-TabBar-addButton'
+    )[0] as HTMLDivElement;
   }
 
   /**
@@ -554,8 +549,10 @@ class TabBar<T> extends Widget {
 
     // Emit the current changed signal.
     this._currentChanged.emit({
-      previousIndex: pi, previousTitle: pt,
-      currentIndex: -1, currentTitle: null
+      previousIndex: pi,
+      previousTitle: pt,
+      currentIndex: -1,
+      currentTitle: null
     });
   }
 
@@ -583,25 +580,25 @@ class TabBar<T> extends Widget {
    */
   handleEvent(event: Event): void {
     switch (event.type) {
-    case 'mousedown':
-      this._evtMouseDown(event as MouseEvent);
-      break;
-    case 'mousemove':
-      this._evtMouseMove(event as MouseEvent);
-      break;
-    case 'mouseup':
-      this._evtMouseUp(event as MouseEvent);
-      break;
-    case 'dblclick':
-      this._evtDblClick(event as MouseEvent);
-      break;
-    case 'keydown':
-      this._evtKeyDown(event as KeyboardEvent);
-      break;
-    case 'contextmenu':
-      event.preventDefault();
-      event.stopPropagation();
-      break;
+      case 'mousedown':
+        this._evtMouseDown(event as MouseEvent);
+        break;
+      case 'mousemove':
+        this._evtMouseMove(event as MouseEvent);
+        break;
+      case 'mouseup':
+        this._evtMouseUp(event as MouseEvent);
+        break;
+      case 'dblclick':
+        this._evtDblClick(event as MouseEvent);
+        break;
+      case 'keydown':
+        this._evtKeyDown(event as KeyboardEvent);
+        break;
+      case 'contextmenu':
+        event.preventDefault();
+        event.stopPropagation();
+        break;
     }
   }
 
@@ -643,7 +640,6 @@ class TabBar<T> extends Widget {
    * Handle the `'dblclick'` event for the tab bar.
    */
   private _evtDblClick(event: MouseEvent): void {
-
     // Do nothing if titles are not editable
     if (!this.titlesEditable) {
       return;
@@ -664,12 +660,11 @@ class TabBar<T> extends Widget {
     let title = this.titles[index];
     let label = tabs[index].querySelector('.lm-TabBar-tabLabel') as HTMLElement;
     if (label && label.contains(event.target as HTMLElement)) {
-
       let value = title.label || '';
 
       // Clear the label element
       let oldValue = label.innerHTML;
-      label.innerHTML = "";
+      label.innerHTML = '';
 
       let input = document.createElement('input');
       input.classList.add('lm-TabBar-tabInput');
@@ -679,9 +674,11 @@ class TabBar<T> extends Widget {
       let onblur = () => {
         input.removeEventListener('blur', onblur);
         label.innerHTML = oldValue;
-      }
+      };
 
-      input.addEventListener('dblclick', (event: Event) => event.stopPropagation());
+      input.addEventListener('dblclick', (event: Event) =>
+        event.stopPropagation()
+      );
       input.addEventListener('blur', onblur);
       input.addEventListener('keydown', (event: KeyboardEvent) => {
         if (event.key === 'Enter') {
@@ -731,7 +728,8 @@ class TabBar<T> extends Widget {
     }
 
     // Check if the add button was clicked.
-    let addButtonClicked = this.addButtonEnabled &&
+    let addButtonClicked =
+      this.addButtonEnabled &&
       this.addButtonNode.contains(event.target as HTMLElement);
 
     // Lookup the tab nodes.
@@ -804,7 +802,8 @@ class TabBar<T> extends Widget {
 
     // Emit the tab activate request signal.
     this._tabActivateRequested.emit({
-      index: this.currentIndex, title: this.currentTitle!
+      index: this.currentIndex,
+      title: this.currentTitle!
     });
   }
 
@@ -915,7 +914,8 @@ class TabBar<T> extends Widget {
       this._dragData = null;
 
       // Handle clicking the add button.
-      let addButtonClicked = this.addButtonEnabled &&
+      let addButtonClicked =
+        this.addButtonEnabled &&
         this.addButtonNode.contains(event.target as HTMLElement);
       if (addButtonClicked) {
         this._addRequested.emit(undefined);
@@ -1012,7 +1012,9 @@ class TabBar<T> extends Widget {
 
       // Emit the tab moved signal.
       this._tabMoved.emit({
-        fromIndex: i, toIndex: j, title: this._titles[j]
+        fromIndex: i,
+        toIndex: j,
+        title: this._titles[j]
       });
 
       // Update the tabs immediately to prevent flicker.
@@ -1075,7 +1077,6 @@ class TabBar<T> extends Widget {
     let ci = this._currentIndex;
     let bh = this.insertBehavior;
 
-
     // TODO: do we need to do an update to update the aria-selected attribute?
 
     // Handle the behavior where the new tab is always selected,
@@ -1084,8 +1085,10 @@ class TabBar<T> extends Widget {
       this._currentIndex = i;
       this._previousTitle = ct;
       this._currentChanged.emit({
-        previousIndex: ci, previousTitle: ct,
-        currentIndex: i, currentTitle: title
+        previousIndex: ci,
+        previousTitle: ct,
+        currentIndex: i,
+        currentTitle: title
       });
       return;
     }
@@ -1137,8 +1140,10 @@ class TabBar<T> extends Widget {
     if (this._titles.length === 0) {
       this._currentIndex = -1;
       this._currentChanged.emit({
-        previousIndex: i, previousTitle: title,
-        currentIndex: -1, currentTitle: null
+        previousIndex: i,
+        previousTitle: title,
+        currentIndex: -1,
+        currentTitle: null
       });
       return;
     }
@@ -1147,8 +1152,10 @@ class TabBar<T> extends Widget {
     if (bh === 'select-tab-after') {
       this._currentIndex = Math.min(i, this._titles.length - 1);
       this._currentChanged.emit({
-        previousIndex: i, previousTitle: title,
-        currentIndex: this._currentIndex, currentTitle: this.currentTitle
+        previousIndex: i,
+        previousTitle: title,
+        currentIndex: this._currentIndex,
+        currentTitle: this.currentTitle
       });
       return;
     }
@@ -1157,8 +1164,10 @@ class TabBar<T> extends Widget {
     if (bh === 'select-tab-before') {
       this._currentIndex = Math.max(0, i - 1);
       this._currentChanged.emit({
-        previousIndex: i, previousTitle: title,
-        currentIndex: this._currentIndex, currentTitle: this.currentTitle
+        previousIndex: i,
+        previousTitle: title,
+        currentIndex: this._currentIndex,
+        currentTitle: this.currentTitle
       });
       return;
     }
@@ -1172,8 +1181,10 @@ class TabBar<T> extends Widget {
         this._currentIndex = Math.min(i, this._titles.length - 1);
       }
       this._currentChanged.emit({
-        previousIndex: i, previousTitle: title,
-        currentIndex: this._currentIndex, currentTitle: this.currentTitle
+        previousIndex: i,
+        previousTitle: title,
+        currentIndex: this._currentIndex,
+        currentTitle: this.currentTitle
       });
       return;
     }
@@ -1181,8 +1192,10 @@ class TabBar<T> extends Widget {
     // Otherwise, no tab gets selected.
     this._currentIndex = -1;
     this._currentChanged.emit({
-      previousIndex: i, previousTitle: title,
-      currentIndex: -1, currentTitle: null
+      previousIndex: i,
+      previousTitle: title,
+      currentIndex: -1,
+      currentTitle: null
     });
   }
 
@@ -1202,91 +1215,93 @@ class TabBar<T> extends Widget {
   private _dragData: Private.IDragData | null = null;
   private _addButtonEnabled: boolean = false;
   private _tabMoved = new Signal<this, TabBar.ITabMovedArgs<T>>(this);
-  private _currentChanged = new Signal<this, TabBar.ICurrentChangedArgs<T>>(this);
+  private _currentChanged = new Signal<this, TabBar.ICurrentChangedArgs<T>>(
+    this
+  );
   private _addRequested = new Signal<this, void>(this);
-  private _tabCloseRequested = new Signal<this, TabBar.ITabCloseRequestedArgs<T>>(this);
-  private _tabDetachRequested = new Signal<this, TabBar.ITabDetachRequestedArgs<T>>(this);
-  private _tabActivateRequested = new Signal<this, TabBar.ITabActivateRequestedArgs<T>>(this);
+  private _tabCloseRequested = new Signal<
+    this,
+    TabBar.ITabCloseRequestedArgs<T>
+  >(this);
+  private _tabDetachRequested = new Signal<
+    this,
+    TabBar.ITabDetachRequestedArgs<T>
+  >(this);
+  private _tabActivateRequested = new Signal<
+    this,
+    TabBar.ITabActivateRequestedArgs<T>
+  >(this);
 }
-
 
 /**
  * The namespace for the `TabBar` class statics.
  */
-export
-namespace TabBar {
+export namespace TabBar {
   /**
    * A type alias for a tab bar orientation.
    */
-  export
-  type Orientation = (
-    /**
+  export type Orientation =
+    | /**
      * The tabs are arranged in a single row, left-to-right.
      *
      * The tab text orientation is horizontal.
      */
-    'horizontal' |
+    'horizontal'
 
     /**
      * The tabs are arranged in a single column, top-to-bottom.
      *
      * The tab text orientation is horizontal.
      */
-    'vertical'
-  );
+    | 'vertical';
 
   /**
    * A type alias for the selection behavior on tab insert.
    */
-  export
-  type InsertBehavior = (
-    /**
+  export type InsertBehavior =
+    | /**
      * The selected tab will not be changed.
      */
-    'none' |
+    'none'
 
     /**
      * The inserted tab will be selected.
      */
-    'select-tab' |
+    | 'select-tab'
 
     /**
      * The inserted tab will be selected if the current tab is null.
      */
-    'select-tab-if-needed'
-  );
+    | 'select-tab-if-needed';
 
   /**
    * A type alias for the selection behavior on tab remove.
    */
-  export
-  type RemoveBehavior = (
-    /**
+  export type RemoveBehavior =
+    | /**
      * No tab will be selected.
      */
-    'none' |
+    'none'
 
     /**
      * The tab after the removed tab will be selected if possible.
      */
-    'select-tab-after' |
+    | 'select-tab-after'
 
     /**
      * The tab before the removed tab will be selected if possible.
      */
-    'select-tab-before' |
+    | 'select-tab-before'
 
     /**
      * The previously selected tab will be selected if possible.
      */
-    'select-previous-tab'
-  );
+    | 'select-previous-tab';
 
   /**
    * An options object for creating a tab bar.
    */
-  export
-  interface IOptions<T> {
+  export interface IOptions<T> {
     /**
      * Name of the tab bar.
      *
@@ -1354,8 +1369,7 @@ namespace TabBar {
   /**
    * The arguments object for the `currentChanged` signal.
    */
-  export
-  interface ICurrentChangedArgs<T> {
+  export interface ICurrentChangedArgs<T> {
     /**
      * The previously selected index.
      */
@@ -1380,8 +1394,7 @@ namespace TabBar {
   /**
    * The arguments object for the `tabMoved` signal.
    */
-  export
-  interface ITabMovedArgs<T> {
+  export interface ITabMovedArgs<T> {
     /**
      * The previous index of the tab.
      */
@@ -1401,8 +1414,7 @@ namespace TabBar {
   /**
    * The arguments object for the `tabActivateRequested` signal.
    */
-  export
-  interface ITabActivateRequestedArgs<T> {
+  export interface ITabActivateRequestedArgs<T> {
     /**
      * The index of the tab to activate.
      */
@@ -1417,8 +1429,7 @@ namespace TabBar {
   /**
    * The arguments object for the `tabCloseRequested` signal.
    */
-  export
-  interface ITabCloseRequestedArgs<T> {
+  export interface ITabCloseRequestedArgs<T> {
     /**
      * The index of the tab to close.
      */
@@ -1433,8 +1444,7 @@ namespace TabBar {
   /**
    * The arguments object for the `tabDetachRequested` signal.
    */
-  export
-  interface ITabDetachRequestedArgs<T> {
+  export interface ITabDetachRequestedArgs<T> {
     /**
      * The index of the tab to detach.
      */
@@ -1464,8 +1474,7 @@ namespace TabBar {
   /**
    * An object which holds the data to render a tab.
    */
-  export
-  interface IRenderData<T> {
+  export interface IRenderData<T> {
     /**
      * The title associated with the tab.
      */
@@ -1485,8 +1494,7 @@ namespace TabBar {
   /**
    * A renderer for use with a tab bar.
    */
-  export
-  interface IRenderer<T> {
+  export interface IRenderer<T> {
     /**
      * A selector which matches the close icon node in a tab.
      */
@@ -1508,13 +1516,7 @@ namespace TabBar {
    * #### Notes
    * Subclasses are free to reimplement rendering methods as needed.
    */
-  export
-  class Renderer implements IRenderer<any> {
-    /**
-     * Construct a new renderer.
-     */
-    constructor() { }
-
+  export class Renderer implements IRenderer<any> {
     /**
      * A selector which matches the close icon node in a tab.
      */
@@ -1536,19 +1538,17 @@ namespace TabBar {
       let dataset = this.createTabDataset(data);
       let aria = this.createTabARIA(data);
       if (data.title.closable) {
-        return (
-          h.li({ id, key, className, title, style, dataset, ...aria },
-            this.renderIcon(data),
-            this.renderLabel(data),
-            this.renderCloseIcon(data)
-          )
+        return h.li(
+          { id, key, className, title, style, dataset, ...aria },
+          this.renderIcon(data),
+          this.renderLabel(data),
+          this.renderCloseIcon(data)
         );
       } else {
-        return (
-          h.li({ id, key, className, title, style, dataset, ...aria },
-            this.renderIcon(data),
-            this.renderLabel(data),
-          )
+        return h.li(
+          { id, key, className, title, style, dataset, ...aria },
+          this.renderIcon(data),
+          this.renderLabel(data)
         );
       }
     }
@@ -1566,12 +1566,12 @@ namespace TabBar {
 
       /* <DEPRECATED> */
       if (typeof title.icon === 'string') {
-        return h.div({className}, title.iconLabel);
+        return h.div({ className }, title.iconLabel);
       }
       /* </DEPRECATED> */
 
       // if title.icon is undefined, it will be ignored
-      return h.div({className}, title.icon!, title.iconLabel);
+      return h.div({ className }, title.icon!, title.iconLabel);
     }
 
     /**
@@ -1582,12 +1582,16 @@ namespace TabBar {
      * @returns A virtual element representing the tab label.
      */
     renderLabel(data: IRenderData<any>): VirtualElement {
-      return h.div({
-        className: 'lm-TabBar-tabLabel'
-          /* <DEPRECATED> */
-          + ' p-TabBar-tabLabel'
+      return h.div(
+        {
+          className:
+            'lm-TabBar-tabLabel' +
+            /* <DEPRECATED> */
+            ' p-TabBar-tabLabel'
           /* </DEPRECATED> */
-      }, data.title.label);
+        },
+        data.title.label
+      );
     }
 
     /**
@@ -1599,10 +1603,11 @@ namespace TabBar {
      */
     renderCloseIcon(data: IRenderData<any>): VirtualElement {
       return h.div({
-        className: 'lm-TabBar-tabCloseIcon'
+        className:
+          'lm-TabBar-tabCloseIcon' +
           /* <DEPRECATED> */
-          + ' p-TabBar-tabCloseIcon'
-          /* </DEPRECATED> */
+          ' p-TabBar-tabCloseIcon'
+        /* </DEPRECATED> */
       });
     }
 
@@ -1687,7 +1692,7 @@ namespace TabBar {
      * @returns The ARIA attributes for the tab.
      */
     createTabARIA(data: IRenderData<any>): ElementARIAAttrs {
-      return {role: 'tab', 'aria-selected': data.current.toString()};
+      return { role: 'tab', 'aria-selected': data.current.toString() };
     }
 
     /**
@@ -1713,17 +1718,13 @@ namespace TabBar {
   /**
    * The default `Renderer` instance.
    */
-  export
-  const defaultRenderer = new Renderer();
+  export const defaultRenderer = new Renderer();
 
   /**
    * A selector which matches the add button node in the tab bar.
    */
-  export
-  const addButtonSelector = '.lm-TabBar-addButton';
-
+  export const addButtonSelector = '.lm-TabBar-addButton';
 }
-
 
 /**
  * The namespace for the module implementation details.
@@ -1732,20 +1733,17 @@ namespace Private {
   /**
    * The start drag distance threshold.
    */
-  export
-  const DRAG_THRESHOLD = 5;
+  export const DRAG_THRESHOLD = 5;
 
   /**
    * The detach distance threshold.
    */
-  export
-  const DETACH_THRESHOLD = 20;
+  export const DETACH_THRESHOLD = 20;
 
   /**
    * A struct which holds the drag data for a tab bar.
    */
-  export
-  interface IDragData {
+  export interface IDragData {
     /**
      * The tab node being dragged.
      */
@@ -1834,8 +1832,7 @@ namespace Private {
   /**
    * An object which holds layout data for a tab.
    */
-  export
-  interface ITabLayout {
+  export interface ITabLayout {
     /**
      * The left/top margin value for the tab.
      */
@@ -1855,8 +1852,7 @@ namespace Private {
   /**
    * Create the DOM node for a tab bar.
    */
-  export
-  function createNode(): HTMLDivElement {
+  export function createNode(): HTMLDivElement {
     let node = document.createElement('div');
     let content = document.createElement('ul');
     content.setAttribute('role', 'tablist');
@@ -1875,16 +1871,14 @@ namespace Private {
   /**
    * Coerce a title or options into a real title.
    */
-  export
-  function asTitle<T>(value: Title<T> | Title.IOptions<T>): Title<T> {
+  export function asTitle<T>(value: Title<T> | Title.IOptions<T>): Title<T> {
     return value instanceof Title ? value : new Title<T>(value);
   }
 
   /**
    * Parse the transition duration for a tab node.
    */
-  export
-  function parseTransitionDuration(tab: HTMLElement): number {
+  export function parseTransitionDuration(tab: HTMLElement): number {
     let style = window.getComputedStyle(tab);
     return 1000 * (parseFloat(style.transitionDuration!) || 0);
   }
@@ -1892,8 +1886,10 @@ namespace Private {
   /**
    * Get a snapshot of the current tab layout values.
    */
-  export
-  function snapTabLayout(tabs: HTMLCollection, orientation: TabBar.Orientation): ITabLayout[] {
+  export function snapTabLayout(
+    tabs: HTMLCollection,
+    orientation: TabBar.Orientation
+  ): ITabLayout[] {
     let layout = new Array<ITabLayout>(tabs.length);
     for (let i = 0, n = tabs.length; i < n; ++i) {
       let node = tabs[i] as HTMLElement;
@@ -1918,8 +1914,7 @@ namespace Private {
   /**
    * Test if the event exceeds the drag threshold.
    */
-  export
-  function dragExceeded(data: IDragData, event: MouseEvent): boolean {
+  export function dragExceeded(data: IDragData, event: MouseEvent): boolean {
     let dx = Math.abs(event.clientX - data.pressX);
     let dy = Math.abs(event.clientY - data.pressY);
     return dx >= DRAG_THRESHOLD || dy >= DRAG_THRESHOLD;
@@ -1928,22 +1923,25 @@ namespace Private {
   /**
    * Test if the event exceeds the drag detach threshold.
    */
-  export
-  function detachExceeded(data: IDragData, event: MouseEvent): boolean {
+  export function detachExceeded(data: IDragData, event: MouseEvent): boolean {
     let rect = data.contentRect!;
     return (
-      (event.clientX < rect.left - DETACH_THRESHOLD) ||
-      (event.clientX >= rect.right + DETACH_THRESHOLD) ||
-      (event.clientY < rect.top - DETACH_THRESHOLD) ||
-      (event.clientY >= rect.bottom + DETACH_THRESHOLD)
+      event.clientX < rect.left - DETACH_THRESHOLD ||
+      event.clientX >= rect.right + DETACH_THRESHOLD ||
+      event.clientY < rect.top - DETACH_THRESHOLD ||
+      event.clientY >= rect.bottom + DETACH_THRESHOLD
     );
   }
 
   /**
    * Update the relative tab positions and computed target index.
    */
-  export
-  function layoutTabs(tabs: HTMLCollection, data: IDragData, event: MouseEvent, orientation: TabBar.Orientation): void {
+  export function layoutTabs(
+    tabs: HTMLCollection,
+    data: IDragData,
+    event: MouseEvent,
+    orientation: TabBar.Orientation
+  ): void {
     // Compute the orientation-sensitive values.
     let pressPos: number;
     let localPos: number;
@@ -1998,8 +1996,10 @@ namespace Private {
   /**
    * Position the drag tab at its final resting relative position.
    */
-  export
-  function finalizeTabPosition(data: IDragData, orientation: TabBar.Orientation): void {
+  export function finalizeTabPosition(
+    data: IDragData,
+    orientation: TabBar.Orientation
+  ): void {
     // Compute the orientation-sensitive client size.
     let clientSize: number;
     if (orientation === 'horizontal') {
@@ -2035,8 +2035,10 @@ namespace Private {
   /**
    * Reset the relative positions of the given tabs.
    */
-  export
-  function resetTabPositions(tabs: HTMLCollection, orientation: TabBar.Orientation): void {
+  export function resetTabPositions(
+    tabs: HTMLCollection,
+    orientation: TabBar.Orientation
+  ): void {
     each(tabs, tab => {
       if (orientation === 'horizontal') {
         (tab as HTMLElement).style.left = '';

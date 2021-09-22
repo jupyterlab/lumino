@@ -7,10 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  IIterator, IterableOrArrayLike, iter
-} from './iter';
-
+import { IIterator, iter, IterableOrArrayLike } from './iter';
 
 /**
  * Transform the values of an iterable with a mapping function.
@@ -32,17 +29,17 @@ import {
  * toArray(stream);  // [2, 4, 6]
  * ```
  */
-export
-function map<T, U>(object: IterableOrArrayLike<T>, fn: (value: T, index: number) => U): IIterator<U> {
+export function map<T, U>(
+  object: IterableOrArrayLike<T>,
+  fn: (value: T, index: number) => U
+): IIterator<U> {
   return new MapIterator<T, U>(iter(object), fn);
 }
-
 
 /**
  * An iterator which transforms values using a mapping function.
  */
-export
-class MapIterator<T, U> implements IIterator<U> {
+export class MapIterator<T, U> implements IIterator<U> {
   /**
    * Construct a new map iterator.
    *

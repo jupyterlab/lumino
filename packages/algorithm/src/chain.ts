@@ -7,10 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  IIterator, IterableOrArrayLike, iter
-} from './iter';
-
+import { IIterator, iter, IterableOrArrayLike } from './iter';
 
 /**
  * Chain together several iterables.
@@ -32,17 +29,14 @@ import {
  * toArray(stream);  // [1, 2, 3, 4, 5, 6]
  * ```
  */
-export
-function chain<T>(...objects: IterableOrArrayLike<T>[]): IIterator<T> {
+export function chain<T>(...objects: IterableOrArrayLike<T>[]): IIterator<T> {
   return new ChainIterator<T>(iter(objects.map(iter)));
 }
-
 
 /**
  * An iterator which chains together several iterators.
  */
-export
-class ChainIterator<T> implements IIterator<T> {
+export class ChainIterator<T> implements IIterator<T> {
   /**
    * Construct a new chain iterator.
    *

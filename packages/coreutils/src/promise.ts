@@ -8,7 +8,6 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
-
 /**
  * A class which wraps a promise into a delegate object.
  *
@@ -16,8 +15,7 @@
  * This class is useful when the logic to resolve or reject a promise
  * cannot be defined at the point where the promise is created.
  */
-export
-class PromiseDelegate<T> {
+export class PromiseDelegate<T> {
   /**
    * Construct a new promise delegate.
    */

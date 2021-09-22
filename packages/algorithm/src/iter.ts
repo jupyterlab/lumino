@@ -8,12 +8,10 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
-
 /**
  * An object which can produce an iterator over its values.
  */
-export
-interface IIterable<T> {
+export interface IIterable<T> {
   /**
    * Get an iterator over the object's values.
    *
@@ -28,7 +26,6 @@ interface IIterable<T> {
   iter(): IIterator<T>;
 }
 
-
 /**
  * An object which traverses a collection of values.
  *
@@ -36,8 +33,7 @@ interface IIterable<T> {
  * An `IIterator` is itself an `IIterable`. Most implementations of
  * `IIterator` should simply return `this` from the `iter()` method.
  */
-export
-interface IIterator<T> extends IIterable<T> {
+export interface IIterator<T> extends IIterable<T> {
   /**
    * Create an independent clone of the iterator.
    *
@@ -70,13 +66,10 @@ interface IIterator<T> extends IIterable<T> {
   next(): T | undefined;
 }
 
-
 /**
  * A type alias for an iterable or builtin array-like object.
  */
-export
-type IterableOrArrayLike<T> = IIterable<T> | ArrayLike<T>;
-
+export type IterableOrArrayLike<T> = IIterable<T> | ArrayLike<T>;
 
 /**
  * Create an iterator for an iterable object.
@@ -89,8 +82,7 @@ type IterableOrArrayLike<T> = IIterable<T> | ArrayLike<T>;
  * This function allows iteration algorithms to operate on user-defined
  * iterable types and builtin array-like objects in a uniform fashion.
  */
-export
-function iter<T>(object: IterableOrArrayLike<T>): IIterator<T> {
+export function iter<T>(object: IterableOrArrayLike<T>): IIterator<T> {
   let it: IIterator<T>;
   if (typeof (object as any).iter === 'function') {
     it = (object as IIterable<T>).iter();
@@ -99,7 +91,6 @@ function iter<T>(object: IterableOrArrayLike<T>): IIterator<T> {
   }
   return it;
 }
-
 
 /**
  * Create an iterator for the keys in an object.
@@ -120,11 +111,11 @@ function iter<T>(object: IterableOrArrayLike<T>): IIterator<T> {
  * each(keys(data), key => { console.log(key); }); // 'one', 'two', 'three'
  * ```
  */
-export
-function iterKeys<T>(object: { readonly [key: string]: T }): IIterator<string> {
+export function iterKeys<T>(object: {
+  readonly [key: string]: T;
+}): IIterator<string> {
   return new KeyIterator(object);
 }
-
 
 /**
  * Create an iterator for the values in an object.
@@ -145,11 +136,11 @@ function iterKeys<T>(object: { readonly [key: string]: T }): IIterator<string> {
  * each(values(data), value => { console.log(value); }); // 1, 2, 3
  * ```
  */
-export
-function iterValues<T>(object: { readonly [key: string]: T }): IIterator<T> {
+export function iterValues<T>(object: {
+  readonly [key: string]: T;
+}): IIterator<T> {
   return new ValueIterator<T>(object);
 }
-
 
 /**
  * Create an iterator for the items in an object.
@@ -170,11 +161,11 @@ function iterValues<T>(object: { readonly [key: string]: T }): IIterator<T> {
  * each(items(data), value => { console.log(value); }); // ['one', 1], ['two', 2], ['three', 3]
  * ```
  */
-export
-function iterItems<T>(object: { readonly [key: string]: T }): IIterator<[string, T]> {
+export function iterItems<T>(object: {
+  readonly [key: string]: T;
+}): IIterator<[string, T]> {
   return new ItemIterator<T>(object);
 }
-
 
 /**
  * Create an iterator for an iterator-like function.
@@ -198,11 +189,9 @@ function iterItems<T>(object: { readonly [key: string]: T }): IIterator<[string,
  * each(it, v => { console.log(v); }); // 0, 1, 2, 3
  * ```
  */
-export
-function iterFn<T>(fn: () => T | undefined): IIterator<T> {
+export function iterFn<T>(fn: () => T | undefined): IIterator<T> {
   return new FnIterator<T>(fn);
 }
-
 
 /**
  * Invoke a function for each value in an iterable.
@@ -227,8 +216,10 @@ function iterFn<T>(fn: () => T | undefined): IIterator<T> {
  * each(data, value => { console.log(value); });
  * ```
  */
-export
-function each<T>(object: IterableOrArrayLike<T>, fn: (value: T, index: number) => boolean | void): void {
+export function each<T>(
+  object: IterableOrArrayLike<T>,
+  fn: (value: T, index: number) => boolean | void
+): void {
   let index = 0;
   let it = iter(object);
   let value: T | undefined;
@@ -238,7 +229,6 @@ function each<T>(object: IterableOrArrayLike<T>, fn: (value: T, index: number) =
     }
   }
 }
-
 
 /**
  * Test whether all values in an iterable satisfy a predicate.
@@ -265,8 +255,10 @@ function each<T>(object: IterableOrArrayLike<T>, fn: (value: T, index: number) =
  * every(data, value => value % 2 === 1);  // true
  * ```
  */
-export
-function every<T>(object: IterableOrArrayLike<T>, fn: (value: T, index: number) => boolean): boolean {
+export function every<T>(
+  object: IterableOrArrayLike<T>,
+  fn: (value: T, index: number) => boolean
+): boolean {
   let index = 0;
   let it = iter(object);
   let value: T | undefined;
@@ -277,7 +269,6 @@ function every<T>(object: IterableOrArrayLike<T>, fn: (value: T, index: number) 
   }
   return true;
 }
-
 
 /**
  * Test whether any value in an iterable satisfies a predicate.
@@ -304,8 +295,10 @@ function every<T>(object: IterableOrArrayLike<T>, fn: (value: T, index: number) 
  * some(data, value => value === 3);  // false
  * ```
  */
-export
-function some<T>(object: IterableOrArrayLike<T>, fn: (value: T, index: number) => boolean): boolean {
+export function some<T>(
+  object: IterableOrArrayLike<T>,
+  fn: (value: T, index: number) => boolean
+): boolean {
   let index = 0;
   let it = iter(object);
   let value: T | undefined;
@@ -316,7 +309,6 @@ function some<T>(object: IterableOrArrayLike<T>, fn: (value: T, index: number) =
   }
   return false;
 }
-
 
 /**
  * Create an array from an iterable of values.
@@ -336,8 +328,7 @@ function some<T>(object: IterableOrArrayLike<T>, fn: (value: T, index: number) =
  * toArray(stream);  // [1, 2, 3, 4, 5, 6];
  * ```
  */
-export
-function toArray<T>(object: IterableOrArrayLike<T>): T[] {
+export function toArray<T>(object: IterableOrArrayLike<T>): T[] {
   let index = 0;
   let result: T[] = [];
   let it = iter(object);
@@ -347,7 +338,6 @@ function toArray<T>(object: IterableOrArrayLike<T>): T[] {
   }
   return result;
 }
-
 
 /**
  * Create an object from an iterable of key/value pairs.
@@ -365,8 +355,9 @@ function toArray<T>(object: IterableOrArrayLike<T>): T[] {
  * toObject(data);  // { one: 1, two: 2, three: 3 }
  * ```
  */
-export
-function toObject<T>(object: IterableOrArrayLike<[string, T]>): { [key: string]: T } {
+export function toObject<T>(
+  object: IterableOrArrayLike<[string, T]>
+): { [key: string]: T } {
   let it = iter(object);
   let pair: [string, T] | undefined;
   let result: { [key: string]: T } = {};
@@ -376,15 +367,13 @@ function toObject<T>(object: IterableOrArrayLike<[string, T]>): { [key: string]:
   return result;
 }
 
-
 /**
  * An iterator for an array-like object.
  *
  * #### Notes
  * This iterator can be used for any builtin JS array-like object.
  */
-export
-class ArrayIterator<T> implements IIterator<T> {
+export class ArrayIterator<T> implements IIterator<T> {
   /**
    * Construct a new array iterator.
    *
@@ -430,15 +419,13 @@ class ArrayIterator<T> implements IIterator<T> {
   private _source: ArrayLike<T>;
 }
 
-
 /**
  * An iterator for the keys in an object.
  *
  * #### Notes
  * This iterator can be used for any JS object.
  */
-export
-class KeyIterator implements IIterator<string> {
+export class KeyIterator implements IIterator<string> {
   /**
    * Construct a new key iterator.
    *
@@ -446,7 +433,10 @@ class KeyIterator implements IIterator<string> {
    *
    * @param keys - The keys to iterate, if known.
    */
-  constructor(source: { readonly [key: string]: any }, keys = Object.keys(source)) {
+  constructor(
+    source: { readonly [key: string]: any },
+    keys = Object.keys(source)
+  ) {
     this._source = source;
     this._keys = keys;
   }
@@ -492,15 +482,13 @@ class KeyIterator implements IIterator<string> {
   private _source: { readonly [key: string]: any };
 }
 
-
 /**
  * An iterator for the values in an object.
  *
  * #### Notes
  * This iterator can be used for any JS object.
  */
-export
-class ValueIterator<T> implements IIterator<T> {
+export class ValueIterator<T> implements IIterator<T> {
   /**
    * Construct a new value iterator.
    *
@@ -508,7 +496,10 @@ class ValueIterator<T> implements IIterator<T> {
    *
    * @param keys - The keys to iterate, if known.
    */
-  constructor(source: { readonly [key: string]: T }, keys = Object.keys(source)) {
+  constructor(
+    source: { readonly [key: string]: T },
+    keys = Object.keys(source)
+  ) {
     this._source = source;
     this._keys = keys;
   }
@@ -554,15 +545,13 @@ class ValueIterator<T> implements IIterator<T> {
   private _source: { readonly [key: string]: T };
 }
 
-
 /**
  * An iterator for the items in an object.
  *
  * #### Notes
  * This iterator can be used for any JS object.
  */
-export
-class ItemIterator<T> implements IIterator<[string, T]> {
+export class ItemIterator<T> implements IIterator<[string, T]> {
   /**
    * Construct a new item iterator.
    *
@@ -570,7 +559,10 @@ class ItemIterator<T> implements IIterator<[string, T]> {
    *
    * @param keys - The keys to iterate, if known.
    */
-  constructor(source: { readonly [key: string]: T }, keys = Object.keys(source)) {
+  constructor(
+    source: { readonly [key: string]: T },
+    keys = Object.keys(source)
+  ) {
     this._source = source;
     this._keys = keys;
   }
@@ -616,12 +608,10 @@ class ItemIterator<T> implements IIterator<[string, T]> {
   private _source: { readonly [key: string]: T };
 }
 
-
 /**
  * An iterator for an iterator-like function.
  */
-export
-class FnIterator<T> implements IIterator<T> {
+export class FnIterator<T> implements IIterator<T> {
   /**
    * Construct a new function iterator.
    *

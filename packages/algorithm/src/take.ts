@@ -7,10 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  IIterator, IterableOrArrayLike, iter
-} from './iter';
-
+import { IIterator, iter, IterableOrArrayLike } from './iter';
 
 /**
  * Take a fixed number of items from an iterable.
@@ -26,17 +23,17 @@ import {
  * The returned iterator will exhaust early if the source iterable
  * contains an insufficient number of items.
  */
-export
-function take<T>(object: IterableOrArrayLike<T>, count: number): IIterator<T> {
+export function take<T>(
+  object: IterableOrArrayLike<T>,
+  count: number
+): IIterator<T> {
   return new TakeIterator<T>(iter(object), count);
 }
-
 
 /**
  * An iterator which takes a fixed number of items from a source.
  */
-export
-class TakeIterator<T> implements IIterator<T> {
+export class TakeIterator<T> implements IIterator<T> {
   /**
    * Construct a new take iterator.
    *

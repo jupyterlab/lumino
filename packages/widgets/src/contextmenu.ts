@@ -100,7 +100,7 @@ export class ContextMenu {
     }
 
     // Add the filtered items to the menu.
-    each(items, (item) => {
+    each(items, item => {
       this.menu.addItem(item);
     });
 

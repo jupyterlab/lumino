@@ -7,25 +7,15 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  ArrayExt
-} from '@lumino/algorithm';
+import { ArrayExt } from '@lumino/algorithm';
 
-import {
-  CommandRegistry
-} from '@lumino/commands';
+import { CommandRegistry } from '@lumino/commands';
 
-import {
-  BoxPanel, DockPanel, Widget
-} from '@lumino/widgets';
+import { BoxPanel, DockPanel, Widget } from '@lumino/widgets';
 
-import {
-  WSAdapter
-} from './wsadapter';
+import { WSAdapter } from './wsadapter';
 
-import {
-  EDITOR_SCHEMA, CodeMirrorEditor
-} from './widget';
+import { CodeMirrorEditor, EDITOR_SCHEMA } from './widget';
 
 import '../style/index.css';
 
@@ -35,11 +25,10 @@ let commands = new CommandRegistry();
  * Initialize the applicaiton.
  */
 async function init(): Promise<void> {
-
   // Create a transaction server adapter, which is responsible for creating
   // a new datastore as well as managing its connection to the server.
   let adapter = new WSAdapter(
-    () => new WebSocket(window.location.origin.replace(/^http/, 'ws')),
+    () => new WebSocket(window.location.origin.replace(/^http/, 'ws'))
   );
   // Create the datastore.
   let store = await adapter.createStore([EDITOR_SCHEMA]);
@@ -81,14 +70,19 @@ async function init(): Promise<void> {
   box.id = 'main';
   box.addWidget(dock);
 
-  window.onresize = () => { box.update(); };
+  window.onresize = () => {
+    box.update();
+  };
   Widget.attach(box, document.body);
 
   // Add commands for undo and redo.
   commands.addCommand('undo', {
     label: 'Undo',
     execute: () => {
-      let editor = ArrayExt.findFirstValue([e1, e2, e3], (e: CodeMirrorEditor) => e.hasFocus());
+      let editor = ArrayExt.findFirstValue(
+        [e1, e2, e3],
+        (e: CodeMirrorEditor) => e.hasFocus()
+      );
       if (editor) {
         editor.undo();
       }
@@ -97,7 +91,10 @@ async function init(): Promise<void> {
   commands.addCommand('redo', {
     label: 'Redo',
     execute: () => {
-      let editor = ArrayExt.findFirstValue([e1, e2, e3], (e: CodeMirrorEditor) => e.hasFocus());
+      let editor = ArrayExt.findFirstValue(
+        [e1, e2, e3],
+        (e: CodeMirrorEditor) => e.hasFocus()
+      );
       if (editor) {
         editor.redo();
       }
@@ -117,9 +114,13 @@ async function init(): Promise<void> {
   });
   // Add an event listener to the document. Mark it as capturing so that we can
   // intercept undo/redo handling for the CodeMirror instances.
-  document.addEventListener('keydown', (event: KeyboardEvent) => {
-    commands.processKeydownEvent(event);
-  }, true);
+  document.addEventListener(
+    'keydown',
+    (event: KeyboardEvent) => {
+      commands.processKeydownEvent(event);
+    },
+    true
+  );
 }
 
 window.onload = init;

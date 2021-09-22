@@ -7,21 +7,13 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  expect
-} from 'chai';
+import { expect } from 'chai';
 
-import {
-  Panel, PanelLayout, Widget
-} from '@lumino/widgets';
-
+import { Panel, PanelLayout, Widget } from '@lumino/widgets';
 
 describe('@lumino/widgets', () => {
-
   describe('Panel', () => {
-
     describe('#constructor()', () => {
-
       it('should take no arguments', () => {
         let panel = new Panel();
         expect(panel).to.be.an.instanceof(Panel);
@@ -37,22 +29,18 @@ describe('@lumino/widgets', () => {
         let panel = new Panel();
         expect(panel.hasClass('lm-Panel')).to.equal(true);
       });
-
     });
 
     describe('#widgets', () => {
-
       it('should be a read-only array of widgets in the panel', () => {
         let panel = new Panel();
         let widget = new Widget();
         panel.addWidget(widget);
         expect(panel.widgets).to.deep.equal([widget]);
       });
-
     });
 
     describe('#addWidget()', () => {
-
       it('should add a widget to the end of the panel', () => {
         let panel = new Panel();
         let widget = new Widget();
@@ -69,11 +57,9 @@ describe('@lumino/widgets', () => {
         panel.addWidget(widget);
         expect(panel.widgets[1]).to.equal(widget);
       });
-
     });
 
     describe('#insertWidget()', () => {
-
       it('should insert a widget at the specified index', () => {
         let panel = new Panel();
         let widget = new Widget();
@@ -90,9 +76,6 @@ describe('@lumino/widgets', () => {
         panel.insertWidget(0, widget);
         expect(panel.widgets[0]).to.equal(widget);
       });
-
     });
-
   });
-
 });

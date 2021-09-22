@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 // Copyright (c) Jupyter Development Team.
 // Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
@@ -7,37 +8,21 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  expect
-} from 'chai';
+import { expect } from 'chai';
 
-import {
-  simulate
-} from 'simulate-event';
+import { simulate } from 'simulate-event';
 
-import {
-  CommandRegistry
-} from '@lumino/commands';
+import { CommandRegistry } from '@lumino/commands';
 
-import {
-  Platform
-} from '@lumino/domutils';
+import { Platform } from '@lumino/domutils';
 
-import {
-  MessageLoop
-} from '@lumino/messaging';
+import { MessageLoop } from '@lumino/messaging';
 
-import {
-  VirtualDOM, h
-} from '@lumino/virtualdom';
+import { h, VirtualDOM } from '@lumino/virtualdom';
 
-import {
-  CommandPalette, Widget
-} from '@lumino/widgets';
-
+import { CommandPalette, Widget } from '@lumino/widgets';
 
 class LogPalette extends CommandPalette {
-
   events: string[] = [];
 
   handleEvent(event: Event): void {
@@ -46,17 +31,14 @@ class LogPalette extends CommandPalette {
   }
 }
 
-
-const defaultOptions: CommandPalette.IItemOptions  = {
+const defaultOptions: CommandPalette.IItemOptions = {
   command: 'test',
   category: 'Test Category',
   args: { foo: 'bar' },
   rank: 42
-}
-
+};
 
 describe('@lumino/widgets', () => {
-
   let commands: CommandRegistry;
   let palette: CommandPalette;
 
@@ -70,88 +52,77 @@ describe('@lumino/widgets', () => {
   });
 
   describe('CommandPalette', () => {
-
     describe('#constructor()', () => {
-
       it('should accept command palette instantiation options', () => {
         expect(palette).to.be.an.instanceof(CommandPalette);
-        expect(palette.node.classList.contains('lm-CommandPalette')).to.equal(true);
+        expect(palette.node.classList.contains('lm-CommandPalette')).to.equal(
+          true
+        );
       });
-
     });
 
     describe('#dispose()', () => {
-
       it('should dispose of the resources held by the command palette', () => {
         palette.addItem(defaultOptions);
         palette.dispose();
         expect(palette.items.length).to.equal(0);
         expect(palette.isDisposed).to.equal(true);
       });
-
     });
 
     describe('#commands', () => {
-
       it('should get the command registry for the command palette', () => {
         expect(palette.commands).to.equal(commands);
       });
-
     });
 
     describe('#renderer', () => {
-
       it('should default to the default renderer', () => {
         expect(palette.renderer).to.equal(CommandPalette.defaultRenderer);
       });
-
     });
 
     describe('#searchNode', () => {
-
       it('should return the search node of a command palette', () => {
-        expect(palette.searchNode.classList.contains('lm-CommandPalette-search')).to.equal(true);
+        expect(
+          palette.searchNode.classList.contains('lm-CommandPalette-search')
+        ).to.equal(true);
       });
-
     });
 
     describe('#inputNode', () => {
-
       it('should return the input node of a command palette', () => {
-        expect(palette.inputNode.classList.contains('lm-CommandPalette-input')).to.equal(true);
+        expect(
+          palette.inputNode.classList.contains('lm-CommandPalette-input')
+        ).to.equal(true);
       });
-
     });
 
     describe('#contentNode', () => {
-
       it('should return the content node of a command palette', () => {
-        expect(palette.contentNode.classList.contains('lm-CommandPalette-content')).to.equal(true);
+        expect(
+          palette.contentNode.classList.contains('lm-CommandPalette-content')
+        ).to.equal(true);
       });
-
     });
 
     describe('#items', () => {
-
       it('should be a read-only array of the palette items', () => {
         expect(palette.items.length).to.equal(0);
         palette.addItem(defaultOptions);
         expect(palette.items.length).to.equal(1);
         expect(palette.items[0].command).to.equal('test');
       });
-
     });
 
     describe('#addItems()', () => {
-
       it('should add items to a command palette using options', () => {
-
-        const item =  {
+        const item = {
           command: 'test2',
           category: 'Test Category',
           args: { foo: 'bar' },
           rank: 100
-        }
+        };
 
         expect(palette.items.length).to.equal(0);
         palette.addItems([defaultOptions, item]);
@@ -159,11 +130,9 @@ describe('@lumino/widgets', () => {
         expect(palette.items[0].command).to.equal('test');
         expect(palette.items[1].command).to.equal('test2');
       });
-
-    })
+    });
 
     describe('#addItem()', () => {
-
       it('should add an item to a command palette using options', () => {
         expect(palette.items.length).to.equal(0);
         palette.addItem(defaultOptions);
@@ -172,18 +141,14 @@ describe('@lumino/widgets', () => {
       });
 
       context('CommandPalette.IItem', () => {
-
         describe('#command', () => {
-
           it('should return the command name of a command item', () => {
             let item = palette.addItem(defaultOptions);
             expect(item.command).to.equal('test');
           });
-
         });
 
         describe('#args', () => {
-
           it('should return the args of a command item', () => {
             let item = palette.addItem(defaultOptions);
             expect(item.args).to.deep.equal(defaultOptions.args);
@@ -193,20 +158,16 @@ describe('@lumino/widgets', () => {
             let item = palette.addItem({ command: 'test', category: 'test' });
             expect(item.args).to.deep.equal({});
           });
-
         });
 
         describe('#category', () => {
-
           it('should return the category of a command item', () => {
             let item = palette.addItem(defaultOptions);
             expect(item.category).to.equal(defaultOptions.category);
           });
-
         });
 
         describe('#rank', () => {
-
           it('should return the rank of a command item', () => {
             let item = palette.addItem(defaultOptions);
             expect(item.rank).to.deep.equal(defaultOptions.rank);
@@ -216,48 +177,40 @@ describe('@lumino/widgets', () => {
             let item = palette.addItem({ command: 'test', category: 'test' });
             expect(item.rank).to.equal(Infinity);
           });
-
         });
 
         describe('#label', () => {
-
           it('should return the label of a command item', () => {
             let label = 'test label';
-            commands.addCommand('test', { execute: () => { }, label });
+            commands.addCommand('test', { execute: () => {}, label });
             let item = palette.addItem(defaultOptions);
             expect(item.label).to.equal(label);
           });
-
         });
 
         describe('#caption', () => {
-
           it('should return the caption of a command item', () => {
             let caption = 'test caption';
-            commands.addCommand('test', { execute: () => { }, caption });
+            commands.addCommand('test', { execute: () => {}, caption });
             let item = palette.addItem(defaultOptions);
             expect(item.caption).to.equal(caption);
           });
-
         });
 
         describe('#className', () => {
-
           it('should return the class name of a command item', () => {
             let className = 'testClass';
-            commands.addCommand('test', { execute: () => { }, className });
+            commands.addCommand('test', { execute: () => {}, className });
             let item = palette.addItem(defaultOptions);
             expect(item.className).to.equal(className);
           });
-
         });
 
         describe('#isEnabled', () => {
-
           it('should return whether a command item is enabled', () => {
             let called = false;
             commands.addCommand('test', {
-              execute: () => { },
+              execute: () => {},
               isEnabled: () => {
                 called = true;
                 return false;
@@ -268,15 +221,13 @@ describe('@lumino/widgets', () => {
             expect(item.isEnabled).to.equal(false);
             expect(called).to.equal(true);
           });
-
         });
 
         describe('#isToggled', () => {
-
           it('should return whether a command item is toggled', () => {
             let called = false;
             commands.addCommand('test', {
-              execute: () => { },
+              execute: () => {},
               isToggled: () => {
                 called = true;
                 return true;
@@ -287,15 +238,13 @@ describe('@lumino/widgets', () => {
             expect(item.isToggled).to.equal(true);
             expect(called).to.equal(true);
           });
-
         });
 
         describe('#isVisible', () => {
-
           it('should return whether a command item is visible', () => {
             let called = false;
             commands.addCommand('test', {
-              execute: () => { },
+              execute: () => {},
               isVisible: () => {
                 called = true;
                 return false;
@@ -306,11 +255,9 @@ describe('@lumino/widgets', () => {
             expect(item.isVisible).to.equal(false);
             expect(called).to.equal(true);
           });
-
         });
 
         describe('#keyBinding', () => {
-
           it('should return the key binding of a command item', () => {
             commands.addKeyBinding({
               keys: ['Ctrl A'],
@@ -321,15 +268,11 @@ describe('@lumino/widgets', () => {
             let item = palette.addItem(defaultOptions);
             expect(item.keyBinding!.keys).to.deep.equal(['Ctrl A']);
           });
-
         });
-
       });
-
     });
 
     describe('#removeItem()', () => {
-
       it('should remove an item from a command palette by item', () => {
         expect(palette.items.length).to.equal(0);
         let item = palette.addItem(defaultOptions);
@@ -337,11 +280,9 @@ describe('@lumino/widgets', () => {
         palette.removeItem(item);
         expect(palette.items.length).to.equal(0);
       });
-
     });
 
     describe('#removeItemAt()', () => {
-
       it('should remove an item from a command palette by index', () => {
         expect(palette.items.length).to.equal(0);
         palette.addItem(defaultOptions);
@@ -349,11 +290,9 @@ describe('@lumino/widgets', () => {
         palette.removeItemAt(0);
         expect(palette.items.length).to.equal(0);
       });
-
     });
 
     describe('#clearItems()', () => {
-
       it('should remove all items from a command palette', () => {
         expect(palette.items.length).to.equal(0);
         palette.addItem({ command: 'test', category: 'one' });
@@ -362,13 +301,11 @@ describe('@lumino/widgets', () => {
         palette.clearItems();
         expect(palette.items.length).to.equal(0);
       });
-
     });
 
     describe('#refresh()', () => {
-
       it('should schedule a refresh of the search items', () => {
-        commands.addCommand('test', { execute: () => { }, label: 'test' });
+        commands.addCommand('test', { execute: () => {}, label: 'test' });
         palette.addItem(defaultOptions);
 
         MessageLoop.flush();
@@ -383,11 +320,9 @@ describe('@lumino/widgets', () => {
         MessageLoop.flush();
         expect(items()).to.have.length(0);
       });
-
     });
 
     describe('#handleEvent()', () => {
-
       it('should handle click, keydown, and input events', () => {
         let palette = new LogPalette({ commands });
         Widget.attach(palette, document.body);
@@ -399,39 +334,40 @@ describe('@lumino/widgets', () => {
       });
 
       context('click', () => {
-
         it('should trigger a command when its item is clicked', () => {
           let called = false;
-          commands.addCommand('test', { execute: () => called = true });
+          commands.addCommand('test', { execute: () => (called = true) });
 
           palette.addItem(defaultOptions);
           Widget.attach(palette, document.body);
           MessageLoop.flush();
 
-          let node = palette.contentNode.querySelector('.lm-CommandPalette-item')!;
+          let node = palette.contentNode.querySelector(
+            '.lm-CommandPalette-item'
+          )!;
           simulate(node, 'click');
           expect(called).to.equal(true);
         });
 
         it('should ignore the event if it is not a left click', () => {
           let called = false;
-          commands.addCommand('test', { execute: () => called = true });
+          commands.addCommand('test', { execute: () => (called = true) });
 
           palette.addItem(defaultOptions);
           Widget.attach(palette, document.body);
           MessageLoop.flush();
 
-          let node = palette.contentNode.querySelector('.lm-CommandPalette-item')!;
+          let node = palette.contentNode.querySelector(
+            '.lm-CommandPalette-item'
+          )!;
           simulate(node, 'click', { button: 1 });
           expect(called).to.equal(false);
         });
-
       });
 
       context('keydown', () => {
-
         it('should navigate down if down arrow is pressed', () => {
-          commands.addCommand('test', { execute: () => { } });
+          commands.addCommand('test', { execute: () => {} });
           let content = palette.contentNode;
 
           palette.addItem(defaultOptions);
@@ -447,7 +383,7 @@ describe('@lumino/widgets', () => {
         });
 
         it('should navigate up if up arrow is pressed', () => {
-          commands.addCommand('test', { execute: () => { } });
+          commands.addCommand('test', { execute: () => {} });
           let content = palette.contentNode;
 
           palette.addItem(defaultOptions);
@@ -464,7 +400,7 @@ describe('@lumino/widgets', () => {
 
         it('should ignore if modifier keys are pressed', () => {
           let called = false;
-          commands.addCommand('test', { execute: () => called = true });
+          commands.addCommand('test', { execute: () => (called = true) });
           let content = palette.contentNode;
 
           palette.addItem(defaultOptions);
@@ -478,7 +414,9 @@ describe('@lumino/widgets', () => {
             let options: any = { keyCode: 38 };
             options[key] = true;
             simulate(palette.node, 'keydown', options);
-            node = content.querySelector('.lm-CommandPalette-item.lm-mod-active');
+            node = content.querySelector(
+              '.lm-CommandPalette-item.lm-mod-active'
+            );
             expect(node).to.equal(null);
           });
           expect(called).to.be.false;
@@ -487,7 +425,7 @@ describe('@lumino/widgets', () => {
         it('should trigger active item if enter is pressed', () => {
           let called = false;
           commands.addCommand('test', {
-            execute: () => called = true
+            execute: () => (called = true)
           });
           let content = palette.contentNode;
 
@@ -496,18 +434,16 @@ describe('@lumino/widgets', () => {
           MessageLoop.flush();
 
           expect(content.querySelector('.lm-mod-active')).to.equal(null);
-          simulate(palette.node, 'keydown', { keyCode: 40 });  // Down arrow
-          simulate(palette.node, 'keydown', { keyCode: 13 });  // Enter
+          simulate(palette.node, 'keydown', { keyCode: 40 }); // Down arrow
+          simulate(palette.node, 'keydown', { keyCode: 13 }); // Enter
           expect(called).to.equal(true);
         });
-
       });
 
       context('input', () => {
-
         it('should filter the list of visible items', () => {
           ['A', 'B', 'C', 'D', 'E'].forEach(name => {
-            commands.addCommand(name, { execute: () => { }, label: name });
+            commands.addCommand(name, { execute: () => {}, label: name });
             palette.addItem({ command: name, category: 'test' });
           });
 
@@ -534,15 +470,20 @@ describe('@lumino/widgets', () => {
           names.forEach((values, index) => {
             values.forEach(command => {
               palette.addItem({ command, category: categories[index] });
-              commands.addCommand(command, { execute: () => { }, label: command });
+              commands.addCommand(command, {
+                execute: () => {},
+                label: command
+              });
             });
           });
 
           Widget.attach(palette, document.body);
           MessageLoop.flush();
 
-          let headers = () => palette.node.querySelectorAll('.lm-CommandPalette-header');
-          let items = () => palette.node.querySelectorAll('.lm-CommandPalette-item');
+          let headers = () =>
+            palette.node.querySelectorAll('.lm-CommandPalette-header');
+          let items = () =>
+            palette.node.querySelectorAll('.lm-CommandPalette-item');
           let input = (value: string) => {
             palette.inputNode.value = value;
             palette.refresh();
@@ -550,26 +491,23 @@ describe('@lumino/widgets', () => {
           };
 
           expect(items()).to.have.length(10);
-          input(`${categories[1]}`);    // Category match
+          input(`${categories[1]}`); // Category match
           expect(items()).to.have.length(5);
-          input(`${names[1][0]}`);      // Label match
+          input(`${names[1][0]}`); // Label match
           expect(items()).to.have.length(1);
-          input(`${categories[1]} B`);  // No match
+          input(`${categories[1]} B`); // No match
           expect(items()).to.have.length(0);
-          input(`${categories[1]} I`);  // Category and text match
+          input(`${categories[1]} I`); // Category and text match
           expect(items()).to.have.length(1);
 
-          input('1');  // Multi-category match
+          input('1'); // Multi-category match
           expect(headers()).to.have.length(2);
           expect(items()).to.have.length(2);
         });
-
       });
-
     });
 
     describe('.Renderer', () => {
-
       let renderer = new CommandPalette.Renderer();
       let item: CommandPalette.IItem = null!;
       let enabledFlag = true;
@@ -584,7 +522,7 @@ describe('@lumino/widgets', () => {
           className: 'testClass',
           isEnabled: () => enabledFlag,
           isToggled: () => toggledFlag,
-          execute: () => { }
+          execute: () => {}
         });
         commands.addKeyBinding({
           command: 'test',
@@ -598,113 +536,160 @@ describe('@lumino/widgets', () => {
       });
 
       describe('#renderHeader()', () => {
-
         it('should render a header node for the palette', () => {
-          let vNode = renderer.renderHeader({ category: 'Test Category', indices: null });
+          let vNode = renderer.renderHeader({
+            category: 'Test Category',
+            indices: null
+          });
           let node = VirtualDOM.realize(vNode);
-          expect(node.classList.contains('lm-CommandPalette-header')).to.equal(true);
+          expect(node.classList.contains('lm-CommandPalette-header')).to.equal(
+            true
+          );
           expect(node.innerHTML).to.equal('Test Category');
         });
 
         it('should mark the matching indices', () => {
-          let vNode = renderer.renderHeader({ category: 'Test Category', indices: [1, 2, 6, 7, 8] });
+          let vNode = renderer.renderHeader({
+            category: 'Test Category',
+            indices: [1, 2, 6, 7, 8]
+          });
           let node = VirtualDOM.realize(vNode);
-          expect(node.classList.contains('lm-CommandPalette-header')).to.equal(true);
-          expect(node.innerHTML).to.equal('T<mark>es</mark>t C<mark>ate</mark>gory');
+          expect(node.classList.contains('lm-CommandPalette-header')).to.equal(
+            true
+          );
+          expect(node.innerHTML).to.equal(
+            'T<mark>es</mark>t C<mark>ate</mark>gory'
+          );
         });
-
       });
 
       describe('#renderItem()', () => {
-
         it('should render an item node for the palette', () => {
-          let vNode = renderer.renderItem({ item, indices: null, active: false });
+          let vNode = renderer.renderItem({
+            item,
+            indices: null,
+            active: false
+          });
           let node = VirtualDOM.realize(vNode);
-          expect(node.classList.contains('lm-CommandPalette-item')).to.equal(true);
+          expect(node.classList.contains('lm-CommandPalette-item')).to.equal(
+            true
+          );
           expect(node.classList.contains('lm-mod-disabled')).to.equal(false);
           expect(node.classList.contains('lm-mod-toggled')).to.equal(false);
           expect(node.classList.contains('lm-mod-active')).to.equal(false);
           expect(node.classList.contains('testClass')).to.equal(true);
           expect(node.getAttribute('data-command')).to.equal('test');
-          expect(node.querySelector('.lm-CommandPalette-itemShortcut')).to.not.equal(null);
-          expect(node.querySelector('.lm-CommandPalette-itemLabel')).to.not.equal(null);
-          expect(node.querySelector('.lm-CommandPalette-itemCaption')).to.not.equal(null);
+          expect(
+            node.querySelector('.lm-CommandPalette-itemShortcut')
+          ).to.not.equal(null);
+          expect(
+            node.querySelector('.lm-CommandPalette-itemLabel')
+          ).to.not.equal(null);
+          expect(
+            node.querySelector('.lm-CommandPalette-itemCaption')
+          ).to.not.equal(null);
         });
 
         it('should handle the disabled item state', () => {
           enabledFlag = false;
-          let vNode = renderer.renderItem({ item, indices: null, active: false });
+          let vNode = renderer.renderItem({
+            item,
+            indices: null,
+            active: false
+          });
           let node = VirtualDOM.realize(vNode);
           expect(node.classList.contains('lm-mod-disabled')).to.equal(true);
         });
 
         it('should handle the toggled item state', () => {
           toggledFlag = true;
-          let vNode = renderer.renderItem({ item, indices: null, active: false });
+          let vNode = renderer.renderItem({
+            item,
+            indices: null,
+            active: false
+          });
           let node = VirtualDOM.realize(vNode);
           expect(node.classList.contains('lm-mod-toggled')).to.equal(true);
         });
 
         it('should handle the active state', () => {
-          let vNode = renderer.renderItem({ item, indices: null, active: true });
+          let vNode = renderer.renderItem({
+            item,
+            indices: null,
+            active: true
+          });
           let node = VirtualDOM.realize(vNode);
           expect(node.classList.contains('lm-mod-active')).to.equal(true);
         });
-
       });
 
       describe('#renderEmptyMessage()', () => {
-
         it('should render an empty message node for the palette', () => {
           let vNode = renderer.renderEmptyMessage({ query: 'foo' });
           let node = VirtualDOM.realize(vNode);
-          expect(node.classList.contains('lm-CommandPalette-emptyMessage')).to.equal(true);
+          expect(
+            node.classList.contains('lm-CommandPalette-emptyMessage')
+          ).to.equal(true);
           expect(node.innerHTML).to.equal("No commands found that match 'foo'");
         });
-
       });
 
       describe('#renderItemShortcut()', () => {
-
         it('should render an item shortcut node', () => {
-          let vNode = renderer.renderItemShortcut({ item, indices: null, active: false });
+          let vNode = renderer.renderItemShortcut({
+            item,
+            indices: null,
+            active: false
+          });
           let node = VirtualDOM.realize(vNode);
-          expect(node.classList.contains('lm-CommandPalette-itemShortcut')).to.equal(true);
+          expect(
+            node.classList.contains('lm-CommandPalette-itemShortcut')
+          ).to.equal(true);
           if (Platform.IS_MAC) {
             expect(node.innerHTML).to.equal('\u2303 A');
           } else {
             expect(node.innerHTML).to.equal('Ctrl+A');
           }
         });
-
       });
 
       describe('#renderItemLabel()', () => {
-
         it('should render an item label node', () => {
-          let vNode = renderer.renderItemLabel({ item, indices: [1, 2, 3], active: false });
+          let vNode = renderer.renderItemLabel({
+            item,
+            indices: [1, 2, 3],
+            active: false
+          });
           let node = VirtualDOM.realize(vNode);
-          expect(node.classList.contains('lm-CommandPalette-itemLabel')).to.equal(true);
+          expect(
+            node.classList.contains('lm-CommandPalette-itemLabel')
+          ).to.equal(true);
           expect(node.innerHTML).to.equal('T<mark>est</mark> Command');
         });
-
       });
 
       describe('#renderItemCaption()', () => {
-
         it('should render an item caption node', () => {
-          let vNode = renderer.renderItemCaption({ item, indices: null, active: false });
+          let vNode = renderer.renderItemCaption({
+            item,
+            indices: null,
+            active: false
+          });
           let node = VirtualDOM.realize(vNode);
-          expect(node.classList.contains('lm-CommandPalette-itemCaption')).to.equal(true);
+          expect(
+            node.classList.contains('lm-CommandPalette-itemCaption')
+          ).to.equal(true);
           expect(node.innerHTML).to.equal('A simple test command');
         });
-
       });
 
       describe('#createItemClass()', () => {
-
         it('should create the full class name for the item node', () => {
-          let name = renderer.createItemClass({ item, indices: null, active: false });
+          let name = renderer.createItemClass({
+            item,
+            indices: null,
+            active: false
+          });
           let expected = 'lm-CommandPalette-item testClass';
           /* <DEPRECATED> */
           expected = 'lm-CommandPalette-item p-CommandPalette-item testClass';
@@ -715,92 +700,117 @@ describe('@lumino/widgets', () => {
         it('should handle the boolean states', () => {
           enabledFlag = false;
           toggledFlag = true;
-          let name = renderer.createItemClass({ item, indices: null, active: true });
-          let expected = 'lm-CommandPalette-item lm-mod-disabled lm-mod-toggled lm-mod-active testClass';
+          let name = renderer.createItemClass({
+            item,
+            indices: null,
+            active: true
+          });
+          let expected =
+            'lm-CommandPalette-item lm-mod-disabled lm-mod-toggled lm-mod-active testClass';
           /* <DEPRECATED> */
-          expected = 'lm-CommandPalette-item p-CommandPalette-item lm-mod-disabled p-mod-disabled lm-mod-toggled p-mod-toggled lm-mod-active p-mod-active testClass';
+          expected =
+            'lm-CommandPalette-item p-CommandPalette-item lm-mod-disabled p-mod-disabled lm-mod-toggled p-mod-toggled lm-mod-active p-mod-active testClass';
           /* </DEPRECATED> */
           expect(name).to.equal(expected);
         });
-
       });
 
       describe('#createItemDataset()', () => {
-
         it('should create the item dataset', () => {
-          let dataset = renderer.createItemDataset({ item, indices: null, active: false });
+          let dataset = renderer.createItemDataset({
+            item,
+            indices: null,
+            active: false
+          });
           expect(dataset).to.deep.equal({ command: 'test' });
         });
-
       });
 
       describe('#formatHeader()', () => {
-
         it('should format unmatched header content', () => {
-          let child1 = renderer.formatHeader({ category: 'Test Category', indices: null });
-          let child2 = renderer.formatHeader({ category: 'Test Category', indices: [] });
+          let child1 = renderer.formatHeader({
+            category: 'Test Category',
+            indices: null
+          });
+          let child2 = renderer.formatHeader({
+            category: 'Test Category',
+            indices: []
+          });
           expect(child1).to.equal('Test Category');
           expect(child2).to.equal('Test Category');
         });
 
         it('should format matched header content', () => {
-          let child = renderer.formatHeader({ category: 'Test Category', indices: [1, 2, 6, 7, 8] });
+          let child = renderer.formatHeader({
+            category: 'Test Category',
+            indices: [1, 2, 6, 7, 8]
+          });
           let node = VirtualDOM.realize(h.div(child));
-          expect(node.innerHTML).to.equal('T<mark>es</mark>t C<mark>ate</mark>gory');
+          expect(node.innerHTML).to.equal(
+            'T<mark>es</mark>t C<mark>ate</mark>gory'
+          );
         });
-
       });
 
       describe('#formatEmptyMessage()', () => {
-
         it('should format the empty message text', () => {
           let child = renderer.formatEmptyMessage({ query: 'foo' });
           expect(child).to.equal("No commands found that match 'foo'");
         });
-
       });
 
       describe('#formatItemShortcut()', () => {
-
         it('should format the item shortcut text', () => {
-          let child = renderer.formatItemShortcut({ item, indices: null, active: false });
+          let child = renderer.formatItemShortcut({
+            item,
+            indices: null,
+            active: false
+          });
           if (Platform.IS_MAC) {
             expect(child).to.equal('\u2303 A');
           } else {
             expect(child).to.equal('Ctrl+A');
           }
         });
-
       });
 
       describe('#formatItemLabel()', () => {
-
         it('should format unmatched label content', () => {
-          let child1 = renderer.formatItemLabel({ item, indices: null, active: false });
-          let child2 = renderer.formatItemLabel({ item, indices: [], active: false });
+          let child1 = renderer.formatItemLabel({
+            item,
+            indices: null,
+            active: false
+          });
+          let child2 = renderer.formatItemLabel({
+            item,
+            indices: [],
+            active: false
+          });
           expect(child1).to.equal('Test Command');
           expect(child2).to.equal('Test Command');
         });
 
         it('should format matched label content', () => {
-          let child = renderer.formatItemLabel({ item, indices: [1, 2, 3], active: false });
+          let child = renderer.formatItemLabel({
+            item,
+            indices: [1, 2, 3],
+            active: false
+          });
           let node = VirtualDOM.realize(h.div(child));
           expect(node.innerHTML).to.equal('T<mark>est</mark> Command');
         });
-
       });
 
       describe('#formatItemCaption()', () => {
-
         it('should format the item caption text', () => {
-          let child = renderer.formatItemCaption({ item, indices: null, active: false });
+          let child = renderer.formatItemCaption({
+            item,
+            indices: null,
+            active: false
+          });
           expect(child).to.equal('A simple test command');
         });
-
       });
-
     });
-
   });
-
 });

@@ -8,29 +8,18 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
-import {
-  expect
-} from 'chai';
+import { expect } from 'chai';
 
-import {
-  each
-} from '@lumino/algorithm';
+import { each } from '@lumino/algorithm';
 
-import {
-  TabBar, DockPanel, Widget
-} from '@lumino/widgets';
+import { DockPanel, TabBar, Widget } from '@lumino/widgets';
 
-import {
-//  LogWidget
-} from './widget.spec';
-
+import //  LogWidget
+'./widget.spec';
 
 describe('@lumino/widgets', () => {
-
   describe('DockPanel', () => {
-
     describe('#constructor()', () => {
-
       it('should construct a new dock panel and take no arguments', () => {
         let panel = new DockPanel();
         expect(panel).to.be.an.instanceof(DockPanel);
@@ -41,26 +30,28 @@ describe('@lumino/widgets', () => {
         let panel = new DockPanel({
           tabsMovable: true,
           renderer,
-          tabsConstrained:true
+          tabsConstrained: true
         });
-        each(panel.tabBars(), (tabBar) => { expect(tabBar.tabsMovable).to.equal(true); });
-        each(panel.tabBars(), (tabBar) => { expect(tabBar.renderer).to.equal(renderer); });
+        each(panel.tabBars(), tabBar => {
+          expect(tabBar.tabsMovable).to.equal(true);
+        });
+        each(panel.tabBars(), tabBar => {
+          expect(tabBar.renderer).to.equal(renderer);
+        });
       });
 
-      it('should not have tabs constrained by default', ()=>{
+      it('should not have tabs constrained by default', () => {
         let panel = new DockPanel();
         expect(panel.tabsConstrained).to.equal(false);
-      })
+      });
 
       it('should add a `lm-DockPanel` class', () => {
         let panel = new DockPanel();
         expect(panel.hasClass('lm-DockPanel')).to.equal(true);
       });
-
     });
 
     describe('#dispose()', () => {
-
       it('should dispose of the resources held by the widget', () => {
         let panel = new DockPanel();
         panel.addWidget(new Widget());
@@ -69,11 +60,9 @@ describe('@lumino/widgets', () => {
         panel.dispose();
         expect(panel.isDisposed).to.equal(true);
       });
-
     });
 
     describe('#tabsMovable', () => {
-
       it('should get whether tabs are movable', () => {
         let panel = new DockPanel();
         expect(panel.tabsMovable).to.equal(true);
@@ -85,14 +74,15 @@ describe('@lumino/widgets', () => {
         let w2 = new Widget();
         panel.addWidget(w1);
         panel.addWidget(w2, { mode: 'split-right', ref: w1 });
-        each(panel.tabBars(), (tabBar) => { expect(tabBar.tabsMovable).to.equal(true); });
+        each(panel.tabBars(), tabBar => {
+          expect(tabBar.tabsMovable).to.equal(true);
+        });
 
         panel.tabsMovable = false;
-        each(panel.tabBars(), (tabBar) => { expect(tabBar.tabsMovable).to.equal(false); });
+        each(panel.tabBars(), tabBar => {
+          expect(tabBar.tabsMovable).to.equal(false);
+        });
       });
-
     });
-
   });
-
 });

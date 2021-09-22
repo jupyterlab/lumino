@@ -7,31 +7,20 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  EmptyIterator, empty
-} from '@lumino/algorithm';
+import { empty, EmptyIterator } from '@lumino/algorithm';
 
-import {
-  testIterator
-} from './iter.spec';
-
+import { testIterator } from './iter.spec';
 
 describe('@lumino/algorithm', () => {
-
   describe('empty()', () => {
-
     testIterator(() => {
       return [empty(), []];
     });
-
   });
 
   describe('EmptyIterator', () => {
-
     testIterator(() => {
       return [new EmptyIterator(), []];
     });
-
   });
-
 });

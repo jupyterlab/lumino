@@ -5,7 +5,6 @@
 @import '~@lumino/default-theme/style/index.css';
 @import './content.css';
 
-
 body {
   display: flex;
   flex-direction: column;
