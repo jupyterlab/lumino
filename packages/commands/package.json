@@ -1,6 +1,6 @@
 {
   "name": "@lumino/commands",
-  "version": "1.15.2",
+  "version": "1.16.0",
   "description": "Lumino Commands",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -51,13 +51,13 @@
     "watch": "tsc --build --watch"
   },
   "dependencies": {
-    "@lumino/algorithm": "^1.6.2",
-    "@lumino/coreutils": "^1.8.2",
-    "@lumino/disposable": "^1.7.2",
-    "@lumino/domutils": "^1.5.2",
-    "@lumino/keyboard": "^1.5.2",
-    "@lumino/signaling": "^1.7.2",
-    "@lumino/virtualdom": "^1.11.2"
+    "@lumino/algorithm": "^1.7.0",
+    "@lumino/coreutils": "^1.9.0",
+    "@lumino/disposable": "^1.8.0",
+    "@lumino/domutils": "^1.6.0",
+    "@lumino/keyboard": "^1.6.0",
+    "@lumino/signaling": "^1.8.0",
+    "@lumino/virtualdom": "^1.12.0"
   },
   "devDependencies": {
     "@microsoft/api-extractor": "^7.6.0",
