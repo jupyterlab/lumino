@@ -569,7 +569,7 @@ type ElementEventMap = {
   ondrop: DragEvent;
   ondurationchange: Event;
   onemptied: Event;
-  onended: MediaStreamErrorEvent;
+  onended: ErrorEvent;
   onerror: ErrorEvent;
   onfocus: FocusEvent;
   oninput: Event;
