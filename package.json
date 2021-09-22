@@ -1,6 +1,6 @@
 {
   "name": "lumino-top-level",
-  "version": "2021.8.12",
+  "version": "2021.9.22",
   "private": true,
   "workspaces": [
     "examples/*",
@@ -53,7 +53,9 @@
     "typedoc": "~0.15.0"
   },
   "jupyter-releaser": {
-    "skip": ["check-links"],
+    "skip": [
+      "check-links"
+    ],
     "options": {
       "ignore-links": [
         "./api/index.html"
