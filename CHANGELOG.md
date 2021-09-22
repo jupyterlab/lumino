@@ -2,6 +2,37 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2021.9.22
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/signaling@1.7.2...520444449e74a37a82c34fdf51c70c60059733b3))
+
+### Bugs fixed
+
+- Remove deprecated MediaStreamErrorEvent [#237](https://github.com/jupyterlab/lumino/pull/237) ([@afshin](https://github.com/afshin))
+- Class and aria attribute must be changed on title [#232](https://github.com/jupyterlab/lumino/pull/232) ([@fcollonval](https://github.com/fcollonval))
+
+### Maintenance and upkeep improvements
+
+- Add binder link to Readme [#229](https://github.com/jupyterlab/lumino/pull/229) ([@blink1073](https://github.com/blink1073))
+- Add binder configuration [#226](https://github.com/jupyterlab/lumino/pull/226) ([@blink1073](https://github.com/blink1073))
+
+### Documentation improvements
+
+- Add screencasts and examples to the README [#234](https://github.com/jupyterlab/lumino/pull/234) ([@jtpio](https://github.com/jtpio))
+
+### Other merged PRs
+
+- Add linter [#230](https://github.com/jupyterlab/lumino/pull/230) ([@fcollonval](https://github.com/fcollonval))
+- Bump tar from 4.4.15 to 4.4.19 [#225](https://github.com/jupyterlab/lumino/pull/225) ([@dependabot](https://github.com/dependabot))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2021-08-23&to=2021-09-22&type=c))
+
+[@afshin](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aafshin+updated%3A2021-08-23..2021-09-22&type=Issues) | [@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2021-08-23..2021-09-22&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2021-08-23..2021-09-22&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2021-08-23..2021-09-22&type=Issues) | [@jtpio](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajtpio+updated%3A2021-08-23..2021-09-22&type=Issues) | [@jupyterlab-probot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajupyterlab-probot+updated%3A2021-08-23..2021-09-22&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2021.8.23
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/algorithm@1.6.1...f765c6160f2a4be5ffaccbc590bf7e0d54675ab5))
@@ -27,8 +58,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2021-08-12&to=2021-08-23&type=c))
 
 [@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2021-08-12..2021-08-23&type=Issues) | [@ibdafna](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aibdafna+updated%3A2021-08-12..2021-08-23&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2021.8.12
 
