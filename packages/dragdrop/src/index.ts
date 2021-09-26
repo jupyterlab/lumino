@@ -258,16 +258,14 @@ export class Drag implements IDisposable {
   handleEvent(event: Event): void {
     switch (event.type) {
       case 'touchmove':
-        /* eslint no-fallthrough: "off" */
-        event = Drag.convertTouchToMouseEvent(event as TouchEvent);
-      // caution: break is omitted intentionally
+        this._evtMouseMove(Drag.convertTouchToMouseEvent(event as TouchEvent));
+        break;
       case 'mousemove':
         this._evtMouseMove(event as MouseEvent);
         break;
       case 'touchend':
-        /* eslint no-fallthrough: "off" */
-        event = Drag.convertTouchToMouseEvent(event as TouchEvent);
-      // caution: break is omitted intentionally
+        this._evtMouseUp(Drag.convertTouchToMouseEvent(event as TouchEvent));
+        break;
       case 'mouseup':
         this._evtMouseUp(event as MouseEvent);
         break;

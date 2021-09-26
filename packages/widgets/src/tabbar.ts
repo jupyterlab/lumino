@@ -581,23 +581,20 @@ export class TabBar<T> extends Widget {
   handleEvent(event: Event): void {
     switch (event.type) {
       case 'touchstart':
-        /* eslint no-fallthrough: "off" */
-        event = Drag.convertTouchToMouseEvent(event as TouchEvent);
-      // caution: break is omitted intentionally
+        this._evtMouseDown(Drag.convertTouchToMouseEvent(event as TouchEvent));
+        break;
       case 'mousedown':
         this._evtMouseDown(event as MouseEvent);
         break;
       case 'touchmove':
-        /* eslint no-fallthrough: "off" */
-        event = Drag.convertTouchToMouseEvent(event as TouchEvent);
-      // caution: break is omitted intentionally
+        this._evtMouseMove(Drag.convertTouchToMouseEvent(event as TouchEvent));
+        break;
       case 'mousemove':
         this._evtMouseMove(event as MouseEvent);
         break;
       case 'touchend':
-        /* eslint no-fallthrough: "off" */
-        event = Drag.convertTouchToMouseEvent(event as TouchEvent);
-      // caution: break is omitted intentionally
+        this._evtMouseUp(Drag.convertTouchToMouseEvent(event as TouchEvent));
+        break;
       case 'mouseup':
         this._evtMouseUp(event as MouseEvent);
         break;
