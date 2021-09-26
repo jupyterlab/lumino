@@ -580,22 +580,13 @@ export class TabBar<T> extends Widget {
    */
   handleEvent(event: Event): void {
     switch (event.type) {
-      case 'touchstart':
-        this._evtMouseDown(Drag.convertTouchToMouseEvent(event as TouchEvent));
-        break;
-      case 'mousedown':
+      case 'pointerdown':
         this._evtMouseDown(event as MouseEvent);
         break;
-      case 'touchmove':
-        this._evtMouseMove(Drag.convertTouchToMouseEvent(event as TouchEvent));
-        break;
-      case 'mousemove':
+      case 'pointermove':
         this._evtMouseMove(event as MouseEvent);
         break;
-      case 'touchend':
-        this._evtMouseUp(Drag.convertTouchToMouseEvent(event as TouchEvent));
-        break;
-      case 'mouseup':
+      case 'pointerup':
         this._evtMouseUp(event as MouseEvent);
         break;
       case 'dblclick':
@@ -615,18 +606,16 @@ export class TabBar<T> extends Widget {
    * A message handler invoked on a `'before-attach'` message.
    */
   protected onBeforeAttach(msg: Message): void {
-    this.node.addEventListener('mousedown', this);
+    this.node.addEventListener('pointerdown', this);
     this.node.addEventListener('dblclick', this);
-    this.node.addEventListener('touchstart', this);
   }
 
   /**
    * A message handler invoked on an `'after-detach'` message.
    */
   protected onAfterDetach(msg: Message): void {
-    this.node.removeEventListener('mousedown', this);
+    this.node.removeEventListener('pointerdown', this);
     this.node.removeEventListener('dblclick', this);
-    this.node.removeEventListener('touchstart', this);
     this._releaseMouse();
   }
 
@@ -779,8 +768,7 @@ export class TabBar<T> extends Widget {
     };
 
     // Add the document mouse up listener.
-    document.addEventListener('mouseup', this, true);
-    document.addEventListener('touchend', this, true);
+    document.addEventListener('pointerup', this, true);
 
     // Do nothing else if the middle button or add button is clicked.
     if (event.button === 1 || addButtonClicked) {
@@ -795,8 +783,7 @@ export class TabBar<T> extends Widget {
 
     // Add the extra listeners if the tabs are movable.
     if (this.tabsMovable) {
-      document.addEventListener('mousemove', this, true);
-      document.addEventListener('touchmove', this, true);
+      document.addEventListener('pointermove', this, true);
       document.addEventListener('keydown', this, true);
       document.addEventListener('contextmenu', this, true);
     }
@@ -916,10 +903,8 @@ export class TabBar<T> extends Widget {
     event.stopPropagation();
 
     // Remove the extra mouse event listeners.
-    document.removeEventListener('mousemove', this, true);
-    document.removeEventListener('touchmove', this, true);
-    document.removeEventListener('mouseup', this, true);
-    document.removeEventListener('touchend', this, true);
+    document.removeEventListener('pointermove', this, true);
+    document.removeEventListener('pointerup', this, true);
     document.removeEventListener('keydown', this, true);
     document.removeEventListener('contextmenu', this, true);
 
@@ -1051,10 +1036,8 @@ export class TabBar<T> extends Widget {
     this._dragData = null;
 
     // Remove the extra mouse listeners.
-    document.removeEventListener('mousemove', this, true);
-    document.removeEventListener('touchmove', this, true);
-    document.removeEventListener('mouseup', this, true);
-    document.removeEventListener('touchend', this, true);
+    document.removeEventListener('pointermove', this, true);
+    document.removeEventListener('pointerup', this, true);
     document.removeEventListener('keydown', this, true);
     document.removeEventListener('contextmenu', this, true);
 

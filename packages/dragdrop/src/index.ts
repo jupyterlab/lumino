@@ -154,7 +154,7 @@ export class Drag implements IDisposable {
 
     // If there is a current target, dispatch a drag leave event.
     if (this._currentTarget) {
-      let event = Private.createMouseEvent('mouseup', -1, -1);
+      let event = Private.createMouseEvent('pointerup', -1, -1);
       Private.dispatchDragLeave(this, this._currentTarget, null, event);
     }
 
@@ -238,7 +238,7 @@ export class Drag implements IDisposable {
     });
 
     // Trigger a fake move event to kick off the drag operation.
-    let event = Private.createMouseEvent('mousemove', clientX, clientY);
+    let event = Private.createMouseEvent('pointermove', clientX, clientY);
     document.dispatchEvent(event);
 
     // Return the pending promise for the drag operation.
@@ -257,16 +257,10 @@ export class Drag implements IDisposable {
    */
   handleEvent(event: Event): void {
     switch (event.type) {
-      case 'touchmove':
-        this._evtMouseMove(Drag.convertTouchToMouseEvent(event as TouchEvent));
-        break;
-      case 'mousemove':
+      case 'pointermove':
         this._evtMouseMove(event as MouseEvent);
         break;
-      case 'touchend':
-        this._evtMouseUp(Drag.convertTouchToMouseEvent(event as TouchEvent));
-        break;
-      case 'mouseup':
+      case 'pointerup':
         this._evtMouseUp(event as MouseEvent);
         break;
       case 'keydown':
@@ -369,16 +363,13 @@ export class Drag implements IDisposable {
    * Add the document event listeners for the drag object.
    */
   private _addListeners(): void {
-    document.addEventListener('mousedown', this, true);
-    document.addEventListener('mousemove', this, true);
-    document.addEventListener('mouseup', this, true);
-    document.addEventListener('mouseenter', this, true);
-    document.addEventListener('mouseleave', this, true);
-    document.addEventListener('mouseover', this, true);
-    document.addEventListener('mouseout', this, true);
-    document.addEventListener('touchstart', this, true);
-    document.addEventListener('touchmove', this, true);
-    document.addEventListener('touchend', this, true);
+    document.addEventListener('pointerdown', this, true);
+    document.addEventListener('pointermove', this, true);
+    document.addEventListener('pointerup', this, true);
+    document.addEventListener('pointerenter', this, true);
+    document.addEventListener('pointerleave', this, true);
+    document.addEventListener('pointerover', this, true);
+    document.addEventListener('pointerout', this, true);
     document.addEventListener('keydown', this, true);
     document.addEventListener('keyup', this, true);
     document.addEventListener('keypress', this, true);
@@ -389,16 +380,13 @@ export class Drag implements IDisposable {
    * Remove the document event listeners for the drag object.
    */
   private _removeListeners(): void {
-    document.removeEventListener('mousedown', this, true);
-    document.removeEventListener('mousemove', this, true);
-    document.removeEventListener('mouseup', this, true);
-    document.removeEventListener('mouseenter', this, true);
-    document.removeEventListener('mouseleave', this, true);
-    document.removeEventListener('mouseover', this, true);
-    document.removeEventListener('mouseout', this, true);
-    document.removeEventListener('touchstart', this, true);
-    document.removeEventListener('touchmove', this, true);
-    document.removeEventListener('touchend', this, true);
+    document.removeEventListener('pointerdown', this, true);
+    document.removeEventListener('pointermove', this, true);
+    document.removeEventListener('pointerup', this, true);
+    document.removeEventListener('pointerenter', this, true);
+    document.removeEventListener('pointerleave', this, true);
+    document.removeEventListener('pointerover', this, true);
+    document.removeEventListener('pointerout', this, true);
     document.removeEventListener('keydown', this, true);
     document.removeEventListener('keyup', this, true);
     document.removeEventListener('keypress', this, true);
@@ -727,31 +715,6 @@ export namespace Drag {
         /* </DEPRECATED> */
       }
     });
-  }
-
-  /**
-   * Converts a TouchEvent to a MouseEvent to simplify mobile touch event handling.
-   */
-  export function convertTouchToMouseEvent(touch: TouchEvent): MouseEvent {
-    let touches = touch.touches;
-    if (touches.length === 0) touches = touch.changedTouches; // touchEnd has no touches :facepalm:
-    let mouse = new MouseEvent('fake-mouse', {
-      button: 0, // why not be a left click :shrug:
-      clientX: touches[0].clientX,
-      clientY: touches[0].clientY
-    });
-
-    // Forcefully add mouse event properties.
-    (mouse as any).preventDefault = touch.preventDefault;
-    (mouse as any).stopPropagation = touch.stopPropagation;
-
-    // target is supposed to be readOnly, set it with js hackery
-    Object.defineProperty(mouse, 'target', {
-      value: touch.target,
-      writable: false
-    });
-
-    return mouse;
   }
 
   /**

@@ -62,6 +62,7 @@
   flex-direction: row;
   box-sizing: border-box;
   overflow: hidden;
+  touch-action: none; /* Disable native Drag/Drop */
 }
 
 /* <DEPRECATED> */
