@@ -428,6 +428,15 @@ export class DockPanel extends Widget {
       case 'lm-drop':
         this._evtDrop(event as IDragEvent);
         break;
+      case 'mousedown': // <DEPRECATED>
+        this._evtMouseDown(event as MouseEvent);
+        break;
+      case 'mousemove': // <DEPRECATED>
+        this._evtMouseMove(event as MouseEvent);
+        break;
+      case 'mouseup': // <DEPRECATED>
+        this._evtMouseUp(event as MouseEvent);
+        break;
       case 'pointerdown':
         this._evtMouseDown(event as MouseEvent);
         break;
@@ -455,6 +464,7 @@ export class DockPanel extends Widget {
     this.node.addEventListener('lm-dragleave', this);
     this.node.addEventListener('lm-dragover', this);
     this.node.addEventListener('lm-drop', this);
+    this.node.addEventListener('mousedown', this); // <DEPRECATED>
     this.node.addEventListener('pointerdown', this);
   }
 
@@ -466,6 +476,7 @@ export class DockPanel extends Widget {
     this.node.removeEventListener('lm-dragleave', this);
     this.node.removeEventListener('lm-dragover', this);
     this.node.removeEventListener('lm-drop', this);
+    this.node.removeEventListener('mousedown', this); // <DEPRECATED>
     this.node.removeEventListener('pointerdown', this);
     this._releaseMouse();
   }
@@ -694,6 +705,8 @@ export class DockPanel extends Widget {
 
     // Add the extra document listeners.
     document.addEventListener('keydown', this, true);
+    document.addEventListener('mouseup', this, true); // <DEPRECATED>
+    document.addEventListener('mousemove', this, true); // <DEPRECATED>
     document.addEventListener('pointerup', this, true);
     document.addEventListener('pointermove', this, true);
     document.addEventListener('contextmenu', this, true);
@@ -767,6 +780,8 @@ export class DockPanel extends Widget {
 
     // Remove the extra document listeners.
     document.removeEventListener('keydown', this, true);
+    document.removeEventListener('mouseup', this, true); // <DEPRECATED>
+    document.removeEventListener('mousemove', this, true); // <DEPRECATED>
     document.removeEventListener('pointerup', this, true);
     document.removeEventListener('pointermove', this, true);
     document.removeEventListener('contextmenu', this, true);

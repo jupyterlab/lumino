@@ -257,6 +257,12 @@ export class Drag implements IDisposable {
    */
   handleEvent(event: Event): void {
     switch (event.type) {
+      case 'mousemove': // <DEPRECATED>
+        this._evtMouseMove(event as MouseEvent);
+        break;
+      case 'mouseup': // <DEPRECATED>
+        this._evtMouseUp(event as MouseEvent);
+        break;
       case 'pointermove':
         this._evtMouseMove(event as MouseEvent);
         break;
@@ -363,6 +369,13 @@ export class Drag implements IDisposable {
    * Add the document event listeners for the drag object.
    */
   private _addListeners(): void {
+    document.addEventListener('mousedown', this, true); // <DEPRECATED>
+    document.addEventListener('mousemove', this, true); // <DEPRECATED>
+    document.addEventListener('mouseup', this, true); // <DEPRECATED>
+    document.addEventListener('mouseenter', this, true); // <DEPRECATED>
+    document.addEventListener('mouseleave', this, true); // <DEPRECATED>
+    document.addEventListener('mouseover', this, true); // <DEPRECATED>
+    document.addEventListener('mouseout', this, true); // <DEPRECATED>
     document.addEventListener('pointerdown', this, true);
     document.addEventListener('pointermove', this, true);
     document.addEventListener('pointerup', this, true);
@@ -380,6 +393,13 @@ export class Drag implements IDisposable {
    * Remove the document event listeners for the drag object.
    */
   private _removeListeners(): void {
+    document.removeEventListener('mousedown', this, true); // <DEPRECATED>
+    document.removeEventListener('mousemove', this, true); // <DEPRECATED>
+    document.removeEventListener('mouseup', this, true); // <DEPRECATED>
+    document.removeEventListener('mouseenter', this, true); // <DEPRECATED>
+    document.removeEventListener('mouseleave', this, true); // <DEPRECATED>
+    document.removeEventListener('mouseover', this, true); // <DEPRECATED>
+    document.removeEventListener('mouseout', this, true); // <DEPRECATED>
     document.removeEventListener('pointerdown', this, true);
     document.removeEventListener('pointermove', this, true);
     document.removeEventListener('pointerup', this, true);
