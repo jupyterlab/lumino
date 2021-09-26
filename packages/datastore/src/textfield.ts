@@ -7,24 +7,22 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  ArrayExt, StringExt
-} from '@lumino/algorithm';
+import { ArrayExt, StringExt } from '@lumino/algorithm';
 
-import {
-  Field
-} from './field';
+import { Field } from './field';
 
-import {
-  createTriplexIds
-} from './utilities';
-
+import { createTriplexIds } from './utilities';
 
 /**
  * A field which represents collaborative text.
  */
-export
-class TextField extends Field<TextField.Value, TextField.Update, TextField.Metadata, TextField.Change, TextField.Patch> {
+export class TextField extends Field<
+  TextField.Value,
+  TextField.Update,
+  TextField.Metadata,
+  TextField.Change,
+  TextField.Patch
+> {
   /**
    * Construct a new text field.
    *
@@ -66,7 +64,13 @@ class TextField extends Field<TextField.Value, TextField.Update, TextField.Metad
    *
    * @returns The result of applying the update.
    */
-  applyUpdate(args: Field.UpdateArgs<TextField.Value, TextField.Update, TextField.Metadata>): Field.UpdateResult<TextField.Value, TextField.Change, TextField.Patch> {
+  applyUpdate(
+    args: Field.UpdateArgs<
+      TextField.Value,
+      TextField.Update,
+      TextField.Metadata
+    >
+  ): Field.UpdateResult<TextField.Value, TextField.Change, TextField.Patch> {
     // Unpack the arguments.
     let { previous, update, metadata, version, storeId } = args;
 
@@ -108,7 +112,9 @@ class TextField extends Field<TextField.Value, TextField.Update, TextField.Metad
    *
    * @returns The result of applying the patch.
    */
-  applyPatch(args: Field.PatchArgs<TextField.Value, TextField.Patch, TextField.Metadata>): Field.PatchResult<TextField.Value, TextField.Change> {
+  applyPatch(
+    args: Field.PatchArgs<TextField.Value, TextField.Patch, TextField.Metadata>
+  ): Field.PatchResult<TextField.Value, TextField.Change> {
     // Unpack the arguments.
     let { previous, patch, metadata } = args;
 
@@ -141,7 +147,9 @@ class TextField extends Field<TextField.Value, TextField.Update, TextField.Metad
    *
    * @returns The result of unapplying the patch.
    */
-  unapplyPatch(args: Field.PatchArgs<TextField.Value, TextField.Patch, TextField.Metadata>): Field.PatchResult<TextField.Value, TextField.Change> {
+  unapplyPatch(
+    args: Field.PatchArgs<TextField.Value, TextField.Patch, TextField.Metadata>
+  ): Field.PatchResult<TextField.Value, TextField.Change> {
     // Unpack the arguments.
     let { previous, patch, metadata } = args;
 
@@ -182,7 +190,10 @@ class TextField extends Field<TextField.Value, TextField.Update, TextField.Metad
    *
    * @returns A new change object which represents both changes.
    */
-  mergeChange(first: TextField.Change, second: TextField.Change): TextField.Change {
+  mergeChange(
+    first: TextField.Change,
+    second: TextField.Change
+  ): TextField.Change {
     return [...first, ...second];
   }
 
@@ -200,29 +211,24 @@ class TextField extends Field<TextField.Value, TextField.Update, TextField.Metad
   }
 }
 
-
 /**
  * The namespace for the `TextField` class statics.
  */
-export
-namespace TextField {
+export namespace TextField {
   /**
    * An options object for initializing a text field.
    */
-  export
-  interface IOptions extends Field.IOptions { }
+  export interface IOptions extends Field.IOptions {}
 
   /**
    * A type alias for the value type of a text field.
    */
-  export
-  type Value = string;
+  export type Value = string;
 
   /**
    * A type alias for a text field splice.
    */
-  export
-  type Splice = {
+  export type Splice = {
     /**
      * The index of the splice.
      */
@@ -242,14 +248,12 @@ namespace TextField {
   /**
    * A type alias for the text field update type.
    */
-  export
-  type Update = Splice | ReadonlyArray<Splice>;
+  export type Update = Splice | ReadonlyArray<Splice>;
 
   /**
    * A type alias for the text field metadata type.
    */
-  export
-  type Metadata = {
+  export type Metadata = {
     /**
      * An array of ids corresponding to the text characters.
      */
@@ -264,8 +268,7 @@ namespace TextField {
   /**
    * A type alias for a text field change part.
    */
-  export
-  type ChangePart = {
+  export type ChangePart = {
     /**
      * The index of the modification.
      */
@@ -285,14 +288,12 @@ namespace TextField {
   /**
    * A type alias for the text field change type.
    */
-  export
-  type Change = ReadonlyArray<ChangePart>;
+  export type Change = ReadonlyArray<ChangePart>;
 
   /**
    * A type alias for the text field patch part.
    */
-  export
-  type PatchPart = {
+  export type PatchPart = {
     /**
      * The ids that were removed.
      */
@@ -317,10 +318,8 @@ namespace TextField {
   /**
    * A type alias for the text field patch type.
    */
-  export
-  type Patch = ReadonlyArray<PatchPart>;
+  export type Patch = ReadonlyArray<PatchPart>;
 }
-
 
 /**
  * The namespace for the module implementation details.
@@ -329,16 +328,14 @@ namespace Private {
   /**
    * A type-guard function for a text field update type.
    */
-  export
-  function isSplice(value: TextField.Update): value is TextField.Splice {
+  export function isSplice(value: TextField.Update): value is TextField.Splice {
     return !Array.isArray(value);
   }
 
   /**
    * A type alias for the result of a splice operation.
    */
-  export
-  type SpliceResult = {
+  export type SpliceResult = {
     /**
      * The user-facing change part for the splice.
      */
@@ -370,8 +367,13 @@ namespace Private {
    *
    * @returns The result of the splice operation.
    */
-  export
-  function applySplice(value: string, splice: TextField.Splice, metadata: TextField.Metadata, version: number, storeId: number): SpliceResult {
+  export function applySplice(
+    value: string,
+    splice: TextField.Splice,
+    metadata: TextField.Metadata,
+    version: number,
+    storeId: number
+  ): SpliceResult {
     // Unpack the splice.
     let { index, remove, text } = splice;
 
@@ -402,7 +404,12 @@ namespace Private {
     let change = { index, removed: removedText, inserted: text };
 
     // Create the patch object.
-    let patch = { removedIds, removedText, insertedIds: ids, insertedText: text };
+    let patch = {
+      removedIds,
+      removedText,
+      insertedIds: ids,
+      insertedText: text
+    };
 
     // Compute the new value.
     value = value.slice(0, index) + text + value.slice(index + count);
@@ -414,8 +421,7 @@ namespace Private {
   /**
    * A type alias for the result of a patch operation.
    */
-  export
-  type PatchResult = {
+  export type PatchResult = {
     /**
      * The user-facing change for the patch.
      */
@@ -438,8 +444,11 @@ namespace Private {
    *
    * @returns The user-facing change array for the patch.
    */
-  export
-  function applyPatch(value: string, patch: TextField.PatchPart, metadata: TextField.Metadata): PatchResult {
+  export function applyPatch(
+    value: string,
+    patch: TextField.PatchPart,
+    metadata: TextField.Metadata
+  ): PatchResult {
     // Unpack the patch.
     let { removedIds, insertedIds, insertedText } = patch;
 
@@ -520,7 +529,10 @@ namespace Private {
    * #### Notes
    * The metadata may be mutated if concurrently removed chunks are encountered.
    */
-  function findRemovedChunks(ids: ReadonlyArray<string>, metadata: TextField.Metadata): RemoveChunk[] {
+  function findRemovedChunks(
+    ids: ReadonlyArray<string>,
+    metadata: TextField.Metadata
+  ): RemoveChunk[] {
     // Set up the chunks array.
     let chunks: RemoveChunk[] = [];
 
@@ -542,7 +554,7 @@ namespace Private {
       if (j === metadata.ids.length || metadata.ids[j] !== ids[i]) {
         let count = metadata.cemetery[ids[i]] || 0;
         metadata.cemetery[ids[i]] = count + 1;
-        i++
+        i++;
         continue;
       }
 
@@ -599,7 +611,11 @@ namespace Private {
    * #### Notes
    * The metadata may be mutated if concurrently removed chunks are encountered.
    */
-  function findInsertedChunks(ids: ReadonlyArray<string>, text: string, metadata: TextField.Metadata): InsertChunk[] {
+  function findInsertedChunks(
+    ids: ReadonlyArray<string>,
+    text: string,
+    metadata: TextField.Metadata
+  ): InsertChunk[] {
     let indices: number[] = [];
     let insertIds: string[] = [];
     let insertText = '';
@@ -631,7 +647,11 @@ namespace Private {
    *
    * @returns The ordered chunks to insert.
    */
-  function chunkifyInsertions(ids: ReadonlyArray<string>, text: string, indices: ReadonlyArray<number>): InsertChunk[] {
+  function chunkifyInsertions(
+    ids: ReadonlyArray<string>,
+    text: string,
+    indices: ReadonlyArray<number>
+  ): InsertChunk[] {
     // Set up the chunks array.
     let chunks: InsertChunk[] = [];
 
@@ -670,7 +690,10 @@ namespace Private {
    * If the ID *is* found in the cemetery, its value in the cemetery is decremented,
    * reflecting that it is closer to being shown.
    */
-  function checkCemeteryForInsert(id: string, cemetery: { [x: string]: number }): boolean {
+  function checkCemeteryForInsert(
+    id: string,
+    cemetery: { [x: string]: number }
+  ): boolean {
     let count = cemetery[id] || 0;
     if (count === 1) {
       delete cemetery[id];
@@ -701,7 +724,12 @@ namespace Private {
    *
    * @returns an array of the deleted elements.
    */
-  function spliceArray<T>(arr: T[], start: number, deleteCount?: number, items?: ReadonlyArray<T>): ReadonlyArray<T> {
+  function spliceArray<T>(
+    arr: T[],
+    start: number,
+    deleteCount?: number,
+    items?: ReadonlyArray<T>
+  ): ReadonlyArray<T> {
     if (!items) {
       return arr.splice(start, deleteCount);
     }

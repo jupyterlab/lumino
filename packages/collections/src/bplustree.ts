@@ -7,9 +7,14 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 import {
-  ArrayExt, IIterable, IIterator, IRetroable, IterableOrArrayLike, each, empty
-} from "@lumino/algorithm";
-
+  ArrayExt,
+  each,
+  empty,
+  IIterable,
+  IIterator,
+  IRetroable,
+  IterableOrArrayLike
+} from '@lumino/algorithm';
 
 /**
  * A generic B+ tree.
@@ -17,8 +22,7 @@ import {
  * #### Notes
  * Most operations have `O(log32 n)` or better complexity.
  */
-export
-class BPlusTree<T> implements IIterable<T>, IRetroable<T> {
+export class BPlusTree<T> implements IIterable<T>, IRetroable<T> {
   /**
    * Construct a new B+ tree.
    *
@@ -254,7 +258,9 @@ class BPlusTree<T> implements IIterable<T>, IRetroable<T> {
    * `O(k log32 n)`
    */
   update(items: IterableOrArrayLike<T>): void {
-    each(items, item => { this.insert(item); });
+    each(items, item => {
+      this.insert(item);
+    });
   }
 
   /**
@@ -308,12 +314,10 @@ class BPlusTree<T> implements IIterable<T>, IRetroable<T> {
   private _root: Private.Node<T> = new Private.LeafNode<T>();
 }
 
-
 /**
  * The namespace for the `BPlusTree` class statics.
  */
-export
-namespace BPlusTree {
+export namespace BPlusTree {
   /**
    * Create a new B+ tree populated with the given items.
    *
@@ -326,14 +330,15 @@ namespace BPlusTree {
    * #### Complexity
    * `O(n log32 n)`
    */
-  export
-  function from<T>(items: IterableOrArrayLike<T>, cmp: (a: T, b: T) => number): BPlusTree<T> {
+  export function from<T>(
+    items: IterableOrArrayLike<T>,
+    cmp: (a: T, b: T) => number
+  ): BPlusTree<T> {
     let tree = new BPlusTree<T>(cmp);
     tree.assign(items);
     return tree;
   }
 }
-
 
 /**
  * The namespace for the module implementation details.
@@ -342,14 +347,15 @@ namespace Private {
   /**
    * A const enum of the B+ tree node types.
    */
-  export
-  const enum NodeType { Branch, Leaf }
+  export const enum NodeType {
+    Branch,
+    Leaf
+  }
 
   /**
    * A branch node in a B+ tree.
    */
-  export
-  class BranchNode<T> {
+  export class BranchNode<T> {
     /**
      * The left-most item of each child subtree.
      */
@@ -390,8 +396,7 @@ namespace Private {
   /**
    * A leaf node in a B+ tree.
    */
-  export
-  class LeafNode<T> {
+  export class LeafNode<T> {
     /**
      * The next sibling leaf node of this leaf node.
      */
@@ -432,8 +437,7 @@ namespace Private {
   /**
    * A type alias for the B+ tree nodes.
    */
-  export
-  type Node<T> = BranchNode<T> | LeafNode<T>;
+  export type Node<T> = BranchNode<T> | LeafNode<T>;
 
   /**
    * Get the first leaf node in the tree.
@@ -445,8 +449,7 @@ namespace Private {
    * #### Complexity
    * `O(log32 n)`
    */
-  export
-  function firstLeaf<T>(node: Node<T>): LeafNode<T> {
+  export function firstLeaf<T>(node: Node<T>): LeafNode<T> {
     while (node.type === NodeType.Branch) {
       node = node.children[0];
     }
@@ -463,8 +466,7 @@ namespace Private {
    * #### Complexity
    * `O(log32 n)`
    */
-  export
-  function lastLeaf<T>(node: Node<T>): LeafNode<T> {
+  export function lastLeaf<T>(node: Node<T>): LeafNode<T> {
     while (node.type === NodeType.Branch) {
       node = node.children[node.children.length - 1];
     }
@@ -481,8 +483,7 @@ namespace Private {
    * #### Complexity
    * `O(log32 n)`
    */
-  export
-  function iterItems<T>(node: Node<T>): IIterator<T> {
+  export function iterItems<T>(node: Node<T>): IIterator<T> {
     let leaf = firstLeaf(node);
     return new ForwardIterator<T>(leaf, 0, -1);
   }
@@ -497,8 +498,7 @@ namespace Private {
    * #### Complexity
    * `O(log32 n)`
    */
-  export
-  function retroItems<T>(node: Node<T>): IIterator<T> {
+  export function retroItems<T>(node: Node<T>): IIterator<T> {
     let leaf = lastLeaf(node);
     return new RetroIterator<T>(leaf, leaf.size - 1, -1);
   }
@@ -521,8 +521,11 @@ namespace Private {
    * #### Complexity
    * `O(log32 n)`
    */
-  export
-  function sliceItems<T>(node: Node<T>, start?: number, stop?: number): IIterator<T> {
+  export function sliceItems<T>(
+    node: Node<T>,
+    start?: number,
+    stop?: number
+  ): IIterator<T> {
     // Normalize the start index.
     if (start === undefined) {
       start = 0;
@@ -578,8 +581,11 @@ namespace Private {
    * #### Complexity
    * `O(log32 n)`
    */
-  export
-  function retroSliceItems<T>(node: Node<T>, start?: number, stop?: number): IIterator<T> {
+  export function retroSliceItems<T>(
+    node: Node<T>,
+    start?: number,
+    stop?: number
+  ): IIterator<T> {
     // Normalize the start index.
     if (start === undefined) {
       start = node.size - 1;
@@ -631,8 +637,7 @@ namespace Private {
    * #### Complexity
    * `O(log32 n)`
    */
-  export
-  function itemAt<T>(node: Node<T>, index: number): T | undefined {
+  export function itemAt<T>(node: Node<T>, index: number): T | undefined {
     // Wrap negative indices.
     if (index < 0) {
       index += node.size;
@@ -668,8 +673,11 @@ namespace Private {
    * #### Complexity
    * `O(log32 n)`
    */
-  export
-  function hasItem<T, U>(node: Node<T>, key: U, cmp: (item: T, key: U) => number): boolean {
+  export function hasItem<T, U>(
+    node: Node<T>,
+    key: U,
+    cmp: (item: T, key: U) => number
+  ): boolean {
     // Find the containing leaf node.
     while (node.type === NodeType.Branch) {
       let i = findPivotIndexByKey(node.items, key, cmp);
@@ -699,8 +707,11 @@ namespace Private {
    * #### Complexity
    * `O(log32 n)`
    */
-  export
-  function indexOf<T, U>(node: Node<T>, key: U, cmp: (item: T, key: U) => number): number {
+  export function indexOf<T, U>(
+    node: Node<T>,
+    key: U,
+    cmp: (item: T, key: U) => number
+  ): number {
     // Set up the global index.
     let index = 0;
 
@@ -733,8 +744,11 @@ namespace Private {
    * #### Complexity
    * `O(log32 n)`
    */
-  export
-  function getItem<T, U>(node: Node<T>, key: U, cmp: (item: T, key: U) => number): T | undefined {
+  export function getItem<T, U>(
+    node: Node<T>,
+    key: U,
+    cmp: (item: T, key: U) => number
+  ): T | undefined {
     // Find the containing leaf node.
     while (node.type === NodeType.Branch) {
       let i = findPivotIndexByKey(node.items, key, cmp);
@@ -767,8 +781,11 @@ namespace Private {
    * #### Notes
    * The root may be overfull after calling this function.
    */
-  export
-  function insertItem<T>(node: Node<T>, item: T, cmp: (a: T, b: T) => number): T | undefined {
+  export function insertItem<T>(
+    node: Node<T>,
+    item: T,
+    cmp: (a: T, b: T) => number
+  ): T | undefined {
     // Handle leaf nodes first.
     if (node.type === NodeType.Leaf) {
       // Find the index for the given item.
@@ -842,8 +859,11 @@ namespace Private {
    * #### Notes
    * The root may be underfull after calling this function.
    */
-  export
-  function deleteItem<T, U>(node: Node<T>, key: U, cmp: (item: T, key: U) => number): T | undefined {
+  export function deleteItem<T, U>(
+    node: Node<T>,
+    key: U,
+    cmp: (item: T, key: U) => number
+  ): T | undefined {
     // Handle leaf nodes first.
     if (node.type === NodeType.Leaf) {
       // Find the index for the given key.
@@ -908,8 +928,7 @@ namespace Private {
    * #### Notes
    * The root may be underfull after calling this function.
    */
-  export
-  function removeItem<T>(node: Node<T>, index: number): T | undefined {
+  export function removeItem<T>(node: Node<T>, index: number): T | undefined {
     // Wrap negative indices.
     if (index < 0) {
       index += node.size;
@@ -958,8 +977,7 @@ namespace Private {
    * #### Complexity
    * `O(n)`
    */
-  export
-  function clear<T>(node: Node<T>): void {
+  export function clear<T>(node: Node<T>): void {
     if (node.type === NodeType.Branch) {
       each(node.children, clear);
       node.children.length = 0;
@@ -979,8 +997,7 @@ namespace Private {
    *
    * @returns The new root node.
    */
-  export
-  function maybeSplitRoot<T>(node: Node<T>): Node<T> {
+  export function maybeSplitRoot<T>(node: Node<T>): Node<T> {
     // Bail early if the current root is not overfull.
     if (node.width <= MAX_NODE_WIDTH) {
       return node;
@@ -1015,8 +1032,7 @@ namespace Private {
    *
    * @returns The new root node.
    */
-  export
-  function maybeExtractRoot<T>(node: Node<T>): Node<T> {
+  export function maybeExtractRoot<T>(node: Node<T>): Node<T> {
     // Bail early if the node it already a leaf.
     if (node.type === NodeType.Leaf) {
       return node;
@@ -1192,7 +1208,11 @@ namespace Private {
   /**
    * Find the pivot index for a particular key.
    */
-  function findPivotIndexByKey<T, U>(items: T[], key: U, cmp: (item: T, key: U) => number): number {
+  function findPivotIndexByKey<T, U>(
+    items: T[],
+    key: U,
+    cmp: (item: T, key: U) => number
+  ): number {
     let n = items.length;
     for (let i = 1; i < n; ++i) {
       if (cmp(items[i], key) > 0) {
@@ -1205,7 +1225,11 @@ namespace Private {
   /**
    * Find the key index for a particular key.
    */
-  function findKeyIndex<T, U>(items: T[], key: U, cmp: (item: T, key: U) => number): number {
+  function findKeyIndex<T, U>(
+    items: T[],
+    key: U,
+    cmp: (item: T, key: U) => number
+  ): number {
     let n = items.length;
     for (let i = 0; i < n; ++i) {
       let c = cmp(items[i], key);

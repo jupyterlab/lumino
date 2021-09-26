@@ -7,15 +7,10 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  expect
-} from 'chai';
-
+import { expect } from 'chai';
 
 describe('@lumino/application', () => {
-
   it('should pass', () => {
     expect(true).to.equal(true);
   });
-
 });

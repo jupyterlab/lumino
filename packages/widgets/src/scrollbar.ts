@@ -7,36 +7,22 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  IDisposable
-} from '@lumino/disposable';
+import { IDisposable } from '@lumino/disposable';
 
-import {
-  ElementExt
-} from '@lumino/domutils';
+import { ElementExt } from '@lumino/domutils';
 
-import {
-  Drag
-} from '@lumino/dragdrop';
+import { Drag } from '@lumino/dragdrop';
 
-import {
-  Message
-} from '@lumino/messaging';
+import { Message } from '@lumino/messaging';
 
-import {
-  ISignal, Signal
-} from '@lumino/signaling';
+import { ISignal, Signal } from '@lumino/signaling';
 
-import {
-  Widget
-} from './widget';
-
+import { Widget } from './widget';
 
 /**
  * A widget which implements a canonical scroll bar.
  */
-export
-class ScrollBar extends Widget {
+export class ScrollBar extends Widget {
   /**
    * Construct a new scroll bar.
    *
@@ -225,7 +211,9 @@ class ScrollBar extends Widget {
    * Modifying this node directly can lead to undefined behavior.
    */
   get decrementNode(): HTMLDivElement {
-    return this.node.getElementsByClassName('lm-ScrollBar-button')[0] as HTMLDivElement;
+    return this.node.getElementsByClassName(
+      'lm-ScrollBar-button'
+    )[0] as HTMLDivElement;
   }
 
   /**
@@ -235,7 +223,9 @@ class ScrollBar extends Widget {
    * Modifying this node directly can lead to undefined behavior.
    */
   get incrementNode(): HTMLDivElement {
-    return this.node.getElementsByClassName('lm-ScrollBar-button')[1] as HTMLDivElement;
+    return this.node.getElementsByClassName(
+      'lm-ScrollBar-button'
+    )[1] as HTMLDivElement;
   }
 
   /**
@@ -245,7 +235,9 @@ class ScrollBar extends Widget {
    * Modifying this node directly can lead to undefined behavior.
    */
   get trackNode(): HTMLDivElement {
-    return this.node.getElementsByClassName('lm-ScrollBar-track')[0] as HTMLDivElement;
+    return this.node.getElementsByClassName(
+      'lm-ScrollBar-track'
+    )[0] as HTMLDivElement;
   }
 
   /**
@@ -255,7 +247,9 @@ class ScrollBar extends Widget {
    * Modifying this node directly can lead to undefined behavior.
    */
   get thumbNode(): HTMLDivElement {
-    return this.node.getElementsByClassName('lm-ScrollBar-thumb')[0] as HTMLDivElement;
+    return this.node.getElementsByClassName(
+      'lm-ScrollBar-thumb'
+    )[0] as HTMLDivElement;
   }
 
   /**
@@ -271,22 +265,22 @@ class ScrollBar extends Widget {
    */
   handleEvent(event: Event): void {
     switch (event.type) {
-    case 'mousedown':
-      this._evtMouseDown(event as MouseEvent);
-      break;
-    case 'mousemove':
-      this._evtMouseMove(event as MouseEvent);
-      break;
-    case 'mouseup':
-      this._evtMouseUp(event as MouseEvent);
-      break;
-    case 'keydown':
-      this._evtKeyDown(event as KeyboardEvent);
-      break;
-    case 'contextmenu':
-      event.preventDefault();
-      event.stopPropagation();
-      break;
+      case 'mousedown':
+        this._evtMouseDown(event as MouseEvent);
+        break;
+      case 'mousemove':
+        this._evtMouseMove(event as MouseEvent);
+        break;
+      case 'mouseup':
+        this._evtMouseUp(event as MouseEvent);
+        break;
+      case 'keydown':
+        this._evtKeyDown(event as KeyboardEvent);
+        break;
+      case 'contextmenu':
+        event.preventDefault();
+        event.stopPropagation();
+        break;
     }
   }
 
@@ -311,8 +305,8 @@ class ScrollBar extends Widget {
    */
   protected onUpdateRequest(msg: Message): void {
     // Convert the value and page into percentages.
-    let value = this._value * 100 / this._maximum;
-    let page = this._page * 100 / (this._page + this._maximum);
+    let value = (this._value * 100) / this._maximum;
+    let page = (this._page * 100) / (this._page + this._maximum);
 
     // Clamp the value and page to the relevant range.
     value = Math.max(0, Math.min(value, 100));
@@ -397,8 +391,10 @@ class ScrollBar extends Widget {
 
     // Set up the press data.
     this._pressData = {
-      part, override,
-      delta: -1, value: -1,
+      part,
+      override,
+      delta: -1,
+      value: -1,
       mouseX: event.clientX,
       mouseY: event.clientY
     };
@@ -480,7 +476,6 @@ class ScrollBar extends Widget {
 
     // Handle an increment button press.
     if (part === 'increment') {
-
       // Add the active class to the increment node.
       this.incrementNode.classList.add('lm-mod-active');
       /* <DEPRECATED> */
@@ -536,7 +531,7 @@ class ScrollBar extends Widget {
     }
 
     // Compute the desired value from the scroll geometry.
-    let value = trackSpan === 0 ? 0 : trackPos * this._maximum / trackSpan;
+    let value = trackSpan === 0 ? 0 : (trackPos * this._maximum) / trackSpan;
 
     // Move the thumb to the computed value.
     this._moveThumb(value);
@@ -715,23 +710,19 @@ class ScrollBar extends Widget {
   private _pageRequested = new Signal<this, 'decrement' | 'increment'>(this);
 }
 
-
 /**
  * The namespace for the `ScrollBar` class statics.
  */
-export
-namespace ScrollBar {
+export namespace ScrollBar {
   /**
    * A type alias for a scroll bar orientation.
    */
-  export
-  type Orientation = 'horizontal' | 'vertical';
+  export type Orientation = 'horizontal' | 'vertical';
 
   /**
    * An options object for creating a scroll bar.
    */
-  export
-  interface IOptions {
+  export interface IOptions {
     /**
      * The orientation of the scroll bar.
      *
@@ -762,7 +753,6 @@ namespace ScrollBar {
   }
 }
 
-
 /**
  * The namespace for the module implementation details.
  */
@@ -770,14 +760,12 @@ namespace Private {
   /**
    * A type alias for the parts of a scroll bar.
    */
-  export
-  type ScrollBarPart = 'thumb' | 'track' | 'decrement' | 'increment';
+  export type ScrollBarPart = 'thumb' | 'track' | 'decrement' | 'increment';
 
   /**
    * An object which holds mouse press data.
    */
-  export
-  interface IPressData {
+  export interface IPressData {
     /**
      * The scroll bar part which was pressed.
      */
@@ -812,8 +800,7 @@ namespace Private {
   /**
    * Create the DOM node for a scroll bar.
    */
-  export
-  function createNode(): HTMLElement {
+  export function createNode(): HTMLElement {
     let node = document.createElement('div');
     let decrement = document.createElement('div');
     let increment = document.createElement('div');
@@ -841,8 +828,10 @@ namespace Private {
   /**
    * Find the scroll bar part which contains the given target.
    */
-  export
-  function findPart(scrollBar: ScrollBar, target: HTMLElement): ScrollBarPart | null {
+  export function findPart(
+    scrollBar: ScrollBar,
+    target: HTMLElement
+  ): ScrollBarPart | null {
     // Test the thumb.
     if (scrollBar.thumbNode.contains(target)) {
       return 'thumb';

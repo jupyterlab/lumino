@@ -7,40 +7,29 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  ArrayExt, StringExt
-} from '@lumino/algorithm';
+import { ArrayExt, StringExt } from '@lumino/algorithm';
+
+import { JSONExt, ReadonlyJSONObject } from '@lumino/coreutils';
+
+import { CommandRegistry } from '@lumino/commands';
+
+import { ElementExt } from '@lumino/domutils';
+
+import { Message } from '@lumino/messaging';
 
 import {
-  JSONExt, ReadonlyJSONObject
-} from '@lumino/coreutils';
-
-import {
-  CommandRegistry
-} from '@lumino/commands';
-
-import {
-  ElementExt
-} from '@lumino/domutils';
-
-import {
-  Message
-} from '@lumino/messaging';
-
-import {
-  ElementDataset, VirtualDOM, VirtualElement, h
+  ElementDataset,
+  h,
+  VirtualDOM,
+  VirtualElement
 } from '@lumino/virtualdom';
 
-import {
-  Widget
-} from './widget';
-
+import { Widget } from './widget';
 
 /**
  * A widget which displays command items as a searchable palette.
  */
-export
-class CommandPalette extends Widget {
+export class CommandPalette extends Widget {
   /**
    * Construct a new command palette.
    *
@@ -85,7 +74,9 @@ class CommandPalette extends Widget {
    * This is the node which contains the search-related elements.
    */
   get searchNode(): HTMLDivElement {
-    return this.node.getElementsByClassName('lm-CommandPalette-search')[0] as HTMLDivElement;
+    return this.node.getElementsByClassName(
+      'lm-CommandPalette-search'
+    )[0] as HTMLDivElement;
   }
 
   /**
@@ -95,7 +86,9 @@ class CommandPalette extends Widget {
    * This is the actual input node for the search area.
    */
   get inputNode(): HTMLInputElement {
-    return this.node.getElementsByClassName('lm-CommandPalette-input')[0] as HTMLInputElement;
+    return this.node.getElementsByClassName(
+      'lm-CommandPalette-input'
+    )[0] as HTMLInputElement;
   }
 
   /**
@@ -107,7 +100,9 @@ class CommandPalette extends Widget {
    * Modifying this node directly can lead to undefined behavior.
    */
   get contentNode(): HTMLUListElement {
-    return this.node.getElementsByClassName('lm-CommandPalette-content')[0] as HTMLUListElement;
+    return this.node.getElementsByClassName(
+      'lm-CommandPalette-content'
+    )[0] as HTMLUListElement;
   }
 
   /**
@@ -136,6 +131,20 @@ class CommandPalette extends Widget {
 
     // Return the item added to the palette.
     return item;
+  }
+
+  /**
+   * Adds command items to the command palette.
+   *
+   * @param items - An array of options for creating each command item.
+   *
+   * @returns The command items added to the palette.
+   */
+  addItems(items: CommandPalette.IItemOptions[]): CommandPalette.IItem[] {
+    const newItems = items.map(item => Private.createItem(this.commands, item));
+    newItems.forEach(item => this._items.push(item));
+    this.refresh();
+    return newItems;
   }
 
   /**
@@ -202,13 +211,16 @@ class CommandPalette extends Widget {
    */
   refresh(): void {
     this._results = null;
-    if(this.inputNode.value !== '') {
-      let clear = this.node.getElementsByClassName('lm-close-icon')[0] as HTMLInputElement;
-      clear.style.display = 'inherit'
-    }
-    else {
-      let clear = this.node.getElementsByClassName('lm-close-icon')[0] as HTMLInputElement;
-      clear.style.display = 'none'
+    if (this.inputNode.value !== '') {
+      let clear = this.node.getElementsByClassName(
+        'lm-close-icon'
+      )[0] as HTMLInputElement;
+      clear.style.display = 'inherit';
+    } else {
+      let clear = this.node.getElementsByClassName(
+        'lm-close-icon'
+      )[0] as HTMLInputElement;
+      clear.style.display = 'none';
     }
     this.update();
   }
@@ -225,19 +237,19 @@ class CommandPalette extends Widget {
    */
   handleEvent(event: Event): void {
     switch (event.type) {
-    case 'click':
-      this._evtClick(event as MouseEvent);
-      break;
-    case 'keydown':
-      this._evtKeyDown(event as KeyboardEvent);
-      break;
-    case 'input':
-      this.refresh();
-      break;
-    case 'focus':
-    case 'blur':
-      this._toggleFocused();
-      break;
+      case 'click':
+        this._evtClick(event as MouseEvent);
+        break;
+      case 'keydown':
+        this._evtKeyDown(event as KeyboardEvent);
+        break;
+      case 'input':
+        this.refresh();
+        break;
+      case 'focus':
+      case 'blur':
+        this._toggleFocused();
+        break;
     }
   }
 
@@ -289,9 +301,9 @@ class CommandPalette extends Widget {
       results = this._results = Private.search(this._items, query);
 
       // Reset the active index.
-      this._activeIndex = (
-        query ? ArrayExt.findFirstIndex(results, Private.canActivate) : -1
-      );
+      this._activeIndex = query
+        ? ArrayExt.findFirstIndex(results, Private.canActivate)
+        : -1;
     }
 
     // If there is no query and no results, clear the content.
@@ -347,7 +359,7 @@ class CommandPalette extends Widget {
     }
 
     // Clear input if the target is clear button
-    if((event.target as HTMLElement).classList.contains("lm-close-icon")) {
+    if ((event.target as HTMLElement).classList.contains('lm-close-icon')) {
       this.inputNode.value = '';
       this.refresh();
       return;
@@ -379,21 +391,21 @@ class CommandPalette extends Widget {
       return;
     }
     switch (event.keyCode) {
-    case 13:  // Enter
-      event.preventDefault();
-      event.stopPropagation();
-      this._execute(this._activeIndex);
-      break;
-    case 38:  // Up Arrow
-      event.preventDefault();
-      event.stopPropagation();
-      this._activatePreviousItem();
-      break;
-    case 40:  // Down Arrow
-      event.preventDefault();
-      event.stopPropagation();
-      this._activateNextItem();
-      break;
+      case 13: // Enter
+        event.preventDefault();
+        event.stopPropagation();
+        this._execute(this._activeIndex);
+        break;
+      case 38: // Up Arrow
+        event.preventDefault();
+        event.stopPropagation();
+        this._activatePreviousItem();
+        break;
+      case 40: // Down Arrow
+        event.preventDefault();
+        event.stopPropagation();
+        this._activateNextItem();
+        break;
     }
   }
 
@@ -412,7 +424,10 @@ class CommandPalette extends Widget {
     let start = ai < n - 1 ? ai + 1 : 0;
     let stop = start === 0 ? n - 1 : start - 1;
     this._activeIndex = ArrayExt.findFirstIndex(
-      this._results, Private.canActivate, start, stop
+      this._results,
+      Private.canActivate,
+      start,
+      stop
     );
 
     // Schedule an update of the items.
@@ -434,7 +449,10 @@ class CommandPalette extends Widget {
     let start = ai <= 0 ? n - 1 : ai - 1;
     let stop = start === n - 1 ? 0 : start + 1;
     this._activeIndex = ArrayExt.findLastIndex(
-      this._results, Private.canActivate, start, stop
+      this._results,
+      Private.canActivate,
+      start,
+      stop
     );
 
     // Schedule an update of the items.
@@ -503,17 +521,14 @@ class CommandPalette extends Widget {
   private _results: Private.SearchResult[] | null = null;
 }
 
-
 /**
  * The namespace for the `CommandPalette` class statics.
  */
-export
-namespace CommandPalette {
+export namespace CommandPalette {
   /**
    * An options object for creating a command palette.
    */
-  export
-  interface IOptions {
+  export interface IOptions {
     /**
      * The command registry for use with the command palette.
      */
@@ -530,8 +545,7 @@ namespace CommandPalette {
   /**
    * An options object for creating a command item.
    */
-  export
-  interface IItemOptions {
+  export interface IItemOptions {
     /**
      * The category for the item.
      */
@@ -570,8 +584,7 @@ namespace CommandPalette {
    * #### Notes
    * Item objects are created automatically by a command palette.
    */
-  export
-  interface IItem {
+  export interface IItem {
     /**
      * The command to execute when the item is triggered.
      */
@@ -605,8 +618,11 @@ namespace CommandPalette {
     /**
      * The icon renderer for the command item.
      */
-    readonly icon: VirtualElement.IRenderer | undefined
-    /* <DEPRECATED> */ | string /* </DEPRECATED> */;
+    readonly icon:
+      | VirtualElement.IRenderer
+      | undefined
+      /* <DEPRECATED> */
+      | string /* </DEPRECATED> */;
 
     /**
      * The icon class for the command item.
@@ -639,6 +655,11 @@ namespace CommandPalette {
     readonly isToggled: boolean;
 
     /**
+     * Whether the command item is toggleable.
+     */
+    readonly isToggleable: boolean;
+
+    /**
      * Whether the command item is visible.
      */
     readonly isVisible: boolean;
@@ -652,8 +673,7 @@ namespace CommandPalette {
   /**
    * The render data for a command palette header.
    */
-  export
-  interface IHeaderRenderData {
+  export interface IHeaderRenderData {
     /**
      * The category of the header.
      */
@@ -668,8 +688,7 @@ namespace CommandPalette {
   /**
    * The render data for a command palette item.
    */
-  export
-  interface IItemRenderData {
+  export interface IItemRenderData {
     /**
      * The command palette item to render.
      */
@@ -689,8 +708,7 @@ namespace CommandPalette {
   /**
    * The render data for a command palette empty message.
    */
-  export
-  interface IEmptyMessageRenderData {
+  export interface IEmptyMessageRenderData {
     /**
      * The query which failed to match any commands.
      */
@@ -700,8 +718,7 @@ namespace CommandPalette {
   /**
    * A renderer for use with a command palette.
    */
-  export
-  interface IRenderer {
+  export interface IRenderer {
     /**
      * Render the virtual element for a command palette header.
      *
@@ -736,8 +753,7 @@ namespace CommandPalette {
   /**
    * The default implementation of `IRenderer`.
    */
-  export
-  class Renderer implements IRenderer {
+  export class Renderer implements IRenderer {
     /**
      * Render the virtual element for a command palette header.
      *
@@ -747,12 +763,16 @@ namespace CommandPalette {
      */
     renderHeader(data: IHeaderRenderData): VirtualElement {
       let content = this.formatHeader(data);
-      return h.li({ className:
-        'lm-CommandPalette-header'
-          /* <DEPRECATED> */
-          + ' p-CommandPalette-header'
+      return h.li(
+        {
+          className:
+            'lm-CommandPalette-header' +
+            /* <DEPRECATED> */
+            ' p-CommandPalette-header'
           /* </DEPRECATED> */
-      }, content);
+        },
+        content
+      );
     }
 
     /**
@@ -765,12 +785,27 @@ namespace CommandPalette {
     renderItem(data: IItemRenderData): VirtualElement {
       let className = this.createItemClass(data);
       let dataset = this.createItemDataset(data);
-      return (
-        h.li({ className, dataset },
+      if (data.item.isToggleable) {
+        return h.li(
+          {
+            className,
+            dataset,
+            role: 'checkbox',
+            'aria-checked': `${data.item.isToggled}`
+          },
           this.renderItemIcon(data),
           this.renderItemContent(data),
-          this.renderItemShortcut(data),
-        )
+          this.renderItemShortcut(data)
+        );
+      }
+      return h.li(
+        {
+          className,
+          dataset
+        },
+        this.renderItemIcon(data),
+        this.renderItemContent(data),
+        this.renderItemShortcut(data)
       );
     }
 
@@ -783,12 +818,16 @@ namespace CommandPalette {
      */
     renderEmptyMessage(data: IEmptyMessageRenderData): VirtualElement {
       let content = this.formatEmptyMessage(data);
-      return h.li({
-        className: 'lm-CommandPalette-emptyMessage'
-          /* <DEPRECATED> */
-          + ' p-CommandPalette-emptyMessage'
+      return h.li(
+        {
+          className:
+            'lm-CommandPalette-emptyMessage' +
+            /* <DEPRECATED> */
+            ' p-CommandPalette-emptyMessage'
           /* </DEPRECATED> */
-      }, content);
+        },
+        content
+      );
     }
 
     /**
@@ -803,12 +842,12 @@ namespace CommandPalette {
 
       /* <DEPRECATED> */
       if (typeof data.item.icon === 'string') {
-        return h.div({className}, data.item.iconLabel);
+        return h.div({ className }, data.item.iconLabel);
       }
       /* </DEPRECATED> */
 
       // if data.item.icon is undefined, it will be ignored
-      return h.div({className}, data.item.icon!, data.item.iconLabel);
+      return h.div({ className }, data.item.icon!, data.item.iconLabel);
     }
 
     /**
@@ -819,16 +858,16 @@ namespace CommandPalette {
      * @returns A virtual element representing the content.
      */
     renderItemContent(data: IItemRenderData): VirtualElement {
-      return (
-        h.div({
-          className: 'lm-CommandPalette-itemContent'
+      return h.div(
+        {
+          className:
+            'lm-CommandPalette-itemContent' +
             /* <DEPRECATED> */
-            + ' p-CommandPalette-itemContent'
-            /* </DEPRECATED> */
+            ' p-CommandPalette-itemContent'
+          /* </DEPRECATED> */
         },
-          this.renderItemLabel(data),
-          this.renderItemCaption(data)
-        )
+        this.renderItemLabel(data),
+        this.renderItemCaption(data)
       );
     }
 
@@ -841,12 +880,16 @@ namespace CommandPalette {
      */
     renderItemLabel(data: IItemRenderData): VirtualElement {
       let content = this.formatItemLabel(data);
-      return h.div({
-        className: 'lm-CommandPalette-itemLabel'
-          /* <DEPRECATED> */
-          + ' p-CommandPalette-itemLabel'
+      return h.div(
+        {
+          className:
+            'lm-CommandPalette-itemLabel' +
+            /* <DEPRECATED> */
+            ' p-CommandPalette-itemLabel'
           /* </DEPRECATED> */
-      }, content);
+        },
+        content
+      );
     }
 
     /**
@@ -858,12 +901,16 @@ namespace CommandPalette {
      */
     renderItemCaption(data: IItemRenderData): VirtualElement {
       let content = this.formatItemCaption(data);
-      return h.div({
-        className: 'lm-CommandPalette-itemCaption'
-          /* <DEPRECATED> */
-          + ' p-CommandPalette-itemCaption'
+      return h.div(
+        {
+          className:
+            'lm-CommandPalette-itemCaption' +
+            /* <DEPRECATED> */
+            ' p-CommandPalette-itemCaption'
           /* </DEPRECATED> */
-      }, content);
+        },
+        content
+      );
     }
 
     /**
@@ -875,12 +922,16 @@ namespace CommandPalette {
      */
     renderItemShortcut(data: IItemRenderData): VirtualElement {
       let content = this.formatItemShortcut(data);
-      return h.div({
-        className: 'lm-CommandPalette-itemShortcut'
-          /* <DEPRECATED> */
-          + ' p-CommandPalette-itemShortcut'
+      return h.div(
+        {
+          className:
+            'lm-CommandPalette-itemShortcut' +
+            /* <DEPRECATED> */
+            ' p-CommandPalette-itemShortcut'
           /* </DEPRECATED> */
-      }, content);
+        },
+        content
+      );
     }
 
     /**
@@ -988,7 +1039,9 @@ namespace CommandPalette {
      */
     formatItemShortcut(data: IItemRenderData): h.Child {
       let kb = data.item.keyBinding;
-      return kb ? kb.keys.map(CommandRegistry.formatKeystroke).join(', ') : null;
+      return kb
+        ? kb.keys.map(CommandRegistry.formatKeystroke).join(', ')
+        : null;
     }
 
     /**
@@ -1020,10 +1073,8 @@ namespace CommandPalette {
   /**
    * The default `Renderer` instance.
    */
-  export
-  const defaultRenderer = new Renderer();
+  export const defaultRenderer = new Renderer();
 }
-
 
 /**
  * The namespace for the module implementation details.
@@ -1032,8 +1083,7 @@ namespace Private {
   /**
    * Create the DOM node for a command palette.
    */
-  export
-  function createNode(): HTMLDivElement {
+  export function createNode(): HTMLDivElement {
     let node = document.createElement('div');
     let search = document.createElement('div');
     let wrapper = document.createElement('div');
@@ -1064,16 +1114,17 @@ namespace Private {
   /**
    * Create a new command item from a command registry and options.
    */
-  export
-  function createItem(commands: CommandRegistry, options: CommandPalette.IItemOptions): CommandPalette.IItem {
+  export function createItem(
+    commands: CommandRegistry,
+    options: CommandPalette.IItemOptions
+  ): CommandPalette.IItem {
     return new CommandItem(commands, options);
   }
 
   /**
    * A search result object for a header label.
    */
-  export
-  interface IHeaderResult {
+  export interface IHeaderResult {
     /**
      * The discriminated type of the object.
      */
@@ -1093,8 +1144,7 @@ namespace Private {
   /**
    * A search result object for a command item.
    */
-  export
-  interface IItemResult {
+  export interface IItemResult {
     /**
      * The discriminated type of the object.
      */
@@ -1114,14 +1164,15 @@ namespace Private {
   /**
    * A type alias for a search result item.
    */
-  export
-  type SearchResult = IHeaderResult | IItemResult;
+  export type SearchResult = IHeaderResult | IItemResult;
 
   /**
    * Search an array of command items for fuzzy matches.
    */
-  export
-  function search(items: CommandPalette.IItem[], query: string): SearchResult[] {
+  export function search(
+    items: CommandPalette.IItem[],
+    query: string
+  ): SearchResult[] {
     // Fuzzy match the items for the query.
     let scores = matchItems(items, query);
 
@@ -1135,8 +1186,7 @@ namespace Private {
   /**
    * Test whether a result item can be activated.
    */
-  export
-  function canActivate(result: SearchResult): boolean {
+  export function canActivate(result: SearchResult): boolean {
     return result.type === 'item' && result.item.isEnabled;
   }
 
@@ -1157,7 +1207,12 @@ namespace Private {
   /**
    * An enum of the supported match types.
    */
-  const enum MatchType { Label, Category, Split, Default }
+  const enum MatchType {
+    Label,
+    Category,
+    Split,
+    Default
+  }
 
   /**
    * A text match score with associated command item.
@@ -1213,7 +1268,8 @@ namespace Private {
           matchType: MatchType.Default,
           categoryIndices: null,
           labelIndices: null,
-          score: 0, item
+          score: 0,
+          item
         });
         continue;
       }
@@ -1243,7 +1299,10 @@ namespace Private {
   /**
    * Perform a fuzzy search on a single command item.
    */
-  function fuzzySearch(item: CommandPalette.IItem, query: string): IScore | null {
+  function fuzzySearch(
+    item: CommandPalette.IItem,
+    query: string
+  ): IScore | null {
     // Create the source text to be searched.
     let category = item.category.toLowerCase();
     let label = item.label.toLowerCase();
@@ -1257,6 +1316,7 @@ namespace Private {
     let rgx = /\b\w/g;
 
     // Search the source by word boundary.
+    // eslint-disable-next-line no-constant-condition
     while (true) {
       // Find the next word boundary in the source.
       let rgxMatch = rgx.exec(source);
@@ -1307,7 +1367,8 @@ namespace Private {
         matchType: MatchType.Label,
         categoryIndices: null,
         labelIndices,
-        score, item
+        score,
+        item
       };
     }
 
@@ -1317,7 +1378,8 @@ namespace Private {
         matchType: MatchType.Category,
         categoryIndices,
         labelIndices: null,
-        score, item
+        score,
+        item
       };
     }
 
@@ -1326,7 +1388,8 @@ namespace Private {
       matchType: MatchType.Split,
       categoryIndices,
       labelIndices,
-      score, item
+      score,
+      item
     };
   }
 
@@ -1350,15 +1413,15 @@ namespace Private {
     let i1 = 0;
     let i2 = 0;
     switch (a.matchType) {
-    case MatchType.Label:
-      i1 = a.labelIndices![0];
-      i2 = b.labelIndices![0];
-      break;
-    case MatchType.Category:
-    case MatchType.Split:
-      i1 = a.categoryIndices![0];
-      i2 = b.categoryIndices![0];
-      break;
+      case MatchType.Label:
+        i1 = a.labelIndices![0];
+        i2 = b.labelIndices![0];
+        break;
+      case MatchType.Category:
+      case MatchType.Split:
+        i1 = a.categoryIndices![0];
+        i2 = b.categoryIndices![0];
+        break;
     }
 
     // Compare based on the match index.
@@ -1376,7 +1439,7 @@ namespace Private {
     let r1 = a.item.rank;
     let r2 = b.item.rank;
     if (r1 !== r2) {
-      return r1 < r2 ? -1 : 1;  // Infinity safe
+      return r1 < r2 ? -1 : 1; // Infinity safe
     }
 
     // Finally, compare by label.
@@ -1444,7 +1507,10 @@ namespace Private {
     /**
      * Construct a new command item.
      */
-    constructor(commands: CommandRegistry, options: CommandPalette.IItemOptions) {
+    constructor(
+      commands: CommandRegistry,
+      options: CommandPalette.IItemOptions
+    ) {
       this._commands = commands;
       this.category = normalizeCategory(options.category);
       this.command = options.command;
@@ -1482,9 +1548,11 @@ namespace Private {
     /**
      * The icon renderer for the command item.
      */
-    get icon(): VirtualElement.IRenderer | undefined
-    /* <DEPRECATED> */ | string /* </DEPRECATED> */
-    {
+    get icon():
+      | VirtualElement.IRenderer
+      | undefined
+      /* <DEPRECATED> */
+      | string /* </DEPRECATED> */ {
       return this._commands.icon(this.command, this.args);
     }
 
@@ -1538,6 +1606,13 @@ namespace Private {
     }
 
     /**
+     * Whether the command item is toggleable.
+     */
+    get isToggleable(): boolean {
+      return this._commands.isToggleable(this.command, this.args);
+    }
+
+    /**
      * Whether the command item is visible.
      */
     get isVisible(): boolean {
@@ -1549,9 +1624,11 @@ namespace Private {
      */
     get keyBinding(): CommandRegistry.IKeyBinding | null {
       let { command, args } = this;
-      return ArrayExt.findLastValue(this._commands.keyBindings, kb => {
-        return kb.command === command && JSONExt.deepEqual(kb.args, args);
-      }) || null;
+      return (
+        ArrayExt.findLastValue(this._commands.keyBindings, kb => {
+          return kb.command === command && JSONExt.deepEqual(kb.args, args);
+        }) || null
+      );
     }
 
     private _commands: CommandRegistry;

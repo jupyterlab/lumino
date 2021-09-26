@@ -7,70 +7,55 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  expect
-} from 'chai';
+import { expect } from 'chai';
 
-import {
-  MapField
-} from '@lumino/datastore';
+import { MapField } from '@lumino/datastore';
 
 type MapValue = string;
 
 describe('@lumino/datastore', () => {
-
   describe('MapField', () => {
-
     let field: MapField<MapValue>;
 
     beforeEach(() => {
-        field = new MapField<MapValue>({
-          description: 'A map field storing strings'
-        });
+      field = new MapField<MapValue>({
+        description: 'A map field storing strings'
+      });
     });
 
     describe('constructor()', () => {
-
       it('should create a map field', () => {
         expect(field).to.be.instanceof(MapField);
       });
-
     });
 
     describe('type', () => {
-
       it('should return the type of the field', () => {
         expect(field.type).to.equal('map');
       });
-
     });
 
     describe('createValue()', () => {
-
       it('should create an initial value for the field', () => {
         let value = field.createValue();
         expect(value).to.eql({});
       });
-
     });
 
     describe('createMetadata()', () => {
-
       it('should create initial metadata for the field', () => {
         let metadata = field.createMetadata();
         expect(metadata).to.eql({ ids: {}, values: {} });
       });
-
     });
 
     describe('applyUpdate', () => {
-
       it('should apply an update to a value', () => {
-        let previous = {'zero': 'zeroth'};
+        let previous = { zero: 'zeroth' };
         let metadata = field.createMetadata();
         let update = {
-          'one': 'first',
-          'two': 'second'
+          one: 'first',
+          two: 'second'
         };
         let { value, patch } = field.applyUpdate({
           previous,
@@ -80,19 +65,19 @@ describe('@lumino/datastore', () => {
           storeId: 1
         });
         expect(value).to.eql({
-          'zero': 'zeroth',
-          'one': 'first',
-          'two': 'second'
+          zero: 'zeroth',
+          one: 'first',
+          two: 'second'
         });
         expect(patch.values).to.eql(update);
       });
 
       it('should indicate changed values in the change object', () => {
-        let previous = {'zero': 'zeroth', 'one': 'first' };
+        let previous = { zero: 'zeroth', one: 'first' };
         let metadata = field.createMetadata();
         let update = {
-          'one': null, // remove this field.
-          'two': 'second' // add this field.
+          one: null, // remove this field.
+          two: 'second' // add this field.
         };
         let { value, change } = field.applyUpdate({
           previous,
@@ -101,22 +86,20 @@ describe('@lumino/datastore', () => {
           version: 1,
           storeId: 1
         });
-        expect(value).to.eql({ 'zero': 'zeroth', 'two': 'second' });
-        expect(change.previous).to.eql({ 'one': 'first', 'two': null });
-        expect(change.current).to.eql({ 'one': null, 'two': 'second' });
+        expect(value).to.eql({ zero: 'zeroth', two: 'second' });
+        expect(change.previous).to.eql({ one: 'first', two: null });
+        expect(change.current).to.eql({ one: null, two: 'second' });
       });
-
     });
 
     describe('applyPatch', () => {
-
       it('should apply a patch to a value', () => {
-        let previous = {'zero': 'zeroth'};
+        let previous = { zero: 'zeroth' };
         let metadata = field.createMetadata();
         let update = field.applyUpdate({
           previous,
           metadata,
-          update: { 'one': 'first', 'two': 'second' },
+          update: { one: 'first', two: 'second' },
           version: 1,
           storeId: 1
         });
@@ -126,18 +109,18 @@ describe('@lumino/datastore', () => {
           patch: update.patch,
           metadata
         });
-        expect(value).to.eql({ 'zero': 'zeroth', 'one': 'first', 'two': 'second' });
+        expect(value).to.eql({ zero: 'zeroth', one: 'first', two: 'second' });
       });
 
       it('should indicate changed values in the change object', () => {
-        let previous = {'zero': 'zeroth', 'one': 'first' };
+        let previous = { zero: 'zeroth', one: 'first' };
         let metadata = field.createMetadata();
         let update = field.applyUpdate({
           previous,
           metadata,
           update: {
-            'one': null, // remove this field.
-            'two': 'second' // add this field.
+            one: null, // remove this field.
+            two: 'second' // add this field.
           },
           version: 1,
           storeId: 1
@@ -148,9 +131,9 @@ describe('@lumino/datastore', () => {
           patch: update.patch,
           metadata
         });
-        expect(value).to.eql({ 'zero': 'zeroth', 'two': 'second' });
-        expect(change.previous).to.eql({ 'one': 'first', 'two': null });
-        expect(change.current).to.eql({ 'one': null, 'two': 'second' });
+        expect(value).to.eql({ zero: 'zeroth', two: 'second' });
+        expect(change.previous).to.eql({ one: 'first', two: null });
+        expect(change.current).to.eql({ one: null, two: 'second' });
       });
 
       it('should allow for out-of-order patches', () => {
@@ -160,18 +143,18 @@ describe('@lumino/datastore', () => {
         let update1 = field.applyUpdate({
           previous,
           metadata,
-          update: { 'a': 'a', 'b': 'b' },
+          update: { a: 'a', b: 'b' },
           version: 1,
           storeId: 1
         });
         let update2 = field.applyUpdate({
           previous: update1.value,
           metadata,
-          update: {'a': null, 'c': 'c' },
+          update: { a: null, c: 'c' },
           version: 2,
           storeId: 1
         });
-        expect(update2.value).to.eql({'b': 'b', 'c': 'c'});
+        expect(update2.value).to.eql({ b: 'b', c: 'c' });
 
         //Reset the metadata and apply the patches out of order.
         metadata = field.createMetadata();
@@ -180,29 +163,27 @@ describe('@lumino/datastore', () => {
           metadata,
           patch: update2.patch
         });
-        expect(patch1.value).to.eql({'c': 'c'})
-        expect(patch1.change.previous).to.eql({'a': null, 'c': null });
-        expect(patch1.change.current).to.eql({'a': null, 'c': 'c'});
+        expect(patch1.value).to.eql({ c: 'c' });
+        expect(patch1.change.previous).to.eql({ a: null, c: null });
+        expect(patch1.change.current).to.eql({ a: null, c: 'c' });
         let patch2 = field.applyPatch({
           previous: patch1.value,
           metadata,
           patch: update1.patch
         });
-        expect(patch2.value).to.eql({'b': 'b', 'c': 'c'});
-        expect(patch2.change.previous).to.eql({'a': null, 'b': null});
-        expect(patch2.change.current).to.eql({'a': null, 'b': 'b'});
+        expect(patch2.value).to.eql({ b: 'b', c: 'c' });
+        expect(patch2.change.previous).to.eql({ a: null, b: null });
+        expect(patch2.change.current).to.eql({ a: null, b: 'b' });
       });
-
     });
 
     describe('unapplyPatch', () => {
-
       it('should unapply a patch to a map', () => {
         let metadata = field.createMetadata();
         let update = field.applyUpdate({
           previous: field.createValue(),
           metadata,
-          update: { 'one': 'first', 'two': 'second' },
+          update: { one: 'first', two: 'second' },
           version: 1,
           storeId: 1
         });
@@ -213,23 +194,22 @@ describe('@lumino/datastore', () => {
           patch: update.patch,
           metadata
         });
-        expect(value).to.eql({ 'one': 'first', 'two': 'second' });
+        expect(value).to.eql({ one: 'first', two: 'second' });
         let unpatched = field.unapplyPatch({
           previous: value,
           patch: update.patch,
           metadata
         });
         expect(unpatched.value).to.eql(field.createValue());
-        expect(unpatched.change.previous).to.eql({ 'one': 'first', 'two': 'second'});
-        expect(unpatched.change.current).to.eql({ 'one': null, 'two': null});
-
+        expect(unpatched.change.previous).to.eql({
+          one: 'first',
+          two: 'second'
+        });
+        expect(unpatched.change.current).to.eql({ one: null, two: null });
       });
-
     });
 
-
     describe('mergeChange', () => {
-
       it('should merge two successive changes', () => {
         let change1 = {
           previous: {},
@@ -245,7 +225,6 @@ describe('@lumino/datastore', () => {
           first: 'first-change',
           second: 'second-change'
         });
-
       });
 
       it('should prefer the first change for the previous merged field', () => {
@@ -254,7 +233,7 @@ describe('@lumino/datastore', () => {
           current: { value: 'value-changed' }
         };
         let change2 = {
-          previous: { value: 'other'},
+          previous: { value: 'other' },
           current: { value: 'other-changed' }
         };
         let result = field.mergeChange(change1, change2);
@@ -267,17 +246,15 @@ describe('@lumino/datastore', () => {
           current: { value: 'value-changed' }
         };
         let change2 = {
-          previous: { value: 'other'},
+          previous: { value: 'other' },
           current: { value: 'other-changed' }
         };
         let result = field.mergeChange(change1, change2);
         expect(result.current).to.eql({ value: 'other-changed' });
       });
-
     });
 
     describe('mergePatch', () => {
-
       it('should merge two patches into a single patch object', () => {
         let patch1 = {
           id: 'one',
@@ -306,9 +283,6 @@ describe('@lumino/datastore', () => {
         let result = field.mergePatch(patch1, patch2);
         expect(result).to.eql(patch2);
       });
-
     });
-
   });
-
 });

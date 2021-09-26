@@ -7,10 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  ArrayExt
-} from '@lumino/algorithm';
-
+import { ArrayExt } from '@lumino/algorithm';
 
 /**
  * An object which manages a collection of variable sized sections.
@@ -20,8 +17,7 @@ import {
  * the variable row and column sizes for a data grid. User code will
  * not interact with this class directly.
  */
-export
-class SectionList {
+export class SectionList {
   /**
    * Construct a new section list.
    *
@@ -29,7 +25,10 @@ class SectionList {
    */
   constructor(options: SectionList.IOptions) {
     this._minimumSize = options.minimumSize || 2;
-    this._defaultSize = Math.max(this._minimumSize, Math.floor(options.defaultSize));
+    this._defaultSize = Math.max(
+      this._minimumSize,
+      Math.floor(options.defaultSize)
+    );
   }
 
   /**
@@ -460,7 +459,11 @@ class SectionList {
     let i = ArrayExt.lowerBound(this._sections, index, Private.indexCmp);
 
     // Find the modified section for the end index.
-    let j = ArrayExt.lowerBound(this._sections, index + count, Private.indexCmp);
+    let j = ArrayExt.lowerBound(
+      this._sections,
+      index + count,
+      Private.indexCmp
+    );
 
     // Remove the relevant modified sections.
     let removed = this._sections.splice(i, j - i);
@@ -617,17 +620,14 @@ class SectionList {
   private _sections: Private.Section[] = [];
 }
 
-
 /**
  * The namespace for the `SectionList` class statics.
  */
-export
-namespace SectionList {
+export namespace SectionList {
   /**
    * An options object for initializing a section list.
    */
-  export
-  interface IOptions {
+  export interface IOptions {
     /**
      * The size of new sections added to the list.
      */
@@ -640,7 +640,6 @@ namespace SectionList {
   }
 }
 
-
 /**
  * The namespace for the module implementation details.
  */
@@ -648,8 +647,7 @@ namespace Private {
   /**
    * An object which represents a modified section.
    */
-  export
-  type Section = {
+  export type Section = {
     /**
      * The index of the section.
      *
@@ -673,8 +671,7 @@ namespace Private {
   /**
    * A comparison function for searching by offset.
    */
-  export
-  function offsetCmp(section: Section, offset: number): number {
+  export function offsetCmp(section: Section, offset: number): number {
     if (offset < section.offset) {
       return 1;
     }
@@ -687,8 +684,7 @@ namespace Private {
   /**
    * A comparison function for searching by index.
    */
-  export
-  function indexCmp(section: Section, index: number): number {
+  export function indexCmp(section: Section, index: number): number {
     return section.index - index;
   }
 }

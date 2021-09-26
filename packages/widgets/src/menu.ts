@@ -7,48 +7,35 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  ArrayExt
-} from '@lumino/algorithm';
+import { ArrayExt } from '@lumino/algorithm';
+
+import { CommandRegistry } from '@lumino/commands';
+
+import { JSONExt, ReadonlyJSONObject } from '@lumino/coreutils';
+
+import { ElementExt } from '@lumino/domutils';
+
+import { getKeyboardLayout } from '@lumino/keyboard';
+
+import { Message, MessageLoop } from '@lumino/messaging';
+
+import { ISignal, Signal } from '@lumino/signaling';
 
 import {
-  CommandRegistry
-} from '@lumino/commands';
-
-import {
-  JSONExt, ReadonlyJSONObject
-} from '@lumino/coreutils';
-
-import {
-  ElementExt
-} from '@lumino/domutils';
-
-import {
-  getKeyboardLayout
-} from '@lumino/keyboard';
-
-import {
-  Message, MessageLoop
-} from '@lumino/messaging';
-
-import {
-  ISignal, Signal
-} from '@lumino/signaling';
-
-import {
-  ElementDataset, VirtualDOM, VirtualElement, h
+  ARIAAttrNames,
+  ElementARIAAttrs,
+  ElementDataset,
+  h,
+  VirtualDOM,
+  VirtualElement
 } from '@lumino/virtualdom';
 
-import {
-  Widget
-} from './widget';
-
+import { Widget } from './widget';
 
 /**
  * A widget which displays items as a canonical menu.
  */
-export
-class Menu extends Widget {
+export class Menu extends Widget {
   /**
    * Construct a new menu.
    *
@@ -138,6 +125,7 @@ class Menu extends Widget {
    * The root menu of the menu hierarchy.
    */
   get rootMenu(): Menu {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     let menu: Menu = this;
     while (menu._parentMenu) {
       menu = menu._parentMenu;
@@ -149,6 +137,7 @@ class Menu extends Widget {
    * The leaf menu of the menu hierarchy.
    */
   get leafMenu(): Menu {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     let menu: Menu = this;
     while (menu._childMenu) {
       menu = menu._childMenu;
@@ -165,7 +154,9 @@ class Menu extends Widget {
    * Modifying this node directly can lead to undefined behavior.
    */
   get contentNode(): HTMLUListElement {
-    return this.node.getElementsByClassName('lm-Menu-content')[0] as HTMLUListElement;
+    return this.node.getElementsByClassName(
+      'lm-Menu-content'
+    )[0] as HTMLUListElement;
   }
 
   /**
@@ -220,6 +211,14 @@ class Menu extends Widget {
     // Update the active index.
     this._activeIndex = value;
 
+    // Make active element in focus
+    if (
+      this._activeIndex >= 0 &&
+      this.contentNode.childNodes[this._activeIndex]
+    ) {
+      (this.contentNode.childNodes[this._activeIndex] as HTMLElement).focus();
+    }
+
     // schedule an update of the items.
     this.update();
   }
@@ -243,7 +242,10 @@ class Menu extends Widget {
     let start = ai < n - 1 ? ai + 1 : 0;
     let stop = start === 0 ? n - 1 : start - 1;
     this.activeIndex = ArrayExt.findFirstIndex(
-      this._items, Private.canActivate, start, stop
+      this._items,
+      Private.canActivate,
+      start,
+      stop
     );
   }
 
@@ -259,7 +261,10 @@ class Menu extends Widget {
     let start = ai <= 0 ? n - 1 : ai - 1;
     let stop = start === n - 1 ? 0 : start + 1;
     this.activeIndex = ArrayExt.findLastIndex(
-      this._items, Private.canActivate, start, stop
+      this._items,
+      Private.canActivate,
+      start,
+      stop
     );
   }
 
@@ -392,7 +397,7 @@ class Menu extends Widget {
 
     // Bail if the index is out of range.
     if (!item) {
-      return
+      return;
     }
 
     // Schedule an update of the items.
@@ -468,28 +473,28 @@ class Menu extends Widget {
    */
   handleEvent(event: Event): void {
     switch (event.type) {
-    case 'keydown':
-      this._evtKeyDown(event as KeyboardEvent);
-      break;
-    case 'mouseup':
-      this._evtMouseUp(event as MouseEvent);
-      break;
-    case 'mousemove':
-      this._evtMouseMove(event as MouseEvent);
-      break;
-    case 'mouseenter':
-      this._evtMouseEnter(event as MouseEvent);
-      break;
-    case 'mouseleave':
-      this._evtMouseLeave(event as MouseEvent);
-      break;
-    case 'mousedown':
-      this._evtMouseDown(event as MouseEvent);
-      break;
-    case 'contextmenu':
-      event.preventDefault();
-      event.stopPropagation();
-      break;
+      case 'keydown':
+        this._evtKeyDown(event as KeyboardEvent);
+        break;
+      case 'mouseup':
+        this._evtMouseUp(event as MouseEvent);
+        break;
+      case 'mousemove':
+        this._evtMouseMove(event as MouseEvent);
+        break;
+      case 'mouseenter':
+        this._evtMouseEnter(event as MouseEvent);
+        break;
+      case 'mouseleave':
+        this._evtMouseLeave(event as MouseEvent);
+        break;
+      case 'mousedown':
+        this._evtMouseDown(event as MouseEvent);
+        break;
+      case 'contextmenu':
+        event.preventDefault();
+        event.stopPropagation();
+        break;
     }
   }
 
@@ -541,7 +546,14 @@ class Menu extends Widget {
       let item = items[i];
       let active = i === activeIndex;
       let collapsed = collapsedFlags[i];
-      content[i] = renderer.renderItem({ item, active, collapsed });
+      content[i] = renderer.renderItem({
+        item,
+        active,
+        collapsed,
+        onfocus: () => {
+          this.activeIndex = i;
+        }
+      });
     }
     VirtualDOM.render(content, this.contentNode);
   }
@@ -910,17 +922,14 @@ class Menu extends Widget {
   private _menuRequested = new Signal<this, 'next' | 'previous'>(this);
 }
 
-
 /**
  * The namespace for the `Menu` class statics.
  */
-export
-namespace Menu {
+export namespace Menu {
   /**
    * An options object for creating a menu.
    */
-  export
-  interface IOptions {
+  export interface IOptions {
     /**
      * The command registry for use with the menu.
      */
@@ -937,8 +946,7 @@ namespace Menu {
   /**
    * An options object for the `open` method on a menu.
    */
-  export
-  interface IOpenOptions {
+  export interface IOpenOptions {
     /**
      * Whether to force the X position of the menu.
      *
@@ -963,14 +971,12 @@ namespace Menu {
   /**
    * A type alias for a menu item type.
    */
-  export
-  type ItemType = 'command' | 'submenu' | 'separator';
+  export type ItemType = 'command' | 'submenu' | 'separator';
 
   /**
    * An options object for creating a menu item.
    */
-  export
-  interface IItemOptions {
+  export interface IItemOptions {
     /**
      * The type of the menu item.
      *
@@ -1006,8 +1012,7 @@ namespace Menu {
    * #### Notes
    * Item objects are created automatically by a menu.
    */
-  export
-  interface IItem {
+  export interface IItem {
     /**
      * The type of the menu item.
      */
@@ -1041,8 +1046,11 @@ namespace Menu {
     /**
      * The icon renderer for the menu item.
      */
-    readonly icon: VirtualElement.IRenderer | undefined
-    /* <DEPRECATED> */ | string /* </DEPRECATED> */;
+    readonly icon:
+      | VirtualElement.IRenderer
+      | undefined
+      /* <DEPRECATED> */
+      | string /* </DEPRECATED> */;
 
     /**
      * The icon class for the menu item.
@@ -1093,8 +1101,7 @@ namespace Menu {
   /**
    * An object which holds the data to render a menu item.
    */
-  export
-  interface IRenderData {
+  export interface IRenderData {
     /**
      * The item to be rendered.
      */
@@ -1109,13 +1116,17 @@ namespace Menu {
      * Whether the item should be collapsed.
      */
     readonly collapsed: boolean;
+
+    /**
+     * Handler for when element is in focus.
+     */
+    readonly onfocus?: () => void;
   }
 
   /**
    * A renderer for use with a menu.
    */
-  export
-  interface IRenderer {
+  export interface IRenderer {
     /**
      * Render the virtual element for a menu item.
      *
@@ -1132,13 +1143,7 @@ namespace Menu {
    * #### Notes
    * Subclasses are free to reimplement rendering methods as needed.
    */
-  export
-  class Renderer implements IRenderer {
-    /**
-     * Construct a new renderer.
-     */
-    constructor() { }
-
+  export class Renderer implements IRenderer {
     /**
      * Render the virtual element for a menu item.
      *
@@ -1149,13 +1154,19 @@ namespace Menu {
     renderItem(data: IRenderData): VirtualElement {
       let className = this.createItemClass(data);
       let dataset = this.createItemDataset(data);
-      return (
-        h.li({ className, dataset },
-          this.renderIcon(data),
-          this.renderLabel(data),
-          this.renderShortcut(data),
-          this.renderSubmenu(data)
-        )
+      let aria = this.createItemARIA(data);
+      return h.li(
+        {
+          className,
+          dataset,
+          tabindex: '0',
+          onfocus: data.onfocus,
+          ...aria
+        },
+        this.renderIcon(data),
+        this.renderLabel(data),
+        this.renderShortcut(data),
+        this.renderSubmenu(data)
       );
     }
 
@@ -1171,12 +1182,12 @@ namespace Menu {
 
       /* <DEPRECATED> */
       if (typeof data.item.icon === 'string') {
-        return h.div({className}, data.item.iconLabel);
+        return h.div({ className }, data.item.iconLabel);
       }
       /* </DEPRECATED> */
 
       // if data.item.icon is undefined, it will be ignored
-      return h.div({className}, data.item.icon!, data.item.iconLabel);
+      return h.div({ className }, data.item.icon!, data.item.iconLabel);
     }
 
     /**
@@ -1188,12 +1199,16 @@ namespace Menu {
      */
     renderLabel(data: IRenderData): VirtualElement {
       let content = this.formatLabel(data);
-      return h.div({
-        className: 'lm-Menu-itemLabel'
-          /* <DEPRECATED> */
-          + ' p-Menu-itemLabel'
+      return h.div(
+        {
+          className:
+            'lm-Menu-itemLabel' +
+            /* <DEPRECATED> */
+            ' p-Menu-itemLabel'
           /* </DEPRECATED> */
-      }, content);
+        },
+        content
+      );
     }
 
     /**
@@ -1205,12 +1220,16 @@ namespace Menu {
      */
     renderShortcut(data: IRenderData): VirtualElement {
       let content = this.formatShortcut(data);
-      return h.div({
-        className: 'lm-Menu-itemShortcut'
-          /* <DEPRECATED> */
-          + ' p-Menu-itemShortcut'
+      return h.div(
+        {
+          className:
+            'lm-Menu-itemShortcut' +
+            /* <DEPRECATED> */
+            ' p-Menu-itemShortcut'
           /* </DEPRECATED> */
-      }, content);
+        },
+        content
+      );
     }
 
     /**
@@ -1222,10 +1241,11 @@ namespace Menu {
      */
     renderSubmenu(data: IRenderData): VirtualElement {
       return h.div({
-        className: 'lm-Menu-itemSubmenuIcon'
+        className:
+          'lm-Menu-itemSubmenuIcon' +
           /* <DEPRECATED> */
-          + ' p-Menu-itemSubmenuIcon'
-          /* </DEPRECATED> */
+          ' p-Menu-itemSubmenuIcon'
+        /* </DEPRECATED> */
       });
     }
 
@@ -1320,6 +1340,34 @@ namespace Menu {
     }
 
     /**
+     * Create the aria attributes for menu item.
+     *
+     * @param data - The data to use for the aria attributes.
+     *
+     * @returns The aria attributes object for the item.
+     */
+    createItemARIA(data: IRenderData): ElementARIAAttrs {
+      let aria: { [T in ARIAAttrNames]?: string } = {};
+      switch (data.item.type) {
+        case 'separator':
+          aria.role = 'presentation';
+          break;
+        case 'submenu':
+          aria['aria-haspopup'] = 'true';
+          if (!data.item.isEnabled) {
+            aria['aria-disabled'] = 'true';
+          }
+          break;
+        default:
+          if (!data.item.isEnabled) {
+            aria['aria-disabled'] = 'true';
+          }
+          aria.role = 'menuitem';
+      }
+      return aria;
+    }
+
+    /**
      * Create the render content for the label node.
      *
      * @param data - The data to use for the label content.
@@ -1341,12 +1389,16 @@ namespace Menu {
       let char = label[mnemonic];
 
       // Wrap the mnemonic character in a span.
-      let span = h.span({
-        className: 'lm-Menu-itemMnemonic'
-          /* <DEPRECATED> */
-          + ' p-Menu-itemMnemonic'
+      let span = h.span(
+        {
+          className:
+            'lm-Menu-itemMnemonic' +
+            /* <DEPRECATED> */
+            ' p-Menu-itemMnemonic'
           /* </DEPRECATED> */
-      }, char);
+        },
+        char
+      );
 
       // Return the content parts.
       return [prefix, span, suffix];
@@ -1361,17 +1413,17 @@ namespace Menu {
      */
     formatShortcut(data: IRenderData): h.Child {
       let kb = data.item.keyBinding;
-      return kb ? kb.keys.map(CommandRegistry.formatKeystroke).join(', ') : null;
+      return kb
+        ? kb.keys.map(CommandRegistry.formatKeystroke).join(', ')
+        : null;
     }
   }
 
   /**
    * The default `Renderer` instance.
    */
-  export
-  const defaultRenderer = new Renderer();
+  export const defaultRenderer = new Renderer();
 }
-
 
 /**
  * The namespace for the module implementation details.
@@ -1380,20 +1432,17 @@ namespace Private {
   /**
    * The ms delay for opening and closing a submenu.
    */
-  export
-  const TIMER_DELAY = 300;
+  export const TIMER_DELAY = 300;
 
   /**
    * The horizontal pixel overlap for an open submenu.
    */
-  export
-  const SUBMENU_OVERLAP = 3;
+  export const SUBMENU_OVERLAP = 3;
 
   /**
    * Create the DOM node for a menu.
    */
-  export
-  function createNode(): HTMLDivElement {
+  export function createNode(): HTMLDivElement {
     let node = document.createElement('div');
     let content = document.createElement('ul');
     content.className = 'lm-Menu-content';
@@ -1401,31 +1450,32 @@ namespace Private {
     content.classList.add('p-Menu-content');
     /* </DEPRECATED> */
     node.appendChild(content);
-    node.tabIndex = -1;
+    content.setAttribute('role', 'menu');
+    node.tabIndex = 0;
     return node;
   }
 
   /**
    * Test whether a menu item can be activated.
    */
-  export
-  function canActivate(item: Menu.IItem): boolean {
+  export function canActivate(item: Menu.IItem): boolean {
     return item.type !== 'separator' && item.isEnabled && item.isVisible;
   }
 
   /**
    * Create a new menu item for an owner menu.
    */
-  export
-  function createItem(owner: Menu, options: Menu.IItemOptions): Menu.IItem {
+  export function createItem(
+    owner: Menu,
+    options: Menu.IItemOptions
+  ): Menu.IItem {
     return new MenuItem(owner.commands, options);
   }
 
   /**
    * Hit test a menu hierarchy starting at the given root.
    */
-  export
-  function hitTestMenus(menu: Menu, x: number, y: number): boolean {
+  export function hitTestMenus(menu: Menu, x: number, y: number): boolean {
     for (let temp: Menu | null = menu; temp; temp = temp.childMenu) {
       if (ElementExt.hitTest(temp.node, x, y)) {
         return true;
@@ -1437,8 +1487,9 @@ namespace Private {
   /**
    * Compute which extra separator items should be collapsed.
    */
-  export
-  function computeCollapsed(items: ReadonlyArray<Menu.IItem>): boolean[] {
+  export function computeCollapsed(
+    items: ReadonlyArray<Menu.IItem>
+  ): boolean[] {
     // Allocate the return array and fill it with `false`.
     let result = new Array<boolean>(items.length);
     ArrayExt.fill(result, false);
@@ -1493,8 +1544,13 @@ namespace Private {
   /**
    * Open a menu as a root menu at the target location.
    */
-  export
-  function openRootMenu(menu: Menu, x: number, y: number, forceX: boolean, forceY: boolean): void {
+  export function openRootMenu(
+    menu: Menu,
+    x: number,
+    y: number,
+    forceX: boolean,
+    forceY: boolean
+  ): void {
     // Ensure the menu is updated before attaching and measuring.
     MessageLoop.sendMessage(menu, Widget.Msg.UpdateRequest);
 
@@ -1526,12 +1582,12 @@ namespace Private {
     let { width, height } = node.getBoundingClientRect();
 
     // Adjust the X position of the menu to fit on-screen.
-    if (!forceX && (x + width > px + cw)) {
+    if (!forceX && x + width > px + cw) {
       x = px + cw - width;
     }
 
     // Adjust the Y position of the menu to fit on-screen.
-    if (!forceY && (y + height > py + ch)) {
+    if (!forceY && y + height > py + ch) {
       if (y > py + ch) {
         y = py + ch - height;
       } else {
@@ -1550,8 +1606,7 @@ namespace Private {
   /**
    * Open a menu as a submenu using an item node for positioning.
    */
-  export
-  function openSubmenu(submenu: Menu, itemNode: HTMLElement): void {
+  export function openSubmenu(submenu: Menu, itemNode: HTMLElement): void {
     // Ensure the menu is updated before opening.
     MessageLoop.sendMessage(submenu, Widget.Msg.UpdateRequest);
 
@@ -1615,8 +1670,7 @@ namespace Private {
   /**
    * The results of a mnemonic search.
    */
-  export
-  interface IMnemonicResult {
+  export interface IMnemonicResult {
     /**
      * The index of the first matching mnemonic item, or `-1`.
      */
@@ -1638,8 +1692,11 @@ namespace Private {
    *
    * The search starts at the given index and wraps around.
    */
-  export
-  function findMnemonic(items: ReadonlyArray<Menu.IItem>, key: string, start: number): IMnemonicResult {
+  export function findMnemonic(
+    items: ReadonlyArray<Menu.IItem>,
+    key: string,
+    start: number
+  ): IMnemonicResult {
     // Setup the result variables.
     let index = -1;
     let auto = -1;
@@ -1756,9 +1813,11 @@ namespace Private {
     /**
      * The icon renderer for the menu item.
      */
-    get icon(): VirtualElement.IRenderer | undefined
-    /* <DEPRECATED> */ | string /* </DEPRECATED> */
-    {
+    get icon():
+      | VirtualElement.IRenderer
+      | undefined
+      /* <DEPRECATED> */
+      | string /* </DEPRECATED> */ {
       if (this.type === 'command') {
         return this._commands.icon(this.command, this.args);
       }
@@ -1801,7 +1860,6 @@ namespace Private {
       }
       return '';
     }
-
 
     /**
      * The display caption for the menu item.
@@ -1884,9 +1942,11 @@ namespace Private {
     get keyBinding(): CommandRegistry.IKeyBinding | null {
       if (this.type === 'command') {
         let { command, args } = this;
-        return ArrayExt.findLastValue(this._commands.keyBindings, kb => {
-          return kb.command === command && JSONExt.deepEqual(kb.args, args);
-        }) || null;
+        return (
+          ArrayExt.findLastValue(this._commands.keyBindings, kb => {
+            return kb.command === command && JSONExt.deepEqual(kb.args, args);
+          }) || null
+        );
       }
       return null;
     }

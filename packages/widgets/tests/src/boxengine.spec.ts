@@ -7,14 +7,9 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  expect
-} from 'chai';
+import { expect } from 'chai';
 
-import {
-  BoxSizer, BoxEngine
-} from '@lumino/widgets';
-
+import { BoxEngine, BoxSizer } from '@lumino/widgets';
 
 function createSizers(n: number): BoxSizer[] {
   let sizers: BoxSizer[] = [];
@@ -24,22 +19,16 @@ function createSizers(n: number): BoxSizer[] {
   return sizers;
 }
 
-
 describe('@lumino/widgets', () => {
-
   describe('BoxSizer', () => {
-
     describe('#constructor()', () => {
-
       it('should accept no arguments', () => {
         let sizer = new BoxSizer();
         expect(sizer).to.be.an.instanceof(BoxSizer);
       });
-
     });
 
     describe('#sizeHint', () => {
-
       it('should default to `0`', () => {
         let sizer = new BoxSizer();
         expect(sizer.sizeHint).to.equal(0);
@@ -50,11 +39,9 @@ describe('@lumino/widgets', () => {
         sizer.sizeHint = 42;
         expect(sizer.sizeHint).to.equal(42);
       });
-
     });
 
     describe('#minSize', () => {
-
       it('should default to `0`', () => {
         let sizer = new BoxSizer();
         expect(sizer.minSize).to.equal(0);
@@ -65,11 +52,9 @@ describe('@lumino/widgets', () => {
         sizer.minSize = 42;
         expect(sizer.minSize).to.equal(42);
       });
-
     });
 
     describe('#maxSize', () => {
-
       it('should default to `Infinity`', () => {
         let sizer = new BoxSizer();
         expect(sizer.maxSize).to.equal(Infinity);
@@ -80,11 +65,9 @@ describe('@lumino/widgets', () => {
         sizer.maxSize = 42;
         expect(sizer.maxSize).to.equal(42);
       });
-
     });
 
     describe('#stretch', () => {
-
       it('should default to `1`', () => {
         let sizer = new BoxSizer();
         expect(sizer.stretch).to.equal(1);
@@ -95,11 +78,9 @@ describe('@lumino/widgets', () => {
         sizer.stretch = 42;
         expect(sizer.stretch).to.equal(42);
       });
-
     });
 
     describe('#size', () => {
-
       it('should be the computed output', () => {
         let sizer = new BoxSizer();
         expect(typeof sizer.size).to.equal('number');
@@ -110,15 +91,11 @@ describe('@lumino/widgets', () => {
         sizer.size = 42;
         expect(sizer.size).to.equal(42);
       });
-
     });
-
   });
 
   describe('BoxEngine', () => {
-
     describe('calc()', () => {
-
       it('should handle an empty sizers array', () => {
         expect(() => BoxEngine.calc([], 100)).to.not.throw(Error);
       });
@@ -328,11 +305,9 @@ describe('@lumino/widgets', () => {
         expect(sizers[2].size).to.equal(70);
         expect(sizers[3].size).to.equal(100);
       });
-
     });
 
     describe('adjust()', () => {
-
       it('should adjust a sizer by a positive delta', () => {
         let sizers = createSizers(5);
         sizers[0].sizeHint = 50;
@@ -378,9 +353,6 @@ describe('@lumino/widgets', () => {
         expect(sizers[3].sizeHint).to.equal(80);
         expect(sizers[4].sizeHint).to.equal(50);
       });
-
     });
-
   });
-
 });

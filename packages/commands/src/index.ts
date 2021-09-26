@@ -7,33 +7,23 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  ArrayExt
-} from '@lumino/algorithm';
+import { ArrayExt } from '@lumino/algorithm';
 
 import {
-  JSONExt, ReadonlyPartialJSONObject
+  JSONExt,
+  ReadonlyJSONObject,
+  ReadonlyPartialJSONObject
 } from '@lumino/coreutils';
 
-import {
-  DisposableDelegate, IDisposable
-} from '@lumino/disposable';
+import { DisposableDelegate, IDisposable } from '@lumino/disposable';
 
-import {
-  Platform, Selector
-} from '@lumino/domutils';
+import { Platform, Selector } from '@lumino/domutils';
 
-import {
-  getKeyboardLayout
-} from '@lumino/keyboard';
+import { getKeyboardLayout } from '@lumino/keyboard';
 
-import {
-  ISignal, Signal
-} from '@lumino/signaling';
+import { ISignal, Signal } from '@lumino/signaling';
 
-import {
-  VirtualElement
-} from '@lumino/virtualdom';
+import { VirtualElement } from '@lumino/virtualdom';
 
 /**
  * An object which manages a collection of commands.
@@ -42,13 +32,7 @@ import {
  * A command registry can be used to populate a variety of action-based
  * widgets, such as command palettes, menus, and toolbars.
  */
-export
-class CommandRegistry {
-  /**
-   * Construct a new command registry.
-   */
-  constructor() { }
-
+export class CommandRegistry {
   /**
    * A signal emitted when a command has changed.
    *
@@ -64,9 +48,9 @@ class CommandRegistry {
    * A signal emitted when a command has executed.
    *
    * #### Notes
-   * Care should be taken when consuming this signal. It is intended to
-   * be used largely for debugging and logging purposes. It should not
-   * be (ab)used for general purpose spying on command execution.
+   * Care should be taken when consuming this signal. The command system is used
+   * by many components for many user actions. Handlers registered with this
+   * signal must return quickly to ensure the overall application remains responsive.
    */
   get commandExecuted(): ISignal<this, CommandRegistry.ICommandExecutedArgs> {
     return this._commandExecuted;
@@ -75,7 +59,10 @@ class CommandRegistry {
   /**
    * A signal emitted when a key binding is changed.
    */
-  get keyBindingChanged(): ISignal<this, CommandRegistry.IKeyBindingChangedArgs> {
+  get keyBindingChanged(): ISignal<
+    this,
+    CommandRegistry.IKeyBindingChangedArgs
+  > {
     return this._keyBindingChanged;
   }
 
@@ -117,7 +104,10 @@ class CommandRegistry {
    *
    * @throws An error if the given `id` is already registered.
    */
-  addCommand(id: string, options: CommandRegistry.ICommandOptions): IDisposable {
+  addCommand(
+    id: string,
+    options: CommandRegistry.ICommandOptions
+  ): IDisposable {
     // Throw an error if the id is already registered.
     if (id in this._commands) {
       throw new Error(`Command '${id}' already registered.`);
@@ -171,7 +161,10 @@ class CommandRegistry {
    * @returns The display label for the command, or an empty string
    *   if the command is not registered.
    */
-  label(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): string {
+  label(
+    id: string,
+    args: ReadonlyPartialJSONObject = JSONExt.emptyObject
+  ): string {
     let cmd = this._commands[id];
     return cmd ? cmd.label.call(undefined, args) : '';
   }
@@ -186,7 +179,10 @@ class CommandRegistry {
    * @returns The mnemonic index for the command, or `-1` if the
    *   command is not registered.
    */
-  mnemonic(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): number {
+  mnemonic(
+    id: string,
+    args: ReadonlyPartialJSONObject = JSONExt.emptyObject
+  ): number {
     let cmd = this._commands[id];
     return cmd ? cmd.mnemonic.call(undefined, args) : -1;
   }
@@ -206,11 +202,18 @@ class CommandRegistry {
    * @returns The icon renderer for the command, or
    *   an empty string if the command is not registered.
    */
-  icon(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): VirtualElement.IRenderer | undefined
-  /* <DEPRECATED> */ | string /* </DEPRECATED> */
-  {
+  icon(
+    id: string,
+    args: ReadonlyPartialJSONObject = JSONExt.emptyObject
+  ):
+    | VirtualElement.IRenderer
+    | undefined
+    /* <DEPRECATED> */
+    | string /* </DEPRECATED> */ {
     let cmd = this._commands[id];
-    return cmd ? cmd.icon.call(undefined, args) : /* <DEPRECATED> */ '' /* </DEPRECATED> */ /* <FUTURE> undefined </FUTURE> */;
+    return cmd
+      ? cmd.icon.call(undefined, args)
+      : /* <DEPRECATED> */ '' /* </DEPRECATED> */ /* <FUTURE> undefined </FUTURE> */;
   }
 
   /**
@@ -223,7 +226,10 @@ class CommandRegistry {
    * @returns The icon class for the command, or an empty string if
    *   the command is not registered.
    */
-  iconClass(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): string {
+  iconClass(
+    id: string,
+    args: ReadonlyPartialJSONObject = JSONExt.emptyObject
+  ): string {
     let cmd = this._commands[id];
     return cmd ? cmd.iconClass.call(undefined, args) : '';
   }
@@ -238,7 +244,10 @@ class CommandRegistry {
    * @returns The icon label for the command, or an empty string if
    *   the command is not registered.
    */
-  iconLabel(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): string {
+  iconLabel(
+    id: string,
+    args: ReadonlyPartialJSONObject = JSONExt.emptyObject
+  ): string {
     let cmd = this._commands[id];
     return cmd ? cmd.iconLabel.call(undefined, args) : '';
   }
@@ -253,7 +262,10 @@ class CommandRegistry {
    * @returns The caption for the command, or an empty string if the
    *   command is not registered.
    */
-  caption(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): string {
+  caption(
+    id: string,
+    args: ReadonlyPartialJSONObject = JSONExt.emptyObject
+  ): string {
     let cmd = this._commands[id];
     return cmd ? cmd.caption.call(undefined, args) : '';
   }
@@ -268,7 +280,10 @@ class CommandRegistry {
    * @returns The usage text for the command, or an empty string if
    *   the command is not registered.
    */
-  usage(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): string {
+  usage(
+    id: string,
+    args: ReadonlyPartialJSONObject = JSONExt.emptyObject
+  ): string {
     let cmd = this._commands[id];
     return cmd ? cmd.usage.call(undefined, args) : '';
   }
@@ -283,7 +298,10 @@ class CommandRegistry {
    * @returns The class name for the command, or an empty string if
    *   the command is not registered.
    */
-  className(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): string {
+  className(
+    id: string,
+    args: ReadonlyPartialJSONObject = JSONExt.emptyObject
+  ): string {
     let cmd = this._commands[id];
     return cmd ? cmd.className.call(undefined, args) : '';
   }
@@ -298,7 +316,10 @@ class CommandRegistry {
    * @returns The dataset for the command, or an empty dataset if
    *   the command is not registered.
    */
-  dataset(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): CommandRegistry.Dataset {
+  dataset(
+    id: string,
+    args: ReadonlyPartialJSONObject = JSONExt.emptyObject
+  ): CommandRegistry.Dataset {
     let cmd = this._commands[id];
     return cmd ? cmd.dataset.call(undefined, args) : {};
   }
@@ -313,7 +334,10 @@ class CommandRegistry {
    * @returns A boolean indicating whether the command is enabled,
    *   or `false` if the command is not registered.
    */
-  isEnabled(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): boolean {
+  isEnabled(
+    id: string,
+    args: ReadonlyPartialJSONObject = JSONExt.emptyObject
+  ): boolean {
     let cmd = this._commands[id];
     return cmd ? cmd.isEnabled.call(undefined, args) : false;
   }
@@ -328,9 +352,30 @@ class CommandRegistry {
    * @returns A boolean indicating whether the command is toggled,
    *   or `false` if the command is not registered.
    */
-  isToggled(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): boolean {
+  isToggled(
+    id: string,
+    args: ReadonlyPartialJSONObject = JSONExt.emptyObject
+  ): boolean {
     let cmd = this._commands[id];
     return cmd ? cmd.isToggled.call(undefined, args) : false;
+  }
+
+  /**
+   * Test whether a specific command is toggleable.
+   *
+   * @param id - The id of the command of interest.
+   *
+   * @param args - The arguments for the command.
+   *
+   * @returns A boolean indicating whether the command is toggleable,
+   *   or `false` if the command is not registered.
+   */
+  isToggleable(
+    id: string,
+    args: ReadonlyJSONObject = JSONExt.emptyObject
+  ): boolean {
+    let cmd = this._commands[id];
+    return cmd ? cmd.isToggleable : false;
   }
 
   /**
@@ -343,7 +388,10 @@ class CommandRegistry {
    * @returns A boolean indicating whether the command is visible,
    *   or `false` if the command is not registered.
    */
-  isVisible(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): boolean {
+  isVisible(
+    id: string,
+    args: ReadonlyPartialJSONObject = JSONExt.emptyObject
+  ): boolean {
     let cmd = this._commands[id];
     return cmd ? cmd.isVisible.call(undefined, args) : false;
   }
@@ -361,7 +409,10 @@ class CommandRegistry {
    * The promise will reject if the command throws an exception,
    * or if the command is not registered.
    */
-  execute(id: string, args: ReadonlyPartialJSONObject = JSONExt.emptyObject): Promise<any> {
+  execute(
+    id: string,
+    args: ReadonlyPartialJSONObject = JSONExt.emptyObject
+  ): Promise<any> {
     // Reject if the command is not registered.
     let cmd = this._commands[id];
     if (!cmd) {
@@ -466,7 +517,9 @@ class CommandRegistry {
 
     // Find the exact and partial matches for the key sequence.
     let { exact, partial } = Private.matchKeyBinding(
-      this._keyBindings, this._keystrokes, event
+      this._keyBindings,
+      this._keystrokes,
+      event
     );
 
     // If there is no exact match and no partial match, replay
@@ -586,28 +639,33 @@ class CommandRegistry {
   private _keyBindings: CommandRegistry.IKeyBinding[] = [];
   private _exactKeyMatch: CommandRegistry.IKeyBinding | null = null;
   private _commands: { [id: string]: Private.ICommand } = Object.create(null);
-  private _commandChanged = new Signal<this, CommandRegistry.ICommandChangedArgs>(this);
-  private _commandExecuted = new Signal<this, CommandRegistry.ICommandExecutedArgs>(this);
-  private _keyBindingChanged = new Signal<this, CommandRegistry.IKeyBindingChangedArgs>(this);
+  private _commandChanged = new Signal<
+    this,
+    CommandRegistry.ICommandChangedArgs
+  >(this);
+  private _commandExecuted = new Signal<
+    this,
+    CommandRegistry.ICommandExecutedArgs
+  >(this);
+  private _keyBindingChanged = new Signal<
+    this,
+    CommandRegistry.IKeyBindingChangedArgs
+  >(this);
 }
-
 
 /**
  * The namespace for the `CommandRegistry` class statics.
  */
-export
-namespace CommandRegistry {
+export namespace CommandRegistry {
   /**
    * A type alias for a user-defined command function.
    */
-  export
-  type CommandFunc<T> = (args: ReadonlyPartialJSONObject) => T;
+  export type CommandFunc<T> = (args: ReadonlyPartialJSONObject) => T;
 
   /**
    * A type alias for a simple immutable string dataset.
    */
-  export
-  type Dataset = { readonly [key: string]: string };
+  export type Dataset = { readonly [key: string]: string };
 
   /**
    * An options object for creating a command.
@@ -621,8 +679,7 @@ namespace CommandRegistry {
    * registry will always invoke the command functions with a `thisArg`
    * which is `undefined`.
    */
-  export
-  interface ICommandOptions {
+  export interface ICommandOptions {
     /**
      * The function to invoke when the command is executed.
      *
@@ -672,17 +729,22 @@ namespace CommandRegistry {
      * renderer based on the provided command arguments.
      *
      * The default value is undefined.
-     * 
+     *
      * DEPRECATED: if set to a string value, the .icon field will function as
      * an alias for the .iconClass field, for backwards compatibility
      */
-    icon?: VirtualElement.IRenderer | undefined
-    /* <DEPRECATED> */ | string /* </DEPRECATED> */
-    | CommandFunc<
-      VirtualElement.IRenderer | undefined
-      /* <DEPRECATED> */ | string /* </DEPRECATED> */
-    >;
-    
+    icon?:
+      | VirtualElement.IRenderer
+      | undefined
+      /* <DEPRECATED> */
+      | string /* </DEPRECATED> */
+      | CommandFunc<
+          | VirtualElement.IRenderer
+          | undefined
+          /* <DEPRECATED> */
+          | string /* </DEPRECATED> */
+        >;
+
     /**
      * The icon class for the command.
      *
@@ -798,6 +860,20 @@ namespace CommandRegistry {
     isToggled?: CommandFunc<boolean>;
 
     /**
+     * A function which indicates whether the command is toggleable.
+     *
+     * #### Notes
+     * Visual representations may use this value to display a toggled command in
+     * a different form, such as a check box for a menu item or a depressed
+     * state for a toggle button. This attribute also allows for accessible
+     * interfaces to notify the user that the command corresponds to some state.
+     *
+     * The default value is `true` if an `isToggled` function is given, `false`
+     * otherwise.
+     */
+    isToggleable?: boolean;
+
+    /**
      * A function which indicates whether the command is visible.
      *
      * #### Notes
@@ -812,8 +888,7 @@ namespace CommandRegistry {
   /**
    * An arguments object for the `commandChanged` signal.
    */
-  export
-  interface ICommandChangedArgs {
+  export interface ICommandChangedArgs {
     /**
      * The id of the associated command.
      *
@@ -830,8 +905,7 @@ namespace CommandRegistry {
   /**
    * An arguments object for the `commandExecuted` signal.
    */
-  export
-  interface ICommandExecutedArgs {
+  export interface ICommandExecutedArgs {
     /**
      * The id of the associated command.
      */
@@ -851,8 +925,7 @@ namespace CommandRegistry {
   /**
    * An options object for creating a key binding.
    */
-  export
-  interface IKeyBindingOptions {
+  export interface IKeyBindingOptions {
     /**
      * The default key sequence for the key binding.
      *
@@ -928,8 +1001,7 @@ namespace CommandRegistry {
    * #### Notes
    * A key binding is an immutable object created by a registry.
    */
-  export
-  interface IKeyBinding {
+  export interface IKeyBinding {
     /**
      * The key sequence for the binding.
      */
@@ -954,8 +1026,7 @@ namespace CommandRegistry {
   /**
    * An arguments object for the `keyBindingChanged` signal.
    */
-  export
-  interface IKeyBindingChangedArgs {
+  export interface IKeyBindingChangedArgs {
     /**
      * The key binding which was changed.
      */
@@ -970,8 +1041,7 @@ namespace CommandRegistry {
   /**
    * An object which holds the results of parsing a keystroke.
    */
-  export
-  interface IKeystrokeParts {
+  export interface IKeystrokeParts {
     /**
      * Whether `'Cmd'` appears in the keystroke.
      */
@@ -1020,8 +1090,7 @@ namespace CommandRegistry {
    *   - The keystroke parts should be separated by whitespace.
    *   - The keystroke is case sensitive.
    */
-  export
-  function parseKeystroke(keystroke: string): IKeystrokeParts {
+  export function parseKeystroke(keystroke: string): IKeystrokeParts {
     let key = '';
     let alt = false;
     let cmd = false;
@@ -1062,8 +1131,7 @@ namespace CommandRegistry {
    *
    * The `Cmd` modifier is ignored on non-Mac platforms.
    */
-  export
-  function normalizeKeystroke(keystroke: string): string {
+  export function normalizeKeystroke(keystroke: string): string {
     let mods = '';
     let parts = parseKeystroke(keystroke);
     if (parts.ctrl) {
@@ -1088,8 +1156,7 @@ namespace CommandRegistry {
    *
    * @returns Array of combined, normalized keys.
    */
-  export
-  function normalizeKeys(options: IKeyBindingOptions): string[] {
+  export function normalizeKeys(options: IKeyBindingOptions): string[] {
     let keys: string[];
     if (Platform.IS_WIN) {
       keys = options.winKeys || options.keys;
@@ -1104,8 +1171,7 @@ namespace CommandRegistry {
   /**
    * Format a keystroke for display on the local system.
    */
-  export
-  function formatKeystroke(keystroke: string): string {
+  export function formatKeystroke(keystroke: string): string {
     let mods = '';
     let parts = parseKeystroke(keystroke);
     if (Platform.IS_MAC) {
@@ -1143,8 +1209,7 @@ namespace CommandRegistry {
    * @returns A normalized keystroke, or an empty string if the event
    *   does not represent a valid keystroke for the given layout.
    */
-  export
-  function keystrokeForKeydownEvent(event: KeyboardEvent): string {
+  export function keystrokeForKeydownEvent(event: KeyboardEvent): string {
     let key = getKeyboardLayout().keyForKeydownEvent(event);
     if (!key) {
       return '';
@@ -1166,7 +1231,6 @@ namespace CommandRegistry {
   }
 }
 
-
 /**
  * The namespace for the module implementation details.
  */
@@ -1174,35 +1238,33 @@ namespace Private {
   /**
    * The timeout in ms for triggering a key binding chord.
    */
-  export
-  const CHORD_TIMEOUT = 1000;
+  export const CHORD_TIMEOUT = 1000;
 
   /**
    * A convenience type alias for a command func.
    */
-  export
-  type CommandFunc<T> = CommandRegistry.CommandFunc<T>;
+  export type CommandFunc<T> = CommandRegistry.CommandFunc<T>;
 
   /**
    * A convenience type alias for a command dataset.
    */
-  export
-  type Dataset = CommandRegistry.Dataset;
+  export type Dataset = CommandRegistry.Dataset;
 
   /**
    * A normalized command object.
    */
-  export
-  interface ICommand {
+  export interface ICommand {
     readonly execute: CommandFunc<any>;
     readonly label: CommandFunc<string>;
     readonly mnemonic: CommandFunc<number>;
-    
+
     readonly icon: CommandFunc<
-      VirtualElement.IRenderer | undefined
-      /* <DEPRECATED> */ | string /* </DEPRECATED> */
+      | VirtualElement.IRenderer
+      | undefined
+      /* <DEPRECATED> */
+      | string /* </DEPRECATED> */
     >;
-    
+
     readonly iconClass: CommandFunc<string>;
     readonly iconLabel: CommandFunc<string>;
     readonly caption: CommandFunc<string>;
@@ -1211,32 +1273,34 @@ namespace Private {
     readonly dataset: CommandFunc<Dataset>;
     readonly isEnabled: CommandFunc<boolean>;
     readonly isToggled: CommandFunc<boolean>;
+    readonly isToggleable: boolean;
     readonly isVisible: CommandFunc<boolean>;
   }
 
   /**
    * Create a normalized command from an options object.
    */
-  export
-  function createCommand(options: CommandRegistry.ICommandOptions): ICommand {
+  export function createCommand(
+    options: CommandRegistry.ICommandOptions
+  ): ICommand {
     let icon;
     let iconClass;
-    
+
     /* <DEPRECATED> */
-    if (!(options.icon) || typeof options.icon === 'string') {
+    if (!options.icon || typeof options.icon === 'string') {
       // alias icon to iconClass
       iconClass = asFunc(options.iconClass || options.icon, emptyStringFunc);
       icon = iconClass;
     } else {
-    /* /<DEPRECATED> */
+      /* /<DEPRECATED> */
 
-    iconClass = asFunc(options.iconClass, emptyStringFunc);
-    icon = asFunc(options.icon, undefinedFunc);
+      iconClass = asFunc(options.iconClass, emptyStringFunc);
+      icon = asFunc(options.icon, undefinedFunc);
 
-    /* <DEPRECATED> */
+      /* <DEPRECATED> */
     }
     /* </DEPRECATED> */
-    
+
     return {
       execute: options.execute,
       label: asFunc(options.label, emptyStringFunc),
@@ -1250,6 +1314,7 @@ namespace Private {
       dataset: asFunc(options.dataset, emptyDatasetFunc),
       isEnabled: options.isEnabled || trueFunc,
       isToggled: options.isToggled || falseFunc,
+      isToggleable: options.isToggleable || !!options.isToggled,
       isVisible: options.isVisible || trueFunc
     };
   }
@@ -1257,8 +1322,9 @@ namespace Private {
   /**
    * Create a key binding object from key binding options.
    */
-  export
-  function createKeyBinding(options: CommandRegistry.IKeyBindingOptions): CommandRegistry.IKeyBinding {
+  export function createKeyBinding(
+    options: CommandRegistry.IKeyBindingOptions
+  ): CommandRegistry.IKeyBinding {
     return {
       keys: CommandRegistry.normalizeKeys(options),
       selector: validateSelector(options),
@@ -1270,8 +1336,7 @@ namespace Private {
   /**
    * An object which holds the results of a key binding match.
    */
-  export
-  interface IMatchResult {
+  export interface IMatchResult {
     /**
      * The best key binding which exactly matches the key sequence.
      */
@@ -1289,8 +1354,11 @@ namespace Private {
    * This returns a match result which contains the best exact matching
    * binding, and a flag which indicates if there are partial matches.
    */
-  export
-  function matchKeyBinding(bindings: ReadonlyArray<CommandRegistry.IKeyBinding>, keys: ReadonlyArray<string>, event: KeyboardEvent): IMatchResult {
+  export function matchKeyBinding(
+    bindings: ReadonlyArray<CommandRegistry.IKeyBinding>,
+    keys: ReadonlyArray<string>,
+    event: KeyboardEvent
+  ): IMatchResult {
     // The current best exact match.
     let exact: CommandRegistry.IKeyBinding | null = null;
 
@@ -1352,8 +1420,7 @@ namespace Private {
    *
    * This synthetically dispatches a clone of the keyboard event.
    */
-  export
-  function replayKeyEvent(event: KeyboardEvent): void {
+  export function replayKeyEvent(event: KeyboardEvent): void {
     event.target!.dispatchEvent(cloneKeyboardEvent(event));
   }
 
@@ -1390,7 +1457,10 @@ namespace Private {
   /**
    * Cast a value or command func to a command func.
    */
-  function asFunc<T>(value: undefined | T | CommandFunc<T>, dfault: CommandFunc<T>): CommandFunc<T> {
+  function asFunc<T>(
+    value: undefined | T | CommandFunc<T>,
+    dfault: CommandFunc<T>
+  ): CommandFunc<T> {
     if (value === undefined) {
       return dfault;
     }
@@ -1400,15 +1470,15 @@ namespace Private {
     return () => value;
   }
 
-
-
   /**
    * Validate the selector for an options object.
    *
    * This returns the validated selector, or throws if the selector is
    * invalid or contains commas.
    */
-  function validateSelector(options: CommandRegistry.IKeyBindingOptions): string {
+  function validateSelector(
+    options: CommandRegistry.IKeyBindingOptions
+  ): string {
     if (options.selector.indexOf(',') !== -1) {
       throw new Error(`Selector cannot contain commas: ${options.selector}`);
     }
@@ -1421,14 +1491,21 @@ namespace Private {
   /**
    * An enum which describes the possible sequence matches.
    */
-  const enum SequenceMatch { None, Exact, Partial };
+  const enum SequenceMatch {
+    None,
+    Exact,
+    Partial
+  }
 
   /**
    * Test whether a key binding sequence matches a key sequence.
    *
    * Returns a `SequenceMatch` value indicating the type of match.
    */
-  function matchSequence(bindKeys: ReadonlyArray<string>, userKeys: ReadonlyArray<string>): SequenceMatch {
+  function matchSequence(
+    bindKeys: ReadonlyArray<string>,
+    userKeys: ReadonlyArray<string>
+  ): SequenceMatch {
     if (bindKeys.length < userKeys.length) {
       return SequenceMatch.None;
     }
@@ -1451,8 +1528,8 @@ namespace Private {
    * the CSS selector. If no match is found, `-1` is returned.
    */
   function targetDistance(selector: string, event: KeyboardEvent): number {
-    let targ = event.target as (Element | null);
-    let curr = event.currentTarget as (Element | null);
+    let targ = event.target as Element | null;
+    let curr = event.currentTarget as Element | null;
     for (let dist = 0; targ !== null; targ = targ.parentElement, ++dist) {
       if (targ.hasAttribute('data-lm-suppress-shortcuts')) {
         return -1;

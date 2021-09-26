@@ -7,31 +7,25 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  expect
-} from 'chai';
+import { expect } from 'chai';
+
+import { generate } from 'simulate-event';
 
 import {
-  generate
-} from 'simulate-event';
-
-import {
-  EN_US, KeycodeLayout, getKeyboardLayout, setKeyboardLayout
+  EN_US,
+  getKeyboardLayout,
+  KeycodeLayout,
+  setKeyboardLayout
 } from '@lumino/keyboard';
 
-
 describe('@lumino/keyboard', () => {
-
   describe('getKeyboardLayout()', () => {
-
     it('should return the global keyboard layout', () => {
       expect(getKeyboardLayout()).to.equal(EN_US);
     });
-
   });
 
   describe('setKeyboardLayout()', () => {
-
     it('should set the global keyboard layout', () => {
       let layout = new KeycodeLayout('ab-cd', {});
       setKeyboardLayout(layout);
@@ -39,52 +33,41 @@ describe('@lumino/keyboard', () => {
       setKeyboardLayout(EN_US);
       expect(getKeyboardLayout()).to.equal(EN_US);
     });
-
   });
 
   describe('KeycodeLayout', () => {
-
     describe('#constructor()', () => {
-
       it('should construct a new keycode layout', () => {
         let layout = new KeycodeLayout('ab-cd', {});
         expect(layout).to.be.an.instanceof(KeycodeLayout);
       });
-
     });
 
     describe('#name', () => {
-
       it('should be a human readable name of the layout', () => {
         let layout = new KeycodeLayout('ab-cd', {});
         expect(layout.name).to.equal('ab-cd');
       });
-
     });
 
     describe('#keys()', () => {
-
       it('should get an array of all key values supported by the layout', () => {
         let layout = new KeycodeLayout('ab-cd', { 100: 'F' });
         let keys = layout.keys();
         expect(keys.length).to.equal(1);
         expect(keys[0]).to.equal('F');
       });
-
     });
 
     describe('#isValidKey()', () => {
-
       it('should test whether the key is valid for the layout', () => {
         let layout = new KeycodeLayout('foo', { 100: 'F' });
         expect(layout.isValidKey('F')).to.equal(true);
         expect(layout.isValidKey('A')).to.equal(false);
       });
-
     });
 
     describe('#keyForKeydownEvent()', () => {
-
       it('should get the key for a `keydown` event', () => {
         let layout = new KeycodeLayout('foo', { 100: 'F' });
         let event = generate('keydown', { keyCode: 100 });
@@ -98,23 +81,18 @@ describe('@lumino/keyboard', () => {
         let key = layout.keyForKeydownEvent(event as KeyboardEvent);
         expect(key).to.equal('');
       });
-
     });
 
     describe('.extractKeys()', () => {
-
       it('should extract the keys from a code map', () => {
         let keys: KeycodeLayout.CodeMap = { 70: 'F', 71: 'G', 72: 'H' };
-        let goal: KeycodeLayout.KeySet = { 'F': true, 'G': true, 'H': true };
+        let goal: KeycodeLayout.KeySet = { F: true, G: true, H: true };
         expect(KeycodeLayout.extractKeys(keys)).to.deep.equal(goal);
       });
-
     });
-
   });
 
   describe('EN_US', () => {
-
     it('should be a keycode layout', () => {
       expect(EN_US).to.be.an.instanceof(KeycodeLayout);
     });
@@ -125,7 +103,5 @@ describe('@lumino/keyboard', () => {
       expect(EN_US.isValidKey('0')).to.equal(true);
       expect(EN_US.isValidKey('a')).to.equal(false);
     });
-
   });
-
 });

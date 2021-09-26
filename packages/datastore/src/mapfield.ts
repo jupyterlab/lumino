@@ -7,28 +7,24 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  ArrayExt, StringExt
-} from '@lumino/algorithm';
+import { ArrayExt, StringExt } from '@lumino/algorithm';
 
-import {
-  ReadonlyJSONValue
-} from '@lumino/coreutils';
+import { ReadonlyJSONValue } from '@lumino/coreutils';
 
-import {
-  Field
-} from './field';
+import { Field } from './field';
 
-import {
-  createDuplexId
-} from './utilities';
-
+import { createDuplexId } from './utilities';
 
 /**
  * A field which represents a collaborative key:value map.
  */
-export
-class MapField<T extends ReadonlyJSONValue> extends Field<MapField.Value<T>, MapField.Update<T>, MapField.Metadata<T>, MapField.Change<T>, MapField.Patch<T>> {
+export class MapField<T extends ReadonlyJSONValue> extends Field<
+  MapField.Value<T>,
+  MapField.Update<T>,
+  MapField.Metadata<T>,
+  MapField.Change<T>,
+  MapField.Patch<T>
+> {
   /**
    * Construct a new map field.
    *
@@ -70,7 +66,17 @@ class MapField<T extends ReadonlyJSONValue> extends Field<MapField.Value<T>, Map
    *
    * @returns The result of applying the update.
    */
-  applyUpdate(args: Field.UpdateArgs<MapField.Value<T>, MapField.Update<T>, MapField.Metadata<T>>): Field.UpdateResult<MapField.Value<T>, MapField.Change<T>, MapField.Patch<T>> {
+  applyUpdate(
+    args: Field.UpdateArgs<
+      MapField.Value<T>,
+      MapField.Update<T>,
+      MapField.Metadata<T>
+    >
+  ): Field.UpdateResult<
+    MapField.Value<T>,
+    MapField.Change<T>,
+    MapField.Patch<T>
+  > {
     // Unpack the arguments.
     let { previous, update, metadata, version, storeId } = args;
 
@@ -120,7 +126,13 @@ class MapField<T extends ReadonlyJSONValue> extends Field<MapField.Value<T>, Map
    *
    * @returns The result of applying the patch.
    */
-  applyPatch(args: Field.PatchArgs<MapField.Value<T>, MapField.Patch<T>, MapField.Metadata<T>>): Field.PatchResult<MapField.Value<T>, MapField.Change<T>> {
+  applyPatch(
+    args: Field.PatchArgs<
+      MapField.Value<T>,
+      MapField.Patch<T>,
+      MapField.Metadata<T>
+    >
+  ): Field.PatchResult<MapField.Value<T>, MapField.Change<T>> {
     // Unpack the arguments.
     let { previous, patch, metadata } = args;
 
@@ -167,7 +179,13 @@ class MapField<T extends ReadonlyJSONValue> extends Field<MapField.Value<T>, Map
    *
    * @returns The result of applying the patch.
    */
-  unapplyPatch(args: Field.PatchArgs<MapField.Value<T>, MapField.Patch<T>, MapField.Metadata<T>>): Field.PatchResult<MapField.Value<T>, MapField.Change<T>> {
+  unapplyPatch(
+    args: Field.PatchArgs<
+      MapField.Value<T>,
+      MapField.Patch<T>,
+      MapField.Metadata<T>
+    >
+  ): Field.PatchResult<MapField.Value<T>, MapField.Change<T>> {
     // Unpack the arguments.
     let { previous, patch, metadata } = args;
 
@@ -216,7 +234,10 @@ class MapField<T extends ReadonlyJSONValue> extends Field<MapField.Value<T>, Map
    *
    * @returns A new change object which represents both changes.
    */
-  mergeChange(first: MapField.Change<T>, second: MapField.Change<T>): MapField.Change<T> {
+  mergeChange(
+    first: MapField.Change<T>,
+    second: MapField.Change<T>
+  ): MapField.Change<T> {
     let previous = { ...second.previous, ...first.previous };
     let current = { ...first.current, ...second.current };
     return { previous, current };
@@ -231,44 +252,42 @@ class MapField<T extends ReadonlyJSONValue> extends Field<MapField.Value<T>, Map
    *
    * @returns A new patch object which represents both patches.
    */
-  mergePatch(first: MapField.Patch<T>, second: MapField.Patch<T>): MapField.Patch<T> {
+  mergePatch(
+    first: MapField.Patch<T>,
+    second: MapField.Patch<T>
+  ): MapField.Patch<T> {
     return { id: second.id, values: { ...first.values, ...second.values } };
   }
 }
 
-
 /**
  * The namespace for the `MapField` class statics.
  */
-export
-namespace MapField {
+export namespace MapField {
   /**
    * An options object for initializing a map field.
    */
-  export
-  interface IOptions<T extends ReadonlyJSONValue> extends Field.IOptions { }
+  export interface IOptions<T extends ReadonlyJSONValue>
+    extends Field.IOptions {}
 
   /**
    * A type alias for the map field value type.
    */
-  export
-  type Value<T extends ReadonlyJSONValue> = {
+  export type Value<T extends ReadonlyJSONValue> = {
     readonly [key: string]: T;
   };
 
   /**
    * A type alias for the map field update type.
    */
-  export
-  type Update<T extends ReadonlyJSONValue> = {
+  export type Update<T extends ReadonlyJSONValue> = {
     readonly [key: string]: T | null;
   };
 
   /**
    * A type alias for the map field metadata type.
    */
-  export
-  type Metadata<T extends ReadonlyJSONValue> = {
+  export type Metadata<T extends ReadonlyJSONValue> = {
     /**
      * A mapping of key:id-history.
      */
@@ -283,8 +302,7 @@ namespace MapField {
   /**
    * A type alias for the map field change type.
    */
-  export
-  type Change<T extends ReadonlyJSONValue> = {
+  export type Change<T extends ReadonlyJSONValue> = {
     /**
      * The previous values of the changed items.
      */
@@ -299,8 +317,7 @@ namespace MapField {
   /**
    * A type alias for the map field patch type.
    */
-  export
-  type Patch<T extends ReadonlyJSONValue> = {
+  export type Patch<T extends ReadonlyJSONValue> = {
     /**
      * The unique id associated with the values.
      */
@@ -312,7 +329,6 @@ namespace MapField {
     readonly values: { readonly [key: string]: T | null };
   };
 }
-
 
 /**
  * The namespace for the module implementation details.
@@ -334,8 +350,12 @@ namespace Private {
    * #### Notes
    * If the id already exists, the old value will be overwritten.
    */
-  export
-  function insertIntoMetadata<T extends ReadonlyJSONValue>(metadata: MapField.Metadata<T>, key: string, id: string, value: T | null): T | null {
+  export function insertIntoMetadata<T extends ReadonlyJSONValue>(
+    metadata: MapField.Metadata<T>,
+    key: string,
+    id: string,
+    value: T | null
+  ): T | null {
     // Fetch the id and value arrays for the given key.
     let ids = metadata.ids[key] || (metadata.ids[key] = []);
     let values = metadata.values[key] || (metadata.values[key] = []);
@@ -369,8 +389,11 @@ namespace Private {
    * #### Notes
    * If the id is not in the metadata, this is a no-op.
    */
-  export
-  function removeFromMetadata<T extends ReadonlyJSONValue>(metadata: MapField.Metadata<T>, key: string, id: string): T | null {
+  export function removeFromMetadata<T extends ReadonlyJSONValue>(
+    metadata: MapField.Metadata<T>,
+    key: string,
+    id: string
+  ): T | null {
     // Fetch the id and value arrays for the given key.
     let ids = metadata.ids[key] || (metadata.ids[key] = []);
     let values = metadata.values[key] || (metadata.values[key] = []);

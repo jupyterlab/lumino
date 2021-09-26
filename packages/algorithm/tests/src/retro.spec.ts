@@ -7,23 +7,14 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  expect
-} from 'chai';
+import { expect } from 'chai';
 
-import {
-  RetroArrayIterator, iter, retro, toArray
-} from '@lumino/algorithm';
+import { iter, retro, RetroArrayIterator, toArray } from '@lumino/algorithm';
 
-import {
-  testIterator
-} from './iter.spec';
-
+import { testIterator } from './iter.spec';
 
 describe('@lumino/algorithm', () => {
-
   describe('retro()', () => {
-
     it('should create an iterator for an array-like object', () => {
       expect(toArray(retro([0, 1, 2, 3]))).to.deep.equal([3, 2, 1, 0]);
     });
@@ -33,15 +24,11 @@ describe('@lumino/algorithm', () => {
       let retroable = { retro: () => iterator };
       expect(retro(retroable)).to.equal(iterator);
     });
-
   });
 
   describe('RetroArrayIterator', () => {
-
     testIterator(() => {
       return [new RetroArrayIterator([1, 2, 3]), [3, 2, 1]];
     });
-
   });
-
 });

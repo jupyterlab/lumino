@@ -7,34 +7,19 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  Platform
-} from '@lumino/domutils';
+import { Platform } from '@lumino/domutils';
 
-import {
-  MessageLoop
-} from '@lumino/messaging';
+import { MessageLoop } from '@lumino/messaging';
 
-import {
-  ISignal, Signal
-} from '@lumino/signaling';
+import { ISignal, Signal } from '@lumino/signaling';
 
-import {
-  BoxLayout
-} from './boxlayout';
+import { BoxLayout } from './boxlayout';
 
-import {
-  StackedPanel
-} from './stackedpanel';
+import { StackedPanel } from './stackedpanel';
 
-import {
-  TabBar
-} from './tabbar';
+import { TabBar } from './tabbar';
 
-import {
-  Widget
-} from './widget';
-
+import { Widget } from './widget';
 
 /**
  * A widget which combines a `TabBar` and a `StackedPanel`.
@@ -47,8 +32,7 @@ import {
  * For use cases which require more control than is provided by this
  * panel, the `TabBar` widget may be used independently.
  */
-export
-class TabPanel extends Widget {
+export class TabPanel extends Widget {
   /**
    * Construct a new tab panel.
    *
@@ -75,7 +59,11 @@ class TabPanel extends Widget {
     this.tabBar.tabMoved.connect(this._onTabMoved, this);
     this.tabBar.currentChanged.connect(this._onCurrentChanged, this);
     this.tabBar.tabCloseRequested.connect(this._onTabCloseRequested, this);
-    this.tabBar.tabActivateRequested.connect(this._onTabActivateRequested, this);
+    this.tabBar.tabActivateRequested.connect(
+      this._onTabActivateRequested,
+      this
+    );
+    this.tabBar.addRequested.connect(this._onTabAddRequested, this);
 
     // Connect the stacked panel signal handlers.
     this.stackedPanel.widgetRemoved.connect(this._onWidgetRemoved, this);
@@ -181,6 +169,22 @@ class TabPanel extends Widget {
   }
 
   /**
+   * Get the whether the add button is enabled.
+   *
+   */
+  get addButtonEnabled(): boolean {
+    return this.tabBar.addButtonEnabled;
+  }
+
+  /**
+   * Set the whether the add button is enabled.
+   *
+   */
+  set addButtonEnabled(value: boolean) {
+    this.tabBar.addButtonEnabled = value;
+  }
+
+  /**
    * Get the tab placement for the tab panel.
    *
    * #### Notes
@@ -215,6 +219,14 @@ class TabPanel extends Widget {
 
     // Update the layout direction.
     (this.layout as BoxLayout).direction = direction;
+  }
+
+  /**
+   * A signal emitted when the add button on a tab bar is clicked.
+   *
+   */
+  get addRequested(): ISignal<this, TabBar<Widget>> {
+    return this._addRequested;
   }
 
   /**
@@ -272,12 +284,27 @@ class TabPanel extends Widget {
     }
     this.stackedPanel.insertWidget(index, widget);
     this.tabBar.insertTab(index, widget.title);
+
+    widget.node.setAttribute('role', 'tabpanel');
+
+    let renderer = this.tabBar.renderer;
+    if (renderer instanceof TabBar.Renderer) {
+      let tabId = renderer.createTabKey({
+        title: widget.title,
+        current: false,
+        zIndex: 0
+      });
+      widget.node.setAttribute('aria-labelledby', tabId);
+    }
   }
 
   /**
    * Handle the `currentChanged` signal from the tab bar.
    */
-  private _onCurrentChanged(sender: TabBar<Widget>, args: TabBar.ICurrentChangedArgs<Widget>): void {
+  private _onCurrentChanged(
+    sender: TabBar<Widget>,
+    args: TabBar.ICurrentChangedArgs<Widget>
+  ): void {
     // Extract the previous and current title from the args.
     let { previousIndex, previousTitle, currentIndex, currentTitle } = args;
 
@@ -297,7 +324,10 @@ class TabPanel extends Widget {
 
     // Emit the `currentChanged` signal for the tab panel.
     this._currentChanged.emit({
-      previousIndex, previousWidget, currentIndex, currentWidget
+      previousIndex,
+      previousWidget,
+      currentIndex,
+      currentWidget
     });
 
     // Flush the message loop on IE and Edge to prevent flicker.
@@ -307,23 +337,39 @@ class TabPanel extends Widget {
   }
 
   /**
+   * Handle the `tabAddRequested` signal from the tab bar.
+   */
+  private _onTabAddRequested(sender: TabBar<Widget>, args: void): void {
+    this._addRequested.emit(sender);
+  }
+
+  /**
    * Handle the `tabActivateRequested` signal from the tab bar.
    */
-  private _onTabActivateRequested(sender: TabBar<Widget>, args: TabBar.ITabActivateRequestedArgs<Widget>): void {
+  private _onTabActivateRequested(
+    sender: TabBar<Widget>,
+    args: TabBar.ITabActivateRequestedArgs<Widget>
+  ): void {
     args.title.owner.activate();
   }
 
   /**
    * Handle the `tabCloseRequested` signal from the tab bar.
    */
-  private _onTabCloseRequested(sender: TabBar<Widget>, args: TabBar.ITabCloseRequestedArgs<Widget>): void {
+  private _onTabCloseRequested(
+    sender: TabBar<Widget>,
+    args: TabBar.ITabCloseRequestedArgs<Widget>
+  ): void {
     args.title.owner.close();
   }
 
   /**
    * Handle the `tabMoved` signal from the tab bar.
    */
-  private _onTabMoved(sender: TabBar<Widget>, args: TabBar.ITabMovedArgs<Widget>): void {
+  private _onTabMoved(
+    sender: TabBar<Widget>,
+    args: TabBar.ITabMovedArgs<Widget>
+  ): void {
     this.stackedPanel.insertWidget(args.toIndex, args.title.owner);
   }
 
@@ -331,56 +377,64 @@ class TabPanel extends Widget {
    * Handle the `widgetRemoved` signal from the stacked panel.
    */
   private _onWidgetRemoved(sender: StackedPanel, widget: Widget): void {
+    widget.node.removeAttribute('role');
+    widget.node.removeAttribute('aria-labelledby');
     this.tabBar.removeTab(widget.title);
   }
 
   private _tabPlacement: TabPanel.TabPlacement;
-  private _currentChanged = new Signal<this, TabPanel.ICurrentChangedArgs>(this);
-}
+  private _currentChanged = new Signal<this, TabPanel.ICurrentChangedArgs>(
+    this
+  );
 
+  private _addRequested = new Signal<this, TabBar<Widget>>(this);
+}
 
 /**
  * The namespace for the `TabPanel` class statics.
  */
-export
-namespace TabPanel {
+export namespace TabPanel {
   /**
    * A type alias for tab placement in a tab bar.
    */
-  export
-  type TabPlacement = (
-    /**
+  export type TabPlacement =
+    | /**
      * The tabs are placed as a row above the content.
      */
-    'top' |
+    'top'
 
     /**
      * The tabs are placed as a column to the left of the content.
      */
-    'left' |
+    | 'left'
 
     /**
      * The tabs are placed as a column to the right of the content.
      */
-    'right' |
+    | 'right'
 
     /**
      * The tabs are placed as a row below the content.
      */
-    'bottom'
-  );
+    | 'bottom';
 
   /**
    * An options object for initializing a tab panel.
    */
-  export
-  interface IOptions {
+  export interface IOptions {
     /**
      * Whether the tabs are movable by the user.
      *
      * The default is `false`.
      */
     tabsMovable?: boolean;
+
+    /**
+     * Whether the button to add new tabs is enabled.
+     *
+     * The default is `false`.
+     */
+    addButtonEnabled?: boolean;
 
     /**
      * The placement of the tab bar relative to the content.
@@ -400,8 +454,7 @@ namespace TabPanel {
   /**
    * The arguments object for the `currentChanged` signal.
    */
-  export
-  interface ICurrentChangedArgs {
+  export interface ICurrentChangedArgs {
     /**
      * The previously selected index.
      */
@@ -424,7 +477,6 @@ namespace TabPanel {
   }
 }
 
-
 /**
  * The namespace for the module implementation details.
  */
@@ -432,16 +484,18 @@ namespace Private {
   /**
    * Convert a tab placement to tab bar orientation.
    */
-  export
-  function orientationFromPlacement(plc: TabPanel.TabPlacement): TabBar.Orientation {
+  export function orientationFromPlacement(
+    plc: TabPanel.TabPlacement
+  ): TabBar.Orientation {
     return placementToOrientationMap[plc];
   }
 
   /**
    * Convert a tab placement to a box layout direction.
    */
-  export
-  function directionFromPlacement(plc: TabPanel.TabPlacement): BoxLayout.Direction {
+  export function directionFromPlacement(
+    plc: TabPanel.TabPlacement
+  ): BoxLayout.Direction {
     return placementToDirectionMap[plc];
   }
 
@@ -449,19 +503,19 @@ namespace Private {
    * A mapping of tab placement to tab bar orientation.
    */
   const placementToOrientationMap: { [key: string]: TabBar.Orientation } = {
-    'top': 'horizontal',
-    'left': 'vertical',
-    'right': 'vertical',
-    'bottom': 'horizontal'
+    top: 'horizontal',
+    left: 'vertical',
+    right: 'vertical',
+    bottom: 'horizontal'
   };
 
   /**
    * A mapping of tab placement to box layout direction.
    */
   const placementToDirectionMap: { [key: string]: BoxLayout.Direction } = {
-    'top': 'top-to-bottom',
-    'left': 'left-to-right',
-    'right': 'right-to-left',
-    'bottom': 'bottom-to-top'
+    top: 'top-to-bottom',
+    left: 'left-to-right',
+    right: 'right-to-left',
+    bottom: 'bottom-to-top'
   };
 }

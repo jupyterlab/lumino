@@ -7,30 +7,17 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  Platform
-} from '@lumino/domutils';
+import { Platform } from '@lumino/domutils';
 
-import {
-  getKeyboardLayout
-} from '@lumino/keyboard';
+import { getKeyboardLayout } from '@lumino/keyboard';
 
-import {
-  DataGrid
-} from './datagrid';
+import { DataGrid } from './datagrid';
 
-import {
-  SelectionModel
-} from './selectionmodel';
+import { SelectionModel } from './selectionmodel';
 
-import {
-  CellEditor
-} from './celleditor';
+import { CellEditor } from './celleditor';
 
-import {
-  MutableDataModel
-} from './datamodel';
-
+import { MutableDataModel } from './datamodel';
 
 /**
  * A basic implementation of a data grid key handler.
@@ -38,8 +25,7 @@ import {
  * #### Notes
  * This class may be subclassed and customized as needed.
  */
-export
-class BasicKeyHandler implements DataGrid.IKeyHandler {
+export class BasicKeyHandler implements DataGrid.IKeyHandler {
   /**
    * Whether the key handler is disposed.
    */
@@ -67,9 +53,11 @@ class BasicKeyHandler implements DataGrid.IKeyHandler {
   onKeyDown(grid: DataGrid, event: KeyboardEvent): void {
     // if grid is editable and cell selection available, start cell editing
     // on key press (letters, numbers and space only)
-    if (grid.editable && 
+    if (
+      grid.editable &&
       grid.selectionModel!.cursorRow !== -1 &&
-      grid.selectionModel!.cursorColumn !== -1) {
+      grid.selectionModel!.cursorColumn !== -1
+    ) {
       const input = String.fromCharCode(event.keyCode);
       if (/[a-zA-Z0-9-_ ]/.test(input)) {
         const row = grid.selectionModel!.cursorRow;
@@ -89,47 +77,47 @@ class BasicKeyHandler implements DataGrid.IKeyHandler {
     }
 
     switch (getKeyboardLayout().keyForKeydownEvent(event)) {
-    case 'ArrowLeft':
-      this.onArrowLeft(grid, event);
-      break;
-    case 'ArrowRight':
-      this.onArrowRight(grid, event);
-      break;
-    case 'ArrowUp':
-      this.onArrowUp(grid, event);
-      break;
-    case 'ArrowDown':
-      this.onArrowDown(grid, event);
-      break;
-    case 'PageUp':
-      this.onPageUp(grid, event);
-      break;
-    case 'PageDown':
-      this.onPageDown(grid, event);
-      break;
-    case 'Escape':
-      this.onEscape(grid, event);
-      break;
-    case 'Delete':
-      this.onDelete(grid, event);
-      break;
-    case 'C':
-      this.onKeyC(grid, event);
-      break;
-    case 'Enter':
-      if (grid.selectionModel) {
-        grid.moveCursor(event.shiftKey ? 'up' : 'down');
-        grid.scrollToCursor();
-      }
-      break;
-    case 'Tab':
-      if (grid.selectionModel) {
-        grid.moveCursor(event.shiftKey ? 'left' : 'right');
-        grid.scrollToCursor();
-        event.stopPropagation();
-        event.preventDefault();
-      }
-      break;
+      case 'ArrowLeft':
+        this.onArrowLeft(grid, event);
+        break;
+      case 'ArrowRight':
+        this.onArrowRight(grid, event);
+        break;
+      case 'ArrowUp':
+        this.onArrowUp(grid, event);
+        break;
+      case 'ArrowDown':
+        this.onArrowDown(grid, event);
+        break;
+      case 'PageUp':
+        this.onPageUp(grid, event);
+        break;
+      case 'PageDown':
+        this.onPageDown(grid, event);
+        break;
+      case 'Escape':
+        this.onEscape(grid, event);
+        break;
+      case 'Delete':
+        this.onDelete(grid, event);
+        break;
+      case 'C':
+        this.onKeyC(grid, event);
+        break;
+      case 'Enter':
+        if (grid.selectionModel) {
+          grid.moveCursor(event.shiftKey ? 'up' : 'down');
+          grid.scrollToCursor();
+        }
+        break;
+      case 'Tab':
+        if (grid.selectionModel) {
+          grid.moveCursor(event.shiftKey ? 'left' : 'right');
+          grid.scrollToCursor();
+          event.stopPropagation();
+          event.preventDefault();
+        }
+        break;
     }
   }
 
@@ -616,7 +604,7 @@ class BasicKeyHandler implements DataGrid.IKeyHandler {
     }
 
     // Get the normal number of cells in the page height.
-    let n =  Math.floor(grid.pageHeight / grid.defaultSizes.rowHeight);
+    let n = Math.floor(grid.pageHeight / grid.defaultSizes.rowHeight);
 
     // Fetch the cursor and selection.
     let r = model.cursorRow;
@@ -693,7 +681,7 @@ class BasicKeyHandler implements DataGrid.IKeyHandler {
     }
 
     // Get the normal number of cells in the page height.
-    let n =  Math.floor(grid.pageHeight / grid.defaultSizes.rowHeight);
+    let n = Math.floor(grid.pageHeight / grid.defaultSizes.rowHeight);
 
     // Fetch the cursor and selection.
     let r = model.cursorRow;
@@ -764,8 +752,7 @@ class BasicKeyHandler implements DataGrid.IKeyHandler {
    * @param event - The keyboard event of interest.
    */
   protected onDelete(grid: DataGrid, event: KeyboardEvent): void {
-    if (grid.editable &&
-      !grid.selectionModel!.isEmpty) {
+    if (grid.editable && !grid.selectionModel!.isEmpty) {
       const dataModel = grid.dataModel as MutableDataModel;
       // Fetch the max row and column.
       let maxRow = dataModel.rowCount('body') - 1;

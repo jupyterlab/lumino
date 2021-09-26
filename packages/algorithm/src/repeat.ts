@@ -7,10 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  IIterator
-} from './iter';
-
+import { IIterator } from './iter';
 
 /**
  * Create an iterator which repeats a value a number of times.
@@ -30,11 +27,9 @@ import {
  * toArray(stream);  // [7, 7, 7]
  * ```
  */
-export
-function repeat<T>(value: T, count: number): IIterator<T> {
+export function repeat<T>(value: T, count: number): IIterator<T> {
   return new RepeatIterator<T>(value, count);
 }
-
 
 /**
  * Create an iterator which yields a value a single time.
@@ -52,17 +47,14 @@ function repeat<T>(value: T, count: number): IIterator<T> {
  * toArray(stream);  // [7]
  * ```
  */
-export
-function once<T>(value: T): IIterator<T> {
+export function once<T>(value: T): IIterator<T> {
   return new RepeatIterator<T>(value, 1);
 }
-
 
 /**
  * An iterator which repeats a value a specified number of times.
  */
-export
-class RepeatIterator<T> implements IIterator<T> {
+export class RepeatIterator<T> implements IIterator<T> {
   /**
    * Construct a new repeat iterator.
    *

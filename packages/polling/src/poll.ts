@@ -50,10 +50,16 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
     this._standby = options.standby || Private.DEFAULT_STANDBY;
     this._state = { ...Private.DEFAULT_STATE, timestamp: new Date().getTime() };
 
-    this.frequency = {
-      ...Private.DEFAULT_FREQUENCY,
-      ...(options.frequency || {})
-    };
+    // Normalize poll frequency `max` to be the greater of
+    // default `max`, `options.frequency.max`, or `options.frequency.interval`.
+    const frequency = options.frequency || {};
+    const max = Math.max(
+      frequency.interval || 0,
+      frequency.max || 0,
+      Private.DEFAULT_FREQUENCY.max
+    );
+    this.frequency = { ...Private.DEFAULT_FREQUENCY, ...frequency, ...{ max } };
+
     this.name = options.name || Private.DEFAULT_NAME;
 
     if ('auto' in options ? options.auto : true) {

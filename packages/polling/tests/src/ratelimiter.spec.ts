@@ -33,7 +33,6 @@ describe('Debouncer', () => {
       expect(counter).to.equal(2);
     });
   });
-
 });
 
 describe('Throttler', () => {
@@ -87,11 +86,11 @@ describe('Throttler', () => {
     });
 
     it('should default to the `leading` edge of cycle', async () => {
-      const started = (new Date()).getTime();
+      const started = new Date().getTime();
       let invoked = 0;
 
       throttler = new Throttler(() => {
-        invoked = (new Date()).getTime();
+        invoked = new Date().getTime();
         expect(invoked - started).to.be.lessThan(limit);
       }, limit);
 
@@ -104,13 +103,16 @@ describe('Throttler', () => {
 
     it('should support the `leading` edge of cycle', async () => {
       const edge = 'leading';
-      const started = (new Date()).getTime();
+      const started = new Date().getTime();
       let invoked = 0;
 
-      throttler = new Throttler(() => {
-        invoked = (new Date()).getTime();
-        expect(invoked - started).to.be.lessThan(limit);
-      }, { edge, limit });
+      throttler = new Throttler(
+        () => {
+          invoked = new Date().getTime();
+          expect(invoked - started).to.be.lessThan(limit);
+        },
+        { edge, limit }
+      );
 
       void throttler.invoke();
       void throttler.invoke();
@@ -121,13 +123,16 @@ describe('Throttler', () => {
 
     it('should support the `trailing` edge of cycle', async () => {
       const edge = 'trailing';
-      const started = (new Date()).getTime();
+      const started = new Date().getTime();
       let invoked = 0;
 
-      throttler = new Throttler(() => {
-        invoked = (new Date()).getTime();
-        expect(invoked - started).to.be.gte(limit);
-      }, { edge, limit });
+      throttler = new Throttler(
+        () => {
+          invoked = new Date().getTime();
+          expect(invoked - started).to.be.gte(limit);
+        },
+        { edge, limit }
+      );
 
       void throttler.invoke();
       void throttler.invoke();
@@ -136,5 +141,4 @@ describe('Throttler', () => {
       await throttler.invoke();
     });
   });
-
 });

@@ -7,8 +7,8 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
-
-/* <DEPRECATED> */ .p-MenuBar, /* </DEPRECATED> */
+/* <DEPRECATED> */
+.p-MenuBar, /* </DEPRECATED> */
 .lm-MenuBar {
   outline: none;
   -webkit-user-select: none;
@@ -17,8 +17,8 @@
   user-select: none;
 }
 
-
-/* <DEPRECATED> */ .p-MenuBar-content, /* </DEPRECATED> */
+/* <DEPRECATED> */
+.p-MenuBar-content, /* </DEPRECATED> */
 .lm-MenuBar-content {
   margin: 0;
   padding: 0;
@@ -27,12 +27,11 @@
   list-style-type: none;
 }
 
-
-/* <DEPRECATED> */ .p--MenuBar-item, /* </DEPRECATED> */
+/* <DEPRECATED> */
+.p--MenuBar-item, /* </DEPRECATED> */
 .lm-MenuBar-item {
   box-sizing: border-box;
 }
-
 
 /* <DEPRECATED> */
 .p-MenuBar-itemIcon,

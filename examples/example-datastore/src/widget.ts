@@ -7,26 +7,20 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  JSONExt, JSONObject
-} from '@lumino/coreutils';
+import { JSONExt, JSONObject } from '@lumino/coreutils';
 
-import {
-  Fields, Datastore, RegisterField, TextField
-} from '@lumino/datastore';
+import { Datastore, Fields, RegisterField, TextField } from '@lumino/datastore';
 
-import {
-  DisposableDelegate, IDisposable
-} from '@lumino/disposable';
+import { DisposableDelegate, IDisposable } from '@lumino/disposable';
 
-import {
-  Panel, Widget
-} from '@lumino/widgets';
+import { Panel, Widget } from '@lumino/widgets';
 
 import * as CodeMirror from 'codemirror';
 
 import {
-  COLLABORATOR_ID, COLLABORATOR_COLOR, COLLABORATOR_NAME
+  COLLABORATOR_COLOR,
+  COLLABORATOR_ID,
+  COLLABORATOR_NAME
 } from './collaborator';
 
 /**
@@ -173,7 +167,6 @@ export class CodeMirrorEditor extends Panel {
     }
   }
 
-
   /**
    * Redo the last user action.
    */
@@ -279,7 +272,10 @@ export class CodeMirrorEditor extends Panel {
    *
    * @param change - the CodeMirror change payload.
    */
-  private _onEditorChange(doc: CodeMirror.Doc, change: CodeMirror.EditorChange): void {
+  private _onEditorChange(
+    doc: CodeMirror.Doc,
+    change: CodeMirror.EditorChange
+  ): void {
     // If this was a remote change, we are done.
     if (this._changeGuard) {
       return;
@@ -295,7 +291,7 @@ export class CodeMirrorEditor extends Panel {
         text: {
           index: start,
           remove: end - start,
-          text: text,
+          text: text
         }
       }
     });
@@ -318,8 +314,10 @@ export class CodeMirrorEditor extends Panel {
       let editorTable = this._store.get(EDITOR_SCHEMA);
       this._store.beginTransaction();
       editorTable.update({
-        [this._record]: { collaborators: {
-          [COLLABORATOR_ID]: { name, color, selections } }
+        [this._record]: {
+          collaborators: {
+            [COLLABORATOR_ID]: { name, color, selections }
+          }
         }
       });
       this._store.endTransaction();
@@ -333,7 +331,10 @@ export class CodeMirrorEditor extends Panel {
    *
    * @param change - the change content.
    */
-  private _onDatastoreChange(store: Datastore, change: Datastore.IChangedArgs): void {
+  private _onDatastoreChange(
+    store: Datastore,
+    change: Datastore.IChangedArgs
+  ): void {
     // Ignore changes that have already been applied locally.
     if (change.type === 'transaction' && change.storeId === store.id) {
       return;
@@ -344,10 +345,10 @@ export class CodeMirrorEditor extends Panel {
     if (c && c[this._record] && c[this._record].text) {
       let textChanges = c[this._record].text as TextField.Change;
       textChanges.forEach(tc => {
-      // Convert the change data to codemirror range and inserted text.
-      let from = doc.posFromIndex(tc.index);
-      let to = doc.posFromIndex(tc.index + tc.removed.length);
-      let replacement = tc.inserted;
+        // Convert the change data to codemirror range and inserted text.
+        let from = doc.posFromIndex(tc.index);
+        let to = doc.posFromIndex(tc.index + tc.removed.length);
+        let replacement = tc.inserted;
 
         // Apply the operation, setting the change guard so we can ignore
         // the change signals from codemirror.
@@ -359,9 +360,11 @@ export class CodeMirrorEditor extends Panel {
 
     // If the readonly state has changed, update the check box, setting the
     // change guard so we can ignore it in the onchange event.
-    if(c && c[this._record] && c[this._record].readOnly) {
+    if (c && c[this._record] && c[this._record].readOnly) {
       this._changeGuard = true;
-      let checkChange = c[this._record].readOnly as RegisterField.Change<boolean>;
+      let checkChange = c[this._record].readOnly as RegisterField.Change<
+        boolean
+      >;
       this._check.checked = checkChange.current;
       // Update the readonly state
       this._editor.setOption('readOnly', this._check.checked);
@@ -369,7 +372,7 @@ export class CodeMirrorEditor extends Panel {
     }
 
     // If the collaborator state has changed, rerender any selections.
-    if(c && c[this._record] && c[this._record].collaborators) {
+    if (c && c[this._record] && c[this._record].collaborators) {
       let record = store.get(EDITOR_SCHEMA).get(this._record)!;
       let { collaborators } = record;
       this._clearAllSelections();
@@ -413,10 +416,7 @@ export class CodeMirrorEditor extends Panel {
   /**
    * Marks selections.
    */
-  private _markSelections(
-    uuid: string,
-    collaborator: ICollaboratorState
-  ) {
+  private _markSelections(uuid: string, collaborator: ICollaboratorState) {
     let markers: CodeMirror.TextMarker[] = [];
     let doc = this._editor.getDoc();
 
@@ -456,20 +456,20 @@ export class CodeMirrorEditor extends Panel {
     if (this._timers[uuid]) {
       window.clearTimeout(this._timers[uuid]);
     }
-    this._timers[uuid] = window.setTimeout(
-      () => {
-        this._clearSelections(uuid);
-        delete this._timers[uuid];
-      },
-      60*1000*(1 + Math.random())
-    );
+    this._timers[uuid] = window.setTimeout(() => {
+      this._clearSelections(uuid);
+      delete this._timers[uuid];
+    }, 60 * 1000 * (1 + Math.random()));
   }
 
   /**
    * Construct a caret element representing the position
    * of a collaborator's cursor.
    */
-  private _getCaret(uuid: string, collaborator: ICollaboratorState): HTMLElement {
+  private _getCaret(
+    uuid: string,
+    collaborator: ICollaboratorState
+  ): HTMLElement {
     let { name, color } = collaborator;
     let hoverTimeout: number;
     let caret: HTMLElement = document.createElement('span');
@@ -575,9 +575,10 @@ namespace Private {
   /**
    * Converts a code mirror selection to an editor selection.
    */
-  export function toSelection(
-    selection: { anchor: CodeMirror.Position, head: CodeMirror.Position }
-  ): ITextSelection {
+  export function toSelection(selection: {
+    anchor: CodeMirror.Position;
+    head: CodeMirror.Position;
+  }): ITextSelection {
     return {
       start: toPosition(selection.anchor),
       end: toPosition(selection.head)

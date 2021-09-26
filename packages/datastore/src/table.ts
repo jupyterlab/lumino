@@ -8,31 +8,24 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 import {
-  IIterable, IIterator, StringExt, IterableOrArrayLike
+  IIterable,
+  IIterator,
+  IterableOrArrayLike,
+  StringExt
 } from '@lumino/algorithm';
 
-import {
-  BPlusTree
-} from '@lumino/collections';
+import { BPlusTree } from '@lumino/collections';
 
-import {
-  Datastore
-} from './datastore';
+import { Datastore } from './datastore';
 
-import {
-  Record
-} from './record';
+import { Record } from './record';
 
-import {
-  Schema
-} from './schema';
-
+import { Schema } from './schema';
 
 /**
  * A datastore object which holds a collection of records.
  */
-export
-class Table<S extends Schema> implements IIterable<Record<S>> {
+export class Table<S extends Schema> implements IIterable<Record<S>> {
   /**
    * @internal
    *
@@ -44,7 +37,10 @@ class Table<S extends Schema> implements IIterable<Record<S>> {
    *
    * @returns A new datastore table.
    */
-  static create<U extends Schema>(schema: U, context: Datastore.Context): Table<U> {
+  static create<U extends Schema>(
+    schema: U,
+    context: Datastore.Context
+  ): Table<U> {
     return new Table<U>(schema, context);
   }
 
@@ -59,7 +55,11 @@ class Table<S extends Schema> implements IIterable<Record<S>> {
    *
    * @returns A new datastore table.
    */
-  static recreate<U extends Schema>(schema: U, context: Datastore.Context, records: IterableOrArrayLike<Record<U>>): Table<U> {
+  static recreate<U extends Schema>(
+    schema: U,
+    context: Datastore.Context,
+    records: IterableOrArrayLike<Record<U>>
+  ): Table<U> {
     return new Table<U>(schema, context, records);
   }
 
@@ -74,7 +74,10 @@ class Table<S extends Schema> implements IIterable<Record<S>> {
    *
    * @returns The user-facing change to the table.
    */
-  static patch<U extends Schema>(table: Table<U>, data: Table.Patch<U>): Table.Change<U> {
+  static patch<U extends Schema>(
+    table: Table<U>,
+    data: Table.Patch<U>
+  ): Table.Change<U> {
     // Create the change object.
     let tc: Table.MutableChange<U> = {};
 
@@ -113,7 +116,10 @@ class Table<S extends Schema> implements IIterable<Record<S>> {
    *
    * @returns The user-facing change to the table.
    */
-  static unpatch<U extends Schema>(table: Table<U>, data: Table.Patch<U>): Table.Change<U> {
+  static unpatch<U extends Schema>(
+    table: Table<U>,
+    data: Table.Patch<U>
+  ): Table.Change<U> {
     // Create the change object.
     let tc: Table.MutableChange<U> = {};
 
@@ -253,7 +259,11 @@ class Table<S extends Schema> implements IIterable<Record<S>> {
    *
    * @param context - The datastore context.
    */
-  private constructor(schema: S, context: Datastore.Context, records?: IterableOrArrayLike<Record<S>>) {
+  private constructor(
+    schema: S,
+    context: Datastore.Context,
+    records?: IterableOrArrayLike<Record<S>>
+  ) {
     this.schema = schema;
     this._context = context;
     if (records) {
@@ -265,33 +275,28 @@ class Table<S extends Schema> implements IIterable<Record<S>> {
   private _records = new BPlusTree<Record<S>>(Private.recordCmp);
 }
 
-
 /**
  * The namespace for the `Table` class statics.
  */
-export
-namespace Table {
+export namespace Table {
   /**
    * A type alias for the table update type.
    */
-  export
-  type Update<S extends Schema> = {
+  export type Update<S extends Schema> = {
     readonly [recordId: string]: Record.Update<S>;
   };
 
   /**
    * A type alias for the table change type.
    */
-  export
-  type Change<S extends Schema> = {
+  export type Change<S extends Schema> = {
     readonly [recordId: string]: Record.Change<S>;
   };
 
   /**
    * A type alias for the table patch type.
    */
-  export
-  type Patch<S extends Schema> = {
+  export type Patch<S extends Schema> = {
     readonly [recordId: string]: Record.Patch<S>;
   };
 
@@ -300,8 +305,7 @@ namespace Table {
    *
    * A type alias for the table mutable change type.
    */
-  export
-  type MutableChange<S extends Schema> = {
+  export type MutableChange<S extends Schema> = {
     [recordId: string]: Record.MutableChange<S>;
   };
 
@@ -310,12 +314,10 @@ namespace Table {
    *
    * A type alias for the table mutable patch type.
    */
-  export
-  type MutablePatch<S extends Schema> = {
+  export type MutablePatch<S extends Schema> = {
     [recordId: string]: Record.MutablePatch<S>;
   };
 }
-
 
 /**
  * The namespace for the module implementation details.
@@ -324,16 +326,20 @@ namespace Private {
   /**
    * A three-way record comparison function.
    */
-  export
-  function recordCmp<S extends Schema>(a: Record<S>, b: Record<S>): number {
+  export function recordCmp<S extends Schema>(
+    a: Record<S>,
+    b: Record<S>
+  ): number {
     return StringExt.cmp(a.$id, b.$id);
   }
 
   /**
    * A three-way record id comparison function.
    */
-  export
-  function recordIdCmp<S extends Schema>(record: Record<S>, id: string): number {
+  export function recordIdCmp<S extends Schema>(
+    record: Record<S>,
+    id: string
+  ): number {
     return StringExt.cmp(record.$id, id);
   }
 
@@ -346,8 +352,10 @@ namespace Private {
    *
    * @returns A new default initialized record.
    */
-  export
-  function createRecord<S extends Schema>(schema: S, id: string): Record<S> {
+  export function createRecord<S extends Schema>(
+    schema: S,
+    id: string
+  ): Record<S> {
     // Create the record and metadata objects.
     let record: any = {};
     let metadata: any = {};
@@ -380,8 +388,12 @@ namespace Private {
    *
    * @returns A new record with the update applied.
    */
-  export
-  function applyUpdate<S extends Schema>(schema: S, record: Record<S>, update: Record.Update<S>, context: Datastore.Context): Record<S> {
+  export function applyUpdate<S extends Schema>(
+    schema: S,
+    record: Record<S>,
+    update: Record.Update<S>,
+    context: Datastore.Context
+  ): Record<S> {
     // Fetch the version and store id.
     let version = context.version;
     let storeId = context.storeId;
@@ -442,8 +454,7 @@ namespace Private {
   /**
    * A type alias for the result of a patch operation.
    */
-  export
-  type PatchResult<S extends Schema> = {
+  export type PatchResult<S extends Schema> = {
     /**
      * The new record object.
      */
@@ -466,8 +477,11 @@ namespace Private {
    *
    * @return The result of applying the patch.
    */
-  export
-  function applyPatch<S extends Schema>(schema: S, record: Record<S>, patch: Record.Patch<S>): PatchResult<S> {
+  export function applyPatch<S extends Schema>(
+    schema: S,
+    record: Record<S>,
+    patch: Record.Patch<S>
+  ): PatchResult<S> {
     // Create the change object.
     let rc: Record.MutableChange<S> = {};
 
@@ -514,8 +528,11 @@ namespace Private {
    *
    * @return The result of unapplying the patch.
    */
-  export
-  function unapplyPatch<S extends Schema>(schema: S, record: Record<S>, patch: Record.Patch<S>): PatchResult<S> {
+  export function unapplyPatch<S extends Schema>(
+    schema: S,
+    record: Record<S>,
+    patch: Record.Patch<S>
+  ): PatchResult<S> {
     // Create the change object.
     let rc: Record.MutableChange<S> = {};
 

@@ -9,7 +9,7 @@
 |----------------------------------------------------------------------------*/
 import { Datastore } from '@lumino/datastore';
 
-import { server as WebSocketServer, connection } from 'websocket';
+import { connection, server as WebSocketServer } from 'websocket';
 
 import { WSAdapterMessages } from './messages';
 
@@ -150,7 +150,7 @@ class TransactionStore {
    * updates its undo count in the internal cemetery, determining whether
    * the transaction should be applied at any given time.
    */
- redo(transactionId: string): void {
+  redo(transactionId: string): void {
     let count = this._cemetery[transactionId];
     if (count === undefined) {
       this._cemetery[transactionId] = 0;
@@ -165,7 +165,7 @@ class TransactionStore {
    * @returns an array of transactions representing the whole history.
    */
   getHistory(): Datastore.Transaction[] {
-    let history = new Array();
+    let history = [];
     for (let id of this._order) {
       let count = this._cemetery[id] || 0;
       if (count > 0) {
@@ -198,7 +198,7 @@ wsServer.on('request', request => {
     return;
   }
 
-  var connection = request.accept(undefined, request.origin);
+  let connection = request.accept(undefined, request.origin);
   console.debug(new Date() + ' Connection accepted.');
 
   // Handle a message from a collaborator.

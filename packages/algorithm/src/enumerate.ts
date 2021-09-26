@@ -7,10 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  IIterator, IterableOrArrayLike, iter
-} from './iter';
-
+import { IIterator, iter, IterableOrArrayLike } from './iter';
 
 /**
  * Enumerate an iterable object.
@@ -32,17 +29,17 @@ import {
  * toArray(stream);  // [[1, 'foo'], [2, 'bar'], [3, 'baz']]
  * ```
  */
-export
-function enumerate<T>(object: IterableOrArrayLike<T>, start = 0): IIterator<[number, T]> {
+export function enumerate<T>(
+  object: IterableOrArrayLike<T>,
+  start = 0
+): IIterator<[number, T]> {
   return new EnumerateIterator<T>(iter(object), start);
 }
-
 
 /**
  * An iterator which enumerates the source values.
  */
-export
-class EnumerateIterator<T> implements IIterator<[number, T]> {
+export class EnumerateIterator<T> implements IIterator<[number, T]> {
   /**
    * Construct a new enumerate iterator.
    *

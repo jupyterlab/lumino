@@ -8,20 +8,14 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
-import {
-  Message
-} from '@lumino/messaging';
+import { Message } from '@lumino/messaging';
 
-import {
-  Widget
-} from '@lumino/widgets';
-
+import { Widget } from '@lumino/widgets';
 
 /**
  * A widget which implements a notification popup.
  */
-export
-class Notification extends Widget {
+export class Notification extends Widget {
   /**
    * Construct a new notification.
    *
@@ -58,13 +52,13 @@ class Notification extends Widget {
    */
   handleEvent(event: Event): void {
     switch (event.type) {
-    case 'mousedown':
-      this._evtMouseDown(event as MouseEvent);
-      break;
-    case 'contextmenu':
-      event.preventDefault();
-      event.stopPropagation();
-      break;
+      case 'mousedown':
+        this._evtMouseDown(event as MouseEvent);
+        break;
+      case 'contextmenu':
+        event.preventDefault();
+        event.stopPropagation();
+        break;
     }
   }
 
@@ -119,7 +113,9 @@ class Notification extends Widget {
    * Get the node presenting the message.
    */
   get messageNode(): HTMLSpanElement {
-    return this.node.getElementsByClassName('lm-DataGrid-notificationMessage')[0] as HTMLSpanElement;
+    return this.node.getElementsByClassName(
+      'lm-DataGrid-notificationMessage'
+    )[0] as HTMLSpanElement;
   }
 
   /**
@@ -191,23 +187,19 @@ class Notification extends Widget {
   private _placement: Notification.Placement;
 }
 
-
 /**
  * The namespace for the `Notification` class statics.
  */
-export
-namespace Notification {
+export namespace Notification {
   /**
    * A type alias for a notification placement.
    */
-  export
-  type Placement = 'top' | 'bottom' | 'left' | 'right';
+  export type Placement = 'top' | 'bottom' | 'left' | 'right';
 
   /**
    * An options object for creating a notification.
    */
-  export
-  interface IOptions {
+  export interface IOptions {
     /**
      * Target element to attach notification to.
      *
@@ -243,8 +235,7 @@ namespace Private {
   /**
    * Create the DOM node for notification.
    */
-  export
-  function createNode(): HTMLElement {
+  export function createNode(): HTMLElement {
     const node = document.createElement('div');
     const container = document.createElement('div');
     container.className = 'lm-DataGrid-notificationContainer';

@@ -7,33 +7,22 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  expect
-} from 'chai';
+import { expect } from 'chai';
 
-import {
-  Title
-} from '@lumino/widgets';
-
+import { Title } from '@lumino/widgets';
 
 const owner = { name: 'Bob' };
 
-
 describe('@lumino/widgets', () => {
-
   describe('Title', () => {
-
     describe('#constructor()', () => {
-
       it('should accept title options', () => {
         let title = new Title({ owner });
         expect(title).to.be.an.instanceof(Title);
       });
-
     });
 
     describe('#changed', () => {
-
       it('should be emitted when the title state changes', () => {
         let called = false;
         let title = new Title({ owner });
@@ -45,20 +34,16 @@ describe('@lumino/widgets', () => {
         title.label = 'baz';
         expect(called).to.equal(true);
       });
-
     });
 
     describe('#owner', () => {
-
       it('should be the title owner', () => {
         let title = new Title({ owner });
         expect(title.owner).to.equal(owner);
       });
-
     });
 
     describe('#label', () => {
-
       it('should default to an empty string', () => {
         let title = new Title({ owner });
         expect(title.label).to.equal('');
@@ -96,11 +81,9 @@ describe('@lumino/widgets', () => {
         title.label = 'foo';
         expect(called).to.equal(false);
       });
-
     });
 
     describe('#mnemonic', () => {
-
       it('should default to `-1', () => {
         let title = new Title({ owner });
         expect(title.mnemonic).to.equal(-1);
@@ -138,11 +121,9 @@ describe('@lumino/widgets', () => {
         title.mnemonic = 1;
         expect(called).to.equal(false);
       });
-
     });
 
     describe('#icon', () => {
-
       const iconRenderer = {
         render: (host: HTMLElement, options?: any) => {
           const renderNode = document.createElement('div');
@@ -216,11 +197,9 @@ describe('@lumino/widgets', () => {
         expect(title.icon).to.equal('foo');
       });
       /* </DEPRECATED> */
-
     });
 
     describe('#caption', () => {
-
       it('should default to an empty string', () => {
         let title = new Title({ owner });
         expect(title.caption).to.equal('');
@@ -258,11 +237,9 @@ describe('@lumino/widgets', () => {
         title.caption = 'foo';
         expect(called).to.equal(false);
       });
-
     });
 
     describe('#className', () => {
-
       it('should default to an empty string', () => {
         let title = new Title({ owner });
         expect(title.className).to.equal('');
@@ -300,11 +277,9 @@ describe('@lumino/widgets', () => {
         title.className = 'foo';
         expect(called).to.equal(false);
       });
-
     });
 
     describe('#closable', () => {
-
       it('should default to `false`', () => {
         let title = new Title({ owner });
         expect(title.closable).to.equal(false);
@@ -342,11 +317,9 @@ describe('@lumino/widgets', () => {
         title.closable = false;
         expect(called).to.equal(false);
       });
-
     });
 
     describe('#dataset', () => {
-
       it('should default to `{}`', () => {
         let title = new Title({ owner });
         expect(title.dataset).to.deep.equal({});
@@ -385,9 +358,6 @@ describe('@lumino/widgets', () => {
         title.dataset = dataset;
         expect(called).to.equal(false);
       });
-
     });
-
   });
-
 });

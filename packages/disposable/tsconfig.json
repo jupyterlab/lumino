@@ -14,23 +14,17 @@
     "target": "ES5",
     "rootDir": "src",
     "outDir": "lib",
-    "lib": [
-      "ES5",
-      "ES2015.Collection",
-      "ES2015.Iterable"
-    ],
+    "lib": ["ES5", "ES2015.Collection", "ES2015.Iterable"],
     "importHelpers": true,
     "types": []
   },
-  "include": [
-    "src/*"
-  ],
+  "include": ["src/*"],
   "references": [
     {
       "path": "../algorithm"
     },
     {
       "path": "../signaling"
-    },
+    }
   ]
 }

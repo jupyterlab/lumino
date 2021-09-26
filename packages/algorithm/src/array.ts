@@ -8,12 +8,10 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
-
 /**
  * The namespace for array-specific algorithms.
  */
-export
-namespace ArrayExt {
+export namespace ArrayExt {
   /**
    * Find the index of the first occurrence of a value in an array.
    *
@@ -54,8 +52,12 @@ namespace ArrayExt {
    * ArrayExt.firstIndexOf(data, 'two', 2, 1);  // 1
    * ```
    */
-  export
-  function firstIndexOf<T>(array: ArrayLike<T>, value: T, start = 0, stop = -1): number {
+  export function firstIndexOf<T>(
+    array: ArrayLike<T>,
+    value: T,
+    start = 0,
+    stop = -1
+  ): number {
     let n = array.length;
     if (n === 0) {
       return -1;
@@ -72,7 +74,7 @@ namespace ArrayExt {
     }
     let span: number;
     if (stop < start) {
-      span = (stop + 1) + (n - start);
+      span = stop + 1 + (n - start);
     } else {
       span = stop - start + 1;
     }
@@ -125,8 +127,12 @@ namespace ArrayExt {
    * ArrayExt.lastIndexOf(data, 'two', 0, 1);  // 1
    * ```
    */
-  export
-  function lastIndexOf<T>(array: ArrayLike<T>, value: T, start = -1, stop = 0): number {
+  export function lastIndexOf<T>(
+    array: ArrayLike<T>,
+    value: T,
+    start = -1,
+    stop = 0
+  ): number {
     let n = array.length;
     if (n === 0) {
       return -1;
@@ -143,7 +149,7 @@ namespace ArrayExt {
     }
     let span: number;
     if (start < stop) {
-      span = (start + 1) + (n - stop);
+      span = start + 1 + (n - stop);
     } else {
       span = start - stop + 1;
     }
@@ -200,8 +206,12 @@ namespace ArrayExt {
    * ArrayExt.findFirstIndex(data, isEven, 6, 5); // 1
    * ```
    */
-  export
-  function findFirstIndex<T>(array: ArrayLike<T>, fn: (value: T, index: number) => boolean, start = 0, stop = -1): number {
+  export function findFirstIndex<T>(
+    array: ArrayLike<T>,
+    fn: (value: T, index: number) => boolean,
+    start = 0,
+    stop = -1
+  ): number {
     let n = array.length;
     if (n === 0) {
       return -1;
@@ -218,7 +228,7 @@ namespace ArrayExt {
     }
     let span: number;
     if (stop < start) {
-      span = (stop + 1) + (n - start);
+      span = stop + 1 + (n - start);
     } else {
       span = stop - start + 1;
     }
@@ -275,8 +285,12 @@ namespace ArrayExt {
    * ArrayExt.findLastIndex(data, isEven, 0, 1);  // 5
    * ```
    */
-  export
-  function findLastIndex<T>(array: ArrayLike<T>, fn: (value: T, index: number) => boolean, start = -1, stop = 0): number {
+  export function findLastIndex<T>(
+    array: ArrayLike<T>,
+    fn: (value: T, index: number) => boolean,
+    start = -1,
+    stop = 0
+  ): number {
     let n = array.length;
     if (n === 0) {
       return -1;
@@ -293,7 +307,7 @@ namespace ArrayExt {
     }
     let d: number;
     if (start < stop) {
-      d = (start + 1) + (n - stop);
+      d = start + 1 + (n - stop);
     } else {
       d = start - stop + 1;
     }
@@ -350,8 +364,12 @@ namespace ArrayExt {
    * ArrayExt.findFirstValue(data, isEven, 6, 5); // 2
    * ```
    */
-  export
-  function findFirstValue<T>(array: ArrayLike<T>, fn: (value: T, index: number) => boolean, start = 0, stop = -1): T | undefined {
+  export function findFirstValue<T>(
+    array: ArrayLike<T>,
+    fn: (value: T, index: number) => boolean,
+    start = 0,
+    stop = -1
+  ): T | undefined {
     let index = findFirstIndex(array, fn, start, stop);
     return index !== -1 ? array[index] : undefined;
   }
@@ -400,8 +418,12 @@ namespace ArrayExt {
    * ArrayExt.findLastValue(data, isEven, 0, 1);  // 2
    * ```
    */
-  export
-  function findLastValue<T>(array: ArrayLike<T>, fn: (value: T, index: number) => boolean, start = -1, stop = 0): T | undefined {
+  export function findLastValue<T>(
+    array: ArrayLike<T>,
+    fn: (value: T, index: number) => boolean,
+    start = -1,
+    stop = 0
+  ): T | undefined {
     let index = findLastIndex(array, fn, start, stop);
     return index !== -1 ? array[index] : undefined;
   }
@@ -461,8 +483,13 @@ namespace ArrayExt {
    * ArrayExt.lowerBound(data, 10, numberCmp);  // 6
    * ```
    */
-  export
-  function lowerBound<T, U>(array: ArrayLike<T>, value: U, fn: (element: T, value: U) => number, start = 0, stop = -1): number {
+  export function lowerBound<T, U>(
+    array: ArrayLike<T>,
+    value: U,
+    fn: (element: T, value: U) => number,
+    start = 0,
+    stop = -1
+  ): number {
     let n = array.length;
     if (n === 0) {
       return 0;
@@ -547,8 +574,13 @@ namespace ArrayExt {
    * ArrayExt.upperBound(data, 10, numberCmp);  // 6
    * ```
    */
-  export
-  function upperBound<T, U>(array: ArrayLike<T>, value: U, fn: (element: T, value: U) => number, start = 0, stop = -1): number {
+  export function upperBound<T, U>(
+    array: ArrayLike<T>,
+    value: U,
+    fn: (element: T, value: U) => number,
+    start = 0,
+    stop = -1
+  ): number {
     let n = array.length;
     if (n === 0) {
       return 0;
@@ -608,8 +640,11 @@ namespace ArrayExt {
    * ArrayExt.shallowEqual(d2, d3);  // false
    * ```
    */
-  export
-  function shallowEqual<T>(a: ArrayLike<T>, b: ArrayLike<T>, fn?: (a: T, b: T) => boolean): boolean {
+  export function shallowEqual<T>(
+    a: ArrayLike<T>,
+    b: ArrayLike<T>,
+    fn?: (a: T, b: T) => boolean
+  ): boolean {
     // Check for object identity first.
     if (a === b) {
       return true;
@@ -660,8 +695,10 @@ namespace ArrayExt {
    * ArrayExt.slice(data, { step: -1 });           // [9, 7, 7, 4, 3, 0]
    * ```
    */
-  export
-  function slice<T>(array: ArrayLike<T>, options: slice.IOptions = {}): T[] {
+  export function slice<T>(
+    array: ArrayLike<T>,
+    options: slice.IOptions = {}
+  ): T[] {
     // Extract the options.
     let { start, stop, step } = options;
 
@@ -719,13 +756,11 @@ namespace ArrayExt {
   /**
    * The namespace for the `slice` function statics.
    */
-  export
-  namespace slice {
+  export namespace slice {
     /**
      * The options for the `slice` function.
      */
-    export
-    interface IOptions {
+    export interface IOptions {
       /**
        * The starting index of the slice, inclusive.
        *
@@ -760,8 +795,7 @@ namespace ArrayExt {
   /**
    * An array-like object which supports item assignment.
    */
-  export
-  type MutableArrayLike<T> = {
+  export type MutableArrayLike<T> = {
     readonly length: number;
     [index: number]: T;
   };
@@ -792,8 +826,11 @@ namespace ArrayExt {
    * ArrayExt.move(data, 4, 2);  // [0, 2, 4, 1, 3]
    * ```
    */
-  export
-  function move<T>(array: MutableArrayLike<T>, fromIndex: number, toIndex: number): void {
+  export function move<T>(
+    array: MutableArrayLike<T>,
+    fromIndex: number,
+    toIndex: number
+  ): void {
     let n = array.length;
     if (n <= 1) {
       return;
@@ -809,7 +846,7 @@ namespace ArrayExt {
       toIndex = Math.min(toIndex, n - 1);
     }
     if (fromIndex === toIndex) {
-      return
+      return;
     }
     let value = array[fromIndex];
     let d = fromIndex < toIndex ? 1 : -1;
@@ -848,8 +885,11 @@ namespace ArrayExt {
    * ArrayExt.reverse(data);        // [1, 4, 2, 3, 0]
    * ```
    */
-  export
-  function reverse<T>(array: MutableArrayLike<T>, start = 0, stop = -1): void {
+  export function reverse<T>(
+    array: MutableArrayLike<T>,
+    start = 0,
+    stop = -1
+  ): void {
     let n = array.length;
     if (n <= 1) {
       return;
@@ -907,8 +947,12 @@ namespace ArrayExt {
    * ArrayExt.rotate(data, 2, 1, 3);  // [4, 2, 0, 1, 3]
    * ```
    */
-  export
-  function rotate<T>(array: MutableArrayLike<T>, delta: number, start = 0, stop = -1): void {
+  export function rotate<T>(
+    array: MutableArrayLike<T>,
+    delta: number,
+    start = 0,
+    stop = -1
+  ): void {
     let n = array.length;
     if (n <= 1) {
       return;
@@ -976,8 +1020,12 @@ namespace ArrayExt {
    * ArrayExt.fill(data, 'z', 3, 1);  // ['z', 'z', 'b', 'z']
    * ```
    */
-  export
-  function fill<T>(array: MutableArrayLike<T>, value: T, start = 0, stop = -1): void {
+  export function fill<T>(
+    array: MutableArrayLike<T>,
+    value: T,
+    start = 0,
+    stop = -1
+  ): void {
     let n = array.length;
     if (n === 0) {
       return;
@@ -994,7 +1042,7 @@ namespace ArrayExt {
     }
     let span: number;
     if (stop < start) {
-      span = (stop + 1) + (n - start);
+      span = stop + 1 + (n - start);
     } else {
       span = stop - start + 1;
     }
@@ -1030,8 +1078,7 @@ namespace ArrayExt {
    * ArrayExt.insert(data, 6, 19);  // [-1, 0, 12, 1, 7, 2, 19]
    * ```
    */
-  export
-  function insert<T>(array: Array<T>, index: number, value: T): void {
+  export function insert<T>(array: Array<T>, index: number, value: T): void {
     let n = array.length;
     if (index < 0) {
       index = Math.max(0, index + n);
@@ -1071,8 +1118,7 @@ namespace ArrayExt {
    * ArrayExt.removeAt(data, 10);  // undefined;
    * ```
    */
-  export
-  function removeAt<T>(array: Array<T>, index: number): T | undefined {
+  export function removeAt<T>(array: Array<T>, index: number): T | undefined {
     let n = array.length;
     if (index < 0) {
       index += n;
@@ -1124,8 +1170,12 @@ namespace ArrayExt {
    * ArrayExt.removeFirstOf(data, 39, 3, 2);  // 2
    * ```
    */
-  export
-  function removeFirstOf<T>(array: Array<T>, value: T, start = 0, stop = -1): number {
+  export function removeFirstOf<T>(
+    array: Array<T>,
+    value: T,
+    start = 0,
+    stop = -1
+  ): number {
     let index = firstIndexOf(array, value, start, stop);
     if (index !== -1) {
       removeAt(array, index);
@@ -1169,8 +1219,12 @@ namespace ArrayExt {
    * ArrayExt.removeLastOf(data, 39, 2, 3);  // 3
    * ```
    */
-  export
-  function removeLastOf<T>(array: Array<T>, value: T, start = -1, stop = 0): number {
+  export function removeLastOf<T>(
+    array: Array<T>,
+    value: T,
+    start = -1,
+    stop = 0
+  ): number {
     let index = lastIndexOf(array, value, start, stop);
     if (index !== -1) {
       removeAt(array, index);
@@ -1213,8 +1267,12 @@ namespace ArrayExt {
    * ArrayExt.removeAllOf(data, 14, 1, 4);  // 1
    * ```
    */
-  export
-  function removeAllOf<T>(array: Array<T>, value: T, start = 0, stop = -1): number {
+  export function removeAllOf<T>(
+    array: Array<T>,
+    value: T,
+    start = 0,
+    stop = -1
+  ): number {
     let n = array.length;
     if (n === 0) {
       return 0;
@@ -1231,9 +1289,13 @@ namespace ArrayExt {
     }
     let count = 0;
     for (let i = 0; i < n; ++i) {
-      if (start <= stop && (i >= start && i <= stop) && array[i] === value) {
+      if (start <= stop && i >= start && i <= stop && array[i] === value) {
         count++;
-      } else if (stop < start && (i <= stop || i >= start) && array[i] === value) {
+      } else if (
+        stop < start &&
+        (i <= stop || i >= start) &&
+        array[i] === value
+      ) {
         count++;
       } else if (count > 0) {
         array[i - count] = array[i];
@@ -1283,8 +1345,12 @@ namespace ArrayExt {
    * ArrayExt.removeFirstWhere(data, isEven, 4);  // { index: -1, value: undefined }
    * ```
    */
-  export
-  function removeFirstWhere<T>(array: Array<T>, fn: (value: T, index: number) => boolean, start = 0, stop = -1): { index: number, value: T | undefined } {
+  export function removeFirstWhere<T>(
+    array: Array<T>,
+    fn: (value: T, index: number) => boolean,
+    start = 0,
+    stop = -1
+  ): { index: number; value: T | undefined } {
     let value: T | undefined;
     let index = findFirstIndex(array, fn, start, stop);
     if (index !== -1) {
@@ -1331,8 +1397,12 @@ namespace ArrayExt {
    * ArrayExt.removeLastWhere(data, isEven, 2, 1);  // { index: -1, value: undefined }
    * ```
    */
-  export
-  function removeLastWhere<T>(array: Array<T>, fn: (value: T, index: number) => boolean, start = -1, stop = 0): { index: number, value: T | undefined } {
+  export function removeLastWhere<T>(
+    array: Array<T>,
+    fn: (value: T, index: number) => boolean,
+    start = -1,
+    stop = 0
+  ): { index: number; value: T | undefined } {
     let value: T | undefined;
     let index = findLastIndex(array, fn, start, stop);
     if (index !== -1) {
@@ -1382,8 +1452,12 @@ namespace ArrayExt {
    * ArrayExt.removeAllWhere(data, isNegative, 0, 3);  // 2
    * ```
    */
-  export
-  function removeAllWhere<T>(array: Array<T>, fn: (value: T, index: number) => boolean, start = 0, stop = -1): number {
+  export function removeAllWhere<T>(
+    array: Array<T>,
+    fn: (value: T, index: number) => boolean,
+    start = 0,
+    stop = -1
+  ): number {
     let n = array.length;
     if (n === 0) {
       return 0;
@@ -1400,7 +1474,7 @@ namespace ArrayExt {
     }
     let count = 0;
     for (let i = 0; i < n; ++i) {
-      if (start <= stop && (i >= start && i <= stop) && fn(array[i], i)) {
+      if (start <= stop && i >= start && i <= stop && fn(array[i], i)) {
         count++;
       } else if (stop < start && (i <= stop || i >= start) && fn(array[i], i)) {
         count++;

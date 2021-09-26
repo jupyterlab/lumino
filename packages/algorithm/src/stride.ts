@@ -7,10 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  IIterator, IterableOrArrayLike, iter
-} from './iter';
-
+import { IIterator, iter, IterableOrArrayLike } from './iter';
 
 /**
  * Iterate over an iterable using a stepped increment.
@@ -33,17 +30,17 @@ import {
  * toArray(stream);  // [1, 3, 5];
  * ```
  */
-export
-function stride<T>(object: IterableOrArrayLike<T>, step: number): IIterator<T> {
+export function stride<T>(
+  object: IterableOrArrayLike<T>,
+  step: number
+): IIterator<T> {
   return new StrideIterator<T>(iter(object), step);
 }
-
 
 /**
  * An iterator which traverses a source iterator step-wise.
  */
-export
-class StrideIterator<T> implements IIterator<T> {
+export class StrideIterator<T> implements IIterator<T> {
   /**
    * Construct a new stride iterator.
    *

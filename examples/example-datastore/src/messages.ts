@@ -7,183 +7,166 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  ReadonlyJSONObject, UUID, JSONObject
-} from '@lumino/coreutils';
+import { JSONObject, ReadonlyJSONObject, UUID } from '@lumino/coreutils';
 
-import {
-  Datastore
-} from '@lumino/datastore';
-
+import { Datastore } from '@lumino/datastore';
 
 /**
  * A patch history object for the datastore.
  */
-export
-type TransactionHistory = {
+export type TransactionHistory = {
   /**
    * All known transactions.
    */
   readonly transactions: ReadonlyArray<Datastore.Transaction>;
-}
-
+};
 
 /**
  * A namespace for messages for communicating with the patch server.
  */
-export
-namespace WSAdapterMessages {
-
+export namespace WSAdapterMessages {
   /**
    * A base message for the patch server.
    */
-  export
-  type IBaseMessage = JSONObject & {
+  export type IBaseMessage = JSONObject & {
     msgId: string;
-    msgType: (
-      'storeid-request' | 'storeid-reply'|
-      'undo-request' | 'undo-reply' |
-      'redo-request' | 'redo-reply' |
-      'transaction-broadcast' | 'transaction-ack' |
-      'history-request' | 'history-reply' |
-      'fetch-transaction-request' | 'fetch-transaction-reply'
-    );
-    parentId: undefined;
+    msgType:
+      | 'storeid-request'
+      | 'storeid-reply'
+      | 'undo-request'
+      | 'undo-reply'
+      | 'redo-request'
+      | 'redo-reply'
+      | 'transaction-broadcast'
+      | 'transaction-ack'
+      | 'history-request'
+      | 'history-reply'
+      | 'fetch-transaction-request'
+      | 'fetch-transaction-reply';
 
     readonly content: ReadonlyJSONObject;
-  }
+  };
 
-  export
-  type IBaseReplyMessage = IBaseMessage & {
+  export type IBaseReplyMessage = IBaseMessage & {
     parentId: string;
-  }
+  };
 
   /**
    * A message representing a request for a unique store ID from the server.
    */
-  export
-  type IStoreIdMessageRequest = IBaseMessage & {
+  export type IStoreIdMessageRequest = IBaseMessage & {
     msgType: 'storeid-request';
     content: {};
-  }
+  };
 
   /**
    * A reply from the server containing a unique store ID.
    */
-  export
-  type IStoreIdMessageReply = IBaseReplyMessage & {
+  export type IStoreIdMessageReply = IBaseReplyMessage & {
     msgType: 'storeid-reply';
     content: {
-      readonly storeId: number
+      readonly storeId: number;
     };
-  }
+  };
 
   /**
    * A message representing a request to undo a transaction.
    */
-  export
-  type IUndoMessageRequest = IBaseMessage & {
+  export type IUndoMessageRequest = IBaseMessage & {
     msgType: 'undo-request';
     content: {
       readonly transactionId: string;
     };
-  }
+  };
 
   /**
    * A reply from the server containing a transaction to undo.
    */
-  export
-  type IUndoMessageReply = IBaseReplyMessage & {
+  export type IUndoMessageReply = IBaseReplyMessage & {
     msgType: 'undo-reply';
     content: {
-      readonly transaction: Datastore.Transaction
+      readonly transaction: Datastore.Transaction;
     };
-  }
+  };
 
   /**
    * A message representing a request to redo a transaction.
    */
-  export
-  type IRedoMessageRequest = IBaseMessage & {
+  export type IRedoMessageRequest = IBaseMessage & {
     msgType: 'redo-request';
     content: {
       readonly transactionId: string;
     };
-  }
+  };
 
   /**
    * A reply from the server containing a transaction to redo.
    */
-  export
-  type IRedoMessageReply = IBaseReplyMessage & {
+  export type IRedoMessageReply = IBaseReplyMessage & {
     msgType: 'redo-reply';
     content: {
-      readonly transaction: Datastore.Transaction
-    }
-  }
+      readonly transaction: Datastore.Transaction;
+    };
+  };
 
   /**
    * A message from a client broadcasting a transaction.
    */
-  export
-  type ITransactionBroadcastMessage = IBaseMessage & {
+  export type ITransactionBroadcastMessage = IBaseMessage & {
     msgType: 'transaction-broadcast';
     content: {
       readonly transactions: ReadonlyArray<Datastore.Transaction>;
     };
-  }
+  };
 
   /**
    * A message from the server acknowledging receipt of a transaction.
    */
-  export
-  type ITransactionAckMessage = IBaseReplyMessage & {
+  export type ITransactionAckMessage = IBaseReplyMessage & {
     msgType: 'transaction-ack';
     content: {
       readonly transactionIds: string[];
     };
-  }
+  };
 
   /**
    * A request from a client for the patch history from the server.
    */
-  export
-  type IHistoryRequestMessage = IBaseMessage & {
+  export type IHistoryRequestMessage = IBaseMessage & {
     msgType: 'history-request';
     content: {};
-  }
+  };
 
   /**
    * A response from the server with the patch history.
    */
-  export
-  type IHistoryReplyMessage = IBaseReplyMessage & {
+  export type IHistoryReplyMessage = IBaseReplyMessage & {
     msgType: 'history-reply';
     content: {
-      history: TransactionHistory
+      history: TransactionHistory;
     };
-  }
+  };
 
   /**
    * A base reply message from the server.
    */
-  export
-  type IReplyMessage = (
-    IStoreIdMessageReply | ITransactionAckMessage |
-    IUndoMessageReply | IRedoMessageReply |
-    IHistoryReplyMessage
-  );
+  export type IReplyMessage =
+    | IStoreIdMessageReply
+    | ITransactionAckMessage
+    | IUndoMessageReply
+    | IRedoMessageReply
+    | IHistoryReplyMessage;
 
   /**
    * A WSAdapter message.
    */
-  export
-  type IMessage = (
-    IStoreIdMessageRequest | ITransactionBroadcastMessage |
-    IUndoMessageRequest | IRedoMessageRequest |
-    IHistoryRequestMessage | IReplyMessage
-  );
-
+  export type IMessage =
+    | IStoreIdMessageRequest
+    | ITransactionBroadcastMessage
+    | IUndoMessageRequest
+    | IRedoMessageRequest
+    | IHistoryRequestMessage
+    | IReplyMessage;
 
   /**
    * Create a WSServerAdapter message.
@@ -196,8 +179,7 @@ namespace WSAdapterMessages {
    *
    * @returns The created message.
    */
-  export
-  function createMessage<T extends IMessage>(
+  export function createMessage<T extends IMessage>(
     msgType: T['msgType'],
     content?: T['content'],
     parentId?: string
@@ -210,10 +192,9 @@ namespace WSAdapterMessages {
       msgId,
       msgType,
       parentId,
-      content,
+      content
     } as T;
   }
-
 
   /**
    * Create a WSServerAdapter message.
@@ -226,8 +207,7 @@ namespace WSAdapterMessages {
    *
    * @returns The created message.
    */
-  export
-  function createReply<T extends IBaseReplyMessage>(
+  export function createReply<T extends IBaseReplyMessage>(
     msgType: T['msgType'],
     content: T['content'],
     parentId: string
@@ -246,8 +226,7 @@ namespace WSAdapterMessages {
    *
    * @returns The created message.
    */
-  export
-  function createStoreIdRequestMessage(): IStoreIdMessageRequest {
+  export function createStoreIdRequestMessage(): IStoreIdMessageRequest {
     return createMessage('storeid-request', {});
   }
 
@@ -260,9 +239,11 @@ namespace WSAdapterMessages {
    *
    * @returns The created message.
    */
-  export
-  function createStoreIdReplyMessage(parentId: string, storeId: number): IStoreIdMessageReply {
-    return createReply('storeid-reply', {storeId}, parentId);
+  export function createStoreIdReplyMessage(
+    parentId: string,
+    storeId: number
+  ): IStoreIdMessageReply {
+    return createReply('storeid-reply', { storeId }, parentId);
   }
 
   /**
@@ -270,9 +251,10 @@ namespace WSAdapterMessages {
    *
    * @returns {IUndoMessageRequest} The created message.
    */
-  export
-  function createUndoRequestMessage(id: string): IUndoMessageRequest {
-    return createMessage<IUndoMessageRequest>('undo-request', { transactionId: id });
+  export function createUndoRequestMessage(id: string): IUndoMessageRequest {
+    return createMessage<IUndoMessageRequest>('undo-request', {
+      transactionId: id
+    });
   }
 
   /**
@@ -284,9 +266,15 @@ namespace WSAdapterMessages {
    *
    * @returns The created message.
    */
-  export
-  function createUndoReplyMessage(parentId: string, transaction: Datastore.Transaction): IUndoMessageReply {
-    return createReply('undo-reply', { transaction: transaction as any }, parentId);
+  export function createUndoReplyMessage(
+    parentId: string,
+    transaction: Datastore.Transaction
+  ): IUndoMessageReply {
+    return createReply(
+      'undo-reply',
+      { transaction: transaction as any },
+      parentId
+    );
   }
 
   /**
@@ -294,8 +282,7 @@ namespace WSAdapterMessages {
    *
    * @returns The created message.
    */
-  export
-  function createRedoRequestMessage(id: string): IRedoMessageRequest {
+  export function createRedoRequestMessage(id: string): IRedoMessageRequest {
     return createMessage('redo-request', { transactionId: id });
   }
 
@@ -308,9 +295,15 @@ namespace WSAdapterMessages {
    *
    * @returns The created message.
    */
-  export
-  function createRedoReplyMessage(parentId: string, transaction: Datastore.Transaction): IRedoMessageReply {
-    return createReply('redo-reply', { transaction: transaction as any }, parentId);
+  export function createRedoReplyMessage(
+    parentId: string,
+    transaction: Datastore.Transaction
+  ): IRedoMessageReply {
+    return createReply(
+      'redo-reply',
+      { transaction: transaction as any },
+      parentId
+    );
   }
 
   /**
@@ -320,11 +313,14 @@ namespace WSAdapterMessages {
    *
    * @returns The created message.
    */
-  export
-  function createTransactionBroadcastMessage(transactions: Datastore.Transaction[]): ITransactionBroadcastMessage {
+  export function createTransactionBroadcastMessage(
+    transactions: Datastore.Transaction[]
+  ): ITransactionBroadcastMessage {
     // TS complains about not being able to cast Transaction[] to JSONArray
     // so for now cast to any:
-    return createMessage('transaction-broadcast', { transactions: transactions as any });
+    return createMessage('transaction-broadcast', {
+      transactions: transactions as any
+    });
   }
 
   /**
@@ -336,9 +332,10 @@ namespace WSAdapterMessages {
    *
    * @returns The created message.
    */
-  export
-  function createTransactionAckMessage(parentId: string, transactionIds: string[]): ITransactionAckMessage {
-
+  export function createTransactionAckMessage(
+    parentId: string,
+    transactionIds: string[]
+  ): ITransactionAckMessage {
     return createReply('transaction-ack', { transactionIds }, parentId);
   }
 
@@ -347,8 +344,7 @@ namespace WSAdapterMessages {
    *
    * @returns {IHistoryRequestMessage} The created message.
    */
-  export
-  function createHistoryRequestMessage(): IHistoryRequestMessage {
+  export function createHistoryRequestMessage(): IHistoryRequestMessage {
     return createMessage('history-request', {});
   }
 
@@ -361,8 +357,10 @@ namespace WSAdapterMessages {
    *
    * @returns The created message.
    */
-  export
-  function createHistoryReplyMessage(parentId: string, history: TransactionHistory): IHistoryReplyMessage {
+  export function createHistoryReplyMessage(
+    parentId: string,
+    history: TransactionHistory
+  ): IHistoryReplyMessage {
     return createReply('history-reply', { history } as any, parentId);
   }
 
@@ -373,8 +371,7 @@ namespace WSAdapterMessages {
    *
    * @returns whether the message is a reply message.
    */
-  export
-  function isReply(message: IMessage): message is IReplyMessage {
+  export function isReply(message: IMessage): message is IReplyMessage {
     return message.parentId !== undefined;
   }
 }

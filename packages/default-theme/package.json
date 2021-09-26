@@ -1,6 +1,6 @@
 {
   "name": "@lumino/default-theme",
-  "version": "0.5.0",
+  "version": "0.18.0",
   "description": "Lumino Default Theme",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -19,16 +19,18 @@
     "src/*",
     "types/*",
     "images/*.png",
-    "style/*.css"
+    "style/*.css",
+    "style/index.js"
   ],
   "style": "style/index.css",
+  "styleModule": "style/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/jupyterlab/lumino.git"
   },
   "dependencies": {
-    "@lumino/dragdrop": "^1.6.4",
-    "@lumino/widgets": "^1.14.0"
+    "@lumino/dragdrop": "^1.11.0",
+    "@lumino/widgets": "^1.27.0"
   },
   "publishConfig": {
     "access": "public"

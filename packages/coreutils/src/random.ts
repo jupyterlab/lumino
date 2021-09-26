@@ -10,15 +10,13 @@
 
 // Declare ambient variables for `window` and `require` to avoid a
 // hard dependency on both. This package must run on node.
-declare var window: any;
-declare var require: any;
-
+declare let window: any;
+declare let require: any;
 
 /**
  * The namespace for random number related functionality.
  */
-export
-namespace Random {
+export namespace Random {
   /**
    * A function which generates random bytes.
    *
@@ -36,26 +34,25 @@ namespace Random {
    *   - `require('crypto').randomBytes
    *   - `Math.random`
    */
-  export
-  const getRandomValues = (() => {
+  export const getRandomValues = (() => {
     // Look up the crypto module if available.
-    const crypto: any = (
+    const crypto: any =
       (typeof window !== 'undefined' && (window.crypto || window.msCrypto)) ||
-      (typeof require !== 'undefined' && require('crypto')) || null
-    );
+      (typeof require !== 'undefined' && require('crypto')) ||
+      null;
 
     // Modern browsers and IE 11
     if (crypto && typeof crypto.getRandomValues === 'function') {
       return function getRandomValues(buffer: Uint8Array): void {
         return crypto.getRandomValues(buffer);
-      }
+      };
     }
 
     // Node 7+
     if (crypto && typeof crypto.randomFillSync === 'function') {
       return function getRandomValues(buffer: Uint8Array): void {
         return crypto.randomFillSync(buffer);
-      }
+      };
     }
 
     // Node 0.10+
@@ -65,7 +62,7 @@ namespace Random {
         for (let i = 0, n = bytes.length; i < n; ++i) {
           buffer[i] = bytes[i];
         }
-      }
+      };
     }
 
     // Fallback
@@ -73,11 +70,11 @@ namespace Random {
       let value = 0;
       for (let i = 0, n = buffer.length; i < n; ++i) {
         if (i % 4 === 0) {
-          value = Math.random() * 0xFFFFFFFF >>> 0;
+          value = (Math.random() * 0xffffffff) >>> 0;
         }
-        buffer[i] = value & 0xFF;
+        buffer[i] = value & 0xff;
         value >>>= 8;
       }
-    }
+    };
   })();
 }

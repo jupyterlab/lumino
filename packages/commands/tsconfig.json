@@ -13,19 +13,12 @@
     "moduleResolution": "node",
     "target": "ES5",
     "outDir": "lib",
-    "lib": [
-      "ES5",
-      "ES2015.Promise",
-      "ES2015.Iterable",
-      "DOM"
-    ],
+    "lib": ["ES5", "ES2015.Promise", "ES2015.Iterable", "DOM"],
     "importHelpers": true,
     "types": [],
     "rootDir": "src"
   },
-  "include": [
-    "src/*"
-  ],
+  "include": ["src/*"],
   "references": [
     {
       "path": "../algorithm"

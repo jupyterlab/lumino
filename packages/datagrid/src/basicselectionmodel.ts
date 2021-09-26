@@ -7,18 +7,11 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  IIterator, iter
-} from '@lumino/algorithm';
+import { IIterator, iter } from '@lumino/algorithm';
 
-import {
-  DataModel
-} from './datamodel';
+import { DataModel } from './datamodel';
 
-import {
-  SelectionModel
-} from './selectionmodel';
-
+import { SelectionModel } from './selectionmodel';
 
 /**
  * A basic selection model implementation.
@@ -27,10 +20,9 @@ import {
  * This selection model is sufficient for most use cases where
  * structural knowledge of the data source is *not* required.
  */
-export
-class BasicSelectionModel extends SelectionModel {
+export class BasicSelectionModel extends SelectionModel {
   /**
-   * Wether the selection model is empty.
+   * Whether the selection model is empty.
    */
   get isEmpty(): boolean {
     return this._selections.length === 0;
@@ -53,10 +45,12 @@ class BasicSelectionModel extends SelectionModel {
   /**
    * Move cursor down/up/left/right while making sure it remains
    * within the bounds of selected rectangles
-   * 
+   *
    * @param direction - The direction of the movement.
    */
-  moveCursorWithinSelections(direction: SelectionModel.CursorMoveDirection): void {
+  moveCursorWithinSelections(
+    direction: SelectionModel.CursorMoveDirection
+  ): void {
     // Bail early if there are no selections or no existing cursor
     if (this.isEmpty || this.cursorRow === -1 || this._cursorColumn === -1) {
       return;
@@ -64,9 +58,11 @@ class BasicSelectionModel extends SelectionModel {
 
     // Bail early if only single cell is selected
     const firstSelection = this._selections[0];
-    if (this._selections.length === 1 &&
+    if (
+      this._selections.length === 1 &&
       firstSelection.r1 === firstSelection.r2 &&
-      firstSelection.c1 === firstSelection.c2) {
+      firstSelection.c1 === firstSelection.c2
+    ) {
       return;
     }
 
@@ -86,14 +82,18 @@ class BasicSelectionModel extends SelectionModel {
     const c2 = Math.max(cursorRect.c1, cursorRect.c2);
 
     const moveToNextRect = () => {
-      this._cursorRectIndex = (this._cursorRectIndex + 1) % this._selections.length;
+      this._cursorRectIndex =
+        (this._cursorRectIndex + 1) % this._selections.length;
       cursorRect = this._selections[this._cursorRectIndex];
       newRow = Math.min(cursorRect.r1, cursorRect.r2);
       newColumn = Math.min(cursorRect.c1, cursorRect.c2);
     };
-    
+
     const moveToPreviousRect = () => {
-      this._cursorRectIndex = this._cursorRectIndex === 0 ? this._selections.length - 1 : this._cursorRectIndex - 1;
+      this._cursorRectIndex =
+        this._cursorRectIndex === 0
+          ? this._selections.length - 1
+          : this._cursorRectIndex - 1;
       cursorRect = this._selections[this._cursorRectIndex];
       newRow = Math.max(cursorRect.r1, cursorRect.r2);
       newColumn = Math.max(cursorRect.c1, cursorRect.c2);
@@ -187,13 +187,28 @@ class BasicSelectionModel extends SelectionModel {
     c1 = Math.max(0, Math.min(c1, columnCount - 1));
     c2 = Math.max(0, Math.min(c2, columnCount - 1));
 
+    // Indicate if a row/column has already been selected.
+    let alreadySelected = false;
+
     // Handle the selection mode.
     if (this.selectionMode === 'row') {
       c1 = 0;
       c2 = columnCount - 1;
+      alreadySelected =
+        this._selections.filter(selection => selection.r1 === r1).length !== 0;
+      // Remove from selections if already selected.
+      this._selections = alreadySelected
+        ? this._selections.filter(selection => selection.r1 !== r1)
+        : this._selections;
     } else if (this.selectionMode === 'column') {
       r1 = 0;
       r2 = rowCount - 1;
+      alreadySelected =
+        this._selections.filter(selection => selection.c1 === c1).length !== 0;
+      // Remove from selections if already selected.
+      this._selections = alreadySelected
+        ? this._selections.filter(selection => selection.c1 !== c1)
+        : this._selections;
     }
 
     // Alias the cursor row and column.
@@ -213,8 +228,10 @@ class BasicSelectionModel extends SelectionModel {
     this._cursorColumn = cc;
     this._cursorRectIndex = this._selections.length;
 
-    // Add the new selection.
-    this._selections.push({ r1, c1, r2, c2 });
+    // Add the new selection if it wasn't already selected.
+    if (!alreadySelected) {
+      this._selections.push({ r1, c1, r2, c2 });
+    }
 
     // Emit the changed signal.
     this.emitChanged();
@@ -244,7 +261,10 @@ class BasicSelectionModel extends SelectionModel {
    *
    * @param args - The arguments for the signal.
    */
-  protected onDataModelChanged(sender: DataModel, args: DataModel.ChangedArgs): void {
+  protected onDataModelChanged(
+    sender: DataModel,
+    args: DataModel.ChangedArgs
+  ): void {
     // Bail early if the model has no current selections.
     if (this._selections.length === 0) {
       return;

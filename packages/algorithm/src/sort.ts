@@ -7,10 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  IterableOrArrayLike, each
-} from './iter';
-
+import { each, IterableOrArrayLike } from './iter';
 
 /**
  * Topologically sort an iterable of edges.
@@ -38,8 +35,7 @@ import {
  * topologicSort(data);  // ['a', 'b', 'c', 'd', 'e']
  * ```
  */
-export
-function topologicSort<T>(edges: IterableOrArrayLike<[T, T]>): T[] {
+export function topologicSort<T>(edges: IterableOrArrayLike<[T, T]>): T[] {
   // Setup the shared sorting state.
   let sorted: T[] = [];
   let visited = new Set<T>();
@@ -49,7 +45,9 @@ function topologicSort<T>(edges: IterableOrArrayLike<[T, T]>): T[] {
   each(edges, addEdge);
 
   // Visit each node in the graph.
-  graph.forEach((v, k) => { visit(k); });
+  graph.forEach((v, k) => {
+    visit(k);
+  });
 
   // Return the sorted results.
   return sorted;

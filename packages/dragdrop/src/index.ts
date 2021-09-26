@@ -7,28 +7,24 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  MimeData
-} from '@lumino/coreutils';
+import { MimeData } from '@lumino/coreutils';
 
-import {
-  DisposableDelegate, IDisposable
-} from '@lumino/disposable';
-
+import { DisposableDelegate, IDisposable } from '@lumino/disposable';
 
 /**
  * A type alias which defines the possible independent drop actions.
  */
-export
-type DropAction = 'none' | 'copy' | 'link' | 'move';
-
+export type DropAction = 'none' | 'copy' | 'link' | 'move';
 
 /**
  * A type alias which defines the possible supported drop actions.
  */
-export
-type SupportedActions = DropAction | 'copy-link' | 'copy-move' | 'link-move' | 'all';
-
+export type SupportedActions =
+  | DropAction
+  | 'copy-link'
+  | 'copy-move'
+  | 'link-move'
+  | 'all';
 
 /**
  * A custom event type used for drag-drop operations.
@@ -38,8 +34,7 @@ type SupportedActions = DropAction | 'copy-link' | 'copy-move' | 'link-move' | '
  * events, a drop target must cancel the `'lm-dragenter'` event by
  * calling the event's `preventDefault()` method.
  */
-export
-interface IDragEvent extends MouseEvent {
+export interface IDragEvent extends MouseEvent {
   /**
    * The drop action supported or taken by the drop target.
    *
@@ -93,7 +88,6 @@ interface IDragEvent extends MouseEvent {
   readonly source: any;
 }
 
-
 /**
  * An object which manages a drag-drop operation.
  *
@@ -131,8 +125,7 @@ interface IDragEvent extends MouseEvent {
  * transfer of arbitrary non-string objects; features which are not
  * possible with the native drag-drop API.
  */
-export
-class Drag implements IDisposable {
+export class Drag implements IDisposable {
   /**
    * Construct a new drag object.
    *
@@ -263,25 +256,29 @@ class Drag implements IDisposable {
    * called directly by user code.
    */
   handleEvent(event: Event): void {
-    switch(event.type) {
-    case 'touchmove':
-      event = Drag.convertTouchToMouseEvent(event as TouchEvent);
-    case 'mousemove':
-      this._evtMouseMove(event as MouseEvent);
-      break;
-    case 'touchend':
-      event = Drag.convertTouchToMouseEvent(event as TouchEvent);
-    case 'mouseup':
-      this._evtMouseUp(event as MouseEvent);
-      break;
-    case 'keydown':
-      this._evtKeyDown(event as KeyboardEvent);
-      break;
-    default:
-      // Stop all other events during drag-drop.
-      event.preventDefault();
-      event.stopPropagation();
-      break;
+    switch (event.type) {
+      case 'touchmove':
+        /* eslint no-fallthrough: "off" */
+        event = Drag.convertTouchToMouseEvent(event as TouchEvent);
+      // caution: break is omitted intentionally
+      case 'mousemove':
+        this._evtMouseMove(event as MouseEvent);
+        break;
+      case 'touchend':
+        /* eslint no-fallthrough: "off" */
+        event = Drag.convertTouchToMouseEvent(event as TouchEvent);
+      // caution: break is omitted intentionally
+      case 'mouseup':
+        this._evtMouseUp(event as MouseEvent);
+        break;
+      case 'keydown':
+        this._evtKeyDown(event as KeyboardEvent);
+        break;
+      default:
+        // Stop all other events during drag-drop.
+        event.preventDefault();
+        event.stopPropagation();
+        break;
     }
   }
 
@@ -518,22 +515,22 @@ class Drag implements IDisposable {
       return;
     }
     switch (action) {
-    case 'none':
-      this._dropAction = action;
-      this._override = Drag.overrideCursor('no-drop');
-      break;
-    case 'copy':
-      this._dropAction = action;
-      this._override = Drag.overrideCursor('copy');
-      break;
-    case 'link':
-      this._dropAction = action;
-      this._override = Drag.overrideCursor('alias');
-      break;
-    case 'move':
-      this._dropAction = action;
-      this._override = Drag.overrideCursor('move');
-      break;
+      case 'none':
+        this._dropAction = action;
+        this._override = Drag.overrideCursor('no-drop');
+        break;
+      case 'copy':
+        this._dropAction = action;
+        this._override = Drag.overrideCursor('copy');
+        break;
+      case 'link':
+        this._dropAction = action;
+        this._override = Drag.overrideCursor('alias');
+        break;
+      case 'move':
+        this._dropAction = action;
+        this._override = Drag.overrideCursor('move');
+        break;
     }
   }
 
@@ -593,18 +590,18 @@ class Drag implements IDisposable {
 
     // Scroll the element in the specified direction.
     switch (edge) {
-    case 'top':
-      element.scrollTop -= s;
-      break;
-    case 'left':
-      element.scrollLeft -= s;
-      break;
-    case 'right':
-      element.scrollLeft += s;
-      break;
-    case 'bottom':
-      element.scrollTop += s;
-      break;
+      case 'top':
+        element.scrollTop -= s;
+        break;
+      case 'left':
+        element.scrollLeft -= s;
+        break;
+      case 'right':
+        element.scrollLeft += s;
+        break;
+      case 'bottom':
+        element.scrollTop += s;
+        break;
     }
 
     // Request the next cycle of the scroll loop.
@@ -621,17 +618,14 @@ class Drag implements IDisposable {
   private _resolve: ((value: DropAction) => void) | null = null;
 }
 
-
 /**
  * The namespace for the `Drag` class statics.
  */
-export
-namespace Drag {
+export namespace Drag {
   /**
    * An options object for initializing a `Drag` object.
    */
-  export
-  interface IOptions {
+  export interface IOptions {
     /**
      * The populated mime data for the drag operation.
      */
@@ -719,8 +713,7 @@ namespace Drag {
    * override.dispose();
    * ```
    */
-  export
-  function overrideCursor(cursor: string): IDisposable {
+  export function overrideCursor(cursor: string): IDisposable {
     let id = ++overrideCursorID;
     document.body.style.cursor = cursor;
     document.body.classList.add('lm-mod-override-cursor');
@@ -741,14 +734,13 @@ namespace Drag {
   /**
    * Converts a TouchEvent to a MouseEvent to simplify mobile touch event handling.
    */
-  export
-  function convertTouchToMouseEvent(touch: TouchEvent): MouseEvent {
+  export function convertTouchToMouseEvent(touch: TouchEvent): MouseEvent {
     let touches = touch.touches;
     if (touches.length === 0) touches = touch.changedTouches; // touchEnd has no touches :facepalm:
     let mouse = new MouseEvent('fake-mouse', {
       button: 0, // why not be a left click :shrug:
       clientX: touches[0].clientX,
-      clientY: touches[0].clientY,
+      clientY: touches[0].clientY
     });
 
     // Forcefully add mouse event properties.
@@ -756,7 +748,10 @@ namespace Drag {
     (mouse as any).stopPropagation = touch.stopPropagation;
 
     // target is supposed to be readOnly, set it with js hackery
-    Object.defineProperty(mouse, 'target', {value: touch.target, writable: false});
+    Object.defineProperty(mouse, 'target', {
+      value: touch.target,
+      writable: false
+    });
 
     return mouse;
   }
@@ -767,7 +762,6 @@ namespace Drag {
   let overrideCursorID = 0;
 }
 
-
 /**
  * The namespace for the module implementation details.
  */
@@ -775,17 +769,18 @@ namespace Private {
   /**
    * The size of a drag scroll edge, in pixels.
    */
-  export
-  const SCROLL_EDGE_SIZE = 20;
+  export const SCROLL_EDGE_SIZE = 20;
 
   /**
    * Validate the given action is one of the supported actions.
    *
    * Returns the given action or `'none'` if the action is unsupported.
    */
-  export
-  function validateAction(action: DropAction, supported: SupportedActions): DropAction {
-    return (actionTable[action] & supportedTable[supported]) ? action : 'none';
+  export function validateAction(
+    action: DropAction,
+    supported: SupportedActions
+  ): DropAction {
+    return actionTable[action] & supportedTable[supported] ? action : 'none';
   }
 
   /**
@@ -799,19 +794,36 @@ namespace Private {
    *
    * @returns A newly created and initialized mouse event.
    */
-  export
-  function createMouseEvent(type: string, clientX: number, clientY: number): MouseEvent {
+  export function createMouseEvent(
+    type: string,
+    clientX: number,
+    clientY: number
+  ): MouseEvent {
     let event = document.createEvent('MouseEvent');
-    event.initMouseEvent(type, true, true, window, 0, 0, 0,
-      clientX, clientY, false, false, false, false, 0, null);
+    event.initMouseEvent(
+      type,
+      true,
+      true,
+      window,
+      0,
+      0,
+      0,
+      clientX,
+      clientY,
+      false,
+      false,
+      false,
+      false,
+      0,
+      null
+    );
     return event;
   }
 
   /**
    * An object which holds the scroll target data.
    */
-  export
-  interface IScrollTarget {
+  export interface IScrollTarget {
     /**
      * The element to be scrolled.
      */
@@ -831,8 +843,7 @@ namespace Private {
   /**
    * Find the drag scroll target under the mouse, if any.
    */
-  export
-  function findScrollTarget(event: MouseEvent): IScrollTarget | null {
+  export function findScrollTarget(event: MouseEvent): IScrollTarget | null {
     // Look up the client mouse position.
     let x = event.clientX;
     let y = event.clientY;
@@ -892,20 +903,20 @@ namespace Private {
 
       // Find the edge for the computed distance.
       switch (distance) {
-      case db:
-        edge = 'bottom';
-        break;
-      case dt:
-        edge = 'top';
-        break;
-      case dr:
-        edge = 'right';
-        break;
-      case dl:
-        edge = 'left';
-        break;
-      default:
-        throw 'unreachable';
+        case db:
+          edge = 'bottom';
+          break;
+        case dt:
+          edge = 'top';
+          break;
+        case dr:
+          edge = 'right';
+          break;
+        case dl:
+          edge = 'left';
+          break;
+        default:
+          throw 'unreachable';
       }
 
       // Compute how much the element can scroll in width and height.
@@ -915,20 +926,20 @@ namespace Private {
       // Determine if the element should be scrolled for the edge.
       let shouldScroll: boolean;
       switch (edge) {
-      case 'top':
-        shouldScroll = dsh > 0 && element.scrollTop > 0;
-        break;
-      case 'left':
-        shouldScroll = dsw > 0 && element.scrollLeft > 0;
-        break;
-      case 'right':
-        shouldScroll = dsw > 0 && element.scrollLeft < dsw;
-        break;
-      case 'bottom':
-        shouldScroll = dsh > 0 && element.scrollTop < dsh;
-        break;
-      default:
-        throw 'unreachable';
+        case 'top':
+          shouldScroll = dsh > 0 && element.scrollTop > 0;
+          break;
+        case 'left':
+          shouldScroll = dsw > 0 && element.scrollLeft > 0;
+          break;
+        case 'right':
+          shouldScroll = dsw > 0 && element.scrollLeft < dsw;
+          break;
+        case 'bottom':
+          shouldScroll = dsh > 0 && element.scrollTop < dsh;
+          break;
+        default:
+          throw 'unreachable';
       }
 
       // Skip the element if it should not be scrolled.
@@ -964,8 +975,12 @@ namespace Private {
    * This largely implements the drag enter portion of the whatwg spec:
    * https://html.spec.whatwg.org/multipage/interaction.html#drag-and-drop-processing-model
    */
-  export
-  function dispatchDragEnter(drag: Drag, currElem: Element | null, currTarget: Element | null, event: MouseEvent): Element | null {
+  export function dispatchDragEnter(
+    drag: Drag,
+    currElem: Element | null,
+    currTarget: Element | null,
+    event: MouseEvent
+  ): Element | null {
     // If the current element is null, return null as the new target.
     if (!currElem) {
       return null;
@@ -1023,8 +1038,12 @@ namespace Private {
    * This largely implements the drag exit portion of the whatwg spec:
    * https://html.spec.whatwg.org/multipage/interaction.html#drag-and-drop-processing-model
    */
-  export
-  function dispatchDragExit(drag: Drag, prevTarget: Element | null, currTarget: Element | null, event: MouseEvent): void {
+  export function dispatchDragExit(
+    drag: Drag,
+    prevTarget: Element | null,
+    currTarget: Element | null,
+    event: MouseEvent
+  ): void {
     // If the previous target is null, do nothing.
     if (!prevTarget) {
       return;
@@ -1057,8 +1076,12 @@ namespace Private {
    * This largely implements the drag leave portion of the whatwg spec:
    * https://html.spec.whatwg.org/multipage/interaction.html#drag-and-drop-processing-model
    */
-  export
-  function dispatchDragLeave(drag: Drag, prevTarget: Element | null, currTarget: Element | null, event: MouseEvent): void {
+  export function dispatchDragLeave(
+    drag: Drag,
+    prevTarget: Element | null,
+    currTarget: Element | null,
+    event: MouseEvent
+  ): void {
     // If the previous target is null, do nothing.
     if (!prevTarget) {
       return;
@@ -1090,8 +1113,11 @@ namespace Private {
    * This largely implements the drag over portion of the whatwg spec:
    * https://html.spec.whatwg.org/multipage/interaction.html#drag-and-drop-processing-model
    */
-  export
-  function dispatchDragOver(drag: Drag, currTarget: Element | null, event: MouseEvent): DropAction {
+  export function dispatchDragOver(
+    drag: Drag,
+    currTarget: Element | null,
+    event: MouseEvent
+  ): DropAction {
     // If there is no current target, the drop action is none.
     if (!currTarget) {
       return 'none';
@@ -1134,8 +1160,11 @@ namespace Private {
    * This largely implements the drag over portion of the whatwg spec:
    * https://html.spec.whatwg.org/multipage/interaction.html#drag-and-drop-processing-model
    */
-  export
-  function dispatchDrop(drag: Drag, currTarget: Element | null, event: MouseEvent): DropAction {
+  export function dispatchDrop(
+    drag: Drag,
+    currTarget: Element | null,
+    event: MouseEvent
+  ): DropAction {
     // If there is no current target, the drop action is none.
     if (!currTarget) {
       return 'none';
@@ -1166,24 +1195,24 @@ namespace Private {
    * A lookup table from drop action to bit value.
    */
   const actionTable: { [key: string]: number } = {
-    'none': 0x0,
-    'copy': 0x1,
-    'link': 0x2,
-    'move': 0x4
+    none: 0x0,
+    copy: 0x1,
+    link: 0x2,
+    move: 0x4
   };
 
   /**
    * A lookup table from supported action to drop action bit mask.
    */
   const supportedTable: { [key: string]: number } = {
-    'none': actionTable['none'],
-    'copy': actionTable['copy'],
-    'link': actionTable['link'],
-    'move': actionTable['move'],
+    none: actionTable['none'],
+    copy: actionTable['copy'],
+    link: actionTable['link'],
+    move: actionTable['move'],
     'copy-link': actionTable['copy'] | actionTable['link'],
     'copy-move': actionTable['copy'] | actionTable['move'],
     'link-move': actionTable['link'] | actionTable['move'],
-    'all': actionTable['copy'] | actionTable['link'] | actionTable['move']
+    all: actionTable['copy'] | actionTable['link'] | actionTable['move']
   };
 
   /**
@@ -1199,19 +1228,33 @@ namespace Private {
    *
    * @returns A new object which implements `IDragEvent`.
    */
-  function createDragEvent(type: string, drag: Drag, event: MouseEvent, related: Element | null): IDragEvent {
+  function createDragEvent(
+    type: string,
+    drag: Drag,
+    event: MouseEvent,
+    related: Element | null
+  ): IDragEvent {
     // Create a new mouse event to use as the drag event. Currently,
     // JS engines do now allow user-defined Event subclasses.
     let dragEvent = document.createEvent('MouseEvent');
 
     // Initialize the mouse event data.
     dragEvent.initMouseEvent(
-      type, true, true, window, 0,
-      event.screenX, event.screenY,
-      event.clientX, event.clientY,
-      event.ctrlKey, event.altKey,
-      event.shiftKey, event.metaKey,
-      event.button, related
+      type,
+      true,
+      true,
+      window,
+      0,
+      event.screenX,
+      event.screenY,
+      event.clientX,
+      event.clientY,
+      event.ctrlKey,
+      event.altKey,
+      event.shiftKey,
+      event.metaKey,
+      event.button,
+      related
     );
 
     // Forcefully add the custom drag event properties.

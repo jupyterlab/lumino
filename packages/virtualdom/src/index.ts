@@ -7,10 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  ArrayExt
-} from '@lumino/algorithm';
-
+import { ArrayExt } from '@lumino/algorithm';
 
 /**
  * The names of the supported HTML5 DOM element attributes.
@@ -25,106 +22,160 @@ import {
  *   - https://www.w3.org/TR/html5/index.html#attributes-1
  *   - https://html.spec.whatwg.org/multipage/indices.html#attributes-3
  */
-export
-type ElementAttrNames = (
-  'abbr' |
-  'accept' |
-  'accept-charset' |
-  'accesskey' |
-  'action' |
-  'allowfullscreen' |
-  'alt' |
-  'autocomplete' |
-  'autofocus' |
-  'autoplay' |
-  'autosave' |
-  'checked' |
-  'cite' |
-  'cols' |
-  'colspan' |
-  'contenteditable' |
-  'controls' |
-  'coords' |
-  'crossorigin' |
-  'data' |
-  'datetime' |
-  'default' |
-  'dir' |
-  'dirname' |
-  'disabled' |
-  'download' |
-  'draggable' |
-  'dropzone' |
-  'enctype' |
-  'form' |
-  'formaction' |
-  'formenctype' |
-  'formmethod' |
-  'formnovalidate' |
-  'formtarget' |
-  'headers' |
-  'height' |
-  'hidden' |
-  'high' |
-  'href' |
-  'hreflang' |
-  'id' |
-  'inputmode' |
-  'integrity' |
-  'ismap' |
-  'kind' |
-  'label' |
-  'lang' |
-  'list' |
-  'loop' |
-  'low' |
-  'max' |
-  'maxlength' |
-  'media' |
-  'mediagroup' |
-  'method' |
-  'min' |
-  'minlength' |
-  'multiple' |
-  'muted' |
-  'name' |
-  'novalidate' |
-  'optimum' |
-  'pattern' |
-  'placeholder' |
-  'poster' |
-  'preload' |
-  'readonly' |
-  'rel' |
-  'required' |
-  'reversed' |
-  'rows' |
-  'rowspan' |
-  'sandbox' |
-  'scope' |
-  'selected' |
-  'shape' |
-  'size' |
-  'sizes' |
-  'span' |
-  'spellcheck' |
-  'src' |
-  'srcdoc' |
-  'srclang' |
-  'srcset' |
-  'start' |
-  'step' |
-  'tabindex' |
-  'target' |
-  'title' |
-  'type' |
-  'typemustmatch' |
-  'usemap' |
-  'value' |
-  'width' |
-  'wrap'
-);
+export type ElementAttrNames =
+  | 'abbr'
+  | 'accept'
+  | 'accept-charset'
+  | 'accesskey'
+  | 'action'
+  | 'allowfullscreen'
+  | 'alt'
+  | 'autocomplete'
+  | 'autofocus'
+  | 'autoplay'
+  | 'autosave'
+  | 'checked'
+  | 'cite'
+  | 'cols'
+  | 'colspan'
+  | 'contenteditable'
+  | 'controls'
+  | 'coords'
+  | 'crossorigin'
+  | 'data'
+  | 'datetime'
+  | 'default'
+  | 'dir'
+  | 'dirname'
+  | 'disabled'
+  | 'download'
+  | 'draggable'
+  | 'dropzone'
+  | 'enctype'
+  | 'form'
+  | 'formaction'
+  | 'formenctype'
+  | 'formmethod'
+  | 'formnovalidate'
+  | 'formtarget'
+  | 'headers'
+  | 'height'
+  | 'hidden'
+  | 'high'
+  | 'href'
+  | 'hreflang'
+  | 'id'
+  | 'inputmode'
+  | 'integrity'
+  | 'ismap'
+  | 'kind'
+  | 'label'
+  | 'lang'
+  | 'list'
+  | 'loop'
+  | 'low'
+  | 'max'
+  | 'maxlength'
+  | 'media'
+  | 'mediagroup'
+  | 'method'
+  | 'min'
+  | 'minlength'
+  | 'multiple'
+  | 'muted'
+  | 'name'
+  | 'novalidate'
+  | 'optimum'
+  | 'pattern'
+  | 'placeholder'
+  | 'poster'
+  | 'preload'
+  | 'readonly'
+  | 'rel'
+  | 'required'
+  | 'reversed'
+  | 'rows'
+  | 'rowspan'
+  | 'sandbox'
+  | 'scope'
+  | 'selected'
+  | 'shape'
+  | 'size'
+  | 'sizes'
+  | 'span'
+  | 'spellcheck'
+  | 'src'
+  | 'srcdoc'
+  | 'srclang'
+  | 'srcset'
+  | 'start'
+  | 'step'
+  | 'tabindex'
+  | 'target'
+  | 'title'
+  | 'type'
+  | 'typemustmatch'
+  | 'usemap'
+  | 'value'
+  | 'width'
+  | 'wrap';
 
+/**
+ * The names of ARIA attributes for HTML elements.
+ *
+ * The attribute names are collected from
+ * https://www.w3.org/TR/html5/infrastructure.html#element-attrdef-aria-role
+ */
+export type ARIAAttrNames =
+  | 'aria-activedescendant'
+  | 'aria-atomic'
+  | 'aria-autocomplete'
+  | 'aria-busy'
+  | 'aria-checked'
+  | 'aria-colcount'
+  | 'aria-colindex'
+  | 'aria-colspan'
+  | 'aria-controls'
+  | 'aria-current'
+  | 'aria-describedby'
+  | 'aria-details'
+  | 'aria-dialog'
+  | 'aria-disabled'
+  | 'aria-dropeffect'
+  | 'aria-errormessage'
+  | 'aria-expanded'
+  | 'aria-flowto'
+  | 'aria-grabbed'
+  | 'aria-haspopup'
+  | 'aria-hidden'
+  | 'aria-invalid'
+  | 'aria-keyshortcuts'
+  | 'aria-label'
+  | 'aria-labelledby'
+  | 'aria-level'
+  | 'aria-live'
+  | 'aria-multiline'
+  | 'aria-multiselectable'
+  | 'aria-orientation'
+  | 'aria-owns'
+  | 'aria-placeholder'
+  | 'aria-posinset'
+  | 'aria-pressed'
+  | 'aria-readonly'
+  | 'aria-relevant'
+  | 'aria-required'
+  | 'aria-roledescription'
+  | 'aria-rowcount'
+  | 'aria-rowindex'
+  | 'aria-rowspan'
+  | 'aria-selected'
+  | 'aria-setsize'
+  | 'aria-sort'
+  | 'aria-valuemax'
+  | 'aria-valuemin'
+  | 'aria-valuenow'
+  | 'aria-valuetext'
+  | 'role';
 
 /**
  * The names of the supported HTML5 CSS property names.
@@ -135,341 +186,338 @@ type ElementAttrNames = (
  * The property names were collected from the following sources:
  *   - TypeScript's `lib.dom.d.ts` file
  */
-export
-type CSSPropertyNames = (
-  'alignContent' |
-  'alignItems' |
-  'alignSelf' |
-  'alignmentBaseline' |
-  'animation' |
-  'animationDelay' |
-  'animationDirection' |
-  'animationDuration' |
-  'animationFillMode' |
-  'animationIterationCount' |
-  'animationName' |
-  'animationPlayState' |
-  'animationTimingFunction' |
-  'backfaceVisibility' |
-  'background' |
-  'backgroundAttachment' |
-  'backgroundClip' |
-  'backgroundColor' |
-  'backgroundImage' |
-  'backgroundOrigin' |
-  'backgroundPosition' |
-  'backgroundPositionX' |
-  'backgroundPositionY' |
-  'backgroundRepeat' |
-  'backgroundSize' |
-  'baselineShift' |
-  'border' |
-  'borderBottom' |
-  'borderBottomColor' |
-  'borderBottomLeftRadius' |
-  'borderBottomRightRadius' |
-  'borderBottomStyle' |
-  'borderBottomWidth' |
-  'borderCollapse' |
-  'borderColor' |
-  'borderImage' |
-  'borderImageOutset' |
-  'borderImageRepeat' |
-  'borderImageSlice' |
-  'borderImageSource' |
-  'borderImageWidth' |
-  'borderLeft' |
-  'borderLeftColor' |
-  'borderLeftStyle' |
-  'borderLeftWidth' |
-  'borderRadius' |
-  'borderRight' |
-  'borderRightColor' |
-  'borderRightStyle' |
-  'borderRightWidth' |
-  'borderSpacing' |
-  'borderStyle' |
-  'borderTop' |
-  'borderTopColor' |
-  'borderTopLeftRadius' |
-  'borderTopRightRadius' |
-  'borderTopStyle' |
-  'borderTopWidth' |
-  'borderWidth' |
-  'bottom' |
-  'boxShadow' |
-  'boxSizing' |
-  'breakAfter' |
-  'breakBefore' |
-  'breakInside' |
-  'captionSide' |
-  'clear' |
-  'clip' |
-  'clipPath' |
-  'clipRule' |
-  'color' |
-  'colorInterpolationFilters' |
-  'columnCount' |
-  'columnFill' |
-  'columnGap' |
-  'columnRule' |
-  'columnRuleColor' |
-  'columnRuleStyle' |
-  'columnRuleWidth' |
-  'columnSpan' |
-  'columnWidth' |
-  'columns' |
-  'content' |
-  'counterIncrement' |
-  'counterReset' |
-  'cssFloat' |
-  'cssText' |
-  'cursor' |
-  'direction' |
-  'display' |
-  'dominantBaseline' |
-  'emptyCells' |
-  'enableBackground' |
-  'fill' |
-  'fillOpacity' |
-  'fillRule' |
-  'filter' |
-  'flex' |
-  'flexBasis' |
-  'flexDirection' |
-  'flexFlow' |
-  'flexGrow' |
-  'flexShrink' |
-  'flexWrap' |
-  'floodColor' |
-  'floodOpacity' |
-  'font' |
-  'fontFamily' |
-  'fontFeatureSettings' |
-  'fontSize' |
-  'fontSizeAdjust' |
-  'fontStretch' |
-  'fontStyle' |
-  'fontVariant' |
-  'fontWeight' |
-  'glyphOrientationHorizontal' |
-  'glyphOrientationVertical' |
-  'height' |
-  'imeMode' |
-  'justifyContent' |
-  'kerning' |
-  'left' |
-  'letterSpacing' |
-  'lightingColor' |
-  'lineHeight' |
-  'listStyle' |
-  'listStyleImage' |
-  'listStylePosition' |
-  'listStyleType' |
-  'margin' |
-  'marginBottom' |
-  'marginLeft' |
-  'marginRight' |
-  'marginTop' |
-  'marker' |
-  'markerEnd' |
-  'markerMid' |
-  'markerStart' |
-  'mask' |
-  'maxHeight' |
-  'maxWidth' |
-  'minHeight' |
-  'minWidth' |
-  'msContentZoomChaining' |
-  'msContentZoomLimit' |
-  'msContentZoomLimitMax' |
-  'msContentZoomLimitMin' |
-  'msContentZoomSnap' |
-  'msContentZoomSnapPoints' |
-  'msContentZoomSnapType' |
-  'msContentZooming' |
-  'msFlowFrom' |
-  'msFlowInto' |
-  'msFontFeatureSettings' |
-  'msGridColumn' |
-  'msGridColumnAlign' |
-  'msGridColumnSpan' |
-  'msGridColumns' |
-  'msGridRow' |
-  'msGridRowAlign' |
-  'msGridRowSpan' |
-  'msGridRows' |
-  'msHighContrastAdjust' |
-  'msHyphenateLimitChars' |
-  'msHyphenateLimitLines' |
-  'msHyphenateLimitZone' |
-  'msHyphens' |
-  'msImeAlign' |
-  'msOverflowStyle' |
-  'msScrollChaining' |
-  'msScrollLimit' |
-  'msScrollLimitXMax' |
-  'msScrollLimitXMin' |
-  'msScrollLimitYMax' |
-  'msScrollLimitYMin' |
-  'msScrollRails' |
-  'msScrollSnapPointsX' |
-  'msScrollSnapPointsY' |
-  'msScrollSnapType' |
-  'msScrollSnapX' |
-  'msScrollSnapY' |
-  'msScrollTranslation' |
-  'msTextCombineHorizontal' |
-  'msTextSizeAdjust' |
-  'msTouchAction' |
-  'msTouchSelect' |
-  'msUserSelect' |
-  'msWrapFlow' |
-  'msWrapMargin' |
-  'msWrapThrough' |
-  'opacity' |
-  'order' |
-  'orphans' |
-  'outline' |
-  'outlineColor' |
-  'outlineStyle' |
-  'outlineWidth' |
-  'overflow' |
-  'overflowX' |
-  'overflowY' |
-  'padding' |
-  'paddingBottom' |
-  'paddingLeft' |
-  'paddingRight' |
-  'paddingTop' |
-  'pageBreakAfter' |
-  'pageBreakBefore' |
-  'pageBreakInside' |
-  'perspective' |
-  'perspectiveOrigin' |
-  'pointerEvents' |
-  'position' |
-  'quotes' |
-  'resize' |
-  'right' |
-  'rubyAlign' |
-  'rubyOverhang' |
-  'rubyPosition' |
-  'stopColor' |
-  'stopOpacity' |
-  'stroke' |
-  'strokeDasharray' |
-  'strokeDashoffset' |
-  'strokeLinecap' |
-  'strokeLinejoin' |
-  'strokeMiterlimit' |
-  'strokeOpacity' |
-  'strokeWidth' |
-  'tableLayout' |
-  'textAlign' |
-  'textAlignLast' |
-  'textAnchor' |
-  'textDecoration' |
-  'textIndent' |
-  'textJustify' |
-  'textKashida' |
-  'textKashidaSpace' |
-  'textOverflow' |
-  'textShadow' |
-  'textTransform' |
-  'textUnderlinePosition' |
-  'top' |
-  'touchAction' |
-  'transform' |
-  'transformOrigin' |
-  'transformStyle' |
-  'transition' |
-  'transitionDelay' |
-  'transitionDuration' |
-  'transitionProperty' |
-  'transitionTimingFunction' |
-  'unicodeBidi' |
-  'verticalAlign' |
-  'visibility' |
-  'webkitAlignContent' |
-  'webkitAlignItems' |
-  'webkitAlignSelf' |
-  'webkitAnimation' |
-  'webkitAnimationDelay' |
-  'webkitAnimationDirection' |
-  'webkitAnimationDuration' |
-  'webkitAnimationFillMode' |
-  'webkitAnimationIterationCount' |
-  'webkitAnimationName' |
-  'webkitAnimationPlayState' |
-  'webkitAnimationTimingFunction' |
-  'webkitAppearance' |
-  'webkitBackfaceVisibility' |
-  'webkitBackgroundClip' |
-  'webkitBackgroundOrigin' |
-  'webkitBackgroundSize' |
-  'webkitBorderBottomLeftRadius' |
-  'webkitBorderBottomRightRadius' |
-  'webkitBorderImage' |
-  'webkitBorderRadius' |
-  'webkitBorderTopLeftRadius' |
-  'webkitBorderTopRightRadius' |
-  'webkitBoxAlign' |
-  'webkitBoxDirection' |
-  'webkitBoxFlex' |
-  'webkitBoxOrdinalGroup' |
-  'webkitBoxOrient' |
-  'webkitBoxPack' |
-  'webkitBoxSizing' |
-  'webkitColumnBreakAfter' |
-  'webkitColumnBreakBefore' |
-  'webkitColumnBreakInside' |
-  'webkitColumnCount' |
-  'webkitColumnGap' |
-  'webkitColumnRule' |
-  'webkitColumnRuleColor' |
-  'webkitColumnRuleStyle' |
-  'webkitColumnRuleWidth' |
-  'webkitColumnSpan' |
-  'webkitColumnWidth' |
-  'webkitColumns' |
-  'webkitFilter' |
-  'webkitFlex' |
-  'webkitFlexBasis' |
-  'webkitFlexDirection' |
-  'webkitFlexFlow' |
-  'webkitFlexGrow' |
-  'webkitFlexShrink' |
-  'webkitFlexWrap' |
-  'webkitJustifyContent' |
-  'webkitOrder' |
-  'webkitPerspective' |
-  'webkitPerspectiveOrigin' |
-  'webkitTapHighlightColor' |
-  'webkitTextFillColor' |
-  'webkitTextSizeAdjust' |
-  'webkitTransform' |
-  'webkitTransformOrigin' |
-  'webkitTransformStyle' |
-  'webkitTransition' |
-  'webkitTransitionDelay' |
-  'webkitTransitionDuration' |
-  'webkitTransitionProperty' |
-  'webkitTransitionTimingFunction' |
-  'webkitUserModify' |
-  'webkitUserSelect' |
-  'webkitWritingMode' |
-  'whiteSpace' |
-  'widows' |
-  'width' |
-  'wordBreak' |
-  'wordSpacing' |
-  'wordWrap' |
-  'writingMode' |
-  'zIndex' |
-  'zoom'
-);
-
+export type CSSPropertyNames =
+  | 'alignContent'
+  | 'alignItems'
+  | 'alignSelf'
+  | 'alignmentBaseline'
+  | 'animation'
+  | 'animationDelay'
+  | 'animationDirection'
+  | 'animationDuration'
+  | 'animationFillMode'
+  | 'animationIterationCount'
+  | 'animationName'
+  | 'animationPlayState'
+  | 'animationTimingFunction'
+  | 'backfaceVisibility'
+  | 'background'
+  | 'backgroundAttachment'
+  | 'backgroundClip'
+  | 'backgroundColor'
+  | 'backgroundImage'
+  | 'backgroundOrigin'
+  | 'backgroundPosition'
+  | 'backgroundPositionX'
+  | 'backgroundPositionY'
+  | 'backgroundRepeat'
+  | 'backgroundSize'
+  | 'baselineShift'
+  | 'border'
+  | 'borderBottom'
+  | 'borderBottomColor'
+  | 'borderBottomLeftRadius'
+  | 'borderBottomRightRadius'
+  | 'borderBottomStyle'
+  | 'borderBottomWidth'
+  | 'borderCollapse'
+  | 'borderColor'
+  | 'borderImage'
+  | 'borderImageOutset'
+  | 'borderImageRepeat'
+  | 'borderImageSlice'
+  | 'borderImageSource'
+  | 'borderImageWidth'
+  | 'borderLeft'
+  | 'borderLeftColor'
+  | 'borderLeftStyle'
+  | 'borderLeftWidth'
+  | 'borderRadius'
+  | 'borderRight'
+  | 'borderRightColor'
+  | 'borderRightStyle'
+  | 'borderRightWidth'
+  | 'borderSpacing'
+  | 'borderStyle'
+  | 'borderTop'
+  | 'borderTopColor'
+  | 'borderTopLeftRadius'
+  | 'borderTopRightRadius'
+  | 'borderTopStyle'
+  | 'borderTopWidth'
+  | 'borderWidth'
+  | 'bottom'
+  | 'boxShadow'
+  | 'boxSizing'
+  | 'breakAfter'
+  | 'breakBefore'
+  | 'breakInside'
+  | 'captionSide'
+  | 'clear'
+  | 'clip'
+  | 'clipPath'
+  | 'clipRule'
+  | 'color'
+  | 'colorInterpolationFilters'
+  | 'columnCount'
+  | 'columnFill'
+  | 'columnGap'
+  | 'columnRule'
+  | 'columnRuleColor'
+  | 'columnRuleStyle'
+  | 'columnRuleWidth'
+  | 'columnSpan'
+  | 'columnWidth'
+  | 'columns'
+  | 'content'
+  | 'counterIncrement'
+  | 'counterReset'
+  | 'cssFloat'
+  | 'cssText'
+  | 'cursor'
+  | 'direction'
+  | 'display'
+  | 'dominantBaseline'
+  | 'emptyCells'
+  | 'enableBackground'
+  | 'fill'
+  | 'fillOpacity'
+  | 'fillRule'
+  | 'filter'
+  | 'flex'
+  | 'flexBasis'
+  | 'flexDirection'
+  | 'flexFlow'
+  | 'flexGrow'
+  | 'flexShrink'
+  | 'flexWrap'
+  | 'floodColor'
+  | 'floodOpacity'
+  | 'font'
+  | 'fontFamily'
+  | 'fontFeatureSettings'
+  | 'fontSize'
+  | 'fontSizeAdjust'
+  | 'fontStretch'
+  | 'fontStyle'
+  | 'fontVariant'
+  | 'fontWeight'
+  | 'glyphOrientationHorizontal'
+  | 'glyphOrientationVertical'
+  | 'height'
+  | 'imeMode'
+  | 'justifyContent'
+  | 'kerning'
+  | 'left'
+  | 'letterSpacing'
+  | 'lightingColor'
+  | 'lineHeight'
+  | 'listStyle'
+  | 'listStyleImage'
+  | 'listStylePosition'
+  | 'listStyleType'
+  | 'margin'
+  | 'marginBottom'
+  | 'marginLeft'
+  | 'marginRight'
+  | 'marginTop'
+  | 'marker'
+  | 'markerEnd'
+  | 'markerMid'
+  | 'markerStart'
+  | 'mask'
+  | 'maxHeight'
+  | 'maxWidth'
+  | 'minHeight'
+  | 'minWidth'
+  | 'msContentZoomChaining'
+  | 'msContentZoomLimit'
+  | 'msContentZoomLimitMax'
+  | 'msContentZoomLimitMin'
+  | 'msContentZoomSnap'
+  | 'msContentZoomSnapPoints'
+  | 'msContentZoomSnapType'
+  | 'msContentZooming'
+  | 'msFlowFrom'
+  | 'msFlowInto'
+  | 'msFontFeatureSettings'
+  | 'msGridColumn'
+  | 'msGridColumnAlign'
+  | 'msGridColumnSpan'
+  | 'msGridColumns'
+  | 'msGridRow'
+  | 'msGridRowAlign'
+  | 'msGridRowSpan'
+  | 'msGridRows'
+  | 'msHighContrastAdjust'
+  | 'msHyphenateLimitChars'
+  | 'msHyphenateLimitLines'
+  | 'msHyphenateLimitZone'
+  | 'msHyphens'
+  | 'msImeAlign'
+  | 'msOverflowStyle'
+  | 'msScrollChaining'
+  | 'msScrollLimit'
+  | 'msScrollLimitXMax'
+  | 'msScrollLimitXMin'
+  | 'msScrollLimitYMax'
+  | 'msScrollLimitYMin'
+  | 'msScrollRails'
+  | 'msScrollSnapPointsX'
+  | 'msScrollSnapPointsY'
+  | 'msScrollSnapType'
+  | 'msScrollSnapX'
+  | 'msScrollSnapY'
+  | 'msScrollTranslation'
+  | 'msTextCombineHorizontal'
+  | 'msTextSizeAdjust'
+  | 'msTouchAction'
+  | 'msTouchSelect'
+  | 'msUserSelect'
+  | 'msWrapFlow'
+  | 'msWrapMargin'
+  | 'msWrapThrough'
+  | 'opacity'
+  | 'order'
+  | 'orphans'
+  | 'outline'
+  | 'outlineColor'
+  | 'outlineStyle'
+  | 'outlineWidth'
+  | 'overflow'
+  | 'overflowX'
+  | 'overflowY'
+  | 'padding'
+  | 'paddingBottom'
+  | 'paddingLeft'
+  | 'paddingRight'
+  | 'paddingTop'
+  | 'pageBreakAfter'
+  | 'pageBreakBefore'
+  | 'pageBreakInside'
+  | 'perspective'
+  | 'perspectiveOrigin'
+  | 'pointerEvents'
+  | 'position'
+  | 'quotes'
+  | 'resize'
+  | 'right'
+  | 'rubyAlign'
+  | 'rubyOverhang'
+  | 'rubyPosition'
+  | 'stopColor'
+  | 'stopOpacity'
+  | 'stroke'
+  | 'strokeDasharray'
+  | 'strokeDashoffset'
+  | 'strokeLinecap'
+  | 'strokeLinejoin'
+  | 'strokeMiterlimit'
+  | 'strokeOpacity'
+  | 'strokeWidth'
+  | 'tableLayout'
+  | 'textAlign'
+  | 'textAlignLast'
+  | 'textAnchor'
+  | 'textDecoration'
+  | 'textIndent'
+  | 'textJustify'
+  | 'textKashida'
+  | 'textKashidaSpace'
+  | 'textOverflow'
+  | 'textShadow'
+  | 'textTransform'
+  | 'textUnderlinePosition'
+  | 'top'
+  | 'touchAction'
+  | 'transform'
+  | 'transformOrigin'
+  | 'transformStyle'
+  | 'transition'
+  | 'transitionDelay'
+  | 'transitionDuration'
+  | 'transitionProperty'
+  | 'transitionTimingFunction'
+  | 'unicodeBidi'
+  | 'verticalAlign'
+  | 'visibility'
+  | 'webkitAlignContent'
+  | 'webkitAlignItems'
+  | 'webkitAlignSelf'
+  | 'webkitAnimation'
+  | 'webkitAnimationDelay'
+  | 'webkitAnimationDirection'
+  | 'webkitAnimationDuration'
+  | 'webkitAnimationFillMode'
+  | 'webkitAnimationIterationCount'
+  | 'webkitAnimationName'
+  | 'webkitAnimationPlayState'
+  | 'webkitAnimationTimingFunction'
+  | 'webkitAppearance'
+  | 'webkitBackfaceVisibility'
+  | 'webkitBackgroundClip'
+  | 'webkitBackgroundOrigin'
+  | 'webkitBackgroundSize'
+  | 'webkitBorderBottomLeftRadius'
+  | 'webkitBorderBottomRightRadius'
+  | 'webkitBorderImage'
+  | 'webkitBorderRadius'
+  | 'webkitBorderTopLeftRadius'
+  | 'webkitBorderTopRightRadius'
+  | 'webkitBoxAlign'
+  | 'webkitBoxDirection'
+  | 'webkitBoxFlex'
+  | 'webkitBoxOrdinalGroup'
+  | 'webkitBoxOrient'
+  | 'webkitBoxPack'
+  | 'webkitBoxSizing'
+  | 'webkitColumnBreakAfter'
+  | 'webkitColumnBreakBefore'
+  | 'webkitColumnBreakInside'
+  | 'webkitColumnCount'
+  | 'webkitColumnGap'
+  | 'webkitColumnRule'
+  | 'webkitColumnRuleColor'
+  | 'webkitColumnRuleStyle'
+  | 'webkitColumnRuleWidth'
+  | 'webkitColumnSpan'
+  | 'webkitColumnWidth'
+  | 'webkitColumns'
+  | 'webkitFilter'
+  | 'webkitFlex'
+  | 'webkitFlexBasis'
+  | 'webkitFlexDirection'
+  | 'webkitFlexFlow'
+  | 'webkitFlexGrow'
+  | 'webkitFlexShrink'
+  | 'webkitFlexWrap'
+  | 'webkitJustifyContent'
+  | 'webkitOrder'
+  | 'webkitPerspective'
+  | 'webkitPerspectiveOrigin'
+  | 'webkitTapHighlightColor'
+  | 'webkitTextFillColor'
+  | 'webkitTextSizeAdjust'
+  | 'webkitTransform'
+  | 'webkitTransformOrigin'
+  | 'webkitTransformStyle'
+  | 'webkitTransition'
+  | 'webkitTransitionDelay'
+  | 'webkitTransitionDuration'
+  | 'webkitTransitionProperty'
+  | 'webkitTransitionTimingFunction'
+  | 'webkitUserModify'
+  | 'webkitUserSelect'
+  | 'webkitWritingMode'
+  | 'whiteSpace'
+  | 'widows'
+  | 'width'
+  | 'wordBreak'
+  | 'wordSpacing'
+  | 'wordWrap'
+  | 'writingMode'
+  | 'zIndex'
+  | 'zoom';
 
 /**
  * A mapping of inline event name to event object type.
@@ -484,8 +532,7 @@ type CSSPropertyNames = (
  *   - https://www.w3.org/TR/html5/index.html#attributes-1
  *   - https://html.spec.whatwg.org/multipage/webappapis.html#idl-definitions
  */
-export
-type ElementEventMap = {
+export type ElementEventMap = {
   onabort: UIEvent;
   onauxclick: MouseEvent;
   onblur: FocusEvent;
@@ -508,7 +555,7 @@ type ElementEventMap = {
   ondrop: DragEvent;
   ondurationchange: Event;
   onemptied: Event;
-  onended: MediaStreamErrorEvent;
+  onended: ErrorEvent;
   onerror: ErrorEvent;
   onfocus: FocusEvent;
   oninput: Event;
@@ -557,7 +604,6 @@ type ElementEventMap = {
   onwaiting: Event;
 };
 
-
 /**
  * An object which represents a dataset for a virtual DOM element.
  *
@@ -567,11 +613,9 @@ type ElementEventMap = {
  *
  * Dataset property names should not contain spaces.
  */
-export
-type ElementDataset = {
+export type ElementDataset = {
   readonly [name: string]: string;
 };
-
 
 /**
  * The inline style for for a virtual DOM element.
@@ -579,11 +623,20 @@ type ElementDataset = {
  * Style attributes use the JS camel-cased property names instead of
  * the CSS hyphenated names for performance and security.
  */
-export
-type ElementInlineStyle = {
+export type ElementInlineStyle = {
   readonly [T in CSSPropertyNames]?: string;
 };
 
+/**
+ * The ARIA attributes for a virtual element node.
+ *
+ * These are the attributes which are applied to a real DOM element via
+ * `element.setAttribute()`. The supported attribute names are defined
+ * by the `ARIAAttrNames` type.
+ */
+export type ElementARIAAttrs = {
+  readonly [T in ARIAAttrNames]?: string;
+};
 
 /**
  * The base attributes for a virtual element node.
@@ -596,28 +649,26 @@ type ElementInlineStyle = {
  * of the camel-case JS name due to browser inconsistencies in handling
  * the JS versions.
  */
-export
-type ElementBaseAttrs = {
+export type ElementBaseAttrs = {
   readonly [T in ElementAttrNames]?: string;
 };
-
 
 /**
  * The inline event listener attributes for a virtual element node.
  *
  * The supported listeners are defined by the `ElementEventMap` type.
  */
-export
-type ElementEventAttrs = {
-  readonly [T in keyof ElementEventMap]?: (this: HTMLElement, event: ElementEventMap[T]) => any;
+export type ElementEventAttrs = {
+  readonly [T in keyof ElementEventMap]?: (
+    this: HTMLElement,
+    event: ElementEventMap[T]
+  ) => any;
 };
-
 
 /**
  * The special-cased attributes for a virtual element node.
  */
-export
-type ElementSpecialAttrs = {
+export type ElementSpecialAttrs = {
   /**
    * The key id for the virtual element node.
    *
@@ -653,20 +704,16 @@ type ElementSpecialAttrs = {
   readonly style?: ElementInlineStyle;
 };
 
-
 /**
  * The full set of attributes supported by a virtual element node.
  *
- * This is the combination of the base element attributes, the inline
- * element event listeners, and the special element attributes.
+ * This is the combination of the base element attributes, the the ARIA attributes,
+ * the inline element event listeners, and the special element attributes.
  */
-export
-type ElementAttrs = (
-  ElementBaseAttrs &
+export type ElementAttrs = ElementBaseAttrs &
+  ElementARIAAttrs &
   ElementEventAttrs &
-  ElementSpecialAttrs
-);
-
+  ElementSpecialAttrs;
 
 /**
  * A virtual node which represents plain text content.
@@ -675,8 +722,7 @@ type ElementAttrs = (
  * User code will not typically create a `VirtualText` node directly.
  * Instead, the `h()` function will be used to create an element tree.
  */
-export
-class VirtualText {
+export class VirtualText {
   /**
    * The text content for the node.
    */
@@ -700,7 +746,6 @@ class VirtualText {
   }
 }
 
-
 /**
  * A virtual node which represents an HTML element.
  *
@@ -708,8 +753,7 @@ class VirtualText {
  * User code will not typically create a `VirtualElement` node directly.
  * Instead, the `h()` function will be used to create an element tree.
  */
-export
-class VirtualElement {
+export class VirtualElement {
   /**
    * The tag name for the element.
    */
@@ -751,7 +795,12 @@ class VirtualElement {
    *
    * @param renderer - An optional custom renderer for the element.
    */
-  constructor(tag: string, attrs: ElementAttrs, children: ReadonlyArray<VirtualNode>, renderer?: VirtualElement.IRenderer) {
+  constructor(
+    tag: string,
+    attrs: ElementAttrs,
+    children: ReadonlyArray<VirtualNode>,
+    renderer?: VirtualElement.IRenderer
+  ) {
     this.tag = tag;
     this.attrs = attrs;
     this.children = children;
@@ -760,8 +809,7 @@ class VirtualElement {
   }
 }
 
-export
-namespace VirtualElement {
+export namespace VirtualElement {
   /**
    * A type describing a custom element renderer
    */
@@ -786,7 +834,10 @@ namespace VirtualElement {
      * @param options - Will be populated with the .attrs and .children fields
      * set on the VirtualElement being rendered.
      */
-    render: (host: HTMLElement, options?: {attrs?: ElementAttrs, children?: ReadonlyArray<VirtualNode>}) => void;
+    render: (
+      host: HTMLElement,
+      options?: { attrs?: ElementAttrs; children?: ReadonlyArray<VirtualNode> }
+    ) => void;
 
     /**
      * Optional cleanup function for custom renderers. If the .renderer field
@@ -809,7 +860,10 @@ namespace VirtualElement {
      * @param options - Will be populated with the .attrs and .children fields
      * set on the VirtualElement being unrendered.
      */
-    unrender?: (host: HTMLElement, options?: {attrs?: ElementAttrs, children?: ReadonlyArray<VirtualNode>}) => void;
+    unrender?: (
+      host: HTMLElement,
+      options?: { attrs?: ElementAttrs; children?: ReadonlyArray<VirtualNode> }
+    ) => void;
   };
 }
 
@@ -826,8 +880,7 @@ namespace VirtualElement {
  * User code will not typically create a `VirtualElementPass` node directly.
  * Instead, the `hpass()` function will be used to create an element tree.
  */
-export
-class VirtualElementPass extends VirtualElement {
+export class VirtualElementPass extends VirtualElement {
   /**
    * DEPRECATED - use VirtualElement with a defined renderer param instead
    *
@@ -845,13 +898,16 @@ class VirtualElementPass extends VirtualElement {
    * HTMLElement and return nothing. If null, the parent element
    * will be rendered barren without any children.
    */
-  constructor(tag: string, attrs: ElementAttrs, renderer: VirtualElementPass.IRenderer | null) {
+  constructor(
+    tag: string,
+    attrs: ElementAttrs,
+    renderer: VirtualElementPass.IRenderer | null
+  ) {
     super(tag, attrs, [], renderer || undefined);
   }
 }
 
-export
-namespace VirtualElementPass {
+export namespace VirtualElementPass {
   /**
    * DEPRECATED - use VirtualElement.IRenderer instead
    *
@@ -860,13 +916,10 @@ namespace VirtualElementPass {
   export type IRenderer = VirtualElement.IRenderer;
 }
 
-
 /**
  * A type alias for a general virtual node.
  */
-export
-type VirtualNode = VirtualElement | VirtualText;
-
+export type VirtualNode = VirtualElement | VirtualText;
 
 /**
  * Create a new virtual element node.
@@ -893,14 +946,28 @@ type VirtualNode = VirtualElement | VirtualText;
  * equivalent to `h.div(...)`.
  */
 export function h(tag: string, ...children: h.Child[]): VirtualElement;
-export function h(tag: string, attrs: ElementAttrs, ...children: h.Child[]): VirtualElement;
-export function h(tag: string, renderer: VirtualElement.IRenderer, ...children: h.Child[]): VirtualElement;
-export function h(tag: string, attrs: ElementAttrs, renderer: VirtualElement.IRenderer, ...children: h.Child[]): VirtualElement;
+export function h(
+  tag: string,
+  attrs: ElementAttrs,
+  ...children: h.Child[]
+): VirtualElement;
+export function h(
+  tag: string,
+  renderer: VirtualElement.IRenderer,
+  ...children: h.Child[]
+): VirtualElement;
+export function h(
+  tag: string,
+  attrs: ElementAttrs,
+  renderer: VirtualElement.IRenderer,
+  ...children: h.Child[]
+): VirtualElement;
 export function h(tag: string): VirtualElement {
   let attrs: ElementAttrs = {};
   let renderer: VirtualElement.IRenderer | undefined;
   let children: VirtualNode[] = [];
   for (let i = 1, n = arguments.length; i < n; ++i) {
+    // eslint-disable-next-line prefer-rest-params
     let arg = arguments[i];
     if (typeof arg === 'string') {
       children.push(new VirtualText(arg));
@@ -911,10 +978,9 @@ export function h(tag: string): VirtualElement {
     } else if (arg instanceof Array) {
       extend(children, arg);
     } else if ((i === 1 || i === 2) && arg && typeof arg === 'object') {
-      if ("render" in arg) {
+      if ('render' in arg) {
         renderer = arg;
-      }
-      else {
+      } else {
         attrs = arg;
       }
     }
@@ -934,27 +1000,32 @@ export function h(tag: string): VirtualElement {
   }
 }
 
-
 /**
  * The namespace for the `h` function statics.
  */
-export
-namespace h {
+export namespace h {
   /**
    * A type alias for the supported child argument types.
    */
-  export
-  type Child = (string | VirtualNode | null) | Array<string | VirtualNode | null>;
+  export type Child =
+    | (string | VirtualNode | null)
+    | Array<string | VirtualNode | null>;
 
   /**
    * A bound factory function for a specific `h()` tag.
    */
-  export
-  interface IFactory {
+  export interface IFactory {
     (...children: Child[]): VirtualElement;
     (attrs: ElementAttrs, ...children: Child[]): VirtualElement;
-    (renderer: VirtualElement.IRenderer, ...children: h.Child[]): VirtualElement;
-    (attrs: ElementAttrs, renderer: VirtualElement.IRenderer, ...children: h.Child[]): VirtualElement;
+    (
+      renderer: VirtualElement.IRenderer,
+      ...children: h.Child[]
+    ): VirtualElement;
+    (
+      attrs: ElementAttrs,
+      renderer: VirtualElement.IRenderer,
+      ...children: h.Child[]
+    ): VirtualElement;
   }
 
   export const a: IFactory = h.bind(undefined, 'a');
@@ -1056,7 +1127,6 @@ namespace h {
   export const wbr: IFactory = h.bind(undefined, 'wbr');
 }
 
-
 /**
  * DEPRECATED - pass the renderer arg to the h function instead
  *
@@ -1071,36 +1141,44 @@ namespace h {
  * @returns A new "pass thru" virtual element node for the given parameters.
  *
  */
-export function hpass(tag: string, renderer?: VirtualElementPass.IRenderer): VirtualElementPass;
-export function hpass(tag: string, attrs: ElementAttrs, renderer?: VirtualElementPass.IRenderer): VirtualElementPass;
+export function hpass(
+  tag: string,
+  renderer?: VirtualElementPass.IRenderer
+): VirtualElementPass;
+export function hpass(
+  tag: string,
+  attrs: ElementAttrs,
+  renderer?: VirtualElementPass.IRenderer
+): VirtualElementPass;
 export function hpass(tag: string): VirtualElementPass {
   let attrs: ElementAttrs = {};
   let renderer: VirtualElementPass.IRenderer | null = null;
 
   if (arguments.length === 2) {
+    // eslint-disable-next-line prefer-rest-params
     const arg = arguments[1];
 
-    if ("render" in arg) {
+    if ('render' in arg) {
       renderer = arg;
     } else {
       attrs = arg;
     }
   } else if (arguments.length === 3) {
+    // eslint-disable-next-line prefer-rest-params
     attrs = arguments[1];
+    // eslint-disable-next-line prefer-rest-params
     renderer = arguments[2];
   } else if (arguments.length > 3) {
-    throw new Error("hpass() should be called with 1, 2, or 3 arguments");
+    throw new Error('hpass() should be called with 1, 2, or 3 arguments');
   }
 
   return new VirtualElementPass(tag, attrs, renderer);
 }
 
-
 /**
  * The namespace for the virtual DOM rendering functions.
  */
-export
-namespace VirtualDOM {
+export namespace VirtualDOM {
   /**
    * Create a real DOM element from a virtual element node.
    *
@@ -1136,15 +1214,16 @@ namespace VirtualDOM {
    * Externally modifying the provided content or the host element will
    * result in undefined rendering behavior.
    */
-  export
-  function render(content: VirtualNode | ReadonlyArray<VirtualNode> | null, host: HTMLElement): void {
+  export function render(
+    content: VirtualNode | ReadonlyArray<VirtualNode> | null,
+    host: HTMLElement
+  ): void {
     let oldContent = Private.hostMap.get(host) || [];
     let newContent = Private.asContentArray(content);
     Private.hostMap.set(host, newContent);
     Private.updateContent(host, oldContent, newContent);
   }
 }
-
 
 /**
  * The namespace for the module implementation details.
@@ -1153,14 +1232,14 @@ namespace Private {
   /**
    * A weak mapping of host element to virtual DOM content.
    */
-  export
-  const hostMap = new WeakMap<HTMLElement, ReadonlyArray<VirtualNode>>();
+  export const hostMap = new WeakMap<HTMLElement, ReadonlyArray<VirtualNode>>();
 
   /**
    * Cast a content value to a content array.
    */
-  export
-  function asContentArray(value: VirtualNode | ReadonlyArray<VirtualNode> | null): ReadonlyArray<VirtualNode> {
+  export function asContentArray(
+    value: VirtualNode | ReadonlyArray<VirtualNode> | null
+  ): ReadonlyArray<VirtualNode> {
     if (!value) {
       return [];
     }
@@ -1176,10 +1255,19 @@ namespace Private {
   export function createDOMNode(node: VirtualText): Text;
   export function createDOMNode(node: VirtualElement): HTMLElement;
   export function createDOMNode(node: VirtualNode): HTMLElement | Text;
-  export function createDOMNode(node: VirtualNode, host: HTMLElement | null): HTMLElement | Text;
-  export function createDOMNode(node: VirtualNode, host: HTMLElement | null, before: Node | null): HTMLElement | Text;
+  export function createDOMNode(
+    node: VirtualNode,
+    host: HTMLElement | null
+  ): HTMLElement | Text;
+  export function createDOMNode(
+    node: VirtualNode,
+    host: HTMLElement | null,
+    before: Node | null
+  ): HTMLElement | Text;
   export function createDOMNode(node: VirtualNode): HTMLElement | Text {
+    // eslint-disable-next-line prefer-rest-params
     let host = arguments[1] || null;
+    // eslint-disable-next-line prefer-rest-params
     const before = arguments[2] || null;
 
     if (host) {
@@ -1197,7 +1285,10 @@ namespace Private {
       addAttrs(host, node.attrs);
 
       if (node.renderer) {
-        node.renderer.render(host, {attrs: node.attrs, children: node.children});
+        node.renderer.render(host, {
+          attrs: node.attrs,
+          children: node.children
+        });
         return host;
       }
 
@@ -1216,8 +1307,11 @@ namespace Private {
    * This is the core "diff" algorithm. There is no explicit "patch"
    * phase. The host is patched at each step as the diff progresses.
    */
-  export
-  function updateContent(host: HTMLElement, oldContent: ReadonlyArray<VirtualNode>, newContent: ReadonlyArray<VirtualNode>): void {
+  export function updateContent(
+    host: HTMLElement,
+    oldContent: ReadonlyArray<VirtualNode>,
+    newContent: ReadonlyArray<VirtualNode>
+  ): void {
     // Bail early if the content is identical.
     if (oldContent === newContent) {
       return;
@@ -1237,7 +1331,6 @@ namespace Private {
     let currElem = host.firstChild;
     let newCount = newContent.length;
     for (let i = 0; i < newCount; ++i) {
-
       // If the old content is exhausted, create a new node.
       if (i >= oldCopy.length) {
         createDOMNode(newContent[i], host);
@@ -1271,7 +1364,7 @@ namespace Private {
 
       // If the old XOR new node has a custom renderer,
       // create and insert a new node.
-      if (!(oldVNode.renderer) != !(newVNode.renderer)) {
+      if (!oldVNode.renderer != !newVNode.renderer) {
         ArrayExt.insert(oldCopy, i, newVNode);
         createDOMNode(newVNode, host, currElem);
         continue;
@@ -1324,9 +1417,16 @@ namespace Private {
 
       // Update the element content.
       if (newVNode.renderer) {
-        newVNode.renderer.render(currElem as HTMLElement, {attrs: newVNode.attrs, children: newVNode.children});
+        newVNode.renderer.render(currElem as HTMLElement, {
+          attrs: newVNode.attrs,
+          children: newVNode.children
+        });
       } else {
-        updateContent(currElem as HTMLElement, oldVNode.children, newVNode.children);
+        updateContent(
+          currElem as HTMLElement,
+          oldVNode.children,
+          newVNode.children
+        );
       }
 
       // Step to the next sibling element.
@@ -1345,15 +1445,27 @@ namespace Private {
    * Once the subtree beneath each child of host has been completely visited,
    * that child will be removed via a call to host.removeChild.
    */
-  function removeContent(host: HTMLElement, oldContent: ReadonlyArray<VirtualNode>, newCount: number, _sentinel: boolean) {
+  function removeContent(
+    host: HTMLElement,
+    oldContent: ReadonlyArray<VirtualNode>,
+    newCount: number,
+    _sentinel: boolean
+  ) {
     // Dispose of the old nodes pushed to the end of the host.
     for (let i = oldContent.length - 1; i >= newCount; --i) {
       const oldNode = oldContent[i];
-      const child = (_sentinel ? host.lastChild : host.childNodes[i]) as HTMLElement;
+      const child = (_sentinel
+        ? host.lastChild
+        : host.childNodes[i]) as HTMLElement;
 
       // recursively clean up host children
-      if (oldNode.type === 'text') {} else if (oldNode.renderer && oldNode.renderer.unrender) {
-        oldNode.renderer.unrender(child!, {attrs: oldNode.attrs, children: oldNode.children});
+      if (oldNode.type === 'text') {
+        // pass
+      } else if (oldNode.renderer && oldNode.renderer.unrender) {
+        oldNode.renderer.unrender(child!, {
+          attrs: oldNode.attrs,
+          children: oldNode.children
+        });
       } else {
         removeContent(child!, oldNode.children, 0, false);
       }
@@ -1368,11 +1480,11 @@ namespace Private {
    * A set of special-cased attribute names.
    */
   const specialAttrs = {
-    'key': true,
-    'className': true,
-    'htmlFor': true,
-    'dataset': true,
-    'style': true,
+    key: true,
+    className: true,
+    htmlFor: true,
+    dataset: true,
+    style: true
   };
 
   /**
@@ -1415,7 +1527,11 @@ namespace Private {
   /**
    * Update the element attributes of an HTML element.
    */
-  function updateAttrs(element: HTMLElement, oldAttrs: ElementAttrs, newAttrs: ElementAttrs): void {
+  function updateAttrs(
+    element: HTMLElement,
+    oldAttrs: ElementAttrs,
+    newAttrs: ElementAttrs
+  ): void {
     // Do nothing if the attrs are the same object.
     if (oldAttrs === newAttrs) {
       return;
@@ -1489,7 +1605,11 @@ namespace Private {
   /**
    * Update the dataset values of an HTML element.
    */
-  function updateDataset(element: HTMLElement, oldDataset: ElementDataset, newDataset: ElementDataset): void {
+  function updateDataset(
+    element: HTMLElement,
+    oldDataset: ElementDataset,
+    newDataset: ElementDataset
+  ): void {
     for (let name in oldDataset) {
       if (!(name in newDataset)) {
         element.removeAttribute(`data-${name}`);
@@ -1509,24 +1629,28 @@ namespace Private {
     let elemStyle = element.style;
     let name: keyof ElementInlineStyle;
     for (name in style) {
-      elemStyle[name] = style[name];
+      (elemStyle as any)[name] = style[name];
     }
   }
 
   /**
    * Update the inline style values of an HTML element.
    */
-  function updateStyle(element: HTMLElement, oldStyle: ElementInlineStyle, newStyle: ElementInlineStyle): void {
+  function updateStyle(
+    element: HTMLElement,
+    oldStyle: ElementInlineStyle,
+    newStyle: ElementInlineStyle
+  ): void {
     let elemStyle = element.style;
     let name: keyof ElementInlineStyle;
     for (name in oldStyle) {
       if (!(name in newStyle)) {
-        elemStyle[name] = '';
+        (elemStyle as any)[name] = '';
       }
     }
     for (name in newStyle) {
       if (oldStyle[name] !== newStyle[name]) {
-        elemStyle[name] = newStyle[name];
+        (elemStyle as any)[name] = newStyle[name];
       }
     }
   }
@@ -1535,13 +1659,16 @@ namespace Private {
    * A mapping of string key to pair of element and rendered node.
    */
   type KeyMap = {
-    [key: string]: { vNode: VirtualElement, element: HTMLElement };
+    [key: string]: { vNode: VirtualElement; element: HTMLElement };
   };
 
   /**
    * Collect a mapping of keyed elements for the host content.
    */
-  function collectKeys(host: HTMLElement, content: ReadonlyArray<VirtualNode>): KeyMap {
+  function collectKeys(
+    host: HTMLElement,
+    content: ReadonlyArray<VirtualNode>
+  ): KeyMap {
     let node = host.firstChild;
     let keyMap: KeyMap = Object.create(null);
     for (let vNode of content) {
