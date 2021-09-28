@@ -497,7 +497,7 @@ export class CommandRegistry {
    */
   processKeydownEvent(event: KeyboardEvent): void {
     // Bail immediately if playing back keystrokes.
-    if (this._replaying) {
+    if (this._replaying || CommandRegistry.isIgnoredKeyPressed(event)) {
       return;
     }
 
@@ -1202,6 +1202,19 @@ export namespace CommandRegistry {
   }
 
   /**
+   * Check if `'keydown'` event is caused by pressing a key that should be ignored.
+   *
+   * @param event - The event object for a `'keydown'` event.
+   *
+   * @returns `true` if ignored key was pressed, `false` otherwise.
+   */
+  export function isIgnoredKeyPressed(event: KeyboardEvent): boolean {
+    let layout = getKeyboardLayout();
+    let key = layout.keyForKeydownEvent(event);
+    return layout.isIgnoredKey(key);
+  }
+
+  /**
    * Create a normalized keystroke for a `'keydown'` event.
    *
    * @param event - The event object for a `'keydown'` event.
@@ -1210,8 +1223,9 @@ export namespace CommandRegistry {
    *   does not represent a valid keystroke for the given layout.
    */
   export function keystrokeForKeydownEvent(event: KeyboardEvent): string {
-    let key = getKeyboardLayout().keyForKeydownEvent(event);
-    if (!key) {
+    let layout = getKeyboardLayout();
+    let key = layout.keyForKeydownEvent(event);
+    if (!key || layout.isIgnoredKey(key)) {
       return '';
     }
     let mods = '';

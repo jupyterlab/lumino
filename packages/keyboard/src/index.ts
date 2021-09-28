@@ -40,6 +40,22 @@ export interface IKeyboardLayout {
   isValidKey(key: string): boolean;
 
   /**
+   * Test whether the given key should be ignored when processing "keydown" event.
+   *
+   * @param key - The user provided key.
+   *
+   * @returns `true` if the key should be ignored, `false` otherwise.
+   *
+   * #### Notes
+   * This is necessary so that we don't process modifier keys pressed
+   * in the middle of the key sequence.
+   * E.g. "Shift C Ctrl P" is actually 4 keydown events:
+   *   "Shift", "Shift P", "Ctrl", "Ctrl P",
+   * and events for "Shift" and "Ctrl" should be ignored.
+   */
+  isIgnoredKey(key: string): boolean;
+
+  /**
    * Get the key for a `'keydown'` event.
    *
    * @param event - The event object for a `'keydown'` event.
@@ -94,10 +110,15 @@ export class KeycodeLayout implements IKeyboardLayout {
    *
    * @param codes - A mapping of keycode to key value.
    */
-  constructor(name: string, codes: KeycodeLayout.CodeMap) {
+  constructor(
+    name: string,
+    codes: KeycodeLayout.CodeMap,
+    keysToIgnore: string[] = []
+  ) {
     this.name = name;
     this._codes = codes;
     this._keys = KeycodeLayout.extractKeys(codes);
+    this._keysToIgnore = KeycodeLayout.convertToKeySet(keysToIgnore);
   }
 
   /**
@@ -126,6 +147,17 @@ export class KeycodeLayout implements IKeyboardLayout {
   }
 
   /**
+   * Test whether the given key should be ignored when processing "keydown" event.
+   *
+   * @param key - The user provided key.
+   *
+   * @returns `true` if the key should be ignored, `false` otherwise.
+   */
+  isIgnoredKey(key: string): boolean {
+    return key in this._keysToIgnore;
+  }
+
+  /**
    * Get the key for a `'keydown'` event.
    *
    * @param event - The event object for a `'keydown'` event.
@@ -139,6 +171,7 @@ export class KeycodeLayout implements IKeyboardLayout {
 
   private _keys: KeycodeLayout.KeySet;
   private _codes: KeycodeLayout.CodeMap;
+  private _keysToIgnore: KeycodeLayout.KeySet;
 }
 
 /**
@@ -169,6 +202,21 @@ export namespace KeycodeLayout {
     }
     return keys as KeySet;
   }
+
+  /**
+   * Convert array of keys to a key set.
+   *
+   * @param keys - The array that needs to be converted
+   *
+   * @returns A set of the keys in the array.
+   */
+  export function convertToKeySet(keys: string[]): KeySet {
+    let keySet = Object(null);
+    for (let i = 0, n = keys.length; i < n; ++i) {
+      keySet[keys[i]] = true;
+    }
+    return keySet;
+  }
 }
 
 /**
@@ -192,102 +240,111 @@ export namespace KeycodeLayout {
  *
  * Other combinations may also work, but are untested.
  */
-export const EN_US: IKeyboardLayout = new KeycodeLayout('en-us', {
-  8: 'Backspace',
-  9: 'Tab',
-  13: 'Enter',
-  19: 'Pause',
-  27: 'Escape',
-  32: 'Space',
-  33: 'PageUp',
-  34: 'PageDown',
-  35: 'End',
-  36: 'Home',
-  37: 'ArrowLeft',
-  38: 'ArrowUp',
-  39: 'ArrowRight',
-  40: 'ArrowDown',
-  45: 'Insert',
-  46: 'Delete',
-  48: '0',
-  49: '1',
-  50: '2',
-  51: '3',
-  52: '4',
-  53: '5',
-  54: '6',
-  55: '7',
-  56: '8',
-  57: '9',
-  59: ';', // firefox
-  61: '=', // firefox
-  65: 'A',
-  66: 'B',
-  67: 'C',
-  68: 'D',
-  69: 'E',
-  70: 'F',
-  71: 'G',
-  72: 'H',
-  73: 'I',
-  74: 'J',
-  75: 'K',
-  76: 'L',
-  77: 'M',
-  78: 'N',
-  79: 'O',
-  80: 'P',
-  81: 'Q',
-  82: 'R',
-  83: 'S',
-  84: 'T',
-  85: 'U',
-  86: 'V',
-  87: 'W',
-  88: 'X',
-  89: 'Y',
-  90: 'Z',
-  93: 'ContextMenu',
-  96: '0', // numpad
-  97: '1', // numpad
-  98: '2', // numpad
-  99: '3', // numpad
-  100: '4', // numpad
-  101: '5', // numpad
-  102: '6', // numpad
-  103: '7', // numpad
-  104: '8', // numpad
-  105: '9', // numpad
-  106: '*', // numpad
-  107: '+', // numpad
-  109: '-', // numpad
-  110: '.', // numpad
-  111: '/', // numpad
-  112: 'F1',
-  113: 'F2',
-  114: 'F3',
-  115: 'F4',
-  116: 'F5',
-  117: 'F6',
-  118: 'F7',
-  119: 'F8',
-  120: 'F9',
-  121: 'F10',
-  122: 'F11',
-  123: 'F12',
-  173: '-', // firefox
-  186: ';', // non-firefox
-  187: '=', // non-firefox
-  188: ',',
-  189: '-', // non-firefox
-  190: '.',
-  191: '/',
-  192: '`',
-  219: '[',
-  220: '\\',
-  221: ']',
-  222: "'"
-});
+export const EN_US: IKeyboardLayout = new KeycodeLayout(
+  'en-us',
+  {
+    8: 'Backspace',
+    9: 'Tab',
+    13: 'Enter',
+    16: 'Shift',
+    17: 'Ctrl',
+    18: 'Alt',
+    19: 'Pause',
+    27: 'Escape',
+    32: 'Space',
+    33: 'PageUp',
+    34: 'PageDown',
+    35: 'End',
+    36: 'Home',
+    37: 'ArrowLeft',
+    38: 'ArrowUp',
+    39: 'ArrowRight',
+    40: 'ArrowDown',
+    45: 'Insert',
+    46: 'Delete',
+    48: '0',
+    49: '1',
+    50: '2',
+    51: '3',
+    52: '4',
+    53: '5',
+    54: '6',
+    55: '7',
+    56: '8',
+    57: '9',
+    59: ';', // firefox
+    61: '=', // firefox
+    65: 'A',
+    66: 'B',
+    67: 'C',
+    68: 'D',
+    69: 'E',
+    70: 'F',
+    71: 'G',
+    72: 'H',
+    73: 'I',
+    74: 'J',
+    75: 'K',
+    76: 'L',
+    77: 'M',
+    78: 'N',
+    79: 'O',
+    80: 'P',
+    81: 'Q',
+    82: 'R',
+    83: 'S',
+    84: 'T',
+    85: 'U',
+    86: 'V',
+    87: 'W',
+    88: 'X',
+    89: 'Y',
+    90: 'Z',
+    91: 'Meta', // non-firefox
+    93: 'ContextMenu',
+    96: '0', // numpad
+    97: '1', // numpad
+    98: '2', // numpad
+    99: '3', // numpad
+    100: '4', // numpad
+    101: '5', // numpad
+    102: '6', // numpad
+    103: '7', // numpad
+    104: '8', // numpad
+    105: '9', // numpad
+    106: '*', // numpad
+    107: '+', // numpad
+    109: '-', // numpad
+    110: '.', // numpad
+    111: '/', // numpad
+    112: 'F1',
+    113: 'F2',
+    114: 'F3',
+    115: 'F4',
+    116: 'F5',
+    117: 'F6',
+    118: 'F7',
+    119: 'F8',
+    120: 'F9',
+    121: 'F10',
+    122: 'F11',
+    123: 'F12',
+    173: '-', // firefox
+    186: ';', // non-firefox
+    187: '=', // non-firefox
+    188: ',',
+    189: '-', // non-firefox
+    190: '.',
+    191: '/',
+    192: '`',
+    219: '[',
+    220: '\\',
+    221: ']',
+    222: "'",
+    224: 'Meta' // firefox
+  },
+  ['Shift', 'Ctrl', 'Alt', 'Meta'] // ignored keys
+);
 
 /**
  * The namespace for the module implementation details.
