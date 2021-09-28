@@ -3712,7 +3712,7 @@ export class DataGrid extends Widget {
         this.paintContent(0, dy < 0 ? contentY : height - dy, width, Math.abs(dy));
       }
     }
-    
+
     // Update the internal X scroll position.
     this._scrollX = x;
 
