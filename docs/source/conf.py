@@ -91,6 +91,9 @@ language = None
 # This patterns also effect to html_static_path and html_extra_path
 exclude_patterns = []
 
+# List of paths that contain custom static files (such as style sheets or script files)
+html_static_path = ['./examples']
+
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
 
@@ -135,9 +138,9 @@ def build_examples(out_dir):
     root = osp.join(docs, os.pardir)
 
     examples_dir = osp.join(root, "examples")
-    api_index = osp.join(examples_dir, f"example-{EXAMPLES[0]}", "index.html")
+    example_index = osp.join(examples_dir, f"example-{EXAMPLES[0]}", "index.html")
 
-    if osp.exists(api_index):
+    if osp.exists(example_index):
         # avoid rebuilding examples because it takes forever
         # `make clean` to force a rebuild
         print(f"already have examples")
