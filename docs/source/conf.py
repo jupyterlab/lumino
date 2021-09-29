@@ -30,6 +30,7 @@ from subprocess import check_call
 
 
 HERE = osp.abspath(osp.dirname(__file__))
+EXAMPLES = ["accordionpanel", "datagrid", "dockpanel"]
 
 # -- General configuration ------------------------------------------------
 
@@ -103,7 +104,7 @@ def build_api_docs(out_dir):
     docs = osp.join(HERE, os.pardir)
     root = osp.join(docs, os.pardir)
     docs_api = osp.join(docs, "api")
-    api_index = osp.join(docs_api, "index.html")
+    api_index = osp.join(docs_api, "algorithm", "index.html")
 
     if osp.exists(api_index):
         # avoid rebuilding docs because it takes forever
@@ -126,6 +127,36 @@ def build_api_docs(out_dir):
     dest = osp.join(dest_dir, 'index.html')
     shutil.copy(osp.join(HERE, 'api_index.html'), dest)
 
+
+# build js examples and stage them to the build directory
+def build_examples(out_dir):
+    """build js example docs"""
+    docs = osp.join(HERE, os.pardir)
+    root = osp.join(docs, os.pardir)
+
+    examples_dir = osp.join(root, "examples")
+    api_index = osp.join(examples_dir, f"example-{EXAMPLES[0]}", "index.html")
+
+    if osp.exists(api_index):
+        # avoid rebuilding examples because it takes forever
+        # `make clean` to force a rebuild
+        print(f"already have examples")
+    else:
+        print("Building lumino examples docs")
+        npm = [shutil.which('npm')]
+        check_call(npm + ['install', '-g', 'yarn'], cwd=root)
+        yarn = [shutil.which('yarn')]
+        check_call(yarn, cwd=root)
+        check_call(yarn + ["build"], cwd=root)
+        check_call(yarn + ["build:examples"], cwd=root)
+
+    for example in EXAMPLES:
+        source = osp.join(root, "examples", f"example-{example}")
+        dest_dir = osp.join(out_dir, "examples", example)
+        print(f"Copying {source} -> {dest_dir}")
+        if osp.exists(dest_dir):
+            shutil.rmtree(dest_dir)
+        shutil.copytree(source, dest_dir)
 
 # -- Options for HTML output ----------------------------------------------
 
@@ -260,3 +291,4 @@ def setup(app):
     shutil.copy(osp.join(HERE, '..', '..', 'CHANGELOG.md'), dest)
     app.add_css_file('css/custom.css')  # may also be an URL
     build_api_docs(app.outdir)
+    build_examples(app.outdir)

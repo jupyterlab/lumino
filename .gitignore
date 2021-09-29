@@ -15,6 +15,9 @@ docs/source/changelog.md
 # generated api files
 docs/api
 
+# generated example files
+docs/source/examples
+
 # jetbrains ide stuff
 *.iml
 .idea/

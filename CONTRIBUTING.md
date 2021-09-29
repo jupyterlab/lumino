@@ -45,3 +45,14 @@ There are also tests in some of the examples. These can be run as:
 ```bash
 yarn test:examples
 ```
+
+## Static Examples
+
+There are static examples built into the documentation.  Having them in docs allows us to test examples
+in the ReadTheDocs build for a PR.
+
+To add an example to the static examples:
+
+- Add appropriate link in: `docs/source/examples.rst`
+- Add the example name to the `EXAMPLES` in `docs/source/conf.py`
+- Add `ignore-links` config in `package.json`
