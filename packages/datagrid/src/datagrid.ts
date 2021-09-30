@@ -3709,7 +3709,12 @@ export class DataGrid extends Widget {
         const w = width;
         const h = contentHeight - Math.abs(dy);
         this._blitContent(this._canvas, x, y, w, h, x, y - dy);
-        this.paintContent(0, dy < 0 ? contentY : height - dy, width, Math.abs(dy));
+        this.paintContent(
+          0,
+          dy < 0 ? contentY : height - dy,
+          width,
+          Math.abs(dy)
+        );
       }
     }
 
@@ -3728,7 +3733,12 @@ export class DataGrid extends Widget {
         const w = contentWidth - Math.abs(dx);
         const h = height;
         this._blitContent(this._canvas, x, y, w, h, x - dx, y);
-        this.paintContent(dx < 0 ? contentX : width - dx, 0, Math.abs(dx), height);
+        this.paintContent(
+          dx < 0 ? contentX : width - dx,
+          0,
+          Math.abs(dx),
+          height
+        );
       }
     }
 
@@ -6435,11 +6445,13 @@ namespace Private {
    * @param region the paint region to be checked.
    * @returns boolean.
    */
-   export
-   function regionHasMergedCells(dataModel: DataModel, region: DataModel.CellRegion): boolean {
-     const regionGroups = CellGroup.getCellGroupsAtRegion(dataModel!, region);
-     return (regionGroups.length > 0);
-   }
+  export function regionHasMergedCells(
+    dataModel: DataModel,
+    region: DataModel.CellRegion
+  ): boolean {
+    const regionGroups = CellGroup.getCellGroupsAtRegion(dataModel!, region);
+    return regionGroups.length > 0;
+  }
 
   /**
    * An object which represents a region to be painted.

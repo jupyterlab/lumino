@@ -37,6 +37,12 @@ jobs:
           npm install -g yarn
           yarn
 
+      - name: Check linters
+        shell: bash
+        run: |
+            set -eux
+            yarn lint:check
+
       - name: Build Source
         shell: bash
         run: |

@@ -28,3 +28,4 @@ docs/source/examples
 .vscode
 
 .jupyter_releaser_checkout
+.eslintcache

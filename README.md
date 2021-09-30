@@ -26,7 +26,6 @@ You can try it live in a web browser (without installing anything) by clicking o
 
 ![jupyterlab](https://user-images.githubusercontent.com/591645/133745885-8905be8e-afc0-466d-afda-21ed3cf0d813.png)
 
-
 ### Examples in the repository
 
 This repository contains several examples making use of Lumino Widgets such as the `DockPanel` and the `DataGrid`.
@@ -50,4 +49,3 @@ To learn more on how to use Lumino, check out the documentation: https://lumino.
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) to know how to contribute and set up
 a development environment.
-
