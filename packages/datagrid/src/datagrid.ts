@@ -3615,9 +3615,6 @@ export class DataGrid extends Widget {
       return;
     }
 
-    // Render entire grid if scrolling merged cells grid
-    const paintEverything = Private.shouldPaintEverything(this._dataModel!);
-
     // Floor and clamp the position to the allowable range.
     x = Math.max(0, Math.min(Math.floor(x), this.maxScrollX));
     y = Math.max(0, Math.min(Math.floor(y), this.maxScrollY));
@@ -3703,25 +3700,16 @@ export class DataGrid extends Widget {
     // Scroll the Y axis if needed. If the scroll distance exceeds
     // the visible height, paint everything. Otherwise, blit the
     // valid content and paint the dirty region.
-    if (paintEverything) {
-      this.paintContent(0, 0, this._viewportWidth, this.viewportWidth);
-    } else {
-      if (dy !== 0 && contentHeight > 0) {
-        if (Math.abs(dy) >= contentHeight) {
-          this.paintContent(0, contentY, width, contentHeight);
-        } else {
-          let x = 0;
-          let y = dy < 0 ? contentY : contentY + dy;
-          let w = width;
-          let h = contentHeight - Math.abs(dy);
-          this._blitContent(this._canvas, x, y, w, h, x, y - dy);
-          this.paintContent(
-            0,
-            dy < 0 ? contentY : height - dy,
-            width,
-            Math.abs(dy)
-          );
-        }
+    if (dy !== 0 && contentHeight > 0) {
+      if (Math.abs(dy) >= contentHeight) {
+        this.paintContent(0, contentY, width, contentHeight);
+      } else {
+        const x = 0;
+        const y = dy < 0 ? contentY : contentY + dy;
+        const w = width;
+        const h = contentHeight - Math.abs(dy);
+        this._blitContent(this._canvas, x, y, w, h, x, y - dy);
+        this.paintContent(0, dy < 0 ? contentY : height - dy, width, Math.abs(dy));
       }
     }
 
@@ -3731,25 +3719,16 @@ export class DataGrid extends Widget {
     // Scroll the X axis if needed. If the scroll distance exceeds
     // the visible width, paint everything. Otherwise, blit the
     // valid content and paint the dirty region.
-    if (paintEverything) {
-      this.paintContent(0, 0, this._viewportWidth, this._viewportHeight);
-    } else {
-      if (dx !== 0 && contentWidth > 0) {
-        if (Math.abs(dx) >= contentWidth) {
-          this.paintContent(contentX, 0, contentWidth, height);
-        } else {
-          let x = dx < 0 ? contentX : contentX + dx;
-          let y = 0;
-          let w = contentWidth - Math.abs(dx);
-          let h = height;
-          this._blitContent(this._canvas, x, y, w, h, x - dx, y);
-          this.paintContent(
-            dx < 0 ? contentX : width - dx,
-            0,
-            Math.abs(dx),
-            height
-          );
-        }
+    if (dx !== 0 && contentWidth > 0) {
+      if (Math.abs(dx) >= contentWidth) {
+        this.paintContent(contentX, 0, contentWidth, height);
+      } else {
+        const x = dx < 0 ? contentX : contentX + dx;
+        const y = 0;
+        const w = contentWidth - Math.abs(dx);
+        const h = height;
+        this._blitContent(this._canvas, x, y, w, h, x - dx, y);
+        this.paintContent(dx < 0 ? contentX : width - dx, 0, Math.abs(dx), height);
       }
     }
 
@@ -4994,7 +4973,7 @@ export class DataGrid extends Widget {
       }
 
       if (lineStarted) {
-        lines.push([xStart, rgn.x + rgn.width]);
+        lines.push([xStart, rgn.xMax + 1]);
       }
 
       // Compute the Y position of the line.
@@ -5006,11 +4985,12 @@ export class DataGrid extends Widget {
         const extendLines = Private.shouldPaintEverything(this._dataModel!);
         if (extendLines) {
           for (const line of lines) {
-            this._canvasGC.moveTo(line[0], pos + 0.5);
-            this._canvasGC.lineTo(line[1], pos + 0.5);
+            const [x1, x2] = line;
+            this._canvasGC.moveTo(x1, pos + 0.5);
+            this._canvasGC.lineTo(x2, pos + 0.5);
           }
         } else {
-          let x2 = Math.min(rgn.x + rgn.width, rgn.xMax + 1);
+          const x2 = Math.min(rgn.x + rgn.width, rgn.xMax + 1);
           this._canvasGC.moveTo(x1, pos + 0.5);
           this._canvasGC.lineTo(x2, pos + 0.5);
         }
@@ -6448,6 +6428,18 @@ namespace Private {
       bodyGroups.length > 0
     );
   }
+
+  /**
+   * Checks whether a given regions has merged cells in it.
+   * @param dataModel grid's data model.
+   * @param region the paint region to be checked.
+   * @returns boolean.
+   */
+   export
+   function regionHasMergedCells(dataModel: DataModel, region: DataModel.CellRegion): boolean {
+     const regionGroups = CellGroup.getCellGroupsAtRegion(dataModel!, region);
+     return (regionGroups.length > 0);
+   }
 
   /**
    * An object which represents a region to be painted.
