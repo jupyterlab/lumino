@@ -109,7 +109,7 @@ def build_api_docs(out_dir):
     if osp.exists(api_index):
         # avoid rebuilding docs because it takes forever
         # `make clean` to force a rebuild
-        print(f"already have {api_index}")
+        print(f"already have api files")
     else:
         print("Building lumino API docs")
         npm = [shutil.which('npm')]
@@ -131,12 +131,12 @@ def build_examples(out_dir):
     docs = osp.join(HERE, os.pardir)
     root = osp.join(docs, os.pardir)
     examples_dir = osp.join(docs, "source", "examples")
-    example_index = osp.join(examples_dir, EXAMPLES[0], "index.html")
+    example_index = osp.join(root, "examples", f"example-{EXAMPLES[0]}", "index.html")
 
     if osp.exists(example_index):
         # avoid rebuilding examples because it takes forever
         # `make clean` to force a rebuild
-        print(f"already have examples")
+        print(f"already have built examples")
     else:
         print("Building lumino examples")
         npm = [shutil.which('npm')]
@@ -146,14 +146,15 @@ def build_examples(out_dir):
         check_call(yarn + ["build"], cwd=root)
         check_call(yarn + ["build:examples"], cwd=root)
 
-        # Copy the examples into source so the JS files get picked up
-        for example in EXAMPLES:
-            source = osp.join(root, "examples", f"example-{example}")
-            dest_dir = osp.join(docs, "source", "examples", example)
-            print(f"Copying {source} -> {dest_dir}")
-            if osp.exists(dest_dir):
-                shutil.rmtree(dest_dir)
-            shutil.copytree(source, dest_dir)
+    # Copy the examples into source so the JS files get picked up
+    dest_dir = osp.join(docs, "source", "examples")
+    if osp.exists(dest_dir):
+        shutil.rmtree(dest_dir)
+    for example in EXAMPLES:
+        source = osp.join(root, "examples", f"example-{example}")
+        dest_dir = osp.join(docs, "source", "examples", example)
+        print(f"Copying {source} -> {dest_dir}")
+        shutil.copytree(source, dest_dir)
 
     dest_dir = osp.join(out_dir, "examples")
     print(f"Copying {examples_dir} -> {dest_dir}")
