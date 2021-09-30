@@ -38,6 +38,7 @@ jobs:
           yarn
 
       - name: Check linters
+        if: ${{ matrix.os == 'ubuntu-latest' }}
         shell: bash
         run: |
             set -eux
