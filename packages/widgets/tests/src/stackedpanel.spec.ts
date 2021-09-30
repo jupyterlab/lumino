@@ -31,7 +31,7 @@ describe('@lumino/widgets', () => {
       });
     });
 
-    describe("hiddenMode", () => {
+    describe('hiddenMode', () => {
       let panel: StackedPanel;
       let widgets: Widget[] = [];
 
@@ -84,7 +84,6 @@ describe('@lumino/widgets', () => {
         expect(widgets[0].hiddenMode).to.equal(Widget.HiddenMode.Display);
         expect(widgets[0].node.style.willChange).to.equal('auto');
       });
-
     });
 
     describe('#widgetRemoved', () => {

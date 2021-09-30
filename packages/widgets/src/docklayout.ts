@@ -53,7 +53,10 @@ export class DockLayout extends Layout {
     if (options.spacing !== undefined) {
       this._spacing = Utils.clampDimension(options.spacing);
     }
-    this._hiddenMode = options.hiddenMode !== undefined ? options.hiddenMode : Widget.HiddenMode.Display;
+    this._hiddenMode =
+      options.hiddenMode !== undefined
+        ? options.hiddenMode
+        : Widget.HiddenMode.Display;
   }
 
   /**
@@ -96,18 +99,18 @@ export class DockLayout extends Layout {
    * ### Note
    * If the hiddenMode is Scale, it will be applied only if the panel has 2 widgets or more.
    */
-  get hiddenMode() : Widget.HiddenMode {
+  get hiddenMode(): Widget.HiddenMode {
     return this._hiddenMode;
   }
-  set hiddenMode(v : Widget.HiddenMode) {
-    if(this._hiddenMode !== v){
+  set hiddenMode(v: Widget.HiddenMode) {
+    if (this._hiddenMode !== v) {
       this._hiddenMode = v;
       each(this.tabBars(), bar => {
-        if(bar.titles.length > 1){
+        if (bar.titles.length > 1) {
           bar.titles.forEach(title => {
             title.owner.hiddenMode = this._hiddenMode;
 
-            switch(this._hiddenMode) {
+            switch (this._hiddenMode) {
               case Widget.HiddenMode.Display:
                 title.owner.node.style.willChange = 'auto';
                 break;
@@ -115,9 +118,9 @@ export class DockLayout extends Layout {
                 title.owner.node.style.willChange = 'transform';
                 break;
             }
-          })
+          });
         }
-      })
+      });
     }
   }
 
@@ -690,7 +693,7 @@ export class DockLayout extends Layout {
     if (tabNode.tabBar.titles.length > 1) {
       tabNode.tabBar.removeTab(widget.title);
       if (this._hiddenMode === Widget.HiddenMode.Scale) {
-        const existingWidget = tabNode.tabBar.titles[0].owner
+        const existingWidget = tabNode.tabBar.titles[0].owner;
         existingWidget.node.style.willChange = 'auto';
       }
       return;
@@ -850,9 +853,12 @@ export class DockLayout extends Layout {
       index = refNode.tabBar.currentIndex;
     }
 
-    if (this._hiddenMode === Widget.HiddenMode.Scale && refNode.tabBar.titles.length > 0) {
+    if (
+      this._hiddenMode === Widget.HiddenMode.Scale &&
+      refNode.tabBar.titles.length > 0
+    ) {
       if (refNode.tabBar.titles.length == 1) {
-        const existingWidget = refNode.tabBar.titles[0].owner
+        const existingWidget = refNode.tabBar.titles[0].owner;
         existingWidget.hiddenMode = Widget.HiddenMode.Scale;
         existingWidget.node.style.willChange = 'transform';
       }

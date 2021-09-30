@@ -12,10 +12,7 @@ import { expect } from 'chai';
 
 import { each } from '@lumino/algorithm';
 
-import {
-  TabBar, DockPanel, Widget
-} from '@lumino/widgets';
-
+import { DockPanel, TabBar, Widget } from '@lumino/widgets';
 
 describe('@lumino/widgets', () => {
   describe('DockPanel', () => {
@@ -62,7 +59,7 @@ describe('@lumino/widgets', () => {
       });
     });
 
-    describe("hiddenMode", () => {
+    describe('hiddenMode', () => {
       let panel: DockPanel;
       let widgets: Widget[] = [];
 
@@ -73,7 +70,7 @@ describe('@lumino/widgets', () => {
         widgets.push(new Widget());
         panel.addWidget(widgets[0]);
         widgets.push(new Widget());
-        panel.addWidget(widgets[1], {mode: 'tab-after'});
+        panel.addWidget(widgets[1], { mode: 'tab-after' });
       });
 
       afterEach(() => {
@@ -115,7 +112,6 @@ describe('@lumino/widgets', () => {
         expect(widgets[0].hiddenMode).to.equal(Widget.HiddenMode.Display);
         expect(widgets[0].node.style.willChange).to.equal('auto');
       });
-
     });
 
     describe('#tabsMovable', () => {

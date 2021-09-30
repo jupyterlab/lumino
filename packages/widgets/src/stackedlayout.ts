@@ -28,26 +28,29 @@ import { Widget } from './widget';
 export class StackedLayout extends PanelLayout {
   constructor(options: StackedLayout.IOptions = {}) {
     super(options);
-    this._hiddenMode = options.hiddenMode !== undefined ? options.hiddenMode : Widget.HiddenMode.Display;
+    this._hiddenMode =
+      options.hiddenMode !== undefined
+        ? options.hiddenMode
+        : Widget.HiddenMode.Display;
   }
 
   /**
    * Stacked widget hiding mode
-   * 
+   *
    * ### Note
    * If the hiddenMode is Scale, it will be applied only if the panel has 2 widgets or more.
    */
-  get hiddenMode() : Widget.HiddenMode {
+  get hiddenMode(): Widget.HiddenMode {
     return this._hiddenMode;
   }
-  set hiddenMode(v : Widget.HiddenMode) {
+  set hiddenMode(v: Widget.HiddenMode) {
     if (this._hiddenMode !== v) {
       this._hiddenMode = v;
       if (this.widgets.length > 1) {
         this.widgets.forEach(w => {
           w.hiddenMode = this._hiddenMode;
 
-          switch(this._hiddenMode) {
+          switch (this._hiddenMode) {
             case Widget.HiddenMode.Display:
               w.node.style.willChange = 'auto';
               break;
@@ -88,7 +91,10 @@ export class StackedLayout extends PanelLayout {
    * This is a reimplementation of the superclass method.
    */
   protected attachWidget(index: number, widget: Widget): void {
-    if (this._items.length > 1 && this._hiddenMode === Widget.HiddenMode.Scale) {
+    if (
+      this._items.length > 1 &&
+      this._hiddenMode === Widget.HiddenMode.Scale
+    ) {
       if (this._items.length === 1) {
         this.widgets[0].hiddenMode = Widget.HiddenMode.Scale;
         this.widgets[0].node.style.willChange = 'transform';
@@ -152,7 +158,6 @@ export class StackedLayout extends PanelLayout {
    * This is a reimplementation of the superclass method.
    */
   protected detachWidget(index: number, widget: Widget): void {
-
     // Remove the layout item for the widget.
     let item = ArrayExt.removeAt(this._items, index);
 
@@ -162,7 +167,7 @@ export class StackedLayout extends PanelLayout {
 
       if (this._items.length === 1) {
         this.widgets[0].hiddenMode = Widget.HiddenMode.Display;
-        this.widgets[0].node.style.willChange = 'auto';        
+        this.widgets[0].node.style.willChange = 'auto';
       }
     }
 

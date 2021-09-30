@@ -458,7 +458,7 @@ export class Widget implements IMessageHandler, IObservableDisposable {
       this.addClass('p-mod-hidden');
       /* </DEPRECATED> */
     } else {
-      this.node.style.transform = 'scale(0)'
+      this.node.style.transform = 'scale(0)';
     }
 
     if (this.isAttached && (!this.parent || this.parent.isVisible)) {
@@ -778,11 +778,11 @@ export namespace Widget {
 
   /**
    * Mode to hide the widget
-   * 
+   *
    * Using the Composition has a positive effect on performance as most browser
    * will not trigger style computation for the transform action. But it should
    * be use sparingly because using it too often can have the opposite effect.
-   * 
+   *
    * To ensure the transformation does not trigger style recomputation, you may
    * need to set the style 'will-change': 'transform'. This should be used only
    * when needed as it may overwhelm the browser with a high number of layer.
