@@ -9,7 +9,7 @@
     "lib.es2015.promise.d.ts",
     "lib.dom.d.ts"
   ],
-  "out": "../../docs/api/datagrid",
+  "out": "../../docs/source/api/datagrid",
   "baseUrl": ".",
   "paths": {
     "@lumino/*": ["node_modules/@lumino/*"]

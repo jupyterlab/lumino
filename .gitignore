@@ -13,7 +13,7 @@ review/api/temp
 docs/source/changelog.md
 
 # generated api files
-docs/api
+docs/source/api
 
 # generated example files
 docs/source/examples

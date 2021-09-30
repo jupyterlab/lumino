@@ -9,7 +9,7 @@
     "lib.es2015.promise.d.ts",
     "lib.dom.d.ts"
   ],
-  "out": "../../docs/api/polling",
+  "out": "../../docs/source/api/polling",
   "baseUrl": ".",
   "paths": {
     "@lumino/*": ["node_modules/@lumino/*"]

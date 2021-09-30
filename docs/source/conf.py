@@ -103,7 +103,7 @@ def build_api_docs(out_dir):
     """build js api docs"""
     docs = osp.join(HERE, os.pardir)
     root = osp.join(docs, os.pardir)
-    docs_api = osp.join(docs, "api")
+    docs_api = osp.join(docs, "source", "api")
     api_index = osp.join(docs_api, "algorithm", "index.html")
 
     if osp.exists(api_index):
@@ -118,31 +118,20 @@ def build_api_docs(out_dir):
         check_call(yarn, cwd=root)
         check_call(yarn + ["docs"], cwd=root)
 
-    dest_dir = osp.join(out_dir, "api")
-    print(f"Copying {docs_api} -> {dest_dir}")
-    if osp.exists(dest_dir):
-        shutil.rmtree(dest_dir)
-    shutil.copytree(docs_api, dest_dir)
-
-    dest = osp.join(dest_dir, 'index.html')
-    shutil.copy(osp.join(HERE, 'api_index.html'), dest)
-
-
 # build js examples and stage them to the build directory
 def build_examples(out_dir):
     """build js example docs"""
     docs = osp.join(HERE, os.pardir)
     root = osp.join(docs, os.pardir)
 
-    examples_dir = osp.join(root, "examples")
-    example_index = osp.join(examples_dir, f"example-{EXAMPLES[0]}", "index.html")
+    example_index = osp.join(docs, "examples", EXAMPLES[0], "index.html")
 
     if osp.exists(example_index):
         # avoid rebuilding examples because it takes forever
         # `make clean` to force a rebuild
         print(f"already have examples")
     else:
-        print("Building lumino examples docs")
+        print("Building lumino examples")
         npm = [shutil.which('npm')]
         check_call(npm + ['install', '-g', 'yarn'], cwd=root)
         yarn = [shutil.which('yarn')]
@@ -150,13 +139,14 @@ def build_examples(out_dir):
         check_call(yarn + ["build"], cwd=root)
         check_call(yarn + ["build:examples"], cwd=root)
 
-    for example in EXAMPLES:
-        source = osp.join(root, "examples", f"example-{example}")
-        dest_dir = osp.join(out_dir, "examples", example)
-        print(f"Copying {source} -> {dest_dir}")
-        if osp.exists(dest_dir):
-            shutil.rmtree(dest_dir)
-        shutil.copytree(source, dest_dir)
+        # Move the examples locally so they can be picked up by html_static_path
+        for example in EXAMPLES:
+            source = osp.join(root, "examples", f"example-{example}")
+            dest_dir = osp.join(docs, "source", "examples", example)
+            print(f"Copying {source} -> {dest_dir}")
+            if osp.exists(dest_dir):
+                shutil.rmtree(dest_dir)
+            shutil.copytree(source, dest_dir)
 
 # -- Options for HTML output ----------------------------------------------
 
@@ -176,9 +166,8 @@ html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-# We add the build directories of the examples
-html_static_path = ['_static'] + ['/'.join(['examples', e, 'build']) for e in EXAMPLES]
-print(html_static_path)
+html_static_path = ['_static']
+
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
 #
@@ -237,7 +226,6 @@ latex_documents = [
      'Project Jupyter', 'manual'),
 ]
 
-
 # -- Options for manual page output ---------------------------------------
 
 # One entry per manual page. List of tuples
@@ -246,7 +234,6 @@ man_pages = [
     (master_doc, 'lumino', 'Lumino Documentation',
      [author], 1)
 ]
-
 
 # -- Options for Texinfo output -------------------------------------------
 
@@ -258,8 +245,6 @@ texinfo_documents = [
      author, 'Lumino', 'One line description of project.',
      'Miscellaneous'),
 ]
-
-
 
 # -- Options for Epub output ----------------------------------------------
 
@@ -280,8 +265,6 @@ epub_copyright = copyright
 
 # A list of files that should not be packed into the epub file.
 epub_exclude_files = ['search.html']
-
-
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'https://docs.python.org/': None}

@@ -21,8 +21,8 @@ module.exports = {
   entryPoints,
   exclude,
   name: '@lumino',
-  out: 'docs/api',
-  // json: 'docs/api.json',
+  out: 'docs/source/api',
+  // json: 'docs/source/api.json',
   readme: 'README.md',
   theme: 'typedoc-theme',
   tsconfig: 'tsconfigdoc.json'
