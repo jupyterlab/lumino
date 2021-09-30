@@ -2,6 +2,30 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2021.9.30
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/algorithm@1.7.0...e6612f622c827b2e85cffb1858fcc3bf1b09be76))
+
+### Enhancements made
+
+- Basic Touch Events [#123](https://github.com/jupyterlab/lumino/pull/123) ([@bign8](https://github.com/bign8))
+
+### Maintenance and upkeep improvements
+
+- Optimise grid rendering [#239](https://github.com/jupyterlab/lumino/pull/239) ([@ibdafna](https://github.com/ibdafna))
+
+### Documentation improvements
+
+- Add static examples in docs [#241](https://github.com/jupyterlab/lumino/pull/241) ([@blink1073](https://github.com/blink1073))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2021-09-22&to=2021-09-30&type=c))
+
+[@bign8](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Abign8+updated%3A2021-09-22..2021-09-30&type=Issues) | [@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2021-09-22..2021-09-30&type=Issues) | [@ibdafna](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aibdafna+updated%3A2021-09-22..2021-09-30&type=Issues) | [@jupyterlab-probot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajupyterlab-probot+updated%3A2021-09-22..2021-09-30&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2021.9.22
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/signaling@1.7.2...520444449e74a37a82c34fdf51c70c60059733b3))
@@ -30,8 +54,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2021-08-23&to=2021-09-22&type=c))
 
 [@afshin](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aafshin+updated%3A2021-08-23..2021-09-22&type=Issues) | [@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2021-08-23..2021-09-22&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2021-08-23..2021-09-22&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2021-08-23..2021-09-22&type=Issues) | [@jtpio](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajtpio+updated%3A2021-08-23..2021-09-22&type=Issues) | [@jupyterlab-probot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajupyterlab-probot+updated%3A2021-08-23..2021-09-22&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2021.8.23
 
