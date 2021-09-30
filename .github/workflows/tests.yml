@@ -37,6 +37,13 @@ jobs:
           npm install -g yarn
           yarn
 
+      - name: Check linters
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        shell: bash
+        run: |
+            set -eux
+            yarn lint:check
+
       - name: Build Source
         shell: bash
         run: |

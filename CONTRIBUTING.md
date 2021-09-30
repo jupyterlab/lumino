@@ -48,7 +48,7 @@ yarn test:examples
 
 ## Static Examples
 
-There are static examples built into the documentation.  Having them in docs allows us to test examples
+There are static examples built into the documentation. Having them in docs allows us to test examples
 in the ReadTheDocs build for a PR.
 
 To add an example to the static examples:
