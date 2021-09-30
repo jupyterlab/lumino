@@ -580,13 +580,22 @@ export class TabBar<T> extends Widget {
    */
   handleEvent(event: Event): void {
     switch (event.type) {
-      case 'mousedown':
+      case 'mousedown': // <DEPRECATED>
         this._evtMouseDown(event as MouseEvent);
         break;
-      case 'mousemove':
+      case 'mousemove': // <DEPRECATED>
         this._evtMouseMove(event as MouseEvent);
         break;
-      case 'mouseup':
+      case 'mouseup': // <DEPRECATED>
+        this._evtMouseUp(event as MouseEvent);
+        break;
+      case 'pointerdown':
+        this._evtMouseDown(event as MouseEvent);
+        break;
+      case 'pointermove':
+        this._evtMouseMove(event as MouseEvent);
+        break;
+      case 'pointerup':
         this._evtMouseUp(event as MouseEvent);
         break;
       case 'dblclick':
@@ -606,7 +615,8 @@ export class TabBar<T> extends Widget {
    * A message handler invoked on a `'before-attach'` message.
    */
   protected onBeforeAttach(msg: Message): void {
-    this.node.addEventListener('mousedown', this);
+    this.node.addEventListener('mousedown', this); // <DEPRECATED>
+    this.node.addEventListener('pointerdown', this);
     this.node.addEventListener('dblclick', this);
   }
 
@@ -614,7 +624,8 @@ export class TabBar<T> extends Widget {
    * A message handler invoked on an `'after-detach'` message.
    */
   protected onAfterDetach(msg: Message): void {
-    this.node.removeEventListener('mousedown', this);
+    this.node.removeEventListener('mousedown', this); // <DEPRECATED>
+    this.node.removeEventListener('pointerdown', this);
     this.node.removeEventListener('dblclick', this);
     this._releaseMouse();
   }
@@ -768,7 +779,8 @@ export class TabBar<T> extends Widget {
     };
 
     // Add the document mouse up listener.
-    document.addEventListener('mouseup', this, true);
+    document.addEventListener('mouseup', this, true); // <DEPRECATED>
+    document.addEventListener('pointerup', this, true);
 
     // Do nothing else if the middle button or add button is clicked.
     if (event.button === 1 || addButtonClicked) {
@@ -783,7 +795,8 @@ export class TabBar<T> extends Widget {
 
     // Add the extra listeners if the tabs are movable.
     if (this.tabsMovable) {
-      document.addEventListener('mousemove', this, true);
+      document.addEventListener('mousemove', this, true); // <DEPRECATED>
+      document.addEventListener('pointermove', this, true);
       document.addEventListener('keydown', this, true);
       document.addEventListener('contextmenu', this, true);
     }
@@ -903,8 +916,10 @@ export class TabBar<T> extends Widget {
     event.stopPropagation();
 
     // Remove the extra mouse event listeners.
-    document.removeEventListener('mousemove', this, true);
-    document.removeEventListener('mouseup', this, true);
+    document.removeEventListener('mousemove', this, true); // <DEPRECATED>
+    document.removeEventListener('mouseup', this, true); // <DEPRECATED>
+    document.removeEventListener('pointermove', this, true);
+    document.removeEventListener('pointerup', this, true);
     document.removeEventListener('keydown', this, true);
     document.removeEventListener('contextmenu', this, true);
 
@@ -1036,8 +1051,10 @@ export class TabBar<T> extends Widget {
     this._dragData = null;
 
     // Remove the extra mouse listeners.
-    document.removeEventListener('mousemove', this, true);
-    document.removeEventListener('mouseup', this, true);
+    document.removeEventListener('mousemove', this, true); // <DEPRECATED>
+    document.removeEventListener('mouseup', this, true); // <DEPRECATED>
+    document.removeEventListener('pointermove', this, true);
+    document.removeEventListener('pointerup', this, true);
     document.removeEventListener('keydown', this, true);
     document.removeEventListener('contextmenu', this, true);
 
