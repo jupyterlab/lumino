@@ -30,6 +30,7 @@ from subprocess import check_call
 
 
 HERE = osp.abspath(osp.dirname(__file__))
+EXAMPLES = ["accordionpanel", "datagrid", "dockpanel"]
 
 # -- General configuration ------------------------------------------------
 
@@ -102,8 +103,8 @@ def build_api_docs(out_dir):
     """build js api docs"""
     docs = osp.join(HERE, os.pardir)
     root = osp.join(docs, os.pardir)
-    docs_api = osp.join(docs, "api")
-    api_index = osp.join(docs_api, "index.html")
+    docs_api = osp.join(docs, "source", "api")
+    api_index = osp.join(docs_api, "algorithm", "index.html")
 
     if osp.exists(api_index):
         # avoid rebuilding docs because it takes forever
@@ -122,10 +123,43 @@ def build_api_docs(out_dir):
     if osp.exists(dest_dir):
         shutil.rmtree(dest_dir)
     shutil.copytree(docs_api, dest_dir)
+    shutil.copy(osp.join(HERE, 'api_index.html'), osp.join(dest_dir, 'index.html'))
 
-    dest = osp.join(dest_dir, 'index.html')
-    shutil.copy(osp.join(HERE, 'api_index.html'), dest)
+# build js examples and stage them to the build directory
+def build_examples(out_dir):
+    """build js example docs"""
+    docs = osp.join(HERE, os.pardir)
+    root = osp.join(docs, os.pardir)
+    examples_dir = osp.join(docs, "source", "examples")
+    example_index = osp.join(examples_dir, EXAMPLES[0], "index.html")
 
+    if osp.exists(example_index):
+        # avoid rebuilding examples because it takes forever
+        # `make clean` to force a rebuild
+        print(f"already have examples")
+    else:
+        print("Building lumino examples")
+        npm = [shutil.which('npm')]
+        check_call(npm + ['install', '-g', 'yarn'], cwd=root)
+        yarn = [shutil.which('yarn')]
+        check_call(yarn, cwd=root)
+        check_call(yarn + ["build"], cwd=root)
+        check_call(yarn + ["build:examples"], cwd=root)
+
+        # Copy the examples into source so the JS files get picked up
+        for example in EXAMPLES:
+            source = osp.join(root, "examples", f"example-{example}")
+            dest_dir = osp.join(docs, "source", "examples", example)
+            print(f"Copying {source} -> {dest_dir}")
+            if osp.exists(dest_dir):
+                shutil.rmtree(dest_dir)
+            shutil.copytree(source, dest_dir)
+
+    dest_dir = osp.join(out_dir, "examples")
+    print(f"Copying {examples_dir} -> {dest_dir}")
+    if osp.exists(dest_dir):
+        shutil.rmtree(dest_dir)
+    shutil.copytree(examples_dir, dest_dir)
 
 # -- Options for HTML output ----------------------------------------------
 
@@ -205,7 +239,6 @@ latex_documents = [
      'Project Jupyter', 'manual'),
 ]
 
-
 # -- Options for manual page output ---------------------------------------
 
 # One entry per manual page. List of tuples
@@ -214,7 +247,6 @@ man_pages = [
     (master_doc, 'lumino', 'Lumino Documentation',
      [author], 1)
 ]
-
 
 # -- Options for Texinfo output -------------------------------------------
 
@@ -226,8 +258,6 @@ texinfo_documents = [
      author, 'Lumino', 'One line description of project.',
      'Miscellaneous'),
 ]
-
-
 
 # -- Options for Epub output ----------------------------------------------
 
@@ -249,8 +279,6 @@ epub_copyright = copyright
 # A list of files that should not be packed into the epub file.
 epub_exclude_files = ['search.html']
 
-
-
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'https://docs.python.org/': None}
 
@@ -260,3 +288,4 @@ def setup(app):
     shutil.copy(osp.join(HERE, '..', '..', 'CHANGELOG.md'), dest)
     app.add_css_file('css/custom.css')  # may also be an URL
     build_api_docs(app.outdir)
+    build_examples(app.outdir)
