@@ -1202,11 +1202,11 @@ export namespace CommandRegistry {
   }
 
   /**
-   * Check if `'keydown'` event is caused by pressing a key that should be ignored.
+   * Check if `'keydown'` event is caused by pressing a modifier key that should be ignored.
    *
    * @param event - The event object for a `'keydown'` event.
    *
-   * @returns `true` if ignored key was pressed, `false` otherwise.
+   * @returns `true` if modifier key was pressed, `false` otherwise.
    */
   export function isModifierKeyPressed(event: KeyboardEvent): boolean {
     let layout = getKeyboardLayout();
