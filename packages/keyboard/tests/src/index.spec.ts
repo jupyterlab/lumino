@@ -66,22 +66,22 @@ describe('@lumino/keyboard', () => {
         expect(layout.isValidKey('A')).to.equal(false);
       });
 
-      it('should treat ignored keys as valid', () => {
+      it('should treat modifier keys as valid', () => {
         let layout = new KeycodeLayout('foo', { 100: 'F', 101: 'A' }, ['A']);
         expect(layout.isValidKey('A')).to.equal(true);
       });
     });
 
-    describe('#isIgnoredKey()', () => {
-      it('should test whether the key is ignored for the layout', () => {
+    describe('#isModifierKey()', () => {
+      it('should test whether the key is modifier for the layout', () => {
         let layout = new KeycodeLayout('foo', { 100: 'F', 101: 'A' }, ['A']);
-        expect(layout.isIgnoredKey('F')).to.equal(false);
-        expect(layout.isIgnoredKey('A')).to.equal(true);
+        expect(layout.isModifierKey('F')).to.equal(false);
+        expect(layout.isModifierKey('A')).to.equal(true);
       });
 
       it('should return false for keys that are not in the layout', () => {
         let layout = new KeycodeLayout('foo', { 100: 'F', 101: 'A' }, ['A']);
-        expect(layout.isIgnoredKey('B')).to.equal(false);
+        expect(layout.isModifierKey('B')).to.equal(false);
       });
     });
 
@@ -137,11 +137,11 @@ describe('@lumino/keyboard', () => {
       expect(EN_US.isValidKey('Meta')).to.equal(true);
     });
 
-    it('should mark modifier keys as ignored', () => {
-      expect(EN_US.isIgnoredKey('Shift')).to.equal(true);
-      expect(EN_US.isIgnoredKey('Ctrl')).to.equal(true);
-      expect(EN_US.isIgnoredKey('Alt')).to.equal(true);
-      expect(EN_US.isIgnoredKey('Meta')).to.equal(true);
+    it('should correctly detect modifier keys', () => {
+      expect(EN_US.isModifierKey('Shift')).to.equal(true);
+      expect(EN_US.isModifierKey('Ctrl')).to.equal(true);
+      expect(EN_US.isModifierKey('Alt')).to.equal(true);
+      expect(EN_US.isModifierKey('Meta')).to.equal(true);
     });
   });
 });

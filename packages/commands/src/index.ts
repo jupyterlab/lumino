@@ -497,7 +497,7 @@ export class CommandRegistry {
    */
   processKeydownEvent(event: KeyboardEvent): void {
     // Bail immediately if playing back keystrokes.
-    if (this._replaying || CommandRegistry.isIgnoredKeyPressed(event)) {
+    if (this._replaying || CommandRegistry.isModifierKeyPressed(event)) {
       return;
     }
 
@@ -1208,10 +1208,10 @@ export namespace CommandRegistry {
    *
    * @returns `true` if ignored key was pressed, `false` otherwise.
    */
-  export function isIgnoredKeyPressed(event: KeyboardEvent): boolean {
+  export function isModifierKeyPressed(event: KeyboardEvent): boolean {
     let layout = getKeyboardLayout();
     let key = layout.keyForKeydownEvent(event);
-    return layout.isIgnoredKey(key);
+    return layout.isModifierKey(key);
   }
 
   /**
@@ -1225,7 +1225,7 @@ export namespace CommandRegistry {
   export function keystrokeForKeydownEvent(event: KeyboardEvent): string {
     let layout = getKeyboardLayout();
     let key = layout.keyForKeydownEvent(event);
-    if (!key || layout.isIgnoredKey(key)) {
+    if (!key || layout.isModifierKey(key)) {
       return '';
     }
     let mods = '';

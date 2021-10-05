@@ -40,11 +40,11 @@ export interface IKeyboardLayout {
   isValidKey(key: string): boolean;
 
   /**
-   * Test whether the given key should be ignored when processing "keydown" event.
+   * Test whether the given key is a modifier key.
    *
    * @param key - The user provided key.
    *
-   * @returns `true` if the key should be ignored, `false` otherwise.
+   * @returns `true` if the key is a modifier key, `false` otherwise.
    *
    * #### Notes
    * This is necessary so that we don't process modifier keys pressed
@@ -53,7 +53,7 @@ export interface IKeyboardLayout {
    *   "Shift", "Shift P", "Ctrl", "Ctrl P",
    * and events for "Shift" and "Ctrl" should be ignored.
    */
-  isIgnoredKey(key: string): boolean;
+  isModifierKey(key: string): boolean;
 
   /**
    * Get the key for a `'keydown'` event.
@@ -109,16 +109,18 @@ export class KeycodeLayout implements IKeyboardLayout {
    * @param name - The human readable name for the layout.
    *
    * @param codes - A mapping of keycode to key value.
+   *
+   * @param modifierKeys - Array of modifier key names
    */
   constructor(
     name: string,
     codes: KeycodeLayout.CodeMap,
-    keysToIgnore: string[] = []
+    modifierKeys: string[] = []
   ) {
     this.name = name;
     this._codes = codes;
     this._keys = KeycodeLayout.extractKeys(codes);
-    this._keysToIgnore = KeycodeLayout.convertToKeySet(keysToIgnore);
+    this._modifierKeys = KeycodeLayout.convertToKeySet(modifierKeys);
   }
 
   /**
@@ -147,14 +149,14 @@ export class KeycodeLayout implements IKeyboardLayout {
   }
 
   /**
-   * Test whether the given key should be ignored when processing "keydown" event.
+   * Test whether the given key is a modifier key.
    *
    * @param key - The user provided key.
    *
-   * @returns `true` if the key should be ignored, `false` otherwise.
+   * @returns `true` if the key is a modifier key, `false` otherwise.
    */
-  isIgnoredKey(key: string): boolean {
-    return key in this._keysToIgnore;
+  isModifierKey(key: string): boolean {
+    return key in this._modifierKeys;
   }
 
   /**
@@ -171,7 +173,7 @@ export class KeycodeLayout implements IKeyboardLayout {
 
   private _keys: KeycodeLayout.KeySet;
   private _codes: KeycodeLayout.CodeMap;
-  private _keysToIgnore: KeycodeLayout.KeySet;
+  private _modifierKeys: KeycodeLayout.KeySet;
 }
 
 /**
@@ -343,7 +345,7 @@ export const EN_US: IKeyboardLayout = new KeycodeLayout(
     222: "'",
     224: 'Meta' // firefox
   },
-  ['Shift', 'Ctrl', 'Alt', 'Meta'] // ignored keys
+  ['Shift', 'Ctrl', 'Alt', 'Meta'] // modifier keys
 );
 
 /**

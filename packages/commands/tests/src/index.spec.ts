@@ -1135,7 +1135,7 @@ describe('@lumino/commands', () => {
         expect(keystroke).to.equal('');
       });
 
-      it('should return nothing for keys that are marked as ignored in keyboard layout', () => {
+      it('should return nothing for keys that are marked as modifier in keyboard layout', () => {
         let event = generate('keydown', { keyCode: 17, ctrlKey: true });
         let keystroke = CommandRegistry.keystrokeForKeydownEvent(
           event as KeyboardEvent
