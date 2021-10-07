@@ -65,6 +65,24 @@ describe('@lumino/keyboard', () => {
         expect(layout.isValidKey('F')).to.equal(true);
         expect(layout.isValidKey('A')).to.equal(false);
       });
+
+      it('should treat modifier keys as valid', () => {
+        let layout = new KeycodeLayout('foo', { 100: 'F', 101: 'A' }, ['A']);
+        expect(layout.isValidKey('A')).to.equal(true);
+      });
+    });
+
+    describe('#isModifierKey()', () => {
+      it('should test whether the key is modifier for the layout', () => {
+        let layout = new KeycodeLayout('foo', { 100: 'F', 101: 'A' }, ['A']);
+        expect(layout.isModifierKey('F')).to.equal(false);
+        expect(layout.isModifierKey('A')).to.equal(true);
+      });
+
+      it('should return false for keys that are not in the layout', () => {
+        let layout = new KeycodeLayout('foo', { 100: 'F', 101: 'A' }, ['A']);
+        expect(layout.isModifierKey('B')).to.equal(false);
+      });
     });
 
     describe('#keyForKeydownEvent()', () => {
@@ -90,6 +108,14 @@ describe('@lumino/keyboard', () => {
         expect(KeycodeLayout.extractKeys(keys)).to.deep.equal(goal);
       });
     });
+
+    describe('.convertToKeySet()', () => {
+      it('should convert key array to key set', () => {
+        let keys: string[] = ['F', 'G', 'H'];
+        let goal: KeycodeLayout.KeySet = { F: true, G: true, H: true };
+        expect(KeycodeLayout.convertToKeySet(keys)).to.deep.equal(goal);
+      });
+    });
   });
 
   describe('EN_US', () => {
@@ -102,6 +128,20 @@ describe('@lumino/keyboard', () => {
       expect(EN_US.isValidKey('Z')).to.equal(true);
       expect(EN_US.isValidKey('0')).to.equal(true);
       expect(EN_US.isValidKey('a')).to.equal(false);
+    });
+
+    it('should have modifier keys', () => {
+      expect(EN_US.isValidKey('Shift')).to.equal(true);
+      expect(EN_US.isValidKey('Ctrl')).to.equal(true);
+      expect(EN_US.isValidKey('Alt')).to.equal(true);
+      expect(EN_US.isValidKey('Meta')).to.equal(true);
+    });
+
+    it('should correctly detect modifier keys', () => {
+      expect(EN_US.isModifierKey('Shift')).to.equal(true);
+      expect(EN_US.isModifierKey('Ctrl')).to.equal(true);
+      expect(EN_US.isModifierKey('Alt')).to.equal(true);
+      expect(EN_US.isModifierKey('Meta')).to.equal(true);
     });
   });
 });
