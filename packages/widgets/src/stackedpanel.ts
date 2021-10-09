@@ -36,14 +36,23 @@ export class StackedPanel extends Panel {
   }
 
   /**
-   * Stacked widget hiding mode
+   * The method for hiding widgets.
    *
-   * ### Note
-   * If the hiddenMode is Scale, it will be applied only if the panel has 2 widgets or more.
+   * #### Notes
+   * If there is only one child widget, `Display` hiding mode will be used
+   * regardless of this setting.
    */
   get hiddenMode(): Widget.HiddenMode {
     return (this.layout as StackedLayout).hiddenMode;
   }
+
+  /**
+   * Set the method for hiding widgets.
+   *
+   * #### Notes
+   * If there is only one child widget, `Display` hiding mode will be used
+   * regardless of this setting.
+   */
   set hiddenMode(v: Widget.HiddenMode) {
     (this.layout as StackedLayout).hiddenMode = v;
   }

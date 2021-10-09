@@ -98,14 +98,15 @@ export class DockPanel extends Widget {
   }
 
   /**
-   * Stacked widget hiding mode
-   *
-   * ### Note
-   * If the hiddenMode is Scale, it will be applied only if the panel has 2 widgets or more.
+   * The method for hiding widgets.
    */
   get hiddenMode(): Widget.HiddenMode {
     return (this.layout as DockLayout).hiddenMode;
   }
+
+  /**
+   * Set the method for hiding widgets.
+   */
   set hiddenMode(v: Widget.HiddenMode) {
     (this.layout as DockLayout).hiddenMode = v;
   }
@@ -1112,7 +1113,9 @@ export namespace DockPanel {
     edges?: IEdges;
 
     /**
-     * How to hide widgets?
+     * The method for hiding widgets.
+     * 
+     * The default is `Widget.HiddenMode.Display`.
      */
     hiddenMode?: Widget.HiddenMode;
 

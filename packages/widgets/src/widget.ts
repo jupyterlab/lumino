@@ -167,11 +167,15 @@ export class Widget implements IMessageHandler, IObservableDisposable {
   }
 
   /**
-   * Mode to hide the widget
+   * Get the method for hiding the widget.
    */
   get hiddenMode(): Widget.HiddenMode {
     return this._hiddenMode;
   }
+
+  /**
+   * Set the method for hiding the widget.
+   */
   set hiddenMode(value: Widget.HiddenMode) {
     if (value !== this._hiddenMode) {
       if (this.isHidden) {
@@ -777,24 +781,30 @@ export namespace Widget {
   }
 
   /**
-   * Mode to hide the widget
+   * The method for hiding the widget.
    *
-   * Using the Composition has a positive effect on performance as most browser
-   * will not trigger style computation for the transform action. But it should
-   * be use sparingly because using it too often can have the opposite effect.
+   * The default is Display.
    *
-   * To ensure the transformation does not trigger style recomputation, you may
-   * need to set the style 'will-change': 'transform'. This should be used only
-   * when needed as it may overwhelm the browser with a high number of layer.
-   * See https://developer.mozilla.org/en-US/docs/Web/CSS/will-change
+   * Using `Scale` will often increase performance as most browsers will not
+   * trigger style computation for the `transform` action. This should be used
+   * sparingly and tested, since increasing the number of composition layers
+   * may slow things down.
+   *
+   * To ensure the transformation does not trigger style recomputation, you
+   * may need to set the widget CSS style `will-change: transform`. This
+   * should be used only when needed as it may overwhelm the browser with a
+   * high number of layers. See
+   * https://developer.mozilla.org/en-US/docs/Web/CSS/will-change
    */
   export enum HiddenMode {
     /**
-     * Set a 'lm-mod-hidden' class to deal with the widget visibility
+     * Set a `lm-mod-hidden` CSS class to hide the widget using `display:none`
+     * CSS from the standard Lumino CSS.
      */
     Display = 0,
+
     /**
-     * Set 'transform' to 'scale(0)' to hide it
+     * Hide the widget by setting the `transform` to `'scale(0)'`.
      */
     Scale
   }
