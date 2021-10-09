@@ -104,25 +104,26 @@ export class DockLayout extends Layout {
     return this._hiddenMode;
   }
   set hiddenMode(v: Widget.HiddenMode) {
-    if (this._hiddenMode !== v) {
-      this._hiddenMode = v;
-      each(this.tabBars(), bar => {
-        if (bar.titles.length > 1) {
-          bar.titles.forEach(title => {
-            title.owner.hiddenMode = this._hiddenMode;
-
-            switch (this._hiddenMode) {
-              case Widget.HiddenMode.Display:
-                title.owner.node.style.willChange = 'auto';
-                break;
-              case Widget.HiddenMode.Scale:
-                title.owner.node.style.willChange = 'transform';
-                break;
-            }
-          });
-        }
-      });
+    if (this._hiddenMode === v) {
+      return;
     }
+    this._hiddenMode = v;
+    each(this.tabBars(), bar => {
+      if (bar.titles.length > 1) {
+        bar.titles.forEach(title => {
+          title.owner.hiddenMode = this._hiddenMode;
+
+          switch (this._hiddenMode) {
+            case Widget.HiddenMode.Display:
+              title.owner.node.style.willChange = 'auto';
+              break;
+            case Widget.HiddenMode.Scale:
+              title.owner.node.style.willChange = 'transform';
+              break;
+          }
+        });
+      }
+    });
   }
 
   /**

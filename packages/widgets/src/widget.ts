@@ -177,23 +177,24 @@ export class Widget implements IMessageHandler, IObservableDisposable {
    * Set the method for hiding the widget.
    */
   set hiddenMode(value: Widget.HiddenMode) {
-    if (value !== this._hiddenMode) {
-      if (this.isHidden) {
-        if (value === Widget.HiddenMode.Display) {
-          this.addClass('lm-mod-hidden');
-          /* <DEPRECATED> */
-          this.addClass('p-mod-hidden');
-          /* </DEPRECATED> */
-          this.node.style.transform = '';
-        } else {
-          this.node.style.transform = 'scale(0)';
-          this.removeClass('lm-mod-hidden');
-          /* <DEPRECATED> */
-          this.removeClass('p-mod-hidden');
-          /* </DEPRECATED> */
-        }
+    if (this._hiddenMode === value) {
+      return;
+    }
+    this._hiddenMode = value;
+    if (this.isHidden) {
+      if (value === Widget.HiddenMode.Display) {
+        this.addClass('lm-mod-hidden');
+        /* <DEPRECATED> */
+        this.addClass('p-mod-hidden');
+        /* </DEPRECATED> */
+        this.node.style.transform = '';
+      } else {
+        this.node.style.transform = 'scale(0)';
+        this.removeClass('lm-mod-hidden');
+        /* <DEPRECATED> */
+        this.removeClass('p-mod-hidden');
+        /* </DEPRECATED> */
       }
-      this._hiddenMode = value;
     }
   }
 
