@@ -54,14 +54,10 @@ describe('@lumino/widgets', () => {
       });
 
       it("should switch to 'scale'", () => {
-        widgets[0].hiddenMode = Widget.HiddenMode.Scale;
-
         panel.hiddenMode = Widget.HiddenMode.Scale;
 
         expect(widgets[0].hiddenMode).to.equal(Widget.HiddenMode.Scale);
-        expect(widgets[0].node.style.willChange).to.equal('transform');
         expect(widgets[1].hiddenMode).to.equal(Widget.HiddenMode.Scale);
-        expect(widgets[1].node.style.willChange).to.equal('transform');
       });
 
       it("should switch to 'display'", () => {
@@ -71,9 +67,7 @@ describe('@lumino/widgets', () => {
         panel.hiddenMode = Widget.HiddenMode.Display;
 
         expect(widgets[0].hiddenMode).to.equal(Widget.HiddenMode.Display);
-        expect(widgets[0].node.style.willChange).to.equal('auto');
         expect(widgets[1].hiddenMode).to.equal(Widget.HiddenMode.Display);
-        expect(widgets[1].node.style.willChange).to.equal('auto');
       });
 
       it("should not set 'scale' if only one widget", () => {
@@ -82,7 +76,6 @@ describe('@lumino/widgets', () => {
         panel.hiddenMode = Widget.HiddenMode.Scale;
 
         expect(widgets[0].hiddenMode).to.equal(Widget.HiddenMode.Display);
-        expect(widgets[0].node.style.willChange).to.equal('auto');
       });
     });
 

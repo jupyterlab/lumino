@@ -112,15 +112,6 @@ export class DockLayout extends Layout {
       if (bar.titles.length > 1) {
         bar.titles.forEach(title => {
           title.owner.hiddenMode = this._hiddenMode;
-
-          switch (this._hiddenMode) {
-            case Widget.HiddenMode.Display:
-              title.owner.node.style.willChange = 'auto';
-              break;
-            case Widget.HiddenMode.Scale:
-              title.owner.node.style.willChange = 'transform';
-              break;
-          }
         });
       }
     });
@@ -694,7 +685,7 @@ export class DockLayout extends Layout {
     // If there are multiple tabs, just remove the widget's tab.
     if (tabNode.tabBar.titles.length > 1) {
       tabNode.tabBar.removeTab(widget.title);
-      if (this._hiddenMode === Widget.HiddenMode.Scale) {
+      if (this._hiddenMode === Widget.HiddenMode.Scale && tabNode.tabBar.titles.length == 1) {
         const existingWidget = tabNode.tabBar.titles[0].owner;
         existingWidget.node.style.willChange = 'auto';
       }
@@ -855,6 +846,8 @@ export class DockLayout extends Layout {
       index = refNode.tabBar.currentIndex;
     }
 
+    // Using transform create an additional layer in the pixel pipeline
+    // to limit the number of layer, it is set only if there is more than one widget.
     if (
       this._hiddenMode === Widget.HiddenMode.Scale &&
       refNode.tabBar.titles.length > 0
@@ -862,11 +855,9 @@ export class DockLayout extends Layout {
       if (refNode.tabBar.titles.length == 1) {
         const existingWidget = refNode.tabBar.titles[0].owner;
         existingWidget.hiddenMode = Widget.HiddenMode.Scale;
-        existingWidget.node.style.willChange = 'transform';
       }
 
       widget.hiddenMode = Widget.HiddenMode.Scale;
-      widget.node.style.willChange = 'transform';
     }
 
     // Insert the widget's tab relative to the target index.

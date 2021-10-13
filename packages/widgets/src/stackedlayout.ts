@@ -101,16 +101,16 @@ export class StackedLayout extends PanelLayout {
    * This is a reimplementation of the superclass method.
    */
   protected attachWidget(index: number, widget: Widget): void {
+    // Using transform create an additional layer in the pixel pipeline
+    // to limit the number of layer, it is set only if there is more than one widget.
     if (
-      this._items.length > 1 &&
-      this._hiddenMode === Widget.HiddenMode.Scale
+      this._hiddenMode === Widget.HiddenMode.Scale &&
+      this._items.length > 0
     ) {
       if (this._items.length === 1) {
         this.widgets[0].hiddenMode = Widget.HiddenMode.Scale;
-        this.widgets[0].node.style.willChange = 'transform';
       }
       widget.hiddenMode = Widget.HiddenMode.Scale;
-      widget.node.style.willChange = 'transform';
     }
 
     // Create and add a new layout item for the widget.
@@ -175,9 +175,8 @@ export class StackedLayout extends PanelLayout {
       widget.hiddenMode = Widget.HiddenMode.Display;
       widget.node.style.willChange = 'auto';
 
-      if (this._items.length === 1) {
+      if (this._items.length == 1) {
         this.widgets[0].hiddenMode = Widget.HiddenMode.Display;
-        this.widgets[0].node.style.willChange = 'auto';
       }
     }
 

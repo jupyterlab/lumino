@@ -181,6 +181,15 @@ export class Widget implements IMessageHandler, IObservableDisposable {
       return;
     }
     this._hiddenMode = value;
+    switch(value) {
+      case Widget.HiddenMode.Display:
+        this.node.style.willChange = 'auto';
+        break;
+      case Widget.HiddenMode.Scale:
+        this.node.style.willChange = 'transform';
+        break;
+    }
+
     if (this.isHidden) {
       if (value === Widget.HiddenMode.Display) {
         this.addClass('lm-mod-hidden');

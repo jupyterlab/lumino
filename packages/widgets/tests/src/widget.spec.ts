@@ -707,6 +707,7 @@ describe('@lumino/widgets', () => {
         widget.hide();
         expect(widget.hasClass('lm-mod-hidden')).to.equal(true);
         expect(widget.node.style.transform).to.be.equal('');
+        expect(widget.node.style.willChange).to.not.equal('transform');
         widget.dispose();
       });
 
@@ -717,6 +718,7 @@ describe('@lumino/widgets', () => {
         widget.hide();
         expect(widget.hasClass('lm-mod-hidden')).to.equal(false);
         expect(widget.node.style.transform).to.equal('scale(0)');
+        expect(widget.node.style.willChange).to.equal('transform');
         widget.dispose();
       });
 
@@ -727,6 +729,7 @@ describe('@lumino/widgets', () => {
         widget.hiddenMode = Widget.HiddenMode.Scale;
         expect(widget.hasClass('lm-mod-hidden')).to.equal(false);
         expect(widget.node.style.transform).to.equal('scale(0)');
+        expect(widget.node.style.willChange).to.equal('transform');
         widget.dispose();
       });
 
@@ -738,6 +741,7 @@ describe('@lumino/widgets', () => {
         widget.hiddenMode = Widget.HiddenMode.Display;
         expect(widget.hasClass('lm-mod-hidden')).to.equal(true);
         expect(widget.node.style.transform).to.equal('');
+        expect(widget.node.style.willChange).to.equal('auto');
         widget.dispose();
       });
     });
