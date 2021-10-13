@@ -685,7 +685,10 @@ export class DockLayout extends Layout {
     // If there are multiple tabs, just remove the widget's tab.
     if (tabNode.tabBar.titles.length > 1) {
       tabNode.tabBar.removeTab(widget.title);
-      if (this._hiddenMode === Widget.HiddenMode.Scale && tabNode.tabBar.titles.length == 1) {
+      if (
+        this._hiddenMode === Widget.HiddenMode.Scale &&
+        tabNode.tabBar.titles.length == 1
+      ) {
         const existingWidget = tabNode.tabBar.titles[0].owner;
         existingWidget.node.style.willChange = 'auto';
       }
@@ -1155,7 +1158,7 @@ export namespace DockLayout {
   export interface IOptions {
     /**
      * The method for hiding widgets.
-     * 
+     *
      * The default is `Widget.HiddenMode.Display`.
      */
     hiddenMode?: Widget.HiddenMode;

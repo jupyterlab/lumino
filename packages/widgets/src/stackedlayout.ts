@@ -385,7 +385,7 @@ export namespace StackedLayout {
   export interface IOptions extends Layout.IOptions {
     /**
      * The method for hiding widgets.
-     * 
+     *
      * The default is `Widget.HiddenMode.Display`.
      */
     hiddenMode?: Widget.HiddenMode;
