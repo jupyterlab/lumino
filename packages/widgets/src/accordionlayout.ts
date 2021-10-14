@@ -68,6 +68,25 @@ export class AccordionLayout extends SplitLayout {
    */
   readonly renderer: AccordionLayout.IRenderer;
 
+  public updateTitle(index: number, widget: Widget): void {
+    const oldTitle = this._titles[index];
+
+    const newTitle = Private.createTitle(this.renderer, widget.title);
+    newTitle.style.position = 'absolute';
+    newTitle.setAttribute('aria-label', `${widget.title.label} Section`);
+    newTitle.setAttribute(
+      'aria-expanded',
+      oldTitle.getAttribute('aria-expanded') || 'true'
+    );
+    newTitle.setAttribute('aria-controls', widget.id);
+    newTitle.classList.add('lm-mod-expanded');
+
+    this._titles[index] = newTitle;
+
+    // Add the title node to the parent before the widget.
+    this.parent!.node.replaceChild(newTitle, oldTitle);
+  }
+
   /**
    * Attach a widget to the parent's DOM node.
    *
