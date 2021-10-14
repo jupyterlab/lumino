@@ -164,9 +164,8 @@ export class StackedLayout extends PanelLayout {
 
     if (this._hiddenMode === Widget.HiddenMode.Scale) {
       widget.hiddenMode = Widget.HiddenMode.Display;
-      widget.node.style.willChange = 'auto';
 
-      if (this._items.length == 1) {
+      if (this._items.length === 1) {
         this.widgets[0].hiddenMode = Widget.HiddenMode.Display;
       }
     }
