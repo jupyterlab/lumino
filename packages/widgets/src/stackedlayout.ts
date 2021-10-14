@@ -162,14 +162,6 @@ export class StackedLayout extends PanelLayout {
     // Remove the layout item for the widget.
     let item = ArrayExt.removeAt(this._items, index);
 
-    if (this._hiddenMode === Widget.HiddenMode.Scale) {
-      widget.hiddenMode = Widget.HiddenMode.Display;
-
-      if (this._items.length === 1) {
-        this.widgets[0].hiddenMode = Widget.HiddenMode.Display;
-      }
-    }
-
     // Send a `'before-detach'` message if the parent is attached.
     if (this.parent!.isAttached) {
       MessageLoop.sendMessage(widget, Widget.Msg.BeforeDetach);
@@ -185,6 +177,16 @@ export class StackedLayout extends PanelLayout {
 
     // Reset the z-index for the widget.
     item!.widget.node.style.zIndex = '';
+
+    // Reset the hidden mode for the widget.
+    if (this._hiddenMode === Widget.HiddenMode.Scale) {
+      widget.hiddenMode = Widget.HiddenMode.Display;
+
+      // Reset the hidden mode for the first widget if necessary.
+      if (this._items.length === 1) {
+        this._items[0].widget.hiddenMode = Widget.HiddenMode.Display;
+      }
+    }
 
     // Dispose of the layout item.
     item!.dispose();
