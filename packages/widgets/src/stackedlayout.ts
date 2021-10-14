@@ -100,6 +100,8 @@ export class StackedLayout extends PanelLayout {
         this.widgets[0].hiddenMode = Widget.HiddenMode.Scale;
       }
       widget.hiddenMode = Widget.HiddenMode.Scale;
+    } else {
+      widget.hiddenMode = Widget.HiddenMode.Display;
     }
 
     // Create and add a new layout item for the widget.

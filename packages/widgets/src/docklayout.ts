@@ -861,6 +861,8 @@ export class DockLayout extends Layout {
       }
 
       widget.hiddenMode = Widget.HiddenMode.Scale;
+    } else {
+      widget.hiddenMode = Widget.HiddenMode.Display;
     }
 
     // Insert the widget's tab relative to the target index.
