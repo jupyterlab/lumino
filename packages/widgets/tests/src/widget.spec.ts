@@ -711,7 +711,7 @@ describe('@lumino/widgets', () => {
         widget.dispose();
       });
 
-      it('should use transformation if in "composition" mode', () => {
+      it('should use transformation if in "scale" mode', () => {
         let widget = new Widget();
         Widget.attach(widget, document.body);
         widget.hiddenMode = Widget.HiddenMode.Scale;
@@ -722,7 +722,7 @@ describe('@lumino/widgets', () => {
         widget.dispose();
       });
 
-      it('should remove class when switching from class to composition', () => {
+      it('should remove class when switching from display to scale', () => {
         let widget = new Widget();
         Widget.attach(widget, document.body);
         widget.hide();
@@ -733,7 +733,7 @@ describe('@lumino/widgets', () => {
         widget.dispose();
       });
 
-      it('should add class when switching from composition to class', () => {
+      it('should add class when switching from scale to display', () => {
         let widget = new Widget();
         Widget.attach(widget, document.body);
         widget.hiddenMode = Widget.HiddenMode.Scale;

@@ -49,7 +49,7 @@ describe('@lumino/widgets', () => {
         panel.dispose();
       });
 
-      it("should be 'class' mode by default", () => {
+      it("should be 'display' mode by default", () => {
         expect(panel.hiddenMode).to.equal(Widget.HiddenMode.Display);
       });
 
