@@ -123,6 +123,18 @@ describe('@lumino/widgets', () => {
         });
         expect(panel.titles.length).to.equal(widgets.length);
       });
+
+      it('should update the title element', () => {
+        const text = 'Something';
+        let panel = new AccordionPanel();
+        let widget = new Widget();
+        panel.addWidget(widget);
+        widget.title.label = text;
+        const el = panel.titles[0].querySelector(
+          '.lm-AccordionPanel-titleLabel'
+        )!;
+        expect(el.textContent).to.equal(text);
+      });
     });
 
     describe('#handleEvent()', () => {
