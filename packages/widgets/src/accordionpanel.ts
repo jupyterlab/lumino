@@ -54,6 +54,34 @@ export class AccordionPanel extends SplitPanel {
   }
 
   /**
+   * Add a widget to the end of the panel.
+   *
+   * @param widget - The widget to add to the panel.
+   *
+   * #### Notes
+   * If the widget is already contained in the panel, it will be moved.
+   */
+  addWidget(widget: Widget): void {
+    super.addWidget(widget);
+    widget.title.changed.connect(this._onTitleChanged, this);
+  }
+
+  /**
+   * Insert a widget at the specified index.
+   *
+   * @param index - The index at which to insert the widget.
+   *
+   * @param widget - The widget to insert into to the panel.
+   *
+   * #### Notes
+   * If the widget is already contained in the panel, it will be moved.
+   */
+  insertWidget(index: number, widget: Widget): void {
+    super.insertWidget(index, widget);
+    widget.title.changed.connect(this._onTitleChanged, this);
+  }
+
+  /**
    * Handle the DOM events for the accordion panel.
    *
    * @param event - The DOM event sent to the panel.
@@ -91,6 +119,20 @@ export class AccordionPanel extends SplitPanel {
     super.onAfterDetach(msg);
     this.node.removeEventListener('click', this);
     this.node.removeEventListener('keydown', this);
+  }
+
+  /**
+   * Handle the `changed` signal of a title object.
+   */
+  private _onTitleChanged(sender: Title<Widget>): void {
+    const index = ArrayExt.findFirstIndex(this.widgets, widget => {
+      return widget.contains(sender.owner);
+    });
+
+    if (index >= 0) {
+      (this.layout as AccordionLayout).updateTitle(index, sender.owner);
+      this.update();
+    }
   }
 
   /**

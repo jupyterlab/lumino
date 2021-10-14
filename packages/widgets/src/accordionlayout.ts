@@ -68,6 +68,16 @@ export class AccordionLayout extends SplitLayout {
    */
   readonly renderer: AccordionLayout.IRenderer;
 
+  public updateTitle(index: number, widget: Widget): void {
+    const oldTitle = this._titles[index];
+    const expanded = oldTitle.classList.contains('lm-mod-expanded');
+    const newTitle = Private.createTitle(this.renderer, widget.title, expanded);
+    this._titles[index] = newTitle;
+
+    // Add the title node to the parent before the widget.
+    this.parent!.node.replaceChild(newTitle, oldTitle);
+  }
+
   /**
    * Attach a widget to the parent's DOM node.
    *
@@ -77,11 +87,6 @@ export class AccordionLayout extends SplitLayout {
    */
   protected attachWidget(index: number, widget: Widget): void {
     const title = Private.createTitle(this.renderer, widget.title);
-    title.style.position = 'absolute';
-    title.setAttribute('aria-label', `${widget.title.label} Section`);
-    title.setAttribute('aria-expanded', 'true');
-    title.setAttribute('aria-controls', widget.id);
-    title.classList.add('lm-mod-expanded');
 
     ArrayExt.insert(this._titles, index, title);
 
@@ -226,8 +231,17 @@ namespace Private {
    */
   export function createTitle(
     renderer: AccordionLayout.IRenderer,
-    data: Title<Widget>
+    data: Title<Widget>,
+    expanded: boolean = true
   ): HTMLElement {
-    return renderer.createSectionTitle(data);
+    const title = renderer.createSectionTitle(data);
+    title.style.position = 'absolute';
+    title.setAttribute('aria-label', `${data.label} Section`);
+    title.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+    title.setAttribute('aria-controls', data.owner.id);
+    if (expanded) {
+      title.classList.add('lm-mod-expanded');
+    }
+    return title;
   }
 }
