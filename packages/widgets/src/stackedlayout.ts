@@ -52,24 +52,13 @@ export class StackedLayout extends PanelLayout {
    * If there is only one child widget, `Display` hiding mode will be used
    * regardless of this setting.
    */
-
   set hiddenMode(v: Widget.HiddenMode) {
-    if (this._hiddenMode !== v) {
-      this._hiddenMode = v;
-      if (this.widgets.length > 1) {
-        this.widgets.forEach(w => {
-          w.hiddenMode = this._hiddenMode;
-
-          switch (this._hiddenMode) {
-            case Widget.HiddenMode.Display:
-              w.node.style.willChange = 'auto';
-              break;
-            case Widget.HiddenMode.Scale:
-              w.node.style.willChange = 'transform';
-              break;
-          }
-        });
-      }
+    if (this._hiddenMode === v) {
+      return;
+    }
+    this._hiddenMode = v;
+    if (this.widgets.length > 1) {
+      this.widgets.forEach(w => { w.hiddenMode = this._hiddenMode; });
     }
   }
 
