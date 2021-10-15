@@ -58,7 +58,9 @@ export class StackedLayout extends PanelLayout {
     }
     this._hiddenMode = v;
     if (this.widgets.length > 1) {
-      this.widgets.forEach(w => { w.hiddenMode = this._hiddenMode; });
+      this.widgets.forEach(w => {
+        w.hiddenMode = this._hiddenMode;
+      });
     }
   }
 
