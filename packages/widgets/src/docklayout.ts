@@ -676,12 +676,6 @@ export class DockLayout extends Layout {
 
     Private.removeAria(widget);
 
-    // We don't switch back the hidden mode of the widget to avoid triggering
-    // style recomputation
-    if (this._hiddenMode === Widget.HiddenMode.Scale) {
-      widget.node.style.willChange = 'auto';
-    }
-
     // If there are multiple tabs, just remove the widget's tab.
     if (tabNode.tabBar.titles.length > 1) {
       tabNode.tabBar.removeTab(widget.title);
@@ -690,7 +684,7 @@ export class DockLayout extends Layout {
         tabNode.tabBar.titles.length == 1
       ) {
         const existingWidget = tabNode.tabBar.titles[0].owner;
-        existingWidget.node.style.willChange = 'auto';
+        existingWidget.hiddenMode = Widget.HiddenMode.Display;
       }
       return;
     }
