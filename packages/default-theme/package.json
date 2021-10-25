@@ -1,6 +1,6 @@
 {
   "name": "@lumino/default-theme",
-  "version": "0.19.0",
+  "version": "0.20.0",
   "description": "Lumino Default Theme",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -29,8 +29,8 @@
     "url": "https://github.com/jupyterlab/lumino.git"
   },
   "dependencies": {
-    "@lumino/dragdrop": "^1.12.0",
-    "@lumino/widgets": "^1.28.0"
+    "@lumino/dragdrop": "^1.13.0",
+    "@lumino/widgets": "^1.29.0"
   },
   "publishConfig": {
     "access": "public"
