@@ -8,13 +8,13 @@
 
 ### Enhancements made
 
-- Add arrow glyphs #151 [#252](https://github.com/jupyterlab/lumino/pull/252) ([@PlatinumCD](https://github.com/PlatinumCD))
-- Added PointerEvents to splitpanel [#251](https://github.com/jupyterlab/lumino/pull/251) ([@martaszmit](https://github.com/martaszmit))
+- Add arrow glyph handling to command registry [#252](https://github.com/jupyterlab/lumino/pull/252) ([@PlatinumCD](https://github.com/PlatinumCD))
+- Added `PointerEvents` handling to `SplitPanel` [#251](https://github.com/jupyterlab/lumino/pull/251) ([@martaszmit](https://github.com/martaszmit))
 - Ignore `keydown` events for modifier keys when accumulating key sequence [#245](https://github.com/jupyterlab/lumino/pull/245) ([@ph-ph](https://github.com/ph-ph))
 
 ### Bugs fixed
 
-- Update title in AccordionPanel [#249](https://github.com/jupyterlab/lumino/pull/249) ([@hbcarlos](https://github.com/hbcarlos))
+- Update title appropriately in `AccordionPanel` [#249](https://github.com/jupyterlab/lumino/pull/249) ([@hbcarlos](https://github.com/hbcarlos))
 
 ### Maintenance and upkeep improvements
 
