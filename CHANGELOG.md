@@ -2,6 +2,32 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2021.10.25
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/algorithm@1.8.0...1ae240e236e596f8162a58c0289642ab4f392c52))
+
+### Enhancements made
+
+- Add arrow glyph handling to command registry [#252](https://github.com/jupyterlab/lumino/pull/252) ([@PlatinumCD](https://github.com/PlatinumCD))
+- Added `PointerEvents` handling to `SplitPanel` [#251](https://github.com/jupyterlab/lumino/pull/251) ([@martaszmit](https://github.com/martaszmit))
+- Ignore `keydown` events for modifier keys when accumulating key sequence [#245](https://github.com/jupyterlab/lumino/pull/245) ([@ph-ph](https://github.com/ph-ph))
+
+### Bugs fixed
+
+- Update title appropriately in `AccordionPanel` [#249](https://github.com/jupyterlab/lumino/pull/249) ([@hbcarlos](https://github.com/hbcarlos))
+
+### Maintenance and upkeep improvements
+
+- Add linter check in CI [#242](https://github.com/jupyterlab/lumino/pull/242) ([@fcollonval](https://github.com/fcollonval))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2021-09-30&to=2021-10-25&type=c))
+
+[@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2021-09-30..2021-10-25&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2021-09-30..2021-10-25&type=Issues) | [@hbcarlos](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ahbcarlos+updated%3A2021-09-30..2021-10-25&type=Issues) | [@martaszmit](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Amartaszmit+updated%3A2021-09-30..2021-10-25&type=Issues) | [@ph-ph](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aph-ph+updated%3A2021-09-30..2021-10-25&type=Issues) | [@PlatinumCD](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3APlatinumCD+updated%3A2021-09-30..2021-10-25&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Awelcome+updated%3A2021-09-30..2021-10-25&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2021.9.30
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/algorithm@1.7.0...e6612f622c827b2e85cffb1858fcc3bf1b09be76))
@@ -23,8 +49,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2021-09-22&to=2021-09-30&type=c))
 
 [@bign8](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Abign8+updated%3A2021-09-22..2021-09-30&type=Issues) | [@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2021-09-22..2021-09-30&type=Issues) | [@ibdafna](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aibdafna+updated%3A2021-09-22..2021-09-30&type=Issues) | [@jupyterlab-probot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajupyterlab-probot+updated%3A2021-09-22..2021-09-30&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2021.9.22
 
