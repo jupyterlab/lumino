@@ -167,6 +167,15 @@ export class SplitPanel extends Panel {
       case 'mouseup':
         this._evtMouseUp(event as MouseEvent);
         break;
+      case 'pointerdown':
+        this._evtMouseDown(event as MouseEvent);
+        break;
+      case 'pointermove':
+        this._evtMouseMove(event as MouseEvent);
+        break;
+      case 'pointerup':
+        this._evtMouseUp(event as MouseEvent);
+        break;
       case 'keydown':
         this._evtKeyDown(event as KeyboardEvent);
         break;
@@ -182,6 +191,7 @@ export class SplitPanel extends Panel {
    */
   protected onBeforeAttach(msg: Message): void {
     this.node.addEventListener('mousedown', this);
+    this.node.addEventListener('pointerdown', this);
   }
 
   /**
@@ -189,6 +199,7 @@ export class SplitPanel extends Panel {
    */
   protected onAfterDetach(msg: Message): void {
     this.node.removeEventListener('mousedown', this);
+    this.node.removeEventListener('pointerdown', this);
     this._releaseMouse();
   }
 
@@ -257,6 +268,8 @@ export class SplitPanel extends Panel {
     // Add the extra document listeners.
     document.addEventListener('mouseup', this, true);
     document.addEventListener('mousemove', this, true);
+    document.addEventListener('pointerup', this, true);
+    document.addEventListener('pointermove', this, true);
     document.addEventListener('keydown', this, true);
     document.addEventListener('contextmenu', this, true);
 
@@ -332,6 +345,8 @@ export class SplitPanel extends Panel {
     document.removeEventListener('mouseup', this, true);
     document.removeEventListener('mousemove', this, true);
     document.removeEventListener('keydown', this, true);
+    document.removeEventListener('pointerup', this, true);
+    document.removeEventListener('pointermove', this, true);
     document.removeEventListener('contextmenu', this, true);
   }
 
