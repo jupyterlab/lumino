@@ -1219,6 +1219,9 @@ export namespace CommandRegistry {
   export function formatKeystroke(keystroke: string): string {
     let mods = '';
     let parts = parseKeystroke(keystroke);
+    let keyWithoutArrows = parts.key
+      .replace(/Arrow(Down|Up|Right|Left)/g, '')
+      .replace('  ', ' ');
     if (Platform.IS_MAC) {
       if (parts.ctrl) {
         mods += '\u2303 ';
@@ -1232,18 +1235,6 @@ export namespace CommandRegistry {
       if (parts.cmd) {
         mods += '\u2318 ';
       }
-      if (parts.arrowLeft) {
-        mods += '\u2190 ';
-      }
-      if (parts.arrowUp) {
-        mods += '\u2191 ';
-      }
-      if (parts.arrowRight) {
-        mods += '\u2192 ';
-      }
-      if (parts.arrowDown) {
-        mods += '\u2193 ';
-      }
     } else {
       if (parts.ctrl) {
         mods += 'Ctrl+';
@@ -1255,7 +1246,20 @@ export namespace CommandRegistry {
         mods += 'Shift+';
       }
     }
-    return mods + parts.key;
+    // regardless of platform
+    if (parts.arrowLeft) {
+      mods += '\u2190 ';
+    }
+    if (parts.arrowUp) {
+      mods += '\u2191 ';
+    }
+    if (parts.arrowRight) {
+      mods += '\u2192 ';
+    }
+    if (parts.arrowDown) {
+      mods += '\u2193 ';
+    }
+    return (mods + keyWithoutArrows).trim();
   }
 
   /**
