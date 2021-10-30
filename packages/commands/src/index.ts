@@ -1121,6 +1121,17 @@ export namespace CommandRegistry {
     let arrowRight = false;
     let arrowDown = false;
     for (let token of keystroke.split(/\s+/)) {
+      // if an arrow is present it can be assigned to `key`
+      if (token === 'ArrowLeft') {
+        arrowLeft = true;
+      } else if (token === 'ArrowUp') {
+        arrowUp = true;
+      } else if (token === 'ArrowRight') {
+        arrowRight = true;
+      } else if (token === 'ArrowDown') {
+        arrowDown = true;
+      }
+      // but do not assign proper modifiers to `key`
       if (token === 'Accel') {
         if (Platform.IS_MAC) {
           cmd = true;
@@ -1135,14 +1146,6 @@ export namespace CommandRegistry {
         ctrl = true;
       } else if (token === 'Shift') {
         shift = true;
-      } else if (token === 'ArrowLeft') {
-        arrowLeft = true;
-      } else if (token === 'ArrowUp') {
-        arrowUp = true;
-      } else if (token === 'ArrowRight') {
-        arrowRight = true;
-      } else if (token === 'ArrowDown') {
-        arrowDown = true;
       } else if (token.length > 0) {
         key = token;
       }
