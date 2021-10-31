@@ -1063,26 +1063,6 @@ export namespace CommandRegistry {
     shift: boolean;
 
     /**
-     * Whether `'ArrowLeft'` appears in the keystroke.
-     */
-    arrowLeft: boolean;
-
-    /**
-     * Whether `'ArrowUp'` appears in the keystroke.
-     */
-    arrowUp: boolean;
-
-    /**
-     * Whether `'ArrowRight'` appears in the keystroke.
-     */
-    arrowRight: boolean;
-
-    /**
-     * Whether `'ArrowDown'` appears in the keystroke.
-     */
-    arrowDown: boolean;
-
-    /**
      * The primary key for the keystroke.
      */
     key: string;
@@ -1116,10 +1096,6 @@ export namespace CommandRegistry {
     let cmd = false;
     let ctrl = false;
     let shift = false;
-    let arrowLeft = false;
-    let arrowUp = false;
-    let arrowRight = false;
-    let arrowDown = false;
     for (let token of keystroke.split(/\s+/)) {
       if (token === 'Accel') {
         if (Platform.IS_MAC) {
@@ -1135,29 +1111,11 @@ export namespace CommandRegistry {
         ctrl = true;
       } else if (token === 'Shift') {
         shift = true;
-      } else if (token === 'ArrowLeft') {
-        arrowLeft = true;
-      } else if (token === 'ArrowUp') {
-        arrowUp = true;
-      } else if (token === 'ArrowRight') {
-        arrowRight = true;
-      } else if (token === 'ArrowDown') {
-        arrowDown = true;
       } else if (token.length > 0) {
         key = token;
       }
     }
-    return {
-      cmd,
-      ctrl,
-      alt,
-      shift,
-      key,
-      arrowLeft,
-      arrowUp,
-      arrowRight,
-      arrowDown
-    };
+    return { cmd, ctrl, alt, shift, key };
   }
 
   /**
@@ -1228,18 +1186,6 @@ export namespace CommandRegistry {
       }
       if (parts.cmd) {
         mods += '\u2318 ';
-      }
-      if (parts.arrowLeft) {
-        mods += '\u2190 ';
-      }
-      if (parts.arrowUp) {
-        mods += '\u2191 ';
-      }
-      if (parts.arrowRight) {
-        mods += '\u2192 ';
-      }
-      if (parts.arrowDown) {
-        mods += '\u2193 ';
       }
     } else {
       if (parts.ctrl) {
