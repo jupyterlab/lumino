@@ -8,6 +8,8 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
+import { Platform } from '@lumino/domutils';
+
 /**
  * An object which represents an abstract keyboard layout.
  */
@@ -64,6 +66,15 @@ export interface IKeyboardLayout {
    *   does not represent a valid primary key.
    */
   keyForKeydownEvent(event: KeyboardEvent): string;
+
+  /**
+   * Get the formatted string for displaying a key in the user interface.
+   *
+   * @param key - The user provided key.
+   *
+   * @returns A unicode string representing the key in the interface.
+   */
+  formatKey(key: string): string;
 }
 
 /**
@@ -115,12 +126,14 @@ export class KeycodeLayout implements IKeyboardLayout {
   constructor(
     name: string,
     codes: KeycodeLayout.CodeMap,
-    modifierKeys: string[] = []
+    modifierKeys: string[] = [],
+    format: KeycodeLayout.KeyFormat = x => x
   ) {
     this.name = name;
     this._codes = codes;
     this._keys = KeycodeLayout.extractKeys(codes);
     this._modifierKeys = KeycodeLayout.convertToKeySet(modifierKeys);
+    this._format = format;
   }
 
   /**
@@ -171,9 +184,21 @@ export class KeycodeLayout implements IKeyboardLayout {
     return this._codes[event.keyCode] || '';
   }
 
+  /**
+   * Get the formatted string for displaying a key in the user interface.
+   *
+   * @param key - The user provided key.
+   *
+   * @returns A unicode string representing the key in the interface.
+   */
+  formatKey(key: string): string {
+    return this._format(key);
+  }
+
   private _keys: KeycodeLayout.KeySet;
   private _codes: KeycodeLayout.CodeMap;
   private _modifierKeys: KeycodeLayout.KeySet;
+  private _format: KeycodeLayout.KeyFormat;
 }
 
 /**
@@ -189,6 +214,11 @@ export namespace KeycodeLayout {
    * A type alias for a key set.
    */
   export type KeySet = { readonly [key: string]: boolean };
+
+  /**
+   * A type alias for a key format function.
+   */
+  export type KeyFormat = (key: string) => string;
 
   /**
    * Extract the set of keys from a code map.
@@ -218,6 +248,57 @@ export namespace KeycodeLayout {
       keySet[keys[i]] = true;
     }
     return keySet;
+  }
+}
+
+export const MAC_DISPLAY: { [key: string]: string } = {
+  Backspace: '⌫',
+  Tab: '⇥',
+  Enter: '↩',
+  Shift: '⇧',
+  Ctrl: '⌃',
+  Alt: '⌥',
+  Escape: '⎋',
+  PageUp: '⇞',
+  PageDown: '⇟',
+  End: '↘',
+  Home: '↖',
+  ArrowLeft: '←',
+  ArrowUp: '↑',
+  ArrowRight: '→',
+  ArrowDown: '↓',
+  Delete: '⌦',
+  Meta: '⌘'
+};
+
+export const WIN_DISPLAY: { [key: string]: string } = {
+  // 'Backspace': '⌫',
+  // 'Tab': '⇥',
+  // 'Enter': 'Return',
+  // 'Shift': '⇧',
+  // 'Ctrl': 'Ctrl',
+  // 'Alt': '⌥',
+  // 'Pause': '',
+  Escape: 'Esc',
+  // 'Space': '␣',
+  PageUp: 'Page Up',
+  PageDown: 'Page Down',
+  // 'End': '↘',
+  // 'Home': '↖',
+  ArrowLeft: 'Left',
+  ArrowUp: 'Right',
+  ArrowRight: 'Up',
+  ArrowDown: 'Down',
+  // 'Insert': '',
+  Delete: 'Del'
+  // 'Meta': ''
+};
+
+export function formatKey(key: string): string {
+  if (Platform.IS_MAC) {
+    return MAC_DISPLAY.hasOwnProperty(key) ? MAC_DISPLAY[key] : key;
+  } else {
+    return WIN_DISPLAY.hasOwnProperty(key) ? WIN_DISPLAY[key] : key;
   }
 }
 
@@ -345,7 +426,8 @@ export const EN_US: IKeyboardLayout = new KeycodeLayout(
     222: "'",
     224: 'Meta' // firefox
   },
-  ['Shift', 'Ctrl', 'Alt', 'Meta'] // modifier keys
+  ['Shift', 'Ctrl', 'Alt', 'Meta'], // modifier keys,
+  formatKey
 );
 
 /**

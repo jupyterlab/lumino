@@ -43,6 +43,9 @@
     "test:ie": "cd tests && karma start --browsers=IE",
     "watch": "tsc --build --watch"
   },
+  "dependencies": {
+    "@lumino/domutils": "^1.8.0"
+  },
   "devDependencies": {
     "@microsoft/api-extractor": "^7.6.0",
     "@types/chai": "^3.4.35",
