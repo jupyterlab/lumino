@@ -1222,7 +1222,7 @@ export namespace CommandRegistry {
     }
     // Loop through modifier keys in order to test them
     let mods = [];
-    for (let mod in layout.modifierKeys()) {
+    for (let mod of layout.modifierKeys()) {
       // Special treatment for Meta (Cmd on macOS) for backwards compatibility
       if (mod === 'Meta') {
         if (Platform.IS_MAC && event.getModifierState(mod)) {
