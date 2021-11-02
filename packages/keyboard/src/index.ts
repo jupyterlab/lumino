@@ -349,7 +349,7 @@ export const EN_US: IKeyboardLayout = new KeycodeLayout(
     9: 'Tab',
     13: 'Enter',
     16: 'Shift',
-    17: 'Ctrl',
+    17: 'Control',
     18: 'Alt',
     19: 'Pause',
     27: 'Escape',
@@ -446,7 +446,7 @@ export const EN_US: IKeyboardLayout = new KeycodeLayout(
     224: 'Meta' // firefox
   },
   // The modifier is labeled "Control", but the key value is "Ctrl"?
-  ['Ctrl', 'Alt', 'Shift', 'Meta'], // modifier keys in display order
+  ['Control', 'Alt', 'Shift', 'Meta'], // modifier keys in display order
   formatKey
 );
 

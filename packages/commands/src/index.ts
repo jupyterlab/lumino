@@ -1177,7 +1177,8 @@ export namespace CommandRegistry {
     let label = [];
     let separator = Platform.IS_MAC ? '+' : ' ';
     if (parts.ctrl) {
-      label.push('Ctrl');
+      // Keyboard layouts label Ctrl as Control
+      label.push('Control');
     }
     if (parts.alt) {
       label.push('Alt');
@@ -1229,7 +1230,12 @@ export namespace CommandRegistry {
           mods.push('Cmd');
         }
       } else if (event.getModifierState(mod)) {
-        mods.push(mod);
+        if (mod === 'Control') {
+          // For backwards compatibility, we use Ctrl for the Control modifier
+          mods.push('Ctrl');
+        } else {
+          mods.push(mod);
+        }
       }
     }
     return mods.join(" ") + " " + key;
