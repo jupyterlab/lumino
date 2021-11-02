@@ -9,6 +9,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+        test: [chrome-headless, firefox-headless]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
@@ -38,7 +39,7 @@ jobs:
           yarn
 
       - name: Check linters
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.test == 'firefox-headless'}}
         shell: bash
         run: |
             set -eux
@@ -53,10 +54,10 @@ jobs:
 
       - name: Run Tests
         run: |
-          yarn test
+          yarn run test:${{ matrix.test }}
 
       - name: Test Examples
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.test == 'firefox-headless'}}
         run: |
           set -eux
           yarn minimize
@@ -64,14 +65,14 @@ jobs:
           yarn test:examples
 
       - name: Build Docs
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.test == 'firefox-headless'}}
         run: |
           set -eux
           yarn clean
           yarn docs
 
       - name: Publish with Verdaccio
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.test == 'firefox-headless'}}
         run: |
           set -eux
           npm install -g verdaccio
