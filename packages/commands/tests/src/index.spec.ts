@@ -1099,7 +1099,7 @@ describe('@lumino/commands', () => {
         if (Platform.IS_MAC) {
           expect(label).to.equal('\u2325 \u2193');
         } else {
-          expect(label).to.equal('Alt+\u2193');
+          expect(label).to.equal('Alt+Down');
         }
       });
     });
