@@ -33,6 +33,17 @@ export interface IKeyboardLayout {
   keys(): string[];
 
   /**
+   * Get an arrow of all modifier key values supported by the layout.
+   *
+   * @returns A new array of the supported modifier key values.
+   *
+   * #### Notes
+   * This can be useful for authoring tools and debugging, when it's
+   * necessary to know which modifier keys are available for shortcut use.
+   */
+  modifierKeys(): string[];
+
+  /**
    * Test whether the given key is a valid value for the layout.
    *
    * @param key - The user provided key to test for validity.
@@ -42,18 +53,17 @@ export interface IKeyboardLayout {
   isValidKey(key: string): boolean;
 
   /**
-   * Test whether the given key is a modifier key.
+   * Test whether the given key is a valid modifier key for the layout.
    *
-   * @param key - The user provided key.
+   * @param key - The user provided key to test for validity.
    *
    * @returns `true` if the key is a modifier key, `false` otherwise.
    *
    * #### Notes
-   * This is necessary so that we don't process modifier keys pressed
-   * in the middle of the key sequence.
-   * E.g. "Shift C Ctrl P" is actually 4 keydown events:
-   *   "Shift", "Shift P", "Ctrl", "Ctrl P",
-   * and events for "Shift" and "Ctrl" should be ignored.
+   * This may be useful to determine whether we should ignore a keypress
+   * event in the middle of a key sequence. For example, "Shift C Ctrl P" is
+   * actually four keydown events: "Shift, "Shift P", "Ctrl", "Ctrl P", but
+   * the keypress events for the modifier keys "Shift" and "Ctrl" are ignored.
    */
   isModifierKey(key: string): boolean;
 
@@ -132,7 +142,7 @@ export class KeycodeLayout implements IKeyboardLayout {
     this.name = name;
     this._codes = codes;
     this._keys = KeycodeLayout.extractKeys(codes);
-    this._modifierKeys = KeycodeLayout.convertToKeySet(modifierKeys);
+    this._modifierKeys = new Set<string>(modifierKeys);
     this._format = format;
   }
 
@@ -148,6 +158,15 @@ export class KeycodeLayout implements IKeyboardLayout {
    */
   keys(): string[] {
     return Object.keys(this._keys);
+  }
+
+  /**
+   * Get an arrow of all modifier key values supported by the layout.
+   *
+   * @returns A new array of the supported modifier key values.
+   */
+  modifierKeys(): string[] {
+    return Array.from(this._modifierKeys);
   }
 
   /**
@@ -169,7 +188,7 @@ export class KeycodeLayout implements IKeyboardLayout {
    * @returns `true` if the key is a modifier key, `false` otherwise.
    */
   isModifierKey(key: string): boolean {
-    return key in this._modifierKeys;
+    return this._modifierKeys.has(key);
   }
 
   /**
@@ -197,7 +216,7 @@ export class KeycodeLayout implements IKeyboardLayout {
 
   private _keys: KeycodeLayout.KeySet;
   private _codes: KeycodeLayout.CodeMap;
-  private _modifierKeys: KeycodeLayout.KeySet;
+  private _modifierKeys: Set<string>;
   private _format: KeycodeLayout.KeyFormat;
 }
 
@@ -426,7 +445,8 @@ export const EN_US: IKeyboardLayout = new KeycodeLayout(
     222: "'",
     224: 'Meta' // firefox
   },
-  ['Shift', 'Ctrl', 'Alt', 'Meta'], // modifier keys,
+  // The modifier is labeled "Control", but the key value is "Ctrl"?
+  ['Ctrl', 'Alt', 'Shift', 'Meta'], // modifier keys in display order
   formatKey
 );
 

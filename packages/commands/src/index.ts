@@ -1172,33 +1172,25 @@ export namespace CommandRegistry {
    * Format a keystroke for display on the local system.
    */
   export function formatKeystroke(keystroke: string): string {
-    let mods = '';
     let parts = parseKeystroke(keystroke);
-    if (Platform.IS_MAC) {
-      if (parts.ctrl) {
-        mods += '\u2303 ';
-      }
-      if (parts.alt) {
-        mods += '\u2325 ';
-      }
-      if (parts.shift) {
-        mods += '\u21E7 ';
-      }
-      if (parts.cmd) {
-        mods += '\u2318 ';
-      }
-    } else {
-      if (parts.ctrl) {
-        mods += 'Ctrl+';
-      }
-      if (parts.alt) {
-        mods += 'Alt+';
-      }
-      if (parts.shift) {
-        mods += 'Shift+';
-      }
+    let layout = getKeyboardLayout();
+    let label = [];
+    let separator = Platform.IS_MAC ? '+' : ' ';
+    if (parts.ctrl) {
+      label.push('Ctrl');
     }
-    return mods + parts.key;
+    if (parts.alt) {
+      label.push('Alt');
+    }
+    if (parts.shift) {
+      label.push('Shift');
+    }
+    if (Platform.IS_MAC && parts.cmd) {
+      // Keyboard layouts label Command as Meta
+      label.push('Meta');
+    }
+    label.push(parts.key);
+    return label.map(layout.formatKey).join(separator);
   }
 
   /**
@@ -1228,20 +1220,19 @@ export namespace CommandRegistry {
     if (!key || layout.isModifierKey(key)) {
       return '';
     }
-    let mods = '';
-    if (event.ctrlKey) {
-      mods += 'Ctrl ';
+    // Loop through modifier keys in order to test them
+    let mods = [];
+    for (let mod in layout.modifierKeys()) {
+      // Special treatment for Meta (Cmd on macOS) for backwards compatibility
+      if (mod === 'Meta') {
+        if (Platform.IS_MAC && event.getModifierState(mod)) {
+          mods.push('Cmd');
+        }
+      } else if (event.getModifierState(mod)) {
+        mods.push(mod);
+      }
     }
-    if (event.altKey) {
-      mods += 'Alt ';
-    }
-    if (event.shiftKey) {
-      mods += 'Shift ';
-    }
-    if (event.metaKey && Platform.IS_MAC) {
-      mods += 'Cmd ';
-    }
-    return mods + key;
+    return mods.join(" ") + " " + key;
   }
 }
 
