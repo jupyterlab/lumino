@@ -1572,6 +1572,7 @@ namespace Private {
     clone.shiftKey = event.shiftKey || false;
     clone.metaKey = event.metaKey || false;
     clone.view = event.view || window;
+    clone.getModifierState = (key: string) => event.getModifierState(key);
     return clone as KeyboardEvent;
   }
 }
