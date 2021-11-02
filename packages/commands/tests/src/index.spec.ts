@@ -1068,9 +1068,8 @@ describe('@lumino/commands', () => {
         expect(parts.key).to.equal('S');
       });
 
-      it('should preserve arrows in key for backward compatibility', () => {
+      it('should preserve arrow names in key without formatting', () => {
         let parts = CommandRegistry.parseKeystroke('ArrowRight');
-        expect(parts.arrowRight).to.equal(true);
         expect(parts.key).to.equal('ArrowRight');
       });
 
