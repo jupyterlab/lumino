@@ -1228,6 +1228,11 @@ export namespace CommandRegistry {
         if (Platform.IS_MAC && event.getModifierState(mod)) {
           mods.push('Cmd');
         }
+      } else if (mod === 'Ctrl') {
+        // For backwards compatibility, our keyboard layout still uses Ctrl.
+        if (event.getModifierState('Control')) {
+          mods.push('Ctrl');
+        }
       } else if (event.getModifierState(mod)) {
         mods.push(mod);
       }
