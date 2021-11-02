@@ -1175,7 +1175,7 @@ export namespace CommandRegistry {
     let parts = parseKeystroke(keystroke);
     let layout = getKeyboardLayout();
     let label = [];
-    let separator = Platform.IS_MAC ? '+' : ' ';
+    let separator = Platform.IS_MAC ? ' ' : '+';
     if (parts.ctrl) {
       label.push('Ctrl');
     }
