@@ -44,7 +44,6 @@ function generateKeydown(options: any) {
         state = options.metaKey || false;
         break;
     }
-    console.log(`modifier state ${key} ${state}`)
     return state;
   };
   return event;
