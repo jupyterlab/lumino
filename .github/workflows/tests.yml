@@ -52,10 +52,8 @@ jobs:
             yarn build:test
 
       - name: Run Tests
-        uses: GabrielBB/xvfb-action@v1
-        with:
-          run: |
-            yarn test
+        run: |
+          yarn test
 
       - name: Test Examples
         if: ${{ matrix.os == 'ubuntu-latest' }}
