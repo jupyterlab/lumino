@@ -1190,7 +1190,7 @@ export namespace CommandRegistry {
       label.push('Meta');
     }
     label.push(parts.key);
-    return label.map(layout.formatKey).join(separator);
+    return label.map(k => layout.formatKey(k)).join(separator);
   }
 
   /**
@@ -1237,7 +1237,8 @@ export namespace CommandRegistry {
         mods.push(mod);
       }
     }
-    return mods.join(" ") + " " + key;
+    mods.push(key);
+    return mods.join(' ');
   }
 }
 
