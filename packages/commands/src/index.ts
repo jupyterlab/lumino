@@ -1172,33 +1172,23 @@ export namespace CommandRegistry {
    * Format a keystroke for display on the local system.
    */
   export function formatKeystroke(keystroke: string): string {
-    let mods = '';
+    let mods = [];
+    let separator = Platform.IS_MAC ? ' ' : '+';
     let parts = parseKeystroke(keystroke);
-    if (Platform.IS_MAC) {
-      if (parts.ctrl) {
-        mods += '\u2303 ';
-      }
-      if (parts.alt) {
-        mods += '\u2325 ';
-      }
-      if (parts.shift) {
-        mods += '\u21E7 ';
-      }
-      if (parts.cmd) {
-        mods += '\u2318 ';
-      }
-    } else {
-      if (parts.ctrl) {
-        mods += 'Ctrl+';
-      }
-      if (parts.alt) {
-        mods += 'Alt+';
-      }
-      if (parts.shift) {
-        mods += 'Shift+';
-      }
+    if (parts.ctrl) {
+      mods.push('Ctrl');
     }
-    return mods + parts.key;
+    if (parts.alt) {
+      mods.push('Alt');
+    }
+    if (parts.shift) {
+      mods.push('Shift');
+    }
+    if (Platform.IS_MAC && parts.cmd) {
+      mods.push('Cmd');
+    }
+    mods.push(parts.key);
+    return mods.map(Private.formatKey).join(separator);
   }
 
   /**
@@ -1228,20 +1218,21 @@ export namespace CommandRegistry {
     if (!key || layout.isModifierKey(key)) {
       return '';
     }
-    let mods = '';
+    let mods = [];
     if (event.ctrlKey) {
-      mods += 'Ctrl ';
+      mods.push('Ctrl');
     }
     if (event.altKey) {
-      mods += 'Alt ';
+      mods.push('Alt');
     }
     if (event.shiftKey) {
-      mods += 'Shift ';
+      mods.push('Shift');
     }
     if (event.metaKey && Platform.IS_MAC) {
-      mods += 'Cmd ';
+      mods.push('Cmd');
     }
-    return mods + key;
+    mods.push(key);
+    return mods.join(' ');
   }
 }
 
@@ -1437,6 +1428,45 @@ namespace Private {
   export function replayKeyEvent(event: KeyboardEvent): void {
     event.target!.dispatchEvent(cloneKeyboardEvent(event));
   }
+
+  export function formatKey(key: string): string {
+    if (Platform.IS_MAC) {
+      return MAC_DISPLAY.hasOwnProperty(key) ? MAC_DISPLAY[key] : key;
+    } else {
+      return WIN_DISPLAY.hasOwnProperty(key) ? WIN_DISPLAY[key] : key;
+    }
+  }
+
+  const MAC_DISPLAY: { [key: string]: string } = {
+    Backspace: '⌫',
+    Tab: '⇥',
+    Enter: '↩',
+    Shift: '⇧',
+    Ctrl: '⌃',
+    Alt: '⌥',
+    Escape: '⎋',
+    PageUp: '⇞',
+    PageDown: '⇟',
+    End: '↘',
+    Home: '↖',
+    ArrowLeft: '←',
+    ArrowUp: '↑',
+    ArrowRight: '→',
+    ArrowDown: '↓',
+    Delete: '⌦',
+    Cmd: '⌘'
+  };
+
+  const WIN_DISPLAY: { [key: string]: string } = {
+    Escape: 'Esc',
+    PageUp: 'Page Up',
+    PageDown: 'Page Down',
+    ArrowLeft: 'Left',
+    ArrowUp: 'Right',
+    ArrowRight: 'Up',
+    ArrowDown: 'Down',
+    Delete: 'Del'
+  };
 
   /**
    * A singleton empty string function.
