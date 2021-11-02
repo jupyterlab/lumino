@@ -26,6 +26,29 @@ const NULL_COMMAND = {
   }
 };
 
+function generateKeydown(options: any) {
+  let event = generate('keydown', options);
+  (event as any).getModifierState = (key: string) => {
+    let state = false;
+    switch (key) {
+      case 'Alt':
+        state = options.altKey || false;
+        break;
+      case 'Control':
+        state = options.ctrlKey || false;
+        break;
+      case 'Shift':
+        state = options.shiftKey || false;
+        break;
+      case 'Meta':
+        state = options.metaKey || false;
+        break;
+    }
+    return state;
+  };
+  return event;
+}
+
 describe('@lumino/commands', () => {
   describe('CommandRegistry', () => {
     let registry: CommandRegistry = null!;
@@ -581,7 +604,7 @@ describe('@lumino/commands', () => {
           selector: `#${elem.id}`,
           command: 'test'
         });
-        let event = generate('keydown', { keyCode: 59, ctrlKey: true });
+        let event = generateKeydown({ keyCode: 59, ctrlKey: true });
         elem.dispatchEvent(event);
         expect(called).to.equal(true);
       });
@@ -599,7 +622,7 @@ describe('@lumino/commands', () => {
           command: 'test'
         });
         binding.dispose();
-        let event = generate('keydown', { keyCode: 59, ctrlKey: true });
+        let event = generateKeydown({ keyCode: 59, ctrlKey: true });
         elem.dispatchEvent(event);
         expect(called).to.equal(false);
       });
@@ -641,7 +664,7 @@ describe('@lumino/commands', () => {
           selector: `#${elem.id}`,
           command: 'test'
         });
-        let event = generate('keydown', { keyCode: 59, ctrlKey: true });
+        let event = generateKeydown({ keyCode: 59, ctrlKey: true });
         elem.dispatchEvent(event);
         expect(called).to.equal(true);
       });
@@ -659,7 +682,7 @@ describe('@lumino/commands', () => {
           command: 'test'
         });
         parent.setAttribute('data-lm-suppress-shortcuts', 'true');
-        let event = generate('keydown', { keyCode: 59, ctrlKey: true });
+        let event = generateKeydown({ keyCode: 59, ctrlKey: true });
         elem.dispatchEvent(event);
         expect(called).to.equal(false);
       });
@@ -676,7 +699,7 @@ describe('@lumino/commands', () => {
           selector: `#${elem.id}`,
           command: 'test'
         });
-        let event = generate('keydown', { keyCode: 45, ctrlKey: true });
+        let event = generateKeydown({ keyCode: 45, ctrlKey: true });
         elem.dispatchEvent(event);
         expect(called).to.equal(false);
       });
@@ -693,8 +716,8 @@ describe('@lumino/commands', () => {
           selector: `#${elem.id}`,
           command: 'test'
         });
-        let eventAlt = generate('keydown', { keyCode: 83, altKey: true });
-        let eventShift = generate('keydown', { keyCode: 83, shiftKey: true });
+        let eventAlt = generateKeydown({ keyCode: 83, altKey: true });
+        let eventShift = generateKeydown({ keyCode: 83, shiftKey: true });
         elem.dispatchEvent(eventAlt);
         expect(count).to.equal(0);
         elem.dispatchEvent(eventShift);
@@ -713,17 +736,17 @@ describe('@lumino/commands', () => {
           selector: `#${elem.id}`,
           command: 'test'
         });
-        let eventK = generate('keydown', { keyCode: 75, ctrlKey: true });
-        let eventL = generate('keydown', { keyCode: 76, ctrlKey: true });
+        let eventK = generateKeydown({ keyCode: 75, ctrlKey: true });
+        let eventL = generateKeydown({ keyCode: 76, ctrlKey: true });
         elem.dispatchEvent(eventK);
         expect(count).to.equal(0);
         elem.dispatchEvent(eventL);
         expect(count).to.equal(1);
-        elem.dispatchEvent(generate('keydown', eventL)); // Don't reuse; clone.
+        elem.dispatchEvent(generateKeydown(eventL)); // Don't reuse; clone.
         expect(count).to.equal(1);
-        elem.dispatchEvent(generate('keydown', eventK)); // Don't reuse; clone.
+        elem.dispatchEvent(generateKeydown(eventK)); // Don't reuse; clone.
         expect(count).to.equal(1);
-        elem.dispatchEvent(generate('keydown', eventL)); // Don't reuse; clone.
+        elem.dispatchEvent(generateKeydown(eventL)); // Don't reuse; clone.
         expect(count).to.equal(2);
       });
 
@@ -739,7 +762,7 @@ describe('@lumino/commands', () => {
           selector: '.inaccessible-scope',
           command: 'test'
         });
-        let event = generate('keydown', { keyCode: 80, shiftKey: true });
+        let event = generateKeydown({ keyCode: 80, shiftKey: true });
         expect(count).to.equal(0);
         elem.dispatchEvent(event);
         expect(count).to.equal(0);
@@ -757,7 +780,7 @@ describe('@lumino/commands', () => {
           selector: `#${elem.id}`,
           command: 'test'
         });
-        let event = generate('keydown', { keyCode: 17 });
+        let event = generateKeydown({ keyCode: 17 });
         expect(count).to.equal(0);
         elem.dispatchEvent(event);
         expect(count).to.equal(0);
@@ -786,8 +809,8 @@ describe('@lumino/commands', () => {
           selector: `#${elem.id}`,
           command: 'test2'
         });
-        let event1 = generate('keydown', { keyCode: 83, ctrlKey: true });
-        let event2 = generate('keydown', { keyCode: 68, ctrlKey: true });
+        let event1 = generateKeydown({ keyCode: 83, ctrlKey: true });
+        let event2 = generateKeydown({ keyCode: 68, ctrlKey: true });
         expect(count1).to.equal(0);
         expect(count2).to.equal(0);
         elem.dispatchEvent(event1);
@@ -821,13 +844,13 @@ describe('@lumino/commands', () => {
           selector: `#${elem.id}`,
           command: 'test2'
         });
-        let event1 = generate('keydown', {
+        let event1 = generateKeydown({
           keyCode: 84,
           ctrlKey: true,
           altKey: true,
           shiftKey: true
         });
-        let event2 = generate('keydown', {
+        let event2 = generateKeydown({
           keyCode: 81,
           ctrlKey: true,
           altKey: true,
@@ -858,9 +881,10 @@ describe('@lumino/commands', () => {
           selector: `#${elem.id}`,
           command: 'test'
         });
-        let event1 = generate('keydown', { keyCode: 68 });
-        let event2 = generate('keydown', { keyCode: 69 });
+        let event1 = generateKeydown({ keyCode: 68 });
+        let event2 = generateKeydown({ keyCode: 69 });
         elem.dispatchEvent(event1);
+        console.log(codes);
         expect(codes.length).to.equal(0);
         elem.dispatchEvent(event2);
         expect(called).to.equal(false);
@@ -885,7 +909,7 @@ describe('@lumino/commands', () => {
           selector: `#${elem.id}`,
           command: 'test'
         });
-        let event = generate('keydown', { keyCode: 68 });
+        let event = generateKeydown({ keyCode: 68 });
         elem.dispatchEvent(event);
         expect(codes.length).to.equal(0);
         setTimeout(() => {
@@ -919,7 +943,7 @@ describe('@lumino/commands', () => {
           selector: `#${elem.id}`,
           command: 'test2'
         });
-        let event = generate('keydown', { keyCode: 68 });
+        let event = generateKeydown({ keyCode: 68 });
         elem.dispatchEvent(event);
         expect(called1).to.equal(false);
         expect(called2).to.equal(false);
@@ -954,7 +978,7 @@ describe('@lumino/commands', () => {
           selector: `#${elem.id}`,
           command: 'test2'
         });
-        let event = generate('keydown', { keyCode: 59, ctrlKey: true });
+        let event = generateKeydown({ keyCode: 59, ctrlKey: true });
         elem.dispatchEvent(event);
         expect(called1).to.equal(false);
         expect(called2).to.equal(true);
@@ -977,7 +1001,7 @@ describe('@lumino/commands', () => {
           selector: '#baz',
           command: 'test'
         });
-        let event = generate('keydown', { keyCode: 68 });
+        let event = generateKeydown({ keyCode: 68 });
         elem.dispatchEvent(event);
         expect(codes).to.deep.equal([68]);
         expect(called).to.equal(false);
@@ -1001,7 +1025,7 @@ describe('@lumino/commands', () => {
           selector: '#baz',
           command: 'test'
         });
-        let event = generate('keydown', { keyCode: 68 });
+        let event = generateKeydown({ keyCode: 68 });
         elem.dispatchEvent(event);
         expect(codes).to.deep.equal([68]);
         expect(called).to.equal(false);
@@ -1020,9 +1044,9 @@ describe('@lumino/commands', () => {
           selector: `#${elem.id}`,
           command: 'test'
         });
-        let eventK = generate('keydown', { keyCode: 75, ctrlKey: true });
-        let eventCtrl = generate('keydown', { keyCode: 17, ctrlKey: true });
-        let eventL = generate('keydown', { keyCode: 76, ctrlKey: true });
+        let eventK = generateKeydown({ keyCode: 75, ctrlKey: true });
+        let eventCtrl = generateKeydown({ keyCode: 17, ctrlKey: true });
+        let eventL = generateKeydown({ keyCode: 76, ctrlKey: true });
         elem.dispatchEvent(eventK);
         expect(count).to.equal(0);
         elem.dispatchEvent(eventCtrl); // user presses Ctrl again - this should not break the sequence
@@ -1043,10 +1067,10 @@ describe('@lumino/commands', () => {
           selector: `#${elem.id}`,
           command: 'test'
         });
-        let eventShift = generate('keydown', { keyCode: 16, shiftlKey: true });
-        let eventK = generate('keydown', { keyCode: 75, shiftKey: true });
-        let eventCtrl = generate('keydown', { keyCode: 17, ctrlKey: true });
-        let eventL = generate('keydown', { keyCode: 76, ctrlKey: true });
+        let eventShift = generateKeydown({ keyCode: 16, shiftlKey: true });
+        let eventK = generateKeydown({ keyCode: 75, shiftKey: true });
+        let eventCtrl = generateKeydown({ keyCode: 17, ctrlKey: true });
+        let eventL = generateKeydown({ keyCode: 76, ctrlKey: true });
         elem.dispatchEvent(eventShift);
         expect(count).to.equal(0);
         elem.dispatchEvent(eventK);
@@ -1107,7 +1131,7 @@ describe('@lumino/commands', () => {
 
     describe('.keystrokeForKeydownEvent()', () => {
       it('should create a normalized keystroke', () => {
-        let event = generate('keydown', { ctrlKey: true, keyCode: 83 });
+        let event = generateKeydown({ ctrlKey: true, keyCode: 83 });
         let keystroke = CommandRegistry.keystrokeForKeydownEvent(
           event as KeyboardEvent
         );
@@ -1115,7 +1139,7 @@ describe('@lumino/commands', () => {
       });
 
       it('should handle multiple modifiers', () => {
-        let event = generate('keydown', {
+        let event = generateKeydown({
           ctrlKey: true,
           altKey: true,
           shiftKey: true,
@@ -1128,7 +1152,7 @@ describe('@lumino/commands', () => {
       });
 
       it('should fail on an invalid shortcut', () => {
-        let event = generate('keydown', { keyCode: -1 });
+        let event = generateKeydown({ keyCode: -1 });
         let keystroke = CommandRegistry.keystrokeForKeydownEvent(
           event as KeyboardEvent
         );
@@ -1136,7 +1160,7 @@ describe('@lumino/commands', () => {
       });
 
       it('should return nothing for keys that are marked as modifier in keyboard layout', () => {
-        let event = generate('keydown', { keyCode: 17, ctrlKey: true });
+        let event = generateKeydown({ keyCode: 17, ctrlKey: true });
         let keystroke = CommandRegistry.keystrokeForKeydownEvent(
           event as KeyboardEvent
         );
