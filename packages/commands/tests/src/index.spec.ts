@@ -1068,6 +1068,11 @@ describe('@lumino/commands', () => {
         expect(parts.key).to.equal('S');
       });
 
+      it('should preserve arrow names in key without formatting', () => {
+        let parts = CommandRegistry.parseKeystroke('ArrowRight');
+        expect(parts.key).to.equal('ArrowRight');
+      });
+
       it('should be a tolerant parse', () => {
         let parts = CommandRegistry.parseKeystroke('G Ctrl Shift S Shift K');
         expect(parts.cmd).to.equal(false);
@@ -1075,6 +1080,26 @@ describe('@lumino/commands', () => {
         expect(parts.alt).to.equal(false);
         expect(parts.shift).to.equal(true);
         expect(parts.key).to.equal('K');
+      });
+    });
+
+    describe('.formatKeystroke()', () => {
+      it('should prepend modifiers', () => {
+        let label = CommandRegistry.formatKeystroke('Ctrl Alt Shift S');
+        if (Platform.IS_MAC) {
+          expect(label).to.equal('\u2303 \u2325 \u21E7 S');
+        } else {
+          expect(label).to.equal('Ctrl+Alt+Shift+S');
+        }
+      });
+
+      it('should format arrow', () => {
+        let label = CommandRegistry.formatKeystroke('Alt ArrowDown');
+        if (Platform.IS_MAC) {
+          expect(label).to.equal('\u2325 \u2193');
+        } else {
+          expect(label).to.equal('Alt+Down');
+        }
       });
     });
 
