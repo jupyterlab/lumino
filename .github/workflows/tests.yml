@@ -53,13 +53,6 @@ jobs:
         run: |
           yarn run test:${{ matrix.browser }}
 
-      - name: Test Examples
-        run: |
-          set -eux
-          yarn minimize
-          yarn build:examples
-          yarn test:examples
-
   build:
     runs-on: ubuntu-latest
     steps:
@@ -101,6 +94,14 @@ jobs:
             set -eux
             yarn build
             yarn build:test
+
+      - name: Test Examples
+        shell: bash
+        run: |
+          set -eux
+          yarn minimize
+          yarn build:examples
+          yarn test:examples
 
       - name: Build Docs
         run: |
