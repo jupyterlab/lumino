@@ -42,13 +42,6 @@ jobs:
           npm install -g yarn
           yarn
 
-      - name: Check linters
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.browser == 'firefox-headless'}}
-        shell: bash
-        run: |
-            set -eux
-            yarn lint:check
-
       - name: Build Source
         shell: bash
         run: |
@@ -61,22 +54,61 @@ jobs:
           yarn run test:${{ matrix.browser }}
 
       - name: Test Examples
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.browser == 'firefox-headless'}}
         run: |
           set -eux
           yarn minimize
           yarn build:examples
           yarn test:examples
 
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+
+      # Cache yarn
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: Cache yarn
+        uses: actions/cache@v2
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          set -eux
+          npm install -g yarn
+          yarn
+
+      - name: Check linters
+        shell: bash
+        run: |
+            set -eux
+            yarn lint:check
+
+      - name: Build Source
+        shell: bash
+        run: |
+            set -eux
+            yarn build
+            yarn build:test
+
       - name: Build Docs
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.browser == 'firefox-headless'}}
         run: |
           set -eux
           yarn clean
           yarn docs
 
       - name: Publish with Verdaccio
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.browser == 'firefox-headless'}}
         run: |
           set -eux
           npm install -g verdaccio
