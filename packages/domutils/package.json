@@ -37,9 +37,11 @@
     "clean:test": "rimraf tests/build",
     "docs": "typedoc --options tdoptions.json src",
     "minimize": "terser dist/index.js -c -m --source-map \"content='dist/index.js.map',url='index.min.js.map'\" -o dist/index.min.js",
-    "test": "npm run test:firefox",
+    "test": "npm run test:firefox-headless",
     "test:chrome": "cd tests && karma start --browsers=Chrome",
+    "test:chrome-headless": "cd tests && karma start --browsers=ChromeHeadless",
     "test:firefox": "cd tests && karma start --browsers=Firefox",
+    "test:firefox-headless": "cd tests && karma start --browsers=FirefoxHeadless",
     "test:ie": "cd tests && karma start --browsers=IE",
     "watch": "tsc --build --watch"
   },

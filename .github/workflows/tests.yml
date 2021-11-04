@@ -8,7 +8,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        browser: [chrome-headless, firefox-headless]
+        exclude:
+          # macos and firefox-headless seems to consistently fail.
+          - os: macos-latest
+            browser: firefox-headless
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
@@ -37,8 +42,47 @@ jobs:
           npm install -g yarn
           yarn
 
+      - name: Build Source
+        shell: bash
+        run: |
+            set -eux
+            yarn build
+            yarn build:test
+
+      - name: Run Tests
+        run: |
+          yarn run test:${{ matrix.browser }}
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+
+      # Cache yarn
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: Cache yarn
+        uses: actions/cache@v2
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          set -eux
+          npm install -g yarn
+          yarn
+
       - name: Check linters
-        if: ${{ matrix.os == 'ubuntu-latest' }}
         shell: bash
         run: |
             set -eux
@@ -51,14 +95,8 @@ jobs:
             yarn build
             yarn build:test
 
-      - name: Run Tests
-        uses: GabrielBB/xvfb-action@v1
-        with:
-          run: |
-            yarn test
-
       - name: Test Examples
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        shell: bash
         run: |
           set -eux
           yarn minimize
@@ -66,14 +104,12 @@ jobs:
           yarn test:examples
 
       - name: Build Docs
-        if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
           set -eux
           yarn clean
           yarn docs
 
       - name: Publish with Verdaccio
-        if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
           set -eux
           npm install -g verdaccio
