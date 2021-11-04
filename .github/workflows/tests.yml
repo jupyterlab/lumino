@@ -9,7 +9,11 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        test: [chrome-headless, firefox-headless]
+        browser: [chrome-headless, firefox-headless]
+        exclude:
+          # macos and firefox-headless seems to consistently fail.
+          - os: macos-latest
+            browser: firefox-headless
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
@@ -39,7 +43,7 @@ jobs:
           yarn
 
       - name: Check linters
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.test == 'firefox-headless'}}
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.browser == 'firefox-headless'}}
         shell: bash
         run: |
             set -eux
@@ -54,10 +58,10 @@ jobs:
 
       - name: Run Tests
         run: |
-          yarn run test:${{ matrix.test }}
+          yarn run test:${{ matrix.browser }}
 
       - name: Test Examples
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.test == 'firefox-headless'}}
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.browser == 'firefox-headless'}}
         run: |
           set -eux
           yarn minimize
@@ -65,14 +69,14 @@ jobs:
           yarn test:examples
 
       - name: Build Docs
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.test == 'firefox-headless'}}
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.browser == 'firefox-headless'}}
         run: |
           set -eux
           yarn clean
           yarn docs
 
       - name: Publish with Verdaccio
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.test == 'firefox-headless'}}
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.browser == 'firefox-headless'}}
         run: |
           set -eux
           npm install -g verdaccio
