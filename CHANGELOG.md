@@ -2,6 +2,27 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2021.11.4
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/algorithm@1.9.0...6720e2482ac4cd7d7ee7918ecb33cb6a16642d99))
+
+### Enhancements made
+
+- Use composition to improve tab switch [#231](https://github.com/jupyterlab/lumino/pull/231) ([@fcollonval](https://github.com/fcollonval))
+
+### Other merged PRs
+
+- Run tests on macOS. [#259](https://github.com/jupyterlab/lumino/pull/259) ([@jasongrout](https://github.com/jasongrout))
+- Format keyboard shortcuts according to OS conventions [#258](https://github.com/jupyterlab/lumino/pull/258) ([@jasongrout](https://github.com/jasongrout))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2021-10-25&to=2021-11-04&type=c))
+
+[@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2021-10-25..2021-11-04&type=Issues) | [@jasongrout](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajasongrout+updated%3A2021-10-25..2021-11-04&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2021.10.25
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/algorithm@1.8.0...1ae240e236e596f8162a58c0289642ab4f392c52))
@@ -25,8 +46,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2021-09-30&to=2021-10-25&type=c))
 
 [@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2021-09-30..2021-10-25&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2021-09-30..2021-10-25&type=Issues) | [@hbcarlos](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ahbcarlos+updated%3A2021-09-30..2021-10-25&type=Issues) | [@martaszmit](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Amartaszmit+updated%3A2021-09-30..2021-10-25&type=Issues) | [@ph-ph](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aph-ph+updated%3A2021-09-30..2021-10-25&type=Issues) | [@PlatinumCD](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3APlatinumCD+updated%3A2021-09-30..2021-10-25&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Awelcome+updated%3A2021-09-30..2021-10-25&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2021.9.30
 
