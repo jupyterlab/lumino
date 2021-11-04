@@ -270,7 +270,7 @@ describe('@lumino/widgets', () => {
       });
     });
 
-    describe('#datset', () => {
+    describe('#dataset', () => {
       it('should get the dataset of the widget node', () => {
         let widget = new Widget();
         expect(widget.dataset).to.equal(widget.node.dataset);
@@ -696,6 +696,52 @@ describe('@lumino/widgets', () => {
         widget.setHidden(false);
         expect(widget.isHidden).to.equal(false);
         expect(widget.messages).to.contain('after-show');
+        widget.dispose();
+      });
+    });
+
+    describe('#hiddenMode', () => {
+      it('should use class to hide the widget by default', () => {
+        let widget = new Widget();
+        Widget.attach(widget, document.body);
+        widget.hide();
+        expect(widget.hasClass('lm-mod-hidden')).to.equal(true);
+        expect(widget.node.style.transform).to.be.equal('');
+        expect(widget.node.style.willChange).to.not.equal('transform');
+        widget.dispose();
+      });
+
+      it('should use transformation if in "scale" mode', () => {
+        let widget = new Widget();
+        Widget.attach(widget, document.body);
+        widget.hiddenMode = Widget.HiddenMode.Scale;
+        widget.hide();
+        expect(widget.hasClass('lm-mod-hidden')).to.equal(false);
+        expect(widget.node.style.transform).to.equal('scale(0)');
+        expect(widget.node.style.willChange).to.equal('transform');
+        widget.dispose();
+      });
+
+      it('should remove class when switching from display to scale', () => {
+        let widget = new Widget();
+        Widget.attach(widget, document.body);
+        widget.hide();
+        widget.hiddenMode = Widget.HiddenMode.Scale;
+        expect(widget.hasClass('lm-mod-hidden')).to.equal(false);
+        expect(widget.node.style.transform).to.equal('scale(0)');
+        expect(widget.node.style.willChange).to.equal('transform');
+        widget.dispose();
+      });
+
+      it('should add class when switching from scale to display', () => {
+        let widget = new Widget();
+        Widget.attach(widget, document.body);
+        widget.hiddenMode = Widget.HiddenMode.Scale;
+        widget.hide();
+        widget.hiddenMode = Widget.HiddenMode.Display;
+        expect(widget.hasClass('lm-mod-hidden')).to.equal(true);
+        expect(widget.node.style.transform).to.equal('');
+        expect(widget.node.style.willChange).to.equal('auto');
         widget.dispose();
       });
     });

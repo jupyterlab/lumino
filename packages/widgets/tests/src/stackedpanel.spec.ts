@@ -31,6 +31,54 @@ describe('@lumino/widgets', () => {
       });
     });
 
+    describe('hiddenMode', () => {
+      let panel: StackedPanel;
+      let widgets: Widget[] = [];
+
+      beforeEach(() => {
+        panel = new StackedPanel();
+
+        // Create two stacked widgets
+        widgets.push(new Widget());
+        panel.addWidget(widgets[0]);
+        widgets.push(new Widget());
+        panel.addWidget(widgets[1]);
+      });
+
+      afterEach(() => {
+        panel.dispose();
+      });
+
+      it("should be 'display' mode by default", () => {
+        expect(panel.hiddenMode).to.equal(Widget.HiddenMode.Display);
+      });
+
+      it("should switch to 'scale'", () => {
+        panel.hiddenMode = Widget.HiddenMode.Scale;
+
+        expect(widgets[0].hiddenMode).to.equal(Widget.HiddenMode.Scale);
+        expect(widgets[1].hiddenMode).to.equal(Widget.HiddenMode.Scale);
+      });
+
+      it("should switch to 'display'", () => {
+        widgets[0].hiddenMode = Widget.HiddenMode.Scale;
+
+        panel.hiddenMode = Widget.HiddenMode.Scale;
+        panel.hiddenMode = Widget.HiddenMode.Display;
+
+        expect(widgets[0].hiddenMode).to.equal(Widget.HiddenMode.Display);
+        expect(widgets[1].hiddenMode).to.equal(Widget.HiddenMode.Display);
+      });
+
+      it("should not set 'scale' if only one widget", () => {
+        panel.layout!.removeWidget(widgets[1]);
+
+        panel.hiddenMode = Widget.HiddenMode.Scale;
+
+        expect(widgets[0].hiddenMode).to.equal(Widget.HiddenMode.Display);
+      });
+    });
+
     describe('#widgetRemoved', () => {
       it('should be emitted when a widget is removed from a stacked panel', () => {
         let panel = new StackedPanel();

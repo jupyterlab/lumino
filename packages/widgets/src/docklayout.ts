@@ -53,6 +53,10 @@ export class DockLayout extends Layout {
     if (options.spacing !== undefined) {
       this._spacing = Utils.clampDimension(options.spacing);
     }
+    this._hiddenMode =
+      options.hiddenMode !== undefined
+        ? options.hiddenMode
+        : Widget.HiddenMode.Display;
   }
 
   /**
@@ -88,6 +92,30 @@ export class DockLayout extends Layout {
    * The renderer used by the dock layout.
    */
   readonly renderer: DockLayout.IRenderer;
+
+  /**
+   * The method for hiding child widgets.
+   *
+   * #### Notes
+   * If there is only one child widget, `Display` hiding mode will be used
+   * regardless of this setting.
+   */
+  get hiddenMode(): Widget.HiddenMode {
+    return this._hiddenMode;
+  }
+  set hiddenMode(v: Widget.HiddenMode) {
+    if (this._hiddenMode === v) {
+      return;
+    }
+    this._hiddenMode = v;
+    each(this.tabBars(), bar => {
+      if (bar.titles.length > 1) {
+        bar.titles.forEach(title => {
+          title.owner.hiddenMode = this._hiddenMode;
+        });
+      }
+    });
+  }
 
   /**
    * Get the inter-element spacing for the dock layout.
@@ -651,6 +679,13 @@ export class DockLayout extends Layout {
     // If there are multiple tabs, just remove the widget's tab.
     if (tabNode.tabBar.titles.length > 1) {
       tabNode.tabBar.removeTab(widget.title);
+      if (
+        this._hiddenMode === Widget.HiddenMode.Scale &&
+        tabNode.tabBar.titles.length == 1
+      ) {
+        const existingWidget = tabNode.tabBar.titles[0].owner;
+        existingWidget.hiddenMode = Widget.HiddenMode.Display;
+      }
       return;
     }
 
@@ -806,6 +841,22 @@ export class DockLayout extends Layout {
       index = refNode.tabBar.titles.indexOf(ref.title);
     } else {
       index = refNode.tabBar.currentIndex;
+    }
+
+    // Using transform create an additional layer in the pixel pipeline
+    // to limit the number of layer, it is set only if there is more than one widget.
+    if (
+      this._hiddenMode === Widget.HiddenMode.Scale &&
+      refNode.tabBar.titles.length > 0
+    ) {
+      if (refNode.tabBar.titles.length == 1) {
+        const existingWidget = refNode.tabBar.titles[0].owner;
+        existingWidget.hiddenMode = Widget.HiddenMode.Scale;
+      }
+
+      widget.hiddenMode = Widget.HiddenMode.Scale;
+    } else {
+      widget.hiddenMode = Widget.HiddenMode.Display;
     }
 
     // Insert the widget's tab relative to the target index.
@@ -1089,6 +1140,7 @@ export class DockLayout extends Layout {
   private _dirty = false;
   private _root: Private.LayoutNode | null = null;
   private _box: ElementExt.IBoxSizing | null = null;
+  private _hiddenMode: Widget.HiddenMode;
   private _items: Private.ItemMap = new Map<Widget, LayoutItem>();
 }
 
@@ -1100,6 +1152,13 @@ export namespace DockLayout {
    * An options object for creating a dock layout.
    */
   export interface IOptions {
+    /**
+     * The method for hiding widgets.
+     *
+     * The default is `Widget.HiddenMode.Display`.
+     */
+    hiddenMode?: Widget.HiddenMode;
+
     /**
      * The renderer to use for the dock layout.
      */

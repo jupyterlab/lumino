@@ -167,6 +167,47 @@ export class Widget implements IMessageHandler, IObservableDisposable {
   }
 
   /**
+   * Get the method for hiding the widget.
+   */
+  get hiddenMode(): Widget.HiddenMode {
+    return this._hiddenMode;
+  }
+
+  /**
+   * Set the method for hiding the widget.
+   */
+  set hiddenMode(value: Widget.HiddenMode) {
+    if (this._hiddenMode === value) {
+      return;
+    }
+    this._hiddenMode = value;
+    switch (value) {
+      case Widget.HiddenMode.Display:
+        this.node.style.willChange = 'auto';
+        break;
+      case Widget.HiddenMode.Scale:
+        this.node.style.willChange = 'transform';
+        break;
+    }
+
+    if (this.isHidden) {
+      if (value === Widget.HiddenMode.Display) {
+        this.addClass('lm-mod-hidden');
+        /* <DEPRECATED> */
+        this.addClass('p-mod-hidden');
+        /* </DEPRECATED> */
+        this.node.style.transform = '';
+      } else {
+        this.node.style.transform = 'scale(0)';
+        this.removeClass('lm-mod-hidden');
+        /* <DEPRECATED> */
+        this.removeClass('p-mod-hidden');
+        /* </DEPRECATED> */
+      }
+    }
+  }
+
+  /**
    * Get the parent of the widget.
    */
   get parent(): Widget | null {
@@ -389,10 +430,16 @@ export class Widget implements IMessageHandler, IObservableDisposable {
       MessageLoop.sendMessage(this, Widget.Msg.BeforeShow);
     }
     this.clearFlag(Widget.Flag.IsHidden);
-    this.removeClass('lm-mod-hidden');
-    /* <DEPRECATED> */
-    this.removeClass('p-mod-hidden');
-    /* </DEPRECATED> */
+    this.node.removeAttribute('aria-hidden');
+    if (this.hiddenMode === Widget.HiddenMode.Display) {
+      this.removeClass('lm-mod-hidden');
+      /* <DEPRECATED> */
+      this.removeClass('p-mod-hidden');
+      /* </DEPRECATED> */
+    } else {
+      this.node.style.transform = '';
+    }
+
     if (this.isAttached && (!this.parent || this.parent.isVisible)) {
       MessageLoop.sendMessage(this, Widget.Msg.AfterShow);
     }
@@ -418,10 +465,16 @@ export class Widget implements IMessageHandler, IObservableDisposable {
       MessageLoop.sendMessage(this, Widget.Msg.BeforeHide);
     }
     this.setFlag(Widget.Flag.IsHidden);
-    this.addClass('lm-mod-hidden');
-    /* <DEPRECATED> */
-    this.addClass('p-mod-hidden');
-    /* </DEPRECATED> */
+    this.node.setAttribute('aria-hidden', 'true');
+    if (this.hiddenMode === Widget.HiddenMode.Display) {
+      this.addClass('lm-mod-hidden');
+      /* <DEPRECATED> */
+      this.addClass('p-mod-hidden');
+      /* </DEPRECATED> */
+    } else {
+      this.node.style.transform = 'scale(0)';
+    }
+
     if (this.isAttached && (!this.parent || this.parent.isVisible)) {
       MessageLoop.sendMessage(this, Widget.Msg.AfterHide);
     }
@@ -707,6 +760,7 @@ export class Widget implements IMessageHandler, IObservableDisposable {
   private _layout: Layout | null = null;
   private _parent: Widget | null = null;
   private _disposed = new Signal<this, void>(this);
+  private _hiddenMode: Widget.HiddenMode = Widget.HiddenMode.Display;
 }
 
 /**
@@ -734,6 +788,35 @@ export namespace Widget {
      * value is ignored.
      */
     tag?: keyof HTMLElementTagNameMap;
+  }
+
+  /**
+   * The method for hiding the widget.
+   *
+   * The default is Display.
+   *
+   * Using `Scale` will often increase performance as most browsers will not
+   * trigger style computation for the `transform` action. This should be used
+   * sparingly and tested, since increasing the number of composition layers
+   * may slow things down.
+   *
+   * To ensure the transformation does not trigger style recomputation, you
+   * may need to set the widget CSS style `will-change: transform`. This
+   * should be used only when needed as it may overwhelm the browser with a
+   * high number of layers. See
+   * https://developer.mozilla.org/en-US/docs/Web/CSS/will-change
+   */
+  export enum HiddenMode {
+    /**
+     * Set a `lm-mod-hidden` CSS class to hide the widget using `display:none`
+     * CSS from the standard Lumino CSS.
+     */
+    Display = 0,
+
+    /**
+     * Hide the widget by setting the `transform` to `'scale(0)'`.
+     */
+    Scale
   }
 
   /**
