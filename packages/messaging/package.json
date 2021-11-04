@@ -1,6 +1,6 @@
 {
   "name": "@lumino/messaging",
-  "version": "1.10.0",
+  "version": "1.10.1",
   "description": "Lumino Message Passing",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -46,8 +46,8 @@
     "watch": "tsc --build --watch"
   },
   "dependencies": {
-    "@lumino/algorithm": "^1.9.0",
-    "@lumino/collections": "^1.9.0"
+    "@lumino/algorithm": "^1.9.1",
+    "@lumino/collections": "^1.9.1"
   },
   "devDependencies": {
     "@microsoft/api-extractor": "^7.6.0",
