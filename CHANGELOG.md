@@ -4,7 +4,7 @@
 
 ## 2021.12.13
 
-([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2021.11.4...v2
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2021.11.4...44b44a408e0849857cc7a7e639b5b0be00ae61ec)
 
 - Enforce labels on PRs by @blink1073 in https://github.com/jupyterlab/lumino/pull/267
 - Fix transposed display names for arrow keys by @thomasjm in https://github.com/jupyterlab/lumino/pull/268
