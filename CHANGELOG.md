@@ -2,6 +2,12 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2021.12.13
+
+No merged PRs
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2021.11.4
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/algorithm@1.9.0...6720e2482ac4cd7d7ee7918ecb33cb6a16642d99))
@@ -23,8 +29,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2021-10-25&to=2021-11-04&type=c))
 
 [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2021-10-25..2021-11-04&type=Issues) | [@jasongrout](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajasongrout+updated%3A2021-10-25..2021-11-04&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2021.10.25
 
