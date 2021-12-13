@@ -1,17 +1,17 @@
 {
   "name": "@lumino/example-dockpanel",
-  "version": "0.19.0",
+  "version": "0.19.1",
   "private": true,
   "scripts": {
     "build": "tsc && webpack",
     "clean": "rimraf build"
   },
   "dependencies": {
-    "@lumino/commands": "^1.19.0",
-    "@lumino/default-theme": "^0.20.1",
+    "@lumino/commands": "^1.19.1",
+    "@lumino/default-theme": "^0.20.2",
     "@lumino/dragdrop": "^1.13.1",
     "@lumino/messaging": "^1.10.1",
-    "@lumino/widgets": "^1.30.0",
+    "@lumino/widgets": "^1.30.1",
     "es6-promise": "^4.0.5"
   },
   "devDependencies": {
