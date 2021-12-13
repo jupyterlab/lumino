@@ -11,14 +11,14 @@ done manually as follows:
 yarn
 yarn run update:versions
 git commit -a -m "Update versions"
-git push origin master
+git push origin main
 ```
 
 If you forget to bump the versions and need to undo:
 
 ```bash
 git revert <version-bump-commit-sha>
-git push origin master
+git push origin main
 push --delete origin <version-tag>
 ```
 
@@ -39,5 +39,5 @@ yarn run update:versions
 # Tag the release with the date, e.g. 2021.4.9
 #
 yarn run publish
-# Push any changes to master
+# Push any changes to main
 ```
