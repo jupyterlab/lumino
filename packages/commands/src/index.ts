@@ -1462,8 +1462,8 @@ namespace Private {
     PageUp: 'Page Up',
     PageDown: 'Page Down',
     ArrowLeft: 'Left',
-    ArrowUp: 'Right',
-    ArrowRight: 'Up',
+    ArrowUp: 'Up',
+    ArrowRight: 'Right',
     ArrowDown: 'Down',
     Delete: 'Del'
   };
