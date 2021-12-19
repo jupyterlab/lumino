@@ -9,8 +9,6 @@
 |----------------------------------------------------------------------------*/
 import { ArrayExt } from '@lumino/algorithm';
 
-import { ElementExt } from '@lumino/domutils';
-
 import { getKeyboardLayout } from '@lumino/keyboard';
 
 import { Message, MessageLoop } from '@lumino/messaging';
@@ -487,9 +485,15 @@ export class MenuBar extends Widget {
    * Handle the `'mousedown'` event for the menu bar.
    */
   private _evtMouseDown(event: MouseEvent): void {
+    const target = event.target;
+    // Bail early if mouse press was not above any element.
+    if (!(target instanceof Element)) {
+      return;
+    }
+
     // Bail if the mouse press was not on the menu bar. This can occur
     // when the document listener is installed for an active menu bar.
-    if (!ElementExt.hitTest(this.node, event.clientX, event.clientY)) {
+    if (!this.node.contains(target)) {
       return;
     }
 
@@ -501,7 +505,7 @@ export class MenuBar extends Widget {
 
     // Check if the mouse is over one of the menu items.
     let index = ArrayExt.findFirstIndex(this.contentNode.children, node => {
-      return ElementExt.hitTest(node, event.clientX, event.clientY);
+      return node.contains(target);
     });
 
     // If the press was not on an item, close the child menu.
@@ -529,9 +533,15 @@ export class MenuBar extends Widget {
    * Handle the `'mousemove'` event for the menu bar.
    */
   private _evtMouseMove(event: MouseEvent): void {
+    const target = event.target;
+    // Bail early if mouse not above any element.
+    if (!(target instanceof Element)) {
+      return;
+    }
+
     // Check if the mouse is over one of the menu items.
     let index = ArrayExt.findFirstIndex(this.contentNode.children, node => {
-      return ElementExt.hitTest(node, event.clientX, event.clientY);
+      return node.contains(target);
     });
 
     // Bail early if the active index will not change.

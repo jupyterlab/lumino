@@ -703,9 +703,15 @@ export class Menu extends Widget {
    * This listener is attached to the menu node.
    */
   private _evtMouseMove(event: MouseEvent): void {
+    const target = event.target;
+    // Bail early if mouse not above any element.
+    if (!(target instanceof Element)) {
+      return;
+    }
+
     // Hit test the item nodes for the item under the mouse.
     let index = ArrayExt.findFirstIndex(this.contentNode.children, node => {
-      return ElementExt.hitTest(node, event.clientX, event.clientY);
+      return node.contains(target);
     });
 
     // Bail early if the mouse is already over the active index.
@@ -774,8 +780,10 @@ export class Menu extends Widget {
     }
 
     // If the mouse is over the child menu, cancel the close timer.
-    let { clientX, clientY } = event;
-    if (ElementExt.hitTest(this._childMenu.node, clientX, clientY)) {
+    if (
+      event.target instanceof Element &&
+      this._childMenu.node.contains(event.target)
+    ) {
       this._cancelCloseTimer();
       return;
     }
@@ -801,7 +809,7 @@ export class Menu extends Widget {
     // is not on a menu, the entire hierarchy is closed and the event
     // is allowed to propagate. This allows other code to act on the
     // event, such as focusing the clicked element.
-    if (Private.hitTestMenus(this, event.clientX, event.clientY)) {
+    if (Private.hitTestMenus(this, event)) {
       event.preventDefault();
       event.stopPropagation();
     } else {
@@ -1475,9 +1483,14 @@ namespace Private {
   /**
    * Hit test a menu hierarchy starting at the given root.
    */
-  export function hitTestMenus(menu: Menu, x: number, y: number): boolean {
+  export function hitTestMenus(menu: Menu, event: MouseEvent): boolean {
+    const target = event.target;
+    // Bail early if mouse not above any element.
+    if (!(target instanceof Element)) {
+      return false;
+    }
     for (let temp: Menu | null = menu; temp; temp = temp.childMenu) {
-      if (ElementExt.hitTest(temp.node, x, y)) {
+      if (temp.node.contains(target)) {
         return true;
       }
     }
