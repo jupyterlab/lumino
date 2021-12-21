@@ -18,13 +18,12 @@
     "S. Chris Colbert <sccolbert@gmail.com>",
     "Steven Silvester <steven.silvester@gmail.com>"
   ],
-  "main": "dist/index.js",
+  "main": "dist/index.node.js",
+  "browser": "dist/index.js",
   "jsdelivr": "dist/index.min.js",
   "unpkg": "dist/index.min.js",
   "module": "dist/index.es6",
-  "browser": {
-    "crypto": false
-  },
+  "module-node": "dist/index.node.es6",
   "types": "types/index.d.ts",
   "files": [
     "dist/*",
