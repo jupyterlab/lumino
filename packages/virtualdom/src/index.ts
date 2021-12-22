@@ -1349,7 +1349,10 @@ namespace Private {
 
       // Handle the simplest case of in-place text update first.
       if (oldVNode.type === 'text' && newVNode.type === 'text') {
-        currElem!.textContent = newVNode.content;
+        // Only update the textContent if it changed
+        if (currElem!.textContent !== newVNode.content) {
+          currElem!.textContent = newVNode.content;
+        }
         currElem = currElem!.nextSibling;
         continue;
       }
