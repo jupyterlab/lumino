@@ -14,6 +14,7 @@
     "build:examples": "lerna run build --scope \"@lumino/example-*\" --concurrency 1",
     "build:src": "lerna run build --scope \"@lumino/!(test-|example-)*\"  --concurrency 1",
     "build:test": "lerna run build:test",
+    "watch:src": "lerna run watch --scope \"@lumino/!(test-|example-)*\"  --parallel",
     "clean": "lerna run clean",
     "clean:examples": "lerna run clean --scope \"@lumino/example-*\"",
     "clean:src": "lerna run clean --scope \"@lumino/!(test-|example-)*\"",

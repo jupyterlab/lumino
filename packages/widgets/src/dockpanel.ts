@@ -44,6 +44,7 @@ export class DockPanel extends Widget {
     /* <DEPRECATED> */
     this.addClass('p-DockPanel');
     /* </DEPRECATED> */
+    this._document = options.document || document;
     this._mode = options.mode || 'multiple-document';
     this._renderer = options.renderer || DockPanel.defaultRenderer;
     this._edges = options.edges || Private.DEFAULT_EDGES;
@@ -736,7 +737,7 @@ export class DockPanel extends Widget {
 
     // Override the cursor and store the press data.
     let style = window.getComputedStyle(handle);
-    let override = Drag.overrideCursor(style.cursor!);
+    let override = Drag.overrideCursor(style.cursor!, this._document);
     this._pressData = { handle, deltaX, deltaY, override };
   }
 
@@ -1049,6 +1050,7 @@ export class DockPanel extends Widget {
 
     // Create the drag object to manage the drag-drop operation.
     this._drag = new Drag({
+      document: this._document,
       mimeData,
       dragImage,
       proposedAction: 'move',
@@ -1073,6 +1075,7 @@ export class DockPanel extends Widget {
   }
 
   private _edges: DockPanel.IEdges;
+  private _document: Document | ShadowRoot;
   private _mode: DockPanel.Mode;
   private _drag: Drag | null = null;
   private _renderer: DockPanel.IRenderer;
@@ -1093,6 +1096,13 @@ export namespace DockPanel {
    * An options object for creating a dock panel.
    */
   export interface IOptions {
+    /**
+     * The document to use with the dock panel.
+     *
+     * The default is the global `document` instance.
+     */
+
+    document?: Document | ShadowRoot;
     /**
      * The overlay to use with the dock panel.
      *

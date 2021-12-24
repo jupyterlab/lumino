@@ -132,6 +132,7 @@ export class Drag implements IDisposable {
    * @param options - The options for initializing the drag.
    */
   constructor(options: Drag.IOptions) {
+    this.document = options.document || document;
     this.mimeData = options.mimeData;
     this.dragImage = options.dragImage || null;
     this.proposedAction = options.proposedAction || 'copy';
@@ -166,6 +167,11 @@ export class Drag implements IDisposable {
    * The mime data for the drag object.
    */
   readonly mimeData: MimeData;
+
+  /**
+   * The target document for dragging events.
+   */
+  readonly document: Document | ShadowRoot;
 
   /**
    * The drag image element for the drag object.
@@ -444,7 +450,7 @@ export class Drag implements IDisposable {
     let prevElem = this._currentElement;
 
     // Find the current indicated element at the given position.
-    let currElem = document.elementFromPoint(event.clientX, event.clientY);
+    let currElem = this.document.elementFromPoint(event.clientX, event.clientY);
 
     // Update the current element reference.
     this._currentElement = currElem;
@@ -493,7 +499,11 @@ export class Drag implements IDisposable {
     style.position = 'fixed';
     style.top = `${clientY}px`;
     style.left = `${clientX}px`;
-    document.body.appendChild(this.dragImage);
+    const body =
+      this.document instanceof Document
+        ? this.document.body
+        : (this.document.firstElementChild as HTMLElement);
+    body.appendChild(this.dragImage);
   }
 
   /**
@@ -523,19 +533,19 @@ export class Drag implements IDisposable {
     switch (action) {
       case 'none':
         this._dropAction = action;
-        this._override = Drag.overrideCursor('no-drop');
+        this._override = Drag.overrideCursor('no-drop', this.document);
         break;
       case 'copy':
         this._dropAction = action;
-        this._override = Drag.overrideCursor('copy');
+        this._override = Drag.overrideCursor('copy', this.document);
         break;
       case 'link':
         this._dropAction = action;
-        this._override = Drag.overrideCursor('alias');
+        this._override = Drag.overrideCursor('alias', this.document);
         break;
       case 'move':
         this._dropAction = action;
-        this._override = Drag.overrideCursor('move');
+        this._override = Drag.overrideCursor('move', this.document);
         break;
     }
   }
@@ -633,6 +643,11 @@ export namespace Drag {
    */
   export interface IOptions {
     /**
+     * The root element for dragging DOM artifacts (defaults to document).
+     */
+    document?: Document | ShadowRoot;
+
+    /**
      * The populated mime data for the drag operation.
      */
     mimeData: MimeData;
@@ -719,19 +734,26 @@ export namespace Drag {
    * override.dispose();
    * ```
    */
-  export function overrideCursor(cursor: string): IDisposable {
+  export function overrideCursor(
+    cursor: string,
+    doc: Document | ShadowRoot = document
+  ): IDisposable {
     let id = ++overrideCursorID;
-    document.body.style.cursor = cursor;
-    document.body.classList.add('lm-mod-override-cursor');
+    const body =
+      doc instanceof Document
+        ? doc.body
+        : (doc.firstElementChild as HTMLElement);
+    body.style.cursor = cursor;
+    body.classList.add('lm-mod-override-cursor');
     /* <DEPRECATED> */
-    document.body.classList.add('p-mod-override-cursor');
+    body.classList.add('p-mod-override-cursor');
     /* </DEPRECATED> */
     return new DisposableDelegate(() => {
       if (id === overrideCursorID) {
-        document.body.style.cursor = '';
-        document.body.classList.remove('lm-mod-override-cursor');
+        body.style.cursor = '';
+        body.classList.remove('lm-mod-override-cursor');
         /* <DEPRECATED> */
-        document.body.classList.remove('p-mod-override-cursor');
+        body.classList.remove('p-mod-override-cursor');
         /* </DEPRECATED> */
       }
     });
@@ -985,21 +1007,26 @@ namespace Private {
     /* </DEPRECATED> */
 
     // If the current element is the document body, keep the original target.
-    if (currElem === document.body) {
+    const body =
+      drag.document instanceof Document
+        ? drag.document.body
+        : (drag.document.firstElementChild as HTMLElement);
+
+    if (currElem === body) {
       return currTarget;
     }
 
     // Dispatch a drag enter event on the document body.
     dragEvent = createDragEvent('lm-dragenter', drag, event, currTarget);
-    document.body.dispatchEvent(dragEvent);
+    body.dispatchEvent(dragEvent);
 
     /* <DEPRECATED> */
     dragEvent = createDragEvent('p-dragenter', drag, event, currTarget);
-    document.body.dispatchEvent(dragEvent);
+    body.dispatchEvent(dragEvent);
     /* </DEPRECATED> */
 
     // Ignore the event cancellation, and use the body as the new target.
-    return document.body;
+    return body;
   }
 
   /**
