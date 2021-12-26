@@ -53,6 +53,7 @@ export class DockLayout extends Layout {
     if (options.spacing !== undefined) {
       this._spacing = Utils.clampDimension(options.spacing);
     }
+    this._document = options.document || document;
     this._hiddenMode =
       options.hiddenMode !== undefined
         ? options.hiddenMode
@@ -1094,7 +1095,7 @@ export class DockLayout extends Layout {
    */
   private _createTabBar(): TabBar<Widget> {
     // Create the tab bar using the renderer.
-    let tabBar = this.renderer.createTabBar();
+    let tabBar = this.renderer.createTabBar(this._document);
 
     // Enforce necessary tab bar behavior.
     tabBar.orientation = 'horizontal';
@@ -1140,6 +1141,7 @@ export class DockLayout extends Layout {
   private _dirty = false;
   private _root: Private.LayoutNode | null = null;
   private _box: ElementExt.IBoxSizing | null = null;
+  private _document: Document | ShadowRoot;
   private _hiddenMode: Widget.HiddenMode;
   private _items: Private.ItemMap = new Map<Widget, LayoutItem>();
 }
@@ -1152,6 +1154,13 @@ export namespace DockLayout {
    * An options object for creating a dock layout.
    */
   export interface IOptions {
+    /**
+     * The document to use with the dock panel.
+     *
+     * The default is the global `document` instance.
+     */
+    document?: Document | ShadowRoot;
+
     /**
      * The method for hiding widgets.
      *
@@ -1181,7 +1190,7 @@ export namespace DockLayout {
      *
      * @returns A new tab bar for a dock layout.
      */
-    createTabBar(): TabBar<Widget>;
+    createTabBar(document?: Document | ShadowRoot): TabBar<Widget>;
 
     /**
      * Create a new handle node for use with a dock layout.
@@ -2184,7 +2193,7 @@ namespace Private {
     renderer: DockLayout.IRenderer
   ): TabLayoutNode {
     // Create the tab bar for the layout node.
-    let tabBar = renderer.createTabBar();
+    let tabBar = renderer.createTabBar(this._document);
 
     // Hide each widget and add it to the tab bar.
     each(config.widgets, widget => {

@@ -54,6 +54,7 @@ export class TabBar<T> extends Widget {
     /* </DEPRECATED> */
     this.contentNode.setAttribute('role', 'tablist');
     this.setFlag(Widget.Flag.DisallowLayout);
+    this._document = options.document || document;
     this.tabsMovable = options.tabsMovable || false;
     this.titlesEditable = options.titlesEditable || false;
     this.allowDeselect = options.allowDeselect || false;
@@ -155,6 +156,15 @@ export class TabBar<T> extends Widget {
    * The renderer used by the tab bar.
    */
   readonly renderer: TabBar.IRenderer<T>;
+
+  /**
+   * The document to use with the tab bar.
+   *
+   * The default is the global `document` instance.
+   */
+  get document(): Document | ShadowRoot {
+    return this._document;
+  }
 
   /**
    * Whether the tabs are movable by the user.
@@ -779,8 +789,8 @@ export class TabBar<T> extends Widget {
     };
 
     // Add the document mouse up listener.
-    document.addEventListener('mouseup', this, true); // <DEPRECATED>
-    document.addEventListener('pointerup', this, true);
+    this.document.addEventListener('mouseup', this, true); // <DEPRECATED>
+    this.document.addEventListener('pointerup', this, true);
 
     // Do nothing else if the middle button or add button is clicked.
     if (event.button === 1 || addButtonClicked) {
@@ -795,10 +805,10 @@ export class TabBar<T> extends Widget {
 
     // Add the extra listeners if the tabs are movable.
     if (this.tabsMovable) {
-      document.addEventListener('mousemove', this, true); // <DEPRECATED>
-      document.addEventListener('pointermove', this, true);
-      document.addEventListener('keydown', this, true);
-      document.addEventListener('contextmenu', this, true);
+      this.document.addEventListener('mousemove', this, true); // <DEPRECATED>
+      this.document.addEventListener('pointermove', this, true);
+      this.document.addEventListener('keydown', this, true);
+      this.document.addEventListener('contextmenu', this, true);
     }
 
     // Update the current index as appropriate.
@@ -916,12 +926,12 @@ export class TabBar<T> extends Widget {
     event.stopPropagation();
 
     // Remove the extra mouse event listeners.
-    document.removeEventListener('mousemove', this, true); // <DEPRECATED>
-    document.removeEventListener('mouseup', this, true); // <DEPRECATED>
-    document.removeEventListener('pointermove', this, true);
-    document.removeEventListener('pointerup', this, true);
-    document.removeEventListener('keydown', this, true);
-    document.removeEventListener('contextmenu', this, true);
+    this.document.removeEventListener('mousemove', this, true); // <DEPRECATED>
+    this.document.removeEventListener('mouseup', this, true); // <DEPRECATED>
+    this.document.removeEventListener('pointermove', this, true);
+    this.document.removeEventListener('pointerup', this, true);
+    this.document.removeEventListener('keydown', this, true);
+    this.document.removeEventListener('contextmenu', this, true);
 
     // Handle a release when the drag is not active.
     if (!data.dragActive) {
@@ -1051,12 +1061,12 @@ export class TabBar<T> extends Widget {
     this._dragData = null;
 
     // Remove the extra mouse listeners.
-    document.removeEventListener('mousemove', this, true); // <DEPRECATED>
-    document.removeEventListener('mouseup', this, true); // <DEPRECATED>
-    document.removeEventListener('pointermove', this, true);
-    document.removeEventListener('pointerup', this, true);
-    document.removeEventListener('keydown', this, true);
-    document.removeEventListener('contextmenu', this, true);
+    this.document.removeEventListener('mousemove', this, true); // <DEPRECATED>
+    this.document.removeEventListener('mouseup', this, true); // <DEPRECATED>
+    this.document.removeEventListener('pointermove', this, true);
+    this.document.removeEventListener('pointerup', this, true);
+    this.document.removeEventListener('keydown', this, true);
+    this.document.removeEventListener('contextmenu', this, true);
 
     // Indicate the drag has been aborted. This allows the mouse
     // event handlers to return early when the drag is canceled.
@@ -1227,6 +1237,7 @@ export class TabBar<T> extends Widget {
   private _currentIndex = -1;
   private _titles: Title<T>[] = [];
   private _orientation: TabBar.Orientation;
+  private _document: Document | ShadowRoot;
   private _titlesEditable: boolean = false;
   private _previousTitle: Title<T> | null = null;
   private _dragData: Private.IDragData | null = null;
@@ -1319,6 +1330,14 @@ export namespace TabBar {
    * An options object for creating a tab bar.
    */
   export interface IOptions<T> {
+    /**
+     * The document to use with the tab bar.
+     *
+     * The default is the global `document` instance.
+     */
+
+    document?: Document | ShadowRoot;
+
     /**
      * Name of the tab bar.
      *
