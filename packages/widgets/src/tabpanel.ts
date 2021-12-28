@@ -423,6 +423,13 @@ export namespace TabPanel {
    */
   export interface IOptions {
     /**
+     * The document to use with the tab panel.
+     *
+     * The default is the global `document` instance.
+     */
+    document?: Document | ShadowRoot;
+
+    /**
      * Whether the tabs are movable by the user.
      *
      * The default is `false`.

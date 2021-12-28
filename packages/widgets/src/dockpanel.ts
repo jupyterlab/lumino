@@ -69,6 +69,7 @@ export class DockPanel extends Widget {
 
     // Set up the dock layout for the panel.
     this.layout = new DockLayout({
+      document: this._document,
       renderer,
       spacing: options.spacing,
       hiddenMode: options.hiddenMode
@@ -723,12 +724,12 @@ export class DockPanel extends Widget {
     event.stopPropagation();
 
     // Add the extra document listeners.
-    document.addEventListener('keydown', this, true);
-    document.addEventListener('mouseup', this, true); // <DEPRECATED>
-    document.addEventListener('mousemove', this, true); // <DEPRECATED>
-    document.addEventListener('pointerup', this, true);
-    document.addEventListener('pointermove', this, true);
-    document.addEventListener('contextmenu', this, true);
+    this._document.addEventListener('keydown', this, true);
+    this._document.addEventListener('mouseup', this, true); // <DEPRECATED>
+    this._document.addEventListener('mousemove', this, true); // <DEPRECATED>
+    this._document.addEventListener('pointerup', this, true);
+    this._document.addEventListener('pointermove', this, true);
+    this._document.addEventListener('contextmenu', this, true);
 
     // Compute the offset deltas for the handle press.
     let rect = handle.getBoundingClientRect();
@@ -798,12 +799,12 @@ export class DockPanel extends Widget {
     this._pressData = null;
 
     // Remove the extra document listeners.
-    document.removeEventListener('keydown', this, true);
-    document.removeEventListener('mouseup', this, true); // <DEPRECATED>
-    document.removeEventListener('mousemove', this, true); // <DEPRECATED>
-    document.removeEventListener('pointerup', this, true);
-    document.removeEventListener('pointermove', this, true);
-    document.removeEventListener('contextmenu', this, true);
+    this._document.removeEventListener('keydown', this, true);
+    this._document.removeEventListener('mouseup', this, true); // <DEPRECATED>
+    this._document.removeEventListener('mousemove', this, true); // <DEPRECATED>
+    this._document.removeEventListener('pointerup', this, true);
+    this._document.removeEventListener('pointermove', this, true);
+    this._document.removeEventListener('contextmenu', this, true);
   }
 
   /**
@@ -922,7 +923,7 @@ export class DockPanel extends Widget {
    */
   private _createTabBar(): TabBar<Widget> {
     // Create the tab bar.
-    let tabBar = this._renderer.createTabBar();
+    let tabBar = this._renderer.createTabBar(this._document);
 
     // Set the generated tab bar property for the tab bar.
     Private.isGeneratedTabBarProperty.set(tabBar, true);
@@ -1399,8 +1400,8 @@ export namespace DockPanel {
      *
      * @returns A new tab bar for a dock panel.
      */
-    createTabBar(): TabBar<Widget> {
-      let bar = new TabBar<Widget>();
+    createTabBar(document?: Document | ShadowRoot): TabBar<Widget> {
+      let bar = new TabBar<Widget>({ document });
       bar.addClass('lm-DockPanel-tabBar');
       /* <DEPRECATED> */
       bar.addClass('p-DockPanel-tabBar');
