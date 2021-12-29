@@ -405,6 +405,9 @@ export class MenuBar extends Widget {
     for (let i = 0, n = menus.length; i < n; ++i) {
       let title = menus[i].title;
       let active = i === activeIndex;
+      if (active && menus[i].items.length == 0) {
+        active = false;
+      }
       content[i] = renderer.renderItem({
         title,
         active,
