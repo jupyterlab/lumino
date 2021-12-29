@@ -607,7 +607,9 @@ export class MenuBar extends Widget {
     let { left, bottom } = (itemNode as HTMLElement).getBoundingClientRect();
 
     // Open the new menu at the computed location.
-    newMenu.open(left, bottom, this._forceItemsPosition);
+    if (newMenu.items.length > 0) {
+      newMenu.open(left, bottom, this._forceItemsPosition);
+    }
   }
 
   /**
