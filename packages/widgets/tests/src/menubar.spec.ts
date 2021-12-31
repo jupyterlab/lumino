@@ -288,6 +288,16 @@ describe('@lumino/widgets', () => {
         expect(menu.isAttached).to.equal(false);
         bar.dispose();
       });
+
+      it('should be a no-op if the active menu is empty', () => {
+        let bar = new MenuBar();
+        let menu = new Menu({ commands });
+        bar.addMenu(menu);
+        bar.activeMenu = menu;
+        bar.openActiveMenu();
+        expect(menu.isAttached).to.equal(false);
+        bar.dispose();
+      });
     });
 
     describe('#addMenu()', () => {

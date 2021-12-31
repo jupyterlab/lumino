@@ -280,10 +280,15 @@ function main(): void {
   menu3.title.label = 'View';
   menu3.title.mnemonic = 0;
 
+  let emptyMenu = new Menu({ commands });
+  emptyMenu.title.label = 'Empty Menu';
+  emptyMenu.title.mnemonic = 0;
+
   let bar = new MenuBar();
   bar.addMenu(menu1);
   bar.addMenu(menu2);
   bar.addMenu(menu3);
+  bar.addMenu(emptyMenu);
   bar.id = 'menuBar';
 
   let palette = new CommandPalette({ commands });
