@@ -8,9 +8,9 @@
 
 ### Enhancements made
 
-- chore(Widget):  Simplify attach/detach sanity checking [#279](https://github.com/jupyterlab/lumino/pull/279) ([@GordonSmith](https://github.com/GordonSmith))
-- fix(TabBar):  Event forwarding fails when hosted in a ShadowRoot [#276](https://github.com/jupyterlab/lumino/pull/276) ([@GordonSmith](https://github.com/GordonSmith))
-- fix(DockPanel):  Drag and Drop fails when hosted in a ShadowRoot [#275](https://github.com/jupyterlab/lumino/pull/275) ([@GordonSmith](https://github.com/GordonSmith))
+- chore(Widget): Simplify attach/detach sanity checking [#279](https://github.com/jupyterlab/lumino/pull/279) ([@GordonSmith](https://github.com/GordonSmith))
+- fix(TabBar): Event forwarding fails when hosted in a ShadowRoot [#276](https://github.com/jupyterlab/lumino/pull/276) ([@GordonSmith](https://github.com/GordonSmith))
+- fix(DockPanel): Drag and Drop fails when hosted in a ShadowRoot [#275](https://github.com/jupyterlab/lumino/pull/275) ([@GordonSmith](https://github.com/GordonSmith))
 
 ### Bugs fixed
 
@@ -18,7 +18,7 @@
 
 ### Maintenance and upkeep improvements
 
-- chore(coreutils):  Refactor Node v Browser builds [#274](https://github.com/jupyterlab/lumino/pull/274) ([@GordonSmith](https://github.com/GordonSmith))
+- chore(coreutils): Refactor Node v Browser builds [#274](https://github.com/jupyterlab/lumino/pull/274) ([@GordonSmith](https://github.com/GordonSmith))
 - Update references to main branch (`master` → `main`) [#272](https://github.com/jupyterlab/lumino/pull/272) ([@krassowski](https://github.com/krassowski))
 
 ### Contributors to this release
