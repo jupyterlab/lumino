@@ -2,14 +2,39 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2022.1.10
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/application@1.27.1...68ba69cdf8233576f103f24caf8e3a47ca6c69f6))
+
+### Enhancements made
+
+- chore(Widget):  Simplify attach/detach sanity checking [#279](https://github.com/jupyterlab/lumino/pull/279) ([@GordonSmith](https://github.com/GordonSmith))
+- fix(TabBar):  Event forwarding fails when hosted in a ShadowRoot [#276](https://github.com/jupyterlab/lumino/pull/276) ([@GordonSmith](https://github.com/GordonSmith))
+- fix(DockPanel):  Drag and Drop fails when hosted in a ShadowRoot [#275](https://github.com/jupyterlab/lumino/pull/275) ([@GordonSmith](https://github.com/GordonSmith))
+
+### Bugs fixed
+
+- Prevent opening an empty menu [#277](https://github.com/jupyterlab/lumino/pull/277) ([@hbcarlos](https://github.com/hbcarlos))
+
+### Maintenance and upkeep improvements
+
+- chore(coreutils):  Refactor Node v Browser builds [#274](https://github.com/jupyterlab/lumino/pull/274) ([@GordonSmith](https://github.com/GordonSmith))
+- Update references to main branch (`master` → `main`) [#272](https://github.com/jupyterlab/lumino/pull/272) ([@krassowski](https://github.com/krassowski))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2021-12-13&to=2022-01-10&type=c))
+
+[@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2021-12-13..2022-01-10&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2021-12-13..2022-01-10&type=Issues) | [@GordonSmith](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3AGordonSmith+updated%3A2021-12-13..2022-01-10&type=Issues) | [@hbcarlos](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ahbcarlos+updated%3A2021-12-13..2022-01-10&type=Issues) | [@krassowski](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2021-12-13..2022-01-10&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2021.12.13
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2021.11.4...44b44a408e0849857cc7a7e639b5b0be00ae61ec)
 
 - Enforce labels on PRs by @blink1073 in https://github.com/jupyterlab/lumino/pull/267
 - Fix transposed display names for arrow keys by @thomasjm in https://github.com/jupyterlab/lumino/pull/268
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2021.11.4
 
