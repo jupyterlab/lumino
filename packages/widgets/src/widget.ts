@@ -1070,10 +1070,10 @@ export namespace Widget {
     if (widget.parent) {
       throw new Error('Cannot attach a child widget.');
     }
-    if (widget.isAttached || document.body.contains(widget.node)) {
+    if (widget.isAttached || widget.node.isConnected) {
       throw new Error('Widget is already attached.');
     }
-    if (!document.body.contains(host)) {
+    if (!host.isConnected) {
       throw new Error('Host is not attached.');
     }
     MessageLoop.sendMessage(widget, Widget.Msg.BeforeAttach);
@@ -1094,7 +1094,7 @@ export namespace Widget {
     if (widget.parent) {
       throw new Error('Cannot detach a child widget.');
     }
-    if (!widget.isAttached || !document.body.contains(widget.node)) {
+    if (!widget.isAttached || !widget.node.isConnected) {
       throw new Error('Widget is not attached.');
     }
     MessageLoop.sendMessage(widget, Widget.Msg.BeforeDetach);
