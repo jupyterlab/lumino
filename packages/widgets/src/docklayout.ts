@@ -343,10 +343,14 @@ export class DockLayout extends Layout {
 
     // Create the root node for the new config.
     if (mainConfig) {
-      this._root = Private.realizeAreaConfig(mainConfig, {
-        createTabBar: () => this._createTabBar(),
-        createHandle: () => this._createHandle()
-      });
+      this._root = Private.realizeAreaConfig(
+        mainConfig,
+        {
+          createTabBar: () => this._createTabBar(),
+          createHandle: () => this._createHandle()
+        },
+        this._document
+      );
     } else {
       this._root = null;
     }
@@ -1482,13 +1486,14 @@ namespace Private {
    */
   export function realizeAreaConfig(
     config: DockLayout.AreaConfig,
-    renderer: DockLayout.IRenderer
+    renderer: DockLayout.IRenderer,
+    document: Document | ShadowRoot
   ): LayoutNode {
     let node: LayoutNode;
     if (config.type === 'tab-area') {
-      node = realizeTabAreaConfig(config, renderer);
+      node = realizeTabAreaConfig(config, renderer, document);
     } else {
-      node = realizeSplitAreaConfig(config, renderer);
+      node = realizeSplitAreaConfig(config, renderer, document);
     }
     return node;
   }
@@ -2190,10 +2195,11 @@ namespace Private {
    */
   function realizeTabAreaConfig(
     config: DockLayout.ITabAreaConfig,
-    renderer: DockLayout.IRenderer
+    renderer: DockLayout.IRenderer,
+    document: Document | ShadowRoot
   ): TabLayoutNode {
     // Create the tab bar for the layout node.
-    let tabBar = renderer.createTabBar(this._document);
+    let tabBar = renderer.createTabBar(document);
 
     // Hide each widget and add it to the tab bar.
     each(config.widgets, widget => {
@@ -2214,7 +2220,8 @@ namespace Private {
    */
   function realizeSplitAreaConfig(
     config: DockLayout.ISplitAreaConfig,
-    renderer: DockLayout.IRenderer
+    renderer: DockLayout.IRenderer,
+    document: Document | ShadowRoot
   ): SplitLayoutNode {
     // Create the split layout node.
     let node = new SplitLayoutNode(config.orientation);
@@ -2222,7 +2229,7 @@ namespace Private {
     // Add each child to the layout node.
     each(config.children, (child, i) => {
       // Create the child data for the layout node.
-      let childNode = realizeAreaConfig(child, renderer);
+      let childNode = realizeAreaConfig(child, renderer, document);
       let sizer = createSizer(config.sizes[i]);
       let handle = renderer.createHandle();
 
