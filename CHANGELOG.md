@@ -2,6 +2,22 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2022.1.13
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/application@1.28.0...f7d36a8bac6c44ee9928ea918d3473e297853658))
+
+### Bugs fixed
+
+- fix(DockLayout):  Invalid use of "this" in private namespace [#281](https://github.com/jupyterlab/lumino/pull/281) ([@GordonSmith](https://github.com/GordonSmith))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2022-01-10&to=2022-01-13&type=c))
+
+[@GordonSmith](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3AGordonSmith+updated%3A2022-01-10..2022-01-13&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2022.1.10
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/application@1.27.1...68ba69cdf8233576f103f24caf8e3a47ca6c69f6))
@@ -26,8 +42,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2021-12-13&to=2022-01-10&type=c))
 
 [@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2021-12-13..2022-01-10&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2021-12-13..2022-01-10&type=Issues) | [@GordonSmith](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3AGordonSmith+updated%3A2021-12-13..2022-01-10&type=Issues) | [@hbcarlos](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ahbcarlos+updated%3A2021-12-13..2022-01-10&type=Issues) | [@krassowski](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2021-12-13..2022-01-10&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2021.12.13
 
