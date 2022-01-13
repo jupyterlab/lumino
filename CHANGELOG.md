@@ -8,7 +8,7 @@
 
 ### Bugs fixed
 
-- fix(DockLayout):  Invalid use of "this" in private namespace [#281](https://github.com/jupyterlab/lumino/pull/281) ([@GordonSmith](https://github.com/GordonSmith))
+- fix(DockLayout): Invalid use of "this" in private namespace [#281](https://github.com/jupyterlab/lumino/pull/281) ([@GordonSmith](https://github.com/GordonSmith))
 
 ### Contributors to this release
 
