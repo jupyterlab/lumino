@@ -346,7 +346,8 @@ export class DockLayout extends Layout {
       this._root = Private.realizeAreaConfig(
         mainConfig,
         {
-          createTabBar: () => this._createTabBar(),
+          // Ignoring optional `document` argument as we must reuse `this._document`
+          createTabBar: (document?: Document | ShadowRoot) => this._createTabBar(),
           createHandle: () => this._createHandle()
         },
         this._document
