@@ -347,7 +347,8 @@ export class DockLayout extends Layout {
         mainConfig,
         {
           // Ignoring optional `document` argument as we must reuse `this._document`
-          createTabBar: (document?: Document | ShadowRoot) => this._createTabBar(),
+          createTabBar: (document?: Document | ShadowRoot) =>
+            this._createTabBar(),
           createHandle: () => this._createHandle()
         },
         this._document
