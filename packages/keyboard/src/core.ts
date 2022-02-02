@@ -8,6 +8,8 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
+import { SPECIAL_KEYS } from './special-keys';
+
 /**
  * An object which represents an abstract keyboard layout.
  */
@@ -89,12 +91,14 @@ export class KeycodeLayout implements IKeyboardLayout {
    */
   constructor(
     name: string,
-    codes: KeycodeLayout.CodeMap,
-    modifierKeys: string[] = []
+    keyCodes: KeycodeLayout.CodeMap,
+    modifierKeys: string[] = [],
+    codes: KeycodeLayout.ModernCodeMap = {}
   ) {
     this.name = name;
+    this._keyCodes = keyCodes;
     this._codes = codes;
-    this._keys = KeycodeLayout.extractKeys(codes);
+    this._keys = KeycodeLayout.extractKeys(keyCodes, codes);
     this._modifierKeys = KeycodeLayout.convertToKeySet(modifierKeys);
   }
 
@@ -120,7 +124,7 @@ export class KeycodeLayout implements IKeyboardLayout {
    * @returns `true` if the key is valid, `false` otherwise.
    */
   isValidKey(key: string): boolean {
-    return key in this._keys;
+    return key in this._keys || Private.isSpecialCharacter(key);
   }
 
   /**
@@ -143,11 +147,22 @@ export class KeycodeLayout implements IKeyboardLayout {
    *   the event does not represent a valid primary key.
    */
   keyForKeydownEvent(event: KeyboardEvent): string {
-    return this._codes[event.keyCode] || '';
+    if (
+      event.code !== '' &&
+      event.code !== 'Unidentified' &&
+      event.code in this._codes
+    ) {
+      return this._codes[event.code];
+    }
+    return (
+      this._keyCodes[event.keyCode] ||
+      (Private.isSpecialCharacter(event.key) ? event.key : '')
+    );
   }
 
   private _keys: KeycodeLayout.KeySet;
-  private _codes: KeycodeLayout.CodeMap;
+  private _keyCodes: KeycodeLayout.CodeMap;
+  private _codes: KeycodeLayout.ModernCodeMap;
   private _modifierKeys: KeycodeLayout.KeySet;
 }
 
@@ -158,7 +173,12 @@ export namespace KeycodeLayout {
   /**
    * A type alias for a keycode map.
    */
-  export type CodeMap = { readonly [code: number]: string };
+  export type CodeMap = { readonly [keyCode: number]: string };
+
+  /**
+   * A type alias for a code map.
+   */
+  export type ModernCodeMap = { readonly [code: string]: string };
 
   /**
    * A type alias for a key set.
@@ -168,12 +188,18 @@ export namespace KeycodeLayout {
   /**
    * Extract the set of keys from a code map.
    *
-   * @param codes - The code map of interest.
+   * @param code - The code map of interest.
    *
    * @returns A set of the keys in the code map.
    */
-  export function extractKeys(codes: CodeMap): KeySet {
+  export function extractKeys(
+    keyCodes: CodeMap,
+    codes: ModernCodeMap = {}
+  ): KeySet {
     let keys: any = Object.create(null);
+    for (let c in keyCodes) {
+      keys[keyCodes[c]] = true;
+    }
     for (let c in codes) {
       keys[codes[c]] = true;
     }
@@ -193,5 +219,21 @@ export namespace KeycodeLayout {
       keySet[keys[i]] = true;
     }
     return keySet;
+  }
+}
+
+/**
+ * The namespace for the module implementation details.
+ */
+namespace Private {
+  /**
+   * Whether the key value can be considered a special character.
+   *
+   * @param key - The key value that is to be considered
+   */
+  export function isSpecialCharacter(key: string): boolean {
+    // If the value starts with an uppercase latin character and is followed by one
+    // or more alphanumeric basic latin characters, it is likely a special key.
+    return SPECIAL_KEYS.has(key);
   }
 }
