@@ -1,0 +1,80 @@
+{
+  "name": "@lumino/keyboard-capture",
+  "version": "1.0.0",
+  "description": "Lumino Keyboard",
+  "homepage": "https://github.com/jupyterlab/lumino",
+  "bugs": {
+    "url": "https://github.com/jupyterlab/lumino/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jupyterlab/lumino.git"
+  },
+  "license": "BSD-3-Clause",
+  "author": "Vidar T. Fauske <vidartf@gmail.com>",
+  "contributors": [
+    "Vidar T. Fauske <vidartf@gmail.com>"
+  ],
+  "main": "dist/index.js",
+  "jsdelivr": "dist/index.min.js",
+  "unpkg": "dist/index.min.js",
+  "module": "dist/index.es6",
+  "types": "types/index.d.ts",
+  "files": [
+    "dist/*",
+    "src/*",
+    "types/*"
+  ],
+  "scripts": {
+    "api": "api-extractor run --local --verbose",
+    "build": "npm run build:src && rollup -c",
+    "build:src": "tsc --build",
+    "build:test": "tsc --build tests && cd tests && webpack",
+    "capture": "node lib/capture.js",
+    "clean": "rimraf ./lib && rimraf *.tsbuildinfo && rimraf ./types && rimraf ./dist",
+    "clean:test": "rimraf tests/build",
+    "docs": "typedoc --options tdoptions.json src",
+    "minimize": "terser dist/index.js -c -m --source-map \"content='dist/index.js.map',url='index.min.js.map'\" -o dist/index.min.js",
+    "test": "npm run test:firefox-headless",
+    "test:chrome": "cd tests && karma start --browsers=Chrome",
+    "test:chrome-headless": "cd tests && karma start --browsers=ChromeHeadless",
+    "test:firefox": "cd tests && karma start --browsers=Firefox",
+    "test:firefox-headless": "cd tests && karma start --browsers=FirefoxHeadless",
+    "test:ie": "cd tests && karma start --browsers=IE",
+    "watch": "tsc --build --watch"
+  },
+  "dependencies": {
+    "@lumino/keyboard": "^1.8.1",
+    "@lumino/signaling": "^1.10.1",
+    "@lumino/widgets": "^1.31.1"
+  },
+  "devDependencies": {
+    "@lumino/messaging": "^1.10.1",
+    "@microsoft/api-extractor": "^7.6.0",
+    "@types/chai": "^3.4.35",
+    "@types/mocha": "^2.2.39",
+    "chai": "^4.3.4",
+    "karma": "^6.3.4",
+    "karma-chrome-launcher": "^3.1.0",
+    "karma-firefox-launcher": "^2.1.1",
+    "karma-ie-launcher": "^1.0.0",
+    "karma-mocha": "^2.0.1",
+    "karma-mocha-reporter": "^2.2.5",
+    "mocha": "^9.0.3",
+    "rimraf": "^3.0.2",
+    "rollup": "^2.56.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-postcss": "^4.0.0",
+    "rollup-plugin-sourcemaps": "^0.6.3",
+    "simulate-event": "^1.4.0",
+    "terser": "^5.7.1",
+    "tslib": "^2.3.0",
+    "typedoc": "~0.15.0",
+    "typescript": "~3.6.0",
+    "webpack": "^4.41.3",
+    "webpack-cli": "^3.3.10"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

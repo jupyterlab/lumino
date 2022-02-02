@@ -52,18 +52,17 @@ describe('@lumino/keyboard', () => {
 
     describe('#keys()', () => {
       it('should get an array of all key values supported by the layout', () => {
-        let layout = new KeycodeLayout('ab-cd', { 100: 'F' }, [], { F4: 'F4' });
+        let layout = new KeycodeLayout('ab-cd', { 100: 'F' });
         let keys = layout.keys();
-        expect(keys.length).to.equal(2);
-        expect(keys[0]).to.equal('F', 'F4');
+        expect(keys.length).to.equal(1);
+        expect(keys[0]).to.equal('F');
       });
     });
 
     describe('#isValidKey()', () => {
       it('should test whether the key is valid for the layout', () => {
-        let layout = new KeycodeLayout('foo', { 100: 'F' }, [], { F4: 'F4' });
+        let layout = new KeycodeLayout('foo', { 100: 'F' });
         expect(layout.isValidKey('F')).to.equal(true);
-        expect(layout.isValidKey('F4')).to.equal(true);
         expect(layout.isValidKey('A')).to.equal(false);
       });
 
@@ -99,24 +98,6 @@ describe('@lumino/keyboard', () => {
         let event = generate('keydown', { keyCode: 101 });
         let key = layout.keyForKeydownEvent(event as KeyboardEvent);
         expect(key).to.equal('');
-      });
-
-      it('should get the key from a `code` value', () => {
-        let layout = new KeycodeLayout('foo', { 100: 'F' }, [], {
-          Escape: 'Escape'
-        });
-        let event = generate('keydown', { code: 'Escape' });
-        let key = layout.keyForKeydownEvent(event as KeyboardEvent);
-        expect(key).to.equal('Escape');
-      });
-
-      it('should fall back to keyCode for Unidentified', () => {
-        let layout = new KeycodeLayout('foo', { 100: 'F' }, [], {
-          Escape: 'Escape'
-        });
-        let event = generate('keydown', { code: 'Unidentified', keyCode: 100 });
-        let key = layout.keyForKeydownEvent(event as KeyboardEvent);
-        expect(key).to.equal('F');
       });
     });
 
@@ -159,7 +140,6 @@ describe('@lumino/keyboard', () => {
     it('should correctly detect modifier keys', () => {
       expect(EN_US.isModifierKey('Shift')).to.equal(true);
       expect(EN_US.isModifierKey('Ctrl')).to.equal(true);
-      expect(EN_US.isModifierKey('Control')).to.equal(true);
       expect(EN_US.isModifierKey('Alt')).to.equal(true);
       expect(EN_US.isModifierKey('Meta')).to.equal(true);
     });

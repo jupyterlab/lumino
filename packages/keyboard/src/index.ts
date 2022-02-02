@@ -114,12 +114,14 @@ export class KeycodeLayout implements IKeyboardLayout {
    */
   constructor(
     name: string,
-    codes: KeycodeLayout.CodeMap,
-    modifierKeys: string[] = []
+    keyCodes: KeycodeLayout.CodeMap,
+    modifierKeys: string[] = [],
+    codes: KeycodeLayout.ModernCodeMap = {}
   ) {
     this.name = name;
+    this._keyCodes = keyCodes;
     this._codes = codes;
-    this._keys = KeycodeLayout.extractKeys(codes);
+    this._keys = KeycodeLayout.extractKeys(keyCodes, codes);
     this._modifierKeys = KeycodeLayout.convertToKeySet(modifierKeys);
   }
 
@@ -168,11 +170,14 @@ export class KeycodeLayout implements IKeyboardLayout {
    *   the event does not represent a valid primary key.
    */
   keyForKeydownEvent(event: KeyboardEvent): string {
-    return this._codes[event.keyCode] || '';
+    return event.code !== '' && event.code !== 'Unidentified'
+      ? this._codes[event.code]
+      : this._keyCodes[event.keyCode] || '';
   }
 
   private _keys: KeycodeLayout.KeySet;
-  private _codes: KeycodeLayout.CodeMap;
+  private _keyCodes: KeycodeLayout.CodeMap;
+  private _codes: KeycodeLayout.ModernCodeMap;
   private _modifierKeys: KeycodeLayout.KeySet;
 }
 
@@ -183,7 +188,12 @@ export namespace KeycodeLayout {
   /**
    * A type alias for a keycode map.
    */
-  export type CodeMap = { readonly [code: number]: string };
+  export type CodeMap = { readonly [keyCode: number]: string };
+
+  /**
+   * A type alias for a code map.
+   */
+  export type ModernCodeMap = { readonly [code: string]: string };
 
   /**
    * A type alias for a key set.
@@ -197,8 +207,14 @@ export namespace KeycodeLayout {
    *
    * @returns A set of the keys in the code map.
    */
-  export function extractKeys(codes: CodeMap): KeySet {
+  export function extractKeys(
+    keyCodes: CodeMap,
+    codes: ModernCodeMap = {}
+  ): KeySet {
     let keys: any = Object.create(null);
+    for (let c in keyCodes) {
+      keys[keyCodes[c]] = true;
+    }
     for (let c in codes) {
       keys[codes[c]] = true;
     }
@@ -345,7 +361,119 @@ export const EN_US: IKeyboardLayout = new KeycodeLayout(
     222: "'",
     224: 'Meta' // firefox
   },
-  ['Shift', 'Ctrl', 'Alt', 'Meta'] // modifier keys
+  // TODO: Figure out Ctrl vs Control
+  [
+    'Alt',
+    'CapsLock',
+    'Ctrl',
+    'Control',
+    'Meta',
+    'NumLock',
+    'ScrollLock',
+    'Shift'
+  ], // modifier keys
+  {
+    AltLeft: 'Alt',
+    AltRight: 'Alt',
+    ArrowDown: 'ArrowDown',
+    ArrowLeft: 'ArrowLeft',
+    ArrowRight: 'ArrowRight',
+    ArrowUp: 'ArrowUp',
+    Backquote: '`',
+    Backslash: '\\',
+    Backspace: 'Backspace',
+    BracketLeft: '[',
+    BracketRight: ']',
+    CapsLock: 'CapsLock',
+    Comma: ',',
+    ControlLeft: 'Control',
+    ControlRight: 'Control',
+    Delete: 'Delete',
+    Digit0: '0',
+    Digit1: '1',
+    Digit2: '2',
+    Digit3: '3',
+    Digit4: '4',
+    Digit5: '5',
+    Digit6: '6',
+    Digit7: '7',
+    Digit8: '8',
+    Digit9: '9',
+    End: 'End',
+    Equal: '=',
+    Escape: 'Escape',
+    F1: 'F1',
+    F10: 'F10',
+    F11: 'F11',
+    F12: 'F12',
+    F2: 'F2',
+    F3: 'F3',
+    F4: 'F4',
+    F5: 'F5',
+    F6: 'F6',
+    F7: 'F7',
+    F8: 'F8',
+    F9: 'F9',
+    Home: 'Home',
+    Insert: 'Insert',
+    KeyA: 'A',
+    KeyB: 'B',
+    KeyC: 'C',
+    KeyD: 'D',
+    KeyE: 'E',
+    KeyF: 'F',
+    KeyG: 'G',
+    KeyH: 'H',
+    KeyI: 'I',
+    KeyJ: 'J',
+    KeyK: 'K',
+    KeyL: 'L',
+    KeyM: 'M',
+    KeyN: 'N',
+    KeyO: 'O',
+    KeyP: 'P',
+    KeyQ: 'Q',
+    KeyR: 'R',
+    KeyS: 'S',
+    KeyT: 'T',
+    KeyU: 'U',
+    KeyV: 'V',
+    KeyW: 'W',
+    KeyX: 'X',
+    KeyY: 'Y',
+    KeyZ: 'Z',
+    MetaLeft: 'Meta',
+    MetaRight: 'Meta',
+    Minus: '-',
+    NumLock: 'NumLock',
+    Numpad0: 'Insert',
+    Numpad1: 'End',
+    Numpad2: 'ArrowDown',
+    Numpad3: 'PageDown',
+    Numpad4: 'ArrowLeft',
+    Numpad5: 'Clear',
+    Numpad6: 'ArrowRight',
+    Numpad7: 'Home',
+    Numpad8: 'ArrowUp',
+    Numpad9: 'PageUp',
+    NumpadAdd: '+',
+    NumpadDecimal: 'Delete',
+    NumpadDivide: '/',
+    NumpadEnter: 'Enter',
+    NumpadMultiply: '*',
+    NumpadSubtract: '-',
+    PageDown: 'PageDown',
+    PageUp: 'PageUp',
+    Pause: 'Pause',
+    Period: '.',
+    PrintScreen: 'PrintScreen',
+    Quote: "'",
+    Semicolon: ';',
+    ShiftLeft: 'Shift',
+    ShiftRight: 'Shift',
+    Slash: '/',
+    Tab: 'Tab'
+  }
 );
 
 /**
