@@ -67,6 +67,11 @@ describe('@lumino/keyboard', () => {
         expect(layout.isValidKey('A')).to.equal(false);
       });
 
+      it('should treat unmodified special keys as valid', () => {
+        let layout = new KeycodeLayout('foo', { 100: 'F' }, [], { F4: 'F4' });
+        expect(layout.isValidKey('MediaPlayPause')).to.equal(true);
+      });
+
       it('should treat modifier keys as valid', () => {
         let layout = new KeycodeLayout('foo', { 100: 'F', 101: 'A' }, ['A']);
         expect(layout.isValidKey('A')).to.equal(true);
@@ -118,6 +123,29 @@ describe('@lumino/keyboard', () => {
         let key = layout.keyForKeydownEvent(event as KeyboardEvent);
         expect(key).to.equal('F');
       });
+
+      it('should treat special keys as valid', () => {
+        let layout = new KeycodeLayout('foo', { 100: 'F' }, [], { F4: 'F4' });
+        let event = generate('keydown', {
+          code: 'Unidentified',
+          ctrlKey: true,
+          key: 'MediaPlayPause',
+          keyCode: 170
+        });
+        let key = layout.keyForKeydownEvent(event as KeyboardEvent);
+        expect(key).to.equal('MediaPlayPause');
+      });
+
+      it('should use keyCode over special key value', () => {
+        let layout = new KeycodeLayout('foo', { 100: 'F' }, [], { F4: 'F4' });
+        let event = generate('keydown', {
+          code: 'Unidentified',
+          key: 'MediaPlayPause',
+          keyCode: 100
+        });
+        let key = layout.keyForKeydownEvent(event as KeyboardEvent);
+        expect(key).to.equal('F');
+      });
     });
 
     describe('.extractKeys()', () => {
@@ -151,14 +179,13 @@ describe('@lumino/keyboard', () => {
 
     it('should have modifier keys', () => {
       expect(EN_US.isValidKey('Shift')).to.equal(true);
-      expect(EN_US.isValidKey('Ctrl')).to.equal(true);
+      expect(EN_US.isValidKey('Control')).to.equal(true);
       expect(EN_US.isValidKey('Alt')).to.equal(true);
       expect(EN_US.isValidKey('Meta')).to.equal(true);
     });
 
     it('should correctly detect modifier keys', () => {
       expect(EN_US.isModifierKey('Shift')).to.equal(true);
-      expect(EN_US.isModifierKey('Ctrl')).to.equal(true);
       expect(EN_US.isModifierKey('Control')).to.equal(true);
       expect(EN_US.isModifierKey('Alt')).to.equal(true);
       expect(EN_US.isModifierKey('Meta')).to.equal(true);
