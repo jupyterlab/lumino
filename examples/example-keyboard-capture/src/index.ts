@@ -111,7 +111,7 @@ async function init(): Promise<void> {
 
   capture.dataAdded.connect((sender, entry) => {
     output.value = `Added ${entry.type}: ${
-      entry.code && `${entry.code} →`
+      entry.code ? `${entry.code} →` : ''
     } <kbd>${entry.key}</kbd>`;
   });
   output.action.connect((sender, action) => {
