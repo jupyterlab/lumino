@@ -351,6 +351,28 @@ export class TabBar<T> extends Widget {
   }
 
   /**
+   * Whether scrolling is enabled.
+   */
+  get scrollingEnabled(): boolean {
+    return this._scrollingEnabled;
+  }
+
+  set scrollingEnabled(value: boolean) {
+    // Do nothing if the value does not change.
+    if (this._scrollingEnabled === value) {
+      return;
+    }
+
+    this._scrollingEnabled = value;
+    if (value) {
+      this.node.classList.add('lm-mod-scrollable');
+    } else {
+      this.node.classList.add('lm-mod-scrollable');
+    }
+    this.maybeSwitchScrollButtons();
+  }
+
+  /**
    * A read-only array of the titles in the tab bar.
    */
   get titles(): ReadonlyArray<Title<T>> {
@@ -372,6 +394,20 @@ export class TabBar<T> extends Widget {
   }
 
   /**
+   * The tab bar content wrapper node.
+   *
+   * #### Notes
+   * This is the node which the content node and enables scrolling.
+   *
+   * Modifying this node directly can lead to undefined behavior.
+   */
+  get contentWrapperNode(): HTMLUListElement {
+    return this.node.getElementsByClassName(
+      'lm-TabBar-wrapper'
+    )[0] as HTMLUListElement;
+  }
+
+  /**
    * The tab bar add button node.
    *
    * #### Notes
@@ -382,6 +418,18 @@ export class TabBar<T> extends Widget {
   get addButtonNode(): HTMLDivElement {
     return this.node.getElementsByClassName(
       'lm-TabBar-addButton'
+    )[0] as HTMLDivElement;
+  }
+
+  get scrollBeforeButtonNode(): HTMLDivElement {
+    return this.node.getElementsByClassName(
+      'lm-TabBar-scrollBeforeButton'
+    )[0] as HTMLDivElement;
+  }
+
+  get scrollAfterButtonNode(): HTMLDivElement {
+    return this.node.getElementsByClassName(
+      'lm-TabBar-scrollAfterButton'
     )[0] as HTMLDivElement;
   }
 
@@ -606,6 +654,9 @@ export class TabBar<T> extends Widget {
         event.preventDefault();
         event.stopPropagation();
         break;
+      case 'scroll':
+        this._evtScroll(event);
+        break;
     }
   }
 
@@ -615,6 +666,7 @@ export class TabBar<T> extends Widget {
   protected onBeforeAttach(msg: Message): void {
     this.node.addEventListener('pointerdown', this);
     this.node.addEventListener('dblclick', this);
+    this.contentNode.addEventListener('scroll', this);
   }
 
   /**
@@ -623,6 +675,7 @@ export class TabBar<T> extends Widget {
   protected onAfterDetach(msg: Message): void {
     this.node.removeEventListener('pointerdown', this);
     this.node.removeEventListener('dblclick', this);
+    this.contentNode.removeEventListener('scroll', this);
     this._releaseMouse();
   }
 
@@ -641,6 +694,80 @@ export class TabBar<T> extends Widget {
       content[i] = renderer.renderTab({ title, current, zIndex });
     }
     VirtualDOM.render(content, this.contentNode);
+    this.maybeSwitchScrollButtons();
+  }
+
+  protected onResize(msg: Widget.ResizeMessage): void {
+    super.onResize(msg);
+    this.maybeSwitchScrollButtons();
+  }
+
+  protected maybeSwitchScrollButtons() {
+    const scrollBefore = this.scrollBeforeButtonNode;
+    const scrollAfter = this.scrollAfterButtonNode;
+    const state = this._scrollState;
+
+    if (this.scrollingEnabled && state.totalSize > state.displayedSize) {
+      // show both buttons
+      scrollBefore.classList.remove('lm-mod-hidden');
+      scrollAfter.classList.remove('lm-mod-hidden');
+    } else {
+      // hide both buttons
+      scrollBefore.classList.add('lm-mod-hidden');
+      scrollAfter.classList.add('lm-mod-hidden');
+    }
+    this.updateScrollingHints(state);
+  }
+
+  /**
+   * Adjust data reflecting the ability to scroll in each direction.
+   */
+  protected updateScrollingHints(scrollState: Private.IScrollState) {
+    const wrapper = this.contentWrapperNode;
+
+    if (!this.scrollingEnabled) {
+      delete wrapper.dataset['canScroll'];
+      return;
+    }
+
+    const canScrollBefore = scrollState.position != 0;
+    const canScrollAfter =
+      scrollState.position != scrollState.totalSize - scrollState.displayedSize;
+
+    if (canScrollBefore && canScrollAfter) {
+      wrapper.dataset['canScroll'] = 'both';
+    } else if (canScrollBefore) {
+      wrapper.dataset['canScroll'] = 'before';
+    } else if (canScrollAfter) {
+      wrapper.dataset['canScroll'] = 'after';
+    } else {
+      delete wrapper.dataset['canScroll'];
+    }
+  }
+
+  private get _scrollState(): Private.IScrollState {
+    const content = this.contentNode;
+    const contentRect = content.getBoundingClientRect();
+    const isHorizontal = this.orientation === 'horizontal';
+    const contentSize = isHorizontal ? contentRect.width : contentRect.height;
+    const scrollTotal = isHorizontal
+      ? content.scrollWidth
+      : content.scrollHeight;
+    const scroll = Math.round(
+      isHorizontal ? content.scrollLeft : content.scrollTop
+    );
+    return {
+      displayedSize: Math.round(contentSize),
+      totalSize: scrollTotal,
+      position: scroll
+    };
+  }
+
+  /**
+   * Handle the `'dblclick'` event for the tab bar.
+   */
+  private _evtScroll(event: Event): void {
+    this.updateScrollingHints(this._scrollState);
   }
 
   /**
@@ -720,6 +847,52 @@ export class TabBar<T> extends Widget {
     }
   }
 
+  protected beginScrolling(direction: '-' | '+') {
+    const initialRate = 5;
+    const rateIncrease = 1;
+    const maxRate = 20;
+    const intervalHandle = setInterval(() => {
+      if (!this._scrollData) {
+        this.stopScrolling();
+        return;
+      }
+      const rate = this._scrollData.rate;
+      const direction = this._scrollData.scrollDirection;
+      const change = (direction == '+' ? 1 : -1) * rate;
+      if (this.orientation == 'horizontal') {
+        this.contentNode.scrollLeft += change;
+      } else {
+        this.contentNode.scrollTop += change;
+      }
+      this._scrollData.rate = Math.min(
+        this._scrollData.rate + rateIncrease,
+        maxRate
+      );
+      const state = this._scrollState;
+      if (
+        (direction == '-' && state.position == 0) ||
+        (direction == '+' &&
+          state.totalSize == state.position + state.displayedSize)
+      ) {
+        this.stopScrolling();
+      }
+    }, 50);
+    this._scrollData = {
+      timerHandle: intervalHandle,
+      scrollDirection: direction,
+      rate: initialRate
+    };
+  }
+
+  protected stopScrolling() {
+    if (this._scrollData) {
+      clearInterval(this._scrollData.timerHandle);
+    }
+    this._scrollData = null;
+    const state = this._scrollState;
+    this.updateScrollingHints(state);
+  }
+
   /**
    * Handle the `'pointerdown'` event for the tab bar.
    */
@@ -739,6 +912,19 @@ export class TabBar<T> extends Widget {
       this.addButtonEnabled &&
       this.addButtonNode.contains(event.target as HTMLElement);
 
+    let scrollBeforeButtonClicked =
+      this.scrollingEnabled &&
+      this.scrollBeforeButtonNode.contains(event.target as HTMLElement);
+
+    let scrollAfterButtonClicked =
+      this.scrollingEnabled &&
+      this.scrollAfterButtonNode.contains(event.target as HTMLElement);
+
+    const anyButtonClicked =
+      addButtonClicked || scrollAfterButtonClicked || scrollBeforeButtonClicked;
+
+    const contentNode = this.contentNode;
+
     // Lookup the tab nodes.
     let tabs = this.contentNode.children;
 
@@ -747,8 +933,8 @@ export class TabBar<T> extends Widget {
       return ElementExt.hitTest(tab, event.clientX, event.clientY);
     });
 
-    // Do nothing if the press is not on a tab or the add button.
-    if (index === -1 && !addButtonClicked) {
+    // Do nothing if the press is not on a tab or any of the buttons.
+    if (index === -1 && !anyButtonClicked) {
       return;
     }
 
@@ -762,6 +948,10 @@ export class TabBar<T> extends Widget {
       index: index,
       pressX: event.clientX,
       pressY: event.clientY,
+      initialScrollPosition:
+        this.orientation == 'horizontal'
+          ? contentNode.scrollLeft
+          : contentNode.scrollTop,
       tabPos: -1,
       tabSize: -1,
       tabPressPos: -1,
@@ -779,6 +969,10 @@ export class TabBar<T> extends Widget {
 
     // Do nothing else if the middle button or add button is clicked.
     if (event.button === 1 || addButtonClicked) {
+      return;
+    }
+    if (scrollBeforeButtonClicked || scrollAfterButtonClicked) {
+      this.beginScrolling(scrollBeforeButtonClicked ? '-' : '+');
       return;
     }
 
@@ -882,8 +1076,24 @@ export class TabBar<T> extends Widget {
       }
     }
 
+    let overBeforeScrollButton =
+      this.scrollingEnabled &&
+      this.scrollBeforeButtonNode.contains(event.target as HTMLElement);
+
+    let overAfterScrollButton =
+      this.scrollingEnabled &&
+      this.scrollAfterButtonNode.contains(event.target as HTMLElement);
+
+    if (overBeforeScrollButton || overAfterScrollButton) {
+      // Start scrolling if the mouse is over scroll buttons
+      this.beginScrolling(overBeforeScrollButton ? '-' : '+');
+    } else {
+      // Stop scrolling if mouse is not over scroll buttons
+      this.stopScrolling();
+    }
+
     // Update the positions of the tabs.
-    Private.layoutTabs(tabs, data, event, this._orientation);
+    Private.layoutTabs(tabs, data, event, this._orientation, this._scrollState);
   }
 
   /**
@@ -916,6 +1126,10 @@ export class TabBar<T> extends Widget {
       // Clear the drag data.
       this._dragData = null;
 
+      if (this._scrollData) {
+        this.stopScrolling();
+        return;
+      }
       // Handle clicking the add button.
       let addButtonClicked =
         this.addButtonEnabled &&
@@ -967,7 +1181,7 @@ export class TabBar<T> extends Widget {
     }
 
     // Position the tab at its final resting position.
-    Private.finalizeTabPosition(data, this._orientation);
+    Private.finalizeTabPosition(data, this._orientation, this._scrollState);
 
     // Remove the dragging class from the tab so it can be transitioned.
     data.tab.classList.remove('lm-mod-dragging');
@@ -1207,7 +1421,9 @@ export class TabBar<T> extends Widget {
   private _titlesEditable: boolean = false;
   private _previousTitle: Title<T> | null = null;
   private _dragData: Private.IDragData | null = null;
+  private _scrollData: Private.IScrollData | null = null;
   private _addButtonEnabled: boolean = false;
+  private _scrollingEnabled: boolean = false;
   private _tabMoved = new Signal<this, TabBar.ITabMovedArgs<T>>(this);
   private _currentChanged = new Signal<this, TabBar.ICurrentChangedArgs<T>>(
     this
@@ -1710,6 +1926,33 @@ namespace Private {
   export const DETACH_THRESHOLD = 20;
 
   /**
+   * A struct which holds the scroll data for a tab bar.
+   */
+  export interface IScrollData {
+    timerHandle: number;
+    scrollDirection: '+' | '-';
+    rate: number;
+  }
+
+  /**
+   * A struct which holds the scroll state for a tab bar.
+   */
+  export interface IScrollState {
+    /**
+     * The size of the container where scrolling occurs (the visible part of the total).
+     */
+    displayedSize: number;
+    /**
+     * The total size of the content to be scrolled.
+     */
+    totalSize: number;
+    /**
+     * The current position (offset) of the scroll state.
+     */
+    position: number;
+  }
+
+  /**
    * A struct which holds the drag data for a tab bar.
    */
   export interface IDragData {
@@ -1727,6 +1970,11 @@ namespace Private {
      * The mouse press client X position.
      */
     pressX: number;
+
+    /**
+     * The initial scroll position
+     */
+    initialScrollPosition: number;
 
     /**
      * The mouse press client Y position.
@@ -1823,13 +2071,32 @@ namespace Private {
    */
   export function createNode(): HTMLDivElement {
     let node = document.createElement('div');
+    let scrollBefore = document.createElement('div');
+    scrollBefore.className =
+      'lm-TabBar-button lm-TabBar-scrollButton lm-TabBar-scrollBeforeButton lm-mod-hidden';
+    scrollBefore.setAttribute('role', 'button');
+    scrollBefore.innerText = '<';
+    let scrollAfter = document.createElement('div');
+    scrollAfter.className =
+      'lm-TabBar-button lm-TabBar-scrollButton lm-TabBar-scrollAfterButton lm-mod-hidden';
+    scrollAfter.setAttribute('role', 'button');
+    scrollAfter.innerText = '>';
+    node.appendChild(scrollBefore);
+
     let content = document.createElement('ul');
     content.setAttribute('role', 'tablist');
     content.className = 'lm-TabBar-content';
-    node.appendChild(content);
+
+    let wrapper = document.createElement('div');
+    wrapper.className = 'lm-TabBar-wrapper';
+    wrapper.appendChild(content);
+    node.appendChild(wrapper);
+
+    node.appendChild(scrollAfter);
 
     let add = document.createElement('div');
-    add.className = 'lm-TabBar-addButton lm-mod-hidden';
+    add.setAttribute('role', 'button');
+    add.className = 'lm-TabBar-button lm-TabBar-addButton lm-mod-hidden';
     node.appendChild(add);
     return node;
   }
@@ -1906,23 +2173,24 @@ namespace Private {
     tabs: HTMLCollection,
     data: IDragData,
     event: MouseEvent,
-    orientation: TabBar.Orientation
+    orientation: TabBar.Orientation,
+    scrollState: IScrollState
   ): void {
     // Compute the orientation-sensitive values.
     let pressPos: number;
     let localPos: number;
     let clientPos: number;
-    let clientSize: number;
+    const clientSize = scrollState.totalSize;
+    const scrollShift = scrollState.position - data.initialScrollPosition;
+
     if (orientation === 'horizontal') {
-      pressPos = data.pressX;
-      localPos = event.clientX - data.contentRect!.left;
+      pressPos = data.pressX - scrollShift;
+      localPos = event.clientX - data.contentRect!.left + scrollState.position;
       clientPos = event.clientX;
-      clientSize = data.contentRect!.width;
     } else {
-      pressPos = data.pressY;
-      localPos = event.clientY - data.contentRect!.top;
+      pressPos = data.pressY - scrollShift;
+      localPos = event.clientY - data.contentRect!.top + scrollState.position;
       clientPos = event.clientY;
-      clientSize = data.contentRect!.height;
     }
 
     // Compute the target data.
@@ -1964,15 +2232,10 @@ namespace Private {
    */
   export function finalizeTabPosition(
     data: IDragData,
-    orientation: TabBar.Orientation
+    orientation: TabBar.Orientation,
+    scrollState: IScrollState
   ): void {
-    // Compute the orientation-sensitive client size.
-    let clientSize: number;
-    if (orientation === 'horizontal') {
-      clientSize = data.contentRect!.width;
-    } else {
-      clientSize = data.contentRect!.height;
-    }
+    const clientSize = scrollState.totalSize;
 
     // Compute the ideal final tab position.
     let ideal: number;
