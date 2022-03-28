@@ -367,7 +367,7 @@ export class TabBar<T> extends Widget {
     if (value) {
       this.node.classList.add('lm-mod-scrollable');
     } else {
-      this.node.classList.add('lm-mod-scrollable');
+      this.node.classList.remove('lm-mod-scrollable');
     }
     this.maybeSwitchScrollButtons();
   }
@@ -694,7 +694,11 @@ export class TabBar<T> extends Widget {
       content[i] = renderer.renderTab({ title, current, zIndex });
     }
     VirtualDOM.render(content, this.contentNode);
+
     this.maybeSwitchScrollButtons();
+
+    // Scroll the current tab into view.
+    this.scrollCurrentIntoView();
   }
 
   protected onResize(msg: Widget.ResizeMessage): void {
@@ -702,6 +706,29 @@ export class TabBar<T> extends Widget {
     this.maybeSwitchScrollButtons();
   }
 
+  /**
+   * Scroll the current tab into view.
+   */
+  protected scrollCurrentIntoView() {
+    if (this.scrollingEnabled) {
+      const contentNode = this.contentNode;
+      const currentNode = contentNode.children.item(this.currentIndex);
+      if (currentNode) {
+        currentNode.scrollIntoView();
+        if (this.orientation == 'horizontal') {
+          contentNode.scrollTop = 0;
+        } else {
+          contentNode.scrollLeft = 0;
+        }
+      } else {
+        console.error('Current tab node not found');
+      }
+    }
+  }
+
+  /**
+   * Show/hide scroll buttons if needed.
+   */
   protected maybeSwitchScrollButtons() {
     const scrollBefore = this.scrollBeforeButtonNode;
     const scrollAfter = this.scrollAfterButtonNode;
@@ -1149,6 +1176,11 @@ export class TabBar<T> extends Widget {
 
       // Do nothing if the release is not on the original pressed tab.
       if (index !== data.index) {
+        return;
+      }
+
+      // Do nothing if neither press nor release was on a tab.
+      if (index === -1 && data.index === -1) {
         return;
       }
 
