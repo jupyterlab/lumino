@@ -801,12 +801,15 @@ export class TabBar<T> extends Widget {
   }
 
   /**
-   * Handle the `'dblclick'` event for the tab bar.
+   * Handle the `'scroll'` event for the tab bar.
    */
   private _evtScroll(event: Event): void {
     this.updateScrollingHints(this._scrollState);
   }
 
+  /**
+   * Handle the `'wheel'` event for the tab bar.
+   */
   private _evtWheel(event: WheelEvent): void {
     this.scrollBy(event.deltaY);
   }
@@ -888,6 +891,9 @@ export class TabBar<T> extends Widget {
     }
   }
 
+  /**
+   * Scroll by a fixed number of pixels (sign defines direction).
+   */
   protected scrollBy(change: number) {
     const orientation = this.orientation;
     const contentNode = this.contentNode;
@@ -903,6 +909,9 @@ export class TabBar<T> extends Widget {
     }
   }
 
+  /**
+   * Begin scrolling in given direction.
+   */
   protected beginScrolling(direction: '-' | '+') {
     // How many pixels should be scrolled per second initially?
     const initialRate = 150;
@@ -955,6 +964,9 @@ export class TabBar<T> extends Widget {
     }
   }
 
+  /**
+   * Stop scrolling which was started with `beginScrolling` method.
+   */
   protected stopScrolling() {
     if (!this._scrollData) {
       return;
