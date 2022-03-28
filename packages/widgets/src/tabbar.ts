@@ -636,15 +636,19 @@ export class TabBar<T> extends Widget {
   handleEvent(event: Event): void {
     switch (event.type) {
       case 'pointerdown':
-        this._evtPointerDown(event as PointerEvent);
+        this._lastMouseEvent = event as MouseEvent;
+        this._evtPointerDown(event as MouseEvent);
         break;
       case 'pointermove':
-        this._evtPointerMove(event as PointerEvent);
+        this._lastMouseEvent = event as MouseEvent;
+        this._evtPointerMove(event as MouseEvent);
         break;
       case 'pointerup':
-        this._evtPointerUp(event as PointerEvent);
+        this._lastMouseEvent = event as MouseEvent;
+        this._evtPointerUp(event as MouseEvent);
         break;
       case 'dblclick':
+        this._lastMouseEvent = event as MouseEvent;
         this._evtDblClick(event as MouseEvent);
         break;
       case 'keydown':
@@ -657,6 +661,10 @@ export class TabBar<T> extends Widget {
       case 'scroll':
         this._evtScroll(event);
         break;
+      case 'wheel':
+        this._evtWheel(event as WheelEvent);
+        event.preventDefault();
+        break;
     }
   }
 
@@ -667,6 +675,7 @@ export class TabBar<T> extends Widget {
     this.node.addEventListener('pointerdown', this);
     this.node.addEventListener('dblclick', this);
     this.contentNode.addEventListener('scroll', this);
+    this.contentNode.addEventListener('wheel', this);
   }
 
   /**
@@ -676,6 +685,7 @@ export class TabBar<T> extends Widget {
     this.node.removeEventListener('pointerdown', this);
     this.node.removeEventListener('dblclick', this);
     this.contentNode.removeEventListener('scroll', this);
+    this.contentNode.removeEventListener('wheel', this);
     this._releaseMouse();
   }
 
@@ -797,6 +807,10 @@ export class TabBar<T> extends Widget {
     this.updateScrollingHints(this._scrollState);
   }
 
+  private _evtWheel(event: WheelEvent): void {
+    this.scrollBy(event.deltaY);
+  }
+
   /**
    * Handle the `'dblclick'` event for the tab bar.
    */
@@ -874,25 +888,47 @@ export class TabBar<T> extends Widget {
     }
   }
 
+  protected scrollBy(change: number) {
+    const orientation = this.orientation;
+    const contentNode = this.contentNode;
+
+    if (orientation == 'horizontal') {
+      contentNode.scrollLeft += change;
+    } else {
+      contentNode.scrollTop += change;
+    }
+    // Force-update drag state by dispatching last recorded mouse event.
+    if (this._lastMouseEvent) {
+      this._evtPointerMove(this._lastMouseEvent);
+    }
+  }
+
   protected beginScrolling(direction: '-' | '+') {
-    const initialRate = 5;
-    const rateIncrease = 1;
-    const maxRate = 20;
-    const intervalHandle = setInterval(() => {
+    // How many pixels should be scrolled per second initially?
+    const initialRate = 150;
+    // By how much should the scrolling rate increase per second?
+    const rateIncrease = 80;
+    // What should be the maximal scrolling speed (pixels/second?)
+    const maxRate = 450;
+
+    let previousTime = performance.now();
+
+    const step = () => {
       if (!this._scrollData) {
         this.stopScrolling();
         return;
       }
+      const stepTime = performance.now();
+      const secondsChange = (stepTime - previousTime) / 1000;
+      previousTime = stepTime;
       const rate = this._scrollData.rate;
-      const direction = this._scrollData.scrollDirection;
-      const change = (direction == '+' ? 1 : -1) * rate;
-      if (this.orientation == 'horizontal') {
-        this.contentNode.scrollLeft += change;
-      } else {
-        this.contentNode.scrollTop += change;
-      }
+      const direction = this._scrollData.direction;
+
+      const change = (direction == '+' ? 1 : -1) * rate * secondsChange;
+
+      this.scrollBy(change);
       this._scrollData.rate = Math.min(
-        this._scrollData.rate + rateIncrease,
+        this._scrollData.rate + rateIncrease * secondsChange,
         maxRate
       );
       const state = this._scrollState;
@@ -902,18 +938,26 @@ export class TabBar<T> extends Widget {
           state.totalSize == state.position + state.displayedSize)
       ) {
         this.stopScrolling();
+        return;
       }
-    }, 50);
+      window.requestAnimationFrame(step);
+    };
+
+    const shouldRequest = !this._scrollData;
+
     this._scrollData = {
-      timerHandle: intervalHandle,
-      scrollDirection: direction,
+      direction: direction,
       rate: initialRate
     };
+
+    if (shouldRequest) {
+      window.requestAnimationFrame(step);
+    }
   }
 
   protected stopScrolling() {
-    if (this._scrollData) {
-      clearInterval(this._scrollData.timerHandle);
+    if (!this._scrollData) {
+      return;
     }
     this._scrollData = null;
     const state = this._scrollState;
@@ -968,6 +1012,18 @@ export class TabBar<T> extends Widget {
     // Pressing on a tab stops the event propagation.
     event.preventDefault();
     event.stopPropagation();
+
+    // Add the document mouse up listener.
+    this.document.addEventListener('pointerup', this, true);
+
+    // Do nothing else if the middle button or add button is clicked.
+    if (event.button === 1 || addButtonClicked) {
+      return;
+    }
+    if (scrollBeforeButtonClicked || scrollAfterButtonClicked) {
+      this.beginScrolling(scrollBeforeButtonClicked ? '-' : '+');
+      return;
+    }
 
     // Initialize the non-measured parts of the drag data.
     this._dragData = {
@@ -1039,6 +1095,21 @@ export class TabBar<T> extends Widget {
    * Handle the `'pointermove'` event for the tab bar.
    */
   private _evtPointerMove(event: PointerEvent | MouseEvent): void {
+    let overBeforeScrollButton =
+      this.scrollingEnabled &&
+      this.scrollBeforeButtonNode.contains(event.target as HTMLElement);
+
+    let overAfterScrollButton =
+      this.scrollingEnabled &&
+      this.scrollAfterButtonNode.contains(event.target as HTMLElement);
+
+    const isOverScrollButton = overBeforeScrollButton || overAfterScrollButton;
+
+    if (!isOverScrollButton) {
+      // Stop scrolling if mouse is not over scroll buttons
+      this.stopScrolling();
+    }
+
     // Do nothing if no drag is in progress.
     let data = this._dragData;
     if (!data) {
@@ -1049,13 +1120,21 @@ export class TabBar<T> extends Widget {
     event.preventDefault();
     event.stopPropagation();
 
-    // Lookup the tab nodes.
-    let tabs = this.contentNode.children;
+    if (isOverScrollButton) {
+      // Start scrolling if the mouse is over scroll buttons
+      this.beginScrolling(overBeforeScrollButton ? '-' : '+');
+    }
 
     // Bail early if the drag threshold has not been met.
-    if (!data.dragActive && !Private.dragExceeded(data, event)) {
+    if (
+      !data.dragActive &&
+      !Private.dragExceeded(data, event, this._scrollState)
+    ) {
       return;
     }
+
+    // Lookup the tab nodes.
+    let tabs = this.contentNode.children;
 
     // Activate the drag if necessary.
     if (!data.dragActive) {
@@ -1103,22 +1182,6 @@ export class TabBar<T> extends Widget {
       }
     }
 
-    let overBeforeScrollButton =
-      this.scrollingEnabled &&
-      this.scrollBeforeButtonNode.contains(event.target as HTMLElement);
-
-    let overAfterScrollButton =
-      this.scrollingEnabled &&
-      this.scrollAfterButtonNode.contains(event.target as HTMLElement);
-
-    if (overBeforeScrollButton || overAfterScrollButton) {
-      // Start scrolling if the mouse is over scroll buttons
-      this.beginScrolling(overBeforeScrollButton ? '-' : '+');
-    } else {
-      // Stop scrolling if mouse is not over scroll buttons
-      this.stopScrolling();
-    }
-
     // Update the positions of the tabs.
     Private.layoutTabs(tabs, data, event, this._orientation, this._scrollState);
   }
@@ -1135,6 +1198,9 @@ export class TabBar<T> extends Widget {
     // Do nothing if no drag is in progress.
     const data = this._dragData;
     if (!data) {
+      if (this._scrollData) {
+        this.stopScrolling();
+      }
       return;
     }
 
@@ -1450,6 +1516,7 @@ export class TabBar<T> extends Widget {
   private _titles: Title<T>[] = [];
   private _orientation: TabBar.Orientation;
   private _document: Document | ShadowRoot;
+  private _lastMouseEvent: MouseEvent | null = null;
   private _titlesEditable: boolean = false;
   private _previousTitle: Title<T> | null = null;
   private _dragData: Private.IDragData | null = null;
@@ -1961,8 +2028,7 @@ namespace Private {
    * A struct which holds the scroll data for a tab bar.
    */
   export interface IScrollData {
-    timerHandle: number;
-    scrollDirection: '+' | '-';
+    direction: '+' | '-';
     rate: number;
   }
 
@@ -2177,12 +2243,19 @@ namespace Private {
   }
 
   /**
-   * Test if the event exceeds the drag threshold.
+   * Test if the event or scroll state exceeds the drag threshold.
    */
-  export function dragExceeded(data: IDragData, event: MouseEvent): boolean {
+  export function dragExceeded(
+    data: IDragData,
+    event: MouseEvent,
+    scrollState: IScrollState | null
+  ): boolean {
     let dx = Math.abs(event.clientX - data.pressX);
     let dy = Math.abs(event.clientY - data.pressY);
-    return dx >= DRAG_THRESHOLD || dy >= DRAG_THRESHOLD;
+    let ds = scrollState
+      ? Math.abs(data.initialScrollPosition - scrollState.position)
+      : 0;
+    return dx >= DRAG_THRESHOLD || dy >= DRAG_THRESHOLD || ds >= DRAG_THRESHOLD;
   }
 
   /**
