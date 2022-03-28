@@ -1028,16 +1028,25 @@ export class TabBar<T> extends Widget {
     // Add the document mouse up listener.
     this.document.addEventListener('pointerup', this, true);
 
-    // Do nothing else if the middle button or add button is clicked.
-    if (event.button === 1 || addButtonClicked) {
-      return;
-    }
     if (scrollBeforeButtonClicked || scrollAfterButtonClicked) {
       this.beginScrolling(scrollBeforeButtonClicked ? '-' : '+');
       return;
     }
 
-    // Initialize the non-measured parts of the drag data.
+    this._clickedTabIndex = index;
+
+    // Do nothing else if the middle button or add button is clicked.
+    if (event.button === 1 || addButtonClicked) {
+      return;
+    }
+
+    // Do nothing else if the close icon is clicked.
+    let icon = tabs[index].querySelector(this.renderer.closeIconSelector);
+    if (icon && icon.contains(event.target as HTMLElement)) {
+      return;
+    }
+
+    // Initialize the non-measured parts of the drag data,
     this._dragData = {
       tab: tabs[index] as HTMLElement,
       index: index,
@@ -1207,14 +1216,7 @@ export class TabBar<T> extends Widget {
       return;
     }
 
-    // Do nothing if no drag is in progress.
     const data = this._dragData;
-    if (!data) {
-      if (this._scrollData) {
-        this.stopScrolling();
-      }
-      return;
-    }
 
     // Stop the event propagation.
     event.preventDefault();
@@ -1223,17 +1225,22 @@ export class TabBar<T> extends Widget {
     // Remove the extra mouse event listeners.
     this.document.removeEventListener('pointermove', this, true);
     this.document.removeEventListener('pointerup', this, true);
-    this.document.removeEventListener('keydown', this, true);
-    this.document.removeEventListener('contextmenu', this, true);
 
-    // Handle a release when the drag is not active.
-    if (!data.dragActive) {
+    // Remove extra mouse event listeners which are only added when drag is in progress.
+    if (data) {
+      this.document.removeEventListener('pointermove', this, true);
+      this.document.removeEventListener('keydown', this, true);
+      this.document.removeEventListener('contextmenu', this, true);
+    }
+
+    // Handle a release when the drag is not active or not in progress.
+    if (!data || !data.dragActive) {
       // Clear the drag data.
       this._dragData = null;
 
+      // Handle mouse release if scrolling was in progress.
       if (this._scrollData) {
         this.stopScrolling();
-        return;
       }
       // Handle clicking the add button.
       let addButtonClicked =
@@ -1253,12 +1260,12 @@ export class TabBar<T> extends Widget {
       });
 
       // Do nothing if the release is not on the original pressed tab.
-      if (index !== data.index) {
+      if (index !== this._clickedTabIndex) {
         return;
       }
 
       // Do nothing if neither press nor release was on a tab.
-      if (index === -1 && data.index === -1) {
+      if (index === -1 && this._clickedTabIndex === -1) {
         return;
       }
 
@@ -1524,6 +1531,7 @@ export class TabBar<T> extends Widget {
   }
 
   private _name: string;
+  private _clickedTabIndex: number = -1;
   private _currentIndex = -1;
   private _titles: Title<T>[] = [];
   private _orientation: TabBar.Orientation;
