@@ -80,8 +80,23 @@ describe('@lumino/commands', () => {
       });
     });
 
+    describe('#commandWillExecute', () => {
+      it('should be emitted before a command is executed', () => {
+        let called = false;
+        registry.addCommand('test', NULL_COMMAND);
+        registry.commandWillExecute.connect((reg, args) => {
+          expect(reg).to.equal(registry);
+          expect(args.id).to.equal('test');
+          expect(args.args).to.deep.equal({});
+          called = true;
+        });
+        registry.execute('test');
+        expect(called).to.equal(true);
+      });
+    });
+
     describe('#commandExecuted', () => {
-      it('should be emitted when a command is executed', () => {
+      it('should be emitted after a command is executed', () => {
         let called = false;
         registry.addCommand('test', NULL_COMMAND);
         registry.commandExecuted.connect((reg, args) => {

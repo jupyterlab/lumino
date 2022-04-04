@@ -45,7 +45,22 @@ export class CommandRegistry {
   }
 
   /**
-   * A signal emitted when a command has executed.
+   * A signal emitted before a command is executed.
+   *
+   * #### Notes
+   * Care should be taken when consuming this signal. The command system is used
+   * by many components for many user actions. Handlers registered with this
+   * signal must return quickly to ensure the overall application remains responsive.
+   */
+  get commandWillExecute(): ISignal<
+    this,
+    CommandRegistry.ICommandExecutedArgs
+  > {
+    return this._commandExecuted;
+  }
+
+  /**
+   * A signal emitted after a command has executed.
    *
    * #### Notes
    * Care should be taken when consuming this signal. The command system is used
@@ -419,6 +434,9 @@ export class CommandRegistry {
       return Promise.reject(new Error(`Command '${id}' not registered.`));
     }
 
+    // Emit the "command will execute" signal.
+    this._commandWillExecute.emit({ id, args });
+
     // Execute the command and reject if an exception is thrown.
     let value: any;
     try {
@@ -642,6 +660,10 @@ export class CommandRegistry {
   private _commandChanged = new Signal<
     this,
     CommandRegistry.ICommandChangedArgs
+  >(this);
+  private _commandWillExecute = new Signal<
+    this,
+    CommandRegistry.ICommandWillExecuteArgs
   >(this);
   private _commandExecuted = new Signal<
     this,
@@ -903,9 +925,9 @@ export namespace CommandRegistry {
   }
 
   /**
-   * An arguments object for the `commandExecuted` signal.
+   * An arguments object for the `commandWillExecute` signal.
    */
-  export interface ICommandExecutedArgs {
+  export interface ICommandWillExecuteArgs {
     /**
      * The id of the associated command.
      */
@@ -915,12 +937,17 @@ export namespace CommandRegistry {
      * The arguments object passed to the command.
      */
     readonly args: ReadonlyPartialJSONObject;
+  }
 
+  /**
+   * An arguments object for the `commandExecuted` signal.
+   */
+  export type ICommandExecutedArgs = ICommandWillExecuteArgs & {
     /**
      * The promise which resolves with the result of the command.
      */
     readonly result: Promise<any>;
-  }
+  };
 
   /**
    * An options object for creating a key binding.
