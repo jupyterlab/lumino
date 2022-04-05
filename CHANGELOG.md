@@ -2,8 +2,6 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
-- Add `commentWillExecute` signal to `CommandRegistry`.
-
 ## 2022.1.13
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/application@1.28.0...f7d36a8bac6c44ee9928ea918d3473e297853658))
