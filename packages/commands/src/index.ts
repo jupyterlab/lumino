@@ -54,9 +54,9 @@ export class CommandRegistry {
    */
   get commandWillExecute(): ISignal<
     this,
-    CommandRegistry.ICommandExecutedArgs
+    CommandRegistry.ICommandWillExecuteArgs
   > {
-    return this._commandExecuted;
+    return this._commandWillExecute;
   }
 
   /**
