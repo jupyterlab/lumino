@@ -15,6 +15,8 @@ import { Drag } from '@lumino/dragdrop';
 
 import { Message } from '@lumino/messaging';
 
+import { ISignal, Signal } from '@lumino/signaling';
+
 import { Panel } from './panel';
 
 import { SplitLayout } from './splitlayout';
@@ -109,6 +111,14 @@ export class SplitPanel extends Panel {
   get renderer(): SplitPanel.IRenderer {
     return (this.layout as SplitLayout).renderer;
   }
+
+  /**
+   * A signal emitted when a split handle has moved.
+   */
+  get handleMoved(): ISignal<this, void> {
+    return this._handleMoved;
+  }
+
 
   /**
    * A read-only array of the split handles in the panel.
@@ -348,8 +358,12 @@ export class SplitPanel extends Panel {
     document.removeEventListener('pointerup', this, true);
     document.removeEventListener('pointermove', this, true);
     document.removeEventListener('contextmenu', this, true);
+
+    // Emit the handle moved signal.
+    this._handleMoved.emit(undefined);
   }
 
+  private _handleMoved = new Signal<any, void>(this);
   private _pressData: Private.IPressData | null = null;
 }
 
