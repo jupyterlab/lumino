@@ -21,6 +21,17 @@ const renderer: SplitPanel.IRenderer = {
   createHandle: () => document.createElement('div')
 };
 
+function dragHandle(panel: LogSplitPanel): void {
+  MessageLoop.sendMessage(panel, Widget.Msg.UpdateRequest);
+  let handle = panel.handles[0];
+  let rect = handle.getBoundingClientRect();
+  let args = { clientX: rect.left + 1, clientY: rect.top + 1 };
+  simulate(handle, 'mousedown', args);
+  args = { clientX: rect.left + 10, clientY: rect.top + 1 };
+  simulate(document.body, 'mousemove', args);
+  simulate(document.body, 'mouseup');
+}
+
 class LogSplitPanel extends SplitPanel {
   events: string[] = [];
 
@@ -127,6 +138,26 @@ describe('@lumino/widgets', () => {
       it('should get the renderer for the panel', () => {
         let panel = new SplitPanel({ renderer });
         expect(panel.renderer).to.equal(renderer);
+      });
+    });
+
+    describe('#handleMoved', () => {
+      it('should be emitted when a handle is moved by the user', done => {
+        let panel = new LogSplitPanel();
+        let widgets = [new Widget(), new Widget()];
+        panel.orientation = 'horizontal';
+        each(widgets, w => {
+          w.node.style.minHeight = '40px';
+          w.node.style.minWidth = '40px';
+          panel.addWidget(w);
+        });
+        panel.setRelativeSizes([40, 80]);
+        Widget.attach(panel, document.body);
+        panel.handleMoved.connect((sender, _) => {
+          expect(sender).to.equal(panel);
+          done();
+        });
+        dragHandle(panel);
       });
     });
 

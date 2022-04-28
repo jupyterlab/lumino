@@ -119,7 +119,6 @@ export class SplitPanel extends Panel {
     return this._handleMoved;
   }
 
-
   /**
    * A read-only array of the split handles in the panel.
    */
@@ -351,6 +350,9 @@ export class SplitPanel extends Panel {
     this._pressData.override.dispose();
     this._pressData = null;
 
+    // Emit the handle moved signal.
+    this._handleMoved.emit(undefined);
+
     // Remove the extra document listeners.
     document.removeEventListener('mouseup', this, true);
     document.removeEventListener('mousemove', this, true);
@@ -358,9 +360,6 @@ export class SplitPanel extends Panel {
     document.removeEventListener('pointerup', this, true);
     document.removeEventListener('pointermove', this, true);
     document.removeEventListener('contextmenu', this, true);
-
-    // Emit the handle moved signal.
-    this._handleMoved.emit(undefined);
   }
 
   private _handleMoved = new Signal<any, void>(this);
