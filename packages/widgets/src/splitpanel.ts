@@ -351,7 +351,7 @@ export class SplitPanel extends Panel {
     this._pressData = null;
 
     // Emit the handle moved signal.
-    this._handleMoved.emit(undefined);
+    this._handleMoved.emit();
 
     // Remove the extra document listeners.
     document.removeEventListener('mouseup', this, true);
