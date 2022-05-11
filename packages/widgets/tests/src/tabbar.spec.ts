@@ -76,7 +76,7 @@ function startDrag(
   // Force an update.
   MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
   simulateOnNode(tab, 'mousedown');
-  let called = true;
+  let called = false;
   bar.tabDetachRequested.connect((sender, args) => {
     called = true;
   });
