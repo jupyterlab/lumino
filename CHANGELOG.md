@@ -2,7 +2,7 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
-## 2022.5.11
+## 2022.5.12
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2022.1.13...9c2948ed094b089f1c948300dfdf1f85fff4b83c))
 
