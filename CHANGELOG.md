@@ -26,7 +26,7 @@
 
 ### Documentation improvements
 
-- chore:  Add Web Component external example to README.md [#299](https://github.com/jupyterlab/lumino/pull/299) ([@GordonSmith](https://github.com/GordonSmith))
+- chore: Add Web Component external example to README.md [#299](https://github.com/jupyterlab/lumino/pull/299) ([@GordonSmith](https://github.com/GordonSmith))
 - Improve DockLayout code documentation [#285](https://github.com/jupyterlab/lumino/pull/285) ([@fcollonval](https://github.com/fcollonval))
 
 ### Contributors to this release
