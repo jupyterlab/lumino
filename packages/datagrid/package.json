@@ -1,6 +1,6 @@
 {
   "name": "@lumino/datagrid",
-  "version": "0.35.1",
+  "version": "0.36.0",
   "description": "Lumino Tabular Data Grid",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -45,7 +45,7 @@
     "@lumino/keyboard": "^1.8.1",
     "@lumino/messaging": "^1.10.1",
     "@lumino/signaling": "^1.10.1",
-    "@lumino/widgets": "^1.31.1"
+    "@lumino/widgets": "^1.32.0"
   },
   "devDependencies": {
     "rimraf": "^3.0.2",
