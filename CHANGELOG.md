@@ -2,6 +2,41 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2022.5.12
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2022.1.13...9c2948ed094b089f1c948300dfdf1f85fff4b83c))
+
+### Enhancements made
+
+- Add handle moved signal to split panel [#301](https://github.com/jupyterlab/lumino/pull/301) ([@afshin](https://github.com/afshin))
+
+### Maintenance and upkeep improvements
+
+- Bump async from 2.6.3 to 2.6.4 [#302](https://github.com/jupyterlab/lumino/pull/302) ([@dependabot](https://github.com/dependabot))
+- Bump minimist from 1.2.5 to 1.2.6 [#296](https://github.com/jupyterlab/lumino/pull/296) ([@dependabot](https://github.com/dependabot))
+- Bump karma from 6.3.14 to 6.3.16 [#295](https://github.com/jupyterlab/lumino/pull/295) ([@dependabot](https://github.com/dependabot))
+- Bump follow-redirects from 1.14.7 to 1.14.8 [#294](https://github.com/jupyterlab/lumino/pull/294) ([@dependabot](https://github.com/dependabot))
+- Bump node-fetch from 2.6.1 to 2.6.7 [#293](https://github.com/jupyterlab/lumino/pull/293) ([@dependabot](https://github.com/dependabot))
+- Bump karma from 6.3.4 to 6.3.14 [#292](https://github.com/jupyterlab/lumino/pull/292) ([@dependabot](https://github.com/dependabot))
+- Bump trim-off-newlines from 1.0.1 to 1.0.3 [#288](https://github.com/jupyterlab/lumino/pull/288) ([@dependabot](https://github.com/dependabot))
+- Bump log4js from 6.3.0 to 6.4.0 [#287](https://github.com/jupyterlab/lumino/pull/287) ([@dependabot](https://github.com/dependabot))
+- Bump shelljs from 0.8.4 to 0.8.5 [#286](https://github.com/jupyterlab/lumino/pull/286) ([@dependabot](https://github.com/dependabot))
+- Bump engine.io from 4.1.1 to 4.1.2 [#284](https://github.com/jupyterlab/lumino/pull/284) ([@dependabot](https://github.com/dependabot))
+- Bump follow-redirects from 1.14.1 to 1.14.7 [#282](https://github.com/jupyterlab/lumino/pull/282) ([@dependabot](https://github.com/dependabot))
+
+### Documentation improvements
+
+- chore: Add Web Component external example to README.md [#299](https://github.com/jupyterlab/lumino/pull/299) ([@GordonSmith](https://github.com/GordonSmith))
+- Improve DockLayout code documentation [#285](https://github.com/jupyterlab/lumino/pull/285) ([@fcollonval](https://github.com/fcollonval))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2022-01-13&to=2022-05-12&type=c))
+
+[@afshin](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aafshin+updated%3A2022-01-13..2022-05-12&type=Issues) | [@ajbozarth](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aajbozarth+updated%3A2022-01-13..2022-05-12&type=Issues) | [@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2022-01-13..2022-05-12&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2022-01-13..2022-05-12&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2022-01-13..2022-05-12&type=Issues) | [@GordonSmith](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3AGordonSmith+updated%3A2022-01-13..2022-05-12&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2022.1.13
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/application@1.28.0...f7d36a8bac6c44ee9928ea918d3473e297853658))
@@ -15,8 +50,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2022-01-10&to=2022-01-13&type=c))
 
 [@GordonSmith](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3AGordonSmith+updated%3A2022-01-10..2022-01-13&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2022.1.10
 
