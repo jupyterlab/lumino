@@ -158,6 +158,17 @@ export class SplitLayout extends PanelLayout {
   }
 
   /**
+   * Get the absolute sizes of the widgets in the layout.
+   *
+   * @returns A new array of the absolute sizes of the widgets.
+   *
+   * This method **does not** measure the DOM nodes.
+   */
+  absoluteSizes(): number[] {
+    return this._sizers.map(sizer => sizer.size);
+  }
+
+  /**
    * Get the relative sizes of the widgets in the layout.
    *
    * @returns A new array of the relative sizes of the widgets.
@@ -176,13 +187,15 @@ export class SplitLayout extends PanelLayout {
    * Set the relative sizes for the widgets in the layout.
    *
    * @param sizes - The relative sizes for the widgets in the panel.
+   * @param update - Update the layout after setting relative sizes.
+   * Default is True.
    *
    * #### Notes
    * Extra values are ignored, too few will yield an undefined layout.
    *
    * The actual geometry of the DOM nodes is updated asynchronously.
    */
-  setRelativeSizes(sizes: number[]): void {
+  setRelativeSizes(sizes: number[], update = true): void {
     // Copy the sizes and pad with zeros as needed.
     let n = this._sizers.length;
     let temp = sizes.slice(0, n);
@@ -204,7 +217,7 @@ export class SplitLayout extends PanelLayout {
     this._hasNormedSizes = true;
 
     // Trigger an update of the parent widget.
-    if (this.parent) {
+    if (update && this.parent) {
       this.parent.update();
     }
   }

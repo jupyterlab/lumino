@@ -151,8 +151,8 @@ export class SplitPanel extends Panel {
    *
    * The actual geometry of the DOM nodes is updated asynchronously.
    */
-  setRelativeSizes(sizes: number[]): void {
-    (this.layout as SplitLayout).setRelativeSizes(sizes);
+  setRelativeSizes(sizes: number[], update = true): void {
+    (this.layout as SplitLayout).setRelativeSizes(sizes, update);
   }
 
   /**
