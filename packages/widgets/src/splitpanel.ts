@@ -145,6 +145,8 @@ export class SplitPanel extends Panel {
    * Set the relative sizes for the widgets in the panel.
    *
    * @param sizes - The relative sizes for the widgets in the panel.
+   * @param update - Update the layout after setting relative sizes.
+   * Default is True.
    *
    * #### Notes
    * Extra values are ignored, too few will yield an undefined layout.

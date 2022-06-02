@@ -176,7 +176,11 @@ export class AccordionPanel extends SplitPanel {
         widgetSizes[widgetToCollapse] + currentSize + delta;
     } else {
       // Show the widget
-      const previousSize = this._widgetSizesCache.get(widget)!;
+      const previousSize = this._widgetSizesCache.get(widget);
+      if (!previousSize) {
+        // Previous size is unavailable, let the `SplitLayout` computes widget sizes.
+        return undefined;
+      }
       newSize[index] += previousSize;
 
       const widgetToCollapse = newSize
@@ -286,7 +290,7 @@ export class AccordionPanel extends SplitPanel {
     }
   }
 
-  private _widgetSizesCache: Map<Widget, number> = new Map();
+  private _widgetSizesCache: WeakMap<Widget, number> = new WeakMap();
 }
 
 /**
