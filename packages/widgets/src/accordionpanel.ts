@@ -136,10 +136,16 @@ export class AccordionPanel extends SplitPanel {
   }
 
   /**
+   * Compute the size of widgets in this panel on the title click event.
+   * On closing, the size of the widget is cached and we will try to expand
+   * the last opened widget.
+   * On opening, we will use the cached size if it is available to restore the
+   * widget.
+   * In both cases, if we can not compute the size of widgets, we will let
+   * `SplitLayout` decide.
    *
-   *
-
    * @param index - The index of widget to be opened of closed
+   *
    * @returns Relative size of widgets in this panel, if this size can
    * not be computed, return `undefined`
    */
@@ -168,7 +174,7 @@ export class AccordionPanel extends SplitPanel {
 
       const widgetToCollapse = newSize.map(sz => sz > 0).lastIndexOf(true);
       if (widgetToCollapse === -1) {
-        // All widget are closed, let the `SplitLayout` computes widget sizes.
+        // All widget are closed, let the `SplitLayout` compute widget sizes.
         return undefined;
       }
 
@@ -178,7 +184,7 @@ export class AccordionPanel extends SplitPanel {
       // Show the widget
       const previousSize = this._widgetSizesCache.get(widget);
       if (!previousSize) {
-        // Previous size is unavailable, let the `SplitLayout` computes widget sizes.
+        // Previous size is unavailable, let the `SplitLayout` compute widget sizes.
         return undefined;
       }
       newSize[index] += previousSize;
