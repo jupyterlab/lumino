@@ -2,6 +2,27 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2022.6.7
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/application@1.29.0...30a88f463778ad44ebbe8034622db3a76fbdc540))
+
+### Bugs fixed
+
+- Fix Accordion sizing issue [#304](https://github.com/jupyterlab/lumino/pull/304) ([@trungleduc](https://github.com/trungleduc))
+
+### Maintenance and upkeep improvements
+
+- Enable bot PRs to auto-label [#306](https://github.com/jupyterlab/lumino/pull/306) ([@blink1073](https://github.com/blink1073))
+- Bump semver-regex from 3.1.3 to 3.1.4 [#305](https://github.com/jupyterlab/lumino/pull/305) ([@dependabot](https://github.com/dependabot))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2022-05-12&to=2022-06-07&type=c))
+
+[@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2022-05-12..2022-06-07&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2022-05-12..2022-06-07&type=Issues) | [@trungleduc](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Atrungleduc+updated%3A2022-05-12..2022-06-07&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Awelcome+updated%3A2022-05-12..2022-06-07&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2022.5.12
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2022.1.13...9c2948ed094b089f1c948300dfdf1f85fff4b83c))
@@ -34,8 +55,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2022-01-13&to=2022-05-12&type=c))
 
 [@afshin](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aafshin+updated%3A2022-01-13..2022-05-12&type=Issues) | [@ajbozarth](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aajbozarth+updated%3A2022-01-13..2022-05-12&type=Issues) | [@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2022-01-13..2022-05-12&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2022-01-13..2022-05-12&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2022-01-13..2022-05-12&type=Issues) | [@GordonSmith](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3AGordonSmith+updated%3A2022-01-13..2022-05-12&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2022.1.13
 
