@@ -145,14 +145,16 @@ export class SplitPanel extends Panel {
    * Set the relative sizes for the widgets in the panel.
    *
    * @param sizes - The relative sizes for the widgets in the panel.
+   * @param update - Update the layout after setting relative sizes.
+   * Default is True.
    *
    * #### Notes
    * Extra values are ignored, too few will yield an undefined layout.
    *
    * The actual geometry of the DOM nodes is updated asynchronously.
    */
-  setRelativeSizes(sizes: number[]): void {
-    (this.layout as SplitLayout).setRelativeSizes(sizes);
+  setRelativeSizes(sizes: number[], update = true): void {
+    (this.layout as SplitLayout).setRelativeSizes(sizes, update);
   }
 
   /**

@@ -136,6 +136,78 @@ export class AccordionPanel extends SplitPanel {
   }
 
   /**
+   * Compute the size of widgets in this panel on the title click event.
+   * On closing, the size of the widget is cached and we will try to expand
+   * the last opened widget.
+   * On opening, we will use the cached size if it is available to restore the
+   * widget.
+   * In both cases, if we can not compute the size of widgets, we will let
+   * `SplitLayout` decide.
+   *
+   * @param index - The index of widget to be opened of closed
+   *
+   * @returns Relative size of widgets in this panel, if this size can
+   * not be computed, return `undefined`
+   */
+  private _computeWidgetSize(index: number): number[] | undefined {
+    const layout = this.layout as AccordionLayout;
+
+    const widget = layout.widgets[index];
+    if (!widget) {
+      return undefined;
+    }
+    const isHidden = widget.isHidden;
+    const widgetSizes = layout.absoluteSizes();
+    const delta = (isHidden ? -1 : 1) * this.spacing;
+    const totalSize = widgetSizes.reduce(
+      (prev: number, curr: number) => prev + curr
+    );
+
+    let newSize = [...widgetSizes];
+
+    if (!isHidden) {
+      // Hide the widget
+      const currentSize = widgetSizes[index];
+
+      this._widgetSizesCache.set(widget, currentSize);
+      newSize[index] = 0;
+
+      const widgetToCollapse = newSize.map(sz => sz > 0).lastIndexOf(true);
+      if (widgetToCollapse === -1) {
+        // All widget are closed, let the `SplitLayout` compute widget sizes.
+        return undefined;
+      }
+
+      newSize[widgetToCollapse] =
+        widgetSizes[widgetToCollapse] + currentSize + delta;
+    } else {
+      // Show the widget
+      const previousSize = this._widgetSizesCache.get(widget);
+      if (!previousSize) {
+        // Previous size is unavailable, let the `SplitLayout` compute widget sizes.
+        return undefined;
+      }
+      newSize[index] += previousSize;
+
+      const widgetToCollapse = newSize
+        .map(sz => sz - previousSize > 0)
+        .lastIndexOf(true);
+      if (widgetToCollapse === -1) {
+        // Can not reduce the size of one widget, reduce all opened widgets
+        // proportionally with its size.
+        newSize.forEach((_, idx) => {
+          if (idx !== index) {
+            newSize[idx] -=
+              (widgetSizes[idx] / totalSize) * (previousSize - delta);
+          }
+        });
+      } else {
+        newSize[widgetToCollapse] -= previousSize - delta;
+      }
+    }
+    return newSize.map(sz => sz / (totalSize + delta));
+  }
+  /**
    * Handle the `'click'` event for the accordion panel
    */
   private _evtClick(event: MouseEvent): void {
@@ -149,9 +221,14 @@ export class AccordionPanel extends SplitPanel {
       if (index >= 0) {
         event.preventDefault();
         event.stopPropagation();
-
         const title = this.titles[index];
         const widget = (this.layout as AccordionLayout).widgets[index];
+
+        const newSize = this._computeWidgetSize(index);
+        if (newSize) {
+          this.setRelativeSizes(newSize, false);
+        }
+
         if (widget.isHidden) {
           title.classList.add('lm-mod-expanded');
           title.setAttribute('aria-expanded', 'true');
@@ -218,6 +295,8 @@ export class AccordionPanel extends SplitPanel {
       }
     }
   }
+
+  private _widgetSizesCache: WeakMap<Widget, number> = new WeakMap();
 }
 
 /**

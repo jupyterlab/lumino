@@ -343,5 +343,44 @@ describe('@lumino/widgets', () => {
         });
       });
     });
+
+    describe('#_computeWidgetSize()', () => {
+      const DELTA = 1e-6;
+      let panel: AccordionPanel;
+      beforeEach(() => {
+        panel = new AccordionPanel({ renderer, titleSpace: 0, spacing: 0 });
+        panel.node.style.height = '500px';
+        Widget.attach(panel, document.body);
+      });
+      it('should not compute the size of panel with only one widget', () => {
+        panel.addWidget(new Widget());
+        MessageLoop.flush();
+        const value = panel['_computeWidgetSize'](0);
+        expect(value).to.be.equal(undefined);
+      });
+      it('should compute the size of panel with two opened widgets', () => {
+        const widgets = [new Widget(), new Widget()];
+        widgets.forEach(w => panel.addWidget(w));
+        MessageLoop.flush();
+        const value0 = panel['_computeWidgetSize'](0);
+        expect(value0.length).to.be.equal(2);
+        expect(value0[0]).to.be.closeTo(0, DELTA);
+        expect(value0[1]).to.be.closeTo(1, DELTA);
+        const value1 = panel['_computeWidgetSize'](1);
+        expect(value1[0]).to.be.closeTo(1, DELTA);
+        expect(value1[1]).to.be.closeTo(0, DELTA);
+      });
+      it('should compute the size of panel with three widgets', () => {
+        const widgets = [new Widget(), new Widget(), new Widget()];
+        widgets.forEach(w => panel.addWidget(w));
+        MessageLoop.flush();
+
+        const value = panel['_computeWidgetSize'](0);
+        expect(value.length).to.be.equal(3);
+        expect(value[0]).to.be.closeTo(0, DELTA);
+        expect(value[1]).to.be.closeTo(0.333333, DELTA);
+        expect(value[2]).to.be.closeTo(0.666666, DELTA);
+      });
+    });
   });
 });
