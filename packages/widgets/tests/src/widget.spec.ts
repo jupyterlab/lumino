@@ -168,6 +168,13 @@ describe('@lumino/widgets', () => {
         widget.dispose();
         expect(layout.isDisposed).to.equal(true);
       });
+
+      it('should dispose of the widget title', () => {
+        const widget = new Widget();
+        const title = widget.title;
+        widget.dispose();
+        expect(title.isDisposed).to.equal(true);
+      });
     });
 
     describe('#disposed', () => {

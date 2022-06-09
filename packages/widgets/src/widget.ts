@@ -80,6 +80,9 @@ export class Widget implements IMessageHandler, IObservableDisposable {
       this._layout = null;
     }
 
+    // Dispose the title
+    this.title.dispose();
+
     // Clear the extra data associated with the widget.
     Signal.clearData(this);
     MessageLoop.clearData(this);
