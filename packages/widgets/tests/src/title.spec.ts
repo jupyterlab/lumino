@@ -37,7 +37,7 @@ describe('@lumino/widgets', () => {
         expect(called).to.equal(true);
       });
 
-      it('should clear signal if it is disposed', () => {
+      it('should be cleared if it is disposed', () => {
         let called = false;
         let title = new Title({ owner });
         title.changed.connect((sender, arg) => {
