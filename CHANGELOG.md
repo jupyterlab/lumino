@@ -2,6 +2,28 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2022.7.6
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/application@1.29.1...69dd9933226562ffe8da8d20890175842df95eda))
+
+### Bugs fixed
+
+- [memory-leak] Title.changed not cleared when owner is disposed [#308](https://github.com/jupyterlab/lumino/pull/308) ([@fcollonval](https://github.com/fcollonval))
+
+### Maintenance and upkeep improvements
+
+- Update versions [#311](https://github.com/jupyterlab/lumino/pull/311) ([@fcollonval](https://github.com/fcollonval))
+- Bump shell-quote from 1.7.2 to 1.7.3 [#310](https://github.com/jupyterlab/lumino/pull/310) ([@dependabot](https://github.com/dependabot))
+- Bump parse-url from 6.0.0 to 6.0.2 [#309](https://github.com/jupyterlab/lumino/pull/309) ([@dependabot](https://github.com/dependabot))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2022-06-07&to=2022-07-06&type=c))
+
+[@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2022-06-07..2022-07-06&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2022-06-07..2022-07-06&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2022.6.7
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/application@1.29.0...30a88f463778ad44ebbe8034622db3a76fbdc540))
@@ -20,8 +42,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2022-05-12&to=2022-06-07&type=c))
 
 [@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2022-05-12..2022-06-07&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2022-05-12..2022-06-07&type=Issues) | [@trungleduc](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Atrungleduc+updated%3A2022-05-12..2022-06-07&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Awelcome+updated%3A2022-05-12..2022-06-07&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2022.5.12
 
