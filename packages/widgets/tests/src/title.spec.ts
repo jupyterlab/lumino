@@ -11,7 +11,9 @@ import { expect } from 'chai';
 
 import { Title } from '@lumino/widgets';
 
-const owner = { name: 'Bob' };
+const owner = {
+  name: 'Bob'
+};
 
 describe('@lumino/widgets', () => {
   describe('Title', () => {
@@ -33,6 +35,19 @@ describe('@lumino/widgets', () => {
         });
         title.label = 'baz';
         expect(called).to.equal(true);
+      });
+
+      it('should be cleared if it is disposed', () => {
+        let called = false;
+        let title = new Title({ owner });
+        title.changed.connect((sender, arg) => {
+          called = true;
+        });
+
+        title.dispose();
+
+        title.label = 'baz';
+        expect(called).to.equal(false);
       });
     });
 

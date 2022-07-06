@@ -7,6 +7,8 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
+import { IDisposable } from '@lumino/disposable';
+
 import { ISignal, Signal } from '@lumino/signaling';
 
 import { VirtualElement } from '@lumino/virtualdom';
@@ -18,8 +20,10 @@ import { VirtualElement } from '@lumino/virtualdom';
  * A title object is intended to hold the data necessary to display a
  * header for a particular object. A common example is the `TabPanel`,
  * which uses the widget title to populate the tab for a child widget.
+ *
+ * It is the responsibility of the owner to call the title disposal.
  */
-export class Title<T> {
+export class Title<T> implements IDisposable {
   /**
    * Construct a new title.
    *
@@ -343,6 +347,28 @@ export class Title<T> {
     this._changed.emit(undefined);
   }
 
+  /**
+   * Test whether the title has been disposed.
+   */
+  get isDisposed(): boolean {
+    return this._isDisposed;
+  }
+
+  /**
+   * Dispose of the resources held by the title.
+   *
+   * #### Notes
+   * It is the responsibility of the owner to call the title disposal.
+   */
+  dispose(): void {
+    if (this.isDisposed) {
+      return;
+    }
+    this._isDisposed = true;
+
+    Signal.clearData(this);
+  }
+
   private _label = '';
   private _caption = '';
   private _mnemonic = -1;
@@ -359,6 +385,7 @@ export class Title<T> {
   private _closable = false;
   private _dataset: Title.Dataset;
   private _changed = new Signal<this, void>(this);
+  private _isDisposed = false;
 }
 
 /**
