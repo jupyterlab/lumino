@@ -12,7 +12,6 @@
 
 ### Maintenance and upkeep improvements
 
-- Update versions [#311](https://github.com/jupyterlab/lumino/pull/311) ([@fcollonval](https://github.com/fcollonval))
 - Bump shell-quote from 1.7.2 to 1.7.3 [#310](https://github.com/jupyterlab/lumino/pull/310) ([@dependabot](https://github.com/dependabot))
 - Bump parse-url from 6.0.0 to 6.0.2 [#309](https://github.com/jupyterlab/lumino/pull/309) ([@dependabot](https://github.com/dependabot))
 
