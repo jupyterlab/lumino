@@ -22,6 +22,9 @@ git push origin main
 push --delete origin <version-tag>
 ```
 
+Then when triggering the _Draft Changelog_ and _Full Release_ actions, you will
+need to set the _New Version Spec_ to the current date `<YEAR>.<MONTH>.<DAY>`.
+
 ## Manual Release
 
 To create a manual release, perform the following steps:
