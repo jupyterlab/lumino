@@ -88,7 +88,9 @@ describe('Throttler', () => {
       };
       throttler = new Throttler<void, any, [number]>(fn);
       expect(sum).to.equal(0);
-      await throttler.invoke(1);
+      void throttler.invoke(1);
+      void throttler.invoke(0);
+      await throttler.invoke();
       expect(sum).to.equal(1);
       void throttler.invoke(10);
       await throttler.invoke(1);

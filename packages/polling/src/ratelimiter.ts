@@ -25,11 +25,11 @@ export abstract class RateLimiter<T, U, V extends any[]>
    *
    * @param limit - The rate limit; defaults to 500ms.
    */
-  constructor(fn: RateLimiter.Function<T, V>, limit = 500) {
+  constructor(fn: (...args: V) => T | Promise<T>, limit = 500) {
     this.limit = limit;
     this.poll = new Poll({
       auto: false,
-      factory: async () => (this.args ? fn(...this.args!) : fn()),
+      factory: async () => fn(...this.args!),
       frequency: { backoff: false, interval: Poll.NEVER, max: Poll.NEVER },
       standby: 'never'
     });
@@ -103,12 +103,6 @@ export abstract class RateLimiter<T, U, V extends any[]>
   protected poll: Poll<T, U, 'invoked'>;
 }
 
-export namespace RateLimiter {
-  export type Function<T, V extends any[]> =
-    | ((...args: V) => T | Promise<T>)
-    | (() => T | Promise<T>);
-}
-
 /**
  * Wraps and debounces a function that can be called multiple times and only
  * executes the underlying function one `interval` after the last invocation.
@@ -161,7 +155,7 @@ export class Throttler<
    * The `edge` defaults to `leading`; the `limit` defaults to `500`.
    */
   constructor(
-    fn: RateLimiter.Function<T, V>,
+    fn: (...args: V) => T | Promise<T>,
     options?: Throttler.IOptions | number
   ) {
     super(fn, typeof options === 'number' ? options : options && options.limit);
