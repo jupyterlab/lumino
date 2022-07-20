@@ -32,6 +32,23 @@ describe('Debouncer', () => {
       await debouncer.invoke();
       expect(counter).to.equal(2);
     });
+
+    it('should accept arguments', async () => {
+      let sum = 0;
+      const fn = (value = 0) => {
+        sum += value;
+      };
+      debouncer = new Debouncer<void, any, [number]>(fn);
+      expect(sum).to.equal(0);
+      await debouncer.invoke(1);
+      expect(sum).to.equal(1);
+      void debouncer.invoke(10);
+      await debouncer.invoke(1);
+      expect(sum).to.equal(2);
+      void debouncer.invoke(10);
+      await debouncer.invoke(1);
+      expect(sum).to.equal(3);
+    });
   });
 });
 
@@ -44,7 +61,7 @@ describe('Throttler', () => {
   });
 
   describe('#constructor()', () => {
-    it('should create a debouncer', () => {
+    it('should create a throttler', () => {
       throttler = new Throttler(async () => undefined);
       expect(throttler).to.be.an.instanceof(Throttler);
     });
@@ -62,6 +79,23 @@ describe('Throttler', () => {
       void throttler.invoke();
       await throttler.invoke();
       expect(counter).to.equal(2);
+    });
+
+    it('should accept arguments', async () => {
+      let sum = 0;
+      const fn = (value = 0) => {
+        sum += value;
+      };
+      throttler = new Throttler<void, any, [number]>(fn);
+      expect(sum).to.equal(0);
+      await throttler.invoke(1);
+      expect(sum).to.equal(1);
+      void throttler.invoke(10);
+      await throttler.invoke(1);
+      expect(sum).to.equal(11); // add 10 to sum NOT 1
+      void throttler.invoke(10);
+      await throttler.invoke(1);
+      expect(sum).to.equal(21); // add 10 to sum NOT 1
     });
 
     it('should collapse invocations into one promise per cycle', async () => {

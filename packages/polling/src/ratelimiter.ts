@@ -13,8 +13,11 @@ import { Poll } from './poll';
  * @typeparam T - The resolved type of the underlying function.
  *
  * @typeparam U - The rejected type of the underlying function.
+ *
+ * @typeparam V - Arguments for the underlying function.
  */
-export abstract class RateLimiter<T, U> implements IRateLimiter<T, U> {
+export abstract class RateLimiter<T, U, V extends any[]>
+  implements IRateLimiter<T, U, V> {
   /**
    * Instantiate a rate limiter.
    *
@@ -22,11 +25,11 @@ export abstract class RateLimiter<T, U> implements IRateLimiter<T, U> {
    *
    * @param limit - The rate limit; defaults to 500ms.
    */
-  constructor(fn: () => T | Promise<T>, limit = 500) {
+  constructor(fn: RateLimiter.Function<T, V>, limit = 500) {
     this.limit = limit;
     this.poll = new Poll({
       auto: false,
-      factory: async () => await fn(),
+      factory: async () => (this.args ? fn(...this.args!) : fn()),
       frequency: { backoff: false, interval: Poll.NEVER, max: Poll.NEVER },
       standby: 'never'
     });
@@ -75,7 +78,7 @@ export abstract class RateLimiter<T, U> implements IRateLimiter<T, U> {
   /**
    * Invoke the rate limited function.
    */
-  abstract invoke(): Promise<T>;
+  abstract invoke(...args: V): Promise<T>;
 
   /**
    * Stop the function if it is mid-flight.
@@ -83,6 +86,11 @@ export abstract class RateLimiter<T, U> implements IRateLimiter<T, U> {
   async stop(): Promise<void> {
     return this.poll.stop();
   }
+
+  /**
+   * Arguments for the underlying function.
+   */
+  protected args: V | undefined = undefined;
 
   /**
    * A promise that resolves on each successful invocation.
@@ -95,6 +103,12 @@ export abstract class RateLimiter<T, U> implements IRateLimiter<T, U> {
   protected poll: Poll<T, U, 'invoked'>;
 }
 
+export namespace RateLimiter {
+  export type Function<T, V extends any[]> =
+    | ((...args: V) => T | Promise<T>)
+    | (() => T | Promise<T>);
+}
+
 /**
  * Wraps and debounces a function that can be called multiple times and only
  * executes the underlying function one `interval` after the last invocation.
@@ -102,13 +116,20 @@ export abstract class RateLimiter<T, U> implements IRateLimiter<T, U> {
  * @typeparam T - The resolved type of the underlying function. Defaults to any.
  *
  * @typeparam U - The rejected type of the underlying function. Defaults to any.
+ *
+ * @typeparam V - Arguments for the underlying function. Defaults to any[].
  */
-export class Debouncer<T = any, U = any> extends RateLimiter<T, U> {
+export class Debouncer<
+  T = any,
+  U = any,
+  V extends any[] = any[]
+> extends RateLimiter<T, U, V> {
   /**
    * Invokes the function and only executes after rate limit has elapsed.
    * Each invocation resets the timer.
    */
-  invoke(): Promise<T> {
+  invoke(...args: V): Promise<T> {
+    this.args = args;
     void this.poll.schedule({ interval: this.limit, phase: 'invoked' });
     return this.payload!.promise;
   }
@@ -121,8 +142,14 @@ export class Debouncer<T = any, U = any> extends RateLimiter<T, U> {
  * @typeparam T - The resolved type of the underlying function. Defaults to any.
  *
  * @typeparam U - The rejected type of the underlying function. Defaults to any.
+ *
+ * @typeparam V - Arguments for the underlying function. Defaults to any[].
  */
-export class Throttler<T = any, U = any> extends RateLimiter<T, U> {
+export class Throttler<
+  T = any,
+  U = any,
+  V extends any[] = any[]
+> extends RateLimiter<T, U, V> {
   /**
    * Instantiate a throttler.
    *
@@ -133,7 +160,10 @@ export class Throttler<T = any, U = any> extends RateLimiter<T, U> {
    * #### Notes
    * The `edge` defaults to `leading`; the `limit` defaults to `500`.
    */
-  constructor(fn: () => T | Promise<T>, options?: Throttler.IOptions | number) {
+  constructor(
+    fn: RateLimiter.Function<T, V>,
+    options?: Throttler.IOptions | number
+  ) {
     super(fn, typeof options === 'number' ? options : options && options.limit);
     let edge: 'leading' | 'trailing' = 'leading';
     if (typeof options !== 'number') {
@@ -146,8 +176,9 @@ export class Throttler<T = any, U = any> extends RateLimiter<T, U> {
   /**
    * Throttles function invocations if one is currently in flight.
    */
-  invoke(): Promise<T> {
+  invoke(...args: V): Promise<T> {
     if (this.poll.state.phase !== 'invoked') {
+      this.args = args;
       void this.poll.schedule({ interval: this._interval, phase: 'invoked' });
     }
     return this.payload!.promise;

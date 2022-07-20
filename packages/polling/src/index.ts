@@ -159,8 +159,11 @@ export namespace IPoll {
  * @typeparam T - The resolved type of the underlying function. Defaults to any.
  *
  * @typeparam U - The rejected type of the underlying function. Defaults to any.
+ *
+ * @typeparam V - Arguments for the underlying function. Defaults to any[].
  */
-export interface IRateLimiter<T = any, U = any> extends IDisposable {
+export interface IRateLimiter<T = any, U = any, V extends any[] = any[]>
+  extends IDisposable {
   /**
    * The rate limit in milliseconds.
    */
@@ -169,7 +172,7 @@ export interface IRateLimiter<T = any, U = any> extends IDisposable {
   /**
    * Invoke the rate limited function.
    */
-  invoke(): Promise<T>;
+  invoke(...args: V): Promise<T>;
 
   /**
    * Stop the function if it is mid-flight.
