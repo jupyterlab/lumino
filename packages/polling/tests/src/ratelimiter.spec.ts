@@ -35,19 +35,19 @@ describe('Debouncer', () => {
 
     it('should accept arguments', async () => {
       let sum = 0;
-      const fn = (value = 0) => {
-        sum += value;
+      const fn = (a?: number, b?: number) => {
+        sum += (a || 0) + (b || 0);
       };
       debouncer = new Debouncer<void, any, [number]>(fn);
       expect(sum).to.equal(0);
-      await debouncer.invoke(1);
-      expect(sum).to.equal(1);
-      void debouncer.invoke(10);
-      await debouncer.invoke(1);
-      expect(sum).to.equal(2);
-      void debouncer.invoke(10);
-      await debouncer.invoke(1);
+      await debouncer.invoke(1, 2);
       expect(sum).to.equal(3);
+      void debouncer.invoke(10, 20);
+      await debouncer.invoke(3, 4);
+      expect(sum).to.equal(10);
+      void debouncer.invoke(30, 40);
+      await debouncer.invoke(1);
+      expect(sum).to.equal(11);
     });
   });
 });
