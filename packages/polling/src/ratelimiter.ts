@@ -29,7 +29,11 @@ export abstract class RateLimiter<T, U, V extends any[]>
     this.limit = limit;
     this.poll = new Poll({
       auto: false,
-      factory: async () => fn(...this.args!),
+      factory: async () => {
+        const { args } = this;
+        this.args = undefined;
+        return fn(...args!);
+      },
       frequency: { backoff: false, interval: Poll.NEVER, max: Poll.NEVER },
       standby: 'never'
     });
@@ -66,6 +70,7 @@ export abstract class RateLimiter<T, U, V extends any[]>
     if (this.isDisposed) {
       return;
     }
+    this.args = undefined;
     this.payload = null;
     this.poll.dispose();
   }
