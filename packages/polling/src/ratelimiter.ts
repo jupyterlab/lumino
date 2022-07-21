@@ -164,29 +164,28 @@ export class Throttler<
     options?: Throttler.IOptions | number
   ) {
     super(fn, typeof options === 'number' ? options : options && options.limit);
-    if (typeof options !== 'number') {
-      options = options || {};
-      this._edge = 'edge' in options ? options.edge! : this._edge;
+    if (typeof options !== 'number' && options && options.edge === 'trailing') {
+      this._trailing = true;
     }
-    this._interval = this._edge === 'trailing' ? this.limit : Poll.IMMEDIATE;
+    this._interval = this._trailing ? this.limit : Poll.IMMEDIATE;
   }
 
   /**
    * Throttles function invocations if one is currently in flight.
    */
   invoke(...args: V): Promise<T> {
-    if (this._edge === 'trailing') {
+    const idle = this.poll.state.phase !== 'invoked';
+    if (idle || this._trailing) {
       this.args = args;
     }
-    if (this.poll.state.phase !== 'invoked') {
-      this.args = args;
+    if (idle) {
       void this.poll.schedule({ interval: this._interval, phase: 'invoked' });
     }
     return this.payload!.promise;
   }
 
-  private _edge: 'leading' | 'trailing' = 'leading';
   private _interval: number;
+  private _trailing = false;
 }
 
 /**

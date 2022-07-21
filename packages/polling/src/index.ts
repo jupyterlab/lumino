@@ -162,6 +162,7 @@ export namespace IPoll {
  *
  * @typeparam V - Arguments for the underlying function. Defaults to any[].
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface IRateLimiter<T = any, U = any, V extends any[] = any[]>
   extends IDisposable {
   /**
