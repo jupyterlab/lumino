@@ -2,6 +2,28 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2022.7.21
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/application@1.29.2...58fc58d365a1f71321ddd3d2d6a320d1ad1ebdde))
+
+### Enhancements made
+
+- Support arguments for rate-limited functions [#316](https://github.com/jupyterlab/lumino/pull/316) ([@afshin](https://github.com/afshin))
+
+### Maintenance and upkeep improvements
+
+- Bump terser from 5.7.1 to 5.14.2 [#315](https://github.com/jupyterlab/lumino/pull/315) ([@dependabot](https://github.com/dependabot))
+- Add the need to set _New Version Spec_ when using the releaser [#314](https://github.com/jupyterlab/lumino/pull/314) ([@fcollonval](https://github.com/fcollonval))
+- Don't run CI twice on PR from this repository [#313](https://github.com/jupyterlab/lumino/pull/313) ([@fcollonval](https://github.com/fcollonval))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2022-07-06&to=2022-07-21&type=c))
+
+[@afshin](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aafshin+updated%3A2022-07-06..2022-07-21&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2022-07-06..2022-07-21&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2022-07-06..2022-07-21&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2022.7.6
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/application@1.29.1...69dd9933226562ffe8da8d20890175842df95eda))
@@ -20,8 +42,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2022-06-07&to=2022-07-06&type=c))
 
 [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2022-06-07..2022-07-06&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2022-06-07..2022-07-06&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2022.6.7
 
