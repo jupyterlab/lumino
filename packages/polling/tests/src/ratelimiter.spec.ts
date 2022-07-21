@@ -3,9 +3,10 @@
 
 import { expect } from 'chai';
 
-import { Debouncer, Throttler } from '@lumino/polling';
+import { Debouncer, Poll, Throttler } from '@lumino/polling';
 
 describe('Debouncer', () => {
+  const limit = Poll.IMMEDIATE;
   let debouncer: Debouncer;
 
   afterEach(() => {
@@ -14,7 +15,7 @@ describe('Debouncer', () => {
 
   describe('#constructor()', () => {
     it('should create a debouncer', () => {
-      debouncer = new Debouncer(async () => undefined);
+      debouncer = new Debouncer(async () => undefined, limit);
       expect(debouncer).to.be.an.instanceof(Debouncer);
     });
   });
@@ -22,7 +23,7 @@ describe('Debouncer', () => {
   describe('#invoke()', () => {
     it('should invoke and debounce a function', async () => {
       let counter = 0;
-      debouncer = new Debouncer(() => counter++);
+      debouncer = new Debouncer(() => counter++, limit);
       expect(counter).to.equal(0);
       await debouncer.invoke();
       expect(counter).to.equal(1);
@@ -32,11 +33,22 @@ describe('Debouncer', () => {
       await debouncer.invoke();
       expect(counter).to.equal(2);
     });
+
+    it('should debounce with arguments', async () => {
+      let output = '';
+      debouncer = new Debouncer((name?: string) => {
+        output = `Hello, ${name || 'world'}`;
+      }, limit);
+      void debouncer.invoke('Huey');
+      void debouncer.invoke('Dewey');
+      await debouncer.invoke('Louie');
+      expect(output).to.equal('Hello, Louie');
+    });
   });
 });
 
 describe('Throttler', () => {
-  const limit = 500;
+  const limit = Poll.IMMEDIATE;
   let throttler: Throttler;
 
   afterEach(() => {
@@ -44,8 +56,8 @@ describe('Throttler', () => {
   });
 
   describe('#constructor()', () => {
-    it('should create a debouncer', () => {
-      throttler = new Throttler(async () => undefined);
+    it('should create a throttler', () => {
+      throttler = new Throttler(async () => undefined, limit);
       expect(throttler).to.be.an.instanceof(Throttler);
     });
   });
@@ -53,7 +65,7 @@ describe('Throttler', () => {
   describe('#invoke()', () => {
     it('should invoke and throttle a function', async () => {
       let counter = 0;
-      throttler = new Throttler(() => counter++);
+      throttler = new Throttler(() => counter++, limit);
       expect(counter).to.equal(0);
       await throttler.invoke();
       expect(counter).to.equal(1);
@@ -62,6 +74,19 @@ describe('Throttler', () => {
       void throttler.invoke();
       await throttler.invoke();
       expect(counter).to.equal(2);
+    });
+
+    it('should throttle with arguments', async () => {
+      let output = '';
+      throttler = new Throttler((name?: string) => {
+        output = `Hello, ${name || 'world'}`;
+      }, limit);
+      void throttler.invoke();
+      await throttler.invoke('Huey');
+      expect(output).to.equal('Hello, world');
+      void throttler.invoke('Dewey');
+      await throttler.invoke('Louie');
+      expect(output).to.equal('Hello, Dewey');
     });
 
     it('should collapse invocations into one promise per cycle', async () => {
@@ -86,59 +111,48 @@ describe('Throttler', () => {
     });
 
     it('should default to the `leading` edge of cycle', async () => {
-      const started = new Date().getTime();
-      let invoked = 0;
-
-      throttler = new Throttler(() => {
-        invoked = new Date().getTime();
-        expect(invoked - started).to.be.lessThan(limit);
+      throttler = new Throttler(invoked => {
+        expect(invoked).to.equal(1);
       }, limit);
 
-      void throttler.invoke();
-      void throttler.invoke();
-      void throttler.invoke();
-      void throttler.invoke();
-      await throttler.invoke();
+      void throttler.invoke(1);
+      void throttler.invoke(2);
+      void throttler.invoke(3);
+      void throttler.invoke(4);
+      await throttler.invoke(5);
     });
 
     it('should support the `leading` edge of cycle', async () => {
       const edge = 'leading';
-      const started = new Date().getTime();
-      let invoked = 0;
 
       throttler = new Throttler(
-        () => {
-          invoked = new Date().getTime();
-          expect(invoked - started).to.be.lessThan(limit);
+        invoked => {
+          expect(invoked).to.equal(1);
         },
         { edge, limit }
       );
 
-      void throttler.invoke();
-      void throttler.invoke();
-      void throttler.invoke();
-      void throttler.invoke();
-      await throttler.invoke();
+      void throttler.invoke(1);
+      void throttler.invoke(2);
+      void throttler.invoke(3);
+      void throttler.invoke(4);
+      await throttler.invoke(5);
     });
 
     it('should support the `trailing` edge of cycle', async () => {
       const edge = 'trailing';
-      const started = new Date().getTime();
-      let invoked = 0;
-
       throttler = new Throttler(
-        () => {
-          invoked = new Date().getTime();
-          expect(invoked - started).to.be.gte(limit);
+        invoked => {
+          expect(invoked).to.equal(5);
         },
         { edge, limit }
       );
 
-      void throttler.invoke();
-      void throttler.invoke();
-      void throttler.invoke();
-      void throttler.invoke();
-      await throttler.invoke();
+      void throttler.invoke(1);
+      void throttler.invoke(2);
+      void throttler.invoke(3);
+      void throttler.invoke(4);
+      await throttler.invoke(5);
     });
   });
 });
