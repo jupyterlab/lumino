@@ -67,6 +67,32 @@ export class AccordionPanel extends SplitPanel {
   }
 
   /**
+   * Collapse the widget at position `index`.
+   *
+   * @param index Widget index
+   */
+  collapse(index: number): void {
+    const widget = (this.layout as AccordionLayout).widgets[index];
+
+    if (!widget.isHidden) {
+      this._toggleExpansion(index);
+    }
+  }
+
+  /**
+   * Expand the widget at position `index`.
+   *
+   * @param index Widget index
+   */
+  expand(index: number): void {
+    const widget = (this.layout as AccordionLayout).widgets[index];
+
+    if (widget.isHidden) {
+      this._toggleExpansion(index);
+    }
+  }
+
+  /**
    * Insert a widget at the specified index.
    *
    * @param index - The index at which to insert the widget.
@@ -221,23 +247,7 @@ export class AccordionPanel extends SplitPanel {
       if (index >= 0) {
         event.preventDefault();
         event.stopPropagation();
-        const title = this.titles[index];
-        const widget = (this.layout as AccordionLayout).widgets[index];
-
-        const newSize = this._computeWidgetSize(index);
-        if (newSize) {
-          this.setRelativeSizes(newSize, false);
-        }
-
-        if (widget.isHidden) {
-          title.classList.add('lm-mod-expanded');
-          title.setAttribute('aria-expanded', 'true');
-          widget.show();
-        } else {
-          title.classList.remove('lm-mod-expanded');
-          title.setAttribute('aria-expanded', 'false');
-          widget.hide();
-        }
+        this._toggleExpansion(index);
       }
     }
   }
@@ -293,6 +303,26 @@ export class AccordionPanel extends SplitPanel {
       if (handled) {
         event.preventDefault();
       }
+    }
+  }
+
+  private _toggleExpansion(index: number) {
+    const title = this.titles[index];
+    const widget = (this.layout as AccordionLayout).widgets[index];
+
+    const newSize = this._computeWidgetSize(index);
+    if (newSize) {
+      this.setRelativeSizes(newSize, false);
+    }
+
+    if (widget.isHidden) {
+      title.classList.add('lm-mod-expanded');
+      title.setAttribute('aria-expanded', 'true');
+      widget.show();
+    } else {
+      title.classList.remove('lm-mod-expanded');
+      title.setAttribute('aria-expanded', 'false');
+      widget.hide();
     }
   }
 
