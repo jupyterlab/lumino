@@ -44,9 +44,6 @@
       "path": "./packages/datagrid"
     },
     {
-      "path": "./packages/datastore"
-    },
-    {
       "path": "./packages/disposable"
     },
     {
