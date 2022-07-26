@@ -137,6 +137,69 @@ describe('@lumino/widgets', () => {
       });
     });
 
+    describe('#collapse()', () => {
+      let panel: AccordionPanel;
+      let layout: AccordionLayout;
+
+      beforeEach(() => {
+        panel = new AccordionPanel();
+        layout = panel.layout as AccordionLayout;
+        let widgets = [new Widget(), new Widget(), new Widget()];
+        widgets.forEach(w => {
+          panel.addWidget(w);
+        });
+        panel.setRelativeSizes([10, 10, 10, 20]);
+        Widget.attach(panel, document.body);
+        MessageLoop.flush();
+      });
+
+      afterEach(() => {
+        panel.dispose();
+      });
+
+      it('should collapse an expanded widget', () => {
+        panel.collapse(1);
+
+        expect(layout.titles[1].getAttribute('aria-expanded')).to.equal(
+          'false'
+        );
+        expect(layout.titles[1].classList.contains('lm-mod-expanded')).to.be
+          .false;
+        expect(layout.widgets[1].isHidden).to.be.true;
+      });
+    });
+
+    describe('#expand()', () => {
+      let panel: AccordionPanel;
+      let layout: AccordionLayout;
+
+      beforeEach(() => {
+        panel = new AccordionPanel();
+        layout = panel.layout as AccordionLayout;
+        let widgets = [new Widget(), new Widget(), new Widget()];
+        widgets.forEach(w => {
+          panel.addWidget(w);
+        });
+        panel.setRelativeSizes([10, 10, 10, 20]);
+        Widget.attach(panel, document.body);
+        MessageLoop.flush();
+      });
+
+      afterEach(() => {
+        panel.dispose();
+      });
+
+      it('should expand a collapsed widget', () => {
+        panel.collapse(1);
+        panel.expand(1);
+
+        expect(layout.titles[0].getAttribute('aria-expanded')).to.equal('true');
+        expect(layout.titles[0].classList.contains('lm-mod-expanded')).to.be
+          .true;
+        expect(layout.widgets[0].isHidden).to.be.false;
+      });
+    });
+
     describe('#handleEvent()', () => {
       let panel: LogAccordionPanel;
       let layout: AccordionLayout;
