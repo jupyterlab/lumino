@@ -1,22 +1,11 @@
 {
+  "extends": "../../tsconfigbase",
   "compilerOptions": {
-    "composite": true,
-    "sourceMap": true,
-    "declaration": true,
-    "declarationDir": "./types",
-    "declarationMap": true,
-    "noImplicitAny": true,
-    "noEmitOnError": true,
-    "noUnusedLocals": true,
-    "strictNullChecks": true,
-    "module": "ES6",
-    "moduleResolution": "node",
-    "target": "ES5",
-    "outDir": "lib",
+    "declarationDir": "types",
     "lib": ["ES5", "ES2015.Collection", "DOM"],
-    "importHelpers": true,
-    "types": ["@types/node"],
-    "rootDir": "src"
+    "outDir": "lib",
+    "rootDir": "src",
+    "types": ["@types/node"]
   },
   "include": ["src/*"],
   "references": [
