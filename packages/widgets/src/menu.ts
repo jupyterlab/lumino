@@ -44,9 +44,6 @@ export class Menu extends Widget {
   constructor(options: Menu.IOptions) {
     super({ node: Private.createNode() });
     this.addClass('lm-Menu');
-    /* <DEPRECATED> */
-    this.addClass('p-Menu');
-    /* </DEPRECATED> */
     this.setFlag(Widget.Flag.DisallowLayout);
     this.commands = options.commands;
     this.renderer = options.renderer || Menu.defaultRenderer;
@@ -1046,11 +1043,7 @@ export namespace Menu {
     /**
      * The icon renderer for the menu item.
      */
-    readonly icon:
-      | VirtualElement.IRenderer
-      | undefined
-      /* <DEPRECATED> */
-      | string /* </DEPRECATED> */;
+    readonly icon: VirtualElement.IRenderer | undefined;
 
     /**
      * The icon class for the menu item.
@@ -1180,13 +1173,7 @@ export namespace Menu {
     renderIcon(data: IRenderData): VirtualElement {
       let className = this.createIconClass(data);
 
-      /* <DEPRECATED> */
-      if (typeof data.item.icon === 'string') {
-        return h.div({ className }, data.item.iconLabel);
-      }
-      /* </DEPRECATED> */
-
-      // if data.item.icon is undefined, it will be ignored
+      // If data.item.icon is undefined, it will be ignored.
       return h.div({ className }, data.item.icon!, data.item.iconLabel);
     }
 
@@ -1199,16 +1186,7 @@ export namespace Menu {
      */
     renderLabel(data: IRenderData): VirtualElement {
       let content = this.formatLabel(data);
-      return h.div(
-        {
-          className:
-            'lm-Menu-itemLabel' +
-            /* <DEPRECATED> */
-            ' p-Menu-itemLabel'
-          /* </DEPRECATED> */
-        },
-        content
-      );
+      return h.div({ className: 'lm-Menu-itemLabel' }, content);
     }
 
     /**
@@ -1220,16 +1198,7 @@ export namespace Menu {
      */
     renderShortcut(data: IRenderData): VirtualElement {
       let content = this.formatShortcut(data);
-      return h.div(
-        {
-          className:
-            'lm-Menu-itemShortcut' +
-            /* <DEPRECATED> */
-            ' p-Menu-itemShortcut'
-          /* </DEPRECATED> */
-        },
-        content
-      );
+      return h.div({ className: 'lm-Menu-itemShortcut' }, content);
     }
 
     /**
@@ -1240,13 +1209,7 @@ export namespace Menu {
      * @returns A virtual element representing the submenu icon.
      */
     renderSubmenu(data: IRenderData): VirtualElement {
-      return h.div({
-        className:
-          'lm-Menu-itemSubmenuIcon' +
-          /* <DEPRECATED> */
-          ' p-Menu-itemSubmenuIcon'
-        /* </DEPRECATED> */
-      });
+      return h.div({ className: 'lm-Menu-itemSubmenuIcon' });
     }
 
     /**
@@ -1259,40 +1222,22 @@ export namespace Menu {
     createItemClass(data: IRenderData): string {
       // Setup the initial class name.
       let name = 'lm-Menu-item';
-      /* <DEPRECATED> */
-      name += ' p-Menu-item';
-      /* </DEPRECATED> */
 
       // Add the boolean state classes.
       if (!data.item.isEnabled) {
         name += ' lm-mod-disabled';
-        /* <DEPRECATED> */
-        name += ' p-mod-disabled';
-        /* </DEPRECATED> */
       }
       if (data.item.isToggled) {
         name += ' lm-mod-toggled';
-        /* <DEPRECATED> */
-        name += ' p-mod-toggled';
-        /* </DEPRECATED> */
       }
       if (!data.item.isVisible) {
         name += ' lm-mod-hidden';
-        /* <DEPRECATED> */
-        name += ' p-mod-hidden';
-        /* </DEPRECATED> */
       }
       if (data.active) {
         name += ' lm-mod-active';
-        /* <DEPRECATED> */
-        name += ' p-mod-active';
-        /* </DEPRECATED> */
       }
       if (data.collapsed) {
         name += ' lm-mod-collapsed';
-        /* <DEPRECATED> */
-        name += ' p-mod-collapsed';
-        /* </DEPRECATED> */
       }
 
       // Add the extra class.
@@ -1332,9 +1277,6 @@ export namespace Menu {
      */
     createIconClass(data: IRenderData): string {
       let name = 'lm-Menu-itemIcon';
-      /* <DEPRECATED> */
-      name += ' p-Menu-itemIcon';
-      /* </DEPRECATED> */
       let extra = data.item.iconClass;
       return extra ? `${name} ${extra}` : name;
     }
@@ -1389,16 +1331,7 @@ export namespace Menu {
       let char = label[mnemonic];
 
       // Wrap the mnemonic character in a span.
-      let span = h.span(
-        {
-          className:
-            'lm-Menu-itemMnemonic' +
-            /* <DEPRECATED> */
-            ' p-Menu-itemMnemonic'
-          /* </DEPRECATED> */
-        },
-        char
-      );
+      let span = h.span({ className: 'lm-Menu-itemMnemonic' }, char);
 
       // Return the content parts.
       return [prefix, span, suffix];
@@ -1446,9 +1379,6 @@ namespace Private {
     let node = document.createElement('div');
     let content = document.createElement('ul');
     content.className = 'lm-Menu-content';
-    /* <DEPRECATED> */
-    content.classList.add('p-Menu-content');
-    /* </DEPRECATED> */
     node.appendChild(content);
     content.setAttribute('role', 'menu');
     node.tabIndex = 0;
@@ -1813,26 +1743,14 @@ namespace Private {
     /**
      * The icon renderer for the menu item.
      */
-    get icon():
-      | VirtualElement.IRenderer
-      | undefined
-      /* <DEPRECATED> */
-      | string /* </DEPRECATED> */ {
+    get icon(): VirtualElement.IRenderer | undefined {
       if (this.type === 'command') {
         return this._commands.icon(this.command, this.args);
       }
       if (this.type === 'submenu' && this.submenu) {
         return this.submenu.title.icon;
       }
-
-      /* <DEPRECATED> */
-      // alias to icon class if not otherwise defined
-      return this.iconClass;
-      /* </DEPRECATED> */
-
-      /* <FUTURE>
       return undefined;
-      </FUTURE> */
     }
 
     /**

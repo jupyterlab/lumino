@@ -7,8 +7,6 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
-/* <DEPRECATED> */
-.p-DockPanel-overlay, /* </DEPRECATED> */
 .lm-DockPanel-overlay {
   background: rgba(255, 255, 255, 0.6);
   border: 1px dashed black;

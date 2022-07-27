@@ -260,7 +260,7 @@ describe('@lumino/commands', () => {
       const iconRenderer = {
         render: (host: HTMLElement, options?: any) => {
           const renderNode = document.createElement('div');
-          renderNode.className = 'p-render';
+          renderNode.className = 'lm-render';
           host.appendChild(renderNode);
         }
       };
@@ -281,46 +281,20 @@ describe('@lumino/commands', () => {
           execute: (args: JSONObject) => {
             return args;
           },
-          icon: (args: JSONObject) => {
-            return JSON.stringify(args);
-          }
+          icon: iconRenderer
         };
         registry.addCommand('test', cmd);
-        expect(registry.icon('test', {})).to.equal('{}');
+        expect(registry.icon('test', {})).to.equal(iconRenderer);
       });
 
-      it('should return an empty string if the command is not registered', () => {
-        expect(registry.icon('foo')).to.equal('');
+      it('should return undefined if the command is not registered', () => {
+        expect(registry.icon('foo')).to.equal(undefined);
       });
 
-      it('should default to an empty string for a command', () => {
+      it('should default to undefined for a command', () => {
         registry.addCommand('test', NULL_COMMAND);
-        expect(registry.icon('test')).to.equal('');
+        expect(registry.icon('test')).to.equal(undefined);
       });
-
-      /* <DEPRECATED> */
-      it('should be able to return a string value', () => {
-        let cmd = {
-          execute: (args: JSONObject) => {
-            return args;
-          },
-          icon: 'foo'
-        };
-        registry.addCommand('test', cmd);
-        expect(registry.icon('test')).to.equal('foo');
-      });
-
-      it('should alias .iconClass() if cmd.icon is unset', () => {
-        let cmd = {
-          execute: (args: JSONObject) => {
-            return args;
-          },
-          iconClass: 'foo'
-        };
-        registry.addCommand('test', cmd);
-        expect(registry.icon('test')).to.equal('foo');
-      });
-      /* </DEPRECATED> */
     });
 
     describe('#caption()', () => {

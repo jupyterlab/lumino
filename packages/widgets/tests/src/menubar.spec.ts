@@ -75,12 +75,19 @@ describe('@lumino/widgets', () => {
 
   before(() => {
     commands = new CommandRegistry();
+    const iconRenderer = {
+      render: (host: HTMLElement, options?: any) => {
+        const renderNode = document.createElement('div');
+        renderNode.className = 'foo';
+        host.appendChild(renderNode);
+      }
+    };
     let cmd = commands.addCommand(DEFAULT_CMD, {
       execute: (args: JSONObject) => {
         return args;
       },
       label: 'LABEL',
-      icon: 'foo',
+      icon: iconRenderer,
       className: 'bar',
       isToggled: (args: JSONObject) => {
         return true;
@@ -774,7 +781,7 @@ describe('@lumino/widgets', () => {
       before(() => {
         let widget = new Widget();
         widget.title.label = 'foo';
-        widget.title.icon = 'bar';
+        widget.title.iconClass = 'bar';
         widget.title.className = 'baz';
         widget.title.closable = true;
         data = {

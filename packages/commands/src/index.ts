@@ -166,7 +166,7 @@ export class CommandRegistry {
     args: ReadonlyPartialJSONObject = JSONExt.emptyObject
   ): string {
     let cmd = this._commands[id];
-    return cmd ? cmd.label.call(undefined, args) : '';
+    return cmd?.label.call(undefined, args) || '';
   }
 
   /**
@@ -199,21 +199,13 @@ export class CommandRegistry {
    *
    * @param args - The arguments for the command.
    *
-   * @returns The icon renderer for the command, or
-   *   an empty string if the command is not registered.
+   * @returns The icon renderer for the command or `undefined`.
    */
   icon(
     id: string,
     args: ReadonlyPartialJSONObject = JSONExt.emptyObject
-  ):
-    | VirtualElement.IRenderer
-    | undefined
-    /* <DEPRECATED> */
-    | string /* </DEPRECATED> */ {
-    let cmd = this._commands[id];
-    return cmd
-      ? cmd.icon.call(undefined, args)
-      : /* <DEPRECATED> */ '' /* </DEPRECATED> */ /* <FUTURE> undefined </FUTURE> */;
+  ): VirtualElement.IRenderer | undefined {
+    return this._commands[id]?.icon.call(undefined, args);
   }
 
   /**
@@ -728,22 +720,12 @@ export namespace CommandRegistry {
      * This can be an IRenderer object, or a function which returns the
      * renderer based on the provided command arguments.
      *
-     * The default value is undefined.
-     *
-     * DEPRECATED: if set to a string value, the .icon field will function as
-     * an alias for the .iconClass field, for backwards compatibility
+     * The default value is `undefined`.
      */
     icon?:
       | VirtualElement.IRenderer
       | undefined
-      /* <DEPRECATED> */
-      | string /* </DEPRECATED> */
-      | CommandFunc<
-          | VirtualElement.IRenderer
-          | undefined
-          /* <DEPRECATED> */
-          | string /* </DEPRECATED> */
-        >;
+      | CommandFunc<VirtualElement.IRenderer | undefined>;
 
     /**
      * The icon class for the command.
@@ -1262,14 +1244,7 @@ namespace Private {
     readonly execute: CommandFunc<any>;
     readonly label: CommandFunc<string>;
     readonly mnemonic: CommandFunc<number>;
-
-    readonly icon: CommandFunc<
-      | VirtualElement.IRenderer
-      | undefined
-      /* <DEPRECATED> */
-      | string /* </DEPRECATED> */
-    >;
-
+    readonly icon: CommandFunc<VirtualElement.IRenderer | undefined>;
     readonly iconClass: CommandFunc<string>;
     readonly iconLabel: CommandFunc<string>;
     readonly caption: CommandFunc<string>;
@@ -1288,30 +1263,12 @@ namespace Private {
   export function createCommand(
     options: CommandRegistry.ICommandOptions
   ): ICommand {
-    let icon;
-    let iconClass;
-
-    /* <DEPRECATED> */
-    if (!options.icon || typeof options.icon === 'string') {
-      // alias icon to iconClass
-      iconClass = asFunc(options.iconClass || options.icon, emptyStringFunc);
-      icon = iconClass;
-    } else {
-      /* /<DEPRECATED> */
-
-      iconClass = asFunc(options.iconClass, emptyStringFunc);
-      icon = asFunc(options.icon, undefinedFunc);
-
-      /* <DEPRECATED> */
-    }
-    /* </DEPRECATED> */
-
     return {
       execute: options.execute,
       label: asFunc(options.label, emptyStringFunc),
       mnemonic: asFunc(options.mnemonic, negativeOneFunc),
-      icon,
-      iconClass,
+      icon: asFunc(options.icon, undefinedFunc),
+      iconClass: asFunc(options.iconClass, emptyStringFunc),
       iconLabel: asFunc(options.iconLabel, emptyStringFunc),
       caption: asFunc(options.caption, emptyStringFunc),
       usage: asFunc(options.usage, emptyStringFunc),
@@ -1578,11 +1535,6 @@ namespace Private {
       if (targ.hasAttribute('data-lm-suppress-shortcuts')) {
         return -1;
       }
-      /* <DEPRECATED> */
-      if (targ.hasAttribute('data-p-suppress-shortcuts')) {
-        return -1;
-      }
-      /* </DEPRECATED> */
       if (Selector.matches(targ, selector)) {
         return dist;
       }

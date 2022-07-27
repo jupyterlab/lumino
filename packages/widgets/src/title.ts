@@ -38,34 +38,14 @@ export class Title<T> implements IDisposable {
       this._mnemonic = options.mnemonic;
     }
     if (options.icon !== undefined) {
-      /* <DEPRECATED> */
-      if (typeof options.icon === 'string') {
-        // when ._icon is null, the .icon getter will alias .iconClass
-        this._icon = null;
-        this._iconClass = options.icon;
-      } else {
-        /* </DEPRECATED> */
-
-        this._icon = options.icon;
-
-        /* <DEPRECATED> */
-      }
-      /* </DEPRECATED> */
-    } else {
-      /* <DEPRECATED> */
-      // if unset, default to aliasing .iconClass
-      this._icon = null;
+      this._icon = options.icon;
     }
-    /* </DEPRECATED> */
 
     if (options.iconClass !== undefined) {
       this._iconClass = options.iconClass;
     }
     if (options.iconLabel !== undefined) {
       this._iconLabel = options.iconLabel;
-    }
-    if (options.iconRenderer !== undefined) {
-      this._icon = options.iconRenderer;
     }
     if (options.caption !== undefined) {
       this._caption = options.caption;
@@ -138,22 +118,8 @@ export class Title<T> implements IDisposable {
    *
    * #### Notes
    * The default value is undefined.
-   *
-   * DEPRECATED: if set to a string value, the .icon field will function as
-   * an alias for the .iconClass field, for backwards compatibility
    */
-  get icon():
-    | VirtualElement.IRenderer
-    | undefined
-    /* <DEPRECATED> */
-    | string /* </DEPRECATED> */ {
-    /* <DEPRECATED> */
-    if (this._icon === null) {
-      // only alias .iconClass if ._icon has been explicitly nulled
-      return this.iconClass;
-    }
-    /* </DEPRECATED> */
-
+  get icon(): VirtualElement.IRenderer | undefined {
     return this._icon;
   }
 
@@ -162,34 +128,13 @@ export class Title<T> implements IDisposable {
    *
    * #### Notes
    * A renderer is an object that supplies a render and unrender function.
-   *
-   * DEPRECATED: if set to a string value, the .icon field will function as
-   * an alias for the .iconClass field, for backwards compatibility
    */
-  set icon(
-    value:
-      | VirtualElement.IRenderer
-      | undefined
-      /* <DEPRECATED> */
-      | string /* </DEPRECATED> */
-  ) {
-    /* <DEPRECATED> */
-    if (typeof value === 'string') {
-      // when ._icon is null, the .icon getter will alias .iconClass
-      this._icon = null;
-      this.iconClass = value;
-    } else {
-      /* </DEPRECATED> */
-
-      if (this._icon === value) {
-        return;
-      }
-      this._icon = value;
-      this._changed.emit(undefined);
-
-      /* <DEPRECATED> */
+  set icon(value: VirtualElement.IRenderer | undefined) {
+    if (this._icon === value) {
+      return;
     }
-    /* </DEPRECATED> */
+    this._icon = value;
+    this._changed.emit(undefined);
   }
 
   /**
@@ -238,20 +183,6 @@ export class Title<T> implements IDisposable {
     }
     this._iconLabel = value;
     this._changed.emit(undefined);
-  }
-
-  /**
-   * @deprecated Use `icon` instead.
-   */
-  get iconRenderer(): VirtualElement.IRenderer | undefined {
-    return this._icon || undefined;
-  }
-
-  /**
-   * @deprecated Use `icon` instead.
-   */
-  set iconRenderer(value: VirtualElement.IRenderer | undefined) {
-    this.icon = value;
   }
 
   /**
@@ -372,13 +303,7 @@ export class Title<T> implements IDisposable {
   private _label = '';
   private _caption = '';
   private _mnemonic = -1;
-
-  private _icon:
-    | VirtualElement.IRenderer
-    | undefined
-    /* <DEPRECATED> */
-    | null /* </DEPRECATED> */;
-
+  private _icon: VirtualElement.IRenderer | undefined = undefined;
   private _iconClass = '';
   private _iconLabel = '';
   private _className = '';
@@ -418,11 +343,8 @@ export namespace Title {
 
     /**
      * The icon renderer for the title.
-     *
-     * DEPRECATED: if set to a string value, the .icon field will function as
-     * an alias for the .iconClass field, for backwards compatibility
      */
-    icon?: VirtualElement.IRenderer | string;
+    icon?: VirtualElement.IRenderer;
 
     /**
      * The icon class name for the title.
@@ -433,11 +355,6 @@ export namespace Title {
      * The icon label for the title.
      */
     iconLabel?: string;
-
-    /**
-     * @deprecated Use `icon` instead.
-     */
-    iconRenderer?: VirtualElement.IRenderer;
 
     /**
      * The caption for the title.

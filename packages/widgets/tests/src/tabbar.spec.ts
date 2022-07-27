@@ -1446,7 +1446,7 @@ describe('@lumino/widgets', () => {
           owner,
           label: 'foo',
           closable: true,
-          icon: 'bar',
+          iconClass: 'bar',
           className: 'fizz',
           caption: 'this is a caption'
         });
@@ -1492,12 +1492,6 @@ describe('@lumino/widgets', () => {
             'lm-TabBar-tabIcon'
           )[0] as HTMLElement;
           expect(icon.classList.contains(title.iconClass)).to.equal(true);
-
-          /* <DEPRECATED> */
-          // since a string was assigned to .icon, it should alias .iconClass
-          expect(icon.classList.contains(title.icon as string)).to.equal(true);
-          expect(title.icon).to.equal(title.iconClass);
-          /* </DEPRECATED> */
         });
       });
 
@@ -1508,12 +1502,6 @@ describe('@lumino/widgets', () => {
           let node = VirtualDOM.realize(vNode as VirtualElement);
           expect(node.className).to.contain('lm-TabBar-tabIcon');
           expect(node.classList.contains(title.iconClass)).to.equal(true);
-
-          /* <DEPRECATED> */
-          // make sure that icon and iconClass match
-          expect(node.classList.contains(title.icon as string)).to.equal(true);
-          expect(title.icon).to.equal(title.iconClass);
-          /* </DEPRECATED> */
         });
       });
 
@@ -1589,12 +1577,6 @@ describe('@lumino/widgets', () => {
           });
           expect(className).to.contain('lm-TabBar-tabIcon');
           expect(className).to.contain(title.iconClass);
-
-          /* <DEPRECATED> */
-          // make sure that icon and iconClass match
-          expect(className).to.contain(title.icon as string);
-          expect(title.icon).to.equal(title.iconClass);
-          /* </DEPRECATED> */
         });
       });
     });

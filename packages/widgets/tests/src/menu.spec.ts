@@ -66,12 +66,19 @@ describe('@lumino/widgets', () => {
   let executed = '';
 
   before(() => {
+    const iconRenderer = {
+      render: (host: HTMLElement, options?: any) => {
+        const renderNode = document.createElement('div');
+        renderNode.className = 'foo';
+        host.appendChild(renderNode);
+      }
+    };
     commands.addCommand('test', {
       execute: (args: JSONObject) => {
         executed = 'test';
       },
       label: 'Test Label',
-      icon: 'foo',
+      icon: iconRenderer,
       caption: 'Test Caption',
       className: 'testClass',
       mnemonic: 0
@@ -81,7 +88,7 @@ describe('@lumino/widgets', () => {
         executed = 'test-toggled';
       },
       label: 'Test Toggled Label',
-      icon: 'foo',
+      icon: iconRenderer,
       className: 'testClass',
       isToggled: (args: JSONObject) => true,
       mnemonic: 6
@@ -91,7 +98,7 @@ describe('@lumino/widgets', () => {
         executed = 'test-disabled';
       },
       label: 'Test Disabled Label',
-      icon: 'foo',
+      icon: iconRenderer,
       className: 'testClass',
       isEnabled: (args: JSONObject) => false,
       mnemonic: 5
@@ -101,7 +108,7 @@ describe('@lumino/widgets', () => {
         executed = 'test-hidden';
       },
       label: 'Hidden Label',
-      icon: 'foo',
+      icon: iconRenderer,
       className: 'testClass',
       isVisible: (args: JSONObject) => false
     });
@@ -110,7 +117,7 @@ describe('@lumino/widgets', () => {
         executed = 'test-zenith';
       },
       label: 'Zenith Label',
-      icon: 'foo',
+      icon: iconRenderer,
       className: 'testClass'
     });
     commands.addKeyBinding({
@@ -1044,9 +1051,9 @@ describe('@lumino/widgets', () => {
 
         it('should get the title icon of a submenu item for a `submenu` type', () => {
           let submenu = new Menu({ commands });
-          submenu.title.icon = 'bar';
+          submenu.title.iconClass = 'bar';
           let item = menu.addItem({ type: 'submenu', submenu });
-          expect(item.icon).to.equal('bar');
+          expect(item.iconClass).to.equal('bar');
         });
 
         it('should default to an empty string', () => {
@@ -1285,10 +1292,6 @@ describe('@lumino/widgets', () => {
           });
           let node = VirtualDOM.realize(vNode);
           let span = '<span class="lm-Menu-itemMnemonic">T</span>est Label';
-          /* <DEPRECATED> */
-          span =
-            '<span class="lm-Menu-itemMnemonic p-Menu-itemMnemonic">T</span>est Label';
-          /* </DEPRECATED> */
           expect(node.classList.contains('lm-Menu-itemLabel')).to.equal(true);
           expect(node.innerHTML).to.equal(span);
         });
@@ -1339,9 +1342,6 @@ describe('@lumino/widgets', () => {
             collapsed: false
           });
           let expected = 'lm-Menu-item testClass';
-          /* <DEPRECATED> */
-          expected = 'lm-Menu-item p-Menu-item testClass';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
 
           name = renderer.createItemClass({
@@ -1350,10 +1350,6 @@ describe('@lumino/widgets', () => {
             collapsed: false
           });
           expected = 'lm-Menu-item lm-mod-active testClass';
-          /* <DEPRECATED> */
-          expected =
-            'lm-Menu-item p-Menu-item lm-mod-active p-mod-active testClass';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
 
           name = renderer.createItemClass({
@@ -1362,10 +1358,6 @@ describe('@lumino/widgets', () => {
             collapsed: true
           });
           expected = 'lm-Menu-item lm-mod-collapsed testClass';
-          /* <DEPRECATED> */
-          expected =
-            'lm-Menu-item p-Menu-item lm-mod-collapsed p-mod-collapsed testClass';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
 
           item = menu.addItem({ command: 'test-disabled' });
@@ -1375,10 +1367,6 @@ describe('@lumino/widgets', () => {
             collapsed: false
           });
           expected = 'lm-Menu-item lm-mod-disabled testClass';
-          /* <DEPRECATED> */
-          expected =
-            'lm-Menu-item p-Menu-item lm-mod-disabled p-mod-disabled testClass';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
 
           item = menu.addItem({ command: 'test-toggled' });
@@ -1388,10 +1376,6 @@ describe('@lumino/widgets', () => {
             collapsed: false
           });
           expected = 'lm-Menu-item lm-mod-toggled testClass';
-          /* <DEPRECATED> */
-          expected =
-            'lm-Menu-item p-Menu-item lm-mod-toggled p-mod-toggled testClass';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
 
           item = menu.addItem({ command: 'test-hidden' });
@@ -1401,10 +1385,6 @@ describe('@lumino/widgets', () => {
             collapsed: false
           });
           expected = 'lm-Menu-item lm-mod-hidden testClass';
-          /* <DEPRECATED> */
-          expected =
-            'lm-Menu-item p-Menu-item lm-mod-hidden p-mod-hidden testClass';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
 
           let submenu = new Menu({ commands });
@@ -1416,9 +1396,6 @@ describe('@lumino/widgets', () => {
             collapsed: false
           });
           expected = 'lm-Menu-item fooClass';
-          /* <DEPRECATED> */
-          expected = 'lm-Menu-item p-Menu-item fooClass';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
         });
       });
@@ -1461,9 +1438,6 @@ describe('@lumino/widgets', () => {
             collapsed: false
           });
           let expected = 'lm-Menu-itemIcon foo';
-          /* <DEPRECATED> */
-          expected = 'lm-Menu-itemIcon p-Menu-itemIcon foo';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
 
           item = menu.addItem({ type: 'separator' });
@@ -1473,13 +1447,10 @@ describe('@lumino/widgets', () => {
             collapsed: false
           });
           expected = 'lm-Menu-itemIcon';
-          /* <DEPRECATED> */
-          expected = 'lm-Menu-itemIcon p-Menu-itemIcon';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
 
           let submenu = new Menu({ commands });
-          submenu.title.icon = 'bar';
+          submenu.title.iconClass = 'bar';
           item = menu.addItem({ type: 'submenu', submenu });
           name = renderer.createIconClass({
             item,
@@ -1487,9 +1458,6 @@ describe('@lumino/widgets', () => {
             collapsed: false
           });
           expected = 'lm-Menu-itemIcon bar';
-          /* <DEPRECATED> */
-          expected = 'lm-Menu-itemIcon p-Menu-itemIcon bar';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
         });
       });
@@ -1504,10 +1472,6 @@ describe('@lumino/widgets', () => {
           });
           let node = VirtualDOM.realize(h.div(child));
           let span = '<span class="lm-Menu-itemMnemonic">T</span>est Label';
-          /* <DEPRECATED> */
-          span =
-            '<span class="lm-Menu-itemMnemonic p-Menu-itemMnemonic">T</span>est Label';
-          /* </DEPRECATED> */
           expect(node.innerHTML).to.equal(span);
 
           item = menu.addItem({ type: 'separator' });

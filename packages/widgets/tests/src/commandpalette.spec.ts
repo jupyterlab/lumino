@@ -691,9 +691,6 @@ describe('@lumino/widgets', () => {
             active: false
           });
           let expected = 'lm-CommandPalette-item testClass';
-          /* <DEPRECATED> */
-          expected = 'lm-CommandPalette-item p-CommandPalette-item testClass';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
         });
 
@@ -707,10 +704,6 @@ describe('@lumino/widgets', () => {
           });
           let expected =
             'lm-CommandPalette-item lm-mod-disabled lm-mod-toggled lm-mod-active testClass';
-          /* <DEPRECATED> */
-          expected =
-            'lm-CommandPalette-item p-CommandPalette-item lm-mod-disabled p-mod-disabled lm-mod-toggled p-mod-toggled lm-mod-active p-mod-active testClass';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
         });
       });

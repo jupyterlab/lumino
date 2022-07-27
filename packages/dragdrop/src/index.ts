@@ -263,12 +263,6 @@ export class Drag implements IDisposable {
    */
   handleEvent(event: Event): void {
     switch (event.type) {
-      case 'mousemove': // <DEPRECATED>
-        this._evtMouseMove(event as MouseEvent);
-        break;
-      case 'mouseup': // <DEPRECATED>
-        this._evtMouseUp(event as MouseEvent);
-        break;
       case 'pointermove':
         this._evtMouseMove(event as MouseEvent);
         break;
@@ -375,13 +369,6 @@ export class Drag implements IDisposable {
    * Add the document event listeners for the drag object.
    */
   private _addListeners(): void {
-    document.addEventListener('mousedown', this, true); // <DEPRECATED>
-    document.addEventListener('mousemove', this, true); // <DEPRECATED>
-    document.addEventListener('mouseup', this, true); // <DEPRECATED>
-    document.addEventListener('mouseenter', this, true); // <DEPRECATED>
-    document.addEventListener('mouseleave', this, true); // <DEPRECATED>
-    document.addEventListener('mouseover', this, true); // <DEPRECATED>
-    document.addEventListener('mouseout', this, true); // <DEPRECATED>
     document.addEventListener('pointerdown', this, true);
     document.addEventListener('pointermove', this, true);
     document.addEventListener('pointerup', this, true);
@@ -399,13 +386,6 @@ export class Drag implements IDisposable {
    * Remove the document event listeners for the drag object.
    */
   private _removeListeners(): void {
-    document.removeEventListener('mousedown', this, true); // <DEPRECATED>
-    document.removeEventListener('mousemove', this, true); // <DEPRECATED>
-    document.removeEventListener('mouseup', this, true); // <DEPRECATED>
-    document.removeEventListener('mouseenter', this, true); // <DEPRECATED>
-    document.removeEventListener('mouseleave', this, true); // <DEPRECATED>
-    document.removeEventListener('mouseover', this, true); // <DEPRECATED>
-    document.removeEventListener('mouseout', this, true); // <DEPRECATED>
     document.removeEventListener('pointerdown', this, true);
     document.removeEventListener('pointermove', this, true);
     document.removeEventListener('pointerup', this, true);
@@ -491,9 +471,6 @@ export class Drag implements IDisposable {
       return;
     }
     this.dragImage.classList.add('lm-mod-drag-image');
-    /* <DEPRECATED> */
-    this.dragImage.classList.add('p-mod-drag-image');
-    /* </DEPRECATED> */
     let style = this.dragImage.style;
     style.pointerEvents = 'none';
     style.position = 'fixed';
@@ -745,16 +722,10 @@ export namespace Drag {
         : (doc.firstElementChild as HTMLElement);
     body.style.cursor = cursor;
     body.classList.add('lm-mod-override-cursor');
-    /* <DEPRECATED> */
-    body.classList.add('p-mod-override-cursor');
-    /* </DEPRECATED> */
     return new DisposableDelegate(() => {
       if (id === overrideCursorID) {
         body.style.cursor = '';
         body.classList.remove('lm-mod-override-cursor');
-        /* <DEPRECATED> */
-        body.classList.remove('p-mod-override-cursor');
-        /* </DEPRECATED> */
       }
     });
   }
@@ -859,11 +830,7 @@ namespace Private {
     // https://github.com/Microsoft/TypeScript/issues/14143
     for (; element; element = element!.parentElement) {
       // Ignore elements which are not marked as scrollable.
-      let scrollable = element.hasAttribute('data-lm-dragscroll');
-      /* <DEPRECATED> */
-      scrollable = scrollable || element.hasAttribute('data-p-dragscroll');
-      /* </DEPRECATED> */
-      if (!scrollable) {
+      if (!element.hasAttribute('data-lm-dragscroll')) {
         continue;
       }
 
@@ -998,14 +965,6 @@ namespace Private {
       return currElem;
     }
 
-    /* <DEPRECATED> */
-    dragEvent = createDragEvent('p-dragenter', drag, event, currTarget);
-    canceled = !currElem.dispatchEvent(dragEvent);
-    if (canceled) {
-      return currElem;
-    }
-    /* </DEPRECATED> */
-
     // If the current element is the document body, keep the original target.
     const body =
       drag.document instanceof Document
@@ -1019,11 +978,6 @@ namespace Private {
     // Dispatch a drag enter event on the document body.
     dragEvent = createDragEvent('lm-dragenter', drag, event, currTarget);
     body.dispatchEvent(dragEvent);
-
-    /* <DEPRECATED> */
-    dragEvent = createDragEvent('p-dragenter', drag, event, currTarget);
-    body.dispatchEvent(dragEvent);
-    /* </DEPRECATED> */
 
     // Ignore the event cancellation, and use the body as the new target.
     return body;
@@ -1060,11 +1014,6 @@ namespace Private {
     // Dispatch the drag exit event to the previous target.
     let dragEvent = createDragEvent('lm-dragexit', drag, event, currTarget);
     prevTarget.dispatchEvent(dragEvent);
-
-    /* <DEPRECATED> */
-    dragEvent = createDragEvent('p-dragexit', drag, event, currTarget);
-    prevTarget.dispatchEvent(dragEvent);
-    /* </DEPRECATED> */
   }
 
   /**
@@ -1098,11 +1047,6 @@ namespace Private {
     // Dispatch the drag leave event to the previous target.
     let dragEvent = createDragEvent('lm-dragleave', drag, event, currTarget);
     prevTarget.dispatchEvent(dragEvent);
-
-    /* <DEPRECATED> */
-    dragEvent = createDragEvent('p-dragleave', drag, event, currTarget);
-    prevTarget.dispatchEvent(dragEvent);
-    /* </DEPRECATED> */
   }
 
   /**
@@ -1139,14 +1083,6 @@ namespace Private {
     if (canceled) {
       return dragEvent.dropAction;
     }
-
-    /* <DEPRECATED> */
-    dragEvent = createDragEvent('p-dragover', drag, event, null);
-    canceled = !currTarget.dispatchEvent(dragEvent);
-    if (canceled) {
-      return dragEvent.dropAction;
-    }
-    /* </DEPRECATED> */
 
     // Otherwise, the effective drop action is none.
     return 'none';
@@ -1186,14 +1122,6 @@ namespace Private {
     if (canceled) {
       return dragEvent.dropAction;
     }
-
-    /* <DEPRECATED> */
-    dragEvent = createDragEvent('p-drop', drag, event, null);
-    canceled = !currTarget.dispatchEvent(dragEvent);
-    if (canceled) {
-      return dragEvent.dropAction;
-    }
-    /* </DEPRECATED> */
 
     // Otherwise, the effective drop action is none.
     return 'none';
