@@ -262,7 +262,7 @@ describe('@lumino/dragdrop', () => {
 
       describe('pointermove', () => {
         it('should be prevented during a drag event', () => {
-          let event = new PointerEvent('pointermove');
+          let event = new PointerEvent('pointermove', { cancelable: true });
           let canceled = !document.body.dispatchEvent(event);
           expect(canceled).to.equal(true);
         });
@@ -315,7 +315,7 @@ describe('@lumino/dragdrop', () => {
 
       describe('pointerup', () => {
         it('should be prevented during a drag event', () => {
-          let event = new PointerEvent('pointerup');
+          let event = new PointerEvent('pointerup', { cancelable: true });
           let canceled = !document.body.dispatchEvent(event);
           expect(canceled).to.equal(true);
         });
@@ -472,7 +472,7 @@ describe('@lumino/dragdrop', () => {
             })
           );
           ['pointermove', 'keydown', 'contextmenu'].forEach(name => {
-            let event = new Event(name);
+            let event = new Event(name, { cancelable: true });
             let canceled = !document.body.dispatchEvent(event);
             expect(canceled).to.equal(false);
           });
@@ -481,13 +481,16 @@ describe('@lumino/dragdrop', () => {
 
       describe('keydown', () => {
         it('should be prevented during a drag event', () => {
-          let event = new KeyboardEvent('keydown');
+          let event = new KeyboardEvent('keydown', { cancelable: true });
           let canceled = !document.body.dispatchEvent(event);
           expect(canceled).to.equal(true);
         });
 
         it('should dispose of the drag if `Escape` is pressed', () => {
-          let event = new KeyboardEvent('keydown', { keyCode: 27 });
+          let event = new KeyboardEvent('keydown', {
+            cancelable: true,
+            keyCode: 27
+          });
           document.body.dispatchEvent(event);
           expect(drag.isDisposed).to.equal(true);
         });
@@ -511,7 +514,7 @@ describe('@lumino/dragdrop', () => {
 
       describe('pointerover', () => {
         it('should be prevented during a drag event', () => {
-          let event = new PointerEvent('pointerover');
+          let event = new PointerEvent('pointerover', { cancelable: true });
           let canceled = !document.body.dispatchEvent(event);
           expect(canceled).to.equal(true);
         });
@@ -519,7 +522,7 @@ describe('@lumino/dragdrop', () => {
 
       describe('pointerout', () => {
         it('should be prevented during a drag event', () => {
-          let event = new PointerEvent('pointerout');
+          let event = new PointerEvent('pointerout', { cancelable: true });
           let canceled = !document.body.dispatchEvent(event);
           expect(canceled).to.equal(true);
         });
@@ -527,7 +530,7 @@ describe('@lumino/dragdrop', () => {
 
       describe('keyup', () => {
         it('should be prevented during a drag event', () => {
-          let event = new KeyboardEvent('keyup');
+          let event = new KeyboardEvent('keyup', { cancelable: true });
           let canceled = !document.body.dispatchEvent(event);
           expect(canceled).to.equal(true);
         });
@@ -535,7 +538,7 @@ describe('@lumino/dragdrop', () => {
 
       describe('keypress', () => {
         it('should be prevented during a drag event', () => {
-          let event = new KeyboardEvent('keypress');
+          let event = new KeyboardEvent('keypress', { cancelable: true });
           let canceled = !document.body.dispatchEvent(event);
           expect(canceled).to.equal(true);
         });
@@ -543,7 +546,7 @@ describe('@lumino/dragdrop', () => {
 
       describe('contextmenu', () => {
         it('should be prevented during a drag event', () => {
-          let event = new Event('contextmenu');
+          let event = new MouseEvent('contextmenu', { cancelable: true });
           let canceled = !document.body.dispatchEvent(event);
           expect(canceled).to.equal(true);
         });
