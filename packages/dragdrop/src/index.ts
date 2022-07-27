@@ -264,10 +264,10 @@ export class Drag implements IDisposable {
   handleEvent(event: Event): void {
     switch (event.type) {
       case 'pointermove':
-        this._evtMouseMove(event as MouseEvent);
+        this._evtPointerMove(event as PointerEvent);
         break;
       case 'pointerup':
-        this._evtMouseUp(event as MouseEvent);
+        this._evtPointerUp(event as PointerEvent);
         break;
       case 'keydown':
         this._evtKeyDown(event as KeyboardEvent);
@@ -295,9 +295,9 @@ export class Drag implements IDisposable {
   }
 
   /**
-   * Handle the `'mousemove'` event for the drag object.
+   * Handle the `'pointermove'` event for the drag object.
    */
-  private _evtMouseMove(event: MouseEvent): void {
+  private _evtPointerMove(event: PointerEvent): void {
     // Stop all input events during drag-drop.
     event.preventDefault();
     event.stopPropagation();
@@ -314,9 +314,9 @@ export class Drag implements IDisposable {
   }
 
   /**
-   * Handle the `'mouseup'` event for the drag object.
+   * Handle the `'pointerup'` event for the drag object.
    */
-  private _evtMouseUp(event: MouseEvent): void {
+  private _evtPointerUp(event: PointerEvent): void {
     // Stop all input events during drag-drop.
     event.preventDefault();
     event.stopPropagation();

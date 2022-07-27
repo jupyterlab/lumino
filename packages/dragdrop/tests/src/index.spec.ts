@@ -7,11 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import 'es6-promise/auto'; // polyfill Promise on IE
-
 import { expect } from 'chai';
-
-import { generate, simulate } from 'simulate-event';
 
 import { MimeData } from '@lumino/coreutils';
 
@@ -264,81 +260,95 @@ describe('@lumino/dragdrop', () => {
         child1.dispose();
       });
 
-      describe('mousemove', () => {
+      describe('pointermove', () => {
         it('should be prevented during a drag event', () => {
-          let evt = generate('mousemove');
-          let canceled = !document.body.dispatchEvent(evt);
+          let event = new PointerEvent('pointermove');
+          let canceled = !document.body.dispatchEvent(event);
           expect(canceled).to.equal(true);
         });
 
         it('should dispatch an enter and leave events', () => {
           let rect = child0.node.getBoundingClientRect();
-          simulate(child0.node, 'mousemove', {
-            clientX: rect.left + 1,
-            clientY: rect.top + 1
-          });
+          child0.node.dispatchEvent(
+            new PointerEvent('pointermove', {
+              clientX: rect.left + 1,
+              clientY: rect.top + 1
+            })
+          );
           expect(child0.events).to.contain('lm-dragenter');
           child0.events = [];
           rect = child1.node.getBoundingClientRect();
-          simulate(child1.node, 'mousemove', {
-            clientX: rect.left + 1,
-            clientY: rect.top + 1
-          });
+          child1.node.dispatchEvent(
+            new PointerEvent('pointermove', {
+              clientX: rect.left + 1,
+              clientY: rect.top + 1
+            })
+          );
           expect(child0.events).to.contain('lm-dragleave');
           expect(child1.events).to.contain('lm-dragenter');
         });
 
         it('should dispatch drag over event', () => {
           let rect = child0.node.getBoundingClientRect();
-          simulate(child0.node, 'mousemove', {
-            clientX: rect.left + 1,
-            clientY: rect.top + 1
-          });
+          child0.node.dispatchEvent(
+            new PointerEvent('pointermove', {
+              clientX: rect.left + 1,
+              clientY: rect.top + 1
+            })
+          );
           expect(child0.events).to.contain('lm-dragover');
         });
 
         it('should move the drag image to the client location', () => {
           let rect = child0.node.getBoundingClientRect();
-          simulate(child0.node, 'mousemove', {
-            clientX: rect.left + 1,
-            clientY: rect.top + 1
-          });
+          child0.node.dispatchEvent(
+            new PointerEvent('pointermove', {
+              clientX: rect.left + 1,
+              clientY: rect.top + 1
+            })
+          );
           let image = drag.dragImage!;
           expect(image.style.top).to.equal(`${rect.top + 1}px`);
           expect(image.style.left).to.equal(`${rect.left + 1}px`);
         });
       });
 
-      describe('mouseup', () => {
+      describe('pointerup', () => {
         it('should be prevented during a drag event', () => {
-          let evt = generate('mouseup');
-          let canceled = !document.body.dispatchEvent(evt);
+          let event = new PointerEvent('pointerup');
+          let canceled = !document.body.dispatchEvent(event);
           expect(canceled).to.equal(true);
         });
 
         it('should do nothing if the left button is not released', () => {
           let rect = child0.node.getBoundingClientRect();
-          simulate(child0.node, 'mouseup', {
-            clientX: rect.left + 1,
-            clientY: rect.top + 1,
-            button: 1
-          });
+          child0.node.dispatchEvent(
+            new PointerEvent('pointerup', {
+              clientX: rect.left + 1,
+              clientY: rect.top + 1,
+              button: 1
+            })
+          );
           expect(child0.events).to.not.contain('lm-dragenter');
         });
 
         it('should dispatch enter and leave events', () => {
           let rect = child0.node.getBoundingClientRect();
-          simulate(child0.node, 'mousemove', {
-            clientX: rect.left + 1,
-            clientY: rect.top + 1
-          });
+          child0.node.dispatchEvent(
+            new PointerEvent('pointermove', {
+              clientX: rect.left + 1,
+              clientY: rect.top + 1
+            })
+          );
           expect(child0.events).to.contain('lm-dragenter');
           child0.events = [];
           rect = child1.node.getBoundingClientRect();
-          simulate(child1.node, 'mouseup', {
-            clientX: rect.left + 1,
-            clientY: rect.top + 1
-          });
+          child1.node.dispatchEvent(
+            new PointerEvent('pointerup', {
+              clientX: rect.left + 1,
+              clientY: rect.top + 1
+            })
+          );
           expect(child0.events).to.contain('lm-dragleave');
           expect(child1.events).to.contain('lm-dragenter');
         });
@@ -351,10 +361,12 @@ describe('@lumino/dragdrop', () => {
           });
           drag.start(0, 0);
           let rect = child0.node.getBoundingClientRect();
-          simulate(child0.node, 'mouseup', {
-            clientX: rect.left + 1,
-            clientY: rect.top + 1
-          });
+          child0.node.dispatchEvent(
+            new PointerEvent('pointerup', {
+              clientX: rect.left + 1,
+              clientY: rect.top + 1
+            })
+          );
           expect(child0.events).to.contain('lm-dragleave');
         });
 
@@ -369,18 +381,22 @@ describe('@lumino/dragdrop', () => {
             done();
           });
           let rect = child0.node.getBoundingClientRect();
-          simulate(child0.node, 'mouseup', {
-            clientX: rect.left + 1,
-            clientY: rect.top + 1
-          });
+          child0.node.dispatchEvent(
+            new PointerEvent('pointerup', {
+              clientX: rect.left + 1,
+              clientY: rect.top + 1
+            })
+          );
         });
 
         it('should dispatch the drop event at the current target', () => {
           let rect = child0.node.getBoundingClientRect();
-          simulate(child0.node, 'mouseup', {
-            clientX: rect.left + 1,
-            clientY: rect.top + 1
-          });
+          child0.node.dispatchEvent(
+            new PointerEvent('pointerup', {
+              clientX: rect.left + 1,
+              clientY: rect.top + 1
+            })
+          );
           expect(child0.events).to.contain('lm-drop');
         });
 
@@ -396,10 +412,12 @@ describe('@lumino/dragdrop', () => {
             done();
           });
           let rect = child0.node.getBoundingClientRect();
-          simulate(child0.node, 'mouseup', {
-            clientX: rect.left + 1,
-            clientY: rect.top + 1
-          });
+          child0.node.dispatchEvent(
+            new PointerEvent('pointerup', {
+              clientX: rect.left + 1,
+              clientY: rect.top + 1
+            })
+          );
         });
 
         it('should handle a `move` action', done => {
@@ -414,40 +432,48 @@ describe('@lumino/dragdrop', () => {
             done();
           });
           let rect = child0.node.getBoundingClientRect();
-          simulate(child0.node, 'mouseup', {
-            clientX: rect.left + 1,
-            clientY: rect.top + 1
-          });
+          child0.node.dispatchEvent(
+            new PointerEvent('pointerup', {
+              clientX: rect.left + 1,
+              clientY: rect.top + 1
+            })
+          );
         });
 
         it('should dispose of the drop', () => {
           let rect = child0.node.getBoundingClientRect();
-          simulate(child0.node, 'mouseup', {
-            clientX: rect.left + 1,
-            clientY: rect.top + 1
-          });
+          child0.node.dispatchEvent(
+            new PointerEvent('pointerup', {
+              clientX: rect.left + 1,
+              clientY: rect.top + 1
+            })
+          );
           expect(drag.isDisposed).to.equal(true);
         });
 
         it('should detach the drag image', () => {
           let image = drag.dragImage!;
           let rect = child0.node.getBoundingClientRect();
-          simulate(child0.node, 'mouseup', {
-            clientX: rect.left + 1,
-            clientY: rect.top + 1
-          });
+          child0.node.dispatchEvent(
+            new PointerEvent('pointerup', {
+              clientX: rect.left + 1,
+              clientY: rect.top + 1
+            })
+          );
           expect(document.body.contains(image)).to.equal(false);
         });
 
         it('should remove event listeners', () => {
           let rect = child0.node.getBoundingClientRect();
-          simulate(child0.node, 'mouseup', {
-            clientX: rect.left + 1,
-            clientY: rect.top + 1
-          });
-          ['mousemove', 'keydown', 'contextmenu'].forEach(name => {
-            let evt = generate(name);
-            let canceled = !document.body.dispatchEvent(evt);
+          child0.node.dispatchEvent(
+            new PointerEvent('pointerup', {
+              clientX: rect.left + 1,
+              clientY: rect.top + 1
+            })
+          );
+          ['pointermove', 'keydown', 'contextmenu'].forEach(name => {
+            let event = new Event(name);
+            let canceled = !document.body.dispatchEvent(event);
             expect(canceled).to.equal(false);
           });
         });
@@ -455,69 +481,70 @@ describe('@lumino/dragdrop', () => {
 
       describe('keydown', () => {
         it('should be prevented during a drag event', () => {
-          let evt = generate('keydown');
-          let canceled = !document.body.dispatchEvent(evt);
+          let event = new KeyboardEvent('keydown');
+          let canceled = !document.body.dispatchEvent(event);
           expect(canceled).to.equal(true);
         });
 
         it('should dispose of the drag if `Escape` is pressed', () => {
-          simulate(document.body, 'keydown', { keyCode: 27 });
+          let event = new KeyboardEvent('keydown', { keyCode: 27 });
+          document.body.dispatchEvent(event);
           expect(drag.isDisposed).to.equal(true);
         });
       });
 
-      describe('mouseenter', () => {
+      describe('pointerenter', () => {
         it('should be prevented during a drag event', () => {
-          let evt = generate('mouseenter', { cancelable: true });
-          let canceled = !document.body.dispatchEvent(evt);
+          let event = new PointerEvent('pointerenter', { cancelable: true });
+          let canceled = !document.body.dispatchEvent(event);
           expect(canceled).to.equal(true);
         });
       });
 
-      describe('mouseleave', () => {
+      describe('pointerleave', () => {
         it('should be prevented during a drag event', () => {
-          let evt = generate('mouseleave', { cancelable: true });
-          let canceled = !document.body.dispatchEvent(evt);
+          let event = new PointerEvent('pointerleave', { cancelable: true });
+          let canceled = !document.body.dispatchEvent(event);
           expect(canceled).to.equal(true);
         });
       });
 
-      describe('mouseover', () => {
+      describe('pointerover', () => {
         it('should be prevented during a drag event', () => {
-          let evt = generate('mouseover');
-          let canceled = !document.body.dispatchEvent(evt);
+          let event = new PointerEvent('pointerover');
+          let canceled = !document.body.dispatchEvent(event);
           expect(canceled).to.equal(true);
         });
       });
 
-      describe('mouseout', () => {
+      describe('pointerout', () => {
         it('should be prevented during a drag event', () => {
-          let evt = generate('mouseout');
-          let canceled = !document.body.dispatchEvent(evt);
+          let event = new PointerEvent('pointerout');
+          let canceled = !document.body.dispatchEvent(event);
           expect(canceled).to.equal(true);
         });
       });
 
       describe('keyup', () => {
         it('should be prevented during a drag event', () => {
-          let evt = generate('keyup');
-          let canceled = !document.body.dispatchEvent(evt);
+          let event = new KeyboardEvent('keyup');
+          let canceled = !document.body.dispatchEvent(event);
           expect(canceled).to.equal(true);
         });
       });
 
       describe('keypress', () => {
         it('should be prevented during a drag event', () => {
-          let evt = generate('keypress');
-          let canceled = !document.body.dispatchEvent(evt);
+          let event = new KeyboardEvent('keypress');
+          let canceled = !document.body.dispatchEvent(event);
           expect(canceled).to.equal(true);
         });
       });
 
       describe('contextmenu', () => {
         it('should be prevented during a drag event', () => {
-          let evt = generate('contextmenu');
-          let canceled = !document.body.dispatchEvent(evt);
+          let event = new Event('contextmenu');
+          let canceled = !document.body.dispatchEvent(event);
           expect(canceled).to.equal(true);
         });
       });
