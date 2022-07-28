@@ -328,6 +328,35 @@ describe('@lumino/commands', () => {
       });
     });
 
+    describe('#describedBy()', () => {
+      it('should get the description for a specific command', () => {
+        const description = {
+          args: {
+            properties: {},
+            additionalProperties: false,
+            type: 'object'
+          }
+        };
+        let cmd = {
+          execute: (args: JSONObject) => {
+            return args;
+          },
+          describedBy: description
+        };
+        registry.addCommand('test', cmd);
+        expect(registry.describedBy('test')).to.deep.equal(description);
+      });
+
+      it('should return an empty description if the command is not registered', () => {
+        expect(registry.describedBy('foo')).to.deep.equal({ args: null });
+      });
+
+      it('should default to an empty description for a command', () => {
+        registry.addCommand('test', NULL_COMMAND);
+        expect(registry.describedBy('test')).to.deep.equal({ args: null });
+      });
+    });
+
     describe('#usage()', () => {
       it('should get the usage text for a specific command', () => {
         let cmd = {

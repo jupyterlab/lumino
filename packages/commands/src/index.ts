@@ -152,6 +152,18 @@ export class CommandRegistry {
   }
 
   /**
+   * Get the description for a specific command.
+   *
+   * @param id - The id of the command of interest.
+   *
+   * @returns The description for the command.
+   */
+  describedBy(id: string): { args: ReadonlyJSONObject | null } {
+    let cmd = this._commands[id];
+    return cmd ? cmd.describedBy : { args: null };
+  }
+
+  /**
    * Get the display label for a specific command.
    *
    * @param id - The id of the command of interest.
@@ -684,6 +696,15 @@ export namespace CommandRegistry {
      * This may be invoked even when `isEnabled` returns `false`.
      */
     execute: CommandFunc<any | Promise<any>>;
+
+    /**
+     * JSON Schemas describing the command.
+     *
+     * #### Notes
+     * For now, the command arguments are the only one that can be
+     * described.
+     */
+    describedBy?: { args?: ReadonlyJSONObject };
 
     /**
      * The label for the command.
@@ -1242,6 +1263,7 @@ namespace Private {
    */
   export interface ICommand {
     readonly execute: CommandFunc<any>;
+    readonly describedBy: { args: ReadonlyJSONObject | null };
     readonly label: CommandFunc<string>;
     readonly mnemonic: CommandFunc<number>;
     readonly icon: CommandFunc<VirtualElement.IRenderer | undefined>;
@@ -1265,6 +1287,7 @@ namespace Private {
   ): ICommand {
     return {
       execute: options.execute,
+      describedBy: { args: null, ...options.describedBy },
       label: asFunc(options.label, emptyStringFunc),
       mnemonic: asFunc(options.mnemonic, negativeOneFunc),
       icon: asFunc(options.icon, undefinedFunc),
