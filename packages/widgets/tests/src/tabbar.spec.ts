@@ -9,8 +9,6 @@
 |----------------------------------------------------------------------------*/
 import { expect } from 'chai';
 
-import { generate, simulate } from 'simulate-event';
-
 import { each, range } from '@lumino/algorithm';
 
 import { Message, MessageLoop } from '@lumino/messaging';
@@ -63,6 +61,8 @@ function populateBar(bar: TabBar<Widget>): void {
   });
 }
 
+type Action = 'pointerdown' | 'pointermove' | 'pointerup';
+
 type Direction = 'left' | 'right' | 'up' | 'down';
 
 function startDrag(
@@ -75,7 +75,6 @@ function startDrag(
   bar.currentIndex = index;
   // Force an update.
   MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
-  simulateOnNode(tab, 'mousedown');
   let called = false;
   bar.tabDetachRequested.connect((sender, args) => {
     called = true;
@@ -96,14 +95,27 @@ function startDrag(
       args = { clientX: rect.right + 200, clientY: rect.top };
       break;
   }
-  simulate(document.body, 'mousemove', args);
+  simulateOnNode(tab, 'pointerdown');
+  document.body.dispatchEvent(
+    new PointerEvent('pointermove', {
+      ...args,
+      cancelable: true
+    })
+  );
   expect(called).to.equal(true);
   bar.events = [];
 }
 
-function simulateOnNode(node: Element, eventName: string): void {
+function simulateOnNode(node: Element, action: Action): void {
   let rect = node.getBoundingClientRect();
-  simulate(node, eventName, { clientX: rect.left + 1, clientY: rect.top });
+  node.dispatchEvent(
+    new PointerEvent(action, {
+      clientX: rect.left + 1,
+      clientY: rect.top,
+      cancelable: true,
+      bubbles: true
+    })
+  );
 }
 
 describe('@lumino/widgets', () => {
@@ -219,7 +231,11 @@ describe('@lumino/widgets', () => {
           done();
         });
         startDrag(bar);
-        simulate(document.body, 'mouseup');
+        document.body.dispatchEvent(
+          new PointerEvent('pointerup', {
+            cancelable: true
+          })
+        );
       });
 
       it('should be emitted when a tab is moved left by the user', done => {
@@ -233,7 +249,7 @@ describe('@lumino/widgets', () => {
           done();
         });
         startDrag(bar, 2, 'left');
-        simulate(document.body, 'mouseup');
+        document.body.dispatchEvent(new PointerEvent('pointerup'));
       });
 
       it('should not be emitted when a tab is moved programmatically', () => {
@@ -269,7 +285,7 @@ describe('@lumino/widgets', () => {
           expect(args.title).to.equal(bar.titles[2]);
           called = true;
         });
-        simulateOnNode(tab, 'mousedown');
+        simulateOnNode(tab, 'pointerdown');
         expect(called).to.equal(true);
       });
 
@@ -284,7 +300,7 @@ describe('@lumino/widgets', () => {
         bar.currentChanged.connect(() => {
           called++;
         });
-        simulateOnNode(tab, 'mousedown');
+        simulateOnNode(tab, 'pointerdown');
         expect(bar.currentIndex).to.equal(2);
         expect(called).to.equal(2);
       });
@@ -297,7 +313,7 @@ describe('@lumino/widgets', () => {
         bar.tabActivateRequested.connect(() => {
           called = true;
         });
-        simulateOnNode(tab, 'mousedown');
+        simulateOnNode(tab, 'pointerdown');
         expect(bar.currentIndex).to.equal(2);
         expect(called).to.equal(true);
       });
@@ -323,16 +339,21 @@ describe('@lumino/widgets', () => {
           expect(args.title).to.equal(bar.titles[0]);
           called = true;
         });
-        simulate(closeIcon, 'mousedown', {
-          clientX: rect.left,
-          clientY: rect.top,
-          button: 0
-        });
-        simulate(closeIcon, 'mouseup', {
-          clientX: rect.left,
-          clientY: rect.top,
-          button: 0
-        });
+        closeIcon.dispatchEvent(
+          new PointerEvent('pointerdown', {
+            clientX: rect.left,
+            clientY: rect.top,
+            button: 0,
+            bubbles: true
+          })
+        );
+        closeIcon.dispatchEvent(
+          new PointerEvent('pointerup', {
+            clientX: rect.left,
+            clientY: rect.top,
+            button: 0
+          })
+        );
         expect(called).to.equal(true);
       });
 
@@ -345,16 +366,21 @@ describe('@lumino/widgets', () => {
           expect(args.title).to.equal(bar.titles[0]);
           called = true;
         });
-        simulate(tab, 'mousedown', {
-          clientX: rect.left,
-          clientY: rect.top,
-          button: 1
-        });
-        simulate(tab, 'mouseup', {
-          clientX: rect.left,
-          clientY: rect.top,
-          button: 1
-        });
+        tab.dispatchEvent(
+          new PointerEvent('pointerdown', {
+            clientX: rect.left,
+            clientY: rect.top,
+            button: 1,
+            bubbles: true
+          })
+        );
+        tab.dispatchEvent(
+          new PointerEvent('pointerup', {
+            clientX: rect.left,
+            clientY: rect.top,
+            button: 1
+          })
+        );
         expect(called).to.equal(true);
       });
 
@@ -370,26 +396,38 @@ describe('@lumino/widgets', () => {
         });
         let rect1 = closeIcon.getBoundingClientRect();
         let rect2 = tab.getBoundingClientRect();
-        simulate(closeIcon, 'mousedown', {
-          clientX: rect1.left,
-          clientY: rect1.top,
-          button: 0
-        });
-        simulate(closeIcon, 'mouseup', {
-          clientX: rect1.left,
-          clientY: rect1.top,
-          button: 0
-        });
-        simulate(tab, 'mousedown', {
-          clientX: rect2.left,
-          clientY: rect2.top,
-          button: 1
-        });
-        simulate(tab, 'mouseup', {
-          clientX: rect2.left,
-          clientY: rect2.top,
-          button: 1
-        });
+        closeIcon.dispatchEvent(
+          new PointerEvent('pointerdown', {
+            clientX: rect1.left,
+            clientY: rect1.top,
+            button: 0,
+            cancelable: true
+          })
+        );
+        closeIcon.dispatchEvent(
+          new PointerEvent('pointerup', {
+            clientX: rect1.left,
+            clientY: rect1.top,
+            button: 0,
+            cancelable: true
+          })
+        );
+        tab.dispatchEvent(
+          new PointerEvent('pointerdown', {
+            clientX: rect2.left,
+            clientY: rect2.top,
+            button: 1,
+            cancelable: true
+          })
+        );
+        tab.dispatchEvent(
+          new PointerEvent('pointereup', {
+            clientX: rect2.left,
+            clientY: rect2.top,
+            button: 1,
+            cancelable: true
+          })
+        );
         expect(called).to.equal(false);
       });
     });
@@ -412,16 +450,21 @@ describe('@lumino/widgets', () => {
           expect(args).to.equal(undefined);
           called = true;
         });
-        simulate(addButton, 'mousedown', {
-          clientX: rect.left,
-          clientY: rect.top,
-          button: 0
-        });
-        simulate(addButton, 'mouseup', {
-          clientX: rect.left,
-          clientY: rect.top,
-          button: 0
-        });
+        addButton.dispatchEvent(
+          new PointerEvent('pointerdown', {
+            clientX: rect.left,
+            clientY: rect.top,
+            button: 0,
+            bubbles: true
+          })
+        );
+        addButton.dispatchEvent(
+          new PointerEvent('pointerup', {
+            clientX: rect.left,
+            clientY: rect.top,
+            button: 0
+          })
+        );
         expect(called).to.equal(true);
       });
 
@@ -434,16 +477,22 @@ describe('@lumino/widgets', () => {
           expect(args).to.equal(undefined);
           called = true;
         });
-        simulate(addButton, 'mousedown', {
-          clientX: rect.left,
-          clientY: rect.top,
-          button: 0
-        });
-        simulate(addButton, 'mouseup', {
-          clientX: rect.left,
-          clientY: rect.top,
-          button: 0
-        });
+        addButton.dispatchEvent(
+          new PointerEvent('pointerdown', {
+            clientX: rect.left,
+            clientY: rect.top,
+            button: 0,
+            cancelable: true
+          })
+        );
+        addButton.dispatchEvent(
+          new PointerEvent('pointerup', {
+            clientX: rect.left,
+            clientY: rect.top,
+            button: 0,
+            cancelable: true
+          })
+        );
         expect(called).to.equal(false);
       });
     });
@@ -458,7 +507,7 @@ describe('@lumino/widgets', () => {
       });
 
       it('should be emitted when a tab is dragged beyond the detach threshold', () => {
-        simulateOnNode(tab, 'mousedown');
+        simulateOnNode(tab, 'pointerdown');
         let called = false;
         bar.tabDetachRequested.connect((sender, args) => {
           expect(sender).to.equal(bar);
@@ -469,15 +518,18 @@ describe('@lumino/widgets', () => {
           called = true;
         });
         let rect = bar.contentNode.getBoundingClientRect();
-        simulate(document.body, 'mousemove', {
-          clientX: rect.right + 200,
-          clientY: rect.top
-        });
+        document.body.dispatchEvent(
+          new PointerEvent('pointermove', {
+            clientX: rect.right + 200,
+            clientY: rect.top,
+            cancelable: true
+          })
+        );
         expect(called).to.equal(true);
       });
 
       it('should be handled by calling `releaseMouse` and removing the tab', () => {
-        simulateOnNode(tab, 'mousedown');
+        simulateOnNode(tab, 'pointerdown');
         let called = false;
         bar.tabDetachRequested.connect((sender, args) => {
           bar.releaseMouse();
@@ -485,15 +537,18 @@ describe('@lumino/widgets', () => {
           called = true;
         });
         let rect = bar.contentNode.getBoundingClientRect();
-        simulate(document.body, 'mousemove', {
-          clientX: rect.right + 200,
-          clientY: rect.top
-        });
+        document.body.dispatchEvent(
+          new PointerEvent('pointermove', {
+            clientX: rect.right + 200,
+            clientY: rect.top,
+            cancelable: true
+          })
+        );
         expect(called).to.equal(true);
       });
 
       it('should only be emitted once per drag cycle', () => {
-        simulateOnNode(tab, 'mousedown');
+        simulateOnNode(tab, 'pointerdown');
         let called = 0;
         bar.tabDetachRequested.connect((sender, args) => {
           bar.releaseMouse();
@@ -501,20 +556,26 @@ describe('@lumino/widgets', () => {
           called++;
         });
         let rect = bar.contentNode.getBoundingClientRect();
-        simulate(document.body, 'mousemove', {
-          clientX: rect.right + 200,
-          clientY: rect.top
-        });
+        document.body.dispatchEvent(
+          new PointerEvent('pointermove', {
+            clientX: rect.right + 200,
+            clientY: rect.top,
+            cancelable: true
+          })
+        );
         expect(called).to.equal(1);
-        simulate(document.body, 'mousemove', {
-          clientX: rect.right + 201,
-          clientY: rect.top
-        });
+        document.body.dispatchEvent(
+          new PointerEvent('pointermove', {
+            clientX: rect.right + 201,
+            clientY: rect.top,
+            cancelable: true
+          })
+        );
         expect(called).to.equal(1);
       });
 
       it('should add the `lm-mod-dragging` class to the tab and the bar', () => {
-        simulateOnNode(tab, 'mousedown');
+        simulateOnNode(tab, 'pointerdown');
         let called = false;
         bar.tabDetachRequested.connect((sender, args) => {
           expect(tab.classList.contains('lm-mod-dragging')).to.equal(true);
@@ -522,10 +583,13 @@ describe('@lumino/widgets', () => {
           called = true;
         });
         let rect = bar.contentNode.getBoundingClientRect();
-        simulate(document.body, 'mousemove', {
-          clientX: rect.right + 200,
-          clientY: rect.top
-        });
+        document.body.dispatchEvent(
+          new PointerEvent('pointermove', {
+            clientX: rect.right + 200,
+            clientY: rect.top,
+            cancelable: true
+          })
+        );
         expect(called).to.equal(true);
       });
     });
@@ -599,14 +663,14 @@ describe('@lumino/widgets', () => {
         let tab = bar.contentNode.getElementsByClassName(
           'lm-TabBar-tab'
         )[2] as HTMLElement;
-        simulateOnNode(tab, 'mousedown');
+        simulateOnNode(tab, 'pointerdown');
         expect(bar.currentIndex).to.equal(2);
-        simulateOnNode(tab, 'mouseup');
+        simulateOnNode(tab, 'pointerup');
 
         bar.allowDeselect = true;
-        simulateOnNode(tab, 'mousedown');
+        simulateOnNode(tab, 'pointerdown');
         expect(bar.currentIndex).to.equal(-1);
-        simulateOnNode(tab, 'mouseup');
+        simulateOnNode(tab, 'pointerup');
       });
 
       it('should always allow programmatic deselection', () => {
@@ -1008,8 +1072,8 @@ describe('@lumino/widgets', () => {
         populateBar(bar);
         startDrag(bar, 0, 'left');
         bar.releaseMouse();
-        simulate(document.body, 'mousemove');
-        expect(bar.events.indexOf('mousemove')).to.equal(-1);
+        document.body.dispatchEvent(new PointerEvent('pointermove'));
+        expect(bar.events.indexOf('pointermove')).to.equal(-1);
       });
     });
 
@@ -1035,16 +1099,22 @@ describe('@lumino/widgets', () => {
             expect(args.title).to.equal(bar.titles[0]);
             called = true;
           });
-          simulate(closeIcon, 'mousedown', {
-            clientX: rect.left,
-            clientY: rect.top,
-            button: 0
-          });
-          simulate(closeIcon, 'mouseup', {
-            clientX: rect.left,
-            clientY: rect.top,
-            button: 0
-          });
+          closeIcon.dispatchEvent(
+            new PointerEvent('pointerdown', {
+              clientX: rect.left,
+              clientY: rect.top,
+              button: 0,
+              bubbles: true
+            })
+          );
+          closeIcon.dispatchEvent(
+            new PointerEvent('pointerup', {
+              clientX: rect.left,
+              clientY: rect.top,
+              button: 0,
+              cancelable: true
+            })
+          );
           expect(called).to.equal(true);
         });
 
@@ -1055,16 +1125,22 @@ describe('@lumino/widgets', () => {
           bar.tabCloseRequested.connect((sender, args) => {
             called = true;
           });
-          simulate(closeIcon, 'mousedown', {
-            clientX: rect.left,
-            clientY: rect.top,
-            button: 0
-          });
-          simulate(closeIcon, 'mouseup', {
-            clientX: rect.left,
-            clientY: rect.top,
-            button: 0
-          });
+          closeIcon.dispatchEvent(
+            new PointerEvent('pointerdown', {
+              clientX: rect.left,
+              clientY: rect.top,
+              button: 0,
+              cancelable: true
+            })
+          );
+          closeIcon.dispatchEvent(
+            new PointerEvent('pointerup', {
+              clientX: rect.left,
+              clientY: rect.top,
+              button: 0,
+              cancelable: true
+            })
+          );
           expect(called).to.equal(false);
         });
 
@@ -1074,16 +1150,22 @@ describe('@lumino/widgets', () => {
           bar.tabCloseRequested.connect((sender, args) => {
             called = true;
           });
-          simulate(closeIcon, 'mousedown', {
-            clientX: rect.left,
-            clientY: rect.top,
-            button: 0
-          });
-          simulate(closeIcon, 'mouseup', {
-            clientX: rect.left - 1,
-            clientY: rect.top - 1,
-            button: 0
-          });
+          closeIcon.dispatchEvent(
+            new PointerEvent('pointerdown', {
+              clientX: rect.left,
+              clientY: rect.top,
+              button: 0,
+              cancelable: true
+            })
+          );
+          closeIcon.dispatchEvent(
+            new PointerEvent('pointerup', {
+              clientX: rect.left - 1,
+              clientY: rect.top - 1,
+              button: 0,
+              cancelable: true
+            })
+          );
           expect(called).to.equal(false);
           expect(called).to.equal(false);
         });
@@ -1095,16 +1177,22 @@ describe('@lumino/widgets', () => {
           bar.tabCloseRequested.connect((sender, args) => {
             called = true;
           });
-          simulate(closeIcon, 'mousedown', {
-            clientX: rect.left,
-            clientY: rect.top,
-            button: 0
-          });
-          simulate(closeIcon, 'mouseup', {
-            clientX: rect.left,
-            clientY: rect.top,
-            button: 0
-          });
+          closeIcon.dispatchEvent(
+            new PointerEvent('pointerdown', {
+              clientX: rect.left,
+              clientY: rect.top,
+              button: 0,
+              cancelable: true
+            })
+          );
+          closeIcon.dispatchEvent(
+            new PointerEvent('pointerup', {
+              clientX: rect.left,
+              clientY: rect.top,
+              button: 0,
+              cancelable: true
+            })
+          );
           expect(called).to.equal(false);
         });
       });
@@ -1119,16 +1207,22 @@ describe('@lumino/widgets', () => {
             expect(args.title).to.equal(bar.titles[0]);
             called = true;
           });
-          simulate(tab, 'mousedown', {
-            clientX: rect.left,
-            clientY: rect.top,
-            button: 1
-          });
-          simulate(tab, 'mouseup', {
-            clientX: rect.left,
-            clientY: rect.top,
-            button: 1
-          });
+          tab.dispatchEvent(
+            new PointerEvent('pointerdown', {
+              clientX: rect.left,
+              clientY: rect.top,
+              button: 1,
+              bubbles: true
+            })
+          );
+          tab.dispatchEvent(
+            new PointerEvent('pointerup', {
+              clientX: rect.left,
+              clientY: rect.top,
+              button: 1,
+              cancelable: true
+            })
+          );
           expect(called).to.equal(true);
         });
 
@@ -1139,16 +1233,22 @@ describe('@lumino/widgets', () => {
           bar.tabCloseRequested.connect((sender, args) => {
             called = true;
           });
-          simulate(tab, 'mousedown', {
-            clientX: rect.left,
-            clientY: rect.top,
-            button: 1
-          });
-          simulate(tab, 'mouseup', {
-            clientX: rect.left,
-            clientY: rect.top,
-            button: 1
-          });
+          tab.dispatchEvent(
+            new PointerEvent('pointerdown', {
+              clientX: rect.left,
+              clientY: rect.top,
+              button: 1,
+              cancelable: true
+            })
+          );
+          tab.dispatchEvent(
+            new PointerEvent('pointerup', {
+              clientX: rect.left,
+              clientY: rect.top,
+              button: 1,
+              cancelable: true
+            })
+          );
           expect(called).to.equal(false);
         });
 
@@ -1158,16 +1258,22 @@ describe('@lumino/widgets', () => {
           bar.tabCloseRequested.connect((sender, args) => {
             called = true;
           });
-          simulate(tab, 'mousedown', {
-            clientX: rect.left,
-            clientY: rect.top,
-            button: 1
-          });
-          simulate(tab, 'mouseup', {
-            clientX: rect.left - 1,
-            clientY: rect.top - 1,
-            button: 1
-          });
+          tab.dispatchEvent(
+            new PointerEvent('pointerdown', {
+              clientX: rect.left,
+              clientY: rect.top,
+              button: 1,
+              cancelable: true
+            })
+          );
+          tab.dispatchEvent(
+            new PointerEvent('pointerup', {
+              clientX: rect.left - 1,
+              clientY: rect.top - 1,
+              button: 1,
+              cancelable: true
+            })
+          );
           expect(called).to.equal(false);
           expect(called).to.equal(false);
         });
@@ -1179,110 +1285,132 @@ describe('@lumino/widgets', () => {
           bar.tabCloseRequested.connect((sender, args) => {
             called = true;
           });
-          simulate(tab, 'mousedown', {
-            clientX: rect.left,
-            clientY: rect.top,
-            button: 1
-          });
-          simulate(tab, 'mouseup', {
-            clientX: rect.left,
-            clientY: rect.top,
-            button: 1
-          });
+          tab.dispatchEvent(
+            new PointerEvent('pointerdown', {
+              clientX: rect.left,
+              clientY: rect.top,
+              button: 1,
+              cancelable: true
+            })
+          );
+          tab.dispatchEvent(
+            new PointerEvent('pointerup', {
+              clientX: rect.left,
+              clientY: rect.top,
+              button: 1,
+              cancelable: true
+            })
+          );
           expect(called).to.equal(false);
         });
       });
 
-      context('mousedown', () => {
+      context('pointerdown', () => {
         it('should add event listeners if the tabs are movable', () => {
-          simulateOnNode(tab, 'mousedown');
-          simulate(document.body, 'mousemove');
-          expect(bar.events.indexOf('mousemove')).to.not.equal(-1);
+          simulateOnNode(tab, 'pointerdown');
+          document.body.dispatchEvent(new PointerEvent('pointermove'));
+          expect(bar.events.indexOf('pointermove')).to.not.equal(-1);
         });
 
         it('should do nothing if not a left mouse press', () => {
           let rect = tab.getBoundingClientRect();
-          simulate(tab, 'mousedown', {
-            clientX: rect.left,
-            clientY: rect.top,
-            button: 1
-          });
-          simulate(document.body, 'mousemove');
-          expect(bar.events.indexOf('mousemove')).to.equal(-1);
+          tab.dispatchEvent(
+            new PointerEvent('pointerdown', {
+              clientX: rect.left,
+              clientY: rect.top,
+              button: 1,
+              cancelable: true
+            })
+          );
+          document.body.dispatchEvent(new PointerEvent('pointermove'));
+          expect(bar.events.indexOf('pointermove')).to.equal(-1);
         });
 
         it('should do nothing if the press is not on a tab', () => {
           let rect = tab.getBoundingClientRect();
-          simulate(tab, 'mousedown', {
-            clientX: rect.left - 1,
-            clientY: rect.top
-          });
-          simulate(document.body, 'mousemove');
-          expect(bar.events.indexOf('mousemove')).to.equal(-1);
+          tab.dispatchEvent(
+            new PointerEvent('pointerdown', {
+              clientX: rect.left - 1,
+              clientY: rect.top,
+              cancelable: true
+            })
+          );
+          document.body.dispatchEvent(new PointerEvent('pointermove'));
+          expect(bar.events.indexOf('pointermove')).to.equal(-1);
         });
 
         it('should do nothing if the press is on a close icon', () => {
-          simulateOnNode(closeIcon, 'mousedown');
-          simulate(document.body, 'mousemove');
-          expect(bar.events.indexOf('mousemove')).to.equal(-1);
+          simulateOnNode(closeIcon, 'pointerdown');
+          document.body.dispatchEvent(new PointerEvent('pointermove'));
+          expect(bar.events.indexOf('pointermove')).to.equal(-1);
         });
 
         it('should do nothing if the tabs are not movable', () => {
           bar.tabsMovable = false;
-          simulateOnNode(tab, 'mousedown');
-          simulate(document.body, 'mousemove');
-          expect(bar.events.indexOf('mousemove')).to.equal(-1);
+          simulateOnNode(tab, 'pointerdown');
+          document.body.dispatchEvent(new PointerEvent('pointermove'));
+          expect(bar.events.indexOf('pointermove')).to.equal(-1);
         });
 
         it('should do nothing if there is a drag in progress', () => {
           startDrag(bar, 2, 'down');
           let rect = tab.getBoundingClientRect();
-          let evt = generate('mousedown', {
+          let event = new PointerEvent('pointerdown', {
             clientX: rect.left,
-            clientY: rect.top
+            clientY: rect.top,
+            cancelable: true
           });
-          let cancelled = !tab.dispatchEvent(evt);
+          let cancelled = !tab.dispatchEvent(event);
           expect(cancelled).to.equal(false);
         });
       });
 
-      context('mousemove', () => {
+      context('pointermove', () => {
         it('should do nothing if there is a drag in progress', () => {
-          simulateOnNode(tab, 'mousedown');
+          simulateOnNode(tab, 'pointerdown');
           let called = 0;
           bar.tabDetachRequested.connect((sender, args) => {
             called++;
           });
           let rect = bar.contentNode.getBoundingClientRect();
-          simulate(document.body, 'mousemove', {
-            clientX: rect.right + 200,
-            clientY: rect.top
-          });
+          document.body.dispatchEvent(
+            new PointerEvent('pointermove', {
+              clientX: rect.right + 200,
+              clientY: rect.top,
+              cancelable: true
+            })
+          );
           expect(called).to.equal(1);
-          simulate(document.body, 'mousemove', {
-            clientX: rect.right + 200,
-            clientY: rect.top
-          });
+          document.body.dispatchEvent(
+            new PointerEvent('pointermove', {
+              clientX: rect.right + 200,
+              clientY: rect.top,
+              cancelable: true
+            })
+          );
           expect(called).to.equal(1);
         });
 
         it('should bail if the drag threshold is not exceeded', () => {
-          simulateOnNode(tab, 'mousedown');
+          simulateOnNode(tab, 'pointerdown');
           let called = false;
           bar.tabDetachRequested.connect((sender, args) => {
             bar.releaseMouse();
             called = true;
           });
           let rect = bar.contentNode.getBoundingClientRect();
-          simulate(document.body, 'mousemove', {
-            clientX: rect.right + 1,
-            clientY: rect.top
-          });
+          document.body.dispatchEvent(
+            new PointerEvent('pointermove', {
+              clientX: rect.right + 1,
+              clientY: rect.top,
+              cancelable: true
+            })
+          );
           expect(called).to.equal(false);
         });
 
         it('should emit the detach requested signal if the threshold is exceeded', () => {
-          simulateOnNode(tab, 'mousedown');
+          simulateOnNode(tab, 'pointerdown');
           let called = false;
           bar.tabDetachRequested.connect((sender, args) => {
             expect(sender).to.equal(bar);
@@ -1293,25 +1421,31 @@ describe('@lumino/widgets', () => {
             called = true;
           });
           let rect = bar.contentNode.getBoundingClientRect();
-          simulate(document.body, 'mousemove', {
-            clientX: rect.right + 200,
-            clientY: rect.top
-          });
+          document.body.dispatchEvent(
+            new PointerEvent('pointermove', {
+              clientX: rect.right + 200,
+              clientY: rect.top,
+              cancelable: true
+            })
+          );
           expect(called).to.equal(true);
         });
 
         it('should bail if the signal handler aborted the drag', () => {
-          simulateOnNode(tab, 'mousedown');
+          simulateOnNode(tab, 'pointerdown');
           let called = false;
           bar.tabDetachRequested.connect((sender, args) => {
             bar.releaseMouse();
             called = true;
           });
           let rect = bar.contentNode.getBoundingClientRect();
-          simulate(document.body, 'mousemove', {
-            clientX: rect.right + 200,
-            clientY: rect.top
-          });
+          document.body.dispatchEvent(
+            new PointerEvent('pointermove', {
+              clientX: rect.right + 200,
+              clientY: rect.top,
+              cancelable: true
+            })
+          );
           expect(called).to.equal(true);
           let left = rect.left;
           rect = tab.getBoundingClientRect();
@@ -1319,16 +1453,19 @@ describe('@lumino/widgets', () => {
         });
 
         it('should update the positions of the tabs', () => {
-          simulateOnNode(tab, 'mousedown');
+          simulateOnNode(tab, 'pointerdown');
           let called = false;
           bar.tabDetachRequested.connect((sender, args) => {
             called = true;
           });
           let rect = bar.contentNode.getBoundingClientRect();
-          simulate(document.body, 'mousemove', {
-            clientX: rect.right + 200,
-            clientY: rect.top
-          });
+          document.body.dispatchEvent(
+            new PointerEvent('pointermove', {
+              clientX: rect.right + 200,
+              clientY: rect.top,
+              cancelable: true
+            })
+          );
           expect(called).to.equal(true);
           let left = rect.left;
           rect = tab.getBoundingClientRect();
@@ -1336,10 +1473,10 @@ describe('@lumino/widgets', () => {
         });
       });
 
-      context('mouseup', () => {
+      context('pointerup', () => {
         it('should emit the `tabMoved` signal', done => {
           startDrag(bar);
-          simulate(document.body, 'mouseup');
+          document.body.dispatchEvent(new PointerEvent('pointerup'));
           bar.tabMoved.connect(() => {
             done();
           });
@@ -1347,7 +1484,7 @@ describe('@lumino/widgets', () => {
 
         it('should move the tab to its final position', done => {
           startDrag(bar);
-          simulate(document.body, 'mouseup');
+          document.body.dispatchEvent(new PointerEvent('pointerup'));
           let title = bar.titles[0];
           bar.tabMoved.connect(() => {
             expect(bar.titles[2]).to.equal(title);
@@ -1357,8 +1494,11 @@ describe('@lumino/widgets', () => {
 
         it('should cancel a middle mouse release', () => {
           startDrag(bar);
-          let evt = generate('mouseup', { button: 1 });
-          let cancelled = !document.body.dispatchEvent(evt);
+          let event = new PointerEvent('pointerup', {
+            button: 1,
+            cancelable: true
+          });
+          let cancelled = !document.body.dispatchEvent(event);
           expect(cancelled).to.equal(true);
         });
       });
@@ -1366,24 +1506,29 @@ describe('@lumino/widgets', () => {
       context('keydown', () => {
         it('should prevent default', () => {
           startDrag(bar);
-          let evt = generate('keydown');
-          let cancelled = !document.body.dispatchEvent(evt);
+          let event = new KeyboardEvent('keydown', { cancelable: true });
+          let cancelled = !document.body.dispatchEvent(event);
           expect(cancelled).to.equal(true);
         });
 
         it('should release the mouse if `Escape` is pressed', () => {
           startDrag(bar);
-          simulate(document.body, 'keydown', { keyCode: 27 });
-          simulateOnNode(tab, 'mousedown');
-          expect(bar.events.indexOf('mousemove')).to.equal(-1);
+          document.body.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              keyCode: 27,
+              cancelable: true
+            })
+          );
+          simulateOnNode(tab, 'pointerdown');
+          expect(bar.events.indexOf('pointermove')).to.equal(-1);
         });
       });
 
       context('contextmenu', () => {
         it('should prevent default', () => {
           startDrag(bar);
-          let evt = generate('contextmenu');
-          let cancelled = !document.body.dispatchEvent(evt);
+          let event = new MouseEvent('contextmenu', { cancelable: true });
+          let cancelled = !document.body.dispatchEvent(event);
           expect(cancelled).to.equal(true);
         });
       });
@@ -1394,8 +1539,12 @@ describe('@lumino/widgets', () => {
         let bar = new LogTabBar();
         Widget.attach(bar, document.body);
         expect(bar.methods).to.contain('onBeforeAttach');
-        simulate(bar.node, 'mousedown');
-        expect(bar.events.indexOf('mousedown')).to.not.equal(-1);
+        bar.node.dispatchEvent(
+          new PointerEvent('pointerdown', {
+            cancelable: true
+          })
+        );
+        expect(bar.events.indexOf('pointerdown')).to.not.equal(-1);
         bar.dispose();
       });
     });
@@ -1409,13 +1558,27 @@ describe('@lumino/widgets', () => {
         Widget.attach(bar, document.body);
         let tab = bar.contentNode.firstChild as HTMLElement;
         let rect = tab.getBoundingClientRect();
-        simulate(tab, 'mousedown', { clientX: rect.left, clientY: rect.top });
+        tab.dispatchEvent(
+          new PointerEvent('pointerdown', {
+            clientX: rect.left,
+            clientY: rect.top,
+            cancelable: true
+          })
+        );
         Widget.detach(bar);
         expect(bar.methods).to.contain('onAfterDetach');
-        simulate(document.body, 'mousemove');
-        expect(bar.events.indexOf('mousemove')).to.equal(-1);
-        simulate(document.body, 'mouseup');
-        expect(bar.events.indexOf('mouseup')).to.equal(-1);
+        document.body.dispatchEvent(
+          new PointerEvent('pointermove', {
+            cancelable: true
+          })
+        );
+        expect(bar.events.indexOf('pointermove')).to.equal(-1);
+        document.body.dispatchEvent(
+          new PointerEvent('pointerup', {
+            cancelable: true
+          })
+        );
+        expect(bar.events.indexOf('pointerup')).to.equal(-1);
       });
     });
 

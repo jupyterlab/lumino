@@ -112,17 +112,20 @@ describe('@lumino/widgets', () => {
       it('should take no arguments', () => {
         let bar = new MenuBar();
         expect(bar).to.be.an.instanceof(MenuBar);
+        bar.dispose();
       });
 
       it('should take options for initializing the menu bar', () => {
         let renderer = new MenuBar.Renderer();
         let bar = new MenuBar({ renderer });
         expect(bar).to.be.an.instanceof(MenuBar);
+        bar.dispose();
       });
 
       it('should add the `lm-MenuBar` class', () => {
         let bar = new MenuBar();
         expect(bar.hasClass('lm-MenuBar')).to.equal(true);
+        bar.dispose();
       });
     });
 
@@ -142,6 +145,7 @@ describe('@lumino/widgets', () => {
         let renderer = Object.create(MenuBar.defaultRenderer);
         let bar = new MenuBar({ renderer });
         expect(bar.renderer).to.equal(renderer);
+        bar.dispose();
       });
     });
 
@@ -171,6 +175,7 @@ describe('@lumino/widgets', () => {
         let bar = new MenuBar();
         let content = bar.contentNode;
         expect(content.classList.contains('lm-MenuBar-content')).to.equal(true);
+        bar.dispose();
       });
     });
 
@@ -268,6 +273,7 @@ describe('@lumino/widgets', () => {
         expect(menus.length).to.equal(2);
         expect(menus[0]).to.equal(menu0);
         expect(menus[1]).to.equal(menu1);
+        bar.dispose();
       });
     });
 
@@ -439,12 +445,14 @@ describe('@lumino/widgets', () => {
         bar.addMenu(new Menu({ commands }));
         bar.clearMenus();
         expect(bar.menus).to.eql([]);
+        bar.dispose();
       });
 
       it('should be a no-op if there are no menus', () => {
         let bar = new MenuBar();
         bar.clearMenus();
         expect(bar.menus).to.eql([]);
+        bar.dispose();
       });
     });
 
@@ -714,12 +722,14 @@ describe('@lumino/widgets', () => {
         Widget.detach(bar);
         MessageLoop.sendMessage(bar, Widget.Msg.ActivateRequest);
         expect(bar.node.contains(document.activeElement)).to.equal(false);
+        bar.dispose();
       });
 
       it('should focus the node if attached', () => {
         let bar = createMenuBar();
         MessageLoop.sendMessage(bar, Widget.Msg.ActivateRequest);
         expect(bar.node.contains(document.activeElement)).to.equal(true);
+        bar.dispose();
       });
     });
 
@@ -734,6 +744,7 @@ describe('@lumino/widgets', () => {
         expect(bar.methods.indexOf('onUpdateRequest')).to.equal(-1);
         requestAnimationFrame(() => {
           expect(bar.methods.indexOf('onUpdateRequest')).to.not.equal(-1);
+          bar.dispose();
           done();
         });
       });
@@ -746,6 +757,7 @@ describe('@lumino/widgets', () => {
         MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
         let child = bar.contentNode.firstChild as HTMLElement;
         expect(child.className).to.contain('lm-MenuBar-item');
+        bar.dispose();
       });
     });
 

@@ -147,9 +147,9 @@ describe('@lumino/widgets', () => {
         }
       };
 
-      it('should default to an empty string', () => {
+      it('should default to undefined', () => {
         let title = new Title({ owner });
-        expect(title.icon).to.equal('');
+        expect(title.icon).to.equal(undefined);
       });
 
       it('should initialize from the options', () => {

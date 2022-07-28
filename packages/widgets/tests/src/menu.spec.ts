@@ -64,21 +64,23 @@ describe('@lumino/widgets', () => {
   let logMenu: LogMenu = null!;
   let menu: Menu = null!;
   let executed = '';
+  const iconClass = 'foo';
+  const iconRenderer = {
+    render: (host: HTMLElement, options?: any) => {
+      const renderNode = document.createElement('div');
+      host.classList.add(iconClass);
+      host.appendChild(renderNode);
+    }
+  };
 
   before(() => {
-    const iconRenderer = {
-      render: (host: HTMLElement, options?: any) => {
-        const renderNode = document.createElement('div');
-        renderNode.className = 'foo';
-        host.appendChild(renderNode);
-      }
-    };
     commands.addCommand('test', {
       execute: (args: JSONObject) => {
         executed = 'test';
       },
       label: 'Test Label',
       icon: iconRenderer,
+      iconClass,
       caption: 'Test Caption',
       className: 'testClass',
       mnemonic: 0
@@ -1044,11 +1046,6 @@ describe('@lumino/widgets', () => {
       });
 
       describe('#icon', () => {
-        it('should get the icon class of a command item for a `command` type', () => {
-          let item = menu.addItem({ command: 'test' });
-          expect(item.icon).to.equal('foo');
-        });
-
         it('should get the title icon of a submenu item for a `submenu` type', () => {
           let submenu = new Menu({ commands });
           submenu.title.iconClass = 'bar';
@@ -1056,11 +1053,11 @@ describe('@lumino/widgets', () => {
           expect(item.iconClass).to.equal('bar');
         });
 
-        it('should default to an empty string', () => {
+        it('should default to undefined', () => {
           let item = menu.addItem({});
-          expect(item.icon).to.equal('');
+          expect(item.icon).to.equal(undefined);
           item = menu.addItem({ type: 'separator' });
-          expect(item.icon).to.equal('');
+          expect(item.icon).to.equal(undefined);
         });
       });
 

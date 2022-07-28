@@ -588,13 +588,13 @@ export class TabBar<T> extends Widget {
   handleEvent(event: Event): void {
     switch (event.type) {
       case 'pointerdown':
-        this._evtPointerDown(event as MouseEvent);
+        this._evtPointerDown(event as PointerEvent);
         break;
       case 'pointermove':
-        this._evtPointerMove(event as MouseEvent);
+        this._evtPointerMove(event as PointerEvent);
         break;
       case 'pointerup':
-        this._evtPointerUp(event as MouseEvent);
+        this._evtPointerUp(event as PointerEvent);
         break;
       case 'dblclick':
         this._evtDblClick(event as MouseEvent);
@@ -723,7 +723,7 @@ export class TabBar<T> extends Widget {
   /**
    * Handle the `'pointerdown'` event for the tab bar.
    */
-  private _evtPointerDown(event: MouseEvent): void {
+  private _evtPointerDown(event: PointerEvent | MouseEvent): void {
     // Do nothing if it's not a left or middle mouse press.
     if (event.button !== 0 && event.button !== 1) {
       return;
@@ -817,7 +817,7 @@ export class TabBar<T> extends Widget {
   /**
    * Handle the `'pointermove'` event for the tab bar.
    */
-  private _evtPointerMove(event: MouseEvent): void {
+  private _evtPointerMove(event: PointerEvent | MouseEvent): void {
     // Do nothing if no drag is in progress.
     let data = this._dragData;
     if (!data) {
@@ -889,7 +889,7 @@ export class TabBar<T> extends Widget {
   /**
    * Handle the `'pointerup'` event for the document.
    */
-  private _evtPointerUp(event: MouseEvent): void {
+  private _evtPointerUp(event: PointerEvent | MouseEvent): void {
     // Do nothing if it's not a left or middle mouse release.
     if (event.button !== 0 && event.button !== 1) {
       return;

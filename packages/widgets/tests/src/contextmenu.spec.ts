@@ -10,8 +10,6 @@
 |----------------------------------------------------------------------------*/
 import { expect } from 'chai';
 
-// import { simulate } from 'simulate-event';
-
 import { CommandRegistry } from '@lumino/commands';
 
 import { JSONObject } from '@lumino/coreutils';
