@@ -144,6 +144,7 @@ describe('@lumino/widgets', () => {
           tabsMovable: true,
           allowDeselect: true,
           addButtonEnabled: true,
+          scrollingEnabled: true,
           insertBehavior: 'select-tab',
           removeBehavior: 'select-previous-tab',
           renderer
@@ -152,6 +153,7 @@ describe('@lumino/widgets', () => {
         expect(newBar.tabsMovable).to.equal(true);
         expect(newBar.renderer).to.equal(renderer);
         expect(newBar.addButtonEnabled).to.equal(true);
+        expect(newBar.scrollingEnabled).to.equal(true);
       });
 
       it('should add the `lm-TabBar` class', () => {
@@ -649,6 +651,37 @@ describe('@lumino/widgets', () => {
         expect(bar.addButtonNode.classList.contains('lm-mod-hidden')).to.equal(
           false
         );
+      });
+    });
+
+    describe('#scrollingEnabled', () => {
+      it('should get whether the scroll buttons are enabled', () => {
+        let bar = new TabBar<Widget>();
+        expect(bar.scrollingEnabled).to.equal(false);
+      });
+
+      it('should set whether the scroll buttons are enabled', () => {
+        let bar = new TabBar<Widget>();
+        bar.scrollingEnabled = true;
+        expect(bar.scrollingEnabled).to.equal(true);
+      });
+
+      it('should not show the scroll buttons if not set', () => {
+        populateBar(bar);
+        expect(
+          bar.scrollBeforeButtonNode.classList.contains('lm-mod-hidden')
+        ).to.equal(true);
+        expect(
+          bar.scrollAfterButtonNode.classList.contains('lm-mod-hidden')
+        ).to.equal(true);
+
+        bar.scrollingEnabled = true;
+        expect(
+          bar.scrollBeforeButtonNode.classList.contains('lm-mod-hidden')
+        ).to.equal(false);
+        expect(
+          bar.scrollAfterButtonNode.classList.contains('lm-mod-hidden')
+        ).to.equal(true);
       });
     });
 
