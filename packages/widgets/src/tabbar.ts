@@ -352,6 +352,8 @@ export class TabBar<T> extends Widget {
 
   /**
    * Whether scrolling is enabled.
+   *
+   * Note: for scrolling to work the tabs need to have `min-width` set.
    */
   get scrollingEnabled(): boolean {
     return this._scrollingEnabled;
@@ -397,7 +399,7 @@ export class TabBar<T> extends Widget {
    * The tab bar content wrapper node.
    *
    * #### Notes
-   * This is the node which the content node and enables scrolling.
+   * This is the node which wraps the content node and enables scrolling.
    *
    * Modifying this node directly can lead to undefined behavior.
    */
@@ -1046,7 +1048,7 @@ export class TabBar<T> extends Widget {
       return;
     }
 
-    // Initialize the non-measured parts of the drag data,
+    // Initialize the non-measured parts of the drag data.
     this._dragData = {
       tab: tabs[index] as HTMLElement,
       index: index,
