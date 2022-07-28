@@ -10,8 +10,7 @@
     "@lumino/datagrid": "^0.36.2",
     "@lumino/default-theme": "^0.22.2",
     "@lumino/dragdrop": "^1.14.0",
-    "@lumino/widgets": "^1.33.0",
-    "es6-promise": "^4.0.5"
+    "@lumino/widgets": "^1.33.0"
   },
   "devDependencies": {
     "css-loader": "^3.4.0",

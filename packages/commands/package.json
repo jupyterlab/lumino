@@ -66,7 +66,6 @@
     "@types/chai": "^3.4.35",
     "@types/mocha": "^2.2.39",
     "chai": "^4.3.4",
-    "es6-promise": "^4.0.5",
     "karma": "^6.3.4",
     "karma-chrome-launcher": "^3.1.0",
     "karma-firefox-launcher": "^2.1.1",
