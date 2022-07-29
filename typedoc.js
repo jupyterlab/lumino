@@ -23,6 +23,5 @@ module.exports = {
   name: '@lumino',
   out: 'docs/source/api',
   readme: 'README.md',
-  theme: 'default',
   tsconfig: 'tsconfigdoc.json'
 };
