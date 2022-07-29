@@ -143,7 +143,7 @@ export class PassInputValidator implements ICellInputValidator {
    *
    * @param cell - The object holding cell configuration data.
    *
-   * @param _value - The cell value input.
+   * @param value - The cell value input.
    *
    * @returns An object with validation result.
    */
