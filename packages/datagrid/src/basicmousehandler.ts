@@ -843,7 +843,7 @@ export namespace PressData {
 /**
  * The namespace for the module implementation details.
  */
-export namespace Private {
+namespace Private {
   /**
    * Creates a CellConfig object from a hit region.
    */
