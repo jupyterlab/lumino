@@ -143,13 +143,13 @@ export class PassInputValidator implements ICellInputValidator {
    *
    * @param cell - The object holding cell configuration data.
    *
-   * @param value - The cell value input.
+   * @param _value - The cell value input.
    *
    * @returns An object with validation result.
    */
   validate(
     cell: CellEditor.CellConfig,
-    value: any
+    value: unknown
   ): ICellInputValidatorResponse {
     return { valid: true };
   }
@@ -423,7 +423,7 @@ export abstract class CellEditor implements ICellEditor, IDisposable {
   /**
    * Cancel editing the cell.
    */
-  cancel() {
+  cancel(): void {
     if (this._disposed) {
       return;
     }
@@ -455,7 +455,7 @@ export abstract class CellEditor implements ICellEditor, IDisposable {
   /**
    * Validate the cell input. Shows validation error notification when input is invalid.
    */
-  protected validate() {
+  protected validate(): void {
     let value;
     try {
       value = this.getInput();
@@ -490,7 +490,7 @@ export abstract class CellEditor implements ICellEditor, IDisposable {
    * If message is set to empty string (which is the default)
    * existing notification popup is removed if any.
    */
-  protected setValidity(valid: boolean, message: string = '') {
+  protected setValidity(valid: boolean, message: string = ''): void {
     this._validInput = valid;
 
     this._closeValidityNotification();
@@ -816,7 +816,7 @@ export abstract class InputCellEditor extends CellEditor {
   /**
    * Dispose of the resources held by cell editor.
    */
-  dispose() {
+  dispose(): void {
     if (this.isDisposed) {
       return;
     }

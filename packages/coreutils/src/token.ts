@@ -34,6 +34,7 @@ export class Token<T> {
    */
   readonly name: string;
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   private _tokenStructuralPropertyT: T;
 }
