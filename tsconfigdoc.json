@@ -1,6 +1,6 @@
 {
   "$schema": "http://json.schemastore.org/tsconfig",
-  "extends": "tsconfigbase",
+  "extends": "./tsconfigbase",
   "exclude": ["**/tests/**", "examples/**"],
   "compilerOptions": {
     "strictNullChecks": true,
@@ -8,7 +8,7 @@
       "@lumino/*": ["./packages/*/src"]
     },
     "moduleResolution": "node",
-    "types": ["jest", "node"]
+    "types": ["node"]
   },
   "references": [
     {

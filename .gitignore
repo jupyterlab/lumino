@@ -13,22 +13,7 @@ review/api/temp
 docs/source/changelog.md
 
 # generated api files
-packages/algorithm/docs/
-packages/application/docs/
-packages/collections/docs/
-packages/commands/docs/
-packages/coreutils/docs/
-packages/datagrid/docs/
-packages/disposable/docs/
-packages/domutils/docs/
-packages/dragdrop/docs/
-packages/keyboard/docs/
-packages/messaging/docs/
-packages/polling/docs/
-packages/properties/docs/
-packages/signaling/docs/
-packages/virtualdom/docs/
-packages/widgets/docs/
+docs/source/api
 
 # generated example files
 docs/source/examples
