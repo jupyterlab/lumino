@@ -9,8 +9,6 @@
 |----------------------------------------------------------------------------*/
 import { expect } from 'chai';
 
-import { generate } from 'simulate-event';
-
 import {
   EN_US,
   getKeyboardLayout,
@@ -88,14 +86,14 @@ describe('@lumino/keyboard', () => {
     describe('#keyForKeydownEvent()', () => {
       it('should get the key for a `keydown` event', () => {
         let layout = new KeycodeLayout('foo', { 100: 'F' });
-        let event = generate('keydown', { keyCode: 100 });
+        let event = new KeyboardEvent('keydown', { keyCode: 100 });
         let key = layout.keyForKeydownEvent(event as KeyboardEvent);
         expect(key).to.equal('F');
       });
 
       it('should return an empty string if the code is not valid', () => {
         let layout = new KeycodeLayout('foo', { 100: 'F' });
-        let event = generate('keydown', { keyCode: 101 });
+        let event = new KeyboardEvent('keydown', { keyCode: 101 });
         let key = layout.keyForKeydownEvent(event as KeyboardEvent);
         expect(key).to.equal('');
       });
