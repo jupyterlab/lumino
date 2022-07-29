@@ -9,8 +9,6 @@
 |----------------------------------------------------------------------------*/
 import { expect } from 'chai';
 
-import { generate, simulate } from 'simulate-event';
-
 import { JSONObject } from '@lumino/coreutils';
 
 import { CommandRegistry } from '@lumino/commands';
@@ -48,6 +46,9 @@ class LogMenuBar extends MenuBar {
     this.methods.push('onUpdateRequest');
   }
 }
+
+const bubbles = true;
+const cancelable = true;
 
 describe('@lumino/widgets', () => {
   const DEFAULT_CMD = 'menubar.spec.ts:defaultCmd';
@@ -470,49 +471,99 @@ describe('@lumino/widgets', () => {
       context('keydown', () => {
         it('should open the active menu on Enter', () => {
           let menu = bar.activeMenu!;
-          simulate(bar.node, 'keydown', { keyCode: 13 });
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 13
+            })
+          );
           expect(menu.isAttached).to.equal(true);
         });
 
         it('should open the active menu on Up Arrow', () => {
           let menu = bar.activeMenu!;
-          simulate(bar.node, 'keydown', { keyCode: 38 });
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 38
+            })
+          );
           expect(menu.isAttached).to.equal(true);
         });
 
         it('should open the active menu on Down Arrow', () => {
           let menu = bar.activeMenu!;
-          simulate(bar.node, 'keydown', { keyCode: 40 });
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 40
+            })
+          );
           expect(menu.isAttached).to.equal(true);
         });
 
         it('should close the active menu on Escape', () => {
           let menu = bar.activeMenu!;
           bar.openActiveMenu();
-          simulate(bar.node, 'keydown', { keyCode: 27 });
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 27
+            })
+          );
           expect(menu.isAttached).to.equal(false);
           expect(menu.activeIndex).to.equal(-1);
           expect(menu.node.contains(document.activeElement)).to.equal(false);
         });
 
         it('should activate the previous menu on Left Arrow', () => {
-          simulate(bar.node, 'keydown', { keyCode: 37 });
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 37
+            })
+          );
           expect(bar.activeIndex!).to.equal(2);
-          simulate(bar.node, 'keydown', { keyCode: 37 });
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 37
+            })
+          );
           expect(bar.activeIndex!).to.equal(1);
         });
 
         it('should activate the next menu on Right Arrow', () => {
-          simulate(bar.node, 'keydown', { keyCode: 39 });
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 39
+            })
+          );
           expect(bar.activeIndex!).to.equal(1);
-          simulate(bar.node, 'keydown', { keyCode: 39 });
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 39
+            })
+          );
           expect(bar.activeIndex!).to.equal(2);
-          simulate(bar.node, 'keydown', { keyCode: 39 });
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 39
+            })
+          );
           expect(bar.activeIndex!).to.equal(0);
         });
 
         it('should open the menu matching a mnemonic', () => {
-          simulate(bar.node, 'keydown', { keyCode: 97 }); // '1';
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 97 // `1` key
+            })
+          );
           expect(bar.activeIndex!).to.equal(1);
           let menu = bar.activeMenu!;
           expect(menu.isAttached).to.equal(true);
@@ -520,7 +571,12 @@ describe('@lumino/widgets', () => {
 
         it('should select the next menu matching by first letter', () => {
           bar.activeIndex = 1;
-          simulate(bar.node, 'keydown', { keyCode: 77 }); // 'M';
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 77 // `M` key
+            })
+          );
           expect(bar.activeIndex!).to.equal(1);
           let menu = bar.activeMenu!;
           expect(menu.isAttached).to.equal(false);
@@ -531,7 +587,12 @@ describe('@lumino/widgets', () => {
           menu.title.label = 'Test1';
           menu.title.mnemonic = 4;
           bar.addMenu(menu);
-          simulate(bar.node, 'keydown', { keyCode: 97 }); // '1';
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 97 // `1` key
+            })
+          );
           expect(bar.activeIndex).to.equal(1);
           menu = bar.activeMenu!;
           expect(menu.isAttached).to.equal(false);
@@ -542,7 +603,12 @@ describe('@lumino/widgets', () => {
           menu.title.label = 'Test1';
           bar.addMenu(menu);
           bar.addMenu(new Menu({ commands }));
-          simulate(bar.node, 'keydown', { keyCode: 84 }); // 'T';
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 84 // `T` key
+            })
+          );
           expect(bar.activeIndex).to.equal(3);
           menu = bar.activeMenu!;
           expect(menu.isAttached).to.equal(false);
@@ -551,15 +617,15 @@ describe('@lumino/widgets', () => {
 
       context('mousedown', () => {
         it('should bail if the mouse press was not on the menu bar', () => {
-          let evt = generate('mousedown', { clientX: -10 });
-          bar.node.dispatchEvent(evt);
-          expect(evt.defaultPrevented).to.equal(false);
+          let event = new MouseEvent('mousedown', { bubbles, clientX: -10 });
+          bar.node.dispatchEvent(event);
+          expect(event.defaultPrevented).to.equal(false);
         });
 
         it('should close an open menu if the press was not on an item', () => {
           bar.openActiveMenu();
           let menu = bar.activeMenu!;
-          simulate(bar.node, 'mousedown');
+          bar.node.dispatchEvent(new MouseEvent('mousedown', { bubbles }));
           expect(bar.activeIndex).to.equal(-1);
           expect(menu.isAttached).to.equal(false);
         });
@@ -571,10 +637,13 @@ describe('@lumino/widgets', () => {
             'lm-MenuBar-item'
           )[0] as HTMLElement;
           let rect = node.getBoundingClientRect();
-          simulate(bar.node, 'mousedown', {
-            clientX: rect.left,
-            clientY: rect.top
-          });
+          bar.node.dispatchEvent(
+            new MouseEvent('mousedown', {
+              bubbles,
+              clientX: rect.left,
+              clientY: rect.top
+            })
+          );
           expect(bar.activeIndex).to.equal(0);
           expect(menu.isAttached).to.equal(false);
         });
@@ -585,10 +654,13 @@ describe('@lumino/widgets', () => {
             'lm-MenuBar-item'
           )[0] as HTMLElement;
           let rect = node.getBoundingClientRect();
-          simulate(bar.node, 'mousedown', {
-            clientX: rect.left,
-            clientY: rect.top
-          });
+          bar.node.dispatchEvent(
+            new MouseEvent('mousedown', {
+              bubbles,
+              clientX: rect.left,
+              clientY: rect.top
+            })
+          );
           expect(bar.activeIndex).to.equal(0);
           expect(menu.isAttached).to.equal(true);
         });
@@ -600,11 +672,14 @@ describe('@lumino/widgets', () => {
             'lm-MenuBar-item'
           )[0] as HTMLElement;
           let rect = node.getBoundingClientRect();
-          simulate(bar.node, 'mousedown', {
-            button: 1,
-            clientX: rect.left,
-            clientY: rect.top
-          });
+          bar.node.dispatchEvent(
+            new MouseEvent('mousedown', {
+              bubbles,
+              button: 1,
+              clientX: rect.left,
+              clientY: rect.top
+            })
+          );
           expect(bar.activeIndex).to.equal(0);
           expect(menu.isAttached).to.equal(true);
         });
@@ -618,10 +693,13 @@ describe('@lumino/widgets', () => {
             'lm-MenuBar-item'
           )[1] as HTMLElement;
           let rect = node.getBoundingClientRect();
-          simulate(node, 'mousemove', {
-            clientX: rect.left + 1,
-            clientY: rect.top
-          });
+          bar.node.dispatchEvent(
+            new MouseEvent('mousemove', {
+              bubbles,
+              clientX: rect.left + 1,
+              clientY: rect.top
+            })
+          );
           expect(bar.activeIndex).to.equal(1);
           expect(menu.isAttached).to.equal(false);
           expect(bar.activeMenu!.isAttached).to.equal(true);
@@ -634,10 +712,13 @@ describe('@lumino/widgets', () => {
             'lm-MenuBar-item'
           )[0] as HTMLElement;
           let rect = node.getBoundingClientRect();
-          simulate(bar.node, 'mousemove', {
-            clientX: rect.left,
-            clientY: rect.top + 1
-          });
+          bar.node.dispatchEvent(
+            new MouseEvent('mousemove', {
+              bubbles,
+              clientX: rect.left,
+              clientY: rect.top + 1
+            })
+          );
           expect(bar.activeIndex).to.equal(0);
           expect(menu.isAttached).to.equal(true);
         });
@@ -645,7 +726,7 @@ describe('@lumino/widgets', () => {
         it('should be a no-op if the mouse is not over an item and there is a menu open', () => {
           bar.openActiveMenu();
           let menu = bar.activeMenu!;
-          simulate(bar.node, 'mousemove');
+          bar.node.dispatchEvent(new MouseEvent('mousemove', { bubbles }));
           expect(bar.activeIndex).to.equal(0);
           expect(menu.isAttached).to.equal(true);
         });
@@ -653,14 +734,14 @@ describe('@lumino/widgets', () => {
 
       context('mouseleave', () => {
         it('should reset the active index if there is no open menu', () => {
-          simulate(bar.node, 'mouseleave');
+          bar.node.dispatchEvent(new MouseEvent('mouseleave', { bubbles }));
           expect(bar.activeIndex).to.equal(-1);
         });
 
         it('should be a no-op if there is an open menu', () => {
           bar.openActiveMenu();
           let menu = bar.activeMenu!;
-          simulate(bar.node, 'mouseleave');
+          bar.node.dispatchEvent(new MouseEvent('mouseleave', { bubbles }));
           expect(bar.activeIndex).to.equal(0);
           expect(menu.isAttached).to.equal(true);
         });
@@ -668,8 +749,8 @@ describe('@lumino/widgets', () => {
 
       context('contextmenu', () => {
         it('should prevent default', () => {
-          let evt = generate('contextmenu');
-          let cancelled = !bar.node.dispatchEvent(evt);
+          let event = new MouseEvent('contextmenu', { bubbles, cancelable });
+          let cancelled = !bar.node.dispatchEvent(event);
           expect(cancelled).to.equal(true);
         });
       });
@@ -681,15 +762,15 @@ describe('@lumino/widgets', () => {
         let node = bar.node;
         Widget.attach(bar, document.body);
         expect(bar.methods.indexOf('onBeforeAttach')).to.not.equal(-1);
-        simulate(node, 'keydown');
+        node.dispatchEvent(new KeyboardEvent('keydown', { bubbles }));
         expect(bar.events.indexOf('keydown')).to.not.equal(-1);
-        simulate(node, 'mousedown');
+        node.dispatchEvent(new MouseEvent('mousedown', { bubbles }));
         expect(bar.events.indexOf('mousedown')).to.not.equal(-1);
-        simulate(node, 'mousemove');
+        node.dispatchEvent(new MouseEvent('mousemove', { bubbles }));
         expect(bar.events.indexOf('mousemove')).to.not.equal(-1);
-        simulate(node, 'mouseleave');
+        node.dispatchEvent(new MouseEvent('mouseleave', { bubbles }));
         expect(bar.events.indexOf('mouseleave')).to.not.equal(-1);
-        simulate(node, 'contextmenu');
+        node.dispatchEvent(new MouseEvent('contextmenu', { bubbles }));
         expect(bar.events.indexOf('contextmenu')).to.not.equal(-1);
         bar.dispose();
       });
@@ -702,15 +783,15 @@ describe('@lumino/widgets', () => {
         Widget.attach(bar, document.body);
         Widget.detach(bar);
         expect(bar.methods.indexOf('onBeforeAttach')).to.not.equal(-1);
-        simulate(node, 'keydown');
+        node.dispatchEvent(new KeyboardEvent('keydown', { bubbles }));
         expect(bar.events.indexOf('keydown')).to.equal(-1);
-        simulate(node, 'mousedown');
+        node.dispatchEvent(new MouseEvent('mousedown', { bubbles }));
         expect(bar.events.indexOf('mousedown')).to.equal(-1);
-        simulate(node, 'mousemove');
+        node.dispatchEvent(new MouseEvent('mousemove', { bubbles }));
         expect(bar.events.indexOf('mousemove')).to.equal(-1);
-        simulate(node, 'mouseleave');
+        node.dispatchEvent(new MouseEvent('mouseleave', { bubbles }));
         expect(bar.events.indexOf('mouseleave')).to.equal(-1);
-        simulate(node, 'contextmenu');
+        node.dispatchEvent(new MouseEvent('contextmenu', { bubbles }));
         expect(bar.events.indexOf('contextmenu')).to.equal(-1);
         bar.dispose();
       });

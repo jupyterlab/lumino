@@ -87,7 +87,6 @@
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-postcss": "^4.0.0",
     "rollup-plugin-sourcemaps": "^0.6.3",
-    "simulate-event": "^1.4.0",
     "style-loader": "^1.0.2",
     "terser": "^5.7.1",
     "tslib": "^2.3.0",
