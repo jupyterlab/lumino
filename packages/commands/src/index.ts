@@ -166,7 +166,7 @@ export class CommandRegistry {
     args: ReadonlyPartialJSONObject = JSONExt.emptyObject
   ): string {
     let cmd = this._commands[id];
-    return cmd?.label.call(undefined, args) || '';
+    return cmd?.label.call(undefined, args) ?? '';
   }
 
   /**
