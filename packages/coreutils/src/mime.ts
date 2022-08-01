@@ -62,7 +62,7 @@ export class MimeData {
    * #### Notes
    * This will overwrite any previous entry for the MIME type.
    */
-  setData(mime: string, data: any): void {
+  setData(mime: string, data: unknown): void {
     this.clearData(mime);
     this._types.push(mime);
     this._values.push(data);

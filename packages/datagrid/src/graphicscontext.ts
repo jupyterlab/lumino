@@ -233,11 +233,11 @@ export class GraphicsContext implements IDisposable {
     }
   }
 
-  get globalCompositeOperation(): string {
+  get globalCompositeOperation(): GlobalCompositeOperation {
     return this._context.globalCompositeOperation;
   }
 
-  set globalCompositeOperation(value: string) {
+  set globalCompositeOperation(value: GlobalCompositeOperation) {
     if (this._state.globalCompositeOperation !== value) {
       this._state.globalCompositeOperation = value;
       this._context.globalCompositeOperation = value;

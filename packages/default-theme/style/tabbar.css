@@ -7,15 +7,11 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
-/* <DEPRECATED> */
-.p-TabBar, /* </DEPRECATED> */
 .lm-TabBar {
   min-height: 24px;
   max-height: 24px;
 }
 
-/* <DEPRECATED> */
-.p-TabBar-content, /* </DEPRECATED> */
 .lm-TabBar-content {
   min-width: 0;
   min-height: 0;
@@ -23,8 +19,6 @@
   border-bottom: 1px solid #c0c0c0;
 }
 
-/* <DEPRECATED> */
-.p-TabBar-tab, /* </DEPRECATED> */
 .lm-TabBar-tab {
   padding: 0px 10px;
   background: #e5e5e5;
@@ -45,46 +39,30 @@
   font: 12px Helvetica, Arial, sans-serif;
 }
 
-/* <DEPRECATED> */
-.p-TabBar-tab.p-mod-current, /* </DEPRECATED> */
 .lm-TabBar-tab.lm-mod-current {
   background: white;
 }
 
-/* <DEPRECATED> */
-.p-TabBar-tab:hover:not(.p-mod-current), /* </DEPRECATED> */
 .lm-TabBar-tab:hover:not(.lm-mod-current) {
   background: #f0f0f0;
 }
 
-/* <DEPRECATED> */
-.p-TabBar-tab:first-child, /* </DEPRECATED> */
 .lm-TabBar-tab:first-child {
   margin-left: 0;
 }
 
-/* <DEPRECATED> */
-.p-TabBar-tab.p-mod-current, /* </DEPRECATED> */
 .lm-TabBar-tab.lm-mod-current {
   min-height: 23px;
   max-height: 23px;
   transform: translateY(1px);
 }
 
-/* <DEPRECATED> */
-.p-TabBar-tabIcon,
-.p-TabBar-tabLabel,
-.p-TabBar-tabCloseIcon,
-/* </DEPRECATED> */
 .lm-TabBar-tabIcon,
 .lm-TabBar-tabLabel,
 .lm-TabBar-tabCloseIcon {
   display: inline-block;
 }
 
-/* <DEPRECATED> */
-.p-TabBar-tab.p-mod-closable > .p-TabBar-tabCloseIcon,
-/* </DEPRECATED> */
 .lm-TabBar-tab.lm-mod-closable > .lm-TabBar-tabCloseIcon {
   margin-left: 4px;
 }
@@ -94,9 +72,6 @@
   border-bottom: 1px solid #c0c0c0;
 }
 
-/* <DEPRECATED> */
-.p-TabBar-tab.p-mod-closable > .p-TabBar-tabCloseIcon:before,
-/* </DEPRECATED> */
 .lm-TabBar-tab.lm-mod-closable > .lm-TabBar-tabCloseIcon:before {
   content: '\f00d';
   font-family: FontAwesome;
@@ -107,9 +82,6 @@
   font-family: FontAwesome;
 }
 
-/* <DEPRECATED> */
-.p-TabBar-tab.p-mod-drag-image,
-/* </DEPRECATED> */
 .lm-TabBar-tab.lm-mod-drag-image {
   min-height: 23px;
   max-height: 23px;

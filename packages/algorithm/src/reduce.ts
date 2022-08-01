@@ -58,7 +58,7 @@ export function reduce<T, U>(
 export function reduce<T>(
   object: IterableOrArrayLike<T>,
   fn: (accumulator: any, value: T, index: number) => any,
-  initial?: any
+  initial?: unknown
 ): any {
   // Setup the iterator and fetch the first value.
   let index = 0;

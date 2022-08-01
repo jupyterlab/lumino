@@ -10,15 +10,14 @@
     "@lumino/datagrid": "^0.36.2",
     "@lumino/default-theme": "^0.22.2",
     "@lumino/dragdrop": "^1.14.0",
-    "@lumino/widgets": "^1.33.0",
-    "es6-promise": "^4.0.5"
+    "@lumino/widgets": "^1.33.0"
   },
   "devDependencies": {
     "css-loader": "^3.4.0",
     "file-loader": "^5.0.2",
     "rimraf": "^3.0.2",
     "style-loader": "^1.0.2",
-    "typescript": "~3.6.0",
+    "typescript": "~4.7.3",
     "webpack": "^4.41.3",
     "webpack-cli": "^3.3.10"
   }

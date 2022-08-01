@@ -32,7 +32,7 @@
     "build": "npm run build:src && rollup -c",
     "build:src": "tsc --build",
     "clean": "rimraf ./lib && rimraf *.tsbuildinfo && rimraf ./types && rimraf ./dist",
-    "docs": "typedoc --options tdoptions.json src",
+    "docs": "typedoc --options ../../typedoc.js src",
     "minimize": "terser dist/index.js -c -m --source-map \"content='dist/index.js.map',url='index.min.js.map'\" -o dist/index.min.js",
     "watch": "tsc --build --watch"
   },
@@ -55,8 +55,8 @@
     "rollup-plugin-sourcemaps": "^0.6.3",
     "terser": "^5.7.1",
     "tslib": "^2.3.0",
-    "typedoc": "~0.15.0",
-    "typescript": "~3.6.0"
+    "typedoc": "~0.23.9",
+    "typescript": "~4.7.3"
   },
   "publishConfig": {
     "access": "public"

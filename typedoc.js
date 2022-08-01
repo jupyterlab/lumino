@@ -22,17 +22,6 @@ module.exports = {
   exclude,
   name: '@lumino',
   out: 'docs/source/api',
-  // json: 'docs/source/api.json',
   readme: 'README.md',
-  theme: 'typedoc-theme',
   tsconfig: 'tsconfigdoc.json'
-
-  // theme: minimal,
-  // excludePrivate: true,
-  // excludeProtected: true,
-  // excludeExternals: true,
-  // hideGenerator: true
-
-  // gitRevision: 'master',
-  // 'sourcefile-url-prefix': `https://github.com/sinnerschrader/feature-hub/tree/${git.short()}/packages/`,
 };

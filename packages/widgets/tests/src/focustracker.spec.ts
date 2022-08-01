@@ -9,8 +9,6 @@
 |----------------------------------------------------------------------------*/
 import { expect } from 'chai';
 
-import { simulate } from 'simulate-event';
-
 import { Platform } from '@lumino/domutils';
 
 import { FocusTracker, Widget } from '@lumino/widgets';
@@ -36,16 +34,14 @@ describe('@lumino/widgets', () => {
   function focusWidget(widget: Widget): void {
     widget.node.focus();
     if (Platform.IS_IE) {
-      // Ensure we get a synchronous event on IE for testing.
-      simulate(widget.node, 'focus');
+      widget.node.dispatchEvent(new FocusEvent('focus', { bubbles: true }));
     }
   }
 
   function blurWidget(widget: Widget): void {
     widget.node.blur();
     if (Platform.IS_IE) {
-      // Ensure we get a synchronous event on IE for testing.
-      simulate(widget.node, 'blur');
+      widget.node.dispatchEvent(new FocusEvent('blur', { bubbles: true }));
     }
   }
 

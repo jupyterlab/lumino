@@ -667,11 +667,13 @@ export class BasicMouseHandler implements DataGrid.IMouseHandler {
     switch (event.deltaMode) {
       case 0: // DOM_DELTA_PIXEL
         break;
-      case 1: // DOM_DELTA_LINE
+      case 1: {
+        // DOM_DELTA_LINE
         let ds = grid.defaultSizes;
         dx *= ds.columnWidth;
         dy *= ds.rowHeight;
         break;
+      }
       case 2: // DOM_DELTA_PAGE
         dx *= grid.pageWidth;
         dy *= grid.pageHeight;
@@ -841,7 +843,7 @@ export namespace PressData {
 /**
  * The namespace for the module implementation details.
  */
-export namespace Private {
+namespace Private {
   /**
    * Creates a CellConfig object from a hit region.
    */

@@ -64,9 +64,6 @@ export class DataGrid extends Widget {
   constructor(options: DataGrid.IOptions = {}) {
     super();
     this.addClass('lm-DataGrid');
-    /* <DEPRECATED> */
-    this.addClass('p-DataGrid');
-    /* </DEPRECATED> */
 
     // Parse the simple options.
     this._style = options.style || DataGrid.defaultStyle;
@@ -140,12 +137,6 @@ export class DataGrid extends Widget {
     this._vScrollBar.addClass('lm-DataGrid-scrollBar');
     this._hScrollBar.addClass('lm-DataGrid-scrollBar');
     this._scrollCorner.addClass('lm-DataGrid-scrollCorner');
-    /* <DEPRECATED> */
-    this._viewport.addClass('p-DataGrid-viewport');
-    this._vScrollBar.addClass('p-DataGrid-scrollBar');
-    this._hScrollBar.addClass('p-DataGrid-scrollBar');
-    this._scrollCorner.addClass('p-DataGrid-scrollCorner');
-    /* </DEPRECATED> */
 
     // Add the on-screen canvas to the viewport node.
     this._viewport.node.appendChild(this._canvas);
@@ -3830,7 +3821,7 @@ export class DataGrid extends Widget {
       numCols === undefined ? dataModel.columnCount('body') : numCols;
 
     for (let i = 0; i < bodyColumnCount; i++) {
-      /* 
+      /*
         if we're working with nested column headers,
         retrieve the nested levels and iterate on them.
       */

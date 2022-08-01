@@ -10,8 +10,6 @@
 |----------------------------------------------------------------------------*/
 import { expect } from 'chai';
 
-import { simulate } from 'simulate-event';
-
 import { CommandRegistry } from '@lumino/commands';
 
 import { Platform } from '@lumino/domutils';
@@ -31,6 +29,7 @@ class LogPalette extends CommandPalette {
   }
 }
 
+const bubbles = true;
 const defaultOptions: CommandPalette.IItemOptions = {
   command: 'test',
   category: 'Test Category',
@@ -327,7 +326,7 @@ describe('@lumino/widgets', () => {
         let palette = new LogPalette({ commands });
         Widget.attach(palette, document.body);
         ['click', 'keydown', 'input'].forEach(type => {
-          simulate(palette.node, type);
+          palette.node.dispatchEvent(new Event(type, { bubbles }));
           expect(palette.events).to.contain(type);
         });
         palette.dispose();
@@ -345,7 +344,7 @@ describe('@lumino/widgets', () => {
           let node = palette.contentNode.querySelector(
             '.lm-CommandPalette-item'
           )!;
-          simulate(node, 'click');
+          node.dispatchEvent(new MouseEvent('click', { bubbles }));
           expect(called).to.equal(true);
         });
 
@@ -360,7 +359,7 @@ describe('@lumino/widgets', () => {
           let node = palette.contentNode.querySelector(
             '.lm-CommandPalette-item'
           )!;
-          simulate(node, 'click', { button: 1 });
+          node.dispatchEvent(new MouseEvent('click', { bubbles, button: 1 }));
           expect(called).to.equal(false);
         });
       });
@@ -376,7 +375,12 @@ describe('@lumino/widgets', () => {
 
           let node = content.querySelector('.lm-mod-active');
           expect(node).to.equal(null);
-          simulate(palette.node, 'keydown', { keyCode: 40 }); // Down arrow
+          palette.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 40 // Down arrow
+            })
+          );
           MessageLoop.flush();
           node = content.querySelector('.lm-CommandPalette-item.lm-mod-active');
           expect(node).to.not.equal(null);
@@ -392,7 +396,12 @@ describe('@lumino/widgets', () => {
 
           let node = content.querySelector('.lm-mod-active');
           expect(node).to.equal(null);
-          simulate(palette.node, 'keydown', { keyCode: 38 }); // Up arrow
+          palette.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 38 // Up arrow
+            })
+          );
           MessageLoop.flush();
           node = content.querySelector('.lm-CommandPalette-item.lm-mod-active');
           expect(node).to.not.equal(null);
@@ -411,9 +420,13 @@ describe('@lumino/widgets', () => {
 
           expect(node).to.equal(null);
           ['altKey', 'ctrlKey', 'shiftKey', 'metaKey'].forEach(key => {
-            let options: any = { keyCode: 38 };
-            options[key] = true;
-            simulate(palette.node, 'keydown', options);
+            palette.node.dispatchEvent(
+              new KeyboardEvent('keydown', {
+                bubbles,
+                [key]: true,
+                keyCode: 38 // Up arrow
+              })
+            );
             node = content.querySelector(
               '.lm-CommandPalette-item.lm-mod-active'
             );
@@ -434,8 +447,18 @@ describe('@lumino/widgets', () => {
           MessageLoop.flush();
 
           expect(content.querySelector('.lm-mod-active')).to.equal(null);
-          simulate(palette.node, 'keydown', { keyCode: 40 }); // Down arrow
-          simulate(palette.node, 'keydown', { keyCode: 13 }); // Enter
+          palette.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 40 // Down arrow
+            })
+          );
+          palette.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 13 // Enter
+            })
+          );
           expect(called).to.equal(true);
         });
       });
@@ -691,9 +714,6 @@ describe('@lumino/widgets', () => {
             active: false
           });
           let expected = 'lm-CommandPalette-item testClass';
-          /* <DEPRECATED> */
-          expected = 'lm-CommandPalette-item p-CommandPalette-item testClass';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
         });
 
@@ -707,10 +727,6 @@ describe('@lumino/widgets', () => {
           });
           let expected =
             'lm-CommandPalette-item lm-mod-disabled lm-mod-toggled lm-mod-active testClass';
-          /* <DEPRECATED> */
-          expected =
-            'lm-CommandPalette-item p-CommandPalette-item lm-mod-disabled p-mod-disabled lm-mod-toggled p-mod-toggled lm-mod-active p-mod-active testClass';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
         });
       });

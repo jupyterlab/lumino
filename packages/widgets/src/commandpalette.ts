@@ -38,9 +38,6 @@ export class CommandPalette extends Widget {
   constructor(options: CommandPalette.IOptions) {
     super({ node: Private.createNode() });
     this.addClass('lm-CommandPalette');
-    /* <DEPRECATED> */
-    this.addClass('p-CommandPalette');
-    /* </DEPRECATED> */
     this.setFlag(Widget.Flag.DisallowLayout);
     this.commands = options.commands;
     this.renderer = options.renderer || CommandPalette.defaultRenderer;
@@ -504,9 +501,6 @@ export class CommandPalette extends Widget {
   private _toggleFocused(): void {
     let focused = document.activeElement === this.inputNode;
     this.toggleClass('lm-mod-focused', focused);
-    /* <DEPRECATED> */
-    this.toggleClass('p-mod-focused', focused);
-    /* </DEPRECATED> */
   }
 
   /**
@@ -618,11 +612,7 @@ export namespace CommandPalette {
     /**
      * The icon renderer for the command item.
      */
-    readonly icon:
-      | VirtualElement.IRenderer
-      | undefined
-      /* <DEPRECATED> */
-      | string /* </DEPRECATED> */;
+    readonly icon: VirtualElement.IRenderer | undefined;
 
     /**
      * The icon class for the command item.
@@ -763,16 +753,7 @@ export namespace CommandPalette {
      */
     renderHeader(data: IHeaderRenderData): VirtualElement {
       let content = this.formatHeader(data);
-      return h.li(
-        {
-          className:
-            'lm-CommandPalette-header' +
-            /* <DEPRECATED> */
-            ' p-CommandPalette-header'
-          /* </DEPRECATED> */
-        },
-        content
-      );
+      return h.li({ className: 'lm-CommandPalette-header' }, content);
     }
 
     /**
@@ -818,16 +799,7 @@ export namespace CommandPalette {
      */
     renderEmptyMessage(data: IEmptyMessageRenderData): VirtualElement {
       let content = this.formatEmptyMessage(data);
-      return h.li(
-        {
-          className:
-            'lm-CommandPalette-emptyMessage' +
-            /* <DEPRECATED> */
-            ' p-CommandPalette-emptyMessage'
-          /* </DEPRECATED> */
-        },
-        content
-      );
+      return h.li({ className: 'lm-CommandPalette-emptyMessage' }, content);
     }
 
     /**
@@ -840,13 +812,7 @@ export namespace CommandPalette {
     renderItemIcon(data: IItemRenderData): VirtualElement {
       let className = this.createIconClass(data);
 
-      /* <DEPRECATED> */
-      if (typeof data.item.icon === 'string') {
-        return h.div({ className }, data.item.iconLabel);
-      }
-      /* </DEPRECATED> */
-
-      // if data.item.icon is undefined, it will be ignored
+      // If data.item.icon is undefined, it will be ignored.
       return h.div({ className }, data.item.icon!, data.item.iconLabel);
     }
 
@@ -859,13 +825,7 @@ export namespace CommandPalette {
      */
     renderItemContent(data: IItemRenderData): VirtualElement {
       return h.div(
-        {
-          className:
-            'lm-CommandPalette-itemContent' +
-            /* <DEPRECATED> */
-            ' p-CommandPalette-itemContent'
-          /* </DEPRECATED> */
-        },
+        { className: 'lm-CommandPalette-itemContent' },
         this.renderItemLabel(data),
         this.renderItemCaption(data)
       );
@@ -880,16 +840,7 @@ export namespace CommandPalette {
      */
     renderItemLabel(data: IItemRenderData): VirtualElement {
       let content = this.formatItemLabel(data);
-      return h.div(
-        {
-          className:
-            'lm-CommandPalette-itemLabel' +
-            /* <DEPRECATED> */
-            ' p-CommandPalette-itemLabel'
-          /* </DEPRECATED> */
-        },
-        content
-      );
+      return h.div({ className: 'lm-CommandPalette-itemLabel' }, content);
     }
 
     /**
@@ -901,16 +852,7 @@ export namespace CommandPalette {
      */
     renderItemCaption(data: IItemRenderData): VirtualElement {
       let content = this.formatItemCaption(data);
-      return h.div(
-        {
-          className:
-            'lm-CommandPalette-itemCaption' +
-            /* <DEPRECATED> */
-            ' p-CommandPalette-itemCaption'
-          /* </DEPRECATED> */
-        },
-        content
-      );
+      return h.div({ className: 'lm-CommandPalette-itemCaption' }, content);
     }
 
     /**
@@ -922,16 +864,7 @@ export namespace CommandPalette {
      */
     renderItemShortcut(data: IItemRenderData): VirtualElement {
       let content = this.formatItemShortcut(data);
-      return h.div(
-        {
-          className:
-            'lm-CommandPalette-itemShortcut' +
-            /* <DEPRECATED> */
-            ' p-CommandPalette-itemShortcut'
-          /* </DEPRECATED> */
-        },
-        content
-      );
+      return h.div({ className: 'lm-CommandPalette-itemShortcut' }, content);
     }
 
     /**
@@ -944,28 +877,16 @@ export namespace CommandPalette {
     createItemClass(data: IItemRenderData): string {
       // Set up the initial class name.
       let name = 'lm-CommandPalette-item';
-      /* <DEPRECATED> */
-      name += ' p-CommandPalette-item';
-      /* </DEPRECATED> */
 
       // Add the boolean state classes.
       if (!data.item.isEnabled) {
         name += ' lm-mod-disabled';
-        /* <DEPRECATED> */
-        name += ' p-mod-disabled';
-        /* </DEPRECATED> */
       }
       if (data.item.isToggled) {
         name += ' lm-mod-toggled';
-        /* <DEPRECATED> */
-        name += ' p-mod-toggled';
-        /* </DEPRECATED> */
       }
       if (data.active) {
         name += ' lm-mod-active';
-        /* <DEPRECATED> */
-        name += ' p-mod-active';
-        /* </DEPRECATED> */
       }
 
       // Add the extra class.
@@ -998,9 +919,6 @@ export namespace CommandPalette {
      */
     createIconClass(data: IItemRenderData): string {
       let name = 'lm-CommandPalette-itemIcon';
-      /* <DEPRECATED> */
-      name += ' p-CommandPalette-itemIcon';
-      /* </DEPRECATED> */
       let extra = data.item.iconClass;
       return extra ? `${name} ${extra}` : name;
     }
@@ -1096,12 +1014,6 @@ namespace Private {
     clear.className = 'lm-close-icon';
 
     content.className = 'lm-CommandPalette-content';
-    /* <DEPRECATED> */
-    search.classList.add('p-CommandPalette-search');
-    wrapper.classList.add('p-CommandPalette-wrapper');
-    input.classList.add('p-CommandPalette-input');
-    content.classList.add('p-CommandPalette-content');
-    /* </DEPRECATED> */
     input.spellcheck = false;
     wrapper.appendChild(input);
     wrapper.appendChild(clear);
@@ -1548,11 +1460,7 @@ namespace Private {
     /**
      * The icon renderer for the command item.
      */
-    get icon():
-      | VirtualElement.IRenderer
-      | undefined
-      /* <DEPRECATED> */
-      | string /* </DEPRECATED> */ {
+    get icon(): VirtualElement.IRenderer | undefined {
       return this._commands.icon(this.command, this.args);
     }
 

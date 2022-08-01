@@ -228,9 +228,6 @@ export class DockLayout extends Layout {
   moveHandle(handle: HTMLDivElement, offsetX: number, offsetY: number): void {
     // Bail early if there is no root or if the handle is hidden.
     let hidden = handle.classList.contains('lm-mod-hidden');
-    /* <DEPRECATED> */
-    hidden = hidden || handle.classList.contains('p-mod-hidden');
-    /* </DEPRECATED> */
     if (!this._root || hidden) {
       return;
     }
@@ -1910,14 +1907,8 @@ namespace Private {
         handle.setAttribute('data-orientation', this.orientation);
         if (i === this.handles.length - 1) {
           handle.classList.add('lm-mod-hidden');
-          /* <DEPRECATED> */
-          handle.classList.add('p-mod-hidden');
-          /* </DEPRECATED> */
         } else {
           handle.classList.remove('lm-mod-hidden');
-          /* <DEPRECATED> */
-          handle.classList.remove('p-mod-hidden');
-          /* </DEPRECATED> */
         }
       });
     }

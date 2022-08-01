@@ -44,9 +44,6 @@ export class Widget implements IMessageHandler, IObservableDisposable {
   constructor(options: Widget.IOptions = {}) {
     this.node = Private.createNode(options);
     this.addClass('lm-Widget');
-    /* <DEPRECATED> */
-    this.addClass('p-Widget');
-    /* </DEPRECATED> */
   }
 
   /**
@@ -196,16 +193,10 @@ export class Widget implements IMessageHandler, IObservableDisposable {
     if (this.isHidden) {
       if (value === Widget.HiddenMode.Display) {
         this.addClass('lm-mod-hidden');
-        /* <DEPRECATED> */
-        this.addClass('p-mod-hidden');
-        /* </DEPRECATED> */
         this.node.style.transform = '';
       } else {
         this.node.style.transform = 'scale(0)';
         this.removeClass('lm-mod-hidden');
-        /* <DEPRECATED> */
-        this.removeClass('p-mod-hidden');
-        /* </DEPRECATED> */
       }
     }
   }
@@ -436,9 +427,6 @@ export class Widget implements IMessageHandler, IObservableDisposable {
     this.node.removeAttribute('aria-hidden');
     if (this.hiddenMode === Widget.HiddenMode.Display) {
       this.removeClass('lm-mod-hidden');
-      /* <DEPRECATED> */
-      this.removeClass('p-mod-hidden');
-      /* </DEPRECATED> */
     } else {
       this.node.style.transform = '';
     }
@@ -471,9 +459,6 @@ export class Widget implements IMessageHandler, IObservableDisposable {
     this.node.setAttribute('aria-hidden', 'true');
     if (this.hiddenMode === Widget.HiddenMode.Display) {
       this.addClass('lm-mod-hidden');
-      /* <DEPRECATED> */
-      this.addClass('p-mod-hidden');
-      /* </DEPRECATED> */
     } else {
       this.node.style.transform = 'scale(0)';
     }

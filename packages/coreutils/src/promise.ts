@@ -46,7 +46,7 @@ export class PromiseDelegate<T> {
    *
    * @reason - The reason for rejecting the promise.
    */
-  reject(reason: any): void {
+  reject(reason: unknown): void {
     let reject = this._reject;
     reject(reason);
   }

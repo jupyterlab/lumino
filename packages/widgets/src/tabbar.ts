@@ -49,9 +49,6 @@ export class TabBar<T> extends Widget {
   constructor(options: TabBar.IOptions<T> = {}) {
     super({ node: Private.createNode() });
     this.addClass('lm-TabBar');
-    /* <DEPRECATED> */
-    this.addClass('p-TabBar');
-    /* </DEPRECATED> */
     this.contentNode.setAttribute('role', 'tablist');
     this.setFlag(Widget.Flag.DisallowLayout);
     this._document = options.document || document;
@@ -590,23 +587,14 @@ export class TabBar<T> extends Widget {
    */
   handleEvent(event: Event): void {
     switch (event.type) {
-      case 'mousedown': // <DEPRECATED>
-        this._evtMouseDown(event as MouseEvent);
-        break;
-      case 'mousemove': // <DEPRECATED>
-        this._evtMouseMove(event as MouseEvent);
-        break;
-      case 'mouseup': // <DEPRECATED>
-        this._evtMouseUp(event as MouseEvent);
-        break;
       case 'pointerdown':
-        this._evtMouseDown(event as MouseEvent);
+        this._evtPointerDown(event as PointerEvent);
         break;
       case 'pointermove':
-        this._evtMouseMove(event as MouseEvent);
+        this._evtPointerMove(event as PointerEvent);
         break;
       case 'pointerup':
-        this._evtMouseUp(event as MouseEvent);
+        this._evtPointerUp(event as PointerEvent);
         break;
       case 'dblclick':
         this._evtDblClick(event as MouseEvent);
@@ -625,7 +613,6 @@ export class TabBar<T> extends Widget {
    * A message handler invoked on a `'before-attach'` message.
    */
   protected onBeforeAttach(msg: Message): void {
-    this.node.addEventListener('mousedown', this); // <DEPRECATED>
     this.node.addEventListener('pointerdown', this);
     this.node.addEventListener('dblclick', this);
   }
@@ -634,7 +621,6 @@ export class TabBar<T> extends Widget {
    * A message handler invoked on an `'after-detach'` message.
    */
   protected onAfterDetach(msg: Message): void {
-    this.node.removeEventListener('mousedown', this); // <DEPRECATED>
     this.node.removeEventListener('pointerdown', this);
     this.node.removeEventListener('dblclick', this);
     this._releaseMouse();
@@ -735,9 +721,9 @@ export class TabBar<T> extends Widget {
   }
 
   /**
-   * Handle the `'mousedown'` event for the tab bar.
+   * Handle the `'pointerdown'` event for the tab bar.
    */
-  private _evtMouseDown(event: MouseEvent): void {
+  private _evtPointerDown(event: PointerEvent | MouseEvent): void {
     // Do nothing if it's not a left or middle mouse press.
     if (event.button !== 0 && event.button !== 1) {
       return;
@@ -788,8 +774,7 @@ export class TabBar<T> extends Widget {
       detachRequested: false
     };
 
-    // Add the document mouse up listener.
-    this.document.addEventListener('mouseup', this, true); // <DEPRECATED>
+    // Add the document pointer up listener.
     this.document.addEventListener('pointerup', this, true);
 
     // Do nothing else if the middle button or add button is clicked.
@@ -805,7 +790,6 @@ export class TabBar<T> extends Widget {
 
     // Add the extra listeners if the tabs are movable.
     if (this.tabsMovable) {
-      this.document.addEventListener('mousemove', this, true); // <DEPRECATED>
       this.document.addEventListener('pointermove', this, true);
       this.document.addEventListener('keydown', this, true);
       this.document.addEventListener('contextmenu', this, true);
@@ -831,9 +815,9 @@ export class TabBar<T> extends Widget {
   }
 
   /**
-   * Handle the `'mousemove'` event for the tab bar.
+   * Handle the `'pointermove'` event for the tab bar.
    */
-  private _evtMouseMove(event: MouseEvent): void {
+  private _evtPointerMove(event: PointerEvent | MouseEvent): void {
     // Do nothing if no drag is in progress.
     let data = this._dragData;
     if (!data) {
@@ -872,10 +856,6 @@ export class TabBar<T> extends Widget {
       // Add the dragging style classes.
       data.tab.classList.add('lm-mod-dragging');
       this.addClass('lm-mod-dragging');
-      /* <DEPRECATED> */
-      data.tab.classList.add('p-mod-dragging');
-      this.addClass('p-mod-dragging');
-      /* </DEPRECATED> */
 
       // Mark the drag as active.
       data.dragActive = true;
@@ -907,9 +887,9 @@ export class TabBar<T> extends Widget {
   }
 
   /**
-   * Handle the `'mouseup'` event for the document.
+   * Handle the `'pointerup'` event for the document.
    */
-  private _evtMouseUp(event: MouseEvent): void {
+  private _evtPointerUp(event: PointerEvent | MouseEvent): void {
     // Do nothing if it's not a left or middle mouse release.
     if (event.button !== 0 && event.button !== 1) {
       return;
@@ -926,8 +906,6 @@ export class TabBar<T> extends Widget {
     event.stopPropagation();
 
     // Remove the extra mouse event listeners.
-    this.document.removeEventListener('mousemove', this, true); // <DEPRECATED>
-    this.document.removeEventListener('mouseup', this, true); // <DEPRECATED>
     this.document.removeEventListener('pointermove', this, true);
     this.document.removeEventListener('pointerup', this, true);
     this.document.removeEventListener('keydown', this, true);
@@ -993,9 +971,6 @@ export class TabBar<T> extends Widget {
 
     // Remove the dragging class from the tab so it can be transitioned.
     data.tab.classList.remove('lm-mod-dragging');
-    /* <DEPRECATED> */
-    data.tab.classList.remove('p-mod-dragging');
-    /* </DEPRECATED> */
 
     // Parse the transition duration for releasing the tab.
     let duration = Private.parseTransitionDuration(data.tab);
@@ -1018,9 +993,6 @@ export class TabBar<T> extends Widget {
 
       // Remove the remaining dragging style.
       this.removeClass('lm-mod-dragging');
-      /* <DEPRECATED> */
-      this.removeClass('p-mod-dragging');
-      /* </DEPRECATED> */
 
       // If the tab was not moved, there is nothing else to do.
       let i = data.index;
@@ -1060,9 +1032,7 @@ export class TabBar<T> extends Widget {
     // Clear the drag data reference.
     this._dragData = null;
 
-    // Remove the extra mouse listeners.
-    this.document.removeEventListener('mousemove', this, true); // <DEPRECATED>
-    this.document.removeEventListener('mouseup', this, true); // <DEPRECATED>
+    // Remove the extra document event listeners.
     this.document.removeEventListener('pointermove', this, true);
     this.document.removeEventListener('pointerup', this, true);
     this.document.removeEventListener('keydown', this, true);
@@ -1086,10 +1056,6 @@ export class TabBar<T> extends Widget {
     // Clear the dragging style classes.
     data.tab.classList.remove('lm-mod-dragging');
     this.removeClass('lm-mod-dragging');
-    /* <DEPRECATED> */
-    data.tab.classList.remove('p-mod-dragging');
-    this.removeClass('p-mod-dragging');
-    /* </DEPRECATED> */
   }
 
   /**
@@ -1600,13 +1566,7 @@ export namespace TabBar {
       const { title } = data;
       let className = this.createIconClass(data);
 
-      /* <DEPRECATED> */
-      if (typeof title.icon === 'string') {
-        return h.div({ className }, title.iconLabel);
-      }
-      /* </DEPRECATED> */
-
-      // if title.icon is undefined, it will be ignored
+      // If title.icon is undefined, it will be ignored.
       return h.div({ className }, title.icon!, title.iconLabel);
     }
 
@@ -1618,16 +1578,7 @@ export namespace TabBar {
      * @returns A virtual element representing the tab label.
      */
     renderLabel(data: IRenderData<any>): VirtualElement {
-      return h.div(
-        {
-          className:
-            'lm-TabBar-tabLabel' +
-            /* <DEPRECATED> */
-            ' p-TabBar-tabLabel'
-          /* </DEPRECATED> */
-        },
-        data.title.label
-      );
+      return h.div({ className: 'lm-TabBar-tabLabel' }, data.title.label);
     }
 
     /**
@@ -1638,13 +1589,7 @@ export namespace TabBar {
      * @returns A virtual element representing the tab close icon.
      */
     renderCloseIcon(data: IRenderData<any>): VirtualElement {
-      return h.div({
-        className:
-          'lm-TabBar-tabCloseIcon' +
-          /* <DEPRECATED> */
-          ' p-TabBar-tabCloseIcon'
-        /* </DEPRECATED> */
-      });
+      return h.div({ className: 'lm-TabBar-tabCloseIcon' });
     }
 
     /**
@@ -1688,23 +1633,14 @@ export namespace TabBar {
      */
     createTabClass(data: IRenderData<any>): string {
       let name = 'lm-TabBar-tab';
-      /* <DEPRECATED> */
-      name += ' p-TabBar-tab';
-      /* </DEPRECATED> */
       if (data.title.className) {
         name += ` ${data.title.className}`;
       }
       if (data.title.closable) {
         name += ' lm-mod-closable';
-        /* <DEPRECATED> */
-        name += ' p-mod-closable';
-        /* </DEPRECATED> */
       }
       if (data.current) {
         name += ' lm-mod-current';
-        /* <DEPRECATED> */
-        name += ' p-mod-current';
-        /* </DEPRECATED> */
       }
       return name;
     }
@@ -1740,9 +1676,6 @@ export namespace TabBar {
      */
     createIconClass(data: IRenderData<any>): string {
       let name = 'lm-TabBar-tabIcon';
-      /* <DEPRECATED> */
-      name += ' p-TabBar-tabIcon';
-      /* </DEPRECATED> */
       let extra = data.title.iconClass;
       return extra ? `${name} ${extra}` : name;
     }
@@ -1893,9 +1826,6 @@ namespace Private {
     let content = document.createElement('ul');
     content.setAttribute('role', 'tablist');
     content.className = 'lm-TabBar-content';
-    /* <DEPRECATED> */
-    content.classList.add('p-TabBar-content');
-    /* </DEPRECATED> */
     node.appendChild(content);
 
     let add = document.createElement('div');

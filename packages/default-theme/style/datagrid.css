@@ -6,22 +6,16 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
-/* <DEPRECATED> */
-.p-DataGrid, /* </DEPRECATED> */
 .lm-DataGrid {
   min-width: 64px;
   min-height: 64px;
   border: 1px solid #a0a0a0;
 }
 
-/* <DEPRECATED> */
-.p-DataGrid-scrollCorner, /* </DEPRECATED> */
 .lm-DataGrid-scrollCorner {
   background-color: #f0f0f0;
 }
 
-/* <DEPRECATED> */
-.p-DataGrid-scrollCorner::after, /* </DEPRECATED> */
 .lm-DataGrid-scrollCorner::after {
   content: '';
   position: absolute;

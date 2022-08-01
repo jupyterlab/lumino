@@ -1,29 +1,15 @@
 {
   "$schema": "http://json.schemastore.org/tsconfig",
+  "extends": "./tsconfigbase",
+  "exclude": ["**/tests/**", "examples/**"],
   "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
-    "composite": true,
-    "declaration": true,
-    "esModuleInterop": true,
-    "incremental": true,
-    "jsx": "react",
-    "module": "esnext",
-    "moduleResolution": "node",
-    "noEmitOnError": true,
-    "noImplicitAny": true,
-    "noUnusedLocals": true,
-    "preserveWatchOutput": true,
-    "resolveJsonModule": true,
-    "sourceMap": true,
     "strictNullChecks": true,
-    "target": "es2017",
-    "types": ["@types/node"],
-    "baseUrl": ".",
     "paths": {
       "@lumino/*": ["./packages/*/src"]
-    }
+    },
+    "moduleResolution": "node",
+    "types": ["node"]
   },
-  "exclude": ["**/tests/**", "examples/**"],
   "references": [
     {
       "path": "./packages/algorithm"
@@ -42,9 +28,6 @@
     },
     {
       "path": "./packages/datagrid"
-    },
-    {
-      "path": "./packages/datastore"
     },
     {
       "path": "./packages/disposable"

@@ -9,14 +9,13 @@
 |----------------------------------------------------------------------------*/
 import { expect } from 'chai';
 
-import { generate, simulate } from 'simulate-event';
-
 import { each, every } from '@lumino/algorithm';
 
 import { MessageLoop } from '@lumino/messaging';
 
 import { SplitLayout, SplitPanel, Widget } from '@lumino/widgets';
 
+const bubbles = true;
 const renderer: SplitPanel.IRenderer = {
   createHandle: () => document.createElement('div')
 };
@@ -25,11 +24,11 @@ function dragHandle(panel: LogSplitPanel): void {
   MessageLoop.sendMessage(panel, Widget.Msg.UpdateRequest);
   let handle = panel.handles[0];
   let rect = handle.getBoundingClientRect();
-  let args = { clientX: rect.left + 1, clientY: rect.top + 1 };
-  simulate(handle, 'mousedown', args);
-  args = { clientX: rect.left + 10, clientY: rect.top + 1 };
-  simulate(document.body, 'mousemove', args);
-  simulate(document.body, 'mouseup');
+  let args = { bubbles, clientX: rect.left + 1, clientY: rect.top + 1 };
+  handle.dispatchEvent(new MouseEvent('mousedown', args));
+  args = { bubbles, clientX: rect.left + 10, clientY: rect.top + 1 };
+  document.body.dispatchEvent(new MouseEvent('mousemove', args));
+  document.body.dispatchEvent(new MouseEvent('mouseup', { bubbles }));
 }
 
 class LogSplitPanel extends SplitPanel {
@@ -96,14 +95,15 @@ describe('@lumino/widgets', () => {
           panel.addWidget(w);
         });
         Widget.attach(panel, document.body);
-        simulate(layout.handles[0], 'mousedown');
+        let handle = layout.handles[0];
+        handle.dispatchEvent(new MouseEvent('mousedown', { bubbles }));
         expect(panel.events).to.contain('mousedown');
-        simulate(panel.node, 'keydown');
+        panel.node.dispatchEvent(new KeyboardEvent('keydown', { bubbles }));
         expect(panel.events).to.contain('keydown');
         let node = panel.node;
         panel.dispose();
         expect(every(widgets, w => w.isDisposed));
-        simulate(node, 'contextmenu');
+        node.dispatchEvent(new MouseEvent('contextmenu', { bubbles }));
         expect(panel.events).to.not.contain('contextmenu');
       });
     });
@@ -230,22 +230,29 @@ describe('@lumino/widgets', () => {
 
       context('mousedown', () => {
         it('should attach other event listeners', () => {
-          simulate(layout.handles[0], 'mousedown');
+          let handle = layout.handles[0];
+          let body = document.body;
+          handle.dispatchEvent(new MouseEvent('mousedown', { bubbles }));
           expect(panel.events).to.contain('mousedown');
-          simulate(document.body, 'mousemove');
+          body.dispatchEvent(new MouseEvent('mousemove', { bubbles }));
           expect(panel.events).to.contain('mousemove');
-          simulate(document.body, 'keydown');
+          body.dispatchEvent(new KeyboardEvent('keydown', { bubbles }));
           expect(panel.events).to.contain('keydown');
-          simulate(document.body, 'contextmenu');
+          body.dispatchEvent(new MouseEvent('contextmenu', { bubbles }));
           expect(panel.events).to.contain('contextmenu');
-          simulate(document.body, 'mouseup');
+          body.dispatchEvent(new MouseEvent('mouseup', { bubbles }));
           expect(panel.events).to.contain('mouseup');
         });
 
         it('should be a no-op if it is not the left button', () => {
-          simulate(layout.handles[0], 'mousedown', { button: 1 });
+          layout.handles[0].dispatchEvent(
+            new MouseEvent('mousedown', {
+              bubbles,
+              button: 1
+            })
+          );
           expect(panel.events).to.contain('mousedown');
-          simulate(document.body, 'mousemove');
+          document.body.dispatchEvent(new MouseEvent('mousemove', { bubbles }));
           expect(panel.events).to.not.contain('mousemove');
         });
       });
@@ -254,11 +261,14 @@ describe('@lumino/widgets', () => {
         it('should move the handle right', done => {
           let handle = layout.handles[1];
           let rect = handle.getBoundingClientRect();
-          simulate(handle, 'mousedown');
-          simulate(document.body, 'mousemove', {
-            clientX: rect.left + 10,
-            clientY: rect.top
-          });
+          handle.dispatchEvent(new MouseEvent('mousedown', { bubbles }));
+          document.body.dispatchEvent(
+            new MouseEvent('mousemove', {
+              bubbles,
+              clientX: rect.left + 10,
+              clientY: rect.top
+            })
+          );
           requestAnimationFrame(() => {
             let newRect = handle.getBoundingClientRect();
             expect(newRect.left).to.not.equal(rect.left);
@@ -273,11 +283,14 @@ describe('@lumino/widgets', () => {
           });
           let handle = layout.handles[1];
           let rect = handle.getBoundingClientRect();
-          simulate(handle, 'mousedown');
-          simulate(document.body, 'mousemove', {
-            clientX: rect.left,
-            clientY: rect.top - 2
-          });
+          handle.dispatchEvent(new MouseEvent('mousedown', { bubbles }));
+          document.body.dispatchEvent(
+            new MouseEvent('mousemove', {
+              bubbles,
+              clientX: rect.left,
+              clientY: rect.top - 2
+            })
+          );
           requestAnimationFrame(() => {
             let newRect = handle.getBoundingClientRect();
             expect(newRect.top).to.not.equal(rect.top);
@@ -288,43 +301,62 @@ describe('@lumino/widgets', () => {
 
       context('mouseup', () => {
         it('should remove the event listeners', () => {
-          simulate(layout.handles[0], 'mousedown');
+          let handle = layout.handles[0];
+          let body = document.body;
+          handle.dispatchEvent(new MouseEvent('mousedown', { bubbles }));
           expect(panel.events).to.contain('mousedown');
-          simulate(document.body, 'mouseup');
+          body.dispatchEvent(new MouseEvent('mouseup', { bubbles }));
           expect(panel.events).to.contain('mouseup');
-          simulate(document.body, 'mousemove');
+          body.dispatchEvent(new MouseEvent('mousemove', { bubbles }));
           expect(panel.events).to.not.contain('mousemove');
-          simulate(document.body, 'keydown');
+          body.dispatchEvent(new KeyboardEvent('keydown', { bubbles }));
           expect(panel.events).to.not.contain('keydown');
-          simulate(document.body, 'contextmenu');
+          body.dispatchEvent(new MouseEvent('contextmenu', { bubbles }));
           expect(panel.events).to.not.contain('contextmenu');
         });
 
         it('should be a no-op if not the left button', () => {
-          simulate(layout.handles[0], 'mousedown');
+          let handle = layout.handles[0];
+          let body = document.body;
+          handle.dispatchEvent(new MouseEvent('mousedown', { bubbles }));
           expect(panel.events).to.contain('mousedown');
-          simulate(document.body, 'mouseup', { button: 1 });
+          body.dispatchEvent(
+            new MouseEvent('mouseup', {
+              bubbles,
+              button: 1
+            })
+          );
           expect(panel.events).to.contain('mouseup');
-          simulate(document.body, 'mousemove');
+          body.dispatchEvent(new MouseEvent('mousemove', { bubbles }));
           expect(panel.events).to.contain('mousemove');
         });
       });
 
       context('keydown', () => {
         it('should release the mouse if `Escape` is pressed', () => {
-          simulate(layout.handles[0], 'mousedown');
-          simulate(panel.node, 'keydown', { keyCode: 27 });
+          let handle = layout.handles[0];
+          handle.dispatchEvent(new MouseEvent('mousedown', { bubbles }));
+          panel.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 27
+            })
+          );
           expect(panel.events).to.contain('keydown');
-          simulate(panel.node, 'mousemove');
+          panel.node.dispatchEvent(new MouseEvent('mousemove', { bubbles }));
           expect(panel.events).to.not.contain('mousemove');
         });
       });
 
       context('contextmenu', () => {
         it('should prevent events during drag', () => {
-          simulate(layout.handles[0], 'mousedown');
-          let evt = generate('contextmenu');
-          let cancelled = !document.body.dispatchEvent(evt);
+          let handle = layout.handles[0];
+          handle.dispatchEvent(new MouseEvent('mousedown', { bubbles }));
+          let event = new MouseEvent('contextmenu', {
+            bubbles,
+            cancelable: true
+          });
+          let cancelled = !document.body.dispatchEvent(event);
           expect(cancelled).to.equal(true);
           expect(panel.events).to.contain('contextmenu');
         });
@@ -335,7 +367,7 @@ describe('@lumino/widgets', () => {
       it('should attach a mousedown listener to the node', () => {
         let panel = new LogSplitPanel();
         Widget.attach(panel, document.body);
-        simulate(panel.node, 'mousedown');
+        panel.node.dispatchEvent(new MouseEvent('mousedown', { bubbles }));
         expect(panel.events).to.contain('mousedown');
         panel.dispose();
       });
@@ -345,13 +377,13 @@ describe('@lumino/widgets', () => {
       it('should remove all listeners', () => {
         let panel = new LogSplitPanel();
         Widget.attach(panel, document.body);
-        simulate(panel.node, 'mousedown');
+        panel.node.dispatchEvent(new MouseEvent('mousedown', { bubbles }));
         expect(panel.events).to.contain('mousedown');
         Widget.detach(panel);
         panel.events = [];
-        simulate(panel.node, 'mousedown');
+        panel.node.dispatchEvent(new MouseEvent('mousedown', { bubbles }));
         expect(panel.events).to.not.contain('mousedown');
-        simulate(document.body, 'keyup');
+        document.body.dispatchEvent(new KeyboardEvent('keyup', { bubbles }));
         expect(panel.events).to.not.contain('keyup');
       });
     });

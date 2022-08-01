@@ -9,8 +9,6 @@
 |----------------------------------------------------------------------------*/
 import { expect } from 'chai';
 
-import { simulate } from 'simulate-event';
-
 import { CommandRegistry } from '@lumino/commands';
 
 import { JSONObject } from '@lumino/coreutils';
@@ -59,11 +57,21 @@ class LogMenu extends Menu {
   }
 }
 
+const bubbles = true;
+
 describe('@lumino/widgets', () => {
   let commands = new CommandRegistry();
   let logMenu: LogMenu = null!;
   let menu: Menu = null!;
   let executed = '';
+  const iconClass = 'foo';
+  const iconRenderer = {
+    render: (host: HTMLElement, options?: any) => {
+      const renderNode = document.createElement('div');
+      host.classList.add(iconClass);
+      host.appendChild(renderNode);
+    }
+  };
 
   before(() => {
     commands.addCommand('test', {
@@ -71,7 +79,8 @@ describe('@lumino/widgets', () => {
         executed = 'test';
       },
       label: 'Test Label',
-      icon: 'foo',
+      icon: iconRenderer,
+      iconClass,
       caption: 'Test Caption',
       className: 'testClass',
       mnemonic: 0
@@ -81,7 +90,7 @@ describe('@lumino/widgets', () => {
         executed = 'test-toggled';
       },
       label: 'Test Toggled Label',
-      icon: 'foo',
+      icon: iconRenderer,
       className: 'testClass',
       isToggled: (args: JSONObject) => true,
       mnemonic: 6
@@ -91,7 +100,7 @@ describe('@lumino/widgets', () => {
         executed = 'test-disabled';
       },
       label: 'Test Disabled Label',
-      icon: 'foo',
+      icon: iconRenderer,
       className: 'testClass',
       isEnabled: (args: JSONObject) => false,
       mnemonic: 5
@@ -101,7 +110,7 @@ describe('@lumino/widgets', () => {
         executed = 'test-hidden';
       },
       label: 'Hidden Label',
-      icon: 'foo',
+      icon: iconRenderer,
       className: 'testClass',
       isVisible: (args: JSONObject) => false
     });
@@ -110,7 +119,7 @@ describe('@lumino/widgets', () => {
         executed = 'test-zenith';
       },
       label: 'Zenith Label',
-      icon: 'foo',
+      icon: iconRenderer,
       className: 'testClass'
     });
     commands.addKeyBinding({
@@ -185,7 +194,12 @@ describe('@lumino/widgets', () => {
           expect(args).to.equal('previous');
           called = true;
         });
-        simulate(menu.node, 'keydown', { keyCode: 37 });
+        menu.node.dispatchEvent(
+          new KeyboardEvent('keydown', {
+            bubbles,
+            keyCode: 37 // Left arrow
+          })
+        );
         expect(called).to.equal(true);
       });
 
@@ -196,7 +210,12 @@ describe('@lumino/widgets', () => {
           expect(args).to.equal('next');
           called = true;
         });
-        simulate(menu.node, 'keydown', { keyCode: 39 });
+        menu.node.dispatchEvent(
+          new KeyboardEvent('keydown', {
+            bubbles,
+            keyCode: 39 // Right arrow
+          })
+        );
         expect(called).to.equal(true);
       });
 
@@ -215,7 +234,12 @@ describe('@lumino/widgets', () => {
         submenu.menuRequested.connect(() => {
           submenuCalled = true;
         });
-        simulate(submenu.node, 'keydown', { keyCode: 39 });
+        submenu.node.dispatchEvent(
+          new KeyboardEvent('keydown', {
+            bubbles,
+            keyCode: 39 // Right arrow
+          })
+        );
         expect(called).to.equal(true);
         expect(submenuCalled).to.equal(false);
       });
@@ -591,14 +615,24 @@ describe('@lumino/widgets', () => {
           menu.addItem({ command: 'test' });
           menu.activeIndex = 0;
           menu.open(0, 0);
-          simulate(menu.node, 'keydown', { keyCode: 13 });
+          menu.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 13 // Enter
+            })
+          );
           expect(executed).to.equal('test');
         });
 
         it('should close the menu on escape', () => {
           menu.open(0, 0);
           expect(menu.isAttached).to.equal(true);
-          simulate(menu.node, 'keydown', { keyCode: 27 });
+          menu.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 27 // Escape
+            })
+          );
           expect(menu.isAttached).to.equal(false);
         });
 
@@ -610,7 +644,12 @@ describe('@lumino/widgets', () => {
           menu.activateNextItem();
           menu.triggerActiveItem();
           expect(menu.childMenu).to.equal(submenu);
-          simulate(submenu.node, 'keydown', { keyCode: 37 });
+          submenu.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 37 // Left arrow
+            })
+          );
           expect(menu.childMenu).to.equal(null);
         });
 
@@ -619,7 +658,12 @@ describe('@lumino/widgets', () => {
           menu.addItem({ command: 'test' });
           menu.addItem({ command: 'test' });
           menu.open(0, 0);
-          simulate(menu.node, 'keydown', { keyCode: 38 });
+          menu.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 38 // Up arrow
+            })
+          );
           expect(menu.activeIndex).to.equal(2);
         });
 
@@ -630,15 +674,25 @@ describe('@lumino/widgets', () => {
           menu.open(0, 0);
           menu.activateNextItem();
           expect(menu.childMenu).to.equal(null);
-          simulate(menu.node, 'keydown', { keyCode: 39 });
+          menu.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 39 // Right arrow
+            })
+          );
           expect(menu.childMenu).to.equal(submenu);
         });
 
-        it('should activate the next itom on down arrow', () => {
+        it('should activate the next item on down arrow', () => {
           menu.addItem({ command: 'test' });
           menu.addItem({ command: 'test' });
           menu.open(0, 0);
-          simulate(menu.node, 'keydown', { keyCode: 40 });
+          menu.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 40 // Down arrow
+            })
+          );
           expect(menu.activeIndex).to.equal(0);
         });
 
@@ -658,7 +712,12 @@ describe('@lumino/widgets', () => {
           menu.addItem({ type: 'submenu', submenu: submenu2 });
 
           menu.open(0, 0);
-          simulate(menu.node, 'keydown', { keyCode: 70 }); // F
+          menu.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 70 // `F` key
+            })
+          );
           expect(menu.activeIndex).to.equal(0);
         });
 
@@ -670,7 +729,12 @@ describe('@lumino/widgets', () => {
           menu.addItem({ command: 'test-zenith' });
           menu.open(0, 0);
           expect(menu.activeIndex).to.equal(-1);
-          simulate(menu.node, 'keydown', { keyCode: 90 }); // Z
+          menu.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 90 // `Z` key
+            })
+          );
           expect(menu.activeIndex).to.equal(4);
         });
       });
@@ -680,7 +744,7 @@ describe('@lumino/widgets', () => {
           menu.addItem({ command: 'test' });
           menu.activeIndex = 0;
           menu.open(0, 0);
-          simulate(menu.node, 'mouseup');
+          menu.node.dispatchEvent(new MouseEvent('mouseup', { bubbles }));
           expect(executed).to.equal('test');
         });
 
@@ -688,7 +752,12 @@ describe('@lumino/widgets', () => {
           menu.addItem({ command: 'test' });
           menu.activeIndex = 0;
           menu.open(0, 0);
-          simulate(menu.node, 'mouseup', { button: 1 });
+          menu.node.dispatchEvent(
+            new MouseEvent('mouseup', {
+              bubbles,
+              button: 1
+            })
+          );
           expect(executed).to.equal('');
         });
       });
@@ -699,10 +768,13 @@ describe('@lumino/widgets', () => {
           menu.open(0, 0);
           let node = menu.node.getElementsByClassName('lm-Menu-item')[0];
           let rect = node.getBoundingClientRect();
-          simulate(menu.node, 'mousemove', {
-            clientX: rect.left,
-            clientY: rect.top
-          });
+          menu.node.dispatchEvent(
+            new MouseEvent('mousemove', {
+              bubbles,
+              clientX: rect.left,
+              clientY: rect.top
+            })
+          );
           expect(menu.activeIndex).to.equal(0);
         });
 
@@ -714,10 +786,13 @@ describe('@lumino/widgets', () => {
           menu.open(0, 0);
           let node = menu.node.getElementsByClassName('lm-Menu-item')[0];
           let rect = node.getBoundingClientRect();
-          simulate(menu.node, 'mousemove', {
-            clientX: rect.left,
-            clientY: rect.top
-          });
+          menu.node.dispatchEvent(
+            new MouseEvent('mousemove', {
+              bubbles,
+              clientX: rect.left,
+              clientY: rect.top
+            })
+          );
           expect(menu.activeIndex).to.equal(0);
           expect(submenu.isAttached).to.equal(false);
           setTimeout(() => {
@@ -737,10 +812,13 @@ describe('@lumino/widgets', () => {
           menu.triggerActiveItem();
           let node = menu.node.getElementsByClassName('lm-Menu-item')[0];
           let rect = node.getBoundingClientRect();
-          simulate(menu.node, 'mousemove', {
-            clientX: rect.left,
-            clientY: rect.top
-          });
+          menu.node.dispatchEvent(
+            new MouseEvent('mousemove', {
+              bubbles,
+              clientX: rect.left,
+              clientY: rect.top
+            })
+          );
           expect(menu.activeIndex).to.equal(0);
           expect(submenu.isAttached).to.equal(true);
           setTimeout(() => {
@@ -759,15 +837,21 @@ describe('@lumino/widgets', () => {
           menu.open(0, 0);
           let node = menu.node.getElementsByClassName('lm-Menu-item')[0];
           let rect = node.getBoundingClientRect();
-          simulate(menu.node, 'mousemove', {
-            clientX: rect.left,
-            clientY: rect.top
-          });
+          menu.node.dispatchEvent(
+            new MouseEvent('mousemove', {
+              bubbles,
+              clientX: rect.left,
+              clientY: rect.top
+            })
+          );
           expect(menu.activeIndex).to.equal(0);
-          simulate(menu.node, 'mouseleave', {
-            clientX: rect.left,
-            clientY: rect.top
-          });
+          menu.node.dispatchEvent(
+            new MouseEvent('mouseleave', {
+              bubbles,
+              clientX: rect.left,
+              clientY: rect.top
+            })
+          );
           expect(menu.activeIndex).to.equal(-1);
           menu.dispose();
         });
@@ -779,10 +863,13 @@ describe('@lumino/widgets', () => {
           menu.open(0, 0);
           expect(menu.isAttached).to.equal(true);
           let rect = menu.node.getBoundingClientRect();
-          simulate(menu.node, 'mousedown', {
-            clientX: rect.left,
-            clientY: rect.top
-          });
+          menu.node.dispatchEvent(
+            new MouseEvent('mousedown', {
+              bubbles,
+              clientX: rect.left,
+              clientY: rect.top
+            })
+          );
           expect(menu.isAttached).to.equal(true);
         });
 
@@ -790,7 +877,12 @@ describe('@lumino/widgets', () => {
           menu.addItem({ command: 'test' });
           menu.open(0, 0);
           expect(menu.isAttached).to.equal(true);
-          simulate(menu.node, 'mousedown', { clientX: -10 });
+          menu.node.dispatchEvent(
+            new MouseEvent('mousedown', {
+              bubbles,
+              clientX: -10
+            })
+          );
           expect(menu.isAttached).to.equal(false);
         });
       });
@@ -801,19 +893,19 @@ describe('@lumino/widgets', () => {
         let node = logMenu.node;
         logMenu.open(0, 0);
         expect(logMenu.methods).to.contain('onBeforeAttach');
-        simulate(node, 'keydown');
+        node.dispatchEvent(new KeyboardEvent('keydown', { bubbles }));
         expect(logMenu.events).to.contain('keydown');
-        simulate(node, 'mouseup');
+        node.dispatchEvent(new MouseEvent('mouseup', { bubbles }));
         expect(logMenu.events).to.contain('mouseup');
-        simulate(node, 'mousemove');
+        node.dispatchEvent(new MouseEvent('mousemove', { bubbles }));
         expect(logMenu.events).to.contain('mousemove');
-        simulate(node, 'mouseenter');
+        node.dispatchEvent(new MouseEvent('mouseenter', { bubbles }));
         expect(logMenu.events).to.contain('mouseenter');
-        simulate(node, 'mouseleave');
+        node.dispatchEvent(new MouseEvent('mouseleave', { bubbles }));
         expect(logMenu.events).to.contain('mouseleave');
-        simulate(node, 'contextmenu');
+        node.dispatchEvent(new MouseEvent('contextmenu', { bubbles }));
         expect(logMenu.events).to.contain('contextmenu');
-        simulate(document.body, 'mousedown');
+        document.body.dispatchEvent(new MouseEvent('mousedown', { bubbles }));
         expect(logMenu.events).to.contain('mousedown');
       });
     });
@@ -824,19 +916,19 @@ describe('@lumino/widgets', () => {
         logMenu.open(0, 0);
         logMenu.close();
         expect(logMenu.methods).to.contain('onAfterDetach');
-        simulate(node, 'keydown');
+        node.dispatchEvent(new KeyboardEvent('keydown', { bubbles }));
         expect(logMenu.events).to.not.contain('keydown');
-        simulate(node, 'mouseup');
+        node.dispatchEvent(new MouseEvent('mouseup', { bubbles }));
         expect(logMenu.events).to.not.contain('mouseup');
-        simulate(node, 'mousemove');
+        node.dispatchEvent(new MouseEvent('mousemove', { bubbles }));
         expect(logMenu.events).to.not.contain('mousemove');
-        simulate(node, 'mouseenter');
+        node.dispatchEvent(new MouseEvent('mouseenter', { bubbles }));
         expect(logMenu.events).to.not.contain('mouseenter');
-        simulate(node, 'mouseleave');
+        node.dispatchEvent(new MouseEvent('mouseleave', { bubbles }));
         expect(logMenu.events).to.not.contain('mouseleave');
-        simulate(node, 'contextmenu');
+        node.dispatchEvent(new MouseEvent('contextmenu', { bubbles }));
         expect(logMenu.events).to.not.contain('contextmenu');
-        simulate(document.body, 'mousedown');
+        document.body.dispatchEvent(new MouseEvent('mousedown', { bubbles }));
         expect(logMenu.events).to.not.contain('mousedown');
       });
     });
@@ -1037,23 +1129,18 @@ describe('@lumino/widgets', () => {
       });
 
       describe('#icon', () => {
-        it('should get the icon class of a command item for a `command` type', () => {
-          let item = menu.addItem({ command: 'test' });
-          expect(item.icon).to.equal('foo');
-        });
-
         it('should get the title icon of a submenu item for a `submenu` type', () => {
           let submenu = new Menu({ commands });
-          submenu.title.icon = 'bar';
+          submenu.title.iconClass = 'bar';
           let item = menu.addItem({ type: 'submenu', submenu });
-          expect(item.icon).to.equal('bar');
+          expect(item.iconClass).to.equal('bar');
         });
 
-        it('should default to an empty string', () => {
+        it('should default to undefined', () => {
           let item = menu.addItem({});
-          expect(item.icon).to.equal('');
+          expect(item.icon).to.equal(undefined);
           item = menu.addItem({ type: 'separator' });
-          expect(item.icon).to.equal('');
+          expect(item.icon).to.equal(undefined);
         });
       });
 
@@ -1285,10 +1372,6 @@ describe('@lumino/widgets', () => {
           });
           let node = VirtualDOM.realize(vNode);
           let span = '<span class="lm-Menu-itemMnemonic">T</span>est Label';
-          /* <DEPRECATED> */
-          span =
-            '<span class="lm-Menu-itemMnemonic p-Menu-itemMnemonic">T</span>est Label';
-          /* </DEPRECATED> */
           expect(node.classList.contains('lm-Menu-itemLabel')).to.equal(true);
           expect(node.innerHTML).to.equal(span);
         });
@@ -1339,9 +1422,6 @@ describe('@lumino/widgets', () => {
             collapsed: false
           });
           let expected = 'lm-Menu-item testClass';
-          /* <DEPRECATED> */
-          expected = 'lm-Menu-item p-Menu-item testClass';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
 
           name = renderer.createItemClass({
@@ -1350,10 +1430,6 @@ describe('@lumino/widgets', () => {
             collapsed: false
           });
           expected = 'lm-Menu-item lm-mod-active testClass';
-          /* <DEPRECATED> */
-          expected =
-            'lm-Menu-item p-Menu-item lm-mod-active p-mod-active testClass';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
 
           name = renderer.createItemClass({
@@ -1362,10 +1438,6 @@ describe('@lumino/widgets', () => {
             collapsed: true
           });
           expected = 'lm-Menu-item lm-mod-collapsed testClass';
-          /* <DEPRECATED> */
-          expected =
-            'lm-Menu-item p-Menu-item lm-mod-collapsed p-mod-collapsed testClass';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
 
           item = menu.addItem({ command: 'test-disabled' });
@@ -1375,10 +1447,6 @@ describe('@lumino/widgets', () => {
             collapsed: false
           });
           expected = 'lm-Menu-item lm-mod-disabled testClass';
-          /* <DEPRECATED> */
-          expected =
-            'lm-Menu-item p-Menu-item lm-mod-disabled p-mod-disabled testClass';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
 
           item = menu.addItem({ command: 'test-toggled' });
@@ -1388,10 +1456,6 @@ describe('@lumino/widgets', () => {
             collapsed: false
           });
           expected = 'lm-Menu-item lm-mod-toggled testClass';
-          /* <DEPRECATED> */
-          expected =
-            'lm-Menu-item p-Menu-item lm-mod-toggled p-mod-toggled testClass';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
 
           item = menu.addItem({ command: 'test-hidden' });
@@ -1401,10 +1465,6 @@ describe('@lumino/widgets', () => {
             collapsed: false
           });
           expected = 'lm-Menu-item lm-mod-hidden testClass';
-          /* <DEPRECATED> */
-          expected =
-            'lm-Menu-item p-Menu-item lm-mod-hidden p-mod-hidden testClass';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
 
           let submenu = new Menu({ commands });
@@ -1416,9 +1476,6 @@ describe('@lumino/widgets', () => {
             collapsed: false
           });
           expected = 'lm-Menu-item fooClass';
-          /* <DEPRECATED> */
-          expected = 'lm-Menu-item p-Menu-item fooClass';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
         });
       });
@@ -1461,9 +1518,6 @@ describe('@lumino/widgets', () => {
             collapsed: false
           });
           let expected = 'lm-Menu-itemIcon foo';
-          /* <DEPRECATED> */
-          expected = 'lm-Menu-itemIcon p-Menu-itemIcon foo';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
 
           item = menu.addItem({ type: 'separator' });
@@ -1473,13 +1527,10 @@ describe('@lumino/widgets', () => {
             collapsed: false
           });
           expected = 'lm-Menu-itemIcon';
-          /* <DEPRECATED> */
-          expected = 'lm-Menu-itemIcon p-Menu-itemIcon';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
 
           let submenu = new Menu({ commands });
-          submenu.title.icon = 'bar';
+          submenu.title.iconClass = 'bar';
           item = menu.addItem({ type: 'submenu', submenu });
           name = renderer.createIconClass({
             item,
@@ -1487,9 +1538,6 @@ describe('@lumino/widgets', () => {
             collapsed: false
           });
           expected = 'lm-Menu-itemIcon bar';
-          /* <DEPRECATED> */
-          expected = 'lm-Menu-itemIcon p-Menu-itemIcon bar';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
         });
       });
@@ -1504,10 +1552,6 @@ describe('@lumino/widgets', () => {
           });
           let node = VirtualDOM.realize(h.div(child));
           let span = '<span class="lm-Menu-itemMnemonic">T</span>est Label';
-          /* <DEPRECATED> */
-          span =
-            '<span class="lm-Menu-itemMnemonic p-Menu-itemMnemonic">T</span>est Label';
-          /* </DEPRECATED> */
           expect(node.innerHTML).to.equal(span);
 
           item = menu.addItem({ type: 'separator' });
