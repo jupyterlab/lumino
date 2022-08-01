@@ -69,12 +69,15 @@ export class AccordionPanel extends SplitPanel {
   /**
    * Collapse the widget at position `index`.
    *
+   * #### Notes
+   * If no widget is found for `index`, this will bail.
+   *
    * @param index Widget index
    */
   collapse(index: number): void {
     const widget = (this.layout as AccordionLayout).widgets[index];
 
-    if (!widget.isHidden) {
+    if (widget && !widget.isHidden) {
       this._toggleExpansion(index);
     }
   }
@@ -82,12 +85,15 @@ export class AccordionPanel extends SplitPanel {
   /**
    * Expand the widget at position `index`.
    *
+   * #### Notes
+   * If no widget is found for `index`, this will bail.
+   *
    * @param index Widget index
    */
   expand(index: number): void {
     const widget = (this.layout as AccordionLayout).widgets[index];
 
-    if (widget.isHidden) {
+    if (widget && widget.isHidden) {
       this._toggleExpansion(index);
     }
   }
