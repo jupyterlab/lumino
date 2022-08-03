@@ -54,6 +54,7 @@ export class TabBar<T> extends Widget {
     this._document = options.document || document;
     this.tabsMovable = options.tabsMovable || false;
     this.titlesEditable = options.titlesEditable || false;
+    this._scrollingEnabled = options.scrollingEnabled || false;
     this.allowDeselect = options.allowDeselect || false;
     this.addButtonEnabled = options.addButtonEnabled || false;
     this.insertBehavior = options.insertBehavior || 'select-tab-if-needed';
@@ -1070,24 +1071,6 @@ export class TabBar<T> extends Widget {
       detachRequested: false
     };
 
-    // Add the document pointer up listener.
-    this.document.addEventListener('pointerup', this, true);
-
-    // Do nothing else if the middle button or add button is clicked.
-    if (event.button === 1 || addButtonClicked) {
-      return;
-    }
-    if (scrollBeforeButtonClicked || scrollAfterButtonClicked) {
-      this.beginScrolling(scrollBeforeButtonClicked ? '-' : '+');
-      return;
-    }
-
-    // Do nothing else if the close icon is clicked.
-    let icon = tabs[index].querySelector(this.renderer.closeIconSelector);
-    if (icon && icon.contains(event.target as HTMLElement)) {
-      return;
-    }
-
     // Add the extra listeners if the tabs are movable.
     if (this.tabsMovable) {
       this.document.addEventListener('pointermove', this, true);
@@ -1682,6 +1665,13 @@ export namespace TabBar {
      * The default is `false`.
      */
     addButtonEnabled?: boolean;
+
+    /**
+     * Whether scrolling is enabled.
+     *
+     * The default is `false`.
+     */
+    scrollingEnabled?: boolean;
 
     /**
      * The selection behavior when inserting a tab.

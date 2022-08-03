@@ -33,11 +33,15 @@
   list-style-type: none;
 }
 
-.lm-TabBar[data-orientation='horizontal'] > .lm-TabBar-wrapper > .lm-TabBar-content {
+.lm-TabBar[data-orientation='horizontal']
+  > .lm-TabBar-wrapper
+  > .lm-TabBar-content {
   flex-direction: row;
 }
 
-.lm-TabBar[data-orientation='vertical'] > .lm-TabBar-wrapper > .lm-TabBar-content {
+.lm-TabBar[data-orientation='vertical']
+  > .lm-TabBar-wrapper
+  > .lm-TabBar-content {
   flex-direction: column;
 }
 
