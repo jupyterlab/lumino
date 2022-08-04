@@ -166,23 +166,14 @@ export class SplitPanel extends Panel {
    */
   handleEvent(event: Event): void {
     switch (event.type) {
-      case 'mousedown':
-        this._evtMouseDown(event as MouseEvent);
-        break;
-      case 'mousemove':
-        this._evtMouseMove(event as MouseEvent);
-        break;
-      case 'mouseup':
-        this._evtMouseUp(event as MouseEvent);
-        break;
       case 'pointerdown':
-        this._evtMouseDown(event as MouseEvent);
+        this._evtPointerDown(event as PointerEvent);
         break;
       case 'pointermove':
-        this._evtMouseMove(event as MouseEvent);
+        this._evtPointerMove(event as PointerEvent);
         break;
       case 'pointerup':
-        this._evtMouseUp(event as MouseEvent);
+        this._evtPointerUp(event as PointerEvent);
         break;
       case 'keydown':
         this._evtKeyDown(event as KeyboardEvent);
@@ -198,7 +189,6 @@ export class SplitPanel extends Panel {
    * A message handler invoked on a `'before-attach'` message.
    */
   protected onBeforeAttach(msg: Message): void {
-    this.node.addEventListener('mousedown', this);
     this.node.addEventListener('pointerdown', this);
   }
 
@@ -206,7 +196,6 @@ export class SplitPanel extends Panel {
    * A message handler invoked on an `'after-detach'` message.
    */
   protected onAfterDetach(msg: Message): void {
-    this.node.removeEventListener('mousedown', this);
     this.node.removeEventListener('pointerdown', this);
     this._releaseMouse();
   }
@@ -244,15 +233,15 @@ export class SplitPanel extends Panel {
   }
 
   /**
-   * Handle the `'mousedown'` event for the split panel.
+   * Handle the `'pointerdown'` event for the split panel.
    */
-  private _evtMouseDown(event: MouseEvent): void {
-    // Do nothing if the left mouse button is not pressed.
+  private _evtPointerDown(event: PointerEvent): void {
+    // Do nothing if the primary button is not pressed.
     if (event.button !== 0) {
       return;
     }
 
-    // Find the handle which contains the mouse target, if any.
+    // Find the handle which contains the target, if any.
     let layout = this.layout as SplitLayout;
     let index = ArrayExt.findFirstIndex(layout.handles, handle => {
       return handle.contains(event.target as HTMLElement);
@@ -268,8 +257,6 @@ export class SplitPanel extends Panel {
     event.stopPropagation();
 
     // Add the extra document listeners.
-    document.addEventListener('mouseup', this, true);
-    document.addEventListener('mousemove', this, true);
     document.addEventListener('pointerup', this, true);
     document.addEventListener('pointermove', this, true);
     document.addEventListener('keydown', this, true);
@@ -292,9 +279,9 @@ export class SplitPanel extends Panel {
   }
 
   /**
-   * Handle the `'mousemove'` event for the split panel.
+   * Handle the `'pointermove'` event for the split panel.
    */
-  private _evtMouseMove(event: MouseEvent): void {
+  private _evtPointerMove(event: PointerEvent): void {
     // Stop the event when dragging a split handle.
     event.preventDefault();
     event.stopPropagation();
@@ -314,10 +301,10 @@ export class SplitPanel extends Panel {
   }
 
   /**
-   * Handle the `'mouseup'` event for the split panel.
+   * Handle the `'pointerup'` event for the split panel.
    */
-  private _evtMouseUp(event: MouseEvent): void {
-    // Do nothing if the left mouse button is not released.
+  private _evtPointerUp(event: PointerEvent): void {
+    // Do nothing if the primary button is not released.
     if (event.button !== 0) {
       return;
     }
@@ -347,8 +334,6 @@ export class SplitPanel extends Panel {
     this._handleMoved.emit();
 
     // Remove the extra document listeners.
-    document.removeEventListener('mouseup', this, true);
-    document.removeEventListener('mousemove', this, true);
     document.removeEventListener('keydown', this, true);
     document.removeEventListener('pointerup', this, true);
     document.removeEventListener('pointermove', this, true);
