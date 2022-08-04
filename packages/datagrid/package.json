@@ -48,11 +48,11 @@
     "@lumino/widgets": "^1.33.0"
   },
   "devDependencies": {
+    "@rollup/plugin-node-resolve": "^13.3.0",
+    "postcss": "^8.4.14",
     "rimraf": "^3.0.2",
     "rollup": "^2.77.2",
-    "@rollup/plugin-node-resolve": "^13.3.0",
     "rollup-plugin-postcss": "^4.0.2",
-    "postcss": "^8.4.14",
     "rollup-plugin-sourcemaps": "^0.6.3",
     "terser": "^5.7.1",
     "tslib": "^2.4.0",
