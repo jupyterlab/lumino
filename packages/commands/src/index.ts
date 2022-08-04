@@ -156,11 +156,18 @@ export class CommandRegistry {
    *
    * @param id - The id of the command of interest.
    *
+   * @param args - The arguments for the command.
+   *
    * @returns The description for the command.
    */
-  describedBy(id: string): { args: ReadonlyJSONObject | null } {
+  describedBy(
+    id: string,
+    args: ReadonlyPartialJSONObject = JSONExt.emptyObject
+  ): Promise<CommandRegistry.Description> {
     let cmd = this._commands[id];
-    return cmd?.describedBy ?? { args: null };
+    return Promise.resolve(
+      cmd?.describedBy.call(undefined, args) ?? { args: null }
+    );
   }
 
   /**
@@ -672,6 +679,11 @@ export namespace CommandRegistry {
   export type Dataset = { readonly [key: string]: string };
 
   /**
+   * Commands description.
+   */
+  export type Description = { args: ReadonlyJSONObject | null };
+
+  /**
    * An options object for creating a command.
    *
    * #### Notes
@@ -704,7 +716,9 @@ export namespace CommandRegistry {
      * For now, the command arguments are the only one that can be
      * described.
      */
-    describedBy?: { args?: ReadonlyJSONObject };
+    describedBy?:
+      | Partial<Description>
+      | CommandFunc<Partial<Description> | Promise<Partial<Description>>>;
 
     /**
      * The label for the command.
@@ -1263,7 +1277,9 @@ namespace Private {
    */
   export interface ICommand {
     readonly execute: CommandFunc<any>;
-    readonly describedBy: { args: ReadonlyJSONObject | null };
+    readonly describedBy: CommandFunc<
+      CommandRegistry.Description | Promise<CommandRegistry.Description>
+    >;
     readonly label: CommandFunc<string>;
     readonly mnemonic: CommandFunc<number>;
     readonly icon: CommandFunc<VirtualElement.IRenderer | undefined>;
@@ -1287,7 +1303,18 @@ namespace Private {
   ): ICommand {
     return {
       execute: options.execute,
-      describedBy: { args: null, ...options.describedBy },
+      describedBy: asFunc<
+        CommandRegistry.Description | Promise<CommandRegistry.Description>
+      >(
+        typeof options.describedBy === 'function'
+          ? (options.describedBy as CommandFunc<
+              CommandRegistry.Description | Promise<CommandRegistry.Description>
+            >)
+          : { args: null, ...options.describedBy },
+        () => {
+          return { args: null };
+        }
+      ),
       label: asFunc(options.label, emptyStringFunc),
       mnemonic: asFunc(options.mnemonic, negativeOneFunc),
       icon: asFunc(options.icon, undefinedFunc),
