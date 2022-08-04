@@ -150,7 +150,7 @@ export abstract class MutableDataModel extends DataModel {
     region: DataModel.CellRegion,
     row: number,
     column: number,
-    value: any
+    value: unknown
   ): boolean;
 }
 

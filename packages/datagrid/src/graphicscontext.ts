@@ -486,7 +486,7 @@ export class GraphicsContext implements IDisposable {
 
   createImageData(imageData: ImageData): ImageData;
   createImageData(sw: number, sh: number): ImageData;
-  createImageData() {
+  createImageData(): ImageData {
     // eslint-disable-next-line prefer-spread, prefer-rest-params
     return this._context.createImageData.apply(this._context, arguments);
   }

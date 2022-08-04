@@ -12,6 +12,7 @@ coverage
 *.map.js
 *.bundle.js
 *.config.js
+.eslintrc.js
 
 # jetbrains IDE stuff
 .idea/

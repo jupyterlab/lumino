@@ -114,7 +114,7 @@ namespace Private {
   /**
    * A cross-browser CSS selector matching prototype function.
    */
-  export const protoMatchFunc: Function = (() => {
+  export const protoMatchFunc = (() => {
     let proto = Element.prototype as any;
     return (
       proto.matches ||
@@ -242,7 +242,8 @@ namespace Private {
   /**
    * A regex which matches a pseudo-element selector at string start.
    */
-  const PSEUDO_ELEM_RE = /^(::[^\s\+>~#\.\[:]+|:first-line|:first-letter|:before|:after)/;
+  const PSEUDO_ELEM_RE =
+    /^(::[^\s\+>~#\.\[:]+|:first-line|:first-letter|:before|:after)/;
 
   /**
    * A regex which matches a pseudo-class selector at string start.

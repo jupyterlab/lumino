@@ -222,7 +222,7 @@ export namespace AttachedProperty {
    * This will clear all property values for the owner, but it will
    * **not** run the change notification for any of the properties.
    */
-  export function clearData(owner: any): void {
+  export function clearData(owner: unknown): void {
     Private.ownerData.delete(owner);
   }
 }
@@ -258,7 +258,7 @@ namespace Private {
    *
    * This will create the map if one does not already exist.
    */
-  export function ensureMap(owner: any): PropertyMap {
+  export function ensureMap(owner: unknown): PropertyMap {
     let map = ownerData.get(owner);
     if (map) {
       return map;

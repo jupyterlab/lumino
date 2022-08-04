@@ -2,7 +2,7 @@
   "extends": "../../tsconfigbase",
   "compilerOptions": {
     "declarationDir": "types",
-    "lib": ["DOM", "ES5", "ES2015.Promise"],
+    "lib": ["DOM", "ES6"],
     "outDir": "lib",
     "rootDir": "src",
     "types": ["@types/node"]
