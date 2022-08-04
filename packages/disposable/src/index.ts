@@ -87,7 +87,8 @@ export class DisposableDelegate implements IDisposable {
  */
 export class ObservableDisposableDelegate
   extends DisposableDelegate
-  implements IObservableDisposable {
+  implements IObservableDisposable
+{
   /**
    * A signal emitted when the delegate is disposed.
    */
@@ -209,7 +210,8 @@ export namespace DisposableSet {
  */
 export class ObservableDisposableSet
   extends DisposableSet
-  implements IObservableDisposable {
+  implements IObservableDisposable
+{
   /**
    * A signal emitted when the set is disposed.
    */

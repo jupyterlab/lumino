@@ -17,7 +17,8 @@ import { Poll } from './poll';
  * @typeparam V - Arguments for the underlying function.
  */
 export abstract class RateLimiter<T, U, V extends any[]>
-  implements IRateLimiter<T, U, V> {
+  implements IRateLimiter<T, U, V>
+{
   /**
    * Instantiate a rate limiter.
    *

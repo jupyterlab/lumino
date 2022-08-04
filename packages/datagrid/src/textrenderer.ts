@@ -50,16 +50,12 @@ export class TextRenderer extends CellRenderer {
   /**
    * The vertical alignment for the cell text.
    */
-  readonly verticalAlignment: CellRenderer.ConfigOption<
-    TextRenderer.VerticalAlignment
-  >;
+  readonly verticalAlignment: CellRenderer.ConfigOption<TextRenderer.VerticalAlignment>;
 
   /**
    * The horizontal alignment for the cell text.
    */
-  readonly horizontalAlignment: CellRenderer.ConfigOption<
-    TextRenderer.HorizontalAlignment
-  >;
+  readonly horizontalAlignment: CellRenderer.ConfigOption<TextRenderer.HorizontalAlignment>;
 
   /**
    * The format function for the cell value.
@@ -69,9 +65,7 @@ export class TextRenderer extends CellRenderer {
   /**
    * Which side to draw the ellipsis.
    */
-  readonly elideDirection: CellRenderer.ConfigOption<
-    TextRenderer.ElideDirection
-  >;
+  readonly elideDirection: CellRenderer.ConfigOption<TextRenderer.ElideDirection>;
 
   /**
    * Boolean flag for applying text wrapping.
@@ -959,9 +953,8 @@ namespace Private {
   /**
    * A cache of measured font heights.
    */
-  export const fontHeightCache: { [font: string]: number } = Object.create(
-    null
-  );
+  export const fontHeightCache: { [font: string]: number } =
+    Object.create(null);
 
   /**
    * The DOM node used for font height measurement.

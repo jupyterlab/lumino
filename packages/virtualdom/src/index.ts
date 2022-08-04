@@ -1454,9 +1454,9 @@ namespace Private {
     // Dispose of the old nodes pushed to the end of the host.
     for (let i = oldContent.length - 1; i >= newCount; --i) {
       const oldNode = oldContent[i];
-      const child = (_sentinel
-        ? host.lastChild
-        : host.childNodes[i]) as HTMLElement;
+      const child = (
+        _sentinel ? host.lastChild : host.childNodes[i]
+      ) as HTMLElement;
 
       // recursively clean up host children
       if (oldNode.type === 'text') {

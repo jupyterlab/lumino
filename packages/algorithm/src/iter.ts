@@ -355,9 +355,9 @@ export function toArray<T>(object: IterableOrArrayLike<T>): T[] {
  * toObject(data);  // { one: 1, two: 2, three: 3 }
  * ```
  */
-export function toObject<T>(
-  object: IterableOrArrayLike<[string, T]>
-): { [key: string]: T } {
+export function toObject<T>(object: IterableOrArrayLike<[string, T]>): {
+  [key: string]: T;
+} {
   let it = iter(object);
   let pair: [string, T] | undefined;
   let result: { [key: string]: T } = {};
