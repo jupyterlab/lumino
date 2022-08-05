@@ -12,7 +12,7 @@ import { expect } from 'chai';
 
 import { CommandRegistry } from '@lumino/commands';
 
-import { JSONObject } from '@lumino/coreutils';
+import { JSONObject, ReadonlyJSONObject } from '@lumino/coreutils';
 
 import { Platform } from '@lumino/domutils';
 
@@ -329,7 +329,7 @@ describe('@lumino/commands', () => {
     });
 
     describe('#describedBy()', () => {
-      it('should get the description for a specific command', () => {
+      it('should get the description for a specific command', async () => {
         const description = {
           args: {
             properties: {},
@@ -344,16 +344,79 @@ describe('@lumino/commands', () => {
           describedBy: description
         };
         registry.addCommand('test', cmd);
-        expect(registry.describedBy('test')).to.deep.equal(description);
+        expect(await registry.describedBy('test')).to.deep.equal(description);
       });
 
-      it('should return an empty description if the command is not registered', () => {
-        expect(registry.describedBy('foo')).to.deep.equal({ args: null });
+      it('should accept a function', async () => {
+        const description = {
+          args: {
+            properties: {},
+            additionalProperties: false,
+            type: 'object'
+          }
+        };
+
+        let cmd = {
+          execute: (args: JSONObject) => {
+            return args;
+          },
+          describedBy: () => description
+        };
+        registry.addCommand('test', cmd);
+        expect(await registry.describedBy('test')).to.deep.equal(description);
       });
 
-      it('should default to an empty description for a command', () => {
+      it('should accept an asynchronous function', async () => {
+        const description = {
+          args: {
+            properties: {},
+            additionalProperties: false,
+            type: 'object'
+          }
+        };
+
+        let cmd = {
+          execute: (args: JSONObject) => {
+            return args;
+          },
+          describedBy: () => Promise.resolve(description)
+        };
+        registry.addCommand('test', cmd);
+        expect(await registry.describedBy('test')).to.deep.equal(description);
+      });
+
+      it('should accept args', async () => {
+        const description = {
+          properties: {},
+          additionalProperties: false,
+          type: 'object'
+        };
+
+        let cmd = {
+          execute: (args: JSONObject) => {
+            return args;
+          },
+          describedBy: (args: ReadonlyJSONObject) => {
+            return {
+              args
+            };
+          }
+        };
+        registry.addCommand('test', cmd);
+        expect(
+          await registry.describedBy('test', description as any)
+        ).to.deep.equal({ args: description });
+      });
+
+      it('should return an empty description if the command is not registered', async () => {
+        expect(await registry.describedBy('foo')).to.deep.equal({ args: null });
+      });
+
+      it('should default to an empty description for a command', async () => {
         registry.addCommand('test', NULL_COMMAND);
-        expect(registry.describedBy('test')).to.deep.equal({ args: null });
+        expect(await registry.describedBy('test')).to.deep.equal({
+          args: null
+        });
       });
     });
 
