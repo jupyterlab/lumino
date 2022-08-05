@@ -15,7 +15,9 @@ const entryPoints = packages
     return fs.existsSync(path);
   });
 
-const exclude = packages.flatMap(p => [`packages/${p}/tests`]);
+const exclude = packages
+  .flatMap(p => [`packages/${p}/tests`])
+  .concat('**/node_modules/**');
 
 module.exports = {
   entryPoints,

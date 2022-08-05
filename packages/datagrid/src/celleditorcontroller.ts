@@ -119,7 +119,7 @@ export class CellEditorController implements ICellEditorController {
   setEditor(
     identifier: EditorOverrideIdentifier,
     editor: ICellEditor | Resolver
-  ) {
+  ): void {
     if (typeof identifier === 'string') {
       this._typeBasedOverrides.set(identifier, editor);
     } else {

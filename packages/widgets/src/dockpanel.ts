@@ -876,13 +876,14 @@ export class DockPanel extends Widget {
         right = target!.right;
         bottom = target!.bottom;
         break;
-      case 'widget-tab':
+      case 'widget-tab': {
         const tabHeight = target!.tabBar.node.getBoundingClientRect().height;
         top = target!.top;
         left = target!.left;
         right = target!.right;
         bottom = target!.bottom + target!.height - tabHeight;
         break;
+      }
       default:
         throw 'unreachable';
     }

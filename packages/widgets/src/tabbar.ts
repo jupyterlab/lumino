@@ -1773,7 +1773,7 @@ namespace Private {
      *
      * This will be `null` if the drag is not active.
      */
-    contentRect: ClientRect | null;
+    contentRect: DOMRect | null;
 
     /**
      * The disposable to clean up the cursor override.

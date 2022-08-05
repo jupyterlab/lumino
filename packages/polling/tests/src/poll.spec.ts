@@ -65,7 +65,7 @@ describe('Poll', () => {
         ticker.push(tick.phase);
       });
       expect(poll.state.phase).to.equal('constructed');
-      await sleep(250); // Sleep for longer than the interval.
+      await sleep(1000); // Sleep for longer than the interval.
       expect(ticker.join(' ')).to.equal(expected);
     });
 
@@ -200,7 +200,7 @@ describe('Poll', () => {
       poll = new Poll({
         auto: false,
         factory: () => Promise.resolve(),
-        frequency: { interval: 200, backoff: false },
+        frequency: { interval: 100, backoff: false },
         name: '@lumino/polling:Poll#tick-1'
       });
       const expected = 'started resolved resolved';
@@ -211,8 +211,8 @@ describe('Poll', () => {
       };
       void poll.tick.then(tock);
       void poll.start();
-      await sleep(300); // Sleep for longer than the interval.
-      expect(ticker.join(' ')).to.equal(expected);
+      await sleep(1000); // Sleep for longer than the interval.
+      expect(ticker.join(' ').startsWith(expected)).to.equal(true);
     });
 
     it('should resolve after `ticked` emits in lock step', async () => {
@@ -248,7 +248,7 @@ describe('Poll', () => {
       await poll.stop();
       await poll.start();
       await poll.tick;
-      await sleep(100);
+      await sleep(250);
       await poll.tick;
       expect(ticker.join(' ')).to.equal(tocker.join(' '));
     });
@@ -264,7 +264,7 @@ describe('Poll', () => {
       poll.ticked.connect((_, tick) => {
         expect(tick).to.equal(poll.state);
       });
-      await sleep(250);
+      await sleep(1000); // Sleep for longer than the interval.
     });
   });
 

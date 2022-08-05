@@ -147,7 +147,7 @@ export class Signal<T, U> implements ISignal<T, U> {
    *
    * @returns `true` if the connection succeeds, `false` otherwise.
    */
-  connect(slot: Slot<T, U>, thisArg?: any): boolean {
+  connect(slot: Slot<T, U>, thisArg?: unknown): boolean {
     return Private.connect(this, slot, thisArg);
   }
 
@@ -161,7 +161,7 @@ export class Signal<T, U> implements ISignal<T, U> {
    *
    * @returns `true` if the connection is removed, `false` otherwise.
    */
-  disconnect(slot: Slot<T, U>, thisArg?: any): boolean {
+  disconnect(slot: Slot<T, U>, thisArg?: unknown): boolean {
     return Private.disconnect(this, slot, thisArg);
   }
 
@@ -196,7 +196,7 @@ export namespace Signal {
    * is considered the receiver. Otherwise, the `slot` is considered
    * the receiver.
    */
-  export function disconnectBetween(sender: any, receiver: any): void {
+  export function disconnectBetween(sender: unknown, receiver: unknown): void {
     Private.disconnectBetween(sender, receiver);
   }
 
@@ -205,7 +205,7 @@ export namespace Signal {
    *
    * @param sender - The sender object of interest.
    */
-  export function disconnectSender(sender: any): void {
+  export function disconnectSender(sender: unknown): void {
     Private.disconnectSender(sender);
   }
 
@@ -219,7 +219,7 @@ export namespace Signal {
    * is considered the receiver. Otherwise, the `slot` is considered
    * the receiver.
    */
-  export function disconnectReceiver(receiver: any): void {
+  export function disconnectReceiver(receiver: unknown): void {
     Private.disconnectReceiver(receiver);
   }
 
@@ -233,7 +233,7 @@ export namespace Signal {
    * is considered the receiver. Otherwise, the `slot` is considered
    * the receiver.
    */
-  export function disconnectAll(object: any): void {
+  export function disconnectAll(object: unknown): void {
     Private.disconnectAll(object);
   }
 
@@ -246,7 +246,7 @@ export namespace Signal {
    * This removes all signal connections and any other signal data
    * associated with the object.
    */
-  export function clearData(object: any): void {
+  export function clearData(object: unknown): void {
     Private.disconnectAll(object);
   }
 
@@ -312,7 +312,7 @@ namespace Private {
   export function connect<T, U>(
     signal: Signal<T, U>,
     slot: Slot<T, U>,
-    thisArg?: any
+    thisArg?: unknown
   ): boolean {
     // Coerce a `null` `thisArg` to `undefined`.
     thisArg = thisArg || undefined;
@@ -363,7 +363,7 @@ namespace Private {
   export function disconnect<T, U>(
     signal: Signal<T, U>,
     slot: Slot<T, U>,
-    thisArg?: any
+    thisArg?: unknown
   ): boolean {
     // Coerce a `null` `thisArg` to `undefined`.
     thisArg = thisArg || undefined;
@@ -402,7 +402,7 @@ namespace Private {
    *
    * @param receiver - The receiver object of interest.
    */
-  export function disconnectBetween(sender: any, receiver: any): void {
+  export function disconnectBetween(sender: unknown, receiver: unknown): void {
     // If there are no receivers, there is nothing to do.
     let receivers = receiversForSender.get(sender);
     if (!receivers || receivers.length === 0) {
@@ -438,7 +438,7 @@ namespace Private {
    *
    * @param sender - The sender object of interest.
    */
-  export function disconnectSender(sender: any): void {
+  export function disconnectSender(sender: unknown): void {
     // If there are no receivers, there is nothing to do.
     let receivers = receiversForSender.get(sender);
     if (!receivers || receivers.length === 0) {
@@ -471,7 +471,7 @@ namespace Private {
    *
    * @param receiver - The receiver object of interest.
    */
-  export function disconnectReceiver(receiver: any): void {
+  export function disconnectReceiver(receiver: unknown): void {
     // If there are no senders, there is nothing to do.
     let senders = sendersForReceiver.get(receiver);
     if (!senders || senders.length === 0) {
@@ -504,7 +504,7 @@ namespace Private {
    *
    * @param object - The object of interest.
    */
-  export function disconnectAll(object: any): void {
+  export function disconnectAll(object: unknown): void {
     // Remove all connections where the given object is the sender.
     disconnectSender(object);
     // Remove all connections where the given object is the receiver.
@@ -582,7 +582,6 @@ namespace Private {
    */
   const schedule = (() => {
     let ok = typeof requestAnimationFrame === 'function';
-    // @ts-ignore
     return ok ? requestAnimationFrame : setImmediate;
   })();
 

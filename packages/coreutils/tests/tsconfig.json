@@ -1,7 +1,7 @@
 {
   "extends": "../../../tsconfigbase",
   "compilerOptions": {
-    "lib": ["ES5", "ES2015.Promise", "ES2015.Iterable"],
+    "lib": ["ES6"],
     "outDir": "lib",
     "rootDir": "src",
     "types": ["chai", "mocha"]

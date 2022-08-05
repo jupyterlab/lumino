@@ -19,11 +19,14 @@ module.exports = {
   root: true,
   extends: [
     'eslint:recommended',
-    'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
-    'prettier/@typescript-eslint'
+    'prettier'
   ],
   parser: '@typescript-eslint/parser',
+  parserOptions: {
+    ecmaVersion: 'ES6',
+    project: ['./tsconfigbase.json']
+  },
   plugins: ['@typescript-eslint'],
   rules: {
     '@typescript-eslint/no-unused-vars': ['warn', { args: 'none' }],
@@ -44,7 +47,7 @@ module.exports = {
     'no-inner-declarations': 'off',
     'no-prototype-builtins': 'off',
     'no-control-regex': 'warn',
-    'no-undef': 'warn',
+    'no-undef': 'off',
     'no-case-declarations': 'warn',
     'no-useless-escape': 'off',
     'prefer-const': 'off',

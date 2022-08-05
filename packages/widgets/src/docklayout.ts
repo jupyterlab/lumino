@@ -2081,7 +2081,7 @@ namespace Private {
     }
   }
 
-  export function addAria(widget: Widget, tabBar: TabBar<Widget>) {
+  export function addAria(widget: Widget, tabBar: TabBar<Widget>): void {
     widget.node.setAttribute('role', 'tabpanel');
     let renderer = tabBar.renderer;
     if (renderer instanceof TabBar.Renderer) {
@@ -2094,7 +2094,7 @@ namespace Private {
     }
   }
 
-  export function removeAria(widget: Widget) {
+  export function removeAria(widget: Widget): void {
     widget.node.removeAttribute('role');
     widget.node.removeAttribute('aria-labelledby');
   }

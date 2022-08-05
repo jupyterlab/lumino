@@ -829,7 +829,7 @@ export abstract class InputCellEditor extends CellEditor {
   /**
    * Start editing the cell.
    */
-  protected startEditing() {
+  protected startEditing(): void {
     this.createWidget();
 
     const cell = this.cell;
@@ -842,15 +842,15 @@ export abstract class InputCellEditor extends CellEditor {
     this.bindEvents();
   }
 
-  protected deserialize(value: any): any {
+  protected deserialize(value: unknown): any {
     if (value === null || value === undefined) {
       return '';
     }
 
-    return value.toString();
+    return (value as any).toString();
   }
 
-  protected createWidget() {
+  protected createWidget(): void {
     const input = document.createElement('input');
     input.classList.add('lm-DataGrid-cellEditorWidget');
     input.classList.add('lm-DataGrid-cellEditorInput');
@@ -860,7 +860,7 @@ export abstract class InputCellEditor extends CellEditor {
     this.input = input;
   }
 
-  protected bindEvents() {
+  protected bindEvents(): void {
     this.input.addEventListener('keydown', this);
     this.input.addEventListener('blur', this);
     this.input.addEventListener('input', this);
@@ -931,7 +931,7 @@ export class NumberCellEditor extends InputCellEditor {
   /**
    * Start editing the cell.
    */
-  protected startEditing() {
+  protected startEditing(): void {
     super.startEditing();
 
     this.input.step = 'any';
@@ -982,7 +982,7 @@ export class IntegerCellEditor extends InputCellEditor {
   /**
    * Start editing the cell.
    */
-  protected startEditing() {
+  protected startEditing(): void {
     super.startEditing();
 
     this.input.step = '1';
@@ -1049,7 +1049,7 @@ export class DateCellEditor extends CellEditor {
   /**
    * Dispose of the resources held by cell editor.
    */
-  dispose() {
+  dispose(): void {
     if (this.isDisposed) {
       return;
     }
@@ -1062,7 +1062,7 @@ export class DateCellEditor extends CellEditor {
   /**
    * Start editing the cell.
    */
-  protected startEditing() {
+  protected startEditing(): void {
     this._createWidget();
 
     const cell = this.cell;
@@ -1171,7 +1171,7 @@ export class BooleanCellEditor extends CellEditor {
   /**
    * Dispose of the resources held by cell editor.
    */
-  dispose() {
+  dispose(): void {
     if (this.isDisposed) {
       return;
     }
@@ -1184,7 +1184,7 @@ export class BooleanCellEditor extends CellEditor {
   /**
    * Start editing the cell.
    */
-  protected startEditing() {
+  protected startEditing(): void {
     this._createWidget();
 
     const cell = this.cell;
@@ -1277,7 +1277,7 @@ export class OptionCellEditor extends CellEditor {
   /**
    * Dispose of the resources held by cell editor.
    */
-  dispose() {
+  dispose(): void {
     if (this.isDisposed) {
       return;
     }
@@ -1292,7 +1292,7 @@ export class OptionCellEditor extends CellEditor {
   /**
    * Start editing the cell.
    */
-  protected startEditing() {
+  protected startEditing(): void {
     const cell = this.cell;
     const cellInfo = this.getCellInfo(cell);
     const metadata = cell.grid.dataModel!.metadata(
@@ -1463,7 +1463,7 @@ export class DynamicOptionCellEditor extends CellEditor {
   /**
    * Dispose of the resources held by cell editor.
    */
-  dispose() {
+  dispose(): void {
     if (this.isDisposed) {
       return;
     }
@@ -1476,7 +1476,7 @@ export class DynamicOptionCellEditor extends CellEditor {
   /**
    * Start editing the cell.
    */
-  protected startEditing() {
+  protected startEditing(): void {
     this._createWidget();
 
     const cell = this.cell;

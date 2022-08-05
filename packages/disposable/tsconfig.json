@@ -2,7 +2,7 @@
   "extends": "../../tsconfigbase",
   "compilerOptions": {
     "declarationDir": "types",
-    "lib": ["ES5", "ES2015.Collection", "ES2015.Iterable"],
+    "lib": ["ES6"],
     "outDir": "lib",
     "rootDir": "src"
   },
