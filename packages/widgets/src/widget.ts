@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 // Copyright (c) Jupyter Development Team.
 // Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
@@ -7,34 +8,24 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  IIterator, empty
-} from '@lumino/algorithm';
+import { empty, IIterator } from '@lumino/algorithm';
+
+import { IObservableDisposable } from '@lumino/disposable';
 
 import {
-  IObservableDisposable
-} from '@lumino/disposable';
-
-import {
-  ConflatableMessage, IMessageHandler, Message, MessageLoop
+  ConflatableMessage,
+  IMessageHandler,
+  Message,
+  MessageLoop
 } from '@lumino/messaging';
 
-import {
-  AttachedProperty
-} from '@lumino/properties';
+import { AttachedProperty } from '@lumino/properties';
 
-import {
-  ISignal, Signal
-} from '@lumino/signaling';
+import { ISignal, Signal } from '@lumino/signaling';
 
-import {
-  Layout
-} from './layout';
+import { Layout } from './layout';
 
-import {
-  Title
-} from './title';
-
+import { Title } from './title';
 
 /**
  * The base class of the lumino widget hierarchy.
@@ -44,8 +35,7 @@ import {
  * widget. However, it can be used directly to host externally created
  * content.
  */
-export
-class Widget implements IMessageHandler, IObservableDisposable {
+export class Widget implements IMessageHandler, IObservableDisposable {
   /**
    * Construct a new widget.
    *
@@ -54,9 +44,6 @@ class Widget implements IMessageHandler, IObservableDisposable {
   constructor(options: Widget.IOptions = {}) {
     this.node = Private.createNode(options);
     this.addClass('lm-Widget');
-    /* <DEPRECATED> */
-    this.addClass('p-Widget');
-    /* </DEPRECATED> */
   }
 
   /**
@@ -89,6 +76,9 @@ class Widget implements IMessageHandler, IObservableDisposable {
       this._layout.dispose();
       this._layout = null;
     }
+
+    // Dispose the title
+    this.title.dispose();
 
     // Clear the extra data associated with the widget.
     Signal.clearData(this);
@@ -174,6 +164,41 @@ class Widget implements IMessageHandler, IObservableDisposable {
    */
   get dataset(): DOMStringMap {
     return this.node.dataset;
+  }
+
+  /**
+   * Get the method for hiding the widget.
+   */
+  get hiddenMode(): Widget.HiddenMode {
+    return this._hiddenMode;
+  }
+
+  /**
+   * Set the method for hiding the widget.
+   */
+  set hiddenMode(value: Widget.HiddenMode) {
+    if (this._hiddenMode === value) {
+      return;
+    }
+    this._hiddenMode = value;
+    switch (value) {
+      case Widget.HiddenMode.Display:
+        this.node.style.willChange = 'auto';
+        break;
+      case Widget.HiddenMode.Scale:
+        this.node.style.willChange = 'transform';
+        break;
+    }
+
+    if (this.isHidden) {
+      if (value === Widget.HiddenMode.Display) {
+        this.addClass('lm-mod-hidden');
+        this.node.style.transform = '';
+      } else {
+        this.node.style.transform = 'scale(0)';
+        this.removeClass('lm-mod-hidden');
+      }
+    }
   }
 
   /**
@@ -399,10 +424,13 @@ class Widget implements IMessageHandler, IObservableDisposable {
       MessageLoop.sendMessage(this, Widget.Msg.BeforeShow);
     }
     this.clearFlag(Widget.Flag.IsHidden);
-    this.removeClass('lm-mod-hidden');
-    /* <DEPRECATED> */
-    this.removeClass('p-mod-hidden');
-    /* </DEPRECATED> */
+    this.node.removeAttribute('aria-hidden');
+    if (this.hiddenMode === Widget.HiddenMode.Display) {
+      this.removeClass('lm-mod-hidden');
+    } else {
+      this.node.style.transform = '';
+    }
+
     if (this.isAttached && (!this.parent || this.parent.isVisible)) {
       MessageLoop.sendMessage(this, Widget.Msg.AfterShow);
     }
@@ -428,10 +456,13 @@ class Widget implements IMessageHandler, IObservableDisposable {
       MessageLoop.sendMessage(this, Widget.Msg.BeforeHide);
     }
     this.setFlag(Widget.Flag.IsHidden);
-    this.addClass('lm-mod-hidden');
-    /* <DEPRECATED> */
-    this.addClass('p-mod-hidden');
-    /* </DEPRECATED> */
+    this.node.setAttribute('aria-hidden', 'true');
+    if (this.hiddenMode === Widget.HiddenMode.Display) {
+      this.addClass('lm-mod-hidden');
+    } else {
+      this.node.style.transform = 'scale(0)';
+    }
+
     if (this.isAttached && (!this.parent || this.parent.isVisible)) {
       MessageLoop.sendMessage(this, Widget.Msg.AfterHide);
     }
@@ -497,77 +528,77 @@ class Widget implements IMessageHandler, IObservableDisposable {
    */
   processMessage(msg: Message): void {
     switch (msg.type) {
-    case 'resize':
-      this.notifyLayout(msg);
-      this.onResize(msg as Widget.ResizeMessage);
-      break;
-    case 'update-request':
-      this.notifyLayout(msg);
-      this.onUpdateRequest(msg);
-      break;
-    case 'fit-request':
-      this.notifyLayout(msg);
-      this.onFitRequest(msg);
-      break;
-    case 'before-show':
-      this.notifyLayout(msg);
-      this.onBeforeShow(msg);
-      break;
-    case 'after-show':
-      this.setFlag(Widget.Flag.IsVisible);
-      this.notifyLayout(msg);
-      this.onAfterShow(msg);
-      break;
-    case 'before-hide':
-      this.notifyLayout(msg);
-      this.onBeforeHide(msg);
-      break;
-    case 'after-hide':
-      this.clearFlag(Widget.Flag.IsVisible);
-      this.notifyLayout(msg);
-      this.onAfterHide(msg);
-      break;
-    case 'before-attach':
-      this.notifyLayout(msg);
-      this.onBeforeAttach(msg);
-      break;
-    case 'after-attach':
-      if (!this.isHidden && (!this.parent || this.parent.isVisible)) {
+      case 'resize':
+        this.notifyLayout(msg);
+        this.onResize(msg as Widget.ResizeMessage);
+        break;
+      case 'update-request':
+        this.notifyLayout(msg);
+        this.onUpdateRequest(msg);
+        break;
+      case 'fit-request':
+        this.notifyLayout(msg);
+        this.onFitRequest(msg);
+        break;
+      case 'before-show':
+        this.notifyLayout(msg);
+        this.onBeforeShow(msg);
+        break;
+      case 'after-show':
         this.setFlag(Widget.Flag.IsVisible);
-      }
-      this.setFlag(Widget.Flag.IsAttached);
-      this.notifyLayout(msg);
-      this.onAfterAttach(msg);
-      break;
-    case 'before-detach':
-      this.notifyLayout(msg);
-      this.onBeforeDetach(msg);
-      break;
-    case 'after-detach':
-      this.clearFlag(Widget.Flag.IsVisible);
-      this.clearFlag(Widget.Flag.IsAttached);
-      this.notifyLayout(msg);
-      this.onAfterDetach(msg);
-      break;
-    case 'activate-request':
-      this.notifyLayout(msg);
-      this.onActivateRequest(msg);
-      break;
-    case 'close-request':
-      this.notifyLayout(msg);
-      this.onCloseRequest(msg);
-      break;
-    case 'child-added':
-      this.notifyLayout(msg);
-      this.onChildAdded(msg as Widget.ChildMessage);
-      break;
-    case 'child-removed':
-      this.notifyLayout(msg);
-      this.onChildRemoved(msg as Widget.ChildMessage);
-      break;
-    default:
-      this.notifyLayout(msg);
-      break;
+        this.notifyLayout(msg);
+        this.onAfterShow(msg);
+        break;
+      case 'before-hide':
+        this.notifyLayout(msg);
+        this.onBeforeHide(msg);
+        break;
+      case 'after-hide':
+        this.clearFlag(Widget.Flag.IsVisible);
+        this.notifyLayout(msg);
+        this.onAfterHide(msg);
+        break;
+      case 'before-attach':
+        this.notifyLayout(msg);
+        this.onBeforeAttach(msg);
+        break;
+      case 'after-attach':
+        if (!this.isHidden && (!this.parent || this.parent.isVisible)) {
+          this.setFlag(Widget.Flag.IsVisible);
+        }
+        this.setFlag(Widget.Flag.IsAttached);
+        this.notifyLayout(msg);
+        this.onAfterAttach(msg);
+        break;
+      case 'before-detach':
+        this.notifyLayout(msg);
+        this.onBeforeDetach(msg);
+        break;
+      case 'after-detach':
+        this.clearFlag(Widget.Flag.IsVisible);
+        this.clearFlag(Widget.Flag.IsAttached);
+        this.notifyLayout(msg);
+        this.onAfterDetach(msg);
+        break;
+      case 'activate-request':
+        this.notifyLayout(msg);
+        this.onActivateRequest(msg);
+        break;
+      case 'close-request':
+        this.notifyLayout(msg);
+        this.onCloseRequest(msg);
+        break;
+      case 'child-added':
+        this.notifyLayout(msg);
+        this.onChildAdded(msg as Widget.ChildMessage);
+        break;
+      case 'child-removed':
+        this.notifyLayout(msg);
+        this.onChildRemoved(msg as Widget.ChildMessage);
+        break;
+      default:
+        this.notifyLayout(msg);
+        break;
     }
   }
 
@@ -607,7 +638,7 @@ class Widget implements IMessageHandler, IObservableDisposable {
    * #### Notes
    * The default implementation of this handler is a no-op.
    */
-  protected onResize(msg: Widget.ResizeMessage): void { }
+  protected onResize(msg: Widget.ResizeMessage): void {}
 
   /**
    * A message handler invoked on an `'update-request'` message.
@@ -615,7 +646,7 @@ class Widget implements IMessageHandler, IObservableDisposable {
    * #### Notes
    * The default implementation of this handler is a no-op.
    */
-  protected onUpdateRequest(msg: Message): void { }
+  protected onUpdateRequest(msg: Message): void {}
 
   /**
    * A message handler invoked on a `'fit-request'` message.
@@ -623,7 +654,7 @@ class Widget implements IMessageHandler, IObservableDisposable {
    * #### Notes
    * The default implementation of this handler is a no-op.
    */
-  protected onFitRequest(msg: Message): void { }
+  protected onFitRequest(msg: Message): void {}
 
   /**
    * A message handler invoked on an `'activate-request'` message.
@@ -631,7 +662,7 @@ class Widget implements IMessageHandler, IObservableDisposable {
    * #### Notes
    * The default implementation of this handler is a no-op.
    */
-  protected onActivateRequest(msg: Message): void { }
+  protected onActivateRequest(msg: Message): void {}
 
   /**
    * A message handler invoked on a `'before-show'` message.
@@ -639,7 +670,7 @@ class Widget implements IMessageHandler, IObservableDisposable {
    * #### Notes
    * The default implementation of this handler is a no-op.
    */
-  protected onBeforeShow(msg: Message): void { }
+  protected onBeforeShow(msg: Message): void {}
 
   /**
    * A message handler invoked on an `'after-show'` message.
@@ -647,7 +678,7 @@ class Widget implements IMessageHandler, IObservableDisposable {
    * #### Notes
    * The default implementation of this handler is a no-op.
    */
-  protected onAfterShow(msg: Message): void { }
+  protected onAfterShow(msg: Message): void {}
 
   /**
    * A message handler invoked on a `'before-hide'` message.
@@ -655,7 +686,7 @@ class Widget implements IMessageHandler, IObservableDisposable {
    * #### Notes
    * The default implementation of this handler is a no-op.
    */
-  protected onBeforeHide(msg: Message): void { }
+  protected onBeforeHide(msg: Message): void {}
 
   /**
    * A message handler invoked on an `'after-hide'` message.
@@ -663,7 +694,7 @@ class Widget implements IMessageHandler, IObservableDisposable {
    * #### Notes
    * The default implementation of this handler is a no-op.
    */
-  protected onAfterHide(msg: Message): void { }
+  protected onAfterHide(msg: Message): void {}
 
   /**
    * A message handler invoked on a `'before-attach'` message.
@@ -671,7 +702,7 @@ class Widget implements IMessageHandler, IObservableDisposable {
    * #### Notes
    * The default implementation of this handler is a no-op.
    */
-  protected onBeforeAttach(msg: Message): void { }
+  protected onBeforeAttach(msg: Message): void {}
 
   /**
    * A message handler invoked on an `'after-attach'` message.
@@ -679,7 +710,7 @@ class Widget implements IMessageHandler, IObservableDisposable {
    * #### Notes
    * The default implementation of this handler is a no-op.
    */
-  protected onAfterAttach(msg: Message): void { }
+  protected onAfterAttach(msg: Message): void {}
 
   /**
    * A message handler invoked on a `'before-detach'` message.
@@ -687,7 +718,7 @@ class Widget implements IMessageHandler, IObservableDisposable {
    * #### Notes
    * The default implementation of this handler is a no-op.
    */
-  protected onBeforeDetach(msg: Message): void { }
+  protected onBeforeDetach(msg: Message): void {}
 
   /**
    * A message handler invoked on an `'after-detach'` message.
@@ -695,7 +726,7 @@ class Widget implements IMessageHandler, IObservableDisposable {
    * #### Notes
    * The default implementation of this handler is a no-op.
    */
-  protected onAfterDetach(msg: Message): void { }
+  protected onAfterDetach(msg: Message): void {}
 
   /**
    * A message handler invoked on a `'child-added'` message.
@@ -703,7 +734,7 @@ class Widget implements IMessageHandler, IObservableDisposable {
    * #### Notes
    * The default implementation of this handler is a no-op.
    */
-  protected onChildAdded(msg: Widget.ChildMessage): void { }
+  protected onChildAdded(msg: Widget.ChildMessage): void {}
 
   /**
    * A message handler invoked on a `'child-removed'` message.
@@ -711,25 +742,23 @@ class Widget implements IMessageHandler, IObservableDisposable {
    * #### Notes
    * The default implementation of this handler is a no-op.
    */
-  protected onChildRemoved(msg: Widget.ChildMessage): void { }
+  protected onChildRemoved(msg: Widget.ChildMessage): void {}
 
   private _flags = 0;
   private _layout: Layout | null = null;
   private _parent: Widget | null = null;
   private _disposed = new Signal<this, void>(this);
+  private _hiddenMode: Widget.HiddenMode = Widget.HiddenMode.Display;
 }
-
 
 /**
  * The namespace for the `Widget` class statics.
  */
-export
-namespace Widget {
+export namespace Widget {
   /**
    * An options object for initializing a widget.
    */
-  export
-  interface IOptions {
+  export interface IOptions {
     /**
      * The optional node to use for the widget.
      *
@@ -739,13 +768,49 @@ namespace Widget {
      * The default is a new `<div>`.
      */
     node?: HTMLElement;
+
+    /**
+     * The optional element tag, used for constructing the widget's node.
+     *
+     * If a pre-constructed node is provided via the `node` arg, this
+     * value is ignored.
+     */
+    tag?: keyof HTMLElementTagNameMap;
+  }
+
+  /**
+   * The method for hiding the widget.
+   *
+   * The default is Display.
+   *
+   * Using `Scale` will often increase performance as most browsers will not
+   * trigger style computation for the `transform` action. This should be used
+   * sparingly and tested, since increasing the number of composition layers
+   * may slow things down.
+   *
+   * To ensure the transformation does not trigger style recomputation, you
+   * may need to set the widget CSS style `will-change: transform`. This
+   * should be used only when needed as it may overwhelm the browser with a
+   * high number of layers. See
+   * https://developer.mozilla.org/en-US/docs/Web/CSS/will-change
+   */
+  export enum HiddenMode {
+    /**
+     * Set a `lm-mod-hidden` CSS class to hide the widget using `display:none`
+     * CSS from the standard Lumino CSS.
+     */
+    Display = 0,
+
+    /**
+     * Hide the widget by setting the `transform` to `'scale(0)'`.
+     */
+    Scale
   }
 
   /**
    * An enum of widget bit flags.
    */
-  export
-  enum Flag {
+  export enum Flag {
     /**
      * The widget has been disposed.
      */
@@ -775,8 +840,7 @@ namespace Widget {
   /**
    * A collection of stateless messages related to widgets.
    */
-  export
-  namespace Msg {
+  export namespace Msg {
     /**
      * A singleton `'before-show'` message.
      *
@@ -785,8 +849,7 @@ namespace Widget {
      *
      * This message is **not** sent when the widget is being attached.
      */
-    export
-    const BeforeShow = new Message('before-show');
+    export const BeforeShow = new Message('before-show');
 
     /**
      * A singleton `'after-show'` message.
@@ -796,8 +859,7 @@ namespace Widget {
      *
      * This message is **not** sent when the widget is being attached.
      */
-    export
-    const AfterShow = new Message('after-show');
+    export const AfterShow = new Message('after-show');
 
     /**
      * A singleton `'before-hide'` message.
@@ -807,8 +869,7 @@ namespace Widget {
      *
      * This message is **not** sent when the widget is being detached.
      */
-    export
-    const BeforeHide = new Message('before-hide');
+    export const BeforeHide = new Message('before-hide');
 
     /**
      * A singleton `'after-hide'` message.
@@ -818,8 +879,7 @@ namespace Widget {
      *
      * This message is **not** sent when the widget is being detached.
      */
-    export
-    const AfterHide = new Message('after-hide');
+    export const AfterHide = new Message('after-hide');
 
     /**
      * A singleton `'before-attach'` message.
@@ -827,8 +887,7 @@ namespace Widget {
      * #### Notes
      * This message is sent to a widget before it is attached.
      */
-    export
-    const BeforeAttach = new Message('before-attach');
+    export const BeforeAttach = new Message('before-attach');
 
     /**
      * A singleton `'after-attach'` message.
@@ -836,8 +895,7 @@ namespace Widget {
      * #### Notes
      * This message is sent to a widget after it is attached.
      */
-    export
-    const AfterAttach = new Message('after-attach');
+    export const AfterAttach = new Message('after-attach');
 
     /**
      * A singleton `'before-detach'` message.
@@ -845,8 +903,7 @@ namespace Widget {
      * #### Notes
      * This message is sent to a widget before it is detached.
      */
-    export
-    const BeforeDetach = new Message('before-detach');
+    export const BeforeDetach = new Message('before-detach');
 
     /**
      * A singleton `'after-detach'` message.
@@ -854,8 +911,7 @@ namespace Widget {
      * #### Notes
      * This message is sent to a widget after it is detached.
      */
-    export
-    const AfterDetach = new Message('after-detach');
+    export const AfterDetach = new Message('after-detach');
 
     /**
      * A singleton `'parent-changed'` message.
@@ -863,8 +919,7 @@ namespace Widget {
      * #### Notes
      * This message is sent to a widget when its parent has changed.
      */
-    export
-    const ParentChanged = new Message('parent-changed');
+    export const ParentChanged = new Message('parent-changed');
 
     /**
      * A singleton conflatable `'update-request'` message.
@@ -877,8 +932,7 @@ namespace Widget {
      * For widgets with a layout, this message will inform the layout to
      * update the position and size of its child widgets.
      */
-    export
-    const UpdateRequest = new ConflatableMessage('update-request');
+    export const UpdateRequest = new ConflatableMessage('update-request');
 
     /**
      * A singleton conflatable `'fit-request'` message.
@@ -889,8 +943,7 @@ namespace Widget {
      * its child widgets, and to update their position and size. Not all
      * layouts will respond to messages of this type.
      */
-    export
-    const FitRequest = new ConflatableMessage('fit-request');
+    export const FitRequest = new ConflatableMessage('fit-request');
 
     /**
      * A singleton conflatable `'activate-request'` message.
@@ -900,8 +953,7 @@ namespace Widget {
      * perform the actions necessary to activate the widget, which
      * may include focusing its node or descendant node.
      */
-    export
-    const ActivateRequest = new ConflatableMessage('activate-request');
+    export const ActivateRequest = new ConflatableMessage('activate-request');
 
     /**
      * A singleton conflatable `'close-request'` message.
@@ -910,15 +962,13 @@ namespace Widget {
      * This message should be dispatched to a widget when it should close
      * and remove itself from the widget hierarchy.
      */
-    export
-    const CloseRequest = new ConflatableMessage('close-request');
+    export const CloseRequest = new ConflatableMessage('close-request');
   }
 
   /**
    * A message class for child related messages.
    */
-  export
-  class ChildMessage extends Message {
+  export class ChildMessage extends Message {
     /**
      * Construct a new child message.
      *
@@ -940,8 +990,7 @@ namespace Widget {
   /**
    * A message class for `'resize'` messages.
    */
-  export
-  class ResizeMessage extends Message {
+  export class ResizeMessage extends Message {
     /**
      * Construct a new resize message.
      *
@@ -977,13 +1026,11 @@ namespace Widget {
   /**
    * The namespace for the `ResizeMessage` class statics.
    */
-  export
-  namespace ResizeMessage {
+  export namespace ResizeMessage {
     /**
      * A singleton `'resize'` message with an unknown size.
      */
-    export
-    const UnknownSize = new ResizeMessage(-1, -1);
+    export const UnknownSize = new ResizeMessage(-1, -1);
   }
 
   /**
@@ -1003,15 +1050,18 @@ namespace Widget {
    * the widget is already attached, or if the host is not attached
    * to the DOM.
    */
-  export
-  function attach(widget: Widget, host: HTMLElement, ref: HTMLElement | null = null): void {
+  export function attach(
+    widget: Widget,
+    host: HTMLElement,
+    ref: HTMLElement | null = null
+  ): void {
     if (widget.parent) {
       throw new Error('Cannot attach a child widget.');
     }
-    if (widget.isAttached || document.body.contains(widget.node)) {
+    if (widget.isAttached || widget.node.isConnected) {
       throw new Error('Widget is already attached.');
     }
-    if (!document.body.contains(host)) {
+    if (!host.isConnected) {
       throw new Error('Host is not attached.');
     }
     MessageLoop.sendMessage(widget, Widget.Msg.BeforeAttach);
@@ -1028,12 +1078,11 @@ namespace Widget {
    * This will throw an error if the widget is not a root widget,
    * or if the widget is not attached to the DOM.
    */
-  export
-  function detach(widget: Widget): void {
+  export function detach(widget: Widget): void {
     if (widget.parent) {
       throw new Error('Cannot detach a child widget.');
     }
-    if (!widget.isAttached || !document.body.contains(widget.node)) {
+    if (!widget.isAttached || !widget.node.isConnected) {
       throw new Error('Widget is not attached.');
     }
     MessageLoop.sendMessage(widget, Widget.Msg.BeforeDetach);
@@ -1042,7 +1091,6 @@ namespace Widget {
   }
 }
 
-
 /**
  * The namespace for the module implementation details.
  */
@@ -1050,17 +1098,15 @@ namespace Private {
   /**
    * An attached property for the widget title object.
    */
-  export
-  const titleProperty = new AttachedProperty<Widget, Title<Widget>>({
+  export const titleProperty = new AttachedProperty<Widget, Title<Widget>>({
     name: 'title',
-    create: owner => new Title<Widget>({ owner }),
+    create: owner => new Title<Widget>({ owner })
   });
 
   /**
    * Create a DOM node for the given widget options.
    */
-  export
-  function createNode(options: Widget.IOptions): HTMLElement {
-    return options.node || document.createElement('div');
+  export function createNode(options: Widget.IOptions): HTMLElement {
+    return options.node || document.createElement(options.tag || 'div');
   }
 }

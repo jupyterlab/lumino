@@ -7,26 +7,15 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  ArrayExt, each
-} from '@lumino/algorithm';
+import { ArrayExt, each } from '@lumino/algorithm';
 
-import {
-  CommandRegistry
-} from '@lumino/commands';
+import { CommandRegistry } from '@lumino/commands';
 
-import {
-  DisposableDelegate, IDisposable
-} from '@lumino/disposable';
+import { DisposableDelegate, IDisposable } from '@lumino/disposable';
 
-import {
-  Selector
-} from '@lumino/domutils';
+import { Selector } from '@lumino/domutils';
 
-import {
-  Menu
-} from './menu';
-
+import { Menu } from './menu';
 
 /**
  * An object which implements a universal context menu.
@@ -37,15 +26,17 @@ import {
  * This is similar in concept to how keyboard shortcuts are matched
  * in the command registry.
  */
-export
-class ContextMenu {
+export class ContextMenu {
   /**
    * Construct a new context menu.
    *
    * @param options - The options for initializing the menu.
    */
   constructor(options: ContextMenu.IOptions) {
-    this.menu = new Menu(options);
+    const { groupByTarget, sortBySelector, ...others } = options;
+    this.menu = new Menu(others);
+    this._groupByTarget = groupByTarget !== false;
+    this._sortBySelector = sortBySelector !== false;
   }
 
   /**
@@ -96,7 +87,12 @@ class ContextMenu {
     }
 
     // Find the matching items for the event.
-    let items = Private.matchItems(this._items, event);
+    let items = Private.matchItems(
+      this._items,
+      event,
+      this._groupByTarget,
+      this._sortBySelector
+    );
 
     // Bail if there are no matching items.
     if (!items || items.length === 0) {
@@ -104,7 +100,9 @@ class ContextMenu {
     }
 
     // Add the filtered items to the menu.
-    each(items, item => { this.menu.addItem(item); });
+    each(items, item => {
+      this.menu.addItem(item);
+    });
 
     // Open the context menu at the current mouse position.
     this.menu.open(event.clientX, event.clientY);
@@ -113,21 +111,20 @@ class ContextMenu {
     return true;
   }
 
+  private _groupByTarget: boolean = true;
   private _idTick = 0;
   private _items: Private.IItem[] = [];
+  private _sortBySelector: boolean = true;
 }
-
 
 /**
  * The namespace for the `ContextMenu` class statics.
  */
-export
-namespace ContextMenu {
+export namespace ContextMenu {
   /**
    * An options object for initializing a context menu.
    */
-  export
-  interface IOptions {
+  export interface IOptions {
     /**
      * The command registry to use with the context menu.
      */
@@ -137,13 +134,30 @@ namespace ContextMenu {
      * A custom renderer for use with the context menu.
      */
     renderer?: Menu.IRenderer;
+
+    /**
+     * Whether to sort by selector and rank or only rank.
+     *
+     * Default true.
+     */
+    sortBySelector?: boolean;
+
+    /**
+     * Whether to group items following the DOM hierarchy.
+     *
+     * Default true.
+     *
+     * #### Note
+     * If true, when the mouse event occurs on element `span` within `div.top`,
+     * the items matching `div.top` will be shown before the ones matching `body`.
+     */
+    groupByTarget?: boolean;
   }
 
   /**
    * An options object for creating a context menu item.
    */
-  export
-  interface IItemOptions extends Menu.IItemOptions {
+  export interface IItemOptions extends Menu.IItemOptions {
     /**
      * The CSS selector for the context menu item.
      *
@@ -172,7 +186,6 @@ namespace ContextMenu {
   }
 }
 
-
 /**
  * The namespace for the module implementation details.
  */
@@ -180,8 +193,7 @@ namespace Private {
   /**
    * A normalized item for a context menu.
    */
-  export
-  interface IItem extends Menu.IItemOptions {
+  export interface IItem extends Menu.IItemOptions {
     /**
      * The selector for the item.
      */
@@ -201,8 +213,10 @@ namespace Private {
   /**
    * Create a normalized context menu item from an options object.
    */
-  export
-  function createItem(options: ContextMenu.IItemOptions, id: number): IItem {
+  export function createItem(
+    options: ContextMenu.IItemOptions,
+    id: number
+  ): IItem {
     let selector = validateSelector(options.selector);
     let rank = options.rank !== undefined ? options.rank : Infinity;
     return { ...options, selector, rank, id };
@@ -213,10 +227,14 @@ namespace Private {
    *
    * The results are sorted by DOM level, specificity, and rank.
    */
-  export
-  function matchItems(items: IItem[], event: MouseEvent): IItem[] | null {
+  export function matchItems(
+    items: IItem[],
+    event: MouseEvent,
+    groupByTarget: boolean,
+    sortBySelector: boolean
+  ): IItem[] | null {
     // Look up the target of the event.
-    let target = event.target as (Element | null);
+    let target = event.target as Element | null;
 
     // Bail if there is no target.
     if (!target) {
@@ -224,7 +242,7 @@ namespace Private {
     }
 
     // Look up the current target of the event.
-    let currentTarget = event.currentTarget as (Element | null);
+    let currentTarget = event.currentTarget as Element | null;
 
     // Bail if there is no current target.
     if (!currentTarget) {
@@ -277,7 +295,9 @@ namespace Private {
 
       // Sort the matches for this level and add them to the results.
       if (matches.length !== 0) {
-        matches.sort(itemCmp);
+        if (groupByTarget) {
+          matches.sort(sortBySelector ? itemCmp : itemCmpRank);
+        }
         result.push(...matches);
       }
 
@@ -288,6 +308,10 @@ namespace Private {
 
       // Step to the parent DOM level.
       target = target.parentElement;
+    }
+
+    if (!groupByTarget) {
+      result.sort(sortBySelector ? itemCmp : itemCmpRank);
     }
 
     // Return the matched and sorted results.
@@ -311,7 +335,22 @@ namespace Private {
   }
 
   /**
-   * A sort comparison function for a context menu item.
+   * A sort comparison function for a context menu item by ranks.
+   */
+  function itemCmpRank(a: IItem, b: IItem): number {
+    // Sort based on rank.
+    let r1 = a.rank;
+    let r2 = b.rank;
+    if (r1 !== r2) {
+      return r1 < r2 ? -1 : 1; // Infinity-safe
+    }
+
+    // When all else fails, sort by item id.
+    return a.id - b.id;
+  }
+
+  /**
+   * A sort comparison function for a context menu item by selectors and ranks.
    */
   function itemCmp(a: IItem, b: IItem): number {
     // Sort first based on selector specificity.
@@ -321,14 +360,7 @@ namespace Private {
       return s2 - s1;
     }
 
-    // If specificities are equal, sort based on rank.
-    let r1 = a.rank;
-    let r2 = b.rank;
-    if (r1 !== r2) {
-      return r1 < r2 ? -1 : 1;  // Infinity-safe
-    }
-
-    // When all else fails, sort by item id.
-    return a.id - b.id;
+    // If specificities are equal
+    return itemCmpRank(a, b);
   }
 }

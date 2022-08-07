@@ -7,14 +7,10 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
-
-/* <DEPRECATED> */ .p-TabPanel-tabBar, /* </DEPRECATED> */
 .lm-TabPanel-tabBar {
   z-index: 1;
 }
 
-
-/* <DEPRECATED> */ .p-TabPanel-stackedPanel, /* </DEPRECATED> */
 .lm-TabPanel-stackedPanel {
   z-index: 0;
 }

@@ -7,33 +7,27 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  IDisposable
-} from '@lumino/disposable';
+import { IDisposable } from '@lumino/disposable';
 
-import {
-  Platform
-} from '@lumino/domutils';
+import { Platform } from '@lumino/domutils';
 
-import {
-  Drag
-} from '@lumino/dragdrop';
+import { Drag } from '@lumino/dragdrop';
 
-import {
-  DataGrid
-} from './datagrid';
+import { DataGrid } from './datagrid';
 
-import {
-  DataModel
-} from './datamodel';
+import { HyperlinkRenderer } from './hyperlinkrenderer';
 
-import {
-  SelectionModel
-} from './selectionmodel';
+import { DataModel } from './datamodel';
 
-import {
-  CellEditor
-} from './celleditor';
+import { SelectionModel } from './selectionmodel';
+
+import { CellEditor } from './celleditor';
+
+import { CellGroup } from './cellgroup';
+
+import { CellRenderer } from './cellrenderer';
+
+import { TextRenderer } from './textrenderer';
 
 /**
  * A basic implementation of a data grid mouse handler.
@@ -41,8 +35,7 @@ import {
  * #### Notes
  * This class may be subclassed and customized as needed.
  */
-export
-class BasicMouseHandler implements DataGrid.IMouseHandler {
+export class BasicMouseHandler implements DataGrid.IMouseHandler {
   /**
    * Dispose of the resources held by the mouse handler.
    */
@@ -102,6 +95,17 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
     // Fetch the cursor for the handle.
     let cursor = this.cursorForHandle(handle);
 
+    // Hyperlink logic.
+    const config = Private.createCellConfigObject(grid, hit);
+
+    if (config) {
+      // Retrieve renderer for hovered cell.
+      const renderer = grid.cellRenderers.get(config);
+      if (renderer instanceof HyperlinkRenderer) {
+        cursor = this.cursorForHandle('hyperlink');
+      }
+    }
+
     // Update the viewport cursor based on the part.
     grid.viewport.node.style.cursor = cursor;
 
@@ -137,7 +141,7 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
     let hit = grid.hitTest(clientX, clientY);
 
     // Unpack the hit test.
-    let { region, row, column } = hit;
+    const { region, row, column } = hit;
 
     // Bail if the hit test is on an uninteresting region.
     if (region === 'void') {
@@ -147,6 +151,36 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
     // Fetch the modifier flags.
     let shift = event.shiftKey;
     let accel = Platform.accelKey(event);
+
+    // Hyperlink logic.
+    if (grid) {
+      // Create cell config object.
+      const config = Private.createCellConfigObject(grid, hit);
+
+      // Retrieve cell renderer.
+      let renderer = grid.cellRenderers.get(config!);
+
+      // Only process hyperlink renderers.
+      if (renderer instanceof HyperlinkRenderer) {
+        // Use the url param if it exists.
+        let url = CellRenderer.resolveOption(renderer.url, config!);
+        // Otherwise assume cell value is the URL.
+        if (!url) {
+          const format = TextRenderer.formatGeneric();
+          url = format(config!);
+        }
+
+        // Open the hyperlink only if user hit Ctrl+Click.
+        if (accel) {
+          window.open(url);
+          // Reset cursor default after clicking
+          const cursor = this.cursorForHandle('none');
+          grid.viewport.node.style.cursor = cursor;
+          // Not applying selections if navigating away.
+          return;
+        }
+      }
+    }
 
     // If the hit test is the body region, the only option is select.
     if (region === 'body') {
@@ -163,8 +197,14 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
 
       // Set up the press data.
       this._pressData = {
-        type: 'select', region, row, column, override,
-        localX: -1, localY: -1, timeout: -1
+        type: 'select',
+        region,
+        row,
+        column,
+        override,
+        localX: -1,
+        localY: -1,
+        timeout: -1
       };
 
       // Set up the selection variables.
@@ -203,9 +243,6 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
         clear = 'all';
       }
 
-      // Use selection mode 'cell'
-      model.selectionMode = 'cell';
-
       // Make the selection.
       model.select({ r1, c1, r2, c2, cursorRow, cursorColumn, clear });
 
@@ -222,14 +259,13 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
     let cursor = this.cursorForHandle(handle);
 
     // Handle horizontal resize.
-    if (handle === 'left' || handle === 'right' ) {
+    if (handle === 'left' || handle === 'right') {
       // Set up the resize data type.
-      let type: 'column-resize' = 'column-resize';
+      const type = 'column-resize';
 
       // Determine the column region.
-      let rgn: DataModel.ColumnRegion = (
-        region === 'column-header' ? 'body' : 'row-header'
-      );
+      let rgn: DataModel.ColumnRegion =
+        region === 'column-header' ? 'body' : 'row-header';
 
       // Determine the section index.
       let index = handle === 'left' ? column - 1 : column;
@@ -250,12 +286,11 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
     // Handle vertical resize
     if (handle === 'top' || handle === 'bottom') {
       // Set up the resize data type.
-      let type: 'row-resize' = 'row-resize';
+      const type = 'row-resize';
 
       // Determine the row region.
-      let rgn: DataModel.RowRegion = (
-        region === 'row-header' ? 'body' : 'column-header'
-      );
+      let rgn: DataModel.RowRegion =
+        region === 'row-header' ? 'body' : 'column-header';
 
       // Determine the section index.
       let index = handle === 'top' ? row - 1 : row;
@@ -288,8 +323,14 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
 
     // Set up the press data.
     this._pressData = {
-      type: 'select', region, row, column, override,
-      localX: -1, localY: -1, timeout: -1
+      type: 'select',
+      region,
+      row,
+      column,
+      override,
+      localX: -1,
+      localY: -1,
+      timeout: -1
     };
 
     // Set up the selection variables.
@@ -313,6 +354,20 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
     } else if (region === 'row-header') {
       r1 = accel ? row : shift ? model.cursorRow : row;
       r2 = row;
+
+      const selectionGroup: CellGroup = { r1: r1, c1: 0, r2: r2, c2: 0 };
+      const joinedGroup = CellGroup.joinCellGroupsIntersectingAtAxis(
+        grid.dataModel!,
+        ['row-header', 'body'],
+        'row',
+        selectionGroup
+      );
+      // Check if there are any merges
+      if (joinedGroup.r1 != Number.MAX_VALUE) {
+        r1 = joinedGroup.r1;
+        r2 = joinedGroup.r2;
+      }
+
       c1 = 0;
       c2 = Infinity;
       cursorRow = accel ? row : shift ? model.cursorRow : row;
@@ -323,6 +378,20 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
       r2 = Infinity;
       c1 = accel ? column : shift ? model.cursorColumn : column;
       c2 = column;
+
+      const selectionGroup: CellGroup = { r1: 0, c1: c1, r2: 0, c2: c2 };
+      const joinedGroup = CellGroup.joinCellGroupsIntersectingAtAxis(
+        grid.dataModel!,
+        ['column-header', 'body'],
+        'column',
+        selectionGroup
+      );
+      // Check if there are any merges
+      if (joinedGroup.c1 != Number.MAX_VALUE) {
+        c1 = joinedGroup.c1;
+        c2 = joinedGroup.c2;
+      }
+
       cursorRow = accel ? 0 : shift ? model.cursorRow : 0;
       cursorColumn = accel ? column : shift ? model.cursorColumn : column;
       clear = accel ? 'none' : shift ? 'current' : 'all';
@@ -334,19 +403,6 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
       cursorRow = accel ? row : shift ? model.cursorRow : row;
       cursorColumn = accel ? column : shift ? model.cursorColumn : column;
       clear = accel ? 'none' : shift ? 'current' : 'all';
-    }
-
-    // Set selection mode based on region
-    switch (region) {
-      case 'column-header':
-        model.selectionMode = 'column';
-        break;
-      case 'row-header':
-        model.selectionMode = 'row';
-        break;
-      default:
-        model.selectionMode = 'cell';
-        break;
     }
 
     // Make the selection.
@@ -450,7 +506,9 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
     if (timeout >= 0) {
       if (data.timeout < 0) {
         data.timeout = timeout;
-        setTimeout(() => { Private.autoselect(grid, data); }, timeout);
+        setTimeout(() => {
+          Private.autoselect(grid, data);
+        }, timeout);
       } else {
         data.timeout = timeout;
       }
@@ -464,7 +522,7 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
     let { vx, vy } = grid.mapToVirtual(event.clientX, event.clientY);
 
     // Clamp the coordinates to the limits.
-    vx = Math.max(0, Math.min(vx, grid.bodyWidth -1));
+    vx = Math.max(0, Math.min(vx, grid.bodyWidth - 1));
     vy = Math.max(0, Math.min(vy, grid.bodyHeight - 1));
 
     // Set up the selection variables.
@@ -480,6 +538,20 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
     if (data.region === 'row-header' || mode === 'row') {
       r1 = data.row;
       r2 = grid.rowAt('body', vy);
+
+      const selectionGroup: CellGroup = { r1: r1, c1: 0, r2: r2, c2: 0 };
+      const joinedGroup = CellGroup.joinCellGroupsIntersectingAtAxis(
+        grid.dataModel!,
+        ['row-header', 'body'],
+        'row',
+        selectionGroup
+      );
+      // Check if there are any merges
+      if (joinedGroup.r1 != Number.MAX_VALUE) {
+        r1 = Math.min(r1, joinedGroup.r1);
+        r2 = Math.max(r2, joinedGroup.r2);
+      }
+
       c1 = 0;
       c2 = Infinity;
     } else if (data.region === 'column-header' || mode === 'column') {
@@ -487,6 +559,19 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
       r2 = Infinity;
       c1 = data.column;
       c2 = grid.columnAt('body', vx);
+
+      const selectionGroup: CellGroup = { r1: 0, c1: c1, r2: 0, c2: c2 };
+      const joinedGroup = CellGroup.joinCellGroupsIntersectingAtAxis(
+        grid.dataModel!,
+        ['column-header', 'body'],
+        'column',
+        selectionGroup
+      );
+      // Check if there are any merges
+      if (joinedGroup.c1 != Number.MAX_VALUE) {
+        c1 = joinedGroup.c1;
+        c2 = joinedGroup.c2;
+      }
     } else {
       r1 = cursorRow;
       r2 = grid.rowAt('body', vy);
@@ -580,52 +665,64 @@ class BasicMouseHandler implements DataGrid.IMouseHandler {
 
     // Convert the delta values to pixel values.
     switch (event.deltaMode) {
-    case 0:  // DOM_DELTA_PIXEL
-      break;
-    case 1:  // DOM_DELTA_LINE
-      let ds = grid.defaultSizes;
-      dx *= ds.columnWidth;
-      dy *= ds.rowHeight;
-      break;
-    case 2:  // DOM_DELTA_PAGE
-      dx *= grid.pageWidth;
-      dy *= grid.pageHeight;
-      break;
-    default:
-      throw 'unreachable';
+      case 0: // DOM_DELTA_PIXEL
+        break;
+      case 1: {
+        // DOM_DELTA_LINE
+        let ds = grid.defaultSizes;
+        dx *= ds.columnWidth;
+        dy *= ds.rowHeight;
+        break;
+      }
+      case 2: // DOM_DELTA_PAGE
+        dx *= grid.pageWidth;
+        dy *= grid.pageHeight;
+        break;
+      default:
+        throw 'unreachable';
     }
 
     // Scroll by the desired amount.
     grid.scrollBy(dx, dy);
   }
 
-/**
-* Convert a resize handle into a cursor.
-*/
-cursorForHandle(handle: ResizeHandle): string {
-  return Private.cursorMap[handle];
-}
+  /**
+   * Convert a resize handle into a cursor.
+   */
+  cursorForHandle(handle: ResizeHandle): string {
+    return Private.cursorMap[handle];
+  }
+
+  /**
+   * Get the current pressData
+   */
+  get pressData(): PressData.PressData | null {
+    return this._pressData;
+  }
 
   private _disposed = false;
-  private _pressData: Private.PressData | null;
+  protected _pressData: PressData.PressData | null = null;
 }
 
 /**
-* A type alias for the resize handle types.
-*/
-  export
-  type ResizeHandle = 'top' | 'left' | 'right' | 'bottom' | 'none';
-
+ * A type alias for the resize handle types.
+ */
+export type ResizeHandle =
+  | 'top'
+  | 'left'
+  | 'right'
+  | 'bottom'
+  | 'none'
+  | 'hyperlink';
 
 /**
- * The namespace for the module implementation details.
+ * The namespace for the pressdata.
  */
-namespace Private {
+export namespace PressData {
   /**
    * A type alias for the row resize data.
    */
-  export
-  type RowResizeData = {
+  export type RowResizeData = {
     /**
      * The descriminated type for the data.
      */
@@ -660,8 +757,7 @@ namespace Private {
   /**
    * A type alias for the column resize data.
    */
-  export
-  type ColumnResizeData = {
+  export type ColumnResizeData = {
     /**
      * The descriminated type for the data.
      */
@@ -696,8 +792,7 @@ namespace Private {
   /**
    * A type alias for the select data.
    */
-  export
-  type SelectData = {
+  export type SelectData = {
     /**
      * The descriminated type for the data.
      */
@@ -742,14 +837,47 @@ namespace Private {
   /**
    * A type alias for the resize handler press data.
    */
-  export
-  type PressData = RowResizeData | ColumnResizeData | SelectData ;
+  export type PressData = RowResizeData | ColumnResizeData | SelectData;
+}
+
+/**
+ * The namespace for the module implementation details.
+ */
+namespace Private {
+  /**
+   * Creates a CellConfig object from a hit region.
+   */
+  export function createCellConfigObject(
+    grid: DataGrid,
+    hit: DataGrid.HitTestResult
+  ): CellRenderer.CellConfig | undefined {
+    const { region, row, column } = hit;
+
+    // Terminate call if region is void.
+    if (region === 'void') {
+      return undefined;
+    }
+
+    // Augment hit region params with value and metadata.
+    const value = grid.dataModel!.data(region, row, column);
+    const metadata = grid.dataModel!.metadata(region, row, column);
+
+    // Create cell config object to retrieve cell renderer.
+    const config = {
+      ...hit,
+      value: value,
+      metadata: metadata
+    } as CellRenderer.CellConfig;
+
+    return config;
+  }
 
   /**
    * Get the resize handle for a grid hit test.
    */
-  export
-  function resizeHandleForHitTest(hit: DataGrid.HitTestResult): ResizeHandle {
+  export function resizeHandleForHitTest(
+    hit: DataGrid.HitTestResult
+  ): ResizeHandle {
     // Fetch the row and column.
     let r = hit.row;
     let c = hit.column;
@@ -765,53 +893,53 @@ namespace Private {
 
     // Dispatch based on hit test region.
     switch (hit.region) {
-    case 'corner-header':
-      if (c > 0 && lw <= 5) {
-        result = 'left';
-      } else if (tw <= 6) {
-        result = 'right';
-      } else if (r > 0 && lh <= 5) {
-        result = 'top';
-      } else if (th <= 6) {
-        result = 'bottom';
-      } else {
+      case 'corner-header':
+        if (c > 0 && lw <= 5) {
+          result = 'left';
+        } else if (tw <= 6) {
+          result = 'right';
+        } else if (r > 0 && lh <= 5) {
+          result = 'top';
+        } else if (th <= 6) {
+          result = 'bottom';
+        } else {
+          result = 'none';
+        }
+        break;
+      case 'column-header':
+        if (c > 0 && lw <= 5) {
+          result = 'left';
+        } else if (tw <= 6) {
+          result = 'right';
+        } else if (r > 0 && lh <= 5) {
+          result = 'top';
+        } else if (th <= 6) {
+          result = 'bottom';
+        } else {
+          result = 'none';
+        }
+        break;
+      case 'row-header':
+        if (c > 0 && lw <= 5) {
+          result = 'left';
+        } else if (tw <= 6) {
+          result = 'right';
+        } else if (r > 0 && lh <= 5) {
+          result = 'top';
+        } else if (th <= 6) {
+          result = 'bottom';
+        } else {
+          result = 'none';
+        }
+        break;
+      case 'body':
         result = 'none';
-      }
-      break;
-    case 'column-header':
-      if (c > 0 && lw <= 5) {
-        result = 'left';
-      } else if (tw <= 6) {
-        result = 'right';
-      } else if (r > 0 && lh <= 5) {
-        result = 'top';
-      } else if (th <= 6) {
-        result = 'bottom';
-      } else {
+        break;
+      case 'void':
         result = 'none';
-      }
-      break;
-    case 'row-header':
-      if (c > 0 && lw <= 5) {
-        result = 'left';
-      } else if (tw <= 6) {
-        result = 'right';
-      } else if (r > 0 && lh <= 5) {
-        result = 'top';
-      } else if (th <= 6) {
-        result = 'bottom';
-      } else {
-        result = 'none';
-      }
-      break;
-    case 'body':
-      result = 'none';
-      break;
-    case 'void':
-      result = 'none';
-      break;
-    default:
-      throw 'unreachable';
+        break;
+      default:
+        throw 'unreachable';
     }
 
     // Return the result.
@@ -825,8 +953,7 @@ namespace Private {
    *
    * @param data - The select data of interest.
    */
-  export
-  function autoselect(grid: DataGrid, data: SelectData): void {
+  export function autoselect(grid: DataGrid, data: PressData.SelectData): void {
     // Bail early if the timeout has been reset.
     if (data.timeout < 0) {
       return;
@@ -888,7 +1015,7 @@ namespace Private {
 
     // Bail if there is no selection.
     if (!cs) {
-      return
+      return;
     }
 
     // Scroll the grid based on the hit region.
@@ -901,7 +1028,9 @@ namespace Private {
     }
 
     // Schedule the next call with the current timeout.
-    setTimeout(() => { autoselect(grid, data); }, data.timeout);
+    setTimeout(() => {
+      autoselect(grid, data);
+    }, data.timeout);
   }
 
   /**
@@ -911,20 +1040,19 @@ namespace Private {
    *
    * @returns The scaled timeout in milliseconds.
    */
-  export
-  function computeTimeout(delta: number): number {
+  export function computeTimeout(delta: number): number {
     return 5 + 120 * (1 - Math.min(128, Math.abs(delta)) / 128);
   }
 
   /**
    * A mapping of resize handle to cursor.
    */
-  export
-  const cursorMap = {
+  export const cursorMap = {
     top: 'ns-resize',
     left: 'ew-resize',
     right: 'ew-resize',
     bottom: 'ns-resize',
+    hyperlink: 'pointer',
     none: 'default'
   };
 }

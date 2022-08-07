@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json.schemastore.org/tsconfig",
+  "extends": "./tsconfigbase",
+  "exclude": ["**/tests/**", "examples/**"],
+  "compilerOptions": {
+    "strictNullChecks": true,
+    "paths": {
+      "@lumino/*": ["./packages/*/src"]
+    },
+    "moduleResolution": "node",
+    "types": ["node"]
+  },
+  "references": [
+    {
+      "path": "./packages/algorithm"
+    },
+    {
+      "path": "./packages/application"
+    },
+    {
+      "path": "./packages/collections"
+    },
+    {
+      "path": "./packages/commands"
+    },
+    {
+      "path": "./packages/coreutils"
+    },
+    {
+      "path": "./packages/datagrid"
+    },
+    {
+      "path": "./packages/disposable"
+    },
+    {
+      "path": "./packages/domutils"
+    },
+    {
+      "path": "./packages/dragdrop"
+    },
+    {
+      "path": "./packages/keyboard"
+    },
+    {
+      "path": "./packages/messaging"
+    },
+    {
+      "path": "./packages/polling"
+    },
+    {
+      "path": "./packages/properties"
+    },
+    {
+      "path": "./packages/signaling"
+    },
+    {
+      "path": "./packages/virtualdom"
+    },
+    {
+      "path": "./packages/widgets"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "declaration": false,
+    "noImplicitAny": true,
+    "noEmitOnError": true,
+    "noUnusedLocals": true,
+    "strictNullChecks": true,
+    "sourceMap": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "ES6",
+    "outDir": "./build",
+    "lib": ["DOM", "ES6"],
+    "types": []
+  },
+  "include": ["src/*"]
+}

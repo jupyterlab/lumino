@@ -8,20 +8,17 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 import {
-  IIterable, IIterator, IRetroable, IterableOrArrayLike, each
+  each,
+  IIterable,
+  IIterator,
+  IRetroable,
+  IterableOrArrayLike
 } from '@lumino/algorithm';
-
 
 /**
  * A generic doubly-linked list.
  */
-export
-class LinkedList<T> implements IIterable<T>, IRetroable<T> {
-  /**
-   * Construct a new linked list.
-   */
-  constructor() { }
-
+export class LinkedList<T> implements IIterable<T>, IRetroable<T> {
   /**
    * Whether the list is empty.
    *
@@ -166,7 +163,9 @@ class LinkedList<T> implements IIterable<T>, IRetroable<T> {
    */
   assign(values: IterableOrArrayLike<T>): void {
     this.clear();
-    each(values, value => { this.addLast(value); });
+    each(values, value => {
+      this.addLast(value);
+    });
   }
 
   /**
@@ -459,12 +458,10 @@ class LinkedList<T> implements IIterable<T>, IRetroable<T> {
   private _size = 0;
 }
 
-
 /**
  * The namespace for the `LinkedList` class statics.
  */
-export
-namespace LinkedList {
+export namespace LinkedList {
   /**
    * An object which represents a node in a linked list.
    *
@@ -472,8 +469,7 @@ namespace LinkedList {
    * User code will not create linked list nodes directly. Nodes
    * are created automatically when values are added to a list.
    */
-  export
-  interface INode<T> {
+  export interface INode<T> {
     /**
      * The linked list which created and owns the node.
      *
@@ -513,8 +509,7 @@ namespace LinkedList {
    * #### Complexity
    * Linear.
    */
-  export
-  function from<T>(values: IterableOrArrayLike<T>): LinkedList<T> {
+  export function from<T>(values: IterableOrArrayLike<T>): LinkedList<T> {
     let list = new LinkedList<T>();
     list.assign(values);
     return list;
@@ -523,8 +518,7 @@ namespace LinkedList {
   /**
    * A forward iterator for values in a linked list.
    */
-  export
-  class ForwardValueIterator<T> implements IIterator<T> {
+  export class ForwardValueIterator<T> implements IIterator<T> {
     /**
      * Construct a forward value iterator.
      *
@@ -572,8 +566,7 @@ namespace LinkedList {
   /**
    * A reverse iterator for values in a linked list.
    */
-  export
-  class RetroValueIterator<T> implements IIterator<T> {
+  export class RetroValueIterator<T> implements IIterator<T> {
     /**
      * Construct a retro value iterator.
      *
@@ -621,8 +614,7 @@ namespace LinkedList {
   /**
    * A forward iterator for nodes in a linked list.
    */
-  export
-  class ForwardNodeIterator<T> implements IIterator<INode<T>> {
+  export class ForwardNodeIterator<T> implements IIterator<INode<T>> {
     /**
      * Construct a forward node iterator.
      *
@@ -670,8 +662,7 @@ namespace LinkedList {
   /**
    * A reverse iterator for nodes in a linked list.
    */
-  export
-  class RetroNodeIterator<T> implements IIterator<INode<T>> {
+  export class RetroNodeIterator<T> implements IIterator<INode<T>> {
     /**
      * Construct a retro node iterator.
      *
@@ -717,7 +708,6 @@ namespace LinkedList {
   }
 }
 
-
 /**
  * The namespace for the module implementation details.
  */
@@ -725,8 +715,7 @@ namespace Private {
   /**
    * The internal linked list node implementation.
    */
-  export
-  class LinkedListNode<T> {
+  export class LinkedListNode<T> {
     /**
      * The linked list which created and owns the node.
      */

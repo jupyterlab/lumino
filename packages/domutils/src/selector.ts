@@ -8,12 +8,10 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
-
 /**
  * The namespace for selector related utilities.
  */
-export
-namespace Selector {
+export namespace Selector {
   /**
    * Calculate the specificity of a single CSS selector.
    *
@@ -39,13 +37,12 @@ namespace Selector {
    * The computed result is cached, so subsequent calculations for the
    * same selector are extremely fast.
    */
-  export
-  function calculateSpecificity(selector: string): number {
+  export function calculateSpecificity(selector: string): number {
     if (selector in Private.specificityCache) {
       return Private.specificityCache[selector];
     }
     let result = Private.calculateSingle(selector);
-    return Private.specificityCache[selector] = result;
+    return (Private.specificityCache[selector] = result);
   }
 
   /**
@@ -59,8 +56,7 @@ namespace Selector {
    * The computed result is cached, so subsequent tests for the same
    * selector are extremely fast.
    */
-  export
-  function isValid(selector: string): boolean {
+  export function isValid(selector: string): boolean {
     if (selector in Private.validityCache) {
       return Private.validityCache[selector];
     }
@@ -70,7 +66,7 @@ namespace Selector {
     } catch (err) {
       result = false;
     }
-    return Private.validityCache[selector] = result;
+    return (Private.validityCache[selector] = result);
   }
 
   /**
@@ -86,12 +82,10 @@ namespace Selector {
    * This function uses the builtin browser capabilities when possible,
    * falling back onto a document query otherwise.
    */
-  export
-  function matches(element: Element, selector: string): boolean {
+  export function matches(element: Element, selector: string): boolean {
     return Private.protoMatchFunc.call(element, selector);
   }
 }
-
 
 /**
  * The namespace for the module implementation details.
@@ -100,32 +94,27 @@ namespace Private {
   /**
    * A type alias for an object hash.
    */
-  export
-  type StringMap<T> = { [key: string]: T };
+  export type StringMap<T> = { [key: string]: T };
 
   /**
    * A cache of computed selector specificity values.
    */
-  export
-  const specificityCache: StringMap<number> = Object.create(null);
+  export const specificityCache: StringMap<number> = Object.create(null);
 
   /**
    * A cache of computed selector validity.
    */
-  export
-  const validityCache: StringMap<boolean> = Object.create(null);
+  export const validityCache: StringMap<boolean> = Object.create(null);
 
   /**
    * An empty element for testing selector validity.
    */
-  export
-  const testElem = document.createElement('div');
+  export const testElem = document.createElement('div');
 
   /**
    * A cross-browser CSS selector matching prototype function.
    */
-  export
-  const protoMatchFunc: Function = (() => {
+  export const protoMatchFunc = (() => {
     let proto = Element.prototype as any;
     return (
       proto.matches ||
@@ -134,11 +123,13 @@ namespace Private {
       proto.msMatchesSelector ||
       proto.oMatchesSelector ||
       proto.webkitMatchesSelector ||
-      (function(selector: string) {
+      function (selector: string) {
         let elem = this as Element;
-        let matches = elem.ownerDocument ? elem.ownerDocument.querySelectorAll(selector) : [];
+        let matches = elem.ownerDocument
+          ? elem.ownerDocument.querySelectorAll(selector)
+          : [];
         return Array.prototype.indexOf.call(matches, elem) !== -1;
-      })
+      }
     );
   })();
 
@@ -147,8 +138,7 @@ namespace Private {
    *
    * The behavior is undefined if the selector is invalid.
    */
-  export
-  function calculateSingle(selector: string): number {
+  export function calculateSingle(selector: string): number {
     // Ignore anything after the first comma.
     selector = selector.split(',', 1)[0];
 
@@ -174,37 +164,56 @@ namespace Private {
 
     // Continue matching until the selector is consumed.
     while (selector.length > 0) {
-
       // Match an ID selector.
-      if (match(ID_RE)) { a++; continue; }
+      if (match(ID_RE)) {
+        a++;
+        continue;
+      }
 
       // Match a class selector.
-      if (match(CLASS_RE)) { b++; continue; }
+      if (match(CLASS_RE)) {
+        b++;
+        continue;
+      }
 
       // Match an attribute selector.
-      if (match(ATTR_RE)) { b++; continue; }
+      if (match(ATTR_RE)) {
+        b++;
+        continue;
+      }
 
       // Match a pseudo-element selector. This is done before matching
       // a pseudo-class since this regex overlaps with that regex.
-      if (match(PSEUDO_ELEM_RE)) { c++; continue; }
+      if (match(PSEUDO_ELEM_RE)) {
+        c++;
+        continue;
+      }
 
       // Match a pseudo-class selector.
-      if (match(PSEDUO_CLASS_RE)) { b++; continue; }
+      if (match(PSEDUO_CLASS_RE)) {
+        b++;
+        continue;
+      }
 
       // Match a plain type selector.
-      if (match(TYPE_RE)) { c++; continue; }
+      if (match(TYPE_RE)) {
+        c++;
+        continue;
+      }
 
       // Finally, match any ignored characters.
-      if (match(IGNORE_RE)) { continue; }
+      if (match(IGNORE_RE)) {
+        continue;
+      }
 
       // At this point, the selector is assumed to be invalid.
       return 0;
     }
 
     // Clamp each component to a reasonable base.
-    a = Math.min(a, 0xFF);
-    b = Math.min(b, 0xFF);
-    c = Math.min(c, 0xFF);
+    a = Math.min(a, 0xff);
+    b = Math.min(b, 0xff);
+    c = Math.min(c, 0xff);
 
     // Combine the components into a single result.
     return (a << 16) | (b << 8) | c;
@@ -233,7 +242,8 @@ namespace Private {
   /**
    * A regex which matches a pseudo-element selector at string start.
    */
-  const PSEUDO_ELEM_RE = /^(::[^\s\+>~#\.\[:]+|:first-line|:first-letter|:before|:after)/;
+  const PSEUDO_ELEM_RE =
+    /^(::[^\s\+>~#\.\[:]+|:first-line|:first-letter|:before|:after)/;
 
   /**
    * A regex which matches a pseudo-class selector at string start.

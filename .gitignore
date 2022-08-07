@@ -9,6 +9,15 @@ build
 review/api/temp
 *.tsbuildinfo
 
+# copied changelog file
+docs/source/changelog.md
+
+# generated api files
+docs/source/api
+
+# generated example files
+docs/source/examples
+
 # jetbrains ide stuff
 *.iml
 .idea/
@@ -18,3 +27,5 @@ review/api/temp
 .history
 .vscode
 
+.jupyter_releaser_checkout
+.eslintcache

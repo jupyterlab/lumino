@@ -7,9 +7,6 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-export * from './json';
-export * from './mime';
-export * from './promise';
-export * from './random';
-export * from './token';
-export * from './uuid';
+export * from './index.common';
+export * from './random.browser';
+export * from './uuid.browser';

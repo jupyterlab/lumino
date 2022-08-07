@@ -8,7 +8,6 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
-
 /**
  * An object which stores MIME data for general application use.
  *
@@ -18,8 +17,7 @@
  * arbitrary data and objects within the same application, it assumes
  * that the user provides correct and accurate data.
  */
-export
-class MimeData {
+export class MimeData {
   /**
    * Get an array of the MIME types contained within the dataset.
    *
@@ -64,7 +62,7 @@ class MimeData {
    * #### Notes
    * This will overwrite any previous entry for the MIME type.
    */
-  setData(mime: string, data: any): void {
+  setData(mime: string, data: unknown): void {
     this.clearData(mime);
     this._types.push(mime);
     this._values.push(data);

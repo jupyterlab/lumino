@@ -7,18 +7,11 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  CommandRegistry
-} from '@lumino/commands';
+import { CommandRegistry } from '@lumino/commands';
 
-import {
-  PromiseDelegate, Token
-} from '@lumino/coreutils';
+import { PromiseDelegate, Token } from '@lumino/coreutils';
 
-import {
-  ContextMenu, Menu, Widget
-} from '@lumino/widgets';
-
+import { ContextMenu, Menu, Widget } from '@lumino/widgets';
 
 /**
  * A user-defined application plugin.
@@ -34,8 +27,7 @@ import {
  * service producer from the service consumer, allowing an application
  * to be easily customized by third parties in a type-safe fashion.
  */
-export
-interface IPlugin<T, U> {
+export interface IPlugin<T, U> {
   /**
    * The human readable id of the plugin.
    *
@@ -109,7 +101,6 @@ interface IPlugin<T, U> {
   activate: (app: T, ...args: any[]) => U | Promise<U>;
 }
 
-
 /**
  * A class for creating pluggable applications.
  *
@@ -118,8 +109,7 @@ interface IPlugin<T, U> {
  * UI applications with the ability to be safely extended by third
  * party code via plugins.
  */
-export
-class Application<T extends Widget> {
+export class Application<T extends Widget> {
   /**
    * Construct a new application.
    *
@@ -272,16 +262,19 @@ class Application<T extends Widget> {
     let promises = required.concat(optional);
 
     // Setup the resolver promise for the plugin.
-    data.promise = Promise.all(promises).then(services => {
-      return data.activate.apply(undefined, [this, ...services]);
-    }).then(service => {
-      data.service = service;
-      data.activated = true;
-      data.promise = null;
-    }).catch(error => {
-      data.promise = null;
-      throw error;
-    });
+    data.promise = Promise.all(promises)
+      .then(services => {
+        return data.activate.apply(undefined, [this, ...services]);
+      })
+      .then(service => {
+        data.service = service;
+        data.activated = true;
+        data.promise = null;
+      })
+      .catch(error => {
+        data.promise = null;
+        throw error;
+      });
 
     // Return the pending resolver promise.
     return data.promise;
@@ -356,12 +349,14 @@ class Application<T extends Widget> {
     }
 
     // Otherwise, activate the plugin and wait on the results.
-    return this.activatePlugin(id).then(() => {
-      return data.service;
-    }).catch(reason => {
-      console.error(reason);
-      return null;
-    });
+    return this.activatePlugin(id)
+      .then(() => {
+        return data.service;
+      })
+      .catch(reason => {
+        console.error(reason);
+        return null;
+      });
   }
 
   /**
@@ -431,15 +426,15 @@ class Application<T extends Widget> {
    */
   handleEvent(event: Event): void {
     switch (event.type) {
-    case 'resize':
-      this.evtResize(event);
-      break;
-    case 'keydown':
-      this.evtKeydown(event as KeyboardEvent);
-      break;
-    case 'contextmenu':
-      this.evtContextMenu(event as MouseEvent);
-      break;
+      case 'resize':
+        this.evtResize(event);
+        break;
+      case 'keydown':
+        this.evtKeydown(event as KeyboardEvent);
+        break;
+      case 'contextmenu':
+        this.evtContextMenu(event as MouseEvent);
+        break;
     }
   }
 
@@ -454,7 +449,10 @@ class Application<T extends Widget> {
    * A subclass may reimplement this method as needed.
    */
   protected attachShell(id: string): void {
-    Widget.attach(this.shell, (id && document.getElementById(id)) || document.body);
+    Widget.attach(
+      this.shell,
+      (id && document.getElementById(id)) || document.body
+    );
   }
 
   /**
@@ -526,17 +524,14 @@ class Application<T extends Widget> {
   private _delegate = new PromiseDelegate<void>();
 }
 
-
 /**
  * The namespace for the `Application` class statics.
  */
-export
-namespace Application {
+export namespace Application {
   /**
    * An options object for creating an application.
    */
-  export
-  interface IOptions<T extends Widget> {
+  export interface IOptions<T extends Widget> {
     /**
      * The shell widget to use for the application.
      *
@@ -555,8 +550,7 @@ namespace Application {
   /**
    * An options object for application startup.
    */
-  export
-  interface IStartOptions {
+  export interface IStartOptions {
     /**
      * The ID of the DOM node to host the application shell.
      *
@@ -583,7 +577,6 @@ namespace Application {
   }
 }
 
-
 /**
  * The namespace for the module implementation details.
  */
@@ -591,8 +584,7 @@ namespace Private {
   /**
    * An object which holds the full application state for a plugin.
    */
-  export
-  interface IPluginData {
+  export interface IPluginData {
     /**
      * The human readable id of the plugin.
      */
@@ -642,36 +634,31 @@ namespace Private {
   /**
    * A type alias for a mapping of plugin id to plugin data.
    */
-  export
-  type PluginMap = { [id: string]: IPluginData };
+  export type PluginMap = { [id: string]: IPluginData };
 
   /**
    * A type alias for a mapping of service token to plugin id.
    */
-  export
-  type ServiceMap = Map<Token<any>, string>;
+  export type ServiceMap = Map<Token<any>, string>;
 
   /**
    * Create a new plugin map.
    */
-  export
-  function createPluginMap(): PluginMap {
+  export function createPluginMap(): PluginMap {
     return Object.create(null);
   }
 
   /**
    * Create a new service map.
    */
-  export
-  function createServiceMap(): ServiceMap {
+  export function createServiceMap(): ServiceMap {
     return new Map<Token<any>, string>();
   }
 
   /**
    * Create a normalized plugin data object for the given plugin.
    */
-  export
-  function createPluginData(plugin: IPlugin<any, any>): IPluginData {
+  export function createPluginData(plugin: IPlugin<any, any>): IPluginData {
     return {
       id: plugin.id,
       service: null,
@@ -690,8 +677,11 @@ namespace Private {
    *
    * If a cycle is detected, an error will be thrown.
    */
-  export
-  function ensureNoCycle(data: IPluginData, pluginMap: PluginMap, serviceMap: ServiceMap): void {
+  export function ensureNoCycle(
+    data: IPluginData,
+    pluginMap: PluginMap,
+    serviceMap: ServiceMap
+  ): void {
     let dependencies = data.requires.concat(data.optional);
     // Bail early if there cannot be a cycle.
     if (!data.provides || dependencies.length === 0) {
@@ -731,8 +721,10 @@ namespace Private {
   /**
    * Collect the IDs of the plugins to activate on startup.
    */
-  export
-  function collectStartupPlugins(pluginMap: PluginMap, options: Application.IStartOptions): string[] {
+  export function collectStartupPlugins(
+    pluginMap: PluginMap,
+    options: Application.IStartOptions
+  ): string[] {
     // Create a map to hold the plugin IDs.
     let resultMap: { [id: string]: boolean } = Object.create(null);
 

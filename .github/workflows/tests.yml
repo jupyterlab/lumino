@@ -1,0 +1,200 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: JS
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        browser: [chrome-headless, firefox-headless]
+        exclude:
+          # macos and firefox-headless seems to consistently fail.
+          - os: macos-latest
+            browser: firefox-headless
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '14.x'
+
+      # Cache yarn
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: Cache yarn
+        uses: actions/cache@v2
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          set -eux
+          npm install -g yarn
+          yarn
+
+      - name: Build Source
+        shell: bash
+        run: |
+            set -eux
+            yarn build
+            yarn build:test
+
+      - name: Run Tests
+        run: |
+          yarn run test:${{ matrix.browser }}
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '14.x'
+
+      # Cache yarn
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: Cache yarn
+        uses: actions/cache@v2
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          set -eux
+          npm install -g yarn
+          yarn
+
+      - name: Check linters
+        shell: bash
+        run: |
+            set -eux
+            yarn lint:check
+
+      - name: Build Source
+        shell: bash
+        run: |
+            set -eux
+            yarn build
+            yarn build:test
+
+      - name: Test Examples
+        shell: bash
+        run: |
+          set -eux
+          yarn minimize
+          yarn build:examples
+          yarn test:examples
+
+      - name: Build Docs
+        run: |
+          set -eux
+          yarn clean
+          yarn docs
+
+      - name: Publish with Verdaccio
+        run: |
+          set -eux
+          npm install -g verdaccio
+          verdaccio --config .github/scripts/verdaccio.yml &
+          npm set registry http://localhost:4873/
+          yarn config set registry http://localhost:4873/
+          git config --global user.email "you@example.com"
+          git config --global user.name "Your Name"
+          yarn run update:versions patch --yes
+          git commit -a -m "Update versions"
+          yarn run publish
+
+  check_release:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        group: [check_release, link_check]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '14.x'
+
+      - name: Install Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+          architecture: "x64"
+
+      # Cache pip
+      - name: Get Date
+        id: get-date
+        run: |
+          echo "::set-output name=date::$(/bin/date -u "+%Y%m%d")"
+        shell: bash
+
+      - name: Get pip cache dir
+        id: pip-cache
+        run: |
+          echo "::set-output name=dir::$(pip cache dir)"
+
+      - name: Cache pip
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.pip-cache.outputs.dir }}
+          key: ${{ runner.os }}-pip-${{ steps.get-date.outputs.date }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+            ${{ runner.os }}-pip-
+
+      # Cache yarn
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: Cache yarn
+        uses: actions/cache@v2
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Cache checked links
+        if: ${{ matrix.group == 'link_check' }}
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pytest-link-check
+          key: ${{ runner.os }}-linkcheck-${{ hashFiles('**/*.md') }}-md-links
+          restore-keys: |
+            ${{ runner.os }}-linkcheck-
+
+      - name: Check Release
+        if: ${{ matrix.group == 'check_release' }}
+        uses: jupyter-server/jupyter_releaser/.github/actions/check-release@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run Link Check
+        if: ${{ matrix.group == 'link_check' }}
+        uses: jupyter-server/jupyter_releaser/.github/actions/check-links@v1

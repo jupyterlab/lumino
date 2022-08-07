@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 // Copyright (c) Jupyter Development Team.
 // Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
@@ -7,25 +8,24 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import 'es6-promise/auto';  // polyfill Promise on IE
+import { CommandRegistry } from '@lumino/commands';
+
+import { Message } from '@lumino/messaging';
 
 import {
-  CommandRegistry
-} from '@lumino/commands';
-
-import {
-  Message
-} from '@lumino/messaging';
-
-import {
-  BoxPanel, CommandPalette, ContextMenu, DockPanel, Menu, MenuBar, Widget
+  BoxPanel,
+  CommandPalette,
+  ContextMenu,
+  DockPanel,
+  Menu,
+  MenuBar,
+  TabBar,
+  Widget
 } from '@lumino/widgets';
 
 import '../style/index.css';
 
-
 const commands = new CommandRegistry();
-
 
 function createMenu(): Menu {
   let sub1 = new Menu({ commands });
@@ -63,9 +63,7 @@ function createMenu(): Menu {
   return root;
 }
 
-
 class ContentWidget extends Widget {
-
   static createNode(): HTMLElement {
     let node = document.createElement('div');
     let content = document.createElement('div');
@@ -97,9 +95,7 @@ class ContentWidget extends Widget {
   }
 }
 
-
 function main(): void {
-
   commands.addCommand('example:cut', {
     label: 'Cut',
     mnemonic: 1,
@@ -158,7 +154,7 @@ function main(): void {
     label: 'Task Manager',
     mnemonic: 5,
     isEnabled: () => false,
-    execute: () => { }
+    execute: () => {}
   });
 
   commands.addCommand('example:close', {
@@ -282,10 +278,15 @@ function main(): void {
   menu3.title.label = 'View';
   menu3.title.mnemonic = 0;
 
+  let emptyMenu = new Menu({ commands });
+  emptyMenu.title.label = 'Empty Menu';
+  emptyMenu.title.mnemonic = 0;
+
   let bar = new MenuBar();
   bar.addMenu(menu1);
   bar.addMenu(menu2);
   bar.addMenu(menu3);
+  bar.addMenu(emptyMenu);
   bar.id = 'menuBar';
 
   let palette = new CommandPalette({ commands });
@@ -302,9 +303,18 @@ function main(): void {
   palette.addItem({ command: 'example:save-on-exit', category: 'File' });
   palette.addItem({ command: 'example:open-task-manager', category: 'File' });
   palette.addItem({ command: 'example:close', category: 'File' });
-  palette.addItem({ command: 'example:clear-cell', category: 'Notebook Cell Operations' });
-  palette.addItem({ command: 'example:cut-cells', category: 'Notebook Cell Operations' });
-  palette.addItem({ command: 'example:run-cell', category: 'Notebook Cell Operations' });
+  palette.addItem({
+    command: 'example:clear-cell',
+    category: 'Notebook Cell Operations'
+  });
+  palette.addItem({
+    command: 'example:cut-cells',
+    category: 'Notebook Cell Operations'
+  });
+  palette.addItem({
+    command: 'example:run-cell',
+    category: 'Notebook Cell Operations'
+  });
   palette.addItem({ command: 'example:cell-test', category: 'Console' });
   palette.addItem({ command: 'notebook:new', category: 'Notebook' });
   palette.id = 'palette';
@@ -321,16 +331,43 @@ function main(): void {
   contextMenu.addItem({ command: 'example:copy', selector: '.content' });
   contextMenu.addItem({ command: 'example:paste', selector: '.content' });
 
-  contextMenu.addItem({ command: 'example:one', selector: '.lm-CommandPalette' });
-  contextMenu.addItem({ command: 'example:two', selector: '.lm-CommandPalette' });
-  contextMenu.addItem({ command: 'example:three', selector: '.lm-CommandPalette' });
-  contextMenu.addItem({ command: 'example:four', selector: '.lm-CommandPalette' });
-  contextMenu.addItem({ command: 'example:black', selector: '.lm-CommandPalette' });
+  contextMenu.addItem({
+    command: 'example:one',
+    selector: '.lm-CommandPalette'
+  });
+  contextMenu.addItem({
+    command: 'example:two',
+    selector: '.lm-CommandPalette'
+  });
+  contextMenu.addItem({
+    command: 'example:three',
+    selector: '.lm-CommandPalette'
+  });
+  contextMenu.addItem({
+    command: 'example:four',
+    selector: '.lm-CommandPalette'
+  });
+  contextMenu.addItem({
+    command: 'example:black',
+    selector: '.lm-CommandPalette'
+  });
 
-  contextMenu.addItem({ command: 'notebook:new', selector: '.lm-CommandPalette-input' });
-  contextMenu.addItem({ command: 'example:save-on-exit', selector: '.lm-CommandPalette-input' });
-  contextMenu.addItem({ command: 'example:open-task-manager', selector: '.lm-CommandPalette-input' });
-  contextMenu.addItem({ type: 'separator', selector: '.lm-CommandPalette-input' });
+  contextMenu.addItem({
+    command: 'notebook:new',
+    selector: '.lm-CommandPalette-input'
+  });
+  contextMenu.addItem({
+    command: 'example:save-on-exit',
+    selector: '.lm-CommandPalette-input'
+  });
+  contextMenu.addItem({
+    command: 'example:open-task-manager',
+    selector: '.lm-CommandPalette-input'
+  });
+  contextMenu.addItem({
+    type: 'separator',
+    selector: '.lm-CommandPalette-input'
+  });
 
   document.addEventListener('keydown', (event: KeyboardEvent) => {
     commands.processKeydownEvent(event);
@@ -355,7 +392,23 @@ function main(): void {
   dock.addWidget(b2, { mode: 'split-right', ref: y1 });
   dock.id = 'dock';
 
+  dock.addRequested.connect((sender: DockPanel, arg: TabBar<Widget>) => {
+    let w = new ContentWidget('Green');
+    sender.addWidget(w, { ref: arg.titles[0].owner });
+  });
+
   let savedLayouts: DockPanel.ILayoutConfig[] = [];
+
+  commands.addCommand('example:add-button', {
+    label: 'Toggle add button',
+    mnemonic: 0,
+    caption: 'Toggle add Button',
+    execute: () => {
+      dock.addButtonEnabled = !dock.addButtonEnabled;
+      console.log('Toggle add button');
+    }
+  });
+  contextMenu.addItem({ command: 'example:add-button', selector: '.content' });
 
   commands.addCommand('save-dock-layout', {
     label: 'Save Layout',
@@ -392,11 +445,12 @@ function main(): void {
   main.addWidget(palette);
   main.addWidget(dock);
 
-  window.onresize = () => { main.update(); };
+  window.onresize = () => {
+    main.update();
+  };
 
   Widget.attach(bar, document.body);
   Widget.attach(main, document.body);
 }
-
 
 window.onload = main;

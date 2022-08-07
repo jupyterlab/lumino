@@ -7,20 +7,14 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  IterableOrArrayLike, each
-} from '@lumino/algorithm';
+import { each, IterableOrArrayLike } from '@lumino/algorithm';
 
-import {
-  ISignal, Signal
-} from '@lumino/signaling';
-
+import { ISignal, Signal } from '@lumino/signaling';
 
 /**
  * An object which implements the disposable pattern.
  */
-export
-interface IDisposable {
+export interface IDisposable {
   /**
    * Test whether the object has been disposed.
    *
@@ -43,24 +37,20 @@ interface IDisposable {
   dispose(): void;
 }
 
-
 /**
  * A disposable object with an observable `disposed` signal.
  */
-export
-interface IObservableDisposable extends IDisposable {
+export interface IObservableDisposable extends IDisposable {
   /**
    * A signal emitted when the object is disposed.
    */
   readonly disposed: ISignal<this, void>;
 }
 
-
 /**
  * A disposable object which delegates to a callback function.
  */
-export
-class DisposableDelegate implements IDisposable {
+export class DisposableDelegate implements IDisposable {
   /**
    * Construct a new disposable delegate.
    *
@@ -92,12 +82,13 @@ class DisposableDelegate implements IDisposable {
   private _fn: (() => void) | null;
 }
 
-
 /**
  * An observable disposable object which delegates to a callback function.
  */
-export
-class ObservableDisposableDelegate extends DisposableDelegate implements IObservableDisposable {
+export class ObservableDisposableDelegate
+  extends DisposableDelegate
+  implements IObservableDisposable
+{
   /**
    * A signal emitted when the delegate is disposed.
    */
@@ -120,17 +111,10 @@ class ObservableDisposableDelegate extends DisposableDelegate implements IObserv
   private _disposed = new Signal<this, void>(this);
 }
 
-
 /**
  * An object which manages a collection of disposable items.
  */
-export
-class DisposableSet implements IDisposable {
-  /**
-   * Construct a new disposable set.
-   */
-  constructor() { }
-
+export class DisposableSet implements IDisposable {
   /**
    * Test whether the set has been disposed.
    */
@@ -149,7 +133,9 @@ class DisposableSet implements IDisposable {
       return;
     }
     this._isDisposed = true;
-    this._items.forEach(item => { item.dispose(); });
+    this._items.forEach(item => {
+      item.dispose();
+    });
     this._items.clear();
   }
 
@@ -199,12 +185,10 @@ class DisposableSet implements IDisposable {
   private _items = new Set<IDisposable>();
 }
 
-
 /**
  * The namespace for the `DisposableSet` class statics.
  */
-export
-namespace DisposableSet {
+export namespace DisposableSet {
   /**
    * Create a disposable set from an iterable of items.
    *
@@ -212,20 +196,22 @@ namespace DisposableSet {
    *
    * @returns A new disposable initialized with the given items.
    */
-  export
-  function from(items: IterableOrArrayLike<IDisposable>): DisposableSet {
+  export function from(items: IterableOrArrayLike<IDisposable>): DisposableSet {
     let set = new DisposableSet();
-    each(items, item => { set.add(item) });
+    each(items, item => {
+      set.add(item);
+    });
     return set;
   }
 }
 
-
 /**
  * An observable object which manages a collection of disposable items.
  */
-export
-class ObservableDisposableSet extends DisposableSet implements IObservableDisposable {
+export class ObservableDisposableSet
+  extends DisposableSet
+  implements IObservableDisposable
+{
   /**
    * A signal emitted when the set is disposed.
    */
@@ -251,12 +237,10 @@ class ObservableDisposableSet extends DisposableSet implements IObservableDispos
   private _disposed = new Signal<this, void>(this);
 }
 
-
 /**
  * The namespace for the `ObservableDisposableSet` class statics.
  */
-export
-namespace ObservableDisposableSet {
+export namespace ObservableDisposableSet {
   /**
    * Create an observable disposable set from an iterable of items.
    *
@@ -264,10 +248,13 @@ namespace ObservableDisposableSet {
    *
    * @returns A new disposable initialized with the given items.
    */
-  export
-  function from(items: IterableOrArrayLike<IDisposable>): ObservableDisposableSet {
+  export function from(
+    items: IterableOrArrayLike<IDisposable>
+  ): ObservableDisposableSet {
     let set = new ObservableDisposableSet();
-    each(items, item => { set.add(item) });
+    each(items, item => {
+      set.add(item);
+    });
     return set;
   }
 }

@@ -1,5 +1,6 @@
 {
-  "version": "0.0.0",
+  "name": "lumino-top-level",
+  "version": "2022.7.21",
   "private": true,
   "workspaces": [
     "examples/*",
@@ -8,29 +9,76 @@
   ],
   "scripts": {
     "api": "lerna run api",
-    "minimize": "lerna run minimize",
-    "build": "lerna run build",
-    "build:examples": "lerna run build --scope \"@lumino/example-*\"",
-    "build:src": "lerna run build --scope \"@lumino/!(test-|example-)*\"",
+    "build": "npm run build:src",
+    "build:dist": "npm run build && npm run minimize",
+    "build:examples": "lerna run build --scope \"@lumino/example-*\" --concurrency 1",
+    "build:src": "lerna run build --scope \"@lumino/!(test-|example-)*\"  --concurrency 1",
     "build:test": "lerna run build:test",
+    "watch:src": "lerna run watch --scope \"@lumino/!(test-|example-)*\"  --parallel",
     "clean": "lerna run clean",
     "clean:examples": "lerna run clean --scope \"@lumino/example-*\"",
     "clean:src": "lerna run clean --scope \"@lumino/!(test-|example-)*\"",
     "clean:tests": "lerna run clean:tests",
-    "docs": "rimraf docs/api && lerna run docs",
+    "docs": "rimraf docs/source/api && lerna run build:src --concurrency 1 && lerna run docs",
+    "eslint": "eslint --ext .js,.jsx,.ts,.tsx --cache --fix .",
+    "eslint:check": "eslint --ext .js,.jsx,.ts,.tsx --cache .",
     "get:dependency": "get-dependency",
-    "publish": "npm run clean && npm run build && npm run minimize && lerna publish -m \"Publish\" from-package",
+    "lint": "yarn && yarn run prettier && yarn run eslint",
+    "lint:check": "yarn run prettier:check && yarn run eslint:check",
+    "minimize": "lerna run minimize",
+    "prettier": "prettier --write \"**/*{.ts,.tsx,.js,.jsx,.css,.json,.md}\"",
+    "prettier:check": "prettier --check \"**/*{.ts,.tsx,.js,.jsx,.css,.json,.md}\"",
+    "publish": "npm run clean && npm run build:dist && node scripts/tag-versions.js && lerna publish --yes -m \"Publish\" from-package",
     "remove:dependency": "remove-dependency",
-    "test": "lerna run test",
+    "test": "lerna run test --scope \"@lumino/!(example-)*\"",
     "test:chrome": "lerna run test:chrome",
+    "test:chrome-headless": "lerna run test:chrome-headless",
+    "test:examples": "lerna run test --scope \"@lumino/example-*\"",
     "test:firefox": "lerna run test:firefox",
+    "test:firefox-headless": "lerna run test:firefox-headless",
     "test:ie": "lerna run test:ie --concurrency 1",
     "update:dependency": "update-dependency --lerna",
-    "version": "lerna version"
+    "update:versions": "lerna version --no-push --no-git-tag-version"
   },
-  "dependencies": {},
   "devDependencies": {
-    "@jupyterlab/buildutils": "^1.0.0",
-    "lerna": "^3.19.0"
+    "@jupyterlab/buildutils": "^3.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.32.0",
+    "@typescript-eslint/parser": "^5.32.0",
+    "eslint": "^8.21.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.0",
+    "husky": "^4.2.5",
+    "lerna": "^5.3.0",
+    "lint-staged": "^10.2.13",
+    "prettier": "^2.7.1",
+    "shell-quote": "^1.7.2",
+    "typedoc": "~0.23.9",
+    "typescript": "~4.7.3"
+  },
+  "jupyter-releaser": {
+    "skip": [
+      "check-links"
+    ],
+    "options": {
+      "ignore-links": [
+        "./api/index.html",
+        "examples/accordionpanel/index.html",
+        "examples/datagrid/index.html",
+        "examples/dockpanel/index.html"
+      ]
+    },
+    "hooks": {
+      "after-build-changelog": [
+        "yarn build:dist",
+        "node scripts/format-changelog.js"
+      ],
+      "before-build-npm": "yarn build:dist",
+      "before-draft-release": "node scripts/tag-versions.js"
+    }
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   }
 }

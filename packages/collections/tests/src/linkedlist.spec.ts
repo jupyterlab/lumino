@@ -7,30 +7,20 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  expect
-} from 'chai';
+import { expect } from 'chai';
 
-import {
-  find, map, toArray
-} from '@lumino/algorithm';
+import { find, map, toArray } from '@lumino/algorithm';
 
-import {
-  LinkedList
-} from '@lumino/collections';
-
+import { LinkedList } from '@lumino/collections';
 
 describe('@lumino/collections', () => {
-
   describe('LinkedList', () => {
-
     describe('#constructor()', () => {
       let list = new LinkedList<number>();
       expect(list).to.be.an.instanceof(LinkedList);
     });
 
     describe('#isEmpty', () => {
-
       it('should be `true` for an empty list', () => {
         let list = new LinkedList<number>();
         expect(list.isEmpty).to.equal(true);
@@ -41,11 +31,9 @@ describe('@lumino/collections', () => {
         let list = LinkedList.from(data);
         expect(list.isEmpty).to.equal(false);
       });
-
     });
 
     describe('#length', () => {
-
       it('should be `0` for an empty list', () => {
         let list = new LinkedList<number>();
         expect(list.length).to.equal(0);
@@ -56,11 +44,9 @@ describe('@lumino/collections', () => {
         let list = LinkedList.from(data);
         expect(list.length).to.equal(data.length);
       });
-
     });
 
     describe('#first', () => {
-
       it('should be the first value in the list', () => {
         let data = [0, 1, 2, 3, 4, 5];
         let list = LinkedList.from(data);
@@ -71,11 +57,9 @@ describe('@lumino/collections', () => {
         let list = new LinkedList<number>();
         expect(list.first).to.equal(undefined);
       });
-
     });
 
     describe('#last', () => {
-
       it('should be the last value in the list', () => {
         let data = [0, 1, 2, 3, 4, 5];
         let list = LinkedList.from(data);
@@ -86,11 +70,9 @@ describe('@lumino/collections', () => {
         let list = new LinkedList<number>();
         expect(list.last).to.equal(undefined);
       });
-
     });
 
     describe('#firstNode', () => {
-
       it('should be the first node in the list', () => {
         let data = [0, 1, 2, 3, 4, 5];
         let list = LinkedList.from(data);
@@ -101,11 +83,9 @@ describe('@lumino/collections', () => {
         let list = new LinkedList<number>();
         expect(list.firstNode).to.equal(null);
       });
-
     });
 
     describe('#lastNode', () => {
-
       it('should be the last node in the list', () => {
         let data = [0, 1, 2, 3, 4, 5];
         let list = LinkedList.from(data);
@@ -116,11 +96,9 @@ describe('@lumino/collections', () => {
         let list = new LinkedList<number>();
         expect(list.lastNode).to.equal(null);
       });
-
     });
 
     describe('#iter()', () => {
-
       it('should return an iterator over the list values', () => {
         let data = [0, 1, 2, 3, 4, 5];
         let list = LinkedList.from(data);
@@ -131,11 +109,9 @@ describe('@lumino/collections', () => {
         expect(toArray(it1)).to.deep.equal(data);
         expect(toArray(it2)).to.deep.equal(data);
       });
-
     });
 
     describe('#retro()', () => {
-
       it('should return a reverse iterator over the list values', () => {
         let data = [0, 1, 2, 3, 4, 5];
         let reversed = data.slice().reverse();
@@ -147,11 +123,9 @@ describe('@lumino/collections', () => {
         expect(toArray(it1)).to.deep.equal(reversed);
         expect(toArray(it2)).to.deep.equal(reversed);
       });
-
     });
 
     describe('#nodes()', () => {
-
       it('should return an iterator over the list nodes', () => {
         let data = [0, 1, 2, 3, 4, 5];
         let list = LinkedList.from(data);
@@ -164,11 +138,9 @@ describe('@lumino/collections', () => {
         expect(toArray(v1)).to.deep.equal(data);
         expect(toArray(v2)).to.deep.equal(data);
       });
-
     });
 
     describe('#retroNodes()', () => {
-
       it('should return a reverse iterator over the list nodes', () => {
         let data = [0, 1, 2, 3, 4, 5];
         let reversed = data.slice().reverse();
@@ -182,11 +154,9 @@ describe('@lumino/collections', () => {
         expect(toArray(v1)).to.deep.equal(reversed);
         expect(toArray(v2)).to.deep.equal(reversed);
       });
-
     });
 
     describe('#addFirst()', () => {
-
       it('should add a value to the beginning of the list', () => {
         let list = new LinkedList<number>();
 
@@ -233,11 +203,9 @@ describe('@lumino/collections', () => {
         expect(n3.prev).to.equal(null);
         expect(n3.value).to.equal(7);
       });
-
     });
 
     describe('#addLast()', () => {
-
       it('should add a value to the end of the list', () => {
         let list = new LinkedList<number>();
 
@@ -284,11 +252,9 @@ describe('@lumino/collections', () => {
         expect(n3.prev).to.equal(n2);
         expect(n3.value).to.equal(7);
       });
-
     });
 
     describe('#insertBefore()', () => {
-
       it('should insert a value before the given reference node', () => {
         let list = LinkedList.from([0, 1, 2, 3]);
         let n1 = find(list.nodes(), n => n.value === 2)!;
@@ -330,14 +296,14 @@ describe('@lumino/collections', () => {
       it('should throw an error if the reference node is invalid', () => {
         let list1 = LinkedList.from([0, 1, 2, 3]);
         let list2 = LinkedList.from([0, 1, 2, 3]);
-        let insert = () => { list2.insertBefore(4, list1.firstNode ); };
+        let insert = () => {
+          list2.insertBefore(4, list1.firstNode);
+        };
         expect(insert).to.throw(Error);
       });
-
     });
 
     describe('#insertAfter()', () => {
-
       it('should insert a value after the given reference node', () => {
         let list = LinkedList.from([0, 1, 2, 3]);
         let n1 = find(list.nodes(), n => n.value === 2)!;
@@ -379,14 +345,14 @@ describe('@lumino/collections', () => {
       it('should throw an error if the reference node is invalid', () => {
         let list1 = LinkedList.from([0, 1, 2, 3]);
         let list2 = LinkedList.from([0, 1, 2, 3]);
-        let insert = () => { list2.insertAfter(4, list1.firstNode ); };
+        let insert = () => {
+          list2.insertAfter(4, list1.firstNode);
+        };
         expect(insert).to.throw(Error);
       });
-
     });
 
     describe('#removeFirst()', () => {
-
       it('should remove the first value from the list', () => {
         let list = LinkedList.from([0, 1, 2, 3]);
 
@@ -442,11 +408,9 @@ describe('@lumino/collections', () => {
         expect(v4).to.equal(3);
         expect(v5).to.equal(undefined);
       });
-
     });
 
     describe('#removeLast()', () => {
-
       it('should remove the last value from the list', () => {
         let list = LinkedList.from([0, 1, 2, 3]);
 
@@ -502,11 +466,9 @@ describe('@lumino/collections', () => {
         expect(v4).to.equal(0);
         expect(v5).to.equal(undefined);
       });
-
     });
 
     describe('#removeNode()', () => {
-
       it('should remove the specified node from the list', () => {
         let list = LinkedList.from([0, 1, 2, 3]);
 
@@ -564,11 +526,9 @@ describe('@lumino/collections', () => {
         expect(n4.prev).to.equal(null);
         expect(n4.value).to.equal(1);
       });
-
     });
 
     describe('#clear()', () => {
-
       it('should remove all values from the list', () => {
         let list = LinkedList.from([0, 1, 2, 3]);
 
@@ -586,11 +546,9 @@ describe('@lumino/collections', () => {
         expect(list.last).to.equal(undefined);
         expect(toArray(list)).to.deep.equal([]);
       });
-
     });
 
     describe('.from()', () => {
-
       it('should initialize a list from an iterable', () => {
         let list1 = LinkedList.from([0, 1, 2, 3]);
         let list2 = LinkedList.from(list1);
@@ -600,11 +558,9 @@ describe('@lumino/collections', () => {
         expect(list2.last).to.equal(3);
         expect(toArray(list2)).to.deep.equal([0, 1, 2, 3]);
       });
-
     });
 
     describe('.ForwardValueIterator', () => {
-
       it('should create a forward iterator over the values', () => {
         let list = LinkedList.from([0, 1, 2, 3, 4]);
         let n = find(list.nodes(), n => n.value === 2)!;
@@ -615,11 +571,9 @@ describe('@lumino/collections', () => {
         expect(toArray(it1)).to.deep.equal([2, 3, 4]);
         expect(toArray(it2)).to.deep.equal([2, 3, 4]);
       });
-
     });
 
     describe('.RetroValueIterator', () => {
-
       it('should create a reverse iterator over the values', () => {
         let list = LinkedList.from([0, 1, 2, 3, 4]);
         let n = find(list.nodes(), n => n.value === 2)!;
@@ -630,11 +584,9 @@ describe('@lumino/collections', () => {
         expect(toArray(it1)).to.deep.equal([2, 1, 0]);
         expect(toArray(it2)).to.deep.equal([2, 1, 0]);
       });
-
     });
 
     describe('.ForwardNodeIterator', () => {
-
       it('should create a forward iterator over the nodes', () => {
         let list = LinkedList.from([0, 1, 2, 3, 4]);
         let n = find(list.nodes(), n => n.value === 2)!;
@@ -647,11 +599,9 @@ describe('@lumino/collections', () => {
         expect(toArray(v1)).to.deep.equal([2, 3, 4]);
         expect(toArray(v2)).to.deep.equal([2, 3, 4]);
       });
-
     });
 
     describe('.RetroNodeIterator', () => {
-
       it('should create a reverse iterator over the nodes', () => {
         let list = LinkedList.from([0, 1, 2, 3, 4]);
         let n = find(list.nodes(), n => n.value === 2)!;
@@ -664,9 +614,6 @@ describe('@lumino/collections', () => {
         expect(toArray(v1)).to.deep.equal([2, 1, 0]);
         expect(toArray(v2)).to.deep.equal([2, 1, 0]);
       });
-
     });
-
   });
-
 });

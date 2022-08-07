@@ -7,12 +7,11 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  ISignal, Signal
-} from '@lumino/signaling';
+import { IDisposable } from '@lumino/disposable';
 
-import { VirtualElement } from "@lumino/virtualdom";
+import { ISignal, Signal } from '@lumino/signaling';
 
+import { VirtualElement } from '@lumino/virtualdom';
 
 /**
  * An object which holds data related to an object's title.
@@ -21,9 +20,10 @@ import { VirtualElement } from "@lumino/virtualdom";
  * A title object is intended to hold the data necessary to display a
  * header for a particular object. A common example is the `TabPanel`,
  * which uses the widget title to populate the tab for a child widget.
+ *
+ * It is the responsibility of the owner to call the title disposal.
  */
-export
-class Title<T> {
+export class Title<T> implements IDisposable {
   /**
    * Construct a new title.
    *
@@ -38,36 +38,14 @@ class Title<T> {
       this._mnemonic = options.mnemonic;
     }
     if (options.icon !== undefined) {
-      /* <DEPRECATED> */
-      if (typeof options.icon === "string") {
-        // when ._icon is null, the .icon getter will alias .iconClass
-        this._icon = null;
-        this._iconClass = options.icon;
-      } else {
-      /* </DEPRECATED> */
-
       this._icon = options.icon;
-
-      /* <DEPRECATED> */
-      }
-      /* </DEPRECATED> */
     }
-
-    /* <DEPRECATED> */
-    else {
-      // if unset, default to aliasing .iconClass
-      this._icon = null;
-    }
-    /* </DEPRECATED> */
 
     if (options.iconClass !== undefined) {
       this._iconClass = options.iconClass;
     }
     if (options.iconLabel !== undefined) {
       this._iconLabel = options.iconLabel;
-    }
-    if (options.iconRenderer !== undefined) {
-      this._icon = options.iconRenderer;
     }
     if (options.caption !== undefined) {
       this._caption = options.caption;
@@ -140,20 +118,8 @@ class Title<T> {
    *
    * #### Notes
    * The default value is undefined.
-   *
-   * DEPRECATED: if set to a string value, the .icon field will function as
-   * an alias for the .iconClass field, for backwards compatibility
    */
-  get icon(): VirtualElement.IRenderer| undefined
-  /* <DEPRECATED> */ | string /* </DEPRECATED> */
-  {
-    /* <DEPRECATED> */
-    if (this._icon === null) {
-      // only alias .iconClass if ._icon has been explicitly nulled
-      return this.iconClass
-    }
-    /* </DEPRECATED> */
-
+  get icon(): VirtualElement.IRenderer | undefined {
     return this._icon;
   }
 
@@ -162,30 +128,13 @@ class Title<T> {
    *
    * #### Notes
    * A renderer is an object that supplies a render and unrender function.
-   *
-   * DEPRECATED: if set to a string value, the .icon field will function as
-   * an alias for the .iconClass field, for backwards compatibility
    */
-  set icon(value: VirtualElement.IRenderer | undefined
-  /* <DEPRECATED> */ | string /* </DEPRECATED> */
-  ) {
-    /* <DEPRECATED> */
-    if (typeof value === "string") {
-      // when ._icon is null, the .icon getter will alias .iconClass
-      this._icon = null;
-      this.iconClass = value;
-    } else {
-    /* </DEPRECATED> */
-
+  set icon(value: VirtualElement.IRenderer | undefined) {
     if (this._icon === value) {
       return;
     }
     this._icon = value;
     this._changed.emit(undefined);
-
-    /* <DEPRECATED> */
-    }
-    /* </DEPRECATED> */
   }
 
   /**
@@ -234,20 +183,6 @@ class Title<T> {
     }
     this._iconLabel = value;
     this._changed.emit(undefined);
-  }
-
-  /**
-   * @deprecated Use `icon` instead.
-   */
-  get iconRenderer(): VirtualElement.IRenderer | undefined {
-    return this._icon || undefined;
-  }
-
-  /**
-   * @deprecated Use `icon` instead.
-   */
-  set iconRenderer(value: VirtualElement.IRenderer | undefined) {
-    this.icon = value;
   }
 
   /**
@@ -343,38 +278,54 @@ class Title<T> {
     this._changed.emit(undefined);
   }
 
+  /**
+   * Test whether the title has been disposed.
+   */
+  get isDisposed(): boolean {
+    return this._isDisposed;
+  }
+
+  /**
+   * Dispose of the resources held by the title.
+   *
+   * #### Notes
+   * It is the responsibility of the owner to call the title disposal.
+   */
+  dispose(): void {
+    if (this.isDisposed) {
+      return;
+    }
+    this._isDisposed = true;
+
+    Signal.clearData(this);
+  }
+
   private _label = '';
   private _caption = '';
   private _mnemonic = -1;
-
-  private _icon: VirtualElement.IRenderer | undefined
-  /* <DEPRECATED> */ | null /* </DEPRECATED> */;
-
+  private _icon: VirtualElement.IRenderer | undefined = undefined;
   private _iconClass = '';
   private _iconLabel = '';
   private _className = '';
   private _closable = false;
   private _dataset: Title.Dataset;
   private _changed = new Signal<this, void>(this);
+  private _isDisposed = false;
 }
-
 
 /**
  * The namespace for the `Title` class statics.
  */
-export
-namespace Title {
+export namespace Title {
   /**
    * A type alias for a simple immutable string dataset.
    */
-  export
-  type Dataset = { readonly [key: string]: string };
+  export type Dataset = { readonly [key: string]: string };
 
   /**
    * An options object for initializing a title.
    */
-  export
-  interface IOptions<T> {
+  export interface IOptions<T> {
     /**
      * The object which owns the title.
      */
@@ -392,11 +343,8 @@ namespace Title {
 
     /**
      * The icon renderer for the title.
-     *
-     * DEPRECATED: if set to a string value, the .icon field will function as
-     * an alias for the .iconClass field, for backwards compatibility
      */
-    icon?: VirtualElement.IRenderer | string;
+    icon?: VirtualElement.IRenderer;
 
     /**
      * The icon class name for the title.
@@ -407,11 +355,6 @@ namespace Title {
      * The icon label for the title.
      */
     iconLabel?: string;
-
-    /**
-     * @deprecated Use `icon` instead.
-     */
-    iconRenderer?: VirtualElement.IRenderer;
 
     /**
      * The caption for the title.

@@ -7,10 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  IIterator
-} from './iter';
-
+import { IIterator } from './iter';
 
 /**
  * Create an empty iterator.
@@ -26,22 +23,14 @@ import {
  * toArray(stream);  // []
  * ```
  */
-export
-function empty<T>(): IIterator<T> {
+export function empty<T>(): IIterator<T> {
   return new EmptyIterator<T>();
 }
-
 
 /**
  * An iterator which is always empty.
  */
-export
-class EmptyIterator<T> implements IIterator<T> {
-  /**
-   * Construct a new empty iterator.
-   */
-  constructor() { }
-
+export class EmptyIterator<T> implements IIterator<T> {
   /**
    * Get an iterator over the object's values.
    *

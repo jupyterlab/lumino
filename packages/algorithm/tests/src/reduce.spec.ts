@@ -7,19 +7,12 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  expect
-} from 'chai';
+import { expect } from 'chai';
 
-import {
-  reduce
-} from '@lumino/algorithm';
-
+import { reduce } from '@lumino/algorithm';
 
 describe('@lumino/algorithm', () => {
-
   describe('reduce()', () => {
-
     it('should reduce items in an iterable into an accumulated value', () => {
       let sum = reduce([1, 2, 3, 4, 5], (a, x) => a + x, 0);
       expect(sum).to.equal(15);
@@ -54,7 +47,5 @@ describe('@lumino/algorithm', () => {
       let result = reduce(data, (a, x) => a + x);
       expect(result).to.equal(3);
     });
-
   });
-
 });

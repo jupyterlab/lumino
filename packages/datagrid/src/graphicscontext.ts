@@ -7,10 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  IDisposable
-} from '@lumino/disposable';
-
+import { IDisposable } from '@lumino/disposable';
 
 /**
  * A thin caching wrapper around a 2D canvas rendering context.
@@ -29,8 +26,7 @@ import {
  * The wrapped canvas context should not be manipulated externally
  * until the wrapping `GraphicsContext` object is disposed.
  */
-export
-class GraphicsContext implements IDisposable {
+export class GraphicsContext implements IDisposable {
   /**
    * Create a new graphics context object.
    *
@@ -237,11 +233,11 @@ class GraphicsContext implements IDisposable {
     }
   }
 
-  get globalCompositeOperation(): string {
+  get globalCompositeOperation(): GlobalCompositeOperation {
     return this._context.globalCompositeOperation;
   }
 
-  set globalCompositeOperation(value: string) {
+  set globalCompositeOperation(value: GlobalCompositeOperation) {
     if (this._state.globalCompositeOperation !== value) {
       this._state.globalCompositeOperation = value;
       this._context.globalCompositeOperation = value;
@@ -264,7 +260,14 @@ class GraphicsContext implements IDisposable {
     this._context.scale(x, y);
   }
 
-  transform(m11: number, m12: number, m21: number, m22: number, dx: number, dy: number): void {
+  transform(
+    m11: number,
+    m12: number,
+    m21: number,
+    m22: number,
+    dx: number,
+    dy: number
+  ): void {
     this._context.transform(m11, m12, m21, m22, dx, dy);
   }
 
@@ -272,7 +275,14 @@ class GraphicsContext implements IDisposable {
     this._context.translate(x, y);
   }
 
-  setTransform(m11: number, m12: number, m21: number, m22: number, dx: number, dy: number): void {
+  setTransform(
+    m11: number,
+    m12: number,
+    m21: number,
+    m22: number,
+    dx: number,
+    dy: number
+  ): void {
     this._context.setTransform(m11, m12, m21, m22, dx, dy);
   }
 
@@ -315,7 +325,14 @@ class GraphicsContext implements IDisposable {
     return result;
   }
 
-  arc(x: number, y: number, radius: number, startAngle: number, endAngle: number, anticlockwise?: boolean): void {
+  arc(
+    x: number,
+    y: number,
+    radius: number,
+    startAngle: number,
+    endAngle: number,
+    anticlockwise?: boolean
+  ): void {
     if (arguments.length === 5) {
       this._context.arc(x, y, radius, startAngle, endAngle);
     } else {
@@ -327,15 +344,48 @@ class GraphicsContext implements IDisposable {
     this._context.arcTo(x1, y1, x2, y2, radius);
   }
 
-  bezierCurveTo(cp1x: number, cp1y: number, cp2x: number, cp2y: number, x: number, y: number): void {
+  bezierCurveTo(
+    cp1x: number,
+    cp1y: number,
+    cp2x: number,
+    cp2y: number,
+    x: number,
+    y: number
+  ): void {
     this._context.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y);
   }
 
-  ellipse(x: number, y: number, radiusX: number, radiusY: number, rotation: number, startAngle: number, endAngle: number, anticlockwise?: boolean): void {
+  ellipse(
+    x: number,
+    y: number,
+    radiusX: number,
+    radiusY: number,
+    rotation: number,
+    startAngle: number,
+    endAngle: number,
+    anticlockwise?: boolean
+  ): void {
     if (arguments.length === 7) {
-      this._context.ellipse(x, y, radiusX, radiusY, rotation, startAngle, endAngle);
+      this._context.ellipse(
+        x,
+        y,
+        radiusX,
+        radiusY,
+        rotation,
+        startAngle,
+        endAngle
+      );
     } else {
-      this._context.ellipse(x, y, radiusX, radiusY, rotation, startAngle, endAngle, anticlockwise);
+      this._context.ellipse(
+        x,
+        y,
+        radiusX,
+        radiusY,
+        rotation,
+        startAngle,
+        endAngle,
+        anticlockwise
+      );
     }
   }
 
@@ -407,21 +457,37 @@ class GraphicsContext implements IDisposable {
     return this._context.measureText(text);
   }
 
-  createLinearGradient(x0: number, y0: number, x1: number, y1: number): CanvasGradient {
+  createLinearGradient(
+    x0: number,
+    y0: number,
+    x1: number,
+    y1: number
+  ): CanvasGradient {
     return this._context.createLinearGradient(x0, y0, x1, y1);
   }
 
-  createRadialGradient(x0: number, y0: number, r0: number, x1: number, y1: number, r1: number): CanvasGradient {
+  createRadialGradient(
+    x0: number,
+    y0: number,
+    r0: number,
+    x1: number,
+    y1: number,
+    r1: number
+  ): CanvasGradient {
     return this._context.createRadialGradient(x0, y0, r0, x1, y1, r1);
   }
 
-  createPattern(image: HTMLImageElement | HTMLCanvasElement | HTMLVideoElement, repetition: string): CanvasPattern | null {
+  createPattern(
+    image: HTMLImageElement | HTMLCanvasElement | HTMLVideoElement,
+    repetition: string
+  ): CanvasPattern | null {
     return this._context.createPattern(image, repetition);
   }
 
   createImageData(imageData: ImageData): ImageData;
   createImageData(sw: number, sh: number): ImageData;
-  createImageData() {
+  createImageData(): ImageData {
+    // eslint-disable-next-line prefer-spread, prefer-rest-params
     return this._context.createImageData.apply(this._context, arguments);
   }
 
@@ -429,16 +495,58 @@ class GraphicsContext implements IDisposable {
     return this._context.getImageData(sx, sy, sw, sh);
   }
 
-  putImageData(imagedata: ImageData, dx: number, dy: number): void
-  putImageData(imagedata: ImageData, dx: number, dy: number, dirtyX: number, dirtyY: number, dirtyWidth: number, dirtyHeight: number): void
+  putImageData(imagedata: ImageData, dx: number, dy: number): void;
+  putImageData(
+    imagedata: ImageData,
+    dx: number,
+    dy: number,
+    dirtyX: number,
+    dirtyY: number,
+    dirtyWidth: number,
+    dirtyHeight: number
+  ): void;
   putImageData(): void {
+    // eslint-disable-next-line prefer-spread, prefer-rest-params
     this._context.putImageData.apply(this._context, arguments);
   }
 
-  drawImage(image: HTMLImageElement | HTMLCanvasElement | HTMLVideoElement | ImageBitmap, dstX: number, dstY: number): void;
-  drawImage(image: HTMLImageElement | HTMLCanvasElement | HTMLVideoElement | ImageBitmap, dstX: number, dstY: number, dstW: number, dstH: number): void;
-  drawImage(image: HTMLImageElement | HTMLCanvasElement | HTMLVideoElement | ImageBitmap, srcX: number, srcY: number, srcW: number, srcH: number, dstX: number, dstY: number, dstW: number, dstH: number): void;
+  drawImage(
+    image:
+      | HTMLImageElement
+      | HTMLCanvasElement
+      | HTMLVideoElement
+      | ImageBitmap,
+    dstX: number,
+    dstY: number
+  ): void;
+  drawImage(
+    image:
+      | HTMLImageElement
+      | HTMLCanvasElement
+      | HTMLVideoElement
+      | ImageBitmap,
+    dstX: number,
+    dstY: number,
+    dstW: number,
+    dstH: number
+  ): void;
+  drawImage(
+    image:
+      | HTMLImageElement
+      | HTMLCanvasElement
+      | HTMLVideoElement
+      | ImageBitmap,
+    srcX: number,
+    srcY: number,
+    srcW: number,
+    srcH: number,
+    dstX: number,
+    dstY: number,
+    dstW: number,
+    dstH: number
+  ): void;
   drawImage(): void {
+    // eslint-disable-next-line prefer-spread, prefer-rest-params
     this._context.drawImage.apply(this._context, arguments);
   }
 
@@ -450,7 +558,6 @@ class GraphicsContext implements IDisposable {
   private _state: Private.State;
   private _context: CanvasRenderingContext2D;
 }
-
 
 /**
  * The namespace for the module implementation details.
@@ -469,8 +576,7 @@ namespace Private {
   /**
    * An object which holds the state for a gc.
    */
-  export
-  class State {
+  export class State {
     /**
      * Create a gc state object from a 2D canvas context.
      */
@@ -552,7 +658,5 @@ namespace Private {
     strokeStyle: string | CanvasGradient | CanvasPattern;
     textAlign: string;
     textBaseline: string;
-
-    private constructor() { }
   }
 }

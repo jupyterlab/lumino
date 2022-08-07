@@ -7,43 +7,29 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  expect
-} from 'chai';
+import { expect } from 'chai';
 
-import {
-  Token
-} from '@lumino/coreutils';
-
+import { Token } from '@lumino/coreutils';
 
 interface ITestInterface {
   foo: number;
   bar: string;
 }
 
-
 describe('@lumino/coreutils', () => {
-
   describe('Token', () => {
-
     describe('#constructor', () => {
-
       it('should accept a name for the token', () => {
         let token = new Token<ITestInterface>('ITestInterface');
         expect(token).to.be.an.instanceof(Token);
       });
-
     });
 
     describe('#name', () => {
-
       it('should be the name for the token', () => {
         let token = new Token<ITestInterface>('ITestInterface');
         expect(token.name).to.equal('ITestInterface');
       });
-
     });
-
   });
-
 });

@@ -7,8 +7,6 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
-
-/* <DEPRECATED> */ .p-TabBar, /* </DEPRECATED> */
 .lm-TabBar {
   display: flex;
   -webkit-user-select: none;
@@ -17,20 +15,16 @@
   user-select: none;
 }
 
-
-/* <DEPRECATED> */ .p-TabBar[data-orientation='horizontal'], /* </DEPRECATED> */
 .lm-TabBar[data-orientation='horizontal'] {
   flex-direction: row;
+  align-items: flex-end;
 }
 
-
-/* <DEPRECATED> */ .p-TabBar[data-orientation='vertical'], /* </DEPRECATED> */
 .lm-TabBar[data-orientation='vertical'] {
   flex-direction: column;
+  align-items: flex-end;
 }
 
-
-/* <DEPRECATED> */ .p-TabBar-content, /* </DEPRECATED> */
 .lm-TabBar-content {
   margin: 0;
   padding: 0;
@@ -39,90 +33,68 @@
   list-style-type: none;
 }
 
-
-/* <DEPRECATED> */
-.p-TabBar[data-orientation='horizontal'] > .p-TabBar-content,
-/* </DEPRECATED> */
 .lm-TabBar[data-orientation='horizontal'] > .lm-TabBar-content {
   flex-direction: row;
 }
 
-
-/* <DEPRECATED> */
-.p-TabBar[data-orientation='vertical'] > .p-TabBar-content,
-/* </DEPRECATED> */
 .lm-TabBar[data-orientation='vertical'] > .lm-TabBar-content {
   flex-direction: column;
 }
 
-
-/* <DEPRECATED> */ .p-TabBar-tab, /* </DEPRECATED> */
 .lm-TabBar-tab {
   display: flex;
   flex-direction: row;
   box-sizing: border-box;
   overflow: hidden;
+  touch-action: none; /* Disable native Drag/Drop */
 }
 
-
-/* <DEPRECATED> */
-.p-TabBar-tabIcon,
-.p-TabBar-tabCloseIcon,
-/* </DEPRECATED> */
 .lm-TabBar-tabIcon,
 .lm-TabBar-tabCloseIcon {
   flex: 0 0 auto;
 }
 
-
-/* <DEPRECATED> */ .p-TabBar-tabLabel, /* </DEPRECATED> */
 .lm-TabBar-tabLabel {
   flex: 1 1 auto;
   overflow: hidden;
   white-space: nowrap;
 }
 
-
 .lm-TabBar-tabInput {
   user-select: all;
   width: 100%;
-  box-sizing : border-box;
+  box-sizing: border-box;
 }
 
-
-/* <DEPRECATED> */ .p-TabBar-tab.p-mod-hidden, /* </DEPRECATED> */
 .lm-TabBar-tab.lm-mod-hidden {
   display: none !important;
 }
 
+.lm-TabBar-addButton.lm-mod-hidden {
+  display: none !important;
+}
 
-/* <DEPRECATED> */ .p-TabBar.p-mod-dragging .p-TabBar-tab, /* </DEPRECATED> */
 .lm-TabBar.lm-mod-dragging .lm-TabBar-tab {
   position: relative;
 }
 
-
-/* <DEPRECATED> */
-.p-TabBar.p-mod-dragging[data-orientation='horizontal'] .p-TabBar-tab,
-/* </DEPRECATED> */
 .lm-TabBar.lm-mod-dragging[data-orientation='horizontal'] .lm-TabBar-tab {
   left: 0;
   transition: left 150ms ease;
 }
 
-
-/* <DEPRECATED> */
-.p-TabBar.p-mod-dragging[data-orientation='vertical'] .p-TabBar-tab,
-/* </DEPRECATED> */
 .lm-TabBar.lm-mod-dragging[data-orientation='vertical'] .lm-TabBar-tab {
   top: 0;
   transition: top 150ms ease;
 }
 
-
-/* <DEPRECATED> */
-.p-TabBar.p-mod-dragging .p-TabBar-tab.p-mod-dragging
-/* </DEPRECATED> */
 .lm-TabBar.lm-mod-dragging .lm-TabBar-tab.lm-mod-dragging {
   transition: none;
+}
+
+.lm-TabBar-tabLabel .lm-TabBar-tabInput {
+  user-select: all;
+  width: 100%;
+  box-sizing: border-box;
+  background: inherit;
 }

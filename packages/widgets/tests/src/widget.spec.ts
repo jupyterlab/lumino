@@ -7,26 +7,15 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  expect
-} from 'chai';
+import { expect } from 'chai';
 
-import {
-  ArrayExt, IIterator, each, iter
-} from '@lumino/algorithm';
+import { ArrayExt, each, IIterator, iter } from '@lumino/algorithm';
 
-import {
-  Message, MessageLoop
-} from '@lumino/messaging';
+import { Message, MessageLoop } from '@lumino/messaging';
 
-import {
-  Layout, Title, Widget
-} from '@lumino/widgets';
+import { Layout, Title, Widget } from '@lumino/widgets';
 
-
-export
-class LogWidget extends Widget {
-
+export class LogWidget extends Widget {
   messages: string[] = [];
 
   methods: string[] = [];
@@ -96,9 +85,7 @@ class LogWidget extends Widget {
   }
 }
 
-
 class TestLayout extends Layout {
-
   dispose(): void {
     while (this._widgets.length !== 0) {
       this._widgets.pop()!.dispose();
@@ -117,13 +104,9 @@ class TestLayout extends Layout {
   private _widgets = [new Widget(), new Widget()];
 }
 
-
 describe('@lumino/widgets', () => {
-
   describe('Widget', () => {
-
     describe('#constructor()', () => {
-
       it('should accept no arguments', () => {
         let widget = new Widget();
         expect(widget).to.be.an.instanceof(Widget);
@@ -139,11 +122,9 @@ describe('@lumino/widgets', () => {
         let widget = new Widget();
         expect(widget.hasClass('lm-Widget')).to.equal(true);
       });
-
     });
 
     describe('#dispose()', () => {
-
       it('should dispose of the widget', () => {
         let widget = new Widget();
         widget.dispose();
@@ -154,7 +135,9 @@ describe('@lumino/widgets', () => {
         let called = false;
         let widget = new Widget();
         widget.dispose();
-        widget.disposed.connect(() => { called = true; });
+        widget.disposed.connect(() => {
+          called = true;
+        });
         widget.dispose();
         expect(called).to.equal(false);
         expect(widget.isDisposed).to.equal(true);
@@ -186,22 +169,27 @@ describe('@lumino/widgets', () => {
         expect(layout.isDisposed).to.equal(true);
       });
 
+      it('should dispose of the widget title', () => {
+        const widget = new Widget();
+        const title = widget.title;
+        widget.dispose();
+        expect(title.isDisposed).to.equal(true);
+      });
     });
 
     describe('#disposed', () => {
-
       it('should be emitted when the widget is disposed', () => {
         let called = false;
         let widget = new Widget();
-        widget.disposed.connect(() => { called = true; });
+        widget.disposed.connect(() => {
+          called = true;
+        });
         widget.dispose();
         expect(called).to.equal(true);
       });
-
     });
 
     describe('#isDisposed', () => {
-
       it('should be `true` if the widget is disposed', () => {
         let widget = new Widget();
         widget.dispose();
@@ -212,11 +200,9 @@ describe('@lumino/widgets', () => {
         let widget = new Widget();
         expect(widget.isDisposed).to.equal(false);
       });
-
     });
 
     describe('#isAttached', () => {
-
       it('should be `true` if the widget is attached', () => {
         let widget = new Widget();
         Widget.attach(widget, document.body);
@@ -228,11 +214,9 @@ describe('@lumino/widgets', () => {
         let widget = new Widget();
         expect(widget.isAttached).to.equal(false);
       });
-
     });
 
     describe('#isHidden', () => {
-
       it('should be `true` if the widget is hidden', () => {
         let widget = new Widget();
         Widget.attach(widget, document.body);
@@ -247,11 +231,9 @@ describe('@lumino/widgets', () => {
         expect(widget.isHidden).to.equal(false);
         widget.dispose();
       });
-
     });
 
     describe('#isVisible', () => {
-
       it('should be `true` if the widget is visible', () => {
         let widget = new Widget();
         Widget.attach(widget, document.body);
@@ -271,21 +253,17 @@ describe('@lumino/widgets', () => {
         let widget = new Widget();
         expect(widget.isVisible).to.equal(false);
       });
-
     });
 
     describe('#node', () => {
-
       it('should get the DOM node owned by the widget', () => {
         let widget = new Widget();
         let node = widget.node;
         expect(node.tagName.toLowerCase()).to.equal('div');
       });
-
     });
 
     describe('#id', () => {
-
       it('should get the id of the widget node', () => {
         let widget = new Widget();
         widget.node.id = 'foo';
@@ -297,29 +275,23 @@ describe('@lumino/widgets', () => {
         widget.id = 'bar';
         expect(widget.node.id).to.equal('bar');
       });
-
     });
 
-    describe('#datset', () => {
-
+    describe('#dataset', () => {
       it('should get the dataset of the widget node', () => {
         let widget = new Widget();
         expect(widget.dataset).to.equal(widget.node.dataset);
       });
-
     });
 
     describe('#title', () => {
-
       it('should get the title data object for the widget', () => {
         let widget = new Widget();
         expect(widget.title).to.be.an.instanceof(Title);
       });
-
     });
 
     describe('#parent', () => {
-
       it('should default to `null`', () => {
         let widget = new Widget();
         expect(widget.parent).to.equal(null);
@@ -347,7 +319,9 @@ describe('@lumino/widgets', () => {
         let widget0 = new Widget();
         let widget1 = new Widget();
         widget0.parent = widget1;
-        expect(() => { widget1.parent = widget0; }).to.throw(Error);
+        expect(() => {
+          widget1.parent = widget0;
+        }).to.throw(Error);
       });
 
       it('should be a no-op if there is no parent change', () => {
@@ -357,11 +331,9 @@ describe('@lumino/widgets', () => {
         child.parent = parent;
         expect(parent.messages).to.not.contain('child-removed');
       });
-
     });
 
     describe('#layout', () => {
-
       it('should default to `null`', () => {
         let widget = new Widget();
         expect(widget.layout).to.equal(null);
@@ -377,7 +349,9 @@ describe('@lumino/widgets', () => {
       it('should be single-use only', () => {
         let widget = new Widget();
         widget.layout = new TestLayout();
-        expect(() => { widget.layout = new TestLayout(); }).to.throw(Error);
+        expect(() => {
+          widget.layout = new TestLayout();
+        }).to.throw(Error);
       });
 
       it('should be disposed when the widget is disposed', () => {
@@ -401,20 +375,22 @@ describe('@lumino/widgets', () => {
         let widget1 = new Widget();
         let layout = new TestLayout();
         widget0.layout = layout;
-        expect(() => { widget1.layout = layout; }).to.throw(Error);
+        expect(() => {
+          widget1.layout = layout;
+        }).to.throw(Error);
       });
 
       it('should throw an error if the `DisallowLayout` flag is set', () => {
         let widget = new Widget();
         widget.setFlag(Widget.Flag.DisallowLayout);
         let layout = new TestLayout();
-        expect(() => { widget.layout = layout; }).to.throw(Error);
+        expect(() => {
+          widget.layout = layout;
+        }).to.throw(Error);
       });
-
     });
 
     describe('#children()', () => {
-
       it('should return an iterator over the widget children', () => {
         let widget = new Widget();
         widget.layout = new TestLayout();
@@ -427,11 +403,9 @@ describe('@lumino/widgets', () => {
         let widget = new Widget();
         expect(widget.children().next()).to.equal(undefined);
       });
-
     });
 
     describe('#contains()', () => {
-
       it('should return `true` if the widget is a descendant', () => {
         let p1 = new Widget();
         let p2 = new Widget();
@@ -478,11 +452,9 @@ describe('@lumino/widgets', () => {
         expect(w2.contains(p3)).to.equal(false);
         expect(w2.contains(w1)).to.equal(false);
       });
-
     });
 
     describe('#hasClass()', () => {
-
       it('should return `true` if a node has a class', () => {
         let widget = new Widget();
         widget.node.classList.add('foo');
@@ -502,11 +474,9 @@ describe('@lumino/widgets', () => {
         expect(widget.hasClass('two')).to.equal(false);
         expect(widget.hasClass('three')).to.equal(false);
       });
-
     });
 
     describe('#addClass()', () => {
-
       it('should add a class to the DOM node', () => {
         let widget = new Widget();
         expect(widget.node.classList.contains('foo')).to.equal(false);
@@ -524,11 +494,9 @@ describe('@lumino/widgets', () => {
         widget.addClass('foo');
         expect(widget.node.classList.contains('foo')).to.equal(true);
       });
-
     });
 
     describe('#removeClass()', () => {
-
       it('should remove the class from the DOM node', () => {
         let widget = new Widget();
         widget.node.classList.add('foo');
@@ -546,11 +514,9 @@ describe('@lumino/widgets', () => {
         widget.removeClass('foo');
         expect(widget.node.classList.contains('foo')).to.equal(false);
       });
-
     });
 
     describe('#toggleClass()', () => {
-
       it('should toggle the presence of a class', () => {
         let widget = new Widget();
         widget.toggleClass('foo');
@@ -590,12 +556,10 @@ describe('@lumino/widgets', () => {
         expect(widget.toggleClass('foo')).to.equal(false);
         expect(widget.toggleClass('foo', false)).to.equal(false);
       });
-
     });
 
     describe('#update()', () => {
-
-      it('should post an `update-request` message', (done) => {
+      it('should post an `update-request` message', done => {
         let widget = new LogWidget();
         widget.update();
         expect(widget.messages).to.deep.equal([]);
@@ -604,12 +568,10 @@ describe('@lumino/widgets', () => {
           done();
         });
       });
-
     });
 
     describe('#fit()', () => {
-
-      it('should post a `fit-request` message to the widget', (done) => {
+      it('should post a `fit-request` message to the widget', done => {
         let widget = new LogWidget();
         widget.fit();
         expect(widget.messages).to.deep.equal([]);
@@ -618,12 +580,10 @@ describe('@lumino/widgets', () => {
           done();
         });
       });
-
     });
 
     describe('#activate()', () => {
-
-      it('should post an `activate-request` message', (done) => {
+      it('should post an `activate-request` message', done => {
         let widget = new LogWidget();
         widget.activate();
         expect(widget.messages).to.deep.equal([]);
@@ -631,24 +591,19 @@ describe('@lumino/widgets', () => {
           expect(widget.messages).to.deep.equal(['activate-request']);
           done();
         });
-
       });
-
     });
 
     describe('#close()', () => {
-
       it('should send a `close-request` message', () => {
         let widget = new LogWidget();
         expect(widget.messages).to.deep.equal([]);
         widget.close();
         expect(widget.messages).to.deep.equal(['close-request']);
       });
-
     });
 
     describe('#show()', () => {
-
       it('should set `isHidden` to `false`', () => {
         let widget = new Widget();
         widget.hide();
@@ -690,11 +645,9 @@ describe('@lumino/widgets', () => {
         expect(widget.messages).to.not.contains('after-show');
         widget.dispose();
       });
-
     });
 
     describe('#hide()', () => {
-
       it('should hide the widget', () => {
         let widget = new Widget();
         widget.hide();
@@ -731,11 +684,9 @@ describe('@lumino/widgets', () => {
         expect(widget.messages).to.not.contain('before-hide');
         widget.dispose();
       });
-
     });
 
     describe('#setHidden()', () => {
-
       it('should call hide if `hidden = true`', () => {
         let widget = new LogWidget();
         Widget.attach(widget, document.body);
@@ -754,41 +705,79 @@ describe('@lumino/widgets', () => {
         expect(widget.messages).to.contain('after-show');
         widget.dispose();
       });
+    });
 
+    describe('#hiddenMode', () => {
+      it('should use class to hide the widget by default', () => {
+        let widget = new Widget();
+        Widget.attach(widget, document.body);
+        widget.hide();
+        expect(widget.hasClass('lm-mod-hidden')).to.equal(true);
+        expect(widget.node.style.transform).to.be.equal('');
+        expect(widget.node.style.willChange).to.not.equal('transform');
+        widget.dispose();
+      });
+
+      it('should use transformation if in "scale" mode', () => {
+        let widget = new Widget();
+        Widget.attach(widget, document.body);
+        widget.hiddenMode = Widget.HiddenMode.Scale;
+        widget.hide();
+        expect(widget.hasClass('lm-mod-hidden')).to.equal(false);
+        expect(widget.node.style.transform).to.equal('scale(0)');
+        expect(widget.node.style.willChange).to.equal('transform');
+        widget.dispose();
+      });
+
+      it('should remove class when switching from display to scale', () => {
+        let widget = new Widget();
+        Widget.attach(widget, document.body);
+        widget.hide();
+        widget.hiddenMode = Widget.HiddenMode.Scale;
+        expect(widget.hasClass('lm-mod-hidden')).to.equal(false);
+        expect(widget.node.style.transform).to.equal('scale(0)');
+        expect(widget.node.style.willChange).to.equal('transform');
+        widget.dispose();
+      });
+
+      it('should add class when switching from scale to display', () => {
+        let widget = new Widget();
+        Widget.attach(widget, document.body);
+        widget.hiddenMode = Widget.HiddenMode.Scale;
+        widget.hide();
+        widget.hiddenMode = Widget.HiddenMode.Display;
+        expect(widget.hasClass('lm-mod-hidden')).to.equal(true);
+        expect(widget.node.style.transform).to.equal('');
+        expect(widget.node.style.willChange).to.equal('auto');
+        widget.dispose();
+      });
     });
 
     describe('#testFlag()', () => {
-
       it('should test whether the given widget flag is set', () => {
         let widget = new Widget();
         expect(widget.testFlag(Widget.Flag.IsHidden)).to.equal(false);
       });
-
     });
 
     describe('#setFlag()', () => {
-
       it('should set the given widget flag', () => {
         let widget = new Widget();
         widget.setFlag(Widget.Flag.IsHidden);
         expect(widget.testFlag(Widget.Flag.IsHidden)).to.equal(true);
       });
-
     });
 
     describe('#clearFlag()', () => {
-
       it('should clear the given widget flag', () => {
         let widget = new Widget();
         widget.setFlag(Widget.Flag.IsHidden);
         widget.clearFlag(Widget.Flag.IsHidden);
         expect(widget.testFlag(Widget.Flag.IsHidden)).to.equal(false);
       });
-
     });
 
     describe('#notifyLayout()', () => {
-
       it("should send a message to the widget's layout", () => {
         let child = new LogWidget();
         let parent = new LogWidget();
@@ -797,11 +786,9 @@ describe('@lumino/widgets', () => {
         child.parent = parent;
         expect(parent.methods).to.contain('notifyLayout');
       });
-
     });
 
     describe('#onActivateRequest()', () => {
-
       it('should be invoked on an `activate-request', () => {
         let widget = new LogWidget();
         MessageLoop.sendMessage(widget, Widget.Msg.ActivateRequest);
@@ -813,11 +800,9 @@ describe('@lumino/widgets', () => {
         MessageLoop.sendMessage(widget, Widget.Msg.ActivateRequest);
         expect(widget.methods).to.contain('notifyLayout');
       });
-
     });
 
     describe('#onCloseRequest()', () => {
-
       it('should be invoked on a `close-request`', () => {
         let widget = new LogWidget();
         MessageLoop.sendMessage(widget, Widget.Msg.CloseRequest);
@@ -845,11 +830,9 @@ describe('@lumino/widgets', () => {
         MessageLoop.sendMessage(widget, Widget.Msg.CloseRequest);
         expect(widget.methods).to.contain('notifyLayout');
       });
-
     });
 
     describe('#onResize()', () => {
-
       it('should be invoked when the widget is resized', () => {
         let widget = new LogWidget();
         Widget.attach(widget, document.body);
@@ -866,11 +849,9 @@ describe('@lumino/widgets', () => {
         expect(widget.methods).to.contain('notifyLayout');
         widget.dispose();
       });
-
     });
 
     describe('#onUpdateRequest()', () => {
-
       it('should be invoked when an update is requested', () => {
         let widget = new LogWidget();
         MessageLoop.sendMessage(widget, Widget.Msg.UpdateRequest);
@@ -883,11 +864,9 @@ describe('@lumino/widgets', () => {
         MessageLoop.sendMessage(widget, Widget.Msg.UpdateRequest);
         expect(widget.methods).to.contain('notifyLayout');
       });
-
     });
 
     describe('#onAfterShow()', () => {
-
       it('should be invoked just after the widget is made visible', () => {
         let widget = new LogWidget();
         Widget.attach(widget, document.body);
@@ -916,11 +895,9 @@ describe('@lumino/widgets', () => {
         expect(widget.methods).to.contain('notifyLayout');
         widget.dispose();
       });
-
     });
 
     describe('#onBeforeHide()', () => {
-
       it('should be invoked just before the widget is made not-visible', () => {
         let widget = new LogWidget();
         Widget.attach(widget, document.body);
@@ -946,11 +923,9 @@ describe('@lumino/widgets', () => {
         expect(widget.methods).to.contain('notifyLayout');
         widget.dispose();
       });
-
     });
 
     describe('#onAfterAttach()', () => {
-
       it('should be invoked just after the widget is attached', () => {
         let widget = new LogWidget();
         Widget.attach(widget, document.body);
@@ -984,11 +959,9 @@ describe('@lumino/widgets', () => {
         expect(widget.methods).to.contain('notifyLayout');
         widget.dispose();
       });
-
     });
 
     describe('#onBeforeDetach()', () => {
-
       it('should be invoked just before the widget is detached', () => {
         let widget = new LogWidget();
         Widget.attach(widget, document.body);
@@ -1013,11 +986,9 @@ describe('@lumino/widgets', () => {
         Widget.detach(widget);
         expect(widget.methods).to.contain('notifyLayout');
       });
-
     });
 
     describe('#onChildAdded()', () => {
-
       it('should be invoked when a child is added', () => {
         let child = new Widget();
         let parent = new LogWidget();
@@ -1033,7 +1004,6 @@ describe('@lumino/widgets', () => {
       });
 
       context('`msg` parameter', () => {
-
         it('should be a `ChildMessage`', () => {
           let child = new Widget();
           let parent = new LogWidget();
@@ -1054,13 +1024,10 @@ describe('@lumino/widgets', () => {
           child.parent = parent;
           expect((parent.raw[0] as Widget.ChildMessage).child).to.equal(child);
         });
-
       });
-
     });
 
     describe('#onChildRemoved()', () => {
-
       it('should be invoked when a child is removed', () => {
         let child = new Widget();
         let parent = new LogWidget();
@@ -1079,7 +1046,6 @@ describe('@lumino/widgets', () => {
       });
 
       context('`msg` parameter', () => {
-
         it('should be a `ChildMessage`', () => {
           let child = new Widget();
           let parent = new LogWidget();
@@ -1095,7 +1061,9 @@ describe('@lumino/widgets', () => {
           child.parent = parent;
           parent.raw = [];
           child.parent = null;
-          expect((parent.raw[0] as Widget.ChildMessage).type).to.equal('child-removed');
+          expect((parent.raw[0] as Widget.ChildMessage).type).to.equal(
+            'child-removed'
+          );
         });
 
         it('should have the correct `child`', () => {
@@ -1106,65 +1074,49 @@ describe('@lumino/widgets', () => {
           child.parent = null;
           expect((parent.raw[0] as Widget.ChildMessage).child).to.equal(child);
         });
-
       });
-
     });
 
     describe('.ChildMessage', () => {
-
       describe('#constructor()', () => {
-
         it('should accept the message type and child widget', () => {
           let msg = new Widget.ChildMessage('test', new Widget());
           expect(msg).to.be.an.instanceof(Widget.ChildMessage);
         });
-
       });
 
       describe('#child', () => {
-
         it('should be the child passed to the constructor', () => {
           let widget = new Widget();
           let msg = new Widget.ChildMessage('test', widget);
           expect(msg.child).to.equal(widget);
         });
-
       });
-
     });
 
     describe('.ResizeMessage', () => {
-
       describe('#constructor()', () => {
-
         it('should accept a width and height', () => {
           let msg = new Widget.ResizeMessage(100, 100);
           expect(msg).to.be.an.instanceof(Widget.ResizeMessage);
         });
-
       });
 
       describe('#width', () => {
-
         it('should be the width passed to the constructor', () => {
           let msg = new Widget.ResizeMessage(100, 200);
           expect(msg.width).to.equal(100);
         });
-
       });
 
       describe('#height', () => {
-
         it('should be the height passed to the constructor', () => {
           let msg = new Widget.ResizeMessage(100, 200);
           expect(msg.height).to.equal(200);
         });
-
       });
 
       describe('.UnknownSize', () => {
-
         it('should be a `ResizeMessage`', () => {
           let msg = Widget.ResizeMessage.UnknownSize;
           expect(msg).to.be.an.instanceof(Widget.ResizeMessage);
@@ -1179,13 +1131,10 @@ describe('@lumino/widgets', () => {
           let msg = Widget.ResizeMessage.UnknownSize;
           expect(msg.height).to.equal(-1);
         });
-
       });
-
     });
 
     describe('.attach()', () => {
-
       it('should attach a root widget to a host', () => {
         let widget = new Widget();
         expect(widget.isAttached).to.equal(false);
@@ -1198,20 +1147,26 @@ describe('@lumino/widgets', () => {
         let parent = new Widget();
         let child = new Widget();
         child.parent = parent;
-        expect(() => { Widget.attach(child, document.body); }).to.throw(Error);
+        expect(() => {
+          Widget.attach(child, document.body);
+        }).to.throw(Error);
       });
 
       it('should throw if the widget is already attached', () => {
         let widget = new Widget();
         Widget.attach(widget, document.body);
-        expect(() => { Widget.attach(widget, document.body); }).to.throw(Error);
+        expect(() => {
+          Widget.attach(widget, document.body);
+        }).to.throw(Error);
         widget.dispose();
       });
 
       it('should throw if the host is not attached to the DOM', () => {
         let widget = new Widget();
         let host = document.createElement('div');
-        expect(() => { Widget.attach(widget, host); }).to.throw(Error);
+        expect(() => {
+          Widget.attach(widget, host);
+        }).to.throw(Error);
       });
 
       it('should dispatch an `after-attach` message', () => {
@@ -1223,11 +1178,9 @@ describe('@lumino/widgets', () => {
         expect(widget.messages).to.contain('after-attach');
         widget.dispose();
       });
-
     });
 
     describe('.detach()', () => {
-
       it('should detach a root widget from its host', () => {
         let widget = new Widget();
         Widget.attach(widget, document.body);
@@ -1242,13 +1195,17 @@ describe('@lumino/widgets', () => {
         let child = new Widget();
         child.parent = parent;
         Widget.attach(parent, document.body);
-        expect(() => { Widget.detach(child); }).to.throw(Error);
+        expect(() => {
+          Widget.detach(child);
+        }).to.throw(Error);
         parent.dispose();
       });
 
       it('should throw if the widget is not attached', () => {
         let widget = new Widget();
-        expect(() => { Widget.detach(widget); }).to.throw(Error);
+        expect(() => {
+          Widget.detach(widget);
+        }).to.throw(Error);
       });
 
       it('should dispatch a `before-detach` message', () => {
@@ -1259,9 +1216,6 @@ describe('@lumino/widgets', () => {
         expect(widget.messages).to.contain('before-detach');
         widget.dispose();
       });
-
     });
-
   });
-
 });

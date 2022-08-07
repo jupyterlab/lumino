@@ -8,33 +8,30 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 import {
-  ArrayExt, ChainIterator, IIterator, chain, each, empty, map, once, reduce
+  ArrayExt,
+  chain,
+  ChainIterator,
+  each,
+  empty,
+  IIterator,
+  map,
+  once,
+  reduce
 } from '@lumino/algorithm';
 
-import {
-  ElementExt
-} from '@lumino/domutils';
+import { ElementExt } from '@lumino/domutils';
 
-import {
-  Message, MessageLoop
-} from '@lumino/messaging';
+import { Message, MessageLoop } from '@lumino/messaging';
 
-import {
-  BoxEngine, BoxSizer
-} from './boxengine';
+import { BoxEngine, BoxSizer } from './boxengine';
 
-import {
-  Layout, LayoutItem
-} from './layout';
+import { Layout, LayoutItem } from './layout';
 
-import {
-  TabBar
-} from './tabbar';
+import { TabBar } from './tabbar';
 
-import {
-  Widget
-} from './widget';
+import Utils from './utils';
 
+import { Widget } from './widget';
 
 /**
  * A layout which provides a flexible docking arrangement.
@@ -44,8 +41,7 @@ import {
  * from the generated tab bars and managing the visibility of widgets
  * and tab bars as needed.
  */
-export
-class DockLayout extends Layout {
+export class DockLayout extends Layout {
   /**
    * Construct a new dock layout.
    *
@@ -55,8 +51,13 @@ class DockLayout extends Layout {
     super();
     this.renderer = options.renderer;
     if (options.spacing !== undefined) {
-      this._spacing = Private.clampSpacing(options.spacing);
+      this._spacing = Utils.clampDimension(options.spacing);
     }
+    this._document = options.document || document;
+    this._hiddenMode =
+      options.hiddenMode !== undefined
+        ? options.hiddenMode
+        : Widget.HiddenMode.Display;
   }
 
   /**
@@ -70,7 +71,9 @@ class DockLayout extends Layout {
     let widgets = this.iter();
 
     // Dispose of the layout items.
-    this._items.forEach(item => { item.dispose(); });
+    this._items.forEach(item => {
+      item.dispose();
+    });
 
     // Clear the layout state before disposing the widgets.
     this._box = null;
@@ -78,7 +81,9 @@ class DockLayout extends Layout {
     this._items.clear();
 
     // Dispose of the widgets contained in the old layout root.
-    each(widgets, widget => { widget.dispose(); });
+    each(widgets, widget => {
+      widget.dispose();
+    });
 
     // Dispose of the base class.
     super.dispose();
@@ -88,6 +93,30 @@ class DockLayout extends Layout {
    * The renderer used by the dock layout.
    */
   readonly renderer: DockLayout.IRenderer;
+
+  /**
+   * The method for hiding child widgets.
+   *
+   * #### Notes
+   * If there is only one child widget, `Display` hiding mode will be used
+   * regardless of this setting.
+   */
+  get hiddenMode(): Widget.HiddenMode {
+    return this._hiddenMode;
+  }
+  set hiddenMode(v: Widget.HiddenMode) {
+    if (this._hiddenMode === v) {
+      return;
+    }
+    this._hiddenMode = v;
+    each(this.tabBars(), bar => {
+      if (bar.titles.length > 1) {
+        bar.titles.forEach(title => {
+          title.owner.hiddenMode = this._hiddenMode;
+        });
+      }
+    });
+  }
 
   /**
    * Get the inter-element spacing for the dock layout.
@@ -100,7 +129,7 @@ class DockLayout extends Layout {
    * Set the inter-element spacing for the dock layout.
    */
   set spacing(value: number) {
-    value = Private.clampSpacing(value);
+    value = Utils.clampDimension(value);
     if (this._spacing === value) {
       return;
     }
@@ -199,9 +228,6 @@ class DockLayout extends Layout {
   moveHandle(handle: HTMLDivElement, offsetX: number, offsetY: number): void {
     // Bail early if there is no root or if the handle is hidden.
     let hidden = handle.classList.contains('lm-mod-hidden');
-    /* <DEPRECATED> */
-    hidden = hidden || handle.classList.contains('p-mod-hidden');
-    /* </DEPRECATED> */
     if (!this._root || hidden) {
       return;
     }
@@ -314,10 +340,16 @@ class DockLayout extends Layout {
 
     // Create the root node for the new config.
     if (mainConfig) {
-      this._root = Private.realizeAreaConfig(mainConfig, {
-        createTabBar: () => this._createTabBar(),
-        createHandle: () => this._createHandle()
-      });
+      this._root = Private.realizeAreaConfig(
+        mainConfig,
+        {
+          // Ignoring optional `document` argument as we must reuse `this._document`
+          createTabBar: (document?: Document | ShadowRoot) =>
+            this._createTabBar(),
+          createHandle: () => this._createHandle()
+        },
+        this._document
+      );
     } else {
       this._root = null;
     }
@@ -369,24 +401,24 @@ class DockLayout extends Layout {
 
     // Insert the widget according to the insert mode.
     switch (mode) {
-    case 'tab-after':
-      this._insertTab(widget, ref, refNode, true);
-      break;
-    case 'tab-before':
-      this._insertTab(widget, ref, refNode, false);
-      break;
-    case 'split-top':
-      this._insertSplit(widget, ref, refNode, 'vertical', false);
-      break;
-    case 'split-left':
-      this._insertSplit(widget, ref, refNode, 'horizontal', false);
-      break;
-    case 'split-right':
-      this._insertSplit(widget, ref, refNode, 'horizontal', true);
-      break;
-    case 'split-bottom':
-      this._insertSplit(widget, ref, refNode, 'vertical', true);
-      break;
+      case 'tab-after':
+        this._insertTab(widget, ref, refNode, true);
+        break;
+      case 'tab-before':
+        this._insertTab(widget, ref, refNode, false);
+        break;
+      case 'split-top':
+        this._insertSplit(widget, ref, refNode, 'vertical', false);
+        break;
+      case 'split-left':
+        this._insertSplit(widget, ref, refNode, 'horizontal', false);
+        break;
+      case 'split-right':
+        this._insertSplit(widget, ref, refNode, 'horizontal', true);
+        break;
+      case 'split-bottom':
+        this._insertSplit(widget, ref, refNode, 'vertical', true);
+        break;
     }
 
     // Do nothing else if there is no parent widget.
@@ -440,7 +472,10 @@ class DockLayout extends Layout {
    * @returns The geometry of the tab area at the given position, or
    *   `null` if there is no tab area at the given position.
    */
-  hitTestTabAreas(clientX: number, clientY: number): DockLayout.ITabAreaGeometry | null {
+  hitTestTabAreas(
+    clientX: number,
+    clientY: number
+  ): DockLayout.ITabAreaGeometry | null {
     // Bail early if hit testing cannot produce valid results.
     if (!this._root || !this.parent || !this.parent.isVisible) {
       return null;
@@ -485,10 +520,14 @@ class DockLayout extends Layout {
     super.init();
 
     // Attach each widget to the parent.
-    each(this, widget => { this.attachWidget(widget); });
+    each(this, widget => {
+      this.attachWidget(widget);
+    });
 
     // Attach each handle to the parent.
-    each(this.handles(), handle => { this.parent!.node.appendChild(handle); });
+    each(this.handles(), handle => {
+      this.parent!.node.appendChild(handle);
+    });
 
     // Post a fit request for the parent widget.
     this.parent!.fit();
@@ -639,9 +678,18 @@ class DockLayout extends Layout {
       return;
     }
 
+    Private.removeAria(widget);
+
     // If there are multiple tabs, just remove the widget's tab.
     if (tabNode.tabBar.titles.length > 1) {
       tabNode.tabBar.removeTab(widget.title);
+      if (
+        this._hiddenMode === Widget.HiddenMode.Scale &&
+        tabNode.tabBar.titles.length == 1
+      ) {
+        const existingWidget = tabNode.tabBar.titles[0].owner;
+        existingWidget.hiddenMode = Widget.HiddenMode.Display;
+      }
       return;
     }
 
@@ -759,7 +807,12 @@ class DockLayout extends Layout {
    * #### Notes
    * This does not attach the widget to the parent widget.
    */
-  private _insertTab(widget: Widget, ref: Widget | null, refNode: Private.TabLayoutNode | null, after: boolean): void {
+  private _insertTab(
+    widget: Widget,
+    ref: Widget | null,
+    refNode: Private.TabLayoutNode | null,
+    after: boolean
+  ): void {
     // Do nothing if the tab is inserted next to itself.
     if (widget === ref) {
       return;
@@ -770,6 +823,7 @@ class DockLayout extends Layout {
       let tabNode = new Private.TabLayoutNode(this._createTabBar());
       tabNode.tabBar.addTab(widget.title);
       this._root = tabNode;
+      Private.addAria(widget, tabNode.tabBar);
       return;
     }
 
@@ -793,8 +847,25 @@ class DockLayout extends Layout {
       index = refNode.tabBar.currentIndex;
     }
 
+    // Using transform create an additional layer in the pixel pipeline
+    // to limit the number of layer, it is set only if there is more than one widget.
+    if (
+      this._hiddenMode === Widget.HiddenMode.Scale &&
+      refNode.tabBar.titles.length > 0
+    ) {
+      if (refNode.tabBar.titles.length == 1) {
+        const existingWidget = refNode.tabBar.titles[0].owner;
+        existingWidget.hiddenMode = Widget.HiddenMode.Scale;
+      }
+
+      widget.hiddenMode = Widget.HiddenMode.Scale;
+    } else {
+      widget.hiddenMode = Widget.HiddenMode.Display;
+    }
+
     // Insert the widget's tab relative to the target index.
     refNode.tabBar.insertTab(index + (after ? 1 : 0), widget.title);
+    Private.addAria(widget, refNode.tabBar);
   }
 
   /**
@@ -803,7 +874,13 @@ class DockLayout extends Layout {
    * #### Notes
    * This does not attach the widget to the parent widget.
    */
-  private _insertSplit(widget: Widget, ref: Widget | null, refNode: Private.TabLayoutNode | null, orientation: Private.Orientation, after: boolean): void {
+  private _insertSplit(
+    widget: Widget,
+    ref: Widget | null,
+    refNode: Private.TabLayoutNode | null,
+    orientation: Private.Orientation,
+    after: boolean
+  ): void {
     // Do nothing if there is no effective split.
     if (widget === ref && refNode && refNode.tabBar.titles.length === 1) {
       return;
@@ -815,6 +892,7 @@ class DockLayout extends Layout {
     // Create the tab layout node to hold the widget.
     let tabNode = new Private.TabLayoutNode(this._createTabBar());
     tabNode.tabBar.addTab(widget.title);
+    Private.addAria(widget, tabNode.tabBar);
 
     // Set the root if it does not exist.
     if (!this._root) {
@@ -863,7 +941,7 @@ class DockLayout extends Layout {
       splitNode.normalizeSizes();
 
       // Consume half the space for the insert location.
-      let s = splitNode.sizers[i].sizeHint /= 2;
+      let s = (splitNode.sizers[i].sizeHint /= 2);
 
       // Insert the tab node sized to the other half.
       let j = i + (after ? 1 : 0);
@@ -908,7 +986,9 @@ class DockLayout extends Layout {
   /**
    * Ensure the root is a split node with the given orientation.
    */
-  private _splitRoot(orientation: Private.Orientation): Private.SplitLayoutNode {
+  private _splitRoot(
+    orientation: Private.Orientation
+  ): Private.SplitLayoutNode {
     // Bail early if the root already meets the requirements.
     let oldRoot = this._root;
     if (oldRoot instanceof Private.SplitLayoutNode) {
@@ -918,7 +998,7 @@ class DockLayout extends Layout {
     }
 
     // Create a new root node with the specified orientation.
-    let newRoot = this._root = new Private.SplitLayoutNode(orientation);
+    let newRoot = (this._root = new Private.SplitLayoutNode(orientation));
 
     // Add the old root to the new root.
     if (oldRoot) {
@@ -948,7 +1028,7 @@ class DockLayout extends Layout {
     }
 
     // Update the box sizing and add it to the computed min size.
-    let box = this._box = ElementExt.boxSizing(this.parent!.node);
+    let box = (this._box = ElementExt.boxSizing(this.parent!.node));
     minW += box.horizontalSum;
     minH += box.verticalSum;
 
@@ -1018,7 +1098,7 @@ class DockLayout extends Layout {
    */
   private _createTabBar(): TabBar<Widget> {
     // Create the tab bar using the renderer.
-    let tabBar = this.renderer.createTabBar();
+    let tabBar = this.renderer.createTabBar(this._document);
 
     // Enforce necessary tab bar behavior.
     tabBar.orientation = 'horizontal';
@@ -1064,20 +1144,33 @@ class DockLayout extends Layout {
   private _dirty = false;
   private _root: Private.LayoutNode | null = null;
   private _box: ElementExt.IBoxSizing | null = null;
+  private _document: Document | ShadowRoot;
+  private _hiddenMode: Widget.HiddenMode;
   private _items: Private.ItemMap = new Map<Widget, LayoutItem>();
 }
-
 
 /**
  * The namespace for the `DockLayout` class statics.
  */
-export
-namespace DockLayout {
+export namespace DockLayout {
   /**
    * An options object for creating a dock layout.
    */
-  export
-  interface IOptions {
+  export interface IOptions {
+    /**
+     * The document to use with the dock panel.
+     *
+     * The default is the global `document` instance.
+     */
+    document?: Document | ShadowRoot;
+
+    /**
+     * The method for hiding widgets.
+     *
+     * The default is `Widget.HiddenMode.Display`.
+     */
+    hiddenMode?: Widget.HiddenMode;
+
     /**
      * The renderer to use for the dock layout.
      */
@@ -1094,14 +1187,13 @@ namespace DockLayout {
   /**
    * A renderer for use with a dock layout.
    */
-  export
-  interface IRenderer {
+  export interface IRenderer {
     /**
      * Create a new tab bar for use with a dock layout.
      *
      * @returns A new tab bar for a dock layout.
      */
-    createTabBar(): TabBar<Widget>;
+    createTabBar(document?: Document | ShadowRoot): TabBar<Widget>;
 
     /**
      * Create a new handle node for use with a dock layout.
@@ -1117,9 +1209,8 @@ namespace DockLayout {
    * An insert mode is used to specify how a widget should be added
    * to the dock layout relative to a reference widget.
    */
-  export
-  type InsertMode = (
-    /**
+  export type InsertMode =
+    | /**
      * The area to the top of the reference widget.
      *
      * The widget will be inserted just above the reference widget.
@@ -1127,7 +1218,7 @@ namespace DockLayout {
      * If the reference widget is null or invalid, the widget will be
      * inserted at the top edge of the dock layout.
      */
-    'split-top' |
+    'split-top'
 
     /**
      * The area to the left of the reference widget.
@@ -1137,7 +1228,7 @@ namespace DockLayout {
      * If the reference widget is null or invalid, the widget will be
      * inserted at the left edge of the dock layout.
      */
-    'split-left' |
+    | 'split-left'
 
     /**
      * The area to the right of the reference widget.
@@ -1147,7 +1238,7 @@ namespace DockLayout {
      * If the reference widget is null or invalid, the widget will be
      * inserted  at the right edge of the dock layout.
      */
-    'split-right' |
+    | 'split-right'
 
     /**
      * The area to the bottom of the reference widget.
@@ -1157,7 +1248,7 @@ namespace DockLayout {
      * If the reference widget is null or invalid, the widget will be
      * inserted at the bottom edge of the dock layout.
      */
-    'split-bottom' |
+    | 'split-bottom'
 
     /**
      * The tab position before the reference widget.
@@ -1167,7 +1258,7 @@ namespace DockLayout {
      * If the reference widget is null or invalid, a sensible default
      * will be used.
      */
-    'tab-before' |
+    | 'tab-before'
 
     /**
      * The tab position after the reference widget.
@@ -1177,14 +1268,12 @@ namespace DockLayout {
      * If the reference widget is null or invalid, a sensible default
      * will be used.
      */
-    'tab-after'
-  );
+    | 'tab-after';
 
   /**
    * An options object for adding a widget to the dock layout.
    */
-  export
-  interface IAddOptions {
+  export interface IAddOptions {
     /**
      * The insertion mode for adding the widget.
      *
@@ -1203,8 +1292,7 @@ namespace DockLayout {
   /**
    * A layout config object for a tab area.
    */
-  export
-  interface ITabAreaConfig {
+  export interface ITabAreaConfig {
     /**
      * The discriminated type of the config object.
      */
@@ -1224,8 +1312,7 @@ namespace DockLayout {
   /**
    * A layout config object for a split area.
    */
-  export
-  interface ISplitAreaConfig {
+  export interface ISplitAreaConfig {
     /**
      * The discriminated type of the config object.
      */
@@ -1250,14 +1337,12 @@ namespace DockLayout {
   /**
    * A type alias for a general area config.
    */
-  export
-  type AreaConfig = ITabAreaConfig | ISplitAreaConfig;
+  export type AreaConfig = ITabAreaConfig | ISplitAreaConfig;
 
   /**
    * A dock layout configuration object.
    */
-  export
-  interface ILayoutConfig {
+  export interface ILayoutConfig {
     /**
      * The layout config for the main dock area.
      */
@@ -1267,8 +1352,7 @@ namespace DockLayout {
   /**
    * An object which represents the geometry of a tab area.
    */
-  export
-  interface ITabAreaGeometry {
+  export interface ITabAreaGeometry {
     /**
      * The tab bar for the tab area.
      */
@@ -1346,7 +1430,6 @@ namespace DockLayout {
   }
 }
 
-
 /**
  * The namespace for the module implementation details.
  */
@@ -1354,40 +1437,27 @@ namespace Private {
   /**
    * A fraction used for sizing root panels; ~= `1 / golden_ratio`.
    */
-  export
-  const GOLDEN_RATIO = 0.618;
+  export const GOLDEN_RATIO = 0.618;
 
   /**
    * A type alias for a dock layout node.
    */
-  export
-  type LayoutNode = TabLayoutNode | SplitLayoutNode;
+  export type LayoutNode = TabLayoutNode | SplitLayoutNode;
 
   /**
    * A type alias for the orientation of a split layout node.
    */
-  export
-  type Orientation = 'horizontal' | 'vertical';
+  export type Orientation = 'horizontal' | 'vertical';
 
   /**
    * A type alias for a layout item map.
    */
-  export
-  type ItemMap = Map<Widget, LayoutItem>;
-
-  /**
-   * Clamp a spacing value to an integer >= 0.
-   */
-  export
-  function clampSpacing(value: number): number {
-    return Math.max(0, Math.floor(value));
-  }
+  export type ItemMap = Map<Widget, LayoutItem>;
 
   /**
    * Create a box sizer with an initial size hint.
    */
-  export
-  function createSizer(hint: number): BoxSizer {
+  export function createSizer(hint: number): BoxSizer {
     let sizer = new BoxSizer();
     sizer.sizeHint = hint;
     sizer.size = hint;
@@ -1397,8 +1467,10 @@ namespace Private {
   /**
    * Normalize an area config object and collect the visited widgets.
    */
-  export
-  function normalizeAreaConfig(config: DockLayout.AreaConfig, widgetSet: Set<Widget>): DockLayout.AreaConfig | null {
+  export function normalizeAreaConfig(
+    config: DockLayout.AreaConfig,
+    widgetSet: Set<Widget>
+  ): DockLayout.AreaConfig | null {
     let result: DockLayout.AreaConfig | null;
     if (config.type === 'tab-area') {
       result = normalizeTabAreaConfig(config, widgetSet);
@@ -1411,13 +1483,16 @@ namespace Private {
   /**
    * Convert a normalized area config into a layout tree.
    */
-  export
-  function realizeAreaConfig(config: DockLayout.AreaConfig, renderer: DockLayout.IRenderer): LayoutNode {
+  export function realizeAreaConfig(
+    config: DockLayout.AreaConfig,
+    renderer: DockLayout.IRenderer,
+    document: Document | ShadowRoot
+  ): LayoutNode {
     let node: LayoutNode;
     if (config.type === 'tab-area') {
-      node = realizeTabAreaConfig(config, renderer);
+      node = realizeTabAreaConfig(config, renderer, document);
     } else {
-      node = realizeSplitAreaConfig(config, renderer);
+      node = realizeSplitAreaConfig(config, renderer, document);
     }
     return node;
   }
@@ -1425,8 +1500,7 @@ namespace Private {
   /**
    * A layout node which holds the data for a tabbed area.
    */
-  export
-  class TabLayoutNode {
+  export class TabLayoutNode {
     /**
      * Construct a new tab layout node.
      *
@@ -1530,7 +1604,9 @@ namespace Private {
     /**
      * Find the split layout node which contains the given handle.
      */
-    findSplitNode(handle: HTMLDivElement): { index: number, node: SplitLayoutNode } | null {
+    findSplitNode(
+      handle: HTMLDivElement
+    ): { index: number; node: SplitLayoutNode } | null {
       return null;
     }
 
@@ -1631,7 +1707,14 @@ namespace Private {
     /**
      * Update the layout tree.
      */
-    update(left: number, top: number, width: number, height: number, spacing: number, items: ItemMap): void {
+    update(
+      left: number,
+      top: number,
+      width: number,
+      height: number,
+      spacing: number,
+      items: ItemMap
+    ): void {
       // Update the layout box values.
       this._top = top;
       this._left = left;
@@ -1671,8 +1754,7 @@ namespace Private {
   /**
    * A layout node which holds the data for a split area.
    */
-  export
-  class SplitLayoutNode {
+  export class SplitLayoutNode {
     /**
      * Construct a new split layout node.
      *
@@ -1768,7 +1850,9 @@ namespace Private {
     /**
      * Find the split layout node which contains the given handle.
      */
-    findSplitNode(handle: HTMLDivElement): { index: number, node: SplitLayoutNode } | null {
+    findSplitNode(
+      handle: HTMLDivElement
+    ): { index: number; node: SplitLayoutNode } | null {
       let index = this.handles.indexOf(handle);
       if (index !== -1) {
         return { index, node: this };
@@ -1823,14 +1907,8 @@ namespace Private {
         handle.setAttribute('data-orientation', this.orientation);
         if (i === this.handles.length - 1) {
           handle.classList.add('lm-mod-hidden');
-          /* <DEPRECATED> */
-          handle.classList.add('p-mod-hidden');
-          /* </DEPRECATED> */
         } else {
           handle.classList.remove('lm-mod-hidden');
-          /* <DEPRECATED> */
-          handle.classList.remove('p-mod-hidden');
-          /* </DEPRECATED> */
         }
       });
     }
@@ -1841,7 +1919,9 @@ namespace Private {
      * This sets the size hint of each sizer to its current size.
      */
     holdSizes(): void {
-      each(this.sizers, sizer => { sizer.sizeHint = sizer.size; });
+      each(this.sizers, sizer => {
+        sizer.sizeHint = sizer.size;
+      });
     }
 
     /**
@@ -1903,9 +1983,13 @@ namespace Private {
 
       // Normalize the sizes based on the sum.
       if (sum === 0) {
-        each(sizes, (size, i) => { sizes[i] = 1 / n; });
+        each(sizes, (size, i) => {
+          sizes[i] = 1 / n;
+        });
       } else {
-        each(sizes, (size, i) => { sizes[i] = size / sum; });
+        each(sizes, (size, i) => {
+          sizes[i] = size / sum;
+        });
       }
 
       // Return the normalized sizes.
@@ -1947,7 +2031,14 @@ namespace Private {
     /**
      * Update the layout tree.
      */
-    update(left: number, top: number, width: number, height: number, spacing: number, items: ItemMap): void {
+    update(
+      left: number,
+      top: number,
+      width: number,
+      height: number,
+      spacing: number,
+      items: ItemMap
+    ): void {
       // Compute the available layout space.
       let horizontal = this.orientation === 'horizontal';
       let fixed = Math.max(0, this.children.length - 1) * spacing;
@@ -1955,7 +2046,9 @@ namespace Private {
 
       // De-normalize the sizes if needed.
       if (this.normalized) {
-        each(this.sizers, sizer => { sizer.sizeHint *= space; });
+        each(this.sizers, sizer => {
+          sizer.sizeHint *= space;
+        });
         this.normalized = false;
       }
 
@@ -1988,10 +2081,31 @@ namespace Private {
     }
   }
 
+  export function addAria(widget: Widget, tabBar: TabBar<Widget>): void {
+    widget.node.setAttribute('role', 'tabpanel');
+    let renderer = tabBar.renderer;
+    if (renderer instanceof TabBar.Renderer) {
+      let tabId = renderer.createTabKey({
+        title: widget.title,
+        current: false,
+        zIndex: 0
+      });
+      widget.node.setAttribute('aria-labelledby', tabId);
+    }
+  }
+
+  export function removeAria(widget: Widget): void {
+    widget.node.removeAttribute('role');
+    widget.node.removeAttribute('aria-labelledby');
+  }
+
   /**
    * Normalize a tab area config and collect the visited widgets.
    */
-  function normalizeTabAreaConfig(config: DockLayout.ITabAreaConfig, widgetSet: Set<Widget>): DockLayout.ITabAreaConfig | null {
+  function normalizeTabAreaConfig(
+    config: DockLayout.ITabAreaConfig,
+    widgetSet: Set<Widget>
+  ): DockLayout.ITabAreaConfig | null {
     // Bail early if there is no content.
     if (config.widgets.length === 0) {
       return null;
@@ -2026,7 +2140,10 @@ namespace Private {
   /**
    * Normalize a split area config and collect the visited widgets.
    */
-  function normalizeSplitAreaConfig(config: DockLayout.ISplitAreaConfig, widgetSet: Set<Widget>): DockLayout.AreaConfig | null {
+  function normalizeSplitAreaConfig(
+    config: DockLayout.ISplitAreaConfig,
+    widgetSet: Set<Widget>
+  ): DockLayout.AreaConfig | null {
     // Set up the result variables.
     let orientation = config.orientation;
     let children: DockLayout.AreaConfig[] = [];
@@ -2069,14 +2186,19 @@ namespace Private {
   /**
    * Convert a normalized tab area config into a layout tree.
    */
-  function realizeTabAreaConfig(config: DockLayout.ITabAreaConfig, renderer: DockLayout.IRenderer): TabLayoutNode {
+  function realizeTabAreaConfig(
+    config: DockLayout.ITabAreaConfig,
+    renderer: DockLayout.IRenderer,
+    document: Document | ShadowRoot
+  ): TabLayoutNode {
     // Create the tab bar for the layout node.
-    let tabBar = renderer.createTabBar();
+    let tabBar = renderer.createTabBar(document);
 
     // Hide each widget and add it to the tab bar.
     each(config.widgets, widget => {
       widget.hide();
       tabBar.addTab(widget.title);
+      Private.addAria(widget, tabBar);
     });
 
     // Set the current index of the tab bar.
@@ -2089,14 +2211,18 @@ namespace Private {
   /**
    * Convert a normalized split area config into a layout tree.
    */
-  function realizeSplitAreaConfig(config: DockLayout.ISplitAreaConfig, renderer: DockLayout.IRenderer): SplitLayoutNode {
+  function realizeSplitAreaConfig(
+    config: DockLayout.ISplitAreaConfig,
+    renderer: DockLayout.IRenderer,
+    document: Document | ShadowRoot
+  ): SplitLayoutNode {
     // Create the split layout node.
     let node = new SplitLayoutNode(config.orientation);
 
     // Add each child to the layout node.
     each(config.children, (child, i) => {
       // Create the child data for the layout node.
-      let childNode = realizeAreaConfig(child, renderer);
+      let childNode = realizeAreaConfig(child, renderer, document);
       let sizer = createSizer(config.sizes[i]);
       let handle = renderer.createHandle();
 

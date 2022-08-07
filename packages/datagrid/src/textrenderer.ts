@@ -7,20 +7,14 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  CellRenderer
-} from './cellrenderer';
+import { CellRenderer } from './cellrenderer';
 
-import {
-  GraphicsContext
-} from './graphicscontext';
-
+import { GraphicsContext } from './graphicscontext';
 
 /**
  * A cell renderer which renders data values as text.
  */
-export
-class TextRenderer extends CellRenderer {
+export class TextRenderer extends CellRenderer {
   /**
    * Construct a new text renderer.
    *
@@ -35,6 +29,7 @@ class TextRenderer extends CellRenderer {
     this.horizontalAlignment = options.horizontalAlignment || 'left';
     this.format = options.format || TextRenderer.formatGeneric();
     this.elideDirection = options.elideDirection || 'right';
+    this.wrapText = options.wrapText || false;
   }
 
   /**
@@ -71,6 +66,11 @@ class TextRenderer extends CellRenderer {
    * Which side to draw the ellipsis.
    */
   readonly elideDirection: CellRenderer.ConfigOption<TextRenderer.ElideDirection>;
+
+  /**
+   * Boolean flag for applying text wrapping.
+   */
+  readonly wrapText: CellRenderer.ConfigOption<boolean>;
 
   /**
    * Paint the content for a cell.
@@ -143,7 +143,13 @@ class TextRenderer extends CellRenderer {
     let hAlign = CellRenderer.resolveOption(this.horizontalAlignment, config);
 
     // Resolve the elision direction
-    let elideDirection = CellRenderer.resolveOption(this.elideDirection, config);
+    let elideDirection = CellRenderer.resolveOption(
+      this.elideDirection,
+      config
+    );
+
+    // Resolve the text wrapping flag
+    let wrapText = CellRenderer.resolveOption(this.wrapText, config);
 
     // Compute the padded text box height for the specified alignment.
     let boxHeight = config.height - (vAlign === 'center' ? 1 : 2);
@@ -163,35 +169,35 @@ class TextRenderer extends CellRenderer {
 
     // Compute the Y position for the text.
     switch (vAlign) {
-    case 'top':
-      textY = config.y + 2 + textHeight;
-      break;
-    case 'center':
-      textY = config.y + config.height / 2 + textHeight / 2;
-      break;
-    case 'bottom':
-      textY = config.y + config.height - 2;
-      break;
-    default:
-      throw 'unreachable';
+      case 'top':
+        textY = config.y + 2 + textHeight;
+        break;
+      case 'center':
+        textY = config.y + config.height / 2 + textHeight / 2;
+        break;
+      case 'bottom':
+        textY = config.y + config.height - 2;
+        break;
+      default:
+        throw 'unreachable';
     }
 
     // Compute the X position for the text.
     switch (hAlign) {
-    case 'left':
-      textX = config.x + 8;
-      boxWidth = config.width - 14;
-      break;
-    case 'center':
-      textX = config.x + config.width / 2;
-      boxWidth = config.width;
-      break;
-    case 'right':
-      textX = config.x + config.width - 8;
-      boxWidth = config.width - 14;
-      break;
-    default:
-      throw 'unreachable';
+      case 'left':
+        textX = config.x + 8;
+        boxWidth = config.width - 14;
+        break;
+      case 'center':
+        textX = config.x + config.width / 2;
+        boxWidth = config.width;
+        break;
+      case 'right':
+        textX = config.x + config.width - 8;
+        boxWidth = config.width - 14;
+        break;
+      default:
+        throw 'unreachable';
     }
 
     // Clip the cell if the text is taller than the text box height.
@@ -207,27 +213,108 @@ class TextRenderer extends CellRenderer {
     gc.textAlign = hAlign;
     gc.textBaseline = 'bottom';
 
+    // The current text width in pixels.
+    let textWidth = gc.measureText(text).width;
+
+    // Apply text wrapping if enabled.
+    if (wrapText && textWidth > boxWidth) {
+      // Make sure box clipping happens.
+      gc.beginPath();
+      gc.rect(config.x, config.y, config.width, config.height - 1);
+      gc.clip();
+
+      // Split column name to words based on
+      // whitespace preceding a word boundary.
+      // "Hello  world" --> ["Hello  ", "world"]
+      const wordsInColumn = text.split(/\s(?=\b)/);
+
+      // Y-coordinate offset for any additional lines
+      let curY = textY;
+      let textInCurrentLine = wordsInColumn.shift()!;
+
+      // Single word. Applying text wrap on word by splitting
+      // it into characters and fitting the maximum number of
+      // characters possible per line (box width).
+      if (wordsInColumn.length === 0) {
+        let curLineTextWidth = gc.measureText(textInCurrentLine).width;
+        while (curLineTextWidth > boxWidth && textInCurrentLine !== '') {
+          // Iterating from the end of the string until we find a
+          // substring (0,i) which has a width less than the box width.
+          for (let i = textInCurrentLine.length; i > 0; i--) {
+            const curSubString = textInCurrentLine.substring(0, i);
+            const curSubStringWidth = gc.measureText(curSubString).width;
+            if (curSubStringWidth < boxWidth || curSubString.length === 1) {
+              // Found a substring which has a width less than the current
+              // box width. Rendering that substring on the current line
+              // and setting the remainder of the parent string as the next
+              // string to iterate on for the next line.
+              const nextLineText = textInCurrentLine.substring(
+                i,
+                textInCurrentLine.length
+              );
+              textInCurrentLine = nextLineText;
+              curLineTextWidth = gc.measureText(textInCurrentLine).width;
+              gc.fillText(curSubString, textX, curY);
+              curY += textHeight;
+              // No need to continue iterating after we identified
+              // an index to break the string on.
+              break;
+            }
+          }
+        }
+      }
+
+      // Multiple words in column header. Fitting maximum
+      // number of words possible per line (box width).
+      else {
+        while (wordsInColumn.length !== 0) {
+          // Processing the next word in the queue.
+          const curWord = wordsInColumn.shift();
+          // Joining that word with the existing text for
+          // the current line.
+          const incrementedText = [textInCurrentLine, curWord].join(' ');
+          const incrementedTextWidth = gc.measureText(incrementedText).width;
+          if (incrementedTextWidth > boxWidth) {
+            // If the newly combined text has a width larger than
+            // the box width, we render the line before the current
+            // word was added. We set the current word as the next
+            // line.
+            gc.fillText(textInCurrentLine, textX, curY);
+            curY += textHeight;
+            textInCurrentLine = curWord!;
+          } else {
+            // The combined text hasd a width less than the box width. We
+            // set the the current line text to be the new combined text.
+            textInCurrentLine = incrementedText;
+          }
+        }
+      }
+      gc.fillText(textInCurrentLine!, textX, curY);
+      // Terminating the call here as we don't want
+      // to apply text eliding when wrapping is active.
+      return;
+    }
+
     // Elide text that is too long
     let elide = '\u2026';
-    let textWidth = gc.measureText(text).width;
 
     // Compute elided text
     if (elideDirection === 'right') {
-      while ((textWidth > boxWidth) && (text.length > 1)) {
+      while (textWidth > boxWidth && text.length > 1) {
         if (text.length > 4 && textWidth >= 2 * boxWidth) {
           // If text width is substantially bigger, take half the string
-          text = text.substring(0, (text.length / 2) + 1) + elide;
+          text = text.substring(0, text.length / 2 + 1) + elide;
         } else {
           // Otherwise incrementally remove the last character
           text = text.substring(0, text.length - 2) + elide;
         }
         textWidth = gc.measureText(text).width;
-      } 
+      }
     } else {
-      while ((textWidth > boxWidth) && (text.length > 1)) {
+      while (textWidth > boxWidth && text.length > 1) {
         if (text.length > 4 && textWidth >= 2 * boxWidth) {
           // If text width is substantially bigger, take half the string
-          text = elide + text.substring((text.length / 2));
+          text = elide + text.substring(text.length / 2);
         } else {
           // Otherwise incrementally remove the last character
           text = elide + text.substring(2);
@@ -241,35 +328,29 @@ class TextRenderer extends CellRenderer {
   }
 }
 
-
 /**
  * The namespace for the `TextRenderer` class statics.
  */
-export
-namespace TextRenderer {
+export namespace TextRenderer {
   /**
    * A type alias for the supported vertical alignment modes.
    */
-  export
-  type VerticalAlignment = 'top' | 'center' | 'bottom';
+  export type VerticalAlignment = 'top' | 'center' | 'bottom';
 
   /**
    * A type alias for the supported horizontal alignment modes.
    */
-  export
-  type HorizontalAlignment = 'left' | 'center' | 'right';
+  export type HorizontalAlignment = 'left' | 'center' | 'right';
 
   /**
    * A type alias for the supported ellipsis sides.
    */
-  export
-  type ElideDirection = 'left' | 'right';
+  export type ElideDirection = 'left' | 'right';
 
   /**
    * An options object for initializing a text renderer.
    */
-  export
-  interface IOptions {
+  export interface IOptions {
     /**
      * The font for drawing the cell text.
      *
@@ -319,13 +400,18 @@ namespace TextRenderer {
      */
     elideDirection?: CellRenderer.ConfigOption<ElideDirection>;
 
+    /**
+     * Whether or not to apply text wrapping.
+     *
+     * The default is `'false'`.
+     */
+    wrapText?: CellRenderer.ConfigOption<boolean>;
   }
 
   /**
    * A type alias for a format function.
    */
-  export
-  type FormatFunc = CellRenderer.ConfigFunc<string>;
+  export type FormatFunc = CellRenderer.ConfigFunc<string>;
 
   /**
    * Create a generic text format function.
@@ -338,8 +424,9 @@ namespace TextRenderer {
    * This formatter uses the builtin `String()` to coerce any value
    * to a string.
    */
-  export
-  function formatGeneric(options: formatGeneric.IOptions = {}): FormatFunc {
+  export function formatGeneric(
+    options: formatGeneric.IOptions = {}
+  ): FormatFunc {
     let missing = options.missing || '';
     return ({ value }) => {
       if (value === null || value === undefined) {
@@ -352,13 +439,11 @@ namespace TextRenderer {
   /**
    * The namespace for the `formatGeneric` function statics.
    */
-  export
-  namespace formatGeneric {
+  export namespace formatGeneric {
     /**
      * The options for creating a generic format function.
      */
-    export
-    interface IOptions {
+    export interface IOptions {
       /**
        * The text to use for a `null` or `undefined` data value.
        *
@@ -381,8 +466,7 @@ namespace TextRenderer {
    *
    * The `formatIntlNumber()` formatter is more flexible, but slower.
    */
-  export
-  function formatFixed(options: formatFixed.IOptions = {}): FormatFunc {
+  export function formatFixed(options: formatFixed.IOptions = {}): FormatFunc {
     let digits = options.digits;
     let missing = options.missing || '';
     return ({ value }) => {
@@ -396,13 +480,11 @@ namespace TextRenderer {
   /**
    * The namespace for the `formatFixed` function statics.
    */
-  export
-  namespace formatFixed {
+  export namespace formatFixed {
     /**
      * The options for creating a fixed format function.
      */
-    export
-    interface IOptions {
+    export interface IOptions {
       /**
        * The number of digits to include after the decimal point.
        *
@@ -432,8 +514,9 @@ namespace TextRenderer {
    *
    * The `formatIntlNumber()` formatter is more flexible, but slower.
    */
-  export
-  function formatPrecision(options: formatPrecision.IOptions = {}): FormatFunc {
+  export function formatPrecision(
+    options: formatPrecision.IOptions = {}
+  ): FormatFunc {
     let digits = options.digits;
     let missing = options.missing || '';
     return ({ value }) => {
@@ -447,13 +530,11 @@ namespace TextRenderer {
   /**
    * The namespace for the `formatPrecision` function statics.
    */
-  export
-  namespace formatPrecision {
+  export namespace formatPrecision {
     /**
      * The options for creating a precision format function.
      */
-    export
-    interface IOptions {
+    export interface IOptions {
       /**
        * The number of significant figures to include in the value.
        *
@@ -483,8 +564,9 @@ namespace TextRenderer {
    *
    * The `formatIntlNumber()` formatter is more flexible, but slower.
    */
-  export
-  function formatExponential(options: formatExponential.IOptions = {}): FormatFunc {
+  export function formatExponential(
+    options: formatExponential.IOptions = {}
+  ): FormatFunc {
     let digits = options.digits;
     let missing = options.missing || '';
     return ({ value }) => {
@@ -498,13 +580,11 @@ namespace TextRenderer {
   /**
    * The namespace for the `formatExponential` function statics.
    */
-  export
-  namespace formatExponential {
+  export namespace formatExponential {
     /**
      * The options for creating an exponential format function.
      */
-    export
-    interface IOptions {
+    export interface IOptions {
       /**
        * The number of digits to include after the decimal point.
        *
@@ -534,8 +614,9 @@ namespace TextRenderer {
    *
    * This is the most flexible (but slowest) number formatter.
    */
-  export
-  function formatIntlNumber(options: formatIntlNumber.IOptions = {}): FormatFunc {
+  export function formatIntlNumber(
+    options: formatIntlNumber.IOptions = {}
+  ): FormatFunc {
     let missing = options.missing || '';
     let nft = new Intl.NumberFormat(options.locales, options.options);
     return ({ value }) => {
@@ -549,13 +630,11 @@ namespace TextRenderer {
   /**
    * The namespace for the `formatIntlNumber` function statics.
    */
-  export
-  namespace formatIntlNumber {
+  export namespace formatIntlNumber {
     /**
      * The options for creating an intl number format function.
      */
-    export
-    interface IOptions {
+    export interface IOptions {
       /**
        * The locales to pass to the `Intl.NumberFormat` constructor.
        *
@@ -594,8 +673,7 @@ namespace TextRenderer {
    *
    * The `formatIntlDateTime()` formatter is more flexible, but slower.
    */
-  export
-  function formatDate(options: formatDate.IOptions = {}): FormatFunc {
+  export function formatDate(options: formatDate.IOptions = {}): FormatFunc {
     let missing = options.missing || '';
     return ({ value }) => {
       if (value === null || value === undefined) {
@@ -604,20 +682,18 @@ namespace TextRenderer {
       if (value instanceof Date) {
         return value.toDateString();
       }
-      return (new Date(value)).toDateString();
+      return new Date(value).toDateString();
     };
   }
 
   /**
    * The namespace for the `formatDate` function statics.
    */
-  export
-  namespace formatDate {
+  export namespace formatDate {
     /**
      * The options for creating a date format function.
      */
-    export
-    interface IOptions {
+    export interface IOptions {
       /**
        * The text to use for a `null` or `undefined` data value.
        *
@@ -642,8 +718,7 @@ namespace TextRenderer {
    *
    * The `formatIntlDateTime()` formatter is more flexible, but slower.
    */
-  export
-  function formatTime(options: formatTime.IOptions = {}): FormatFunc {
+  export function formatTime(options: formatTime.IOptions = {}): FormatFunc {
     let missing = options.missing || '';
     return ({ value }) => {
       if (value === null || value === undefined) {
@@ -652,20 +727,18 @@ namespace TextRenderer {
       if (value instanceof Date) {
         return value.toTimeString();
       }
-      return (new Date(value)).toTimeString();
+      return new Date(value).toTimeString();
     };
   }
 
   /**
    * The namespace for the `formatTime` function statics.
    */
-  export
-  namespace formatTime {
+  export namespace formatTime {
     /**
      * The options for creating a time format function.
      */
-    export
-    interface IOptions {
+    export interface IOptions {
       /**
        * The text to use for a `null` or `undefined` data value.
        *
@@ -690,8 +763,9 @@ namespace TextRenderer {
    *
    * The `formatIntlDateTime()` formatter is more flexible, but slower.
    */
-  export
-  function formatISODateTime(options: formatISODateTime.IOptions = {}): FormatFunc {
+  export function formatISODateTime(
+    options: formatISODateTime.IOptions = {}
+  ): FormatFunc {
     let missing = options.missing || '';
     return ({ value }) => {
       if (value === null || value === undefined) {
@@ -700,20 +774,18 @@ namespace TextRenderer {
       if (value instanceof Date) {
         return value.toISOString();
       }
-      return (new Date(value)).toISOString();
+      return new Date(value).toISOString();
     };
   }
 
   /**
    * The namespace for the `formatISODateTime` function statics.
    */
-  export
-  namespace formatISODateTime {
+  export namespace formatISODateTime {
     /**
      * The options for creating an ISO datetime format function.
      */
-    export
-    interface IOptions {
+    export interface IOptions {
       /**
        * The text to use for a `null` or `undefined` data value.
        *
@@ -738,8 +810,9 @@ namespace TextRenderer {
    *
    * The `formatIntlDateTime()` formatter is more flexible, but slower.
    */
-  export
-  function formatUTCDateTime(options: formatUTCDateTime.IOptions = {}): FormatFunc {
+  export function formatUTCDateTime(
+    options: formatUTCDateTime.IOptions = {}
+  ): FormatFunc {
     let missing = options.missing || '';
     return ({ value }) => {
       if (value === null || value === undefined) {
@@ -748,20 +821,18 @@ namespace TextRenderer {
       if (value instanceof Date) {
         return value.toUTCString();
       }
-      return (new Date(value)).toUTCString();
+      return new Date(value).toUTCString();
     };
   }
 
   /**
    * The namespace for the `formatUTCDateTime` function statics.
    */
-  export
-  namespace formatUTCDateTime {
+  export namespace formatUTCDateTime {
     /**
      * The options for creating a UTC datetime format function.
      */
-    export
-    interface IOptions {
+    export interface IOptions {
       /**
        * The text to use for a `null` or `undefined` data value.
        *
@@ -784,8 +855,9 @@ namespace TextRenderer {
    *
    * This is the most flexible (but slowest) datetime formatter.
    */
-  export
-  function formatIntlDateTime(options: formatIntlDateTime.IOptions = {}): FormatFunc {
+  export function formatIntlDateTime(
+    options: formatIntlDateTime.IOptions = {}
+  ): FormatFunc {
     let missing = options.missing || '';
     let dtf = new Intl.DateTimeFormat(options.locales, options.options);
     return ({ value }) => {
@@ -799,13 +871,11 @@ namespace TextRenderer {
   /**
    * The namespace for the `formatIntlDateTime` function statics.
    */
-  export
-  namespace formatIntlDateTime {
+  export namespace formatIntlDateTime {
     /**
      * The options for creating an intl datetime format function.
      */
-    export
-    interface IOptions {
+    export interface IOptions {
       /**
        * The locales to pass to the `Intl.DateTimeFormat` constructor.
        *
@@ -842,8 +912,7 @@ namespace TextRenderer {
    * will incur a DOM reflow, but the return value is cached, so any
    * subsequent call for the same font will return the cached value.
    */
-  export
-  function measureFontHeight(font: string): number {
+  export function measureFontHeight(font: string): number {
     // Look up the cached font height.
     let height = Private.fontHeightCache[font];
 
@@ -877,7 +946,6 @@ namespace TextRenderer {
   }
 }
 
-
 /**
  * The namespace for the module implementation details.
  */
@@ -885,14 +953,13 @@ namespace Private {
   /**
    * A cache of measured font heights.
    */
-  export
-  const fontHeightCache: { [font: string]: number } = Object.create(null);
+  export const fontHeightCache: { [font: string]: number } =
+    Object.create(null);
 
   /**
    * The DOM node used for font height measurement.
    */
-  export
-  const fontMeasurementNode = (() => {
+  export const fontMeasurementNode = (() => {
     let node = document.createElement('div');
     node.style.position = 'absolute';
     node.style.top = '-99999px';
@@ -905,8 +972,7 @@ namespace Private {
   /**
    * The GC used for font measurement.
    */
-  export
-  const fontMeasurementGC = (() => {
+  export const fontMeasurementGC = (() => {
     let canvas = document.createElement('canvas');
     canvas.width = 0;
     canvas.height = 0;

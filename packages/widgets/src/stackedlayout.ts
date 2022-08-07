@@ -7,30 +7,17 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  ArrayExt, each
-} from '@lumino/algorithm';
+import { ArrayExt, each } from '@lumino/algorithm';
 
-import {
-  ElementExt
-} from '@lumino/domutils';
+import { ElementExt } from '@lumino/domutils';
 
-import {
-  Message, MessageLoop
-} from '@lumino/messaging';
+import { Message, MessageLoop } from '@lumino/messaging';
 
-import {
-  LayoutItem
-} from './layout';
+import { Layout, LayoutItem } from './layout';
 
-import {
-  PanelLayout
-} from './panellayout';
+import { PanelLayout } from './panellayout';
 
-import {
-  Widget
-} from './widget';
-
+import { Widget } from './widget';
 
 /**
  * A layout where visible widgets are stacked atop one another.
@@ -38,14 +25,53 @@ import {
  * #### Notes
  * The Z-order of the visible widgets follows their layout order.
  */
-export
-class StackedLayout extends PanelLayout {
+export class StackedLayout extends PanelLayout {
+  constructor(options: StackedLayout.IOptions = {}) {
+    super(options);
+    this._hiddenMode =
+      options.hiddenMode !== undefined
+        ? options.hiddenMode
+        : Widget.HiddenMode.Display;
+  }
+
+  /**
+   * The method for hiding widgets.
+   *
+   * #### Notes
+   * If there is only one child widget, `Display` hiding mode will be used
+   * regardless of this setting.
+   */
+  get hiddenMode(): Widget.HiddenMode {
+    return this._hiddenMode;
+  }
+
+  /**
+   * Set the method for hiding widgets.
+   *
+   * #### Notes
+   * If there is only one child widget, `Display` hiding mode will be used
+   * regardless of this setting.
+   */
+  set hiddenMode(v: Widget.HiddenMode) {
+    if (this._hiddenMode === v) {
+      return;
+    }
+    this._hiddenMode = v;
+    if (this.widgets.length > 1) {
+      this.widgets.forEach(w => {
+        w.hiddenMode = this._hiddenMode;
+      });
+    }
+  }
+
   /**
    * Dispose of the resources held by the layout.
    */
   dispose(): void {
     // Dispose of the layout items.
-    each(this._items, item => { item.dispose(); });
+    each(this._items, item => {
+      item.dispose();
+    });
 
     // Clear the layout state.
     this._box = null;
@@ -66,6 +92,20 @@ class StackedLayout extends PanelLayout {
    * This is a reimplementation of the superclass method.
    */
   protected attachWidget(index: number, widget: Widget): void {
+    // Using transform create an additional layer in the pixel pipeline
+    // to limit the number of layer, it is set only if there is more than one widget.
+    if (
+      this._hiddenMode === Widget.HiddenMode.Scale &&
+      this._items.length > 0
+    ) {
+      if (this._items.length === 1) {
+        this.widgets[0].hiddenMode = Widget.HiddenMode.Scale;
+      }
+      widget.hiddenMode = Widget.HiddenMode.Scale;
+    } else {
+      widget.hiddenMode = Widget.HiddenMode.Display;
+    }
+
     // Create and add a new layout item for the widget.
     ArrayExt.insert(this._items, index, new LayoutItem(widget));
 
@@ -98,7 +138,11 @@ class StackedLayout extends PanelLayout {
    * #### Notes
    * This is a reimplementation of the superclass method.
    */
-  protected moveWidget(fromIndex: number, toIndex: number, widget: Widget): void {
+  protected moveWidget(
+    fromIndex: number,
+    toIndex: number,
+    widget: Widget
+  ): void {
     // Move the layout item for the widget.
     ArrayExt.move(this._items, fromIndex, toIndex);
 
@@ -135,6 +179,16 @@ class StackedLayout extends PanelLayout {
 
     // Reset the z-index for the widget.
     item!.widget.node.style.zIndex = '';
+
+    // Reset the hidden mode for the widget.
+    if (this._hiddenMode === Widget.HiddenMode.Scale) {
+      widget.hiddenMode = Widget.HiddenMode.Display;
+
+      // Reset the hidden mode for the first widget if necessary.
+      if (this._items.length === 1) {
+        this._items[0].widget.hiddenMode = Widget.HiddenMode.Display;
+      }
+    }
 
     // Dispose of the layout item.
     item!.dispose();
@@ -227,7 +281,7 @@ class StackedLayout extends PanelLayout {
     }
 
     // Update the box sizing and add it to the computed min size.
-    let box = this._box = ElementExt.boxSizing(this.parent!.node);
+    let box = (this._box = ElementExt.boxSizing(this.parent!.node));
     minW += box.horizontalSum;
     minH += box.verticalSum;
 
@@ -312,4 +366,22 @@ class StackedLayout extends PanelLayout {
   private _dirty = false;
   private _items: LayoutItem[] = [];
   private _box: ElementExt.IBoxSizing | null = null;
+  private _hiddenMode: Widget.HiddenMode;
+}
+
+/**
+ * The namespace for the `StackedLayout` class statics.
+ */
+export namespace StackedLayout {
+  /**
+   * An options object for initializing a stacked layout.
+   */
+  export interface IOptions extends Layout.IOptions {
+    /**
+     * The method for hiding widgets.
+     *
+     * The default is `Widget.HiddenMode.Display`.
+     */
+    hiddenMode?: Widget.HiddenMode;
+  }
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 // Copyright (c) Jupyter Development Team.
 // Distributed under the terms of the Modified BSD License.
 
@@ -48,16 +49,18 @@ function createMenu() {
   return root;
 }
 
-
-function ContentWidget(name) {
-  Widget.call(this, { node: ContentWidget.prototype.createNode() });
-  this.setFlag(Widget.Flag.DisallowLayout);
-  this.addClass('content');
-  this.addClass(name.toLowerCase());
-  this.title.label = name;
-  this.title.closable = true;
-  this.title.caption = "Long description for: " + name;
+class ContentWidget extends Widget {
+  constructor(name) {
+    super({ node: ContentWidget.prototype.createNode() });
+    this.setFlag(Widget.Flag.DisallowLayout);
+    this.addClass('content');
+    this.addClass(name.toLowerCase());
+    this.title.label = name;
+    this.title.closable = true;
+    this.title.caption = 'Long description for: ' + name;
+  }
 }
+
 ContentWidget.prototype = Object.create(Widget.prototype);
 
 ContentWidget.prototype.createNode = function () {
@@ -68,20 +71,19 @@ ContentWidget.prototype.createNode = function () {
   content.appendChild(input);
   node.appendChild(content);
   return node;
-}
+};
 
 ContentWidget.prototype.inputNode = function () {
   return this.node.getElementsByTagName('input')[0];
-}
+};
 
 ContentWidget.prototype.onActivateRequest = function (msg) {
   if (this.isAttached) {
     this.inputNode().focus();
   }
-}
+};
 
 function main() {
-
   commands.addCommand('example:cut', {
     label: 'Cut',
     mnemonic: 1,
@@ -139,8 +141,10 @@ function main() {
   commands.addCommand('example:open-task-manager', {
     label: 'Task Manager',
     mnemonic: 5,
-    isEnabled: function () { return false; },
-    execute: function () { }
+    isEnabled: function () {
+      return false;
+    },
+    execute: function () {}
   });
 
   commands.addCommand('example:close', {
@@ -284,9 +288,18 @@ function main() {
   palette.addItem({ command: 'example:save-on-exit', category: 'File' });
   palette.addItem({ command: 'example:open-task-manager', category: 'File' });
   palette.addItem({ command: 'example:close', category: 'File' });
-  palette.addItem({ command: 'example:clear-cell', category: 'Notebook Cell Operations' });
-  palette.addItem({ command: 'example:cut-cells', category: 'Notebook Cell Operations' });
-  palette.addItem({ command: 'example:run-cell', category: 'Notebook Cell Operations' });
+  palette.addItem({
+    command: 'example:clear-cell',
+    category: 'Notebook Cell Operations'
+  });
+  palette.addItem({
+    command: 'example:cut-cells',
+    category: 'Notebook Cell Operations'
+  });
+  palette.addItem({
+    command: 'example:run-cell',
+    category: 'Notebook Cell Operations'
+  });
   palette.addItem({ command: 'example:cell-test', category: 'Console' });
   palette.addItem({ command: 'notebook:new', category: 'Notebook' });
   palette.id = 'palette';
@@ -303,16 +316,43 @@ function main() {
   contextMenu.addItem({ command: 'example:copy', selector: '.content' });
   contextMenu.addItem({ command: 'example:paste', selector: '.content' });
 
-  contextMenu.addItem({ command: 'example:one', selector: '.lm-CommandPalette' });
-  contextMenu.addItem({ command: 'example:two', selector: '.lm-CommandPalette' });
-  contextMenu.addItem({ command: 'example:three', selector: '.lm-CommandPalette' });
-  contextMenu.addItem({ command: 'example:four', selector: '.lm-CommandPalette' });
-  contextMenu.addItem({ command: 'example:black', selector: '.lm-CommandPalette' });
+  contextMenu.addItem({
+    command: 'example:one',
+    selector: '.lm-CommandPalette'
+  });
+  contextMenu.addItem({
+    command: 'example:two',
+    selector: '.lm-CommandPalette'
+  });
+  contextMenu.addItem({
+    command: 'example:three',
+    selector: '.lm-CommandPalette'
+  });
+  contextMenu.addItem({
+    command: 'example:four',
+    selector: '.lm-CommandPalette'
+  });
+  contextMenu.addItem({
+    command: 'example:black',
+    selector: '.lm-CommandPalette'
+  });
 
-  contextMenu.addItem({ command: 'notebook:new', selector: '.lm-CommandPalette-input' });
-  contextMenu.addItem({ command: 'example:save-on-exit', selector: '.lm-CommandPalette-input' });
-  contextMenu.addItem({ command: 'example:open-task-manager', selector: '.lm-CommandPalette-input' });
-  contextMenu.addItem({ type: 'separator', selector: '.lm-CommandPalette-input' });
+  contextMenu.addItem({
+    command: 'notebook:new',
+    selector: '.lm-CommandPalette-input'
+  });
+  contextMenu.addItem({
+    command: 'example:save-on-exit',
+    selector: '.lm-CommandPalette-input'
+  });
+  contextMenu.addItem({
+    command: 'example:open-task-manager',
+    selector: '.lm-CommandPalette-input'
+  });
+  contextMenu.addItem({
+    type: 'separator',
+    selector: '.lm-CommandPalette-input'
+  });
 
   document.addEventListener('keydown', function (event) {
     commands.processKeydownEvent(event);
@@ -354,7 +394,7 @@ function main() {
 
   commands.addCommand('restore-dock-layout', {
     label: function (args) {
-      return "Restore Layout " + args.index;
+      return 'Restore Layout ' + args.index;
     },
     execute: function (args) {
       dock.restoreLayout(savedLayouts[args.index]);
@@ -374,7 +414,9 @@ function main() {
   main.addWidget(palette);
   main.addWidget(dock);
 
-  window.onresize = function () { main.update(); };
+  window.onresize = function () {
+    main.update();
+  };
 
   Widget.attach(bar, document.body);
   Widget.attach(main, document.body);
