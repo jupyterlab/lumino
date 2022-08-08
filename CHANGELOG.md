@@ -2,6 +2,30 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2022.8.8
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/polling@1.11.0...3f98b0ec04e54ed9fef96e03898c82884878b663))
+
+### Enhancements made
+
+- Add `collapse` and `expand` methods to `AccordionPanel` [#321](https://github.com/jupyterlab/lumino/pull/321) ([@fcollonval](https://github.com/fcollonval))
+
+### Maintenance and upkeep improvements
+
+- Update versions [#335](https://github.com/jupyterlab/lumino/pull/335) ([@fcollonval](https://github.com/fcollonval))
+
+### Documentation improvements
+
+- Update my name and email [#323](https://github.com/jupyterlab/lumino/pull/323) ([@afshin](https://github.com/afshin))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2022-07-21&to=2022-08-08&type=c))
+
+[@afshin](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aafshin+updated%3A2022-07-21..2022-08-08&type=Issues) | [@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2022-07-21..2022-08-08&type=Issues) | [@bollwyvl](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Abollwyvl+updated%3A2022-07-21..2022-08-08&type=Issues) | [@ellisonbg](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aellisonbg+updated%3A2022-07-21..2022-08-08&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2022-07-21..2022-08-08&type=Issues) | [@ian-r-rose](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aian-r-rose+updated%3A2022-07-21..2022-08-08&type=Issues) | [@jweill-aws](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajweill-aws+updated%3A2022-07-21..2022-08-08&type=Issues) | [@meeseeksmachine](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ameeseeksmachine+updated%3A2022-07-21..2022-08-08&type=Issues) | [@SylvainCorlay](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3ASylvainCorlay+updated%3A2022-07-21..2022-08-08&type=Issues) | [@vidartf](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Avidartf+updated%3A2022-07-21..2022-08-08&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2022.7.21
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/application@1.29.2...58fc58d365a1f71321ddd3d2d6a320d1ad1ebdde))
@@ -21,8 +45,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2022-07-06&to=2022-07-21&type=c))
 
 [@afshin](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aafshin+updated%3A2022-07-06..2022-07-21&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2022-07-06..2022-07-21&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2022-07-06..2022-07-21&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2022.7.6
 
