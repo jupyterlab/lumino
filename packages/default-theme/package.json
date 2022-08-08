@@ -7,13 +7,7 @@
     "url": "https://github.com/jupyterlab/lumino/issues"
   },
   "license": "BSD-3-Clause",
-  "author": "S. Chris Colbert <sccolbert@gmail.com>",
-  "contributors": [
-    "A. T. Darian <git@darian.email>",
-    "Dave Willmer <dave.willmer@gmail.com>",
-    "S. Chris Colbert <sccolbert@gmail.com>",
-    "Steven Silvester <steven.silvester@gmail.com>"
-  ],
+  "author": "Project Jupyter",
   "files": [
     "dist/*",
     "src/*",

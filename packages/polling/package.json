@@ -11,13 +11,7 @@
     "url": "https://github.com/jupyterlab/lumino.git"
   },
   "license": "BSD-3-Clause",
-  "author": "A. T. Darian <git@darian.email>",
-  "contributors": [
-    "A. T. Darian <git@darian.email>",
-    "Ian Rose <ian.r.rose@gmail.com>",
-    "Jason Grout <jgrout6@bloomberg.net>",
-    "Steven Silvester <steven.silvester@gmail.com>"
-  ],
+  "author": "Project Jupyter",
   "main": "dist/index.js",
   "jsdelivr": "dist/index.min.js",
   "unpkg": "dist/index.min.js",
