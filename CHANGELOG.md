@@ -10,10 +10,6 @@
 
 - Add `collapse` and `expand` methods to `AccordionPanel` [#321](https://github.com/jupyterlab/lumino/pull/321) ([@fcollonval](https://github.com/fcollonval))
 
-### Maintenance and upkeep improvements
-
-- Update versions [#335](https://github.com/jupyterlab/lumino/pull/335) ([@fcollonval](https://github.com/fcollonval))
-
 ### Documentation improvements
 
 - Update my name and email [#323](https://github.com/jupyterlab/lumino/pull/323) ([@afshin](https://github.com/afshin))
