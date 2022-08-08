@@ -1,15 +1,15 @@
 {
   "name": "@lumino/example-accordionpanel",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "private": true,
   "scripts": {
     "build": "tsc && webpack",
     "clean": "rimraf build"
   },
   "dependencies": {
-    "@lumino/default-theme": "^0.22.2",
-    "@lumino/messaging": "^1.10.1",
-    "@lumino/widgets": "^1.33.0",
+    "@lumino/default-theme": "^0.22.3",
+    "@lumino/messaging": "^1.10.2",
+    "@lumino/widgets": "^1.34.0",
     "es6-promise": "^4.0.5"
   },
   "devDependencies": {

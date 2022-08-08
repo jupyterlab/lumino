@@ -1,6 +1,6 @@
 {
   "name": "@lumino/dragdrop",
-  "version": "1.14.0",
+  "version": "1.14.1",
   "description": "Lumino Drag and Drop",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -49,8 +49,8 @@
     "watch": "tsc --build --watch"
   },
   "dependencies": {
-    "@lumino/coreutils": "^1.12.0",
-    "@lumino/disposable": "^1.10.1"
+    "@lumino/coreutils": "^1.12.1",
+    "@lumino/disposable": "^1.10.2"
   },
   "devDependencies": {
     "@microsoft/api-extractor": "^7.6.0",
