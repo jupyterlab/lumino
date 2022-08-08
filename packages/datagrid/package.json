@@ -11,12 +11,7 @@
     "url": "https://github.com/jupyterlab/lumino.git"
   },
   "license": "BSD-3-Clause",
-  "author": "S. Chris Colbert <sccolbert@gmail.com>",
-  "contributors": [
-    "A. T. Darian <git@darian.email>",
-    "S. Chris Colbert <sccolbert@gmail.com>",
-    "Steven Silvester <steven.silvester@gmail.com>"
-  ],
+  "author": "Project Jupyter",
   "main": "dist/index.js",
   "jsdelivr": "dist/index.min.js",
   "unpkg": "dist/index.min.js",
