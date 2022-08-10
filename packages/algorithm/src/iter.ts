@@ -131,58 +131,6 @@ export function toArray<T>(object: Iterable<T>): T[] {
 }
 
 /**
- * An iterator for an array-like object.
- *
- * #### Notes
- * This iterator can be used for any builtin JS array-like object.
- */
-export class ArrayIterator<T> implements IIterator<T> {
-  /**
-   * Construct a new array iterator.
-   *
-   * @param source - The array-like object of interest.
-   */
-  constructor(source: ArrayLike<T>) {
-    this._source = source;
-  }
-
-  /**
-   * Get an iterator over the object's values.
-   *
-   * @returns An iterator which yields the object's values.
-   */
-  iter(): IIterator<T> {
-    return this;
-  }
-
-  /**
-   * Create an independent clone of the iterator.
-   *
-   * @returns A new independent clone of the iterator.
-   */
-  clone(): IIterator<T> {
-    let result = new ArrayIterator<T>(this._source);
-    result._index = this._index;
-    return result;
-  }
-
-  /**
-   * Get the next value from the iterator.
-   *
-   * @returns The next value from the iterator, or `undefined`.
-   */
-  next(): T | undefined {
-    if (this._index >= this._source.length) {
-      return undefined;
-    }
-    return this._source[this._index++];
-  }
-
-  private _index = 0;
-  private _source: ArrayLike<T>;
-}
-
-/**
  * An iterator for the keys in an object.
  *
  * #### Notes
