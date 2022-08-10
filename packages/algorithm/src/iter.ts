@@ -118,14 +118,3 @@ export function some<T>(
   }
   return false;
 }
-
-/**
- * Create an array from an iterable of values.
- *
- * @param object - The iterable object of interest.
- *
- * @returns A new array of values from the given object.
- */
-export function toArray<T>(object: Iterable<T>): T[] {
-  return [...object];
-}
