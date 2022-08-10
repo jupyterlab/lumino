@@ -11,7 +11,7 @@
 /**
  * Invoke a function for each value in an iterable.
  *
- * @param object - The iterable or array-like object of interest.
+ * @param object - The iterable object of interest.
  *
  * @param fn - The callback function to invoke for each value.
  *
@@ -32,14 +32,12 @@
  * ```
  */
 export function each<T>(
-  object: IterableOrArrayLike<T>,
-  fn: (value: T, index: number) => boolean | void
+  object: Iterable<T>,
+  fn: (value: T, index: number, object: Iterable<T>) => boolean | void
 ): void {
   let index = 0;
-  let it = iter(object);
-  let value: T | undefined;
-  while ((value = it.next()) !== undefined) {
-    if (fn(value, index++) === false) {
+  for (const value of object) {
+    if (false === fn(value, index++, object)) {
       return;
     }
   }
@@ -75,7 +73,7 @@ export function every<T>(
   fn: (value: T, index: number, object: Iterable<T>) => boolean
 ): boolean {
   let index = 0;
-  for (let value of object) {
+  for (const value of object) {
     if (false === fn(value, index++, object)) {
       return false;
     }
@@ -113,7 +111,7 @@ export function some<T>(
   fn: (value: T, index: number, object: Iterable<T>) => boolean
 ): boolean {
   let index = 0;
-  for (let value of object) {
+  for (const value of object) {
     if (fn(value, index++, object)) {
       return true;
     }
