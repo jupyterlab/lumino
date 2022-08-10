@@ -22,4 +22,3 @@ export * from './retro';
 export * from './sort';
 export * from './stride';
 export * from './string';
-export * from './take';
