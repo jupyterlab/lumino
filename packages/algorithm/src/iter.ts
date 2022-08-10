@@ -65,12 +65,6 @@ export interface IIterator<T> extends IIterable<T> {
    */
   next(): T | undefined;
 }
-
-/**
- * A type alias for an iterable or builtin array-like object.
- */
-export type IterableOrArrayLike<T> = IIterable<T> | ArrayLike<T>;
-
 /**
  * Create an iterator for an iterable object.
  *
@@ -233,7 +227,7 @@ export function each<T>(
 /**
  * Test whether all values in an iterable satisfy a predicate.
  *
- * @param object - The iterable or array-like object of interest.
+ * @param object - The iterable object of interest.
  *
  * @param fn - The predicate function to invoke for each value.
  *
@@ -256,14 +250,12 @@ export function each<T>(
  * ```
  */
 export function every<T>(
-  object: IterableOrArrayLike<T>,
-  fn: (value: T, index: number) => boolean
+  object: Iterable<T>,
+  fn: (value: T, index: number, object: Iterable<T>) => boolean
 ): boolean {
   let index = 0;
-  let it = iter(object);
-  let value: T | undefined;
-  while ((value = it.next()) !== undefined) {
-    if (!fn(value, index++)) {
+  for (let value of object) {
+    if (false === fn(value, index++, object)) {
       return false;
     }
   }
@@ -273,7 +265,7 @@ export function every<T>(
 /**
  * Test whether any value in an iterable satisfies a predicate.
  *
- * @param object - The iterable or array-like object of interest.
+ * @param object - The iterable object of interest.
  *
  * @param fn - The predicate function to invoke for each value.
  *
@@ -296,14 +288,12 @@ export function every<T>(
  * ```
  */
 export function some<T>(
-  object: IterableOrArrayLike<T>,
-  fn: (value: T, index: number) => boolean
+  object: Iterable<T>,
+  fn: (value: T, index: number, object: Iterable<T>) => boolean
 ): boolean {
   let index = 0;
-  let it = iter(object);
-  let value: T | undefined;
-  while ((value = it.next()) !== undefined) {
-    if (fn(value, index++)) {
+  for (let value of object) {
+    if (fn(value, index++, object)) {
       return true;
     }
   }
@@ -313,58 +303,12 @@ export function some<T>(
 /**
  * Create an array from an iterable of values.
  *
- * @param object - The iterable or array-like object of interest.
+ * @param object - The iterable object of interest.
  *
  * @returns A new array of values from the given object.
- *
- * #### Example
- * ```typescript
- * import { iter, toArray } from '@lumino/algorithm';
- *
- * let data = [1, 2, 3, 4, 5, 6];
- *
- * let stream = iter(data);
- *
- * toArray(stream);  // [1, 2, 3, 4, 5, 6];
- * ```
  */
-export function toArray<T>(object: IterableOrArrayLike<T>): T[] {
-  let index = 0;
-  let result: T[] = [];
-  let it = iter(object);
-  let value: T | undefined;
-  while ((value = it.next()) !== undefined) {
-    result[index++] = value;
-  }
-  return result;
-}
-
-/**
- * Create an object from an iterable of key/value pairs.
- *
- * @param object - The iterable or array-like object of interest.
- *
- * @returns A new object mapping keys to values.
- *
- * #### Example
- * ```typescript
- * import { toObject } from '@lumino/algorithm';
- *
- * let data = [['one', 1], ['two', 2], ['three', 3]];
- *
- * toObject(data);  // { one: 1, two: 2, three: 3 }
- * ```
- */
-export function toObject<T>(object: IterableOrArrayLike<[string, T]>): {
-  [key: string]: T;
-} {
-  let it = iter(object);
-  let pair: [string, T] | undefined;
-  let result: { [key: string]: T } = {};
-  while ((pair = it.next()) !== undefined) {
-    result[pair[0]] = pair[1];
-  }
-  return result;
+export function toArray<T>(object: Iterable<T>): T[] {
+  return [...object];
 }
 
 /**
