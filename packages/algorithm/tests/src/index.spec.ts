@@ -22,4 +22,3 @@ import './sort.spec';
 import './stride.spec';
 import './string.spec';
 import './take.spec';
-import './zip.spec';
