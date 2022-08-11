@@ -7,8 +7,6 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { toArray } from '@lumino/algorithm';
-
 import { IDisposable } from '@lumino/disposable';
 
 import { ClipboardExt, ElementExt, Platform } from '@lumino/domutils';
@@ -1767,7 +1765,7 @@ export class DataGrid extends Widget {
     }
 
     // Coerce the selections to an array.
-    let selections = toArray(selectionModel.selections());
+    let selections = Array.from(selectionModel.selections());
 
     // Bail early if there are no selections.
     if (selections.length === 0) {
@@ -5195,9 +5193,11 @@ export class DataGrid extends Widget {
 
     // Iterate over the selections.
     let it = model.selections();
+    let r: IteratorResult<SelectionModel.Selection>;
     let s: SelectionModel.Selection | undefined;
-    while ((s = it.next()) !== undefined) {
+    while (!(r = it.next()).done) {
       // Skip the section if it's not visible.
+      s = r.value;
       if (s.r1 < r1 && s.r2 < r1) {
         continue;
       }

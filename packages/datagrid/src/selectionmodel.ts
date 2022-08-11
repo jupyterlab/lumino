@@ -7,7 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { IIterator, some } from '@lumino/algorithm';
+import { some } from '@lumino/algorithm';
 
 import { ISignal, Signal } from '@lumino/signaling';
 
@@ -82,7 +82,7 @@ export abstract class SelectionModel {
    * #### Notes
    * The data grid will render the selections in order.
    */
-  abstract selections(): IIterator<SelectionModel.Selection>;
+  abstract selections(): IterableIterator<SelectionModel.Selection>;
 
   /**
    * Select the specified cells.
