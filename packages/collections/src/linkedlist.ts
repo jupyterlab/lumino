@@ -520,7 +520,7 @@ export namespace LinkedList {
   /**
    * Create a linked list from an iterable of values.
    *
-   * @param values - The iterable or array-like object of interest.
+   * @param values - The iterable object of interest.
    *
    * @returns A new linked list initialized with the given values.
    *

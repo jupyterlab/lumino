@@ -192,7 +192,7 @@ export namespace DisposableSet {
   /**
    * Create a disposable set from an iterable of items.
    *
-   * @param items - The iterable or array-like object of interest.
+   * @param items - The iterable object of interest.
    *
    * @returns A new disposable initialized with the given items.
    */
@@ -244,7 +244,7 @@ export namespace ObservableDisposableSet {
   /**
    * Create an observable disposable set from an iterable of items.
    *
-   * @param items - The iterable or array-like object of interest.
+   * @param items - The iterable object of interest.
    *
    * @returns A new disposable initialized with the given items.
    */

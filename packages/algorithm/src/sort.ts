@@ -12,7 +12,7 @@ import { each } from './iter';
 /**
  * Topologically sort an iterable of edges.
  *
- * @param edges - The iterable or array-like object of edges to sort.
+ * @param edges - The iterable object of edges to sort.
  *   An edge is represented as a 2-tuple of `[fromNode, toNode]`.
  *
  * @returns The topologically sorted array of nodes.
