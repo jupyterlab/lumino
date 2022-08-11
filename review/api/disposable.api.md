@@ -5,7 +5,6 @@
 ```ts
 
 import { ISignal } from '@lumino/signaling';
-import { IterableOrArrayLike } from '@lumino/algorithm';
 
 // @public
 export class DisposableDelegate implements IDisposable {
@@ -26,7 +25,7 @@ export class DisposableSet implements IDisposable {
 
 // @public
 export namespace DisposableSet {
-    export function from(items: IterableOrArrayLike<IDisposable>): DisposableSet;
+    export function from(items: Iterable<IDisposable>): DisposableSet;
 }
 
 // @public
@@ -54,7 +53,7 @@ export class ObservableDisposableSet extends DisposableSet implements IObservabl
 
 // @public
 export namespace ObservableDisposableSet {
-    export function from(items: IterableOrArrayLike<IDisposable>): ObservableDisposableSet;
+    export function from(items: Iterable<IDisposable>): ObservableDisposableSet;
 }
 
 // (No @packageDocumentation comment for this package)
