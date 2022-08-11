@@ -21,3 +21,4 @@ import './retro.spec';
 import './sort.spec';
 import './stride.spec';
 import './string.spec';
+import './take.spec';
