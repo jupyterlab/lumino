@@ -7,7 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { each, IterableOrArrayLike } from '@lumino/algorithm';
+import { each } from '@lumino/algorithm';
 
 import { ISignal, Signal } from '@lumino/signaling';
 
@@ -196,7 +196,7 @@ export namespace DisposableSet {
    *
    * @returns A new disposable initialized with the given items.
    */
-  export function from(items: IterableOrArrayLike<IDisposable>): DisposableSet {
+  export function from(items: Iterable<IDisposable>): DisposableSet {
     let set = new DisposableSet();
     each(items, item => {
       set.add(item);
@@ -248,9 +248,7 @@ export namespace ObservableDisposableSet {
    *
    * @returns A new disposable initialized with the given items.
    */
-  export function from(
-    items: IterableOrArrayLike<IDisposable>
-  ): ObservableDisposableSet {
+  export function from(items: Iterable<IDisposable>): ObservableDisposableSet {
     let set = new ObservableDisposableSet();
     each(items, item => {
       set.add(item);
