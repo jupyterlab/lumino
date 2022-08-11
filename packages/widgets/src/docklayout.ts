@@ -10,10 +10,8 @@
 import {
   ArrayExt,
   chain,
-  ChainIterator,
   each,
   empty,
-  IIterator,
   map,
   once,
   reduce
@@ -68,7 +66,7 @@ export class DockLayout extends Layout {
    */
   dispose(): void {
     // Get an iterator over the widgets in the layout.
-    let widgets = this.iter();
+    let widgets = this[Symbol.iterator]();
 
     // Dispose of the layout items.
     this._items.forEach(item => {
@@ -155,7 +153,7 @@ export class DockLayout extends Layout {
    * #### Notes
    * This iterator includes the generated tab bars.
    */
-  iter(): IIterator<Widget> {
+  [Symbol.iterator](): IterableIterator<Widget> {
     return this._root ? this._root.iterAllWidgets() : empty<Widget>();
   }
 
@@ -167,7 +165,7 @@ export class DockLayout extends Layout {
    * #### Notes
    * This iterator does not include the generated tab bars.
    */
-  widgets(): IIterator<Widget> {
+  widgets(): IterableIterator<Widget> {
     return this._root ? this._root.iterUserWidgets() : empty<Widget>();
   }
 
@@ -180,7 +178,7 @@ export class DockLayout extends Layout {
    * This iterator yields the widgets corresponding to the current tab
    * of each tab bar in the layout.
    */
-  selectedWidgets(): IIterator<Widget> {
+  selectedWidgets(): IterableIterator<Widget> {
     return this._root ? this._root.iterSelectedWidgets() : empty<Widget>();
   }
 
@@ -192,7 +190,7 @@ export class DockLayout extends Layout {
    * #### Notes
    * This iterator does not include the user widgets.
    */
-  tabBars(): IIterator<TabBar<Widget>> {
+  tabBars(): IterableIterator<TabBar<Widget>> {
     return this._root ? this._root.iterTabBars() : empty<TabBar<Widget>>();
   }
 
@@ -201,7 +199,7 @@ export class DockLayout extends Layout {
    *
    * @returns A new iterator over the handles in the layout.
    */
-  handles(): IIterator<HTMLDivElement> {
+  handles(): IterableIterator<HTMLDivElement> {
     return this._root ? this._root.iterHandles() : empty<HTMLDivElement>();
   }
 
@@ -1561,21 +1559,21 @@ namespace Private {
     /**
      * Create an iterator for all widgets in the layout tree.
      */
-    iterAllWidgets(): IIterator<Widget> {
+    iterAllWidgets(): IterableIterator<Widget> {
       return chain(once(this.tabBar), this.iterUserWidgets());
     }
 
     /**
      * Create an iterator for the user widgets in the layout tree.
      */
-    iterUserWidgets(): IIterator<Widget> {
+    iterUserWidgets(): IterableIterator<Widget> {
       return map(this.tabBar.titles, title => title.owner);
     }
 
     /**
      * Create an iterator for the selected widgets in the layout tree.
      */
-    iterSelectedWidgets(): IIterator<Widget> {
+    iterSelectedWidgets(): IterableIterator<Widget> {
       let title = this.tabBar.currentTitle;
       return title ? once(title.owner) : empty<Widget>();
     }
@@ -1583,14 +1581,14 @@ namespace Private {
     /**
      * Create an iterator for the tab bars in the layout tree.
      */
-    iterTabBars(): IIterator<TabBar<Widget>> {
+    iterTabBars(): IterableIterator<TabBar<Widget>> {
       return once(this.tabBar);
     }
 
     /**
      * Create an iterator for the handles in the layout tree.
      */
-    iterHandles(): IIterator<HTMLDivElement> {
+    iterHandles(): IterableIterator<HTMLDivElement> {
       return empty<HTMLDivElement>();
     }
 
@@ -1797,41 +1795,41 @@ namespace Private {
     /**
      * Create an iterator for all widgets in the layout tree.
      */
-    iterAllWidgets(): IIterator<Widget> {
+    iterAllWidgets(): IterableIterator<Widget> {
       let children = map(this.children, child => child.iterAllWidgets());
-      return new ChainIterator<Widget>(children);
+      return chain<Widget>(...children);
     }
 
     /**
      * Create an iterator for the user widgets in the layout tree.
      */
-    iterUserWidgets(): IIterator<Widget> {
+    iterUserWidgets(): IterableIterator<Widget> {
       let children = map(this.children, child => child.iterUserWidgets());
-      return new ChainIterator<Widget>(children);
+      return chain<Widget>(...children);
     }
 
     /**
      * Create an iterator for the selected widgets in the layout tree.
      */
-    iterSelectedWidgets(): IIterator<Widget> {
+    iterSelectedWidgets(): IterableIterator<Widget> {
       let children = map(this.children, child => child.iterSelectedWidgets());
-      return new ChainIterator<Widget>(children);
+      return chain<Widget>(...children);
     }
 
     /**
      * Create an iterator for the tab bars in the layout tree.
      */
-    iterTabBars(): IIterator<TabBar<Widget>> {
+    iterTabBars(): IterableIterator<TabBar<Widget>> {
       let children = map(this.children, child => child.iterTabBars());
-      return new ChainIterator<TabBar<Widget>>(children);
+      return chain<TabBar<Widget>>(...children);
     }
 
     /**
      * Create an iterator for the handles in the layout tree.
      */
-    iterHandles(): IIterator<HTMLDivElement> {
+    iterHandles(): IterableIterator<HTMLDivElement> {
       let children = map(this.children, child => child.iterHandles());
-      return chain(this.handles, new ChainIterator<HTMLDivElement>(children));
+      return chain<HTMLDivElement>(this.handles, ...children);
     }
 
     /**
