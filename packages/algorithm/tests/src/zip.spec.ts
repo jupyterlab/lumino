@@ -7,7 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { iter, zip, ZipIterator } from '@lumino/algorithm';
+import { zip } from '@lumino/algorithm';
 
 import { testIterator } from './iter.spec';
 
@@ -25,13 +25,13 @@ describe('@lumino/algorithm', () => {
     });
   });
 
-  describe('ZipIterator', () => {
+  describe('zip()', () => {
     testIterator(() => {
-      let i1 = iter(['one', 'two']);
-      let i2 = iter([1, 2]);
-      let i3 = iter([true, false]);
+      let i1 = ['one', 'two'];
+      let i2 = [1, 2];
+      let i3 = [true, false];
       type T = string | number | boolean;
-      let it = new ZipIterator<T>([i1, i2, i3]);
+      let it = zip<T>(i1, i2, i3);
       let results = [
         ['one', 1, true],
         ['two', 2, false]

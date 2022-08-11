@@ -7,7 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { iter, map, MapIterator } from '@lumino/algorithm';
+import { map } from '@lumino/algorithm';
 
 import { testIterator } from './iter.spec';
 
@@ -20,10 +20,10 @@ describe('@lumino/algorithm', () => {
     });
   });
 
-  describe('MapIterator', () => {
+  describe('map()', () => {
     testIterator(() => {
       let result = [0, 1, 8, 27];
-      let it = new MapIterator(iter([0, 1, 2, 3]), x => x ** 3);
+      let it = map([0, 1, 2, 3][Symbol.iterator](), x => x ** 3);
       return [it, result];
     });
   });

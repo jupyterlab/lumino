@@ -132,7 +132,11 @@ export function min<T>(
 ): T | undefined {
   let result: T | undefined = undefined;
   for (const value of object) {
-    if (fn(value, (result = result ?? value)) < 0) {
+    if (result === undefined) {
+      result = value;
+      continue;
+    }
+    if (fn(value, result) < 0) {
       result = value;
     }
   }
@@ -173,7 +177,11 @@ export function max<T>(
 ): T | undefined {
   let result: T | undefined = undefined;
   for (const value of object) {
-    if (fn(value, (result = result ?? value)) > 0) {
+    if (result === undefined) {
+      result = value;
+      continue;
+    }
+    if (fn(value, result) > 0) {
       result = value;
     }
   }

@@ -7,7 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { iter, take, TakeIterator } from '@lumino/algorithm';
+import { take } from '@lumino/algorithm';
 
 import { testIterator } from './iter.spec';
 
@@ -18,9 +18,9 @@ describe('@lumino/algorithm', () => {
     });
   });
 
-  describe('TakeIterator', () => {
+  describe('take()', () => {
     testIterator(() => {
-      return [new TakeIterator(iter([0, 1, 2, 3]), 1), [0]];
+      return [take([0, 1, 2, 3][Symbol.iterator](), 1), [0]];
     });
   });
 });

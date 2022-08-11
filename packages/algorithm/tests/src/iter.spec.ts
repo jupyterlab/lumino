@@ -9,20 +9,7 @@
 |----------------------------------------------------------------------------*/
 import { expect } from 'chai';
 
-import {
-  ArrayIterator,
-  each,
-  every,
-  IIterator,
-  iter,
-  some,
-  toArray
-} from '@lumino/algorithm';
-
-/**
- * A factory which returns an iterator and expected results.
- */
-export type IteratorFactory<T> = () => [IIterator<T>, T[]];
+import { each, every, some } from '@lumino/algorithm';
 
 /**
  * A helper function to test the methods of an iterator.
@@ -30,48 +17,18 @@ export type IteratorFactory<T> = () => [IIterator<T>, T[]];
  * @param factory - A function which produces an iterator and the
  *   expected results of that iterator.
  */
-export function testIterator<T>(factory: IteratorFactory<T>): void {
-  describe('iter()', () => {
-    it('should return `this` iterator', () => {
-      let [it] = factory();
-      expect(it.iter()).to.equal(it);
-    });
-  });
-
-  describe('clone()', () => {
-    it('should return a new independent iterator', () => {
+export function testIterator<T>(
+  factory: () => [IterableIterator<T>, T[]]
+): void {
+  describe('yield', () => {
+    it('should return the same values in the iterator', () => {
       let [it, results] = factory();
-      let it2 = it.clone();
-      expect(it).to.not.equal(it2);
-      expect(toArray(it)).to.deep.equal(results);
-      expect(toArray(it2)).to.deep.equal(results);
-    });
-  });
-
-  describe('next()', () => {
-    it('should return the next value in the iterator', () => {
-      let value: T | undefined;
-      let [it, results] = factory();
-      for (let i = 0; (value = it.next()) !== undefined; ++i) {
-        expect(value).to.deep.equal(results[i]);
-      }
+      expect(Array.from(it)).to.deep.equal(results);
     });
   });
 }
 
 describe('@lumino/algorithm', () => {
-  describe('iter()', () => {
-    it('should create an iterator for an array-like object', () => {
-      let data = [0, 1, 2, 3];
-      expect(toArray(iter(data))).to.deep.equal(data);
-    });
-
-    it('should call `iter` on an iterable', () => {
-      let iterator = iter([1, 2, 3, 4]);
-      expect(iter(iterator)).to.equal(iterator);
-    });
-  });
-
   describe('each()', () => {
     it('should visit every item in an iterable', () => {
       let result = 0;
@@ -113,23 +70,6 @@ describe('@lumino/algorithm', () => {
       let invalid = some(data, x => x < 0);
       expect(valid).to.equal(true);
       expect(invalid).to.equal(false);
-    });
-  });
-
-  describe('toArray()', () => {
-    it('should create an array from an iterable', () => {
-      let data = [0, 1, 2, 3, 4, 5];
-      let result = toArray(data);
-      expect(result).to.deep.equal(data);
-      expect(result).to.not.equal(data);
-    });
-  });
-
-  describe('ArrayIterator', () => {
-    testIterator(() => {
-      let results = [1, 2, 3, 4, 5];
-      let it = new ArrayIterator(results);
-      return [it, results];
     });
   });
 });

@@ -7,7 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { iter, stride, StrideIterator } from '@lumino/algorithm';
+import { stride } from '@lumino/algorithm';
 
 import { testIterator } from './iter.spec';
 
@@ -20,8 +20,8 @@ describe('@lumino/algorithm', () => {
 
   describe('StrideIterator', () => {
     testIterator(() => {
-      let it = iter([1, 2, 3, 4, 5, 6, 7]);
-      return [new StrideIterator(it, 3), [1, 4, 7]];
+      let it = [1, 2, 3, 4, 5, 6, 7][Symbol.iterator]();
+      return [stride(it, 3), [1, 4, 7]];
     });
   });
 });

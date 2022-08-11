@@ -17,7 +17,7 @@ export interface IRetroable<T> {
    *
    * @returns An iterator which yields the object's values in reverse.
    */
-  retro(): Iterator<T>;
+  retro(): IterableIterator<T>;
 }
 
 /**
@@ -38,7 +38,9 @@ export interface IRetroable<T> {
  * Array.from(stream);  // [6, 5, 4, 3, 2, 1]
  * ```
  */
-export function retro<T>(object: IRetroable<T> | ArrayLike<T>) {
+export function retro<T>(
+  object: IRetroable<T> | ArrayLike<T>
+): IterableIterator<T> {
   if (typeof (object as any).retro === 'function') {
     return (object as IRetroable<T>).retro();
   }
