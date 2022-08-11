@@ -97,9 +97,9 @@ describe('@lumino/widgets', () => {
         each(widgets, w => {
           w.title.label = 'foo';
         });
-        let iter = layout.iter();
+        let iter = layout[Symbol.iterator]();
         expect(every(iter, w => w.title.label === 'foo')).to.equal(true);
-        expect(layout.iter()).to.not.equal(iter);
+        expect(layout[Symbol.iterator]()).to.not.equal(iter);
       });
     });
 

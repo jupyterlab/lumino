@@ -9,7 +9,7 @@
 |----------------------------------------------------------------------------*/
 import { expect } from 'chai';
 
-import { ArrayExt, every, IIterator, iter, toArray } from '@lumino/algorithm';
+import { ArrayExt, every } from '@lumino/algorithm';
 
 import { Message, MessageLoop } from '@lumino/messaging';
 
@@ -29,8 +29,8 @@ class LogLayout extends Layout {
     super.dispose();
   }
 
-  iter(): IIterator<Widget> {
-    return iter(this.widgets);
+  [Symbol.iterator](): IterableIterator<Widget> {
+    return this.widgets[Symbol.iterator]();
   }
 
   removeWidget(widget: Widget): void {
@@ -113,7 +113,7 @@ describe('@lumino/widgets', () => {
         let widget = new Widget();
         let layout = new LogLayout();
         widget.layout = layout;
-        let children = toArray(widget.children());
+        let children = Array.from(widget.children());
         layout.dispose();
         expect(layout.parent).to.equal(null);
         expect(every(children, w => w.isDisposed)).to.equal(true);
