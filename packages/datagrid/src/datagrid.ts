@@ -5192,12 +5192,8 @@ export class DataGrid extends Widget {
     }
 
     // Iterate over the selections.
-    let it = model.selections();
-    let r: IteratorResult<SelectionModel.Selection>;
-    let s: SelectionModel.Selection | undefined;
-    while (!(r = it.next()).done) {
+    for (let s of model.selections()) {
       // Skip the section if it's not visible.
-      s = r.value;
       if (s.r1 < r1 && s.r2 < r1) {
         continue;
       }

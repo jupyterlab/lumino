@@ -758,12 +758,8 @@ export class BasicKeyHandler implements DataGrid.IKeyHandler {
       let maxRow = dataModel.rowCount('body') - 1;
       let maxColumn = dataModel.columnCount('body') - 1;
 
-      const it = grid.selectionModel!.selections();
-      let r: IteratorResult<SelectionModel.Selection>;
-      let s: SelectionModel.Selection | undefined;
-      while (!(r = it.next()).done) {
+      for (let s of grid.selectionModel!.selections()) {
         // Clamp the cell to the model bounds.
-        s = r.value;
         let sr1 = Math.max(0, Math.min(s.r1, maxRow));
         let sc1 = Math.max(0, Math.min(s.c1, maxColumn));
         let sr2 = Math.max(0, Math.min(s.r2, maxRow));
