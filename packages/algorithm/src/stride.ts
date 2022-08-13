@@ -30,10 +30,10 @@
  * ```
  */
 export function* stride<T>(object: Iterable<T>, step: number) {
-  const it = object[Symbol.iterator]();
-  for (let count = 0, item = it.next(); !item.done; item = it.next()) {
+  let count = 0;
+  for (const value of object) {
     if (0 === count++ % step) {
-      yield item.value;
+      yield value;
     }
   }
 }
