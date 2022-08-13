@@ -108,13 +108,12 @@ export class LinkedList<T> implements Iterable<T>, IRetroable<T> {
    * Constant.
    */
   [Symbol.iterator](): IterableIterator<T> {
-    let node = this._first;
-    return (function* () {
+    return (function* (node) {
       while (node) {
         yield node.value;
         node = node.next;
       }
-    })();
+    })(this._first);
   }
 
   /**
@@ -126,13 +125,12 @@ export class LinkedList<T> implements Iterable<T>, IRetroable<T> {
    * Constant.
    */
   retro(): IterableIterator<T> {
-    let node = this._last;
-    return (function* () {
+    return (function* (node) {
       while (node) {
         yield node.value;
         node = node.prev;
       }
-    })();
+    })(this._last);
   }
 
   /**
@@ -144,13 +142,12 @@ export class LinkedList<T> implements Iterable<T>, IRetroable<T> {
    * Constant.
    */
   nodes(): IterableIterator<LinkedList.INode<T>> {
-    let node = this._first;
-    return (function* () {
+    return (function* (node) {
       while (node) {
         yield node;
         node = node.next;
       }
-    })();
+    })(this._first);
   }
 
   /**
@@ -162,13 +159,12 @@ export class LinkedList<T> implements Iterable<T>, IRetroable<T> {
    * Constant.
    */
   retroNodes(): IterableIterator<LinkedList.INode<T>> {
-    let node = this._last;
-    return (function* () {
+    return (function* (node) {
       while (node) {
         yield node;
         node = node.prev;
       }
-    })();
+    })(this._last);
   }
 
   /**
