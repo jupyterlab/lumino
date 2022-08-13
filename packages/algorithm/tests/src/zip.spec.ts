@@ -27,14 +27,15 @@ describe('@lumino/algorithm', () => {
 
   describe('zip()', () => {
     testIterator(() => {
-      let i1 = ['one', 'two'];
-      let i2 = [1, 2];
-      let i3 = [true, false];
-      type T = string | number | boolean;
+      let i1 = ['one', 'two', 'three', 'four'];
+      let i2 = [true, false, true];
+      let i3 = [1, 2, 3, 4];
+      type T = string | boolean | number;
       let it = zip<T>(i1, i2, i3);
       let results = [
-        ['one', 1, true],
-        ['two', 2, false]
+        ['one', true, 1],
+        ['two', false, 2],
+        ['three', true, 3]
       ];
       return [it, results];
     });
