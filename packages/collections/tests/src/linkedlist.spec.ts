@@ -98,7 +98,7 @@ describe('@lumino/collections', () => {
       });
     });
 
-    describe('@@iterator()', () => {
+    describe('[Symbol.iterator]()', () => {
       it('should return an iterator over the list values', () => {
         let data = [0, 1, 2, 3, 4, 5];
         let list = LinkedList.from(data);

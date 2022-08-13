@@ -91,7 +91,7 @@ class LogLayout extends Layout {
 
 describe('@lumino/widgets', () => {
   describe('Layout', () => {
-    describe('#iter()', () => {
+    describe('[Symbol.iterator]()', () => {
       it('should create an iterator over the widgets in the layout', () => {
         let layout = new LogLayout();
         expect(every(layout, child => child instanceof Widget)).to.equal(true);
@@ -113,10 +113,9 @@ describe('@lumino/widgets', () => {
         let widget = new Widget();
         let layout = new LogLayout();
         widget.layout = layout;
-        let children = Array.from(widget.children());
         layout.dispose();
         expect(layout.parent).to.equal(null);
-        expect(every(children, w => w.isDisposed)).to.equal(true);
+        expect(every(widget.children(), w => w.isDisposed)).to.equal(true);
       });
 
       it('should be called automatically when the parent is disposed', () => {
