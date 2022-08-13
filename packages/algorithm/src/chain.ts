@@ -29,10 +29,9 @@
  * ```
  */
 export function* chain<T>(...objects: Iterable<T>[]) {
-  for (const obj of objects) {
-    const it = obj[Symbol.iterator]();
-    for (let item = it.next(); !item.done; item = it.next()) {
-      yield item.value;
+  for (const object of objects) {
+    for (const item of object) {
+      yield item;
     }
   }
 }
