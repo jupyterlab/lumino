@@ -33,11 +33,11 @@
  */
 export function each<T>(
   object: Iterable<T>,
-  fn: (value: T, index: number, object: Iterable<T>) => boolean | void
+  fn: (value: T, index: number) => boolean | void
 ): void {
   let index = 0;
   for (const value of object) {
-    if (false === fn(value, index++, object)) {
+    if (false === fn(value, index++)) {
       return;
     }
   }
@@ -70,11 +70,11 @@ export function each<T>(
  */
 export function every<T>(
   object: Iterable<T>,
-  fn: (value: T, index: number, object: Iterable<T>) => boolean
+  fn: (value: T, index: number) => boolean
 ): boolean {
   let index = 0;
   for (const value of object) {
-    if (false === fn(value, index++, object)) {
+    if (false === fn(value, index++)) {
       return false;
     }
   }
@@ -108,11 +108,11 @@ export function every<T>(
  */
 export function some<T>(
   object: Iterable<T>,
-  fn: (value: T, index: number, object: Iterable<T>) => boolean
+  fn: (value: T, index: number) => boolean
 ): boolean {
   let index = 0;
   for (const value of object) {
-    if (fn(value, index++, object)) {
+    if (fn(value, index++)) {
       return true;
     }
   }
