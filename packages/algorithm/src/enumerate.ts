@@ -29,7 +29,7 @@
  * ```
  */
 export function* enumerate<T>(object: Iterable<T>, start = 0) {
-  for (const item of object) {
-    yield [start++, item];
+  for (const value of object) {
+    yield [start++, value];
   }
 }

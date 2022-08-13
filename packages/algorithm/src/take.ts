@@ -32,8 +32,9 @@
  * ```
  */
 export function* take<T>(object: Iterable<T>, count: number) {
-  const it = object[Symbol.iterator]();
-  for (let item = it.next(); !item.done && 0 < count--; item = it.next()) {
-    yield item.value;
+  for (const value of object) {
+    if (0 < count--) {
+      yield value;
+    }
   }
 }
