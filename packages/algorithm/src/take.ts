@@ -31,7 +31,10 @@
  * Array.from(stream);  // [5, 4, 3]
  * ```
  */
-export function* take<T>(object: Iterable<T>, count: number) {
+export function* take<T>(
+  object: Iterable<T>,
+  count: number
+): IterableIterator<T> {
   for (const value of object) {
     if (0 < count--) {
       yield value;

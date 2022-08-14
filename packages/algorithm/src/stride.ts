@@ -29,7 +29,10 @@
  * Array.from(stream);  // [1, 3, 5];
  * ```
  */
-export function* stride<T>(object: Iterable<T>, step: number) {
+export function* stride<T>(
+  object: Iterable<T>,
+  step: number
+): IterableIterator<T> {
   let count = 0;
   for (const value of object) {
     if (0 === count++ % step) {

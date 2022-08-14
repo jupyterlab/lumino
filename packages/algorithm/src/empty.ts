@@ -23,6 +23,6 @@
  * ```
  */
 // eslint-disable-next-line require-yield, @typescript-eslint/no-unused-vars
-export function* empty<T>() {
+export function* empty<T>(): IterableIterator<T> {
   return;
 }

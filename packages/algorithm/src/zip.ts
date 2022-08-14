@@ -30,7 +30,7 @@ import { every } from './iter';
  * Array.from(stream);  // [[1, 4], [2, 5], [3, 6]]
  * ```
  */
-export function* zip<T>(...objects: Iterable<T>[]) {
+export function* zip<T>(...objects: Iterable<T>[]): IterableIterator<T[]> {
   const iters = objects.map(obj => obj[Symbol.iterator]());
   let tuple = iters.map(it => it.next());
   for (; every(tuple, item => !item.done); tuple = iters.map(it => it.next())) {

@@ -30,7 +30,7 @@
 export function* map<T, U>(
   object: Iterable<T>,
   fn: (value: T, index: number) => U
-) {
+): IterableIterator<U> {
   let index = 0;
   for (const value of object) {
     yield fn(value, index++);

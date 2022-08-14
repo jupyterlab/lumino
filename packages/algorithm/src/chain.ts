@@ -28,7 +28,7 @@
  * Array.from(stream);  // [1, 2, 3, 4, 5, 6]
  * ```
  */
-export function* chain<T>(...objects: Iterable<T>[]) {
+export function* chain<T>(...objects: Iterable<T>[]): IterableIterator<T> {
   for (const object of objects) {
     for (const value of object) {
       yield value;

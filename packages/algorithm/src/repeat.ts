@@ -26,7 +26,7 @@
  * Array.from(stream);  // [7, 7, 7]
  * ```
  */
-export function* repeat<T>(value: T, count: number) {
+export function* repeat<T>(value: T, count: number): IterableIterator<T> {
   while (0 < count--) {
     yield value;
   }
@@ -48,6 +48,6 @@ export function* repeat<T>(value: T, count: number) {
  * Array.from(stream);  // [7]
  * ```
  */
-export function* once<T>(value: T) {
+export function* once<T>(value: T): IterableIterator<T> {
   yield value;
 }

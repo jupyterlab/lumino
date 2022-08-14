@@ -34,7 +34,11 @@
  * Array.from(stream);  // [2, 3]
  * ```
  */
-export function* range(start: number, stop?: number, step?: number) {
+export function* range(
+  start: number,
+  stop?: number,
+  step?: number
+): IterableIterator<number> {
   if (stop === undefined) {
     stop = start;
     start = 0;

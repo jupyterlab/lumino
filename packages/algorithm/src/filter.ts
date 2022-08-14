@@ -31,7 +31,7 @@
 export function* filter<T>(
   object: Iterable<T>,
   fn: (value: T, index: number) => boolean
-) {
+): IterableIterator<T> {
   let index = 0;
   for (const value of object) {
     if (fn(value, index++)) {

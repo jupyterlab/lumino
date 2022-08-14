@@ -28,7 +28,10 @@
  * Array.from(stream);  // [[1, 'foo'], [2, 'bar'], [3, 'baz']]
  * ```
  */
-export function* enumerate<T>(object: Iterable<T>, start = 0) {
+export function* enumerate<T>(
+  object: Iterable<T>,
+  start = 0
+): IterableIterator<[number, T]> {
   for (const value of object) {
     yield [start++, value];
   }
