@@ -220,19 +220,19 @@ export function minmax<T>(
   object: Iterable<T>,
   fn: (first: T, second: T) => number
 ): [T, T] | undefined {
-  const it = object[Symbol.iterator]();
-  let item = it.next();
-  if (item.done) {
-    return undefined;
-  }
-  let vmin = item.value;
-  let vmax = item.value;
-  while (!(item = it.next()).done) {
-    if (fn(item.value, vmin) < 0) {
-      vmin = item.value;
-    } else if (fn(item.value, vmax) > 0) {
-      vmax = item.value;
+  let empty = true;
+  let vmin: T;
+  let vmax: T;
+  for (const value of object) {
+    if (empty) {
+      vmin = value;
+      vmax = value;
+      empty = false;
+    } else if (fn(value, vmin!) < 0) {
+      vmin = value;
+    } else if (fn(value, vmax!) > 0) {
+      vmax = value;
     }
   }
-  return [vmin, vmax];
+  return empty ? undefined : [vmin!, vmax!];
 }
