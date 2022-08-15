@@ -7,7 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { ArrayExt, each, find } from '@lumino/algorithm';
+import { ArrayExt, find } from '@lumino/algorithm';
 
 /**
  * A type alias for a slot function.
@@ -416,17 +416,17 @@ namespace Private {
     }
 
     // Clear each connection between the sender and receiver.
-    each(senders, connection => {
+    for (const connection of senders) {
       // Skip connections which have already been cleared.
       if (!connection.signal) {
-        return;
+        continue;
       }
 
       // Clear the connection if it matches the sender.
       if (connection.signal.sender === sender) {
         connection.signal = null;
       }
-    });
+    }
 
     // Schedule a cleanup of the senders and receivers.
     scheduleCleanup(receivers);
@@ -446,10 +446,10 @@ namespace Private {
     }
 
     // Clear each receiver connection.
-    each(receivers, connection => {
+    for (const connection of receivers) {
       // Skip connections which have already been cleared.
       if (!connection.signal) {
-        return;
+        continue;
       }
 
       // Choose the best object for the receiver.
@@ -460,7 +460,7 @@ namespace Private {
 
       // Cleanup the array of senders, which is now known to exist.
       scheduleCleanup(sendersForReceiver.get(receiver)!);
-    });
+    }
 
     // Schedule a cleanup of the receivers.
     scheduleCleanup(receivers);
@@ -479,10 +479,10 @@ namespace Private {
     }
 
     // Clear each sender connection.
-    each(senders, connection => {
+    for (const connection of senders) {
       // Skip connections which have already been cleared.
       if (!connection.signal) {
-        return;
+        continue;
       }
 
       // Lookup the sender for the connection.
@@ -493,7 +493,7 @@ namespace Private {
 
       // Cleanup the array of receivers, which is now known to exist.
       scheduleCleanup(receiversForSender.get(sender)!);
-    });
+    }
 
     // Schedule a cleanup of the list of senders.
     scheduleCleanup(senders);
