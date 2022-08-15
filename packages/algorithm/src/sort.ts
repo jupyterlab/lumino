@@ -7,7 +7,6 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { each } from './iter';
 
 /**
  * Topologically sort an iterable of edges.
@@ -42,12 +41,14 @@ export function topologicSort<T>(edges: Iterable<[T, T]>): T[] {
   let graph = new Map<T, T[]>();
 
   // Add the edges to the graph.
-  each(edges, addEdge);
+  for (const edge of edges) {
+    addEdge(edge);
+  }
 
   // Visit each node in the graph.
-  graph.forEach((v, k) => {
+  for (const [k] of graph) {
     visit(k);
-  });
+  }
 
   // Return the sorted results.
   return sorted;

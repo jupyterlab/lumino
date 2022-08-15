@@ -7,7 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { each, IRetroable } from '@lumino/algorithm';
+import { IRetroable } from '@lumino/algorithm';
 
 /**
  * A generic doubly-linked list.
@@ -177,9 +177,9 @@ export class LinkedList<T> implements Iterable<T>, IRetroable<T> {
    */
   assign(values: Iterable<T>): void {
     this.clear();
-    each(values, value => {
+    for (const value of values) {
       this.addLast(value);
-    });
+    }
   }
 
   /**
