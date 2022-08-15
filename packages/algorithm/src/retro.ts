@@ -45,7 +45,7 @@ export function retro<T>(
     return (object as IRetroable<T>).retro();
   }
   return (function* (object) {
-    for (let index = object.length - 1; ~index; index--) {
+    for (let index = object.length - 1; index > -1; index--) {
       yield object[index];
     }
   })(object as ArrayLike<T>);
