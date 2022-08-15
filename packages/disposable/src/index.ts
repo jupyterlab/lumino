@@ -7,8 +7,6 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { each } from '@lumino/algorithm';
-
 import { ISignal, Signal } from '@lumino/signaling';
 
 /**
@@ -198,9 +196,9 @@ export namespace DisposableSet {
    */
   export function from(items: Iterable<IDisposable>): DisposableSet {
     let set = new DisposableSet();
-    each(items, item => {
+    for (const item of items) {
       set.add(item);
-    });
+    }
     return set;
   }
 }
@@ -250,9 +248,9 @@ export namespace ObservableDisposableSet {
    */
   export function from(items: Iterable<IDisposable>): ObservableDisposableSet {
     let set = new ObservableDisposableSet();
-    each(items, item => {
+    for (const item of items) {
       set.add(item);
-    });
+    }
     return set;
   }
 }
