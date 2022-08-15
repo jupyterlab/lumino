@@ -7,7 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { each, find } from '@lumino/algorithm';
+import { find } from '@lumino/algorithm';
 
 import { MimeData } from '@lumino/coreutils';
 
@@ -192,9 +192,9 @@ export class DockPanel extends Widget {
     // Configure the layout for the specified mode.
     switch (value) {
       case 'multiple-document':
-        each(layout.tabBars(), tabBar => {
+        for (const tabBar of layout.tabBars()) {
           tabBar.show();
-        });
+        }
         break;
       case 'single-document':
         layout.restoreLayout(Private.createSingleDocumentConfig(this));
@@ -219,9 +219,9 @@ export class DockPanel extends Widget {
    */
   set tabsMovable(value: boolean) {
     this._tabsMovable = value;
-    each(this.tabBars(), tabbar => {
-      tabbar.tabsMovable = value;
-    });
+    for (const tabBar of this.tabBars()) {
+      tabBar.tabsMovable = value;
+    }
   }
 
   /**
@@ -250,9 +250,9 @@ export class DockPanel extends Widget {
    */
   set addButtonEnabled(value: boolean) {
     this._addButtonEnabled = value;
-    each(this.tabBars(), tabbar => {
-      tabbar.addButtonEnabled = value;
-    });
+    for (const tabBar of this.tabBars()) {
+      tabBar.addButtonEnabled = value;
+    }
   }
 
   /**

@@ -7,7 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { ArrayExt, each, map } from '@lumino/algorithm';
+import { ArrayExt, map } from '@lumino/algorithm';
 
 import { ElementExt } from '@lumino/domutils';
 
@@ -51,11 +51,11 @@ export class GridLayout extends Layout {
    */
   dispose(): void {
     // Dispose of the widgets and layout items.
-    each(this._items, item => {
+    for (const item of this._items) {
       let widget = item.widget;
       item.dispose();
       widget.dispose();
-    });
+    }
 
     // Clear the layout state.
     this._box = null;
@@ -357,9 +357,9 @@ export class GridLayout extends Layout {
    */
   protected init(): void {
     super.init();
-    each(this, widget => {
+    for (const widget of this) {
       this.attachWidget(widget);
-    });
+    }
   }
 
   /**

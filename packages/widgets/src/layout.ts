@@ -8,8 +8,6 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { each } from '@lumino/algorithm';
-
 import { IDisposable } from '@lumino/disposable';
 
 import { ElementExt } from '@lumino/domutils';
@@ -239,9 +237,9 @@ export abstract class Layout implements Iterable<Widget>, IDisposable {
    * widget nodes to the parent widget's node.
    */
   protected init(): void {
-    each(this, widget => {
+    for (const widget of this) {
       widget.parent = this.parent;
-    });
+    }
   }
 
   /**
@@ -258,9 +256,9 @@ export abstract class Layout implements Iterable<Widget>, IDisposable {
    * This may be reimplemented by subclasses as needed.
    */
   protected onResize(msg: Widget.ResizeMessage): void {
-    each(this, widget => {
+    for (const widget of this) {
       MessageLoop.sendMessage(widget, Widget.ResizeMessage.UnknownSize);
-    });
+    }
   }
 
   /**
@@ -277,9 +275,9 @@ export abstract class Layout implements Iterable<Widget>, IDisposable {
    * This may be reimplemented by subclasses as needed.
    */
   protected onUpdateRequest(msg: Message): void {
-    each(this, widget => {
+    for (const widget of this) {
       MessageLoop.sendMessage(widget, Widget.ResizeMessage.UnknownSize);
-    });
+    }
   }
 
   /**
@@ -293,9 +291,9 @@ export abstract class Layout implements Iterable<Widget>, IDisposable {
    * This may be reimplemented by subclasses as needed.
    */
   protected onBeforeAttach(msg: Message): void {
-    each(this, widget => {
+    for (const widget of this) {
       MessageLoop.sendMessage(widget, msg);
-    });
+    }
   }
 
   /**
@@ -309,9 +307,9 @@ export abstract class Layout implements Iterable<Widget>, IDisposable {
    * This may be reimplemented by subclasses as needed.
    */
   protected onAfterAttach(msg: Message): void {
-    each(this, widget => {
+    for (const widget of this) {
       MessageLoop.sendMessage(widget, msg);
-    });
+    }
   }
 
   /**
@@ -325,9 +323,9 @@ export abstract class Layout implements Iterable<Widget>, IDisposable {
    * This may be reimplemented by subclasses as needed.
    */
   protected onBeforeDetach(msg: Message): void {
-    each(this, widget => {
+    for (const widget of this) {
       MessageLoop.sendMessage(widget, msg);
-    });
+    }
   }
 
   /**
@@ -341,9 +339,9 @@ export abstract class Layout implements Iterable<Widget>, IDisposable {
    * This may be reimplemented by subclasses as needed.
    */
   protected onAfterDetach(msg: Message): void {
-    each(this, widget => {
+    for (const widget of this) {
       MessageLoop.sendMessage(widget, msg);
-    });
+    }
   }
 
   /**
@@ -357,11 +355,11 @@ export abstract class Layout implements Iterable<Widget>, IDisposable {
    * This may be reimplemented by subclasses as needed.
    */
   protected onBeforeShow(msg: Message): void {
-    each(this, widget => {
+    for (const widget of this) {
       if (!widget.isHidden) {
         MessageLoop.sendMessage(widget, msg);
       }
-    });
+    }
   }
 
   /**
@@ -375,11 +373,11 @@ export abstract class Layout implements Iterable<Widget>, IDisposable {
    * This may be reimplemented by subclasses as needed.
    */
   protected onAfterShow(msg: Message): void {
-    each(this, widget => {
+    for (const widget of this) {
       if (!widget.isHidden) {
         MessageLoop.sendMessage(widget, msg);
       }
-    });
+    }
   }
 
   /**
@@ -393,11 +391,11 @@ export abstract class Layout implements Iterable<Widget>, IDisposable {
    * This may be reimplemented by subclasses as needed.
    */
   protected onBeforeHide(msg: Message): void {
-    each(this, widget => {
+    for (const widget of this) {
       if (!widget.isHidden) {
         MessageLoop.sendMessage(widget, msg);
       }
-    });
+    }
   }
 
   /**
@@ -411,11 +409,11 @@ export abstract class Layout implements Iterable<Widget>, IDisposable {
    * This may be reimplemented by subclasses as needed.
    */
   protected onAfterHide(msg: Message): void {
-    each(this, widget => {
+    for (const widget of this) {
       if (!widget.isHidden) {
         MessageLoop.sendMessage(widget, msg);
       }
-    });
+    }
   }
 
   /**

@@ -7,15 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  ArrayExt,
-  chain,
-  each,
-  empty,
-  map,
-  once,
-  reduce
-} from '@lumino/algorithm';
+import { ArrayExt, chain, empty, map, once } from '@lumino/algorithm';
 
 import { ElementExt } from '@lumino/domutils';
 
@@ -79,9 +71,9 @@ export class DockLayout extends Layout {
     this._items.clear();
 
     // Dispose of the widgets contained in the old layout root.
-    each(widgets, widget => {
+    for (const widget of widgets) {
       widget.dispose();
-    });
+    }
 
     // Dispose of the base class.
     super.dispose();
@@ -107,13 +99,13 @@ export class DockLayout extends Layout {
       return;
     }
     this._hiddenMode = v;
-    each(this.tabBars(), bar => {
+    for (const bar of this.tabBars()) {
       if (bar.titles.length > 1) {
-        bar.titles.forEach(title => {
+        for (const title of bar.titles) {
           title.owner.hiddenMode = this._hiddenMode;
-        });
+        }
       }
-    });
+    }
   }
 
   /**
@@ -313,28 +305,28 @@ export class DockLayout extends Layout {
     this._root = null;
 
     // Unparent the old widgets which are not in the new config.
-    each(oldWidgets, widget => {
+    for (const widget of oldWidgets) {
       if (!widgetSet.has(widget)) {
         widget.parent = null;
       }
-    });
+    }
 
     // Dispose of the old tab bars.
-    each(oldTabBars, tabBar => {
+    for (const tabBar of oldTabBars) {
       tabBar.dispose();
-    });
+    }
 
     // Remove the old handles.
-    each(oldHandles, handle => {
+    for (const handle of oldHandles) {
       if (handle.parentNode) {
         handle.parentNode.removeChild(handle);
       }
-    });
+    }
 
     // Reparent the new widgets to the current parent.
-    widgetSet.forEach(widget => {
+    for (const widget of widgetSet) {
       widget.parent = this.parent;
-    });
+    }
 
     // Create the root node for the new config.
     if (mainConfig) {
@@ -518,14 +510,14 @@ export class DockLayout extends Layout {
     super.init();
 
     // Attach each widget to the parent.
-    each(this, widget => {
+    for (const widget of this) {
       this.attachWidget(widget);
-    });
+    }
 
     // Attach each handle to the parent.
-    each(this.handles(), handle => {
+    for (const handle of this.handles()) {
       this.parent!.node.appendChild(handle);
-    });
+    }
 
     // Post a fit request for the parent widget.
     this.parent!.fit();
@@ -1901,7 +1893,7 @@ namespace Private {
      * Sync the visibility and orientation of the handles.
      */
     syncHandles(): void {
-      each(this.handles, (handle, i) => {
+      this.handles.forEach((handle, i) => {
         handle.setAttribute('data-orientation', this.orientation);
         if (i === this.handles.length - 1) {
           handle.classList.add('lm-mod-hidden');
@@ -1917,9 +1909,9 @@ namespace Private {
      * This sets the size hint of each sizer to its current size.
      */
     holdSizes(): void {
-      each(this.sizers, sizer => {
+      for (const sizer of this.sizers) {
         sizer.sizeHint = sizer.size;
-      });
+      }
     }
 
     /**
@@ -1928,7 +1920,9 @@ namespace Private {
      * This ignores the sizers of tab layout nodes.
      */
     holdAllSizes(): void {
-      each(this.children, child => child.holdAllSizes());
+      for (const child of this.children) {
+        child.holdAllSizes();
+      }
       this.holdSizes();
     }
 
@@ -1946,17 +1940,17 @@ namespace Private {
       this.holdSizes();
 
       // Compute the sum of the sizes.
-      let sum = reduce(this.sizers, (v, sizer) => v + sizer.sizeHint, 0);
+      let sum = this.sizers.reduce((v, sizer) => v + sizer.sizeHint, 0);
 
       // Normalize the sizes based on the sum.
       if (sum === 0) {
-        each(this.sizers, sizer => {
+        for (const sizer of this.sizers) {
           sizer.size = sizer.sizeHint = 1 / n;
-        });
+        }
       } else {
-        each(this.sizers, sizer => {
+        for (const sizer of this.sizers) {
           sizer.size = sizer.sizeHint /= sum;
-        });
+        }
       }
 
       // Mark the sizes as normalized.
@@ -1977,17 +1971,17 @@ namespace Private {
       let sizes = this.sizers.map(sizer => sizer.size);
 
       // Compute the sum of the sizes.
-      let sum = reduce(sizes, (v, size) => v + size, 0);
+      let sum = sizes.reduce((v, size) => v + size, 0);
 
       // Normalize the sizes based on the sum.
       if (sum === 0) {
-        each(sizes, (size, i) => {
+        for (let i = sizes.length - 1; i > -1; i--) {
           sizes[i] = 1 / n;
-        });
+        }
       } else {
-        each(sizes, (size, i) => {
-          sizes[i] = size / sum;
-        });
+        for (let i = sizes.length - 1; i > -1; i--) {
+          sizes[i] /= sum;
+        }
       }
 
       // Return the normalized sizes.
@@ -2044,9 +2038,9 @@ namespace Private {
 
       // De-normalize the sizes if needed.
       if (this.normalized) {
-        each(this.sizers, sizer => {
+        for (const sizer of this.sizers) {
           sizer.sizeHint *= space;
-        });
+        }
         this.normalized = false;
       }
 
@@ -2113,12 +2107,12 @@ namespace Private {
     let widgets: Widget[] = [];
 
     // Filter the config for unique widgets.
-    each(config.widgets, widget => {
+    for (const widget of config.widgets) {
       if (!widgetSet.has(widget)) {
         widgetSet.add(widget);
         widgets.push(widget);
       }
-    });
+    }
 
     // Bail if there are no effective widgets.
     if (widgets.length === 0) {
@@ -2193,11 +2187,11 @@ namespace Private {
     let tabBar = renderer.createTabBar(document);
 
     // Hide each widget and add it to the tab bar.
-    each(config.widgets, widget => {
+    for (const widget of config.widgets) {
       widget.hide();
       tabBar.addTab(widget.title);
       Private.addAria(widget, tabBar);
-    });
+    }
 
     // Set the current index of the tab bar.
     tabBar.currentIndex = config.currentIndex;
@@ -2218,7 +2212,7 @@ namespace Private {
     let node = new SplitLayoutNode(config.orientation);
 
     // Add each child to the layout node.
-    each(config.children, (child, i) => {
+    config.children.forEach((child, i) => {
       // Create the child data for the layout node.
       let childNode = realizeAreaConfig(child, renderer, document);
       let sizer = createSizer(config.sizes[i]);

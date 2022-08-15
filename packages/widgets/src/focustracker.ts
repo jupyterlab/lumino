@@ -7,7 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { ArrayExt, each, filter, find, max } from '@lumino/algorithm';
+import { ArrayExt, find, max } from '@lumino/algorithm';
 
 import { IDisposable } from '@lumino/disposable';
 
@@ -38,10 +38,10 @@ export class FocusTracker<T extends Widget> implements IDisposable {
     Signal.clearData(this);
 
     // Remove all event listeners.
-    each(this._widgets, w => {
-      w.node.removeEventListener('focus', this, true);
-      w.node.removeEventListener('blur', this, true);
-    });
+    for (const widget of this._widgets) {
+      widget.node.removeEventListener('focus', this, true);
+      widget.node.removeEventListener('blur', this, true);
+    }
 
     // Clear the internal data structures.
     this._activeWidget = null;
@@ -226,7 +226,7 @@ export class FocusTracker<T extends Widget> implements IDisposable {
     }
 
     // Filter the widgets for those which have had focus.
-    let valid = filter(this._widgets, w => this._numbers.get(w) !== -1);
+    let valid = this._widgets.filter(w => this._numbers.get(w) !== -1);
 
     // Get the valid widget with the max focus number.
     let previous =
