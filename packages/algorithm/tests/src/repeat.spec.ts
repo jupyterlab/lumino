@@ -18,12 +18,6 @@ describe('@lumino/algorithm', () => {
     });
   });
 
-  describe('repeat()', () => {
-    testIterator(() => {
-      return [repeat('foo', 3), ['foo', 'foo', 'foo']];
-    });
-  });
-
   describe('once()', () => {
     testIterator(() => {
       return [once('foo'), ['foo']];
