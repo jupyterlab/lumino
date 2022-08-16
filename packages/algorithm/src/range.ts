@@ -67,7 +67,11 @@ namespace Private {
    *
    * @returns The number of steps need to traverse the range.
    */
-  export function rangeLength(start: number, stop: number, step: number) {
+  export function rangeLength(
+    start: number,
+    stop: number,
+    step: number
+  ): number {
     if (step === 0) {
       return Infinity;
     }
