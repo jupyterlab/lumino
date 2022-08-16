@@ -9,7 +9,7 @@
 |----------------------------------------------------------------------------*/
 import { expect } from 'chai';
 
-import { each, every, some, toArray, toObject } from '@lumino/algorithm';
+import { each, every, some, toArray, toObject, zip } from '@lumino/algorithm';
 
 /**
  * A helper function to test the methods of an iterator.
@@ -40,12 +40,10 @@ describe('@lumino/algorithm', () => {
 
   describe('toObject()', () => {
     it('should create an object from a [key, value] iterable', () => {
-      let data: [string, number][] = [
-        ['one', 1],
-        ['two', 2],
-        ['three', 3]
-      ];
-      let result = toObject(data);
+      let keys = ['one', 'two', 'three'];
+      let values = [1, 2, 3];
+      let stream = zip<string | number>(keys, values);
+      let result = toObject(stream as Iterable<[string, number]>);
       expect(result).to.deep.equal({ one: 1, two: 2, three: 3 });
     });
   });
