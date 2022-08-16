@@ -43,15 +43,21 @@ jobs:
           yarn build
           yarn api
 
+      - name: Dummy commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add ./review/api/*.api.md
+          git commit --allow-empty -m "API changes"
+
       - name: Get API changes
         id: api-changed
         uses: tj-actions/changed-files@v24
         with:
-          base_sha: 'HEAD'
-          sha: ''
+          base_sha: 'HEAD~1'
+          sha: 'HEAD'
           # only checks for modified files in this directory
           files: review/api/*.api.md
-
 
       - name: Fail if API are modified
         if: steps.api-changed.outputs.any_changed == 'true'
