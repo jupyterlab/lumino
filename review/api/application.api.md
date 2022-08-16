@@ -30,8 +30,8 @@ export class Application<T extends Widget> {
     resolveRequiredService<U>(token: Token<U>): Promise<U>;
     readonly shell: T;
     start(options?: Application.IStartOptions): Promise<void>;
-    readonly started: Promise<void>;
-    }
+    get started(): Promise<void>;
+}
 
 // @public
 export namespace Application {
@@ -55,7 +55,6 @@ export interface IPlugin<T, U> {
     provides?: Token<U>;
     requires?: Token<any>[];
 }
-
 
 // (No @packageDocumentation comment for this package)
 
