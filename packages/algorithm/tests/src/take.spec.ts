@@ -20,13 +20,18 @@ describe('@lumino/algorithm', () => {
 
   describe('take() from an iterable iterator', () => {
     testIterator(() => {
-      return [take([0, 1, 2, 3][Symbol.iterator](), 1), [0]];
+      return [take([0, 1, 2, 3], 1), [0]];
     });
   });
 
   describe('take() with count=0', () => {
-    testIterator(() => {
-      return [take([0, 1, 2, 3][Symbol.iterator](), 0), []];
-    });
+    testIterator(() => [take([0, 1, 2, 3], 0), []]);
+  });
+
+  describe('take() only takes as many as count or are left', () => {
+    const it = [0, 1, 2, 3, 4, 5, 6][Symbol.iterator]();
+    testIterator(() => [take(it, 2), [0, 1]]);
+    testIterator(() => [take(it, 4), [2, 3, 4, 5]]);
+    testIterator(() => [take(it, 25), [6]]);
   });
 });
