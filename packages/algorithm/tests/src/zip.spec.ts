@@ -12,7 +12,7 @@ import { zip } from '@lumino/algorithm';
 import { testIterator } from './iter.spec';
 
 describe('@lumino/algorithm', () => {
-  describe('zip()', () => {
+  describe('zip() with same-length iterables', () => {
     testIterator(() => {
       return [
         zip([1, 2, 3], [4, 5, 6]),
@@ -25,7 +25,7 @@ describe('@lumino/algorithm', () => {
     });
   });
 
-  describe('zip()', () => {
+  describe('zip() with different-length iterables', () => {
     testIterator(() => {
       let i1 = ['one', 'two', 'three', 'four'];
       let i2 = [true, false, true];
