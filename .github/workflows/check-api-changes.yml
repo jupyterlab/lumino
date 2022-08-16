@@ -52,4 +52,6 @@ jobs:
 
       - name: Fail if API are modified
         if: steps.api-changed.outputs.any_changed == 'true'
-        run: exit 1
+        run: |
+          git diff
+          exit 1
