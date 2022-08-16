@@ -12,13 +12,13 @@ import { take } from '@lumino/algorithm';
 import { testIterator } from './iter.spec';
 
 describe('@lumino/algorithm', () => {
-  describe('take()', () => {
+  describe('take() from an array', () => {
     testIterator(() => {
       return [take([1, 2, 3, 4, 5], 2), [1, 2]];
     });
   });
 
-  describe('take()', () => {
+  describe('take() from an iterable iterator', () => {
     testIterator(() => {
       return [take([0, 1, 2, 3][Symbol.iterator](), 1), [0]];
     });

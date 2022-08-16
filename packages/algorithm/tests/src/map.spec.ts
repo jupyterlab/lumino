@@ -19,12 +19,4 @@ describe('@lumino/algorithm', () => {
       return [it, result];
     });
   });
-
-  describe('map()', () => {
-    testIterator(() => {
-      let result = [0, 1, 8, 27];
-      let it = map([0, 1, 2, 3][Symbol.iterator](), x => x ** 3);
-      return [it, result];
-    });
-  });
 });

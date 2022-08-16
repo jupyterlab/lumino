@@ -24,11 +24,11 @@ describe('@lumino/algorithm', () => {
       let retroable = { retro: () => iterator };
       expect(retro(retroable)).to.equal(iterator);
     });
-  });
 
-  describe('retro()', () => {
-    testIterator(() => {
-      return [retro([1, 2, 3]), [3, 2, 1]];
+    it('should reverse an array', () => {
+      testIterator(() => {
+        return [retro([1, 2, 3]), [3, 2, 1]];
+      });
     });
   });
 });
