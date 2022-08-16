@@ -23,4 +23,10 @@ describe('@lumino/algorithm', () => {
       return [take([0, 1, 2, 3][Symbol.iterator](), 1), [0]];
     });
   });
+
+  describe('take() with count=0', () => {
+    testIterator(() => {
+      return [take([0, 1, 2, 3][Symbol.iterator](), 0), []];
+    });
+  });
 });
