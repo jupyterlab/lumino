@@ -13,6 +13,7 @@ Lumino
    changelog
    api
    examples
+   migration
 
 Indices and tables
 ==================
