@@ -21,9 +21,7 @@
  * ```typescript
  * import { iter, toArray } from '@lumino/algorithm';
  *
- * let data = [1, 2, 3, 4, 5, 6];
- *
- * let stream = iter(data);
+ * let stream = [1, 2, 3, 4, 5, 6][Symbol.iterator]();
  *
  * toArray(stream);  // [1, 2, 3, 4, 5, 6];
  * ```
