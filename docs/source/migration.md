@@ -27,7 +27,7 @@ In many places where the Lumino `iter()` utility function has been replaced in L
 
 ### Use `Array.from(...)` sparingly
 
-`toArray(...)` has been removed. You may be tempted to swap in `Array.from(...)` when you update your code. This _will_ work, but if you simply need to iterate through an iterable, you can use `for...of` directly on the iterable object. This is more performant both in terms of CPU and memory than allocating and populating new `Array` instance before iteration.
+`toArray(...)` has been deprecated. You may be tempted to swap in `Array.from(...)` when you update your code. This _will_ work, but if you simply need to iterate through an iterable, you can use `for...of` directly on the iterable object. This is more performant both in terms of CPU and memory than allocating and populating new `Array` instance before iteration.
 
 If you need a snapshot of every item in your iterable as an array, then `Array.from(...)` is an appropriate replacement for `toArray(...)`.
 
@@ -82,8 +82,12 @@ All of the iterator utilities have been changed to use native generators and ite
 | ✅  | `function`  | `some<T>(...)`           | Reimplement with native types                                                                                                                                                                                                             |
 | ✅  | `function`  | `stride<T>(...)`         | Reimplement with native types                                                                                                                                                                                                             |
 | ✅  | `function`  | `take<T>(...)`           | Reimplement with native types                                                                                                                                                                                                             |
-| ✅  | `function`  | `topologicSort<T>(...)`  | Support native types                                                                                                                                                                                                                      |
-| ✅  | `function`  | `zip<T>(...)`            | Reimplement with native types                                                                                                                                                                                                             |
+
+| ☑️ | `function` | `toArray<T>(...)` | `@deprecated`, use [`Array.from(...)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from) or [`for ... of`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...of) |
+| ✅ | `function` | `toObject(...)` | Reimplement with native types |
+
+| ✅ | `function` | `topologicSort<T>(...)` | Support native types |
+| ✅ | `function` | `zip<T>(...)` | Reimplement with native types |
 
 ### `@lumino/collections`
 

@@ -128,6 +128,14 @@ export namespace StringExt {
 // @public
 export function take<T>(object: Iterable<T>, count: number): IterableIterator<T>;
 
+// @public @deprecated
+export function toArray<T>(object: Iterable<T>): T[];
+
+// @public
+export function toObject<T>(object: Iterable<[string, T]>): {
+    [key: string]: T;
+};
+
 // @public
 export function topologicSort<T>(edges: Iterable<[T, T]>): T[];
 

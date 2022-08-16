@@ -9,6 +9,56 @@
 |----------------------------------------------------------------------------*/
 
 /**
+ * Create an array from an iterable of values.
+ *
+ * @deprecated
+ *
+ * @param object - The iterable or array-like object of interest.
+ *
+ * @returns A new array of values from the given object.
+ *
+ * #### Example
+ * ```typescript
+ * import { iter, toArray } from '@lumino/algorithm';
+ *
+ * let data = [1, 2, 3, 4, 5, 6];
+ *
+ * let stream = iter(data);
+ *
+ * toArray(stream);  // [1, 2, 3, 4, 5, 6];
+ * ```
+ */
+export function toArray<T>(object: Iterable<T>): T[] {
+  return Array.from(object);
+}
+
+/**
+ * Create an object from an iterable of key/value pairs.
+ *
+ * @param object - The iterable or array-like object of interest.
+ *
+ * @returns A new object mapping keys to values.
+ *
+ * #### Example
+ * ```typescript
+ * import { toObject } from '@lumino/algorithm';
+ *
+ * let data: [string, number][] = [['one', 1], ['two', 2], ['three', 3]];
+ *
+ * toObject(data);  // { one: 1, two: 2, three: 3 }
+ * ```
+ */
+export function toObject<T>(object: Iterable<[string, T]>): {
+  [key: string]: T;
+} {
+  const result: { [key: string]: T } = {};
+  for (const [key, value] of object) {
+    result[key] = value;
+  }
+  return result;
+}
+
+/**
  * Invoke a function for each value in an iterable.
  *
  * @param object - The iterable object of interest.

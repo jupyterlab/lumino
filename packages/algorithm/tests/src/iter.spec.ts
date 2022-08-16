@@ -9,7 +9,7 @@
 |----------------------------------------------------------------------------*/
 import { expect } from 'chai';
 
-import { each, every, some } from '@lumino/algorithm';
+import { each, every, some, toArray, toObject } from '@lumino/algorithm';
 
 /**
  * A helper function to test the methods of an iterator.
@@ -29,6 +29,27 @@ export function testIterator<T>(
 }
 
 describe('@lumino/algorithm', () => {
+  describe('toArray()', () => {
+    it('should create an array from an iterable', () => {
+      let data = [1, 2, 3, 4, 5, 6];
+      let stream = data[Symbol.iterator]();
+      let result = toArray(stream);
+      expect(result).to.deep.equal([1, 2, 3, 4, 5, 6]);
+    });
+  });
+
+  describe('toObject()', () => {
+    it('should create an object from a [key, value] iterable', () => {
+      let data: [string, number][] = [
+        ['one', 1],
+        ['two', 2],
+        ['three', 3]
+      ];
+      let result = toObject(data);
+      expect(result).to.deep.equal({ one: 1, two: 2, three: 3 });
+    });
+  });
+
   describe('each()', () => {
     it('should visit every item in an iterable', () => {
       let result = 0;
