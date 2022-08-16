@@ -47,8 +47,11 @@ jobs:
         id: api-changed
         uses: tj-actions/changed-files@v24
         with:
+          base_sha: 'HEAD'
+          sha: ''
           # only checks for modified files in this directory
           files: review/api/*.api.md
+
 
       - name: Fail if API are modified
         if: steps.api-changed.outputs.any_changed == 'true'
