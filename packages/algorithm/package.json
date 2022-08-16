@@ -28,7 +28,7 @@
     "build:src": "tsc --build",
     "build:test": "npm run clean:test && tsc --build tests && cd tests && rollup -c",
     "clean": "rimraf ./lib && rimraf *.tsbuildinfo && rimraf ./types && rimraf ./dist",
-    "clean:test": "rimraf tests/lib && rimraf tests/tsconfig.tsbuildinfo",
+    "clean:test": "rimraf tests/lib tests/tsconfig.tsbuildinfo",
     "docs": "typedoc --options ../../typedoc.js src",
     "minimize": "terser dist/index.js -c -m --source-map \"content='dist/index.js.map',url='index.min.js.map'\" -o dist/index.min.js",
     "test": "npm run test:firefox-headless",
