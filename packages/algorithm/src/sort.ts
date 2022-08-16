@@ -72,7 +72,9 @@ export function topologicSort<T>(edges: Iterable<[T, T]>): T[] {
     visited.add(node);
     let children = graph.get(node);
     if (children) {
-      children.forEach(visit);
+      for (const child of children) {
+        visit(child);
+      }
     }
     sorted.push(node);
   }
