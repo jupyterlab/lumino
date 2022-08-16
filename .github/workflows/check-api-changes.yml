@@ -48,10 +48,12 @@ jobs:
         uses: tj-actions/changed-files@v24
         with:
           # only checks for modified files in this directory
-          files: review/api
+          files: review/api/*.api.md
 
       - name: Fail if API are modified
         if: steps.api-changed.outputs.any_changed == 'true'
         run: |
-          git diff
+          for file in ${{ steps.api-changed.outputs.all_changed_files }}; do
+            echo "$file"
+          done
           exit 1
