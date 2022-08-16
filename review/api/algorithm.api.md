@@ -7,7 +7,7 @@
 // @public
 export namespace ArrayExt {
     export function fill<T>(array: MutableArrayLike<T>, value: T, start?: number, stop?: number): void;
-    export function findFirstIndex<T>(array: ArrayLike<T>, fn: (value: T, index: number) => boolean, start?: number, stop?: number): boolean;
+    export function findFirstIndex<T>(array: ArrayLike<T>, fn: (value: T, index: number) => boolean, start?: number, stop?: number): number;
     export function findFirstValue<T>(array: ArrayLike<T>, fn: (value: T, index: number) => boolean, start?: number, stop?: number): T | undefined;
     export function findLastIndex<T>(array: ArrayLike<T>, fn: (value: T, index: number) => boolean, start?: number, stop?: number): number;
     export function findLastValue<T>(array: ArrayLike<T>, fn: (value: T, index: number) => boolean, start?: number, stop?: number): T | undefined;
