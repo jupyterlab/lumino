@@ -1,0 +1,8 @@
+name: "Lumino CodeQL config"
+
+queries:
+  - uses: security-and-quality
+
+paths:
+  - examples/**/src
+  - packages/**/src

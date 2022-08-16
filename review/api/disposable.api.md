@@ -11,17 +11,16 @@ import { IterableOrArrayLike } from '@lumino/algorithm';
 export class DisposableDelegate implements IDisposable {
     constructor(fn: () => void);
     dispose(): void;
-    readonly isDisposed: boolean;
+    get isDisposed(): boolean;
 }
 
 // @public
 export class DisposableSet implements IDisposable {
-    constructor();
     add(item: IDisposable): void;
     clear(): void;
     contains(item: IDisposable): boolean;
     dispose(): void;
-    readonly isDisposed: boolean;
+    get isDisposed(): boolean;
     remove(item: IDisposable): void;
 }
 
@@ -44,20 +43,19 @@ export interface IObservableDisposable extends IDisposable {
 // @public
 export class ObservableDisposableDelegate extends DisposableDelegate implements IObservableDisposable {
     dispose(): void;
-    readonly disposed: ISignal<this, void>;
-    }
+    get disposed(): ISignal<this, void>;
+}
 
 // @public
 export class ObservableDisposableSet extends DisposableSet implements IObservableDisposable {
     dispose(): void;
-    readonly disposed: ISignal<this, void>;
-    }
+    get disposed(): ISignal<this, void>;
+}
 
 // @public
 export namespace ObservableDisposableSet {
     export function from(items: IterableOrArrayLike<IDisposable>): ObservableDisposableSet;
 }
-
 
 // (No @packageDocumentation comment for this package)
 

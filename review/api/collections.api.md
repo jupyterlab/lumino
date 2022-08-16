@@ -10,50 +10,20 @@ import { IRetroable } from '@lumino/algorithm';
 import { IterableOrArrayLike } from '@lumino/algorithm';
 
 // @public
-export class BPlusTree<T> implements IIterable<T>, IRetroable<T> {
-    constructor(cmp: (a: T, b: T) => number);
-    assign(items: IterableOrArrayLike<T>): void;
-    at(index: number): T | undefined;
-    clear(): void;
-    readonly cmp: (a: T, b: T) => number;
-    delete<U>(key: U, cmp: (item: T, key: U) => number): T | undefined;
-    readonly first: T | undefined;
-    get<U>(key: U, cmp: (item: T, key: U) => number): T | undefined;
-    has<U>(key: U, cmp: (item: T, key: U) => number): boolean;
-    indexOf<U>(key: U, cmp: (item: T, key: U) => number): number;
-    insert(item: T): T | undefined;
-    readonly isEmpty: boolean;
-    iter(): IIterator<T>;
-    readonly last: T | undefined;
-    remove(index: number): T | undefined;
-    retro(): IIterator<T>;
-    retroSlice(start?: number, stop?: number): IIterator<T>;
-    readonly size: number;
-    slice(start?: number, stop?: number): IIterator<T>;
-    update(items: IterableOrArrayLike<T>): void;
-}
-
-// @public
-export namespace BPlusTree {
-    export function from<T>(items: IterableOrArrayLike<T>, cmp: (a: T, b: T) => number): BPlusTree<T>;
-}
-
-// @public
 export class LinkedList<T> implements IIterable<T>, IRetroable<T> {
-    constructor();
     addFirst(value: T): LinkedList.INode<T>;
     addLast(value: T): LinkedList.INode<T>;
     assign(values: IterableOrArrayLike<T>): void;
     clear(): void;
-    readonly first: T | undefined;
-    readonly firstNode: LinkedList.INode<T> | null;
+    get first(): T | undefined;
+    get firstNode(): LinkedList.INode<T> | null;
     insertAfter(value: T, ref: LinkedList.INode<T> | null): LinkedList.INode<T>;
     insertBefore(value: T, ref: LinkedList.INode<T> | null): LinkedList.INode<T>;
-    readonly isEmpty: boolean;
+    get isEmpty(): boolean;
     iter(): IIterator<T>;
-    readonly last: T | undefined;
-    readonly lastNode: LinkedList.INode<T> | null;
-    readonly length: number;
+    get last(): T | undefined;
+    get lastNode(): LinkedList.INode<T> | null;
+    get length(): number;
     nodes(): IIterator<LinkedList.INode<T>>;
     pop(): T | undefined;
     push(value: T): void;
@@ -63,7 +33,7 @@ export class LinkedList<T> implements IIterable<T>, IRetroable<T> {
     retro(): IIterator<T>;
     retroNodes(): IIterator<LinkedList.INode<T>>;
     shift(value: T): void;
-    readonly size: number;
+    get size(): number;
     unshift(): T | undefined;
 }
 
@@ -74,13 +44,13 @@ export namespace LinkedList {
         clone(): IIterator<INode<T>>;
         iter(): IIterator<INode<T>>;
         next(): INode<T> | undefined;
-        }
+    }
     export class ForwardValueIterator<T> implements IIterator<T> {
         constructor(node: INode<T> | null);
         clone(): IIterator<T>;
         iter(): IIterator<T>;
         next(): T | undefined;
-        }
+    }
     export function from<T>(values: IterableOrArrayLike<T>): LinkedList<T>;
     export interface INode<T> {
         readonly list: LinkedList<T> | null;
@@ -93,15 +63,14 @@ export namespace LinkedList {
         clone(): IIterator<INode<T>>;
         iter(): IIterator<INode<T>>;
         next(): INode<T> | undefined;
-        }
+    }
     export class RetroValueIterator<T> implements IIterator<T> {
         constructor(node: INode<T> | null);
         clone(): IIterator<T>;
         iter(): IIterator<T>;
         next(): T | undefined;
-        }
+    }
 }
-
 
 // (No @packageDocumentation comment for this package)
 

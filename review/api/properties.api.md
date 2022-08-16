@@ -15,7 +15,7 @@ export class AttachedProperty<T, U> {
 
 // @public
 export namespace AttachedProperty {
-    export function clearData(owner: any): void;
+    export function clearData(owner: unknown): void;
     export interface IOptions<T, U> {
         changed?: (owner: T, oldValue: U, newValue: U) => void;
         coerce?: (owner: T, value: U) => U;
@@ -24,7 +24,6 @@ export namespace AttachedProperty {
         name: string;
     }
 }
-
 
 // (No @packageDocumentation comment for this package)
 

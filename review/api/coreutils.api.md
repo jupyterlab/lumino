@@ -49,9 +49,9 @@ export class MimeData {
     clearData(mime: string): void;
     getData(mime: string): any | undefined;
     hasData(mime: string): boolean;
-    setData(mime: string, data: any): void;
+    setData(mime: string, data: unknown): void;
     types(): string[];
-    }
+}
 
 // @public
 export interface PartialJSONArray extends Array<PartialJSONValue> {
@@ -70,13 +70,14 @@ export type PartialJSONValue = JSONPrimitive | PartialJSONObject | PartialJSONAr
 export class PromiseDelegate<T> {
     constructor();
     readonly promise: Promise<T>;
-    reject(reason: any): void;
+    reject(reason: unknown): void;
     resolve(value: T | PromiseLike<T>): void;
-    }
+}
 
 // @public
 export namespace Random {
-    const getRandomValues: (buffer: Uint8Array) => void;
+    const // Warning: (ae-forgotten-export) The symbol "fallbackRandomValues" needs to be exported by the entry point index.d.ts
+    getRandomValues: typeof fallbackRandomValues;
 }
 
 // @public
@@ -109,13 +110,12 @@ export type ReadonlyPartialJSONValue = JSONPrimitive | ReadonlyPartialJSONObject
 export class Token<T> {
     constructor(name: string);
     readonly name: string;
-    }
+}
 
 // @public
 export namespace UUID {
     const uuid4: () => string;
 }
-
 
 // (No @packageDocumentation comment for this package)
 
