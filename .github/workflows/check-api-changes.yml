@@ -5,7 +5,7 @@ on:
   pull_request:
 
 jobs:
-  staging-check:
+  api-changes:
     runs-on: ubuntu-latest
 
     env:
@@ -40,6 +40,7 @@ jobs:
         run: |
           set -ex
           yarn
+          yarn build
           yarn api
 
       - name: Get API changes
