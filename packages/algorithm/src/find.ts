@@ -7,12 +7,11 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { iter, IterableOrArrayLike } from './iter';
 
 /**
  * Find the first value in an iterable which matches a predicate.
  *
- * @param object - The iterable or array-like object to search.
+ * @param object - The iterable object to search.
  *
  * @param fn - The predicate function to apply to the values.
  *
@@ -42,13 +41,11 @@ import { iter, IterableOrArrayLike } from './iter';
  * ```
  */
 export function find<T>(
-  object: IterableOrArrayLike<T>,
+  object: Iterable<T>,
   fn: (value: T, index: number) => boolean
 ): T | undefined {
   let index = 0;
-  let it = iter(object);
-  let value: T | undefined;
-  while ((value = it.next()) !== undefined) {
+  for (const value of object) {
     if (fn(value, index++)) {
       return value;
     }
@@ -59,7 +56,7 @@ export function find<T>(
 /**
  * Find the index of the first value which matches a predicate.
  *
- * @param object - The iterable or array-like object to search.
+ * @param object - The iterable object to search.
  *
  * @param fn - The predicate function to apply to the values.
  *
@@ -89,13 +86,11 @@ export function find<T>(
  * ```
  */
 export function findIndex<T>(
-  object: IterableOrArrayLike<T>,
+  object: Iterable<T>,
   fn: (value: T, index: number) => boolean
 ): number {
   let index = 0;
-  let it = iter(object);
-  let value: T | undefined;
-  while ((value = it.next()) !== undefined) {
+  for (const value of object) {
     if (fn(value, index++)) {
       return index - 1;
     }
@@ -106,7 +101,7 @@ export function findIndex<T>(
 /**
  * Find the minimum value in an iterable.
  *
- * @param object - The iterable or array-like object to search.
+ * @param object - The iterable object to search.
  *
  * @param fn - The 3-way comparison function to apply to the values.
  *   It should return `< 0` if the first value is less than the second.
@@ -132,16 +127,15 @@ export function findIndex<T>(
  * ```
  */
 export function min<T>(
-  object: IterableOrArrayLike<T>,
+  object: Iterable<T>,
   fn: (first: T, second: T) => number
 ): T | undefined {
-  let it = iter(object);
-  let value = it.next();
-  if (value === undefined) {
-    return undefined;
-  }
-  let result = value;
-  while ((value = it.next()) !== undefined) {
+  let result: T | undefined = undefined;
+  for (const value of object) {
+    if (result === undefined) {
+      result = value;
+      continue;
+    }
     if (fn(value, result) < 0) {
       result = value;
     }
@@ -152,7 +146,7 @@ export function min<T>(
 /**
  * Find the maximum value in an iterable.
  *
- * @param object - The iterable or array-like object to search.
+ * @param object - The iterable object to search.
  *
  * @param fn - The 3-way comparison function to apply to the values.
  *   It should return `< 0` if the first value is less than the second.
@@ -178,16 +172,15 @@ export function min<T>(
  * ```
  */
 export function max<T>(
-  object: IterableOrArrayLike<T>,
+  object: Iterable<T>,
   fn: (first: T, second: T) => number
 ): T | undefined {
-  let it = iter(object);
-  let value = it.next();
-  if (value === undefined) {
-    return undefined;
-  }
-  let result = value;
-  while ((value = it.next()) !== undefined) {
+  let result: T | undefined = undefined;
+  for (const value of object) {
+    if (result === undefined) {
+      result = value;
+      continue;
+    }
     if (fn(value, result) > 0) {
       result = value;
     }
@@ -198,7 +191,7 @@ export function max<T>(
 /**
  * Find the minimum and maximum values in an iterable.
  *
- * @param object - The iterable or array-like object to search.
+ * @param object - The iterable object to search.
  *
  * @param fn - The 3-way comparison function to apply to the values.
  *   It should return `< 0` if the first value is less than the second.
@@ -224,22 +217,22 @@ export function max<T>(
  * ```
  */
 export function minmax<T>(
-  object: IterableOrArrayLike<T>,
+  object: Iterable<T>,
   fn: (first: T, second: T) => number
 ): [T, T] | undefined {
-  let it = iter(object);
-  let value = it.next();
-  if (value === undefined) {
-    return undefined;
-  }
-  let vmin = value;
-  let vmax = value;
-  while ((value = it.next()) !== undefined) {
-    if (fn(value, vmin) < 0) {
+  let empty = true;
+  let vmin: T;
+  let vmax: T;
+  for (const value of object) {
+    if (empty) {
       vmin = value;
-    } else if (fn(value, vmax) > 0) {
+      vmax = value;
+      empty = false;
+    } else if (fn(value, vmin!) < 0) {
+      vmin = value;
+    } else if (fn(value, vmax!) > 0) {
       vmax = value;
     }
   }
-  return [vmin, vmax];
+  return empty ? undefined : [vmin!, vmax!];
 }

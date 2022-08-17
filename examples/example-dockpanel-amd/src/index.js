@@ -53,15 +53,18 @@ define(['@lumino/commands', '@lumino/widgets'], function (
     return root;
   }
 
-  function ContentWidget(name) {
-    Widget.call(this, { node: ContentWidget.prototype.createNode() });
-    this.setFlag(Widget.Flag.DisallowLayout);
-    this.addClass('content');
-    this.addClass(name.toLowerCase());
-    this.title.label = name;
-    this.title.closable = true;
-    this.title.caption = 'Long description for: ' + name;
+  class ContentWidget extends Widget {
+    constructor(name) {
+      super({ node: ContentWidget.prototype.createNode() });
+      this.setFlag(Widget.Flag.DisallowLayout);
+      this.addClass('content');
+      this.addClass(name.toLowerCase());
+      this.title.label = name;
+      this.title.closable = true;
+      this.title.caption = 'Long description for: ' + name;
+    }
   }
+
   ContentWidget.prototype = Object.create(Widget.prototype);
 
   ContentWidget.prototype.createNode = function () {

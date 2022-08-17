@@ -87,7 +87,7 @@ describe('@lumino/widgets', () => {
       });
     });
 
-    describe('#iter()', () => {
+    describe('[Symbol.iterator]()', () => {
       it('should create an iterator over the widgets in the layout', () => {
         let layout = new PanelLayout();
         let widgets = [new Widget(), new Widget()];
@@ -97,9 +97,10 @@ describe('@lumino/widgets', () => {
         each(widgets, w => {
           w.title.label = 'foo';
         });
-        let iter = layout.iter();
-        expect(every(iter, w => w.title.label === 'foo')).to.equal(true);
-        expect(layout.iter()).to.not.equal(iter);
+        expect(every(layout, w => w.title.label === 'foo')).to.equal(true);
+        let it1 = layout[Symbol.iterator](),
+          it2 = layout[Symbol.iterator]();
+        expect(it1).to.not.equal(it2);
       });
     });
 

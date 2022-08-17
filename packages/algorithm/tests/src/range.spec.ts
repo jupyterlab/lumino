@@ -7,7 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { range, RangeIterator } from '@lumino/algorithm';
+import { range } from '@lumino/algorithm';
 
 import { testIterator } from './iter.spec';
 
@@ -41,12 +41,6 @@ describe('@lumino/algorithm', () => {
       testIterator(() => {
         return [range(0, 10, -1), []];
       });
-    });
-  });
-
-  describe('RangeIterator', () => {
-    testIterator(() => {
-      return [new RangeIterator(0, 11, 2), [0, 2, 4, 6, 8, 10]];
     });
   });
 });

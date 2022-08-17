@@ -48,214 +48,69 @@ export namespace ArrayExt {
 }
 
 // @public
-export class ArrayIterator<T> implements IIterator<T> {
-    constructor(source: ArrayLike<T>);
-    clone(): IIterator<T>;
-    iter(): IIterator<T>;
-    next(): T | undefined;
-}
+export function chain<T>(...objects: Iterable<T>[]): IterableIterator<T>;
 
 // @public
-export function chain<T>(...objects: IterableOrArrayLike<T>[]): IIterator<T>;
+export function each<T>(object: Iterable<T>, fn: (value: T, index: number) => boolean | void): void;
 
 // @public
-export class ChainIterator<T> implements IIterator<T> {
-    constructor(source: IIterator<IIterator<T>>);
-    clone(): IIterator<T>;
-    iter(): IIterator<T>;
-    next(): T | undefined;
-}
+export function empty<T>(): IterableIterator<T>;
 
 // @public
-export function each<T>(object: IterableOrArrayLike<T>, fn: (value: T, index: number) => boolean | void): void;
+export function enumerate<T>(object: Iterable<T>, start?: number): IterableIterator<[number, T]>;
 
 // @public
-export function empty<T>(): IIterator<T>;
+export function every<T>(object: Iterable<T>, fn: (value: T, index: number) => boolean): boolean;
 
 // @public
-export class EmptyIterator<T> implements IIterator<T> {
-    clone(): IIterator<T>;
-    iter(): IIterator<T>;
-    next(): T | undefined;
-}
+export function filter<T>(object: Iterable<T>, fn: (value: T, index: number) => boolean): IterableIterator<T>;
 
 // @public
-export function enumerate<T>(object: IterableOrArrayLike<T>, start?: number): IIterator<[number, T]>;
+export function find<T>(object: Iterable<T>, fn: (value: T, index: number) => boolean): T | undefined;
 
 // @public
-export class EnumerateIterator<T> implements IIterator<[number, T]> {
-    constructor(source: IIterator<T>, start: number);
-    clone(): IIterator<[number, T]>;
-    iter(): IIterator<[number, T]>;
-    next(): [number, T] | undefined;
-}
-
-// @public
-export function every<T>(object: IterableOrArrayLike<T>, fn: (value: T, index: number) => boolean): boolean;
-
-// @public
-export function filter<T>(object: IterableOrArrayLike<T>, fn: (value: T, index: number) => boolean): IIterator<T>;
-
-// @public
-export class FilterIterator<T> implements IIterator<T> {
-    constructor(source: IIterator<T>, fn: (value: T, index: number) => boolean);
-    clone(): IIterator<T>;
-    iter(): IIterator<T>;
-    next(): T | undefined;
-}
-
-// @public
-export function find<T>(object: IterableOrArrayLike<T>, fn: (value: T, index: number) => boolean): T | undefined;
-
-// @public
-export function findIndex<T>(object: IterableOrArrayLike<T>, fn: (value: T, index: number) => boolean): number;
-
-// @public
-export class FnIterator<T> implements IIterator<T> {
-    constructor(fn: () => T | undefined);
-    clone(): IIterator<T>;
-    iter(): IIterator<T>;
-    next(): T | undefined;
-}
-
-// @public
-export interface IIterable<T> {
-    iter(): IIterator<T>;
-}
-
-// @public
-export interface IIterator<T> extends IIterable<T> {
-    clone(): IIterator<T>;
-    next(): T | undefined;
-}
+export function findIndex<T>(object: Iterable<T>, fn: (value: T, index: number) => boolean): number;
 
 // @public
 export interface IRetroable<T> {
-    retro(): IIterator<T>;
+    retro(): IterableIterator<T>;
 }
 
 // @public
-export class ItemIterator<T> implements IIterator<[string, T]> {
-    constructor(source: {
-        readonly [key: string]: T;
-    }, keys?: string[]);
-    clone(): IIterator<[string, T]>;
-    iter(): IIterator<[string, T]>;
-    next(): [string, T] | undefined;
-}
+export function map<T, U>(object: Iterable<T>, fn: (value: T, index: number) => U): IterableIterator<U>;
 
 // @public
-export function iter<T>(object: IterableOrArrayLike<T>): IIterator<T>;
+export function max<T>(object: Iterable<T>, fn: (first: T, second: T) => number): T | undefined;
 
 // @public
-export type IterableOrArrayLike<T> = IIterable<T> | ArrayLike<T>;
+export function min<T>(object: Iterable<T>, fn: (first: T, second: T) => number): T | undefined;
 
 // @public
-export function iterFn<T>(fn: () => T | undefined): IIterator<T>;
+export function minmax<T>(object: Iterable<T>, fn: (first: T, second: T) => number): [T, T] | undefined;
 
 // @public
-export function iterItems<T>(object: {
-    readonly [key: string]: T;
-}): IIterator<[string, T]>;
+export function once<T>(value: T): IterableIterator<T>;
 
 // @public
-export function iterKeys<T>(object: {
-    readonly [key: string]: T;
-}): IIterator<string>;
+export function range(start: number, stop?: number, step?: number): IterableIterator<number>;
 
 // @public
-export function iterValues<T>(object: {
-    readonly [key: string]: T;
-}): IIterator<T>;
-
-// @public
-export class KeyIterator implements IIterator<string> {
-    constructor(source: {
-        readonly [key: string]: any;
-    }, keys?: string[]);
-    clone(): IIterator<string>;
-    iter(): IIterator<string>;
-    next(): string | undefined;
-}
-
-// @public
-export function map<T, U>(object: IterableOrArrayLike<T>, fn: (value: T, index: number) => U): IIterator<U>;
-
-// @public
-export class MapIterator<T, U> implements IIterator<U> {
-    constructor(source: IIterator<T>, fn: (value: T, index: number) => U);
-    clone(): IIterator<U>;
-    iter(): IIterator<U>;
-    next(): U | undefined;
-}
-
-// @public
-export function max<T>(object: IterableOrArrayLike<T>, fn: (first: T, second: T) => number): T | undefined;
-
-// @public
-export function min<T>(object: IterableOrArrayLike<T>, fn: (first: T, second: T) => number): T | undefined;
-
-// @public
-export function minmax<T>(object: IterableOrArrayLike<T>, fn: (first: T, second: T) => number): [T, T] | undefined;
-
-// @public
-export function once<T>(value: T): IIterator<T>;
-
-// @public
-export function range(start: number, stop?: number, step?: number): IIterator<number>;
-
-// @public
-export class RangeIterator implements IIterator<number> {
-    constructor(start: number, stop: number, step: number);
-    clone(): IIterator<number>;
-    iter(): IIterator<number>;
-    next(): number | undefined;
-}
-
-// @public
-export function reduce<T>(object: IterableOrArrayLike<T>, fn: (accumulator: T, value: T, index: number) => T): T;
+export function reduce<T>(object: Iterable<T>, fn: (accumulator: T, value: T, index: number) => T): T;
 
 // @public (undocumented)
-export function reduce<T, U>(object: IterableOrArrayLike<T>, fn: (accumulator: U, value: T, index: number) => U, initial: U): U;
+export function reduce<T, U>(object: Iterable<T>, fn: (accumulator: U, value: T, index: number) => U, initial: U): U;
 
 // @public
-export function repeat<T>(value: T, count: number): IIterator<T>;
+export function repeat<T>(value: T, count: number): IterableIterator<T>;
 
 // @public
-export class RepeatIterator<T> implements IIterator<T> {
-    constructor(value: T, count: number);
-    clone(): IIterator<T>;
-    iter(): IIterator<T>;
-    next(): T | undefined;
-}
+export function retro<T>(object: IRetroable<T> | ArrayLike<T>): IterableIterator<T>;
 
 // @public
-export function retro<T>(object: RetroableOrArrayLike<T>): IIterator<T>;
+export function some<T>(object: Iterable<T>, fn: (value: T, index: number) => boolean): boolean;
 
 // @public
-export type RetroableOrArrayLike<T> = IRetroable<T> | ArrayLike<T>;
-
-// @public
-export class RetroArrayIterator<T> implements IIterator<T> {
-    constructor(source: ArrayLike<T>);
-    clone(): IIterator<T>;
-    iter(): IIterator<T>;
-    next(): T | undefined;
-}
-
-// @public
-export function some<T>(object: IterableOrArrayLike<T>, fn: (value: T, index: number) => boolean): boolean;
-
-// @public
-export function stride<T>(object: IterableOrArrayLike<T>, step: number): IIterator<T>;
-
-// @public
-export class StrideIterator<T> implements IIterator<T> {
-    constructor(source: IIterator<T>, step: number);
-    clone(): IIterator<T>;
-    iter(): IIterator<T>;
-    next(): T | undefined;
-}
+export function stride<T>(object: Iterable<T>, step: number): IterableIterator<T>;
 
 // @public
 export namespace StringExt {
@@ -271,47 +126,21 @@ export namespace StringExt {
 }
 
 // @public
-export function take<T>(object: IterableOrArrayLike<T>, count: number): IIterator<T>;
+export function take<T>(object: Iterable<T>, count: number): IterableIterator<T>;
+
+// @public @deprecated
+export function toArray<T>(object: Iterable<T>): T[];
 
 // @public
-export class TakeIterator<T> implements IIterator<T> {
-    constructor(source: IIterator<T>, count: number);
-    clone(): IIterator<T>;
-    iter(): IIterator<T>;
-    next(): T | undefined;
-}
-
-// @public
-export function toArray<T>(object: IterableOrArrayLike<T>): T[];
-
-// @public
-export function toObject<T>(object: IterableOrArrayLike<[string, T]>): {
+export function toObject<T>(object: Iterable<[string, T]>): {
     [key: string]: T;
 };
 
 // @public
-export function topologicSort<T>(edges: IterableOrArrayLike<[T, T]>): T[];
+export function topologicSort<T>(edges: Iterable<[T, T]>): T[];
 
 // @public
-export class ValueIterator<T> implements IIterator<T> {
-    constructor(source: {
-        readonly [key: string]: T;
-    }, keys?: string[]);
-    clone(): IIterator<T>;
-    iter(): IIterator<T>;
-    next(): T | undefined;
-}
-
-// @public
-export function zip<T>(...objects: IterableOrArrayLike<T>[]): IIterator<T[]>;
-
-// @public
-export class ZipIterator<T> implements IIterator<T[]> {
-    constructor(source: IIterator<T>[]);
-    clone(): IIterator<T[]>;
-    iter(): IIterator<T[]>;
-    next(): T[] | undefined;
-}
+export function zip<T>(...objects: Iterable<T>[]): IterableIterator<T[]>;
 
 // (No @packageDocumentation comment for this package)
 

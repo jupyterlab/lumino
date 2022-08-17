@@ -7,7 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { each, find, IIterator, toArray } from '@lumino/algorithm';
+import { find } from '@lumino/algorithm';
 
 import { MimeData } from '@lumino/coreutils';
 
@@ -192,9 +192,9 @@ export class DockPanel extends Widget {
     // Configure the layout for the specified mode.
     switch (value) {
       case 'multiple-document':
-        each(layout.tabBars(), tabBar => {
+        for (const tabBar of layout.tabBars()) {
           tabBar.show();
-        });
+        }
         break;
       case 'single-document':
         layout.restoreLayout(Private.createSingleDocumentConfig(this));
@@ -219,9 +219,9 @@ export class DockPanel extends Widget {
    */
   set tabsMovable(value: boolean) {
     this._tabsMovable = value;
-    each(this.tabBars(), tabbar => {
-      tabbar.tabsMovable = value;
-    });
+    for (const tabBar of this.tabBars()) {
+      tabBar.tabsMovable = value;
+    }
   }
 
   /**
@@ -250,9 +250,9 @@ export class DockPanel extends Widget {
    */
   set addButtonEnabled(value: boolean) {
     this._addButtonEnabled = value;
-    each(this.tabBars(), tabbar => {
-      tabbar.addButtonEnabled = value;
-    });
+    for (const tabBar of this.tabBars()) {
+      tabBar.addButtonEnabled = value;
+    }
   }
 
   /**
@@ -270,7 +270,7 @@ export class DockPanel extends Widget {
    * #### Notes
    * This iterator does not include the generated tab bars.
    */
-  widgets(): IIterator<Widget> {
+  widgets(): IterableIterator<Widget> {
     return (this.layout as DockLayout).widgets();
   }
 
@@ -283,7 +283,7 @@ export class DockPanel extends Widget {
    * This iterator yields the widgets corresponding to the current tab
    * of each tab bar in the panel.
    */
-  selectedWidgets(): IIterator<Widget> {
+  selectedWidgets(): IterableIterator<Widget> {
     return (this.layout as DockLayout).selectedWidgets();
   }
 
@@ -295,7 +295,7 @@ export class DockPanel extends Widget {
    * #### Notes
    * This iterator does not include the user widgets.
    */
-  tabBars(): IIterator<TabBar<Widget>> {
+  tabBars(): IterableIterator<TabBar<Widget>> {
     return (this.layout as DockLayout).tabBars();
   }
 
@@ -304,7 +304,7 @@ export class DockPanel extends Widget {
    *
    * @returns A new iterator over the handles in the panel.
    */
-  handles(): IIterator<HTMLDivElement> {
+  handles(): IterableIterator<HTMLDivElement> {
     return (this.layout as DockLayout).handles();
   }
 
@@ -1553,10 +1553,10 @@ namespace Private {
     }
 
     // Get a flat array of the widgets in the panel.
-    let widgets = toArray(panel.widgets());
+    let widgets = Array.from(panel.widgets());
 
     // Get the first selected widget in the panel.
-    let selected = panel.selectedWidgets().next();
+    let selected = panel.selectedWidgets().next().value;
 
     // Compute the current index for the new config.
     let currentIndex = selected ? widgets.indexOf(selected) : -1;

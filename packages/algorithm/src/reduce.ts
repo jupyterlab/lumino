@@ -7,12 +7,11 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { iter, IterableOrArrayLike } from './iter';
 
 /**
  * Summarize all values in an iterable using a reducer function.
  *
- * @param object - The iterable or array-like object of interest.
+ * @param object - The iterable object of interest.
  *
  * @param fn - The reducer function to invoke for each value.
  *
@@ -47,59 +46,59 @@ import { iter, IterableOrArrayLike } from './iter';
  * ```
  */
 export function reduce<T>(
-  object: IterableOrArrayLike<T>,
+  object: Iterable<T>,
   fn: (accumulator: T, value: T, index: number) => T
 ): T;
 export function reduce<T, U>(
-  object: IterableOrArrayLike<T>,
+  object: Iterable<T>,
   fn: (accumulator: U, value: T, index: number) => U,
   initial: U
 ): U;
 export function reduce<T>(
-  object: IterableOrArrayLike<T>,
+  object: Iterable<T>,
   fn: (accumulator: any, value: T, index: number) => any,
   initial?: unknown
 ): any {
   // Setup the iterator and fetch the first value.
+  const it = object[Symbol.iterator]();
   let index = 0;
-  let it = iter(object);
   let first = it.next();
 
   // An empty iterator and no initial value is an error.
-  if (first === undefined && initial === undefined) {
+  if (first.done && initial === undefined) {
     throw new TypeError('Reduce of empty iterable with no initial value.');
   }
 
   // If the iterator is empty, return the initial value.
-  if (first === undefined) {
+  if (first.done) {
     return initial;
   }
 
   // If the iterator has a single item and no initial value, the
   // reducer is not invoked and the first item is the return value.
   let second = it.next();
-  if (second === undefined && initial === undefined) {
-    return first;
+  if (second.done && initial === undefined) {
+    return first.value;
   }
 
   // If iterator has a single item and an initial value is provided,
   // the reducer is invoked and that result is the return value.
-  if (second === undefined) {
-    return fn(initial, first, index++);
+  if (second.done) {
+    return fn(initial, first.value, index++);
   }
 
   // Setup the initial accumlated value.
   let accumulator: any;
   if (initial === undefined) {
-    accumulator = fn(first, second, index++);
+    accumulator = fn(first.value, second.value, index++);
   } else {
-    accumulator = fn(fn(initial, first, index++), second, index++);
+    accumulator = fn(fn(initial, first.value, index++), second.value, index++);
   }
 
   // Iterate the rest of the values, updating the accumulator.
-  let next: T | undefined;
-  while ((next = it.next()) !== undefined) {
-    accumulator = fn(accumulator, next, index++);
+  let next: IteratorResult<T>;
+  while (!(next = it.next()).done) {
+    accumulator = fn(accumulator, next.value, index++);
   }
 
   // Return the final accumulated value.

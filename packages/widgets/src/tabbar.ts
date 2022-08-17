@@ -7,7 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { ArrayExt, each } from '@lumino/algorithm';
+import { ArrayExt } from '@lumino/algorithm';
 
 import { IDisposable } from '@lumino/disposable';
 
@@ -2005,12 +2005,12 @@ namespace Private {
     tabs: HTMLCollection,
     orientation: TabBar.Orientation
   ): void {
-    each(tabs, tab => {
+    for (const tab of tabs) {
       if (orientation === 'horizontal') {
         (tab as HTMLElement).style.left = '';
       } else {
         (tab as HTMLElement).style.top = '';
       }
-    });
+    }
   }
 }

@@ -11,8 +11,6 @@ import { ElementDataset } from '@lumino/virtualdom';
 import { ElementInlineStyle } from '@lumino/virtualdom';
 import { h } from '@lumino/virtualdom';
 import { IDisposable } from '@lumino/disposable';
-import { IIterable } from '@lumino/algorithm';
-import { IIterator } from '@lumino/algorithm';
 import { IMessageHandler } from '@lumino/messaging';
 import { IObservableDisposable } from '@lumino/disposable';
 import { ISignal } from '@lumino/signaling';
@@ -281,18 +279,18 @@ export namespace ContextMenu {
 
 // @public
 export class DockLayout extends Layout {
+    [Symbol.iterator](): IterableIterator<Widget>;
     constructor(options: DockLayout.IOptions);
     addWidget(widget: Widget, options?: DockLayout.IAddOptions): void;
     protected attachWidget(widget: Widget): void;
     protected detachWidget(widget: Widget): void;
     dispose(): void;
-    handles(): IIterator<HTMLDivElement>;
+    handles(): IterableIterator<HTMLDivElement>;
     get hiddenMode(): Widget.HiddenMode;
     set hiddenMode(v: Widget.HiddenMode);
     hitTestTabAreas(clientX: number, clientY: number): DockLayout.ITabAreaGeometry | null;
     protected init(): void;
     get isEmpty(): boolean;
-    iter(): IIterator<Widget>;
     moveHandle(handle: HTMLDivElement, offsetX: number, offsetY: number): void;
     protected onBeforeAttach(msg: Message): void;
     protected onBeforeShow(msg: Message): void;
@@ -305,11 +303,11 @@ export class DockLayout extends Layout {
     readonly renderer: DockLayout.IRenderer;
     restoreLayout(config: DockLayout.ILayoutConfig): void;
     saveLayout(): DockLayout.ILayoutConfig;
-    selectedWidgets(): IIterator<Widget>;
+    selectedWidgets(): IterableIterator<Widget>;
     get spacing(): number;
     set spacing(value: number);
-    tabBars(): IIterator<TabBar<Widget>>;
-    widgets(): IIterator<Widget>;
+    tabBars(): IterableIterator<TabBar<Widget>>;
+    widgets(): IterableIterator<Widget>;
 }
 
 // @public
@@ -419,7 +417,7 @@ export class DockPanel extends Widget {
     addWidget(widget: Widget, options?: DockPanel.IAddOptions): void;
     dispose(): void;
     handleEvent(event: Event): void;
-    handles(): IIterator<HTMLDivElement>;
+    handles(): IterableIterator<HTMLDivElement>;
     get hiddenMode(): Widget.HiddenMode;
     set hiddenMode(v: Widget.HiddenMode);
     get isEmpty(): boolean;
@@ -435,16 +433,16 @@ export class DockPanel extends Widget {
     get renderer(): DockPanel.IRenderer;
     restoreLayout(config: DockPanel.ILayoutConfig): void;
     saveLayout(): DockPanel.ILayoutConfig;
-    selectedWidgets(): IIterator<Widget>;
+    selectedWidgets(): IterableIterator<Widget>;
     selectWidget(widget: Widget): void;
     get spacing(): number;
     set spacing(value: number);
-    tabBars(): IIterator<TabBar<Widget>>;
+    tabBars(): IterableIterator<TabBar<Widget>>;
     get tabsConstrained(): boolean;
     set tabsConstrained(value: boolean);
     get tabsMovable(): boolean;
     set tabsMovable(value: boolean);
-    widgets(): IIterator<Widget>;
+    widgets(): IterableIterator<Widget>;
 }
 
 // @public
@@ -534,6 +532,7 @@ export namespace FocusTracker {
 
 // @public
 export class GridLayout extends Layout {
+    [Symbol.iterator](): IterableIterator<Widget>;
     constructor(options?: GridLayout.IOptions);
     addWidget(widget: Widget): void;
     protected attachWidget(widget: Widget): void;
@@ -545,7 +544,6 @@ export class GridLayout extends Layout {
     protected detachWidget(widget: Widget): void;
     dispose(): void;
     protected init(): void;
-    iter(): IIterator<Widget>;
     protected onBeforeAttach(msg: Message): void;
     protected onBeforeShow(msg: Message): void;
     protected onChildHidden(msg: Widget.ChildMessage): void;
@@ -582,14 +580,14 @@ export namespace GridLayout {
 }
 
 // @public
-export abstract class Layout implements IIterable<Widget>, IDisposable {
+export abstract class Layout implements Iterable<Widget>, IDisposable {
+    abstract [Symbol.iterator](): IterableIterator<Widget>;
     constructor(options?: Layout.IOptions);
     dispose(): void;
     get fitPolicy(): Layout.FitPolicy;
     set fitPolicy(value: Layout.FitPolicy);
     protected init(): void;
     get isDisposed(): boolean;
-    abstract iter(): IIterator<Widget>;
     protected onAfterAttach(msg: Message): void;
     protected onAfterDetach(msg: Message): void;
     protected onAfterHide(msg: Message): void;
@@ -812,13 +810,13 @@ export namespace Panel {
 
 // @public
 export class PanelLayout extends Layout {
+    [Symbol.iterator](): IterableIterator<Widget>;
     addWidget(widget: Widget): void;
     protected attachWidget(index: number, widget: Widget): void;
     protected detachWidget(index: number, widget: Widget): void;
     dispose(): void;
     protected init(): void;
     insertWidget(index: number, widget: Widget): void;
-    iter(): IIterator<Widget>;
     protected moveWidget(fromIndex: number, toIndex: number, widget: Widget): void;
     removeWidget(widget: Widget): void;
     removeWidgetAt(index: number): void;
@@ -862,11 +860,11 @@ export namespace ScrollBar {
 
 // @public
 export class SingletonLayout extends Layout {
+    [Symbol.iterator](): IterableIterator<Widget>;
     protected attachWidget(widget: Widget): void;
     protected detachWidget(widget: Widget): void;
     dispose(): void;
     protected init(): void;
-    iter(): IIterator<Widget>;
     removeWidget(widget: Widget): void;
     get widget(): Widget | null;
     set widget(widget: Widget | null);
@@ -1256,7 +1254,7 @@ export class Widget implements IMessageHandler, IObservableDisposable {
     constructor(options?: Widget.IOptions);
     activate(): void;
     addClass(name: string): void;
-    children(): IIterator<Widget>;
+    children(): IterableIterator<Widget>;
     clearFlag(flag: Widget.Flag): void;
     close(): void;
     contains(widget: Widget): boolean;

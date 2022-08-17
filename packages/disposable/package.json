@@ -40,7 +40,6 @@
     "watch": "tsc --build --watch"
   },
   "dependencies": {
-    "@lumino/algorithm": "^1.9.1",
     "@lumino/signaling": "^1.10.1"
   },
   "devDependencies": {

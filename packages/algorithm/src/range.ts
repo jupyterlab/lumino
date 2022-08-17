@@ -7,8 +7,6 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { IIterator } from './iter';
-
 /**
  * Create an iterator of evenly spaced values.
  *
@@ -26,78 +24,32 @@ import { IIterator } from './iter';
  *
  * In the two argument form of `range(start, stop)`, `step` defaults
  * to `1`.
+ *
+ * #### Example
+ * ```typescript
+ * import { range } from '@lumino/algorithm';
+ *
+ * let stream = range(2, 4);
+ *
+ * Array.from(stream);  // [2, 3]
+ * ```
  */
-export function range(
+export function* range(
   start: number,
   stop?: number,
   step?: number
-): IIterator<number> {
+): IterableIterator<number> {
   if (stop === undefined) {
-    return new RangeIterator(0, start, 1);
+    stop = start;
+    start = 0;
+    step = 1;
+  } else if (step === undefined) {
+    step = 1;
   }
-  if (step === undefined) {
-    return new RangeIterator(start, stop, 1);
+  const length = Private.rangeLength(start, stop, step);
+  for (let index = 0; index < length; index++) {
+    yield start + step * index;
   }
-  return new RangeIterator(start, stop, step);
-}
-
-/**
- * An iterator which produces a range of evenly spaced values.
- */
-export class RangeIterator implements IIterator<number> {
-  /**
-   * Construct a new range iterator.
-   *
-   * @param start - The starting value for the range, inclusive.
-   *
-   * @param stop - The stopping value for the range, exclusive.
-   *
-   * @param step - The distance between each value.
-   */
-  constructor(start: number, stop: number, step: number) {
-    this._start = start;
-    this._stop = stop;
-    this._step = step;
-    this._length = Private.rangeLength(start, stop, step);
-  }
-
-  /**
-   * Get an iterator over the object's values.
-   *
-   * @returns An iterator which yields the object's values.
-   */
-  iter(): IIterator<number> {
-    return this;
-  }
-
-  /**
-   * Create an independent clone of the iterator.
-   *
-   * @returns A new independent clone of the iterator.
-   */
-  clone(): IIterator<number> {
-    let result = new RangeIterator(this._start, this._stop, this._step);
-    result._index = this._index;
-    return result;
-  }
-
-  /**
-   * Get the next value from the iterator.
-   *
-   * @returns The next value from the iterator, or `undefined`.
-   */
-  next(): number | undefined {
-    if (this._index >= this._length) {
-      return undefined;
-    }
-    return this._start + this._step * this._index++;
-  }
-
-  private _index = 0;
-  private _length: number;
-  private _start: number;
-  private _stop: number;
-  private _step: number;
 }
 
 /**

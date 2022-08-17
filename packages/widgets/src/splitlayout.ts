@@ -7,7 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { ArrayExt, each } from '@lumino/algorithm';
+import { ArrayExt } from '@lumino/algorithm';
 
 import { ElementExt } from '@lumino/domutils';
 
@@ -53,9 +53,9 @@ export class SplitLayout extends PanelLayout {
    */
   dispose(): void {
     // Dispose of the layout items.
-    each(this._items, item => {
+    for (const item of this._items) {
       item.dispose();
-    });
+    }
 
     // Clear the layout state.
     this._box = null;

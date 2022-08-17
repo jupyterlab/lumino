@@ -7,17 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  ArrayExt,
-  chain,
-  ChainIterator,
-  each,
-  empty,
-  IIterator,
-  map,
-  once,
-  reduce
-} from '@lumino/algorithm';
+import { ArrayExt, chain, empty, map, once } from '@lumino/algorithm';
 
 import { ElementExt } from '@lumino/domutils';
 
@@ -68,7 +58,7 @@ export class DockLayout extends Layout {
    */
   dispose(): void {
     // Get an iterator over the widgets in the layout.
-    let widgets = this.iter();
+    let widgets = this[Symbol.iterator]();
 
     // Dispose of the layout items.
     this._items.forEach(item => {
@@ -81,9 +71,9 @@ export class DockLayout extends Layout {
     this._items.clear();
 
     // Dispose of the widgets contained in the old layout root.
-    each(widgets, widget => {
+    for (const widget of widgets) {
       widget.dispose();
-    });
+    }
 
     // Dispose of the base class.
     super.dispose();
@@ -109,13 +99,13 @@ export class DockLayout extends Layout {
       return;
     }
     this._hiddenMode = v;
-    each(this.tabBars(), bar => {
+    for (const bar of this.tabBars()) {
       if (bar.titles.length > 1) {
-        bar.titles.forEach(title => {
+        for (const title of bar.titles) {
           title.owner.hiddenMode = this._hiddenMode;
-        });
+        }
       }
-    });
+    }
   }
 
   /**
@@ -155,7 +145,7 @@ export class DockLayout extends Layout {
    * #### Notes
    * This iterator includes the generated tab bars.
    */
-  iter(): IIterator<Widget> {
+  [Symbol.iterator](): IterableIterator<Widget> {
     return this._root ? this._root.iterAllWidgets() : empty<Widget>();
   }
 
@@ -167,7 +157,7 @@ export class DockLayout extends Layout {
    * #### Notes
    * This iterator does not include the generated tab bars.
    */
-  widgets(): IIterator<Widget> {
+  widgets(): IterableIterator<Widget> {
     return this._root ? this._root.iterUserWidgets() : empty<Widget>();
   }
 
@@ -180,7 +170,7 @@ export class DockLayout extends Layout {
    * This iterator yields the widgets corresponding to the current tab
    * of each tab bar in the layout.
    */
-  selectedWidgets(): IIterator<Widget> {
+  selectedWidgets(): IterableIterator<Widget> {
     return this._root ? this._root.iterSelectedWidgets() : empty<Widget>();
   }
 
@@ -192,7 +182,7 @@ export class DockLayout extends Layout {
    * #### Notes
    * This iterator does not include the user widgets.
    */
-  tabBars(): IIterator<TabBar<Widget>> {
+  tabBars(): IterableIterator<TabBar<Widget>> {
     return this._root ? this._root.iterTabBars() : empty<TabBar<Widget>>();
   }
 
@@ -201,7 +191,7 @@ export class DockLayout extends Layout {
    *
    * @returns A new iterator over the handles in the layout.
    */
-  handles(): IIterator<HTMLDivElement> {
+  handles(): IterableIterator<HTMLDivElement> {
     return this._root ? this._root.iterHandles() : empty<HTMLDivElement>();
   }
 
@@ -315,28 +305,28 @@ export class DockLayout extends Layout {
     this._root = null;
 
     // Unparent the old widgets which are not in the new config.
-    each(oldWidgets, widget => {
+    for (const widget of oldWidgets) {
       if (!widgetSet.has(widget)) {
         widget.parent = null;
       }
-    });
+    }
 
     // Dispose of the old tab bars.
-    each(oldTabBars, tabBar => {
+    for (const tabBar of oldTabBars) {
       tabBar.dispose();
-    });
+    }
 
     // Remove the old handles.
-    each(oldHandles, handle => {
+    for (const handle of oldHandles) {
       if (handle.parentNode) {
         handle.parentNode.removeChild(handle);
       }
-    });
+    }
 
     // Reparent the new widgets to the current parent.
-    widgetSet.forEach(widget => {
+    for (const widget of widgetSet) {
       widget.parent = this.parent;
-    });
+    }
 
     // Create the root node for the new config.
     if (mainConfig) {
@@ -520,14 +510,14 @@ export class DockLayout extends Layout {
     super.init();
 
     // Attach each widget to the parent.
-    each(this, widget => {
+    for (const widget of this) {
       this.attachWidget(widget);
-    });
+    }
 
     // Attach each handle to the parent.
-    each(this.handles(), handle => {
+    for (const handle of this.handles()) {
       this.parent!.node.appendChild(handle);
-    });
+    }
 
     // Post a fit request for the parent widget.
     this.parent!.fit();
@@ -1561,21 +1551,21 @@ namespace Private {
     /**
      * Create an iterator for all widgets in the layout tree.
      */
-    iterAllWidgets(): IIterator<Widget> {
+    iterAllWidgets(): IterableIterator<Widget> {
       return chain(once(this.tabBar), this.iterUserWidgets());
     }
 
     /**
      * Create an iterator for the user widgets in the layout tree.
      */
-    iterUserWidgets(): IIterator<Widget> {
+    iterUserWidgets(): IterableIterator<Widget> {
       return map(this.tabBar.titles, title => title.owner);
     }
 
     /**
      * Create an iterator for the selected widgets in the layout tree.
      */
-    iterSelectedWidgets(): IIterator<Widget> {
+    iterSelectedWidgets(): IterableIterator<Widget> {
       let title = this.tabBar.currentTitle;
       return title ? once(title.owner) : empty<Widget>();
     }
@@ -1583,14 +1573,14 @@ namespace Private {
     /**
      * Create an iterator for the tab bars in the layout tree.
      */
-    iterTabBars(): IIterator<TabBar<Widget>> {
+    iterTabBars(): IterableIterator<TabBar<Widget>> {
       return once(this.tabBar);
     }
 
     /**
      * Create an iterator for the handles in the layout tree.
      */
-    iterHandles(): IIterator<HTMLDivElement> {
+    iterHandles(): IterableIterator<HTMLDivElement> {
       return empty<HTMLDivElement>();
     }
 
@@ -1797,41 +1787,41 @@ namespace Private {
     /**
      * Create an iterator for all widgets in the layout tree.
      */
-    iterAllWidgets(): IIterator<Widget> {
+    iterAllWidgets(): IterableIterator<Widget> {
       let children = map(this.children, child => child.iterAllWidgets());
-      return new ChainIterator<Widget>(children);
+      return chain<Widget>(...children);
     }
 
     /**
      * Create an iterator for the user widgets in the layout tree.
      */
-    iterUserWidgets(): IIterator<Widget> {
+    iterUserWidgets(): IterableIterator<Widget> {
       let children = map(this.children, child => child.iterUserWidgets());
-      return new ChainIterator<Widget>(children);
+      return chain<Widget>(...children);
     }
 
     /**
      * Create an iterator for the selected widgets in the layout tree.
      */
-    iterSelectedWidgets(): IIterator<Widget> {
+    iterSelectedWidgets(): IterableIterator<Widget> {
       let children = map(this.children, child => child.iterSelectedWidgets());
-      return new ChainIterator<Widget>(children);
+      return chain<Widget>(...children);
     }
 
     /**
      * Create an iterator for the tab bars in the layout tree.
      */
-    iterTabBars(): IIterator<TabBar<Widget>> {
+    iterTabBars(): IterableIterator<TabBar<Widget>> {
       let children = map(this.children, child => child.iterTabBars());
-      return new ChainIterator<TabBar<Widget>>(children);
+      return chain<TabBar<Widget>>(...children);
     }
 
     /**
      * Create an iterator for the handles in the layout tree.
      */
-    iterHandles(): IIterator<HTMLDivElement> {
+    iterHandles(): IterableIterator<HTMLDivElement> {
       let children = map(this.children, child => child.iterHandles());
-      return chain(this.handles, new ChainIterator<HTMLDivElement>(children));
+      return chain<HTMLDivElement>(this.handles, ...children);
     }
 
     /**
@@ -1903,7 +1893,7 @@ namespace Private {
      * Sync the visibility and orientation of the handles.
      */
     syncHandles(): void {
-      each(this.handles, (handle, i) => {
+      this.handles.forEach((handle, i) => {
         handle.setAttribute('data-orientation', this.orientation);
         if (i === this.handles.length - 1) {
           handle.classList.add('lm-mod-hidden');
@@ -1919,9 +1909,9 @@ namespace Private {
      * This sets the size hint of each sizer to its current size.
      */
     holdSizes(): void {
-      each(this.sizers, sizer => {
+      for (const sizer of this.sizers) {
         sizer.sizeHint = sizer.size;
-      });
+      }
     }
 
     /**
@@ -1930,7 +1920,9 @@ namespace Private {
      * This ignores the sizers of tab layout nodes.
      */
     holdAllSizes(): void {
-      each(this.children, child => child.holdAllSizes());
+      for (const child of this.children) {
+        child.holdAllSizes();
+      }
       this.holdSizes();
     }
 
@@ -1948,17 +1940,17 @@ namespace Private {
       this.holdSizes();
 
       // Compute the sum of the sizes.
-      let sum = reduce(this.sizers, (v, sizer) => v + sizer.sizeHint, 0);
+      let sum = this.sizers.reduce((v, sizer) => v + sizer.sizeHint, 0);
 
       // Normalize the sizes based on the sum.
       if (sum === 0) {
-        each(this.sizers, sizer => {
+        for (const sizer of this.sizers) {
           sizer.size = sizer.sizeHint = 1 / n;
-        });
+        }
       } else {
-        each(this.sizers, sizer => {
+        for (const sizer of this.sizers) {
           sizer.size = sizer.sizeHint /= sum;
-        });
+        }
       }
 
       // Mark the sizes as normalized.
@@ -1979,17 +1971,17 @@ namespace Private {
       let sizes = this.sizers.map(sizer => sizer.size);
 
       // Compute the sum of the sizes.
-      let sum = reduce(sizes, (v, size) => v + size, 0);
+      let sum = sizes.reduce((v, size) => v + size, 0);
 
       // Normalize the sizes based on the sum.
       if (sum === 0) {
-        each(sizes, (size, i) => {
+        for (let i = sizes.length - 1; i > -1; i--) {
           sizes[i] = 1 / n;
-        });
+        }
       } else {
-        each(sizes, (size, i) => {
-          sizes[i] = size / sum;
-        });
+        for (let i = sizes.length - 1; i > -1; i--) {
+          sizes[i] /= sum;
+        }
       }
 
       // Return the normalized sizes.
@@ -2046,9 +2038,9 @@ namespace Private {
 
       // De-normalize the sizes if needed.
       if (this.normalized) {
-        each(this.sizers, sizer => {
+        for (const sizer of this.sizers) {
           sizer.sizeHint *= space;
-        });
+        }
         this.normalized = false;
       }
 
@@ -2115,12 +2107,12 @@ namespace Private {
     let widgets: Widget[] = [];
 
     // Filter the config for unique widgets.
-    each(config.widgets, widget => {
+    for (const widget of config.widgets) {
       if (!widgetSet.has(widget)) {
         widgetSet.add(widget);
         widgets.push(widget);
       }
-    });
+    }
 
     // Bail if there are no effective widgets.
     if (widgets.length === 0) {
@@ -2195,11 +2187,11 @@ namespace Private {
     let tabBar = renderer.createTabBar(document);
 
     // Hide each widget and add it to the tab bar.
-    each(config.widgets, widget => {
+    for (const widget of config.widgets) {
       widget.hide();
       tabBar.addTab(widget.title);
       Private.addAria(widget, tabBar);
-    });
+    }
 
     // Set the current index of the tab bar.
     tabBar.currentIndex = config.currentIndex;
@@ -2220,7 +2212,7 @@ namespace Private {
     let node = new SplitLayoutNode(config.orientation);
 
     // Add each child to the layout node.
-    each(config.children, (child, i) => {
+    config.children.forEach((child, i) => {
       // Create the child data for the layout node.
       let childNode = realizeAreaConfig(child, renderer, document);
       let sizer = createSizer(config.sizes[i]);

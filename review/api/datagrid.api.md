@@ -5,7 +5,6 @@
 ```ts
 
 import { IDisposable } from '@lumino/disposable';
-import { IIterator } from '@lumino/algorithm';
 import { IMessageHandler } from '@lumino/messaging';
 import { ISignal } from '@lumino/signaling';
 import { Message } from '@lumino/messaging';
@@ -58,7 +57,7 @@ export class BasicSelectionModel extends SelectionModel {
     moveCursorWithinSelections(direction: SelectionModel.CursorMoveDirection): void;
     protected onDataModelChanged(sender: DataModel, args: DataModel.ChangedArgs): void;
     select(args: SelectionModel.SelectArgs): void;
-    selections(): IIterator<SelectionModel.Selection>;
+    selections(): IterableIterator<SelectionModel.Selection>;
 }
 
 // @public
@@ -851,7 +850,7 @@ export abstract class SelectionModel {
     abstract select(args: SelectionModel.SelectArgs): void;
     get selectionMode(): SelectionModel.SelectionMode;
     set selectionMode(value: SelectionModel.SelectionMode);
-    abstract selections(): IIterator<SelectionModel.Selection>;
+    abstract selections(): IterableIterator<SelectionModel.Selection>;
 }
 
 // @public

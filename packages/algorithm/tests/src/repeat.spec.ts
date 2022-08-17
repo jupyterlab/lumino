@@ -7,7 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { once, repeat, RepeatIterator } from '@lumino/algorithm';
+import { once, repeat } from '@lumino/algorithm';
 
 import { testIterator } from './iter.spec';
 
@@ -21,12 +21,6 @@ describe('@lumino/algorithm', () => {
   describe('once()', () => {
     testIterator(() => {
       return [once('foo'), ['foo']];
-    });
-  });
-
-  describe('RepeatIterator', () => {
-    testIterator(() => {
-      return [new RepeatIterator('foo', 3), ['foo', 'foo', 'foo']];
     });
   });
 });
