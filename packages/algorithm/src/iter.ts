@@ -19,7 +19,7 @@
  *
  * #### Example
  * ```typescript
- * import { iter, toArray } from '@lumino/algorithm';
+ * import { toArray } from '@lumino/algorithm';
  *
  * let stream = [1, 2, 3, 4, 5, 6][Symbol.iterator]();
  *
