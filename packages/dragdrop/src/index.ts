@@ -34,7 +34,7 @@ export type SupportedActions =
  * events, a drop target must cancel the `'lm-dragenter'` event by
  * calling the event's `preventDefault()` method.
  */
-export interface IDragEvent extends MouseEvent {
+export interface IDragEvent extends PointerEvent {
   /**
    * The drop action supported or taken by the drop target.
    *
@@ -412,7 +412,7 @@ export class Drag implements IDisposable {
   /**
    * Update the drag scroll element under the mouse.
    */
-  private _updateDragScroll(event: MouseEvent): void {
+  private _updateDragScroll(event: PointerEvent): void {
     // Find the scroll target under the mouse.
     let target = Private.findScrollTarget(event);
 
@@ -433,7 +433,7 @@ export class Drag implements IDisposable {
   /**
    * Update the current target node using the given mouse event.
    */
-  private _updateCurrentTarget(event: MouseEvent): void {
+  private _updateCurrentTarget(event: PointerEvent): void {
     // Fetch common local state.
     let prevTarget = this._currentTarget;
     let currTarget = this._currentTarget;
@@ -790,7 +790,7 @@ namespace Private {
   /**
    * Find the drag scroll target under the mouse, if any.
    */
-  export function findScrollTarget(event: MouseEvent): IScrollTarget | null {
+  export function findScrollTarget(event: PointerEvent): IScrollTarget | null {
     // Look up the client mouse position.
     let x = event.clientX;
     let y = event.clientY;
@@ -922,7 +922,7 @@ namespace Private {
     drag: Drag,
     currElem: Element | null,
     currTarget: Element | null,
-    event: MouseEvent
+    event: PointerEvent
   ): Element | null {
     // If the current element is null, return null as the new target.
     if (!currElem) {
@@ -977,7 +977,7 @@ namespace Private {
     drag: Drag,
     prevTarget: Element | null,
     currTarget: Element | null,
-    event: MouseEvent
+    event: PointerEvent
   ): void {
     // If the previous target is null, do nothing.
     if (!prevTarget) {
@@ -1010,7 +1010,7 @@ namespace Private {
     drag: Drag,
     prevTarget: Element | null,
     currTarget: Element | null,
-    event: MouseEvent
+    event: PointerEvent
   ): void {
     // If the previous target is null, do nothing.
     if (!prevTarget) {
@@ -1041,7 +1041,7 @@ namespace Private {
   export function dispatchDragOver(
     drag: Drag,
     currTarget: Element | null,
-    event: MouseEvent
+    event: PointerEvent
   ): DropAction {
     // If there is no current target, the drop action is none.
     if (!currTarget) {
@@ -1080,7 +1080,7 @@ namespace Private {
   export function dispatchDrop(
     drag: Drag,
     currTarget: Element | null,
-    event: MouseEvent
+    event: PointerEvent
   ): DropAction {
     // If there is no current target, the drop action is none.
     if (!currTarget) {
@@ -1140,7 +1140,7 @@ namespace Private {
   function createDragEvent(
     type: string,
     drag: Drag,
-    event: MouseEvent,
+    event: PointerEvent,
     related: Element | null
   ): IDragEvent {
     // Create a new mouse event to use as the drag event. Currently,
