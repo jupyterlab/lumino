@@ -155,7 +155,12 @@ export class Drag implements IDisposable {
 
     // If there is a current target, dispatch a drag leave event.
     if (this._currentTarget) {
-      let event = Private.createMouseEvent('pointerup', -1, -1);
+      let event = new PointerEvent('pointerup', {
+        bubbles: true,
+        cancelable: true,
+        clientX: -1,
+        clientY: -1
+      });
       Private.dispatchDragLeave(this, this._currentTarget, null, event);
     }
 
@@ -244,7 +249,12 @@ export class Drag implements IDisposable {
     });
 
     // Trigger a fake move event to kick off the drag operation.
-    let event = Private.createMouseEvent('pointermove', clientX, clientY);
+    let event = new PointerEvent('pointermove', {
+      bubbles: true,
+      cancelable: true,
+      clientX,
+      clientY
+    });
     document.dispatchEvent(event);
 
     // Return the pending promise for the drag operation.
@@ -755,43 +765,6 @@ namespace Private {
     supported: SupportedActions
   ): DropAction {
     return actionTable[action] & supportedTable[supported] ? action : 'none';
-  }
-
-  /**
-   * Create a left mouse event at the given position.
-   *
-   * @param type - The event type for the mouse event.
-   *
-   * @param clientX - The client X position.
-   *
-   * @param clientY - The client Y position.
-   *
-   * @returns A newly created and initialized mouse event.
-   */
-  export function createMouseEvent(
-    type: string,
-    clientX: number,
-    clientY: number
-  ): MouseEvent {
-    let event = document.createEvent('MouseEvent');
-    event.initMouseEvent(
-      type,
-      true,
-      true,
-      window,
-      0,
-      0,
-      0,
-      clientX,
-      clientY,
-      false,
-      false,
-      false,
-      false,
-      0,
-      null
-    );
-    return event;
   }
 
   /**
