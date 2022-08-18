@@ -104,19 +104,13 @@ def build_api_docs(out_dir):
     docs = osp.join(HERE, os.pardir)
     root = osp.join(docs, os.pardir)
     docs_api = osp.join(docs, "source", "api")
-    api_index = osp.join(docs_api, "algorithm", "index.html")
 
-    if osp.exists(api_index):
-        # avoid rebuilding docs because it takes forever
-        # `make clean` to force a rebuild
-        print(f"already have {api_index}")
-    else:
-        print("Building lumino API docs")
-        npm = [shutil.which('npm')]
-        check_call(npm + ['install', '-g', 'yarn'], cwd=root)
-        yarn = [shutil.which('yarn')]
-        check_call(yarn, cwd=root)
-        check_call(yarn + ["docs"], cwd=root)
+    print("Building lumino API docs")
+    npm = [shutil.which('npm')]
+    check_call(npm + ['install', '-g', 'yarn'], cwd=root)
+    yarn = [shutil.which('yarn')]
+    check_call(yarn, cwd=root)
+    check_call(yarn + ["docs"], cwd=root)
 
     dest_dir = osp.join(out_dir, "api")
     print(f"Copying {docs_api} -> {dest_dir}")
@@ -130,29 +124,23 @@ def build_examples(out_dir):
     docs = osp.join(HERE, os.pardir)
     root = osp.join(docs, os.pardir)
     examples_dir = osp.join(docs, "source", "examples")
-    example_index = osp.join(examples_dir, EXAMPLES[0], "index.html")
 
-    if osp.exists(example_index):
-        # avoid rebuilding examples because it takes forever
-        # `make clean` to force a rebuild
-        print(f"already have examples")
-    else:
-        print("Building lumino examples")
-        npm = [shutil.which('npm')]
-        check_call(npm + ['install', '-g', 'yarn'], cwd=root)
-        yarn = [shutil.which('yarn')]
-        check_call(yarn, cwd=root)
-        check_call(yarn + ["build"], cwd=root)
-        check_call(yarn + ["build:examples"], cwd=root)
+    print("Building lumino examples")
+    npm = [shutil.which('npm')]
+    check_call(npm + ['install', '-g', 'yarn'], cwd=root)
+    yarn = [shutil.which('yarn')]
+    check_call(yarn, cwd=root)
+    check_call(yarn + ["build"], cwd=root)
+    check_call(yarn + ["build:examples"], cwd=root)
 
-        # Copy the examples into source so the JS files get picked up
-        for example in EXAMPLES:
-            source = osp.join(root, "examples", f"example-{example}")
-            dest_dir = osp.join(docs, "source", "examples", example)
-            print(f"Copying {source} -> {dest_dir}")
-            if osp.exists(dest_dir):
-                shutil.rmtree(dest_dir)
-            shutil.copytree(source, dest_dir)
+    # Copy the examples into source so the JS files get picked up
+    for example in EXAMPLES:
+        source = osp.join(root, "examples", f"example-{example}")
+        dest_dir = osp.join(docs, "source", "examples", example)
+        print(f"Copying {source} -> {dest_dir}")
+        if osp.exists(dest_dir):
+            shutil.rmtree(dest_dir)
+        shutil.copytree(source, dest_dir)
 
     dest_dir = osp.join(out_dir, "examples")
     print(f"Copying {examples_dir} -> {dest_dir}")
