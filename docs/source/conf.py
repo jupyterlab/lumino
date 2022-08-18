@@ -123,7 +123,6 @@ def build_api_docs(out_dir):
     if osp.exists(dest_dir):
         shutil.rmtree(dest_dir)
     shutil.copytree(docs_api, dest_dir)
-    shutil.copy(osp.join(HERE, 'api_index.html'), osp.join(dest_dir, 'index.html'))
 
 # build js examples and stage them to the build directory
 def build_examples(out_dir):
