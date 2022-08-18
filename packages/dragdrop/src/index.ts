@@ -12,81 +12,12 @@ import { MimeData } from '@lumino/coreutils';
 import { DisposableDelegate, IDisposable } from '@lumino/disposable';
 
 /**
- * A type alias which defines the possible independent drop actions.
- */
-export type DropAction = 'none' | 'copy' | 'link' | 'move';
-
-/**
- * A type alias which defines the possible supported drop actions.
- */
-export type SupportedActions =
-  | DropAction
-  | 'copy-link'
-  | 'copy-move'
-  | 'link-move'
-  | 'all';
-
-/**
- * A custom event type used for drag-drop operations.
+ * @deprecated
  *
  * #### Notes
- * In order to receive `'lm-dragover'`, `'lm-dragleave'`, or `'lm-drop'`
- * events, a drop target must cancel the `'lm-dragenter'` event by
- * calling the event's `preventDefault()` method.
+ * This interface is deprecated. Use Drag.Event instead.
  */
-export interface IDragEvent extends PointerEvent {
-  /**
-   * The drop action supported or taken by the drop target.
-   *
-   * #### Notes
-   * At the start of each event, this value will be `'none'`. During a
-   * `'lm-dragover'` event, the drop target must set this value to one
-   * of the supported actions, or the drop event will not occur.
-   *
-   * When handling the drop event, the drop target should set this
-   * to the action which was *actually* taken. This value will be
-   * reported back to the drag initiator.
-   */
-  dropAction: DropAction;
-
-  /**
-   * The drop action proposed by the drag initiator.
-   *
-   * #### Notes
-   * This is the action which is *preferred* by the drag initiator. The
-   * drop target is not required to perform this action, but should if
-   * it all possible.
-   */
-  readonly proposedAction: DropAction;
-
-  /**
-   * The drop actions supported by the drag initiator.
-   *
-   * #### Notes
-   * If the `dropAction` is not set to one of the supported actions
-   * during the `'lm-dragover'` event, the drop event will not occur.
-   */
-  readonly supportedActions: SupportedActions;
-
-  /**
-   * The mime data associated with the event.
-   *
-   * #### Notes
-   * This is mime data provided by the drag initiator. Drop targets
-   * should use this data to determine if they can handle the drop.
-   */
-  readonly mimeData: MimeData;
-
-  /**
-   * The source object of the drag, as provided by the drag initiator.
-   *
-   * #### Notes
-   * For advanced applications, the drag initiator may wish to expose
-   * a source object to the drop targets. That will be provided here
-   * if given by the drag initiator, otherwise it will be `null`.
-   */
-  readonly source: any;
-}
+export interface IDragEvent extends Drag.Event {}
 
 /**
  * An object which manages a drag-drop operation.
@@ -186,12 +117,12 @@ export class Drag implements IDisposable {
   /**
    * The proposed drop action for the drag object.
    */
-  readonly proposedAction: DropAction;
+  readonly proposedAction: Drag.DropAction;
 
   /**
    * The supported drop actions for the drag object.
    */
-  readonly supportedActions: SupportedActions;
+  readonly supportedActions: Drag.SupportedActions;
 
   /**
    * Get the drag source for the drag object.
@@ -226,10 +157,10 @@ export class Drag implements IDisposable {
    *
    * This method assumes the left mouse button is already held down.
    */
-  start(clientX: number, clientY: number): Promise<DropAction> {
-    // If the drag object is already disposed, resolve to `None`.
+  start(clientX: number, clientY: number): Promise<Drag.DropAction> {
+    // If the drag object is already disposed, resolve to `none`.
     if (this._disposed) {
-      return Promise.resolve('none' as DropAction);
+      return Promise.resolve('none');
     }
 
     // If the drag has already been started, return the promise.
@@ -244,7 +175,7 @@ export class Drag implements IDisposable {
     this._attachDragImage(clientX, clientY);
 
     // Create the promise which will be resolved on completion.
-    this._promise = new Promise<DropAction>((resolve, reject) => {
+    this._promise = new Promise<Drag.DropAction>(resolve => {
       this._resolve = resolve;
     });
 
@@ -512,7 +443,7 @@ export class Drag implements IDisposable {
   /**
    * Set the internal drop action state and update the drag cursor.
    */
-  private _setDropAction(action: DropAction): void {
+  private _setDropAction(action: Drag.DropAction): void {
     action = Private.validateAction(action, this.supportedActions);
     if (this._override && this._dropAction === action) {
       return;
@@ -540,7 +471,7 @@ export class Drag implements IDisposable {
   /**
    * Finalize the drag operation and resolve the drag promise.
    */
-  private _finalize(action: DropAction): void {
+  private _finalize(action: Drag.DropAction): void {
     // Store the resolve function as a temp variable.
     let resolve = this._resolve;
 
@@ -612,19 +543,34 @@ export class Drag implements IDisposable {
   };
 
   private _disposed = false;
-  private _dropAction: DropAction = 'none';
+  private _dropAction: Drag.DropAction = 'none';
   private _override: IDisposable | null = null;
   private _currentTarget: Element | null = null;
   private _currentElement: Element | null = null;
-  private _promise: Promise<DropAction> | null = null;
+  private _promise: Promise<Drag.DropAction> | null = null;
   private _scrollTarget: Private.IScrollTarget | null = null;
-  private _resolve: ((value: DropAction) => void) | null = null;
+  private _resolve: ((value: Drag.DropAction) => void) | null = null;
 }
 
 /**
  * The namespace for the `Drag` class statics.
  */
 export namespace Drag {
+  /**
+   * A type alias which defines the possible independent drop actions.
+   */
+  export type DropAction = 'none' | 'copy' | 'link' | 'move';
+
+  /**
+   * A type alias which defines the possible supported drop actions.
+   */
+  export type SupportedActions =
+    | DropAction
+    | 'copy-link'
+    | 'copy-move'
+    | 'link-move'
+    | 'all';
+
   /**
    * An options object for initializing a `Drag` object.
    */
@@ -696,6 +642,124 @@ export namespace Drag {
   }
 
   /**
+   * A custom event used for drag-drop operations.
+   *
+   * #### Notes
+   * In order to receive `'lm-dragover'`, `'lm-dragleave'`, or `'lm-drop'`
+   * events, a drop target must cancel the `'lm-dragenter'` event by
+   * calling the event's `preventDefault()` method.
+   */
+  export class Event extends DragEvent {
+    constructor(event: PointerEvent, options: Event.IOptions) {
+      super(options.type, {
+        bubbles: true,
+        cancelable: true,
+        altKey: event.altKey,
+        button: event.button,
+        clientX: event.clientX,
+        clientY: event.clientX,
+        ctrlKey: event.ctrlKey,
+        detail: 0,
+        metaKey: event.metaKey,
+        relatedTarget: options.related,
+        screenX: event.screenX,
+        screenY: event.screenY,
+        shiftKey: event.shiftKey,
+        view: window
+      });
+
+      const { drag } = options;
+      this.dropAction = 'none';
+      this.mimeData = drag.mimeData;
+      this.proposedAction = drag.proposedAction;
+      this.supportedActions = drag.supportedActions;
+      this.source = drag.source;
+    }
+
+    /**
+     * The drop action supported or taken by the drop target.
+     *
+     * #### Notes
+     * At the start of each event, this value will be `'none'`. During a
+     * `'lm-dragover'` event, the drop target must set this value to one
+     * of the supported actions, or the drop event will not occur.
+     *
+     * When handling the drop event, the drop target should set this
+     * to the action which was *actually* taken. This value will be
+     * reported back to the drag initiator.
+     */
+    dropAction: DropAction;
+
+    /**
+     * The drop action proposed by the drag initiator.
+     *
+     * #### Notes
+     * This is the action which is *preferred* by the drag initiator. The
+     * drop target is not required to perform this action, but should if
+     * it all possible.
+     */
+    readonly proposedAction: DropAction;
+
+    /**
+     * The drop actions supported by the drag initiator.
+     *
+     * #### Notes
+     * If the `dropAction` is not set to one of the supported actions
+     * during the `'lm-dragover'` event, the drop event will not occur.
+     */
+    readonly supportedActions: SupportedActions;
+
+    /**
+     * The mime data associated with the event.
+     *
+     * #### Notes
+     * This is mime data provided by the drag initiator. Drop targets
+     * should use this data to determine if they can handle the drop.
+     */
+    readonly mimeData: MimeData;
+
+    /**
+     * The source object of the drag, as provided by the drag initiator.
+     *
+     * #### Notes
+     * For advanced applications, the drag initiator may wish to expose
+     * a source object to the drop targets. That will be provided here
+     * if given by the drag initiator, otherwise it will be `null`.
+     */
+    readonly source: any;
+  }
+
+  /**
+   * The namespace for the `Event` class statics.
+   */
+  export namespace Event {
+    /**
+     * An options object for initializing a `Drag` object.
+     */
+    export interface IOptions {
+      /**
+       * The drag object to use for seeding the drag data.
+       */
+      drag: Drag;
+
+      /**
+       * The related target for the event, or `null`.
+       */
+      related: Element | null;
+
+      /**
+       * The drag event type.
+       */
+      type:
+        | 'lm-dragenter'
+        | 'lm-dragexit'
+        | 'lm-dragleave'
+        | 'lm-dragover'
+        | 'lm-drop';
+    }
+  }
+
+  /**
    * Override the cursor icon for the entire document.
    *
    * @param cursor - The string representing the cursor style.
@@ -761,9 +825,9 @@ namespace Private {
    * Returns the given action or `'none'` if the action is unsupported.
    */
   export function validateAction(
-    action: DropAction,
-    supported: SupportedActions
-  ): DropAction {
+    action: Drag.DropAction,
+    supported: Drag.SupportedActions
+  ): Drag.DropAction {
     return actionTable[action] & supportedTable[supported] ? action : 'none';
   }
 
@@ -930,7 +994,11 @@ namespace Private {
     }
 
     // Dispatch a drag enter event to the current element.
-    let dragEvent = createDragEvent('lm-dragenter', drag, event, currTarget);
+    let dragEvent = new Drag.Event(event, {
+      drag,
+      related: currTarget,
+      type: 'lm-dragenter'
+    });
     let canceled = !currElem.dispatchEvent(dragEvent);
 
     // If the event was canceled, use the current element as the new target.
@@ -949,7 +1017,11 @@ namespace Private {
     }
 
     // Dispatch a drag enter event on the document body.
-    dragEvent = createDragEvent('lm-dragenter', drag, event, currTarget);
+    dragEvent = new Drag.Event(event, {
+      drag,
+      related: currTarget,
+      type: 'lm-dragenter'
+    });
     body.dispatchEvent(dragEvent);
 
     // Ignore the event cancellation, and use the body as the new target.
@@ -985,7 +1057,11 @@ namespace Private {
     }
 
     // Dispatch the drag exit event to the previous target.
-    let dragEvent = createDragEvent('lm-dragexit', drag, event, currTarget);
+    let dragEvent = new Drag.Event(event, {
+      drag,
+      related: currTarget,
+      type: 'lm-dragexit'
+    });
     prevTarget.dispatchEvent(dragEvent);
   }
 
@@ -1018,7 +1094,11 @@ namespace Private {
     }
 
     // Dispatch the drag leave event to the previous target.
-    let dragEvent = createDragEvent('lm-dragleave', drag, event, currTarget);
+    let dragEvent = new Drag.Event(event, {
+      drag,
+      related: currTarget,
+      type: 'lm-dragleave'
+    });
     prevTarget.dispatchEvent(dragEvent);
   }
 
@@ -1042,14 +1122,18 @@ namespace Private {
     drag: Drag,
     currTarget: Element | null,
     event: PointerEvent
-  ): DropAction {
+  ): Drag.DropAction {
     // If there is no current target, the drop action is none.
     if (!currTarget) {
       return 'none';
     }
 
     // Dispatch the drag over event to the current target.
-    let dragEvent = createDragEvent('lm-dragover', drag, event, null);
+    let dragEvent = new Drag.Event(event, {
+      drag,
+      related: null,
+      type: 'lm-dragover'
+    });
     let canceled = !currTarget.dispatchEvent(dragEvent);
 
     // If the event was canceled, return the drop action result.
@@ -1081,14 +1165,18 @@ namespace Private {
     drag: Drag,
     currTarget: Element | null,
     event: PointerEvent
-  ): DropAction {
+  ): Drag.DropAction {
     // If there is no current target, the drop action is none.
     if (!currTarget) {
       return 'none';
     }
 
     // Dispatch the drop event to the current target.
-    let dragEvent = createDragEvent('lm-drop', drag, event, null);
+    let dragEvent = new Drag.Event(event, {
+      drag,
+      related: null,
+      type: 'lm-drop'
+    });
     let canceled = !currTarget.dispatchEvent(dragEvent);
 
     // If the event was canceled, return the drop action result.
@@ -1123,57 +1211,4 @@ namespace Private {
     'link-move': actionTable['link'] | actionTable['move'],
     all: actionTable['copy'] | actionTable['link'] | actionTable['move']
   };
-
-  /**
-   * Create a new initialized `IDragEvent` from the given data.
-   *
-   * @param type - The event type for the drag event.
-   *
-   * @param drag - The drag object to use for seeding the drag data.
-   *
-   * @param event - The mouse event to use for seeding the mouse data.
-   *
-   * @param related - The related target for the event, or `null`.
-   *
-   * @returns A new object which implements `IDragEvent`.
-   */
-  function createDragEvent(
-    type: string,
-    drag: Drag,
-    event: PointerEvent,
-    related: Element | null
-  ): IDragEvent {
-    // Create a new mouse event to use as the drag event. Currently,
-    // JS engines do now allow user-defined Event subclasses.
-    let dragEvent = document.createEvent('MouseEvent');
-
-    // Initialize the mouse event data.
-    dragEvent.initMouseEvent(
-      type,
-      true,
-      true,
-      window,
-      0,
-      event.screenX,
-      event.screenY,
-      event.clientX,
-      event.clientY,
-      event.ctrlKey,
-      event.altKey,
-      event.shiftKey,
-      event.metaKey,
-      event.button,
-      related
-    );
-
-    // Forcefully add the custom drag event properties.
-    (dragEvent as any).dropAction = 'none';
-    (dragEvent as any).mimeData = drag.mimeData;
-    (dragEvent as any).proposedAction = drag.proposedAction;
-    (dragEvent as any).supportedActions = drag.supportedActions;
-    (dragEvent as any).source = drag.source;
-
-    // Return the fully initialized drag event.
-    return dragEvent as IDragEvent;
-  }
 }

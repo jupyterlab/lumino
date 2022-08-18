@@ -11,7 +11,7 @@ import { expect } from 'chai';
 
 import { MimeData } from '@lumino/coreutils';
 
-import { Drag, IDragEvent } from '@lumino/dragdrop';
+import { Drag } from '@lumino/dragdrop';
 
 import '@lumino/dragdrop/style/index.css';
 
@@ -42,37 +42,37 @@ class DropTarget {
     this.events.push(event.type);
     switch (event.type) {
       case 'lm-dragenter':
-        this._evtDragEnter(event as IDragEvent);
+        this._evtDragEnter(event as Drag.Event);
         break;
       case 'lm-dragleave':
-        this._evtDragLeave(event as IDragEvent);
+        this._evtDragLeave(event as Drag.Event);
         break;
       case 'lm-dragover':
-        this._evtDragOver(event as IDragEvent);
+        this._evtDragOver(event as Drag.Event);
         break;
       case 'lm-drop':
-        this._evtDrop(event as IDragEvent);
+        this._evtDrop(event as Drag.Event);
         break;
     }
   }
 
-  private _evtDragEnter(event: IDragEvent): void {
+  private _evtDragEnter(event: Drag.Event): void {
     event.preventDefault();
     event.stopPropagation();
   }
 
-  private _evtDragLeave(event: IDragEvent): void {
+  private _evtDragLeave(event: Drag.Event): void {
     event.preventDefault();
     event.stopPropagation();
   }
 
-  private _evtDragOver(event: IDragEvent): void {
+  private _evtDragOver(event: Drag.Event): void {
     event.preventDefault();
     event.stopPropagation();
     event.dropAction = event.proposedAction;
   }
 
-  private _evtDrop(event: IDragEvent): void {
+  private _evtDrop(event: Drag.Event): void {
     event.preventDefault();
     event.stopPropagation();
     if (event.proposedAction === 'none') {

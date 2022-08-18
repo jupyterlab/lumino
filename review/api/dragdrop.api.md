@@ -17,14 +17,30 @@ export class Drag implements IDisposable {
     get isDisposed(): boolean;
     readonly mimeData: MimeData;
     protected moveDragImage(clientX: number, clientY: number): void;
-    readonly proposedAction: DropAction;
+    readonly proposedAction: Drag.DropAction;
     readonly source: any;
-    start(clientX: number, clientY: number): Promise<DropAction>;
-    readonly supportedActions: SupportedActions;
+    start(clientX: number, clientY: number): Promise<Drag.DropAction>;
+    readonly supportedActions: Drag.SupportedActions;
 }
 
 // @public
 export namespace Drag {
+    export type DropAction = 'none' | 'copy' | 'link' | 'move';
+    export class Event extends DragEvent {
+        constructor(event: PointerEvent, options: Event.IOptions);
+        dropAction: DropAction;
+        readonly mimeData: MimeData;
+        readonly proposedAction: DropAction;
+        readonly source: any;
+        readonly supportedActions: SupportedActions;
+    }
+    export namespace Event {
+        export interface IOptions {
+            drag: Drag;
+            related: Element | null;
+            type: 'lm-dragenter' | 'lm-dragexit' | 'lm-dragleave' | 'lm-dragover' | 'lm-drop';
+        }
+    }
     export interface IOptions {
         document?: Document | ShadowRoot;
         dragImage?: HTMLElement;
@@ -34,22 +50,12 @@ export namespace Drag {
         supportedActions?: SupportedActions;
     }
     export function overrideCursor(cursor: string, doc?: Document | ShadowRoot): IDisposable;
+    export type SupportedActions = DropAction | 'copy-link' | 'copy-move' | 'link-move' | 'all';
 }
 
-// @public
-export type DropAction = 'none' | 'copy' | 'link' | 'move';
-
-// @public
-export interface IDragEvent extends MouseEvent {
-    dropAction: DropAction;
-    readonly mimeData: MimeData;
-    readonly proposedAction: DropAction;
-    readonly source: any;
-    readonly supportedActions: SupportedActions;
+// @public @deprecated (undocumented)
+export interface IDragEvent extends Drag.Event {
 }
-
-// @public
-export type SupportedActions = DropAction | 'copy-link' | 'copy-move' | 'link-move' | 'all';
 
 // (No @packageDocumentation comment for this package)
 
