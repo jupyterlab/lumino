@@ -1,3 +1,7 @@
+---
+github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
+---
+
 # Changelog
 
 <!-- <START NEW CHANGELOG ENTRY> -->

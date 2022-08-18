@@ -197,7 +197,6 @@ html_sidebars = {
 
 # Output for github to be used in links
 html_context = {
-    "check_meta": True,
     "display_github": True,  # Integrate GitHub
     "github_user": "jupyterlab",  # Username
     "github_repo": "lumino",  # Repo name
