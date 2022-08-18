@@ -14,10 +14,3 @@ Lumino
    api
    examples
    migration
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

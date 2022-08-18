@@ -27,9 +27,12 @@
     "build": "npm run build:src && rollup -c",
     "build:src": "tsc --build",
     "clean": "rimraf ./lib && rimraf *.tsbuildinfo && rimraf ./types && rimraf ./dist",
-    "docs": "typedoc --options ../../typedoc.js src",
     "minimize": "terser dist/index.js -c -m --source-map \"content='dist/index.js.map',url='index.min.js.map'\" -o dist/index.min.js",
     "watch": "tsc --build --watch"
+  },
+  "typedoc": {
+    "entryPoint": "./src/index.ts",
+    "displayName": "datagrid"
   },
   "dependencies": {
     "@lumino/algorithm": "^1.9.1",
