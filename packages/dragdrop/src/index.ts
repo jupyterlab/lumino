@@ -657,7 +657,7 @@ export namespace Drag {
         altKey: event.altKey,
         button: event.button,
         clientX: event.clientX,
-        clientY: event.clientX,
+        clientY: event.clientY,
         ctrlKey: event.ctrlKey,
         detail: 0,
         metaKey: event.metaKey,
