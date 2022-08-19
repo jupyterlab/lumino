@@ -124,6 +124,14 @@ Helper functions for `DisposableSet` and `ObservableDisposableSet` have been udp
 | ✅  | `function` | `DisposableSet.from(...)`           | Accept `Iterable<IDisposable>` |
 | ✅  | `function` | `ObservableDisposableSet.from(...)` | Accept `Iterable<IDisposable>` |
 
+### `@lumino/dragdrop`
+
+|     | `export`    | name               | note                                    |
+| --- | ----------- | ------------------ | --------------------------------------- |
+| ❌  | `type`      | `DropAction`       | Moved to `Drag.DropAction`              |
+| ❌  | `type`      | `SupportedActions` | Moved to `Drag.SupportedActions`        |
+| ☑️  | `interface` | `IDragEvent`       | `@deprecated`, use `Drag.Event` instead |
+
 ### `@lumino/widgets`
 
 `Layout` and its sub-classes now use native iterators, e.g. `implements Iterable<Widget>`.

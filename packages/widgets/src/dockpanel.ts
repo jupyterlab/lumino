@@ -15,7 +15,7 @@ import { IDisposable } from '@lumino/disposable';
 
 import { ElementExt, Platform } from '@lumino/domutils';
 
-import { Drag, IDragEvent } from '@lumino/dragdrop';
+import { Drag } from '@lumino/dragdrop';
 
 import { ConflatableMessage, Message, MessageLoop } from '@lumino/messaging';
 
@@ -434,16 +434,16 @@ export class DockPanel extends Widget {
   handleEvent(event: Event): void {
     switch (event.type) {
       case 'lm-dragenter':
-        this._evtDragEnter(event as IDragEvent);
+        this._evtDragEnter(event as Drag.Event);
         break;
       case 'lm-dragleave':
-        this._evtDragLeave(event as IDragEvent);
+        this._evtDragLeave(event as Drag.Event);
         break;
       case 'lm-dragover':
-        this._evtDragOver(event as IDragEvent);
+        this._evtDragOver(event as Drag.Event);
         break;
       case 'lm-drop':
-        this._evtDrop(event as IDragEvent);
+        this._evtDrop(event as Drag.Event);
         break;
       case 'pointerdown':
         this._evtPointerDown(event as MouseEvent);
@@ -519,7 +519,7 @@ export class DockPanel extends Widget {
   /**
    * Handle the `'lm-dragenter'` event for the dock panel.
    */
-  private _evtDragEnter(event: IDragEvent): void {
+  private _evtDragEnter(event: Drag.Event): void {
     // If the factory mime type is present, mark the event as
     // handled in order to get the rest of the drag events.
     if (event.mimeData.hasData('application/vnd.lumino.widget-factory')) {
@@ -531,7 +531,7 @@ export class DockPanel extends Widget {
   /**
    * Handle the `'lm-dragleave'` event for the dock panel.
    */
-  private _evtDragLeave(event: IDragEvent): void {
+  private _evtDragLeave(event: Drag.Event): void {
     // Mark the event as handled.
     event.preventDefault();
     event.stopPropagation();
@@ -545,7 +545,7 @@ export class DockPanel extends Widget {
   /**
    * Handle the `'lm-dragover'` event for the dock panel.
    */
-  private _evtDragOver(event: IDragEvent): void {
+  private _evtDragOver(event: Drag.Event): void {
     // Mark the event as handled.
     event.preventDefault();
     event.stopPropagation();
@@ -565,7 +565,7 @@ export class DockPanel extends Widget {
   /**
    * Handle the `'lm-drop'` event for the dock panel.
    */
-  private _evtDrop(event: IDragEvent): void {
+  private _evtDrop(event: Drag.Event): void {
     // Mark the event as handled.
     event.preventDefault();
     event.stopPropagation();
