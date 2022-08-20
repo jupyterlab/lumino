@@ -18,9 +18,10 @@ import { each, every, some, toArray, toObject, zip } from '@lumino/algorithm';
  *   expected results of that iterator.
  */
 export function testIterator<T>(
-  factory: () => [IterableIterator<T>, T[]]
+  factory: () => [IterableIterator<T>, T[]],
+  name = ''
 ): void {
-  describe('yield', () => {
+  describe(`yield ${name}`, () => {
     it('should return the same values in the iterator', () => {
       let [it, results] = factory();
       expect(Array.from(it)).to.deep.equal(results);

@@ -20,9 +20,9 @@ describe('@lumino/algorithm', () => {
     });
 
     it('should call `retro` on a retroable', () => {
-      let iterator = [1, 2, 3, 4][Symbol.iterator]();
-      let retroable = { retro: () => iterator };
-      expect(retro(retroable)).to.equal(iterator);
+      let data = [1, 2, 3, 4];
+      let retroable = { retro: () => retro(data) };
+      testIterator(() => [retro(retroable), data.slice().reverse()], 'retro');
     });
 
     it('should reverse an array', () => {
