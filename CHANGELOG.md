@@ -6,7 +6,7 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
-## 2022.8.22
+## 2022.08.22 (v2-alpha.0)
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/polling@1.11.0...af893b62f725708169552e46ae0b45aeda47a9f7))
 
