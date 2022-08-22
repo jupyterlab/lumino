@@ -6,9 +6,9 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
-## 2022.8.22-alpha.0
+## 2022.8.22-alpha.1
 
-([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2022.7.21...bb974bff2ae9550488118286a92f4b6136dd702d))
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2022.7.21...bbfb9e2c37a2cf195a990c33a0ebbb1c64e9da26))
 
 ### Enhancements made
 
@@ -19,20 +19,25 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 
 ### Maintenance and upkeep improvements
 
+- Refactor `retro()`, clean up iterators [#361](https://github.com/jupyterlab/lumino/pull/361) ([@afshin](https://github.com/afshin))
 - Update `dragdrop` to use `PointerEvent` and `DragEvent` [#355](https://github.com/jupyterlab/lumino/pull/355) ([@afshin](https://github.com/afshin))
-- Remove mouse event handlers from SplitPanel [#327](https://github.com/jupyterlab/lumino/pull/327) ([@afshin](https://github.com/afshin))
 - Use native iterators instead of Lumino iterators [#346](https://github.com/jupyterlab/lumino/pull/346) ([@afshin](https://github.com/afshin))
 - Remove `BPlusTree` class from `@lumino/collections` [#345](https://github.com/jupyterlab/lumino/pull/345) ([@afshin](https://github.com/afshin))
-
-- Fix license header following 231f01c [#365](https://github.com/jupyterlab/lumino/pull/365) ([@fcollonval](https://github.com/fcollonval))
-- First Lumino 2 pre-release [#359](https://github.com/jupyterlab/lumino/pull/359) ([@fcollonval](https://github.com/fcollonval))
-- Add more safety workflows [#350](https://github.com/jupyterlab/lumino/pull/350) ([@fcollonval](https://github.com/fcollonval))
+- Remove mouse event handlers from SplitPanel [#327](https://github.com/jupyterlab/lumino/pull/327) ([@afshin](https://github.com/afshin))
 - Update `devDependencies`, fix `eslint`, use `ES6` [#330](https://github.com/jupyterlab/lumino/pull/330) ([@afshin](https://github.com/afshin))
+
 - Bump tj-actions/changed-files from 24 to 26.1 [#352](https://github.com/jupyterlab/lumino/pull/352) ([@dependabot](https://github.com/dependabot))
 - Bump actions/setup-python from 2 to 4 [#351](https://github.com/jupyterlab/lumino/pull/351) ([@dependabot](https://github.com/dependabot))
+- Set npm tag to next for prerelease [#369](https://github.com/jupyterlab/lumino/pull/369) ([@fcollonval](https://github.com/fcollonval))
+- Fix license header following 231f01c [#365](https://github.com/jupyterlab/lumino/pull/365) ([@fcollonval](https://github.com/fcollonval))
+- Bump to v2 alpha 1 [#370](https://github.com/jupyterlab/lumino/pull/370) ([@fcollonval](https://github.com/fcollonval))
+- First Lumino 2 pre-release [#359](https://github.com/jupyterlab/lumino/pull/359) ([@fcollonval](https://github.com/fcollonval))
+- Add more safety workflows [#350](https://github.com/jupyterlab/lumino/pull/350) ([@fcollonval](https://github.com/fcollonval))
 
 ### Documentation improvements
 
+- Fix documentation CI error [#368](https://github.com/jupyterlab/lumino/pull/368) ([@fcollonval](https://github.com/fcollonval))
+- Update license copyright date [#363](https://github.com/jupyterlab/lumino/pull/363) ([@fcollonval](https://github.com/fcollonval))
 - Update and fix docs [#354](https://github.com/jupyterlab/lumino/pull/354) ([@gabalafou](https://github.com/gabalafou))
 - Update NPM package author to Project Jupyter [#342](https://github.com/jupyterlab/lumino/pull/342) ([@afshin](https://github.com/afshin))
 - Update my name and email [#323](https://github.com/jupyterlab/lumino/pull/323) ([@afshin](https://github.com/afshin))
