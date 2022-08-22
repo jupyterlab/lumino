@@ -66,7 +66,8 @@
         "examples/accordionpanel/index.html",
         "examples/datagrid/index.html",
         "examples/dockpanel/index.html"
-      ]
+      ],
+      "npm-cmd": "npm publish --tag next"
     },
     "hooks": {
       "after-build-changelog": [
