@@ -2,6 +2,7 @@
 name: lumino_documentation
 channels:
   - conda-forge
+  - nodefaults
 dependencies:
 - python=3.8
 - sphinx>=1.8
