@@ -13,7 +13,7 @@
  *
  * @deprecated
  *
- * @param object - The iterable or array-like object of interest.
+ * @param object - The iterable object of interest.
  *
  * @returns A new array of values from the given object.
  *
@@ -33,7 +33,7 @@ export function toArray<T>(object: Iterable<T>): T[] {
 /**
  * Create an object from an iterable of key/value pairs.
  *
- * @param object - The iterable or array-like object of interest.
+ * @param object - The iterable object of interest.
  *
  * @returns A new object mapping keys to values.
  *

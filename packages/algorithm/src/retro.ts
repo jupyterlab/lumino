@@ -38,15 +38,18 @@ export interface IRetroable<T> {
  * Array.from(stream);  // [6, 5, 4, 3, 2, 1]
  * ```
  */
-export function retro<T>(
+export function* retro<T>(
   object: IRetroable<T> | ArrayLike<T>
 ): IterableIterator<T> {
   if (typeof (object as any).retro === 'function') {
-    return (object as IRetroable<T>).retro();
-  }
-  return (function* (object) {
-    for (let index = object.length - 1; index > -1; index--) {
-      yield object[index];
+    const it = (object as IRetroable<T>).retro();
+    let item: IteratorResult<T>;
+    while (!(item = it.next()).done) {
+      yield item.value;
     }
-  })(object as ArrayLike<T>);
+  } else {
+    for (let index = (object as ArrayLike<T>).length - 1; index > -1; index--) {
+      yield (object as ArrayLike<T>)[index];
+    }
+  }
 }

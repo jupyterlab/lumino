@@ -107,13 +107,12 @@ export class LinkedList<T> implements Iterable<T>, IRetroable<T> {
    * #### Complexity
    * Constant.
    */
-  [Symbol.iterator](): IterableIterator<T> {
-    return (function* (node) {
-      while (node) {
-        yield node.value;
-        node = node.next;
-      }
-    })(this._first);
+  *[Symbol.iterator](): IterableIterator<T> {
+    let node = this._first;
+    while (node) {
+      yield node.value;
+      node = node.next;
+    }
   }
 
   /**
@@ -124,13 +123,12 @@ export class LinkedList<T> implements Iterable<T>, IRetroable<T> {
    * #### Complexity
    * Constant.
    */
-  retro(): IterableIterator<T> {
-    return (function* (node) {
-      while (node) {
-        yield node.value;
-        node = node.prev;
-      }
-    })(this._last);
+  *retro(): IterableIterator<T> {
+    let node = this._last;
+    while (node) {
+      yield node.value;
+      node = node.prev;
+    }
   }
 
   /**
@@ -141,13 +139,12 @@ export class LinkedList<T> implements Iterable<T>, IRetroable<T> {
    * #### Complexity
    * Constant.
    */
-  nodes(): IterableIterator<LinkedList.INode<T>> {
-    return (function* (node) {
-      while (node) {
-        yield node;
-        node = node.next;
-      }
-    })(this._first);
+  *nodes(): IterableIterator<LinkedList.INode<T>> {
+    let node = this._first;
+    while (node) {
+      yield node;
+      node = node.next;
+    }
   }
 
   /**
@@ -158,13 +155,12 @@ export class LinkedList<T> implements Iterable<T>, IRetroable<T> {
    * #### Complexity
    * Constant.
    */
-  retroNodes(): IterableIterator<LinkedList.INode<T>> {
-    return (function* (node) {
-      while (node) {
-        yield node;
-        node = node.prev;
-      }
-    })(this._last);
+  *retroNodes(): IterableIterator<LinkedList.INode<T>> {
+    let node = this._last;
+    while (node) {
+      yield node;
+      node = node.prev;
+    }
   }
 
   /**
