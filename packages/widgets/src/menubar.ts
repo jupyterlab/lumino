@@ -409,6 +409,9 @@ export class MenuBar extends Widget {
 
   /**
    * Handle the `'keydown'` event for the menu bar.
+   *
+   * #### Notes
+   * All keys are trapped except the tab key that is ignored.
    */
   private _evtKeyDown(event: KeyboardEvent): void {
     // Fetch the key code for the event.
@@ -419,7 +422,7 @@ export class MenuBar extends Widget {
       return;
     }
 
-    // A menu bar handles all keydown events.
+    // A menu bar handles all other keydown events.
     event.preventDefault();
     event.stopPropagation();
 
