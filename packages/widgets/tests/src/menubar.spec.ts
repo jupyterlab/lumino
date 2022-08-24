@@ -469,6 +469,12 @@ describe('@lumino/widgets', () => {
       });
 
       context('keydown', () => {
+        it('should bail on Tab', () => {
+          let event = new KeyboardEvent('keydown', { keyCode: 9 });
+          bar.node.dispatchEvent(event);
+          expect(event.defaultPrevented).to.equal(false);
+        });
+
         it('should open the active menu on Enter', () => {
           let menu = bar.activeMenu!;
           bar.node.dispatchEvent(

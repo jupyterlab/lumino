@@ -409,14 +409,22 @@ export class MenuBar extends Widget {
 
   /**
    * Handle the `'keydown'` event for the menu bar.
+   *
+   * #### Notes
+   * All keys are trapped except the tab key that is ignored.
    */
   private _evtKeyDown(event: KeyboardEvent): void {
-    // A menu bar handles all keydown events.
-    event.preventDefault();
-    event.stopPropagation();
-
     // Fetch the key code for the event.
     let kc = event.keyCode;
+
+    // Do not trap the tab key.
+    if (kc === 9) {
+      return;
+    }
+
+    // A menu bar handles all other keydown events.
+    event.preventDefault();
+    event.stopPropagation();
 
     // Enter, Up Arrow, Down Arrow
     if (kc === 13 || kc === 38 || kc === 40) {
