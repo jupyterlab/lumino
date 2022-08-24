@@ -9,7 +9,7 @@
 |----------------------------------------------------------------------------*/
 import { expect } from 'chai';
 
-import { each, every } from '@lumino/algorithm';
+import { every } from '@lumino/algorithm';
 
 import {
   IMessageHandler,
@@ -200,7 +200,7 @@ describe('@lumino/widgets', () => {
       it('should be a read-only sequence of the split handles in the layout', () => {
         let layout = new SplitLayout({ renderer });
         let widgets = [new Widget(), new Widget(), new Widget()];
-        each(widgets, w => {
+        widgets.forEach(w => {
           layout.addWidget(w);
         });
         expect(every(layout.handles, h => h instanceof HTMLElement));
@@ -213,7 +213,7 @@ describe('@lumino/widgets', () => {
         let widgets = [new Widget(), new Widget(), new Widget()];
         let parent = new Widget();
         parent.layout = layout;
-        each(widgets, w => {
+        widgets.forEach(w => {
           layout.addWidget(w);
         });
         let sizes = layout.relativeSizes();
@@ -228,7 +228,7 @@ describe('@lumino/widgets', () => {
         let widgets = [new Widget(), new Widget(), new Widget()];
         let parent = new Widget();
         parent.layout = layout;
-        each(widgets, w => {
+        widgets.forEach(w => {
           layout.addWidget(w);
         });
         layout.setRelativeSizes([10, 10, 10]);
@@ -242,7 +242,7 @@ describe('@lumino/widgets', () => {
         let widgets = [new Widget(), new Widget(), new Widget()];
         let parent = new Widget();
         parent.layout = layout;
-        each(widgets, w => {
+        widgets.forEach(w => {
           layout.addWidget(w);
         });
         layout.setRelativeSizes([10, 15, 20, 20]);
@@ -257,13 +257,13 @@ describe('@lumino/widgets', () => {
         let parent = new Widget();
         let layout = new SplitLayout({ renderer });
         let widgets = [new Widget(), new Widget(), new Widget()];
-        each(widgets, w => {
+        widgets.forEach(w => {
           layout.addWidget(w);
         });
-        each(widgets, w => {
+        widgets.forEach(w => {
           w.node.style.minHeight = '100px';
         });
-        each(widgets, w => {
+        widgets.forEach(w => {
           w.node.style.minWidth = '100px';
         });
         parent.layout = layout;
@@ -295,7 +295,7 @@ describe('@lumino/widgets', () => {
         Widget.attach(parent, document.body);
         let layout = new LogSplitLayout({ renderer });
         let widgets = [new Widget(), new Widget(), new Widget()];
-        each(widgets, w => {
+        widgets.forEach(w => {
           layout.addWidget(w);
         });
         parent.layout = layout;
@@ -350,7 +350,7 @@ describe('@lumino/widgets', () => {
         let widgets = [new Widget(), new Widget(), new Widget()];
         let parent = new Widget();
         parent.layout = layout;
-        each(widgets, w => {
+        widgets.forEach(w => {
           layout.addWidget(w);
         });
         let widget = widgets[0];
@@ -366,7 +366,7 @@ describe('@lumino/widgets', () => {
         let widgets = [new Widget(), new Widget(), new Widget()];
         let parent = new Widget();
         parent.layout = layout;
-        each(widgets, w => {
+        widgets.forEach(w => {
           layout.addWidget(w);
         });
         let widget = widgets[0];
@@ -462,7 +462,7 @@ describe('@lumino/widgets', () => {
         parent.layout = layout;
         let widgets = [new Widget(), new Widget(), new Widget()];
         widgets[0].hide();
-        each(widgets, w => {
+        widgets.forEach(w => {
           layout.addWidget(w);
         });
         Widget.attach(parent, document.body);
@@ -482,7 +482,7 @@ describe('@lumino/widgets', () => {
         let layout = new LogSplitLayout({ renderer });
         parent.layout = layout;
         let widgets = [new Widget(), new Widget(), new Widget()];
-        each(widgets, w => {
+        widgets.forEach(w => {
           layout.addWidget(w);
         });
         Widget.attach(parent, document.body);
@@ -502,7 +502,7 @@ describe('@lumino/widgets', () => {
         let layout = new LogSplitLayout({ renderer });
         parent.layout = layout;
         let widgets = [new Widget(), new Widget(), new Widget()];
-        each(widgets, w => {
+        widgets.forEach(w => {
           layout.addWidget(w);
         });
         Widget.attach(parent, document.body);

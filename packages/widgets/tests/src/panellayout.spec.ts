@@ -9,7 +9,7 @@
 |----------------------------------------------------------------------------*/
 import { expect } from 'chai';
 
-import { each, every } from '@lumino/algorithm';
+import { every } from '@lumino/algorithm';
 
 import {
   IMessageHandler,
@@ -68,7 +68,7 @@ describe('@lumino/widgets', () => {
       it('should dispose of the resources held by the widget', () => {
         let layout = new PanelLayout();
         let widgets = [new Widget(), new Widget()];
-        each(widgets, w => {
+        widgets.forEach(w => {
           layout.addWidget(w);
         });
         layout.dispose();
@@ -91,10 +91,10 @@ describe('@lumino/widgets', () => {
       it('should create an iterator over the widgets in the layout', () => {
         let layout = new PanelLayout();
         let widgets = [new Widget(), new Widget()];
-        each(widgets, w => {
+        widgets.forEach(w => {
           layout.addWidget(w);
         });
-        each(widgets, w => {
+        widgets.forEach(w => {
           w.title.label = 'foo';
         });
         expect(every(layout, w => w.title.label === 'foo')).to.equal(true);
@@ -198,7 +198,7 @@ describe('@lumino/widgets', () => {
         Widget.attach(parent, document.body);
         let layout = new LogPanelLayout();
         let widgets = [new Widget(), new Widget(), new Widget()];
-        each(widgets, w => {
+        widgets.forEach(w => {
           layout.addWidget(w);
         });
         parent.layout = layout;

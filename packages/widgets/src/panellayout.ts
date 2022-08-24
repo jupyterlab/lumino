@@ -7,7 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { ArrayExt, each } from '@lumino/algorithm';
+import { ArrayExt } from '@lumino/algorithm';
 
 import { MessageLoop } from '@lumino/messaging';
 
@@ -178,9 +178,10 @@ export class PanelLayout extends Layout {
    */
   protected init(): void {
     super.init();
-    each(this, (widget, index) => {
-      this.attachWidget(index, widget);
-    });
+    let index = 0;
+    for (const widget of this) {
+      this.attachWidget(index++, widget);
+    }
   }
 
   /**

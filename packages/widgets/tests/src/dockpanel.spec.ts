@@ -10,8 +10,6 @@
 
 import { expect } from 'chai';
 
-import { each } from '@lumino/algorithm';
-
 import { DockPanel, TabBar, Widget } from '@lumino/widgets';
 
 describe('@lumino/widgets', () => {
@@ -29,12 +27,12 @@ describe('@lumino/widgets', () => {
           renderer,
           tabsConstrained: true
         });
-        each(panel.tabBars(), tabBar => {
+        for (const tabBar of panel.tabBars()) {
           expect(tabBar.tabsMovable).to.equal(true);
-        });
-        each(panel.tabBars(), tabBar => {
+        }
+        for (const tabBar of panel.tabBars()) {
           expect(tabBar.renderer).to.equal(renderer);
-        });
+        }
       });
 
       it('should not have tabs constrained by default', () => {
@@ -121,14 +119,14 @@ describe('@lumino/widgets', () => {
         let w2 = new Widget();
         panel.addWidget(w1);
         panel.addWidget(w2, { mode: 'split-right', ref: w1 });
-        each(panel.tabBars(), tabBar => {
+        for (const tabBar of panel.tabBars()) {
           expect(tabBar.tabsMovable).to.equal(true);
-        });
+        }
 
         panel.tabsMovable = false;
-        each(panel.tabBars(), tabBar => {
+        for (const tabBar of panel.tabBars()) {
           expect(tabBar.tabsMovable).to.equal(false);
-        });
+        }
       });
     });
   });

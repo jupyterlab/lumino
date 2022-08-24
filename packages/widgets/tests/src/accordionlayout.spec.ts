@@ -1,7 +1,7 @@
 // Copyright (c) Jupyter Development Team.
 // Distributed under the terms of the Modified BSD License.
 
-import { each, every } from '@lumino/algorithm';
+import { every } from '@lumino/algorithm';
 import { Message } from '@lumino/messaging';
 import { AccordionLayout, Title, Widget } from '@lumino/widgets';
 import { expect } from 'chai';
@@ -107,9 +107,9 @@ describe('@lumino/widgets', () => {
         let parent = new Widget();
         parent.layout = layout;
         const widgets = [new Widget(), new Widget(), new Widget()];
-        each(widgets, w => {
-          layout.addWidget(w);
-        });
+        for (const widget of widgets) {
+          layout.addWidget(widget);
+        }
 
         expect(every(layout.titles, h => h instanceof HTMLElement));
         expect(layout.titles).to.have.length(widgets.length);

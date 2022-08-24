@@ -9,7 +9,7 @@
 |----------------------------------------------------------------------------*/
 import { expect } from 'chai';
 
-import { each, every } from '@lumino/algorithm';
+import { every } from '@lumino/algorithm';
 
 import { Message, MessageLoop } from '@lumino/messaging';
 
@@ -225,7 +225,7 @@ describe('@lumino/widgets', () => {
         let parent = new Widget();
         let layout = new LogBoxLayout();
         let widgets = [new Widget(), new Widget(), new Widget()];
-        each(widgets, w => {
+        widgets.forEach(w => {
           layout.addWidget(w);
         });
         parent.layout = layout;
@@ -358,13 +358,13 @@ describe('@lumino/widgets', () => {
         parent.layout = layout;
         let widgets = [new LogWidget(), new LogWidget(), new LogWidget()];
         let hiddenWidgets = [new LogWidget(), new LogWidget()];
-        each(widgets, w => {
+        widgets.forEach(w => {
           layout.addWidget(w);
         });
-        each(hiddenWidgets, w => {
+        hiddenWidgets.forEach(w => {
           layout.addWidget(w);
         });
-        each(hiddenWidgets, w => {
+        hiddenWidgets.forEach(w => {
           w.hide();
         });
         Widget.attach(parent, document.body);
@@ -401,7 +401,7 @@ describe('@lumino/widgets', () => {
         let layout = new LogBoxLayout();
         parent.layout = layout;
         let widgets = [new LogWidget(), new LogWidget(), new LogWidget()];
-        each(widgets, w => {
+        widgets.forEach(w => {
           layout.addWidget(w);
         });
         Widget.attach(parent, document.body);
@@ -419,7 +419,7 @@ describe('@lumino/widgets', () => {
         parent.layout = layout;
         let widgets = [new LogWidget(), new LogWidget(), new LogWidget()];
         widgets[0].hide();
-        each(widgets, w => {
+        widgets.forEach(w => {
           layout.addWidget(w);
         });
         Widget.attach(parent, document.body);
@@ -439,7 +439,7 @@ describe('@lumino/widgets', () => {
         let layout = new LogBoxLayout();
         parent.layout = layout;
         let widgets = [new LogWidget(), new LogWidget(), new LogWidget()];
-        each(widgets, w => {
+        widgets.forEach(w => {
           layout.addWidget(w);
         });
         Widget.attach(parent, document.body);
@@ -459,7 +459,7 @@ describe('@lumino/widgets', () => {
         let layout = new LogBoxLayout();
         parent.layout = layout;
         let widgets = [new LogWidget(), new LogWidget(), new LogWidget()];
-        each(widgets, w => {
+        widgets.forEach(w => {
           layout.addWidget(w);
         });
         Widget.attach(parent, document.body);

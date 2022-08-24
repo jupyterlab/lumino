@@ -9,7 +9,7 @@
 |----------------------------------------------------------------------------*/
 import { expect } from 'chai';
 
-import { each, every } from '@lumino/algorithm';
+import { every } from '@lumino/algorithm';
 
 import { MessageLoop } from '@lumino/messaging';
 
@@ -91,7 +91,7 @@ describe('@lumino/widgets', () => {
         let panel = new LogSplitPanel();
         let layout = panel.layout as SplitLayout;
         let widgets = [new Widget(), new Widget(), new Widget()];
-        each(widgets, w => {
+        widgets.forEach(w => {
           panel.addWidget(w);
         });
         Widget.attach(panel, document.body);
@@ -146,7 +146,7 @@ describe('@lumino/widgets', () => {
         let panel = new LogSplitPanel();
         let widgets = [new Widget(), new Widget()];
         panel.orientation = 'horizontal';
-        each(widgets, w => {
+        widgets.forEach(w => {
           w.node.style.minHeight = '40px';
           w.node.style.minWidth = '40px';
           panel.addWidget(w);
@@ -165,7 +165,7 @@ describe('@lumino/widgets', () => {
       it('should get the read-only sequence of the split handles in the panel', () => {
         let panel = new SplitPanel();
         let widgets = [new Widget(), new Widget(), new Widget()];
-        each(widgets, w => {
+        widgets.forEach(w => {
           panel.addWidget(w);
         });
         expect(panel.handles.length).to.equal(3);
@@ -176,7 +176,7 @@ describe('@lumino/widgets', () => {
       it('should get the current sizes of the widgets in the panel', () => {
         let panel = new SplitPanel();
         let widgets = [new Widget(), new Widget(), new Widget()];
-        each(widgets, w => {
+        widgets.forEach(w => {
           panel.addWidget(w);
         });
         let sizes = panel.relativeSizes();
@@ -188,7 +188,7 @@ describe('@lumino/widgets', () => {
       it('should set the desired sizes for the widgets in the panel', () => {
         let panel = new SplitPanel();
         let widgets = [new Widget(), new Widget(), new Widget()];
-        each(widgets, w => {
+        widgets.forEach(w => {
           panel.addWidget(w);
         });
         panel.setRelativeSizes([10, 20, 30]);
@@ -199,7 +199,7 @@ describe('@lumino/widgets', () => {
       it('should ignore extra values', () => {
         let panel = new SplitPanel();
         let widgets = [new Widget(), new Widget(), new Widget()];
-        each(widgets, w => {
+        widgets.forEach(w => {
           panel.addWidget(w);
         });
         panel.setRelativeSizes([10, 30, 40, 20]);
@@ -216,7 +216,7 @@ describe('@lumino/widgets', () => {
         panel = new LogSplitPanel();
         layout = panel.layout as SplitLayout;
         let widgets = [new Widget(), new Widget(), new Widget()];
-        each(widgets, w => {
+        widgets.forEach(w => {
           panel.addWidget(w);
         });
         panel.setRelativeSizes([10, 10, 10, 20]);
@@ -280,7 +280,7 @@ describe('@lumino/widgets', () => {
 
         it('should move the handle down', done => {
           panel.orientation = 'vertical';
-          each(panel.widgets, w => {
+          panel.widgets.forEach(w => {
             w.node.style.minHeight = '20px';
           });
           let handle = layout.handles[1];

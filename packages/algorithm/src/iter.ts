@@ -59,6 +59,8 @@ export function toObject<T>(object: Iterable<[string, T]>): {
 /**
  * Invoke a function for each value in an iterable.
  *
+ * @deprecated
+ *
  * @param object - The iterable object of interest.
  *
  * @param fn - The callback function to invoke for each value.

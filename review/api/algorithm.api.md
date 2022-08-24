@@ -50,7 +50,7 @@ export namespace ArrayExt {
 // @public
 export function chain<T>(...objects: Iterable<T>[]): IterableIterator<T>;
 
-// @public
+// @public @deprecated
 export function each<T>(object: Iterable<T>, fn: (value: T, index: number) => boolean | void): void;
 
 // @public

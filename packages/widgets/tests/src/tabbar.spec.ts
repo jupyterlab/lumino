@@ -9,7 +9,7 @@
 |----------------------------------------------------------------------------*/
 import { expect } from 'chai';
 
-import { each, range } from '@lumino/algorithm';
+import { range } from '@lumino/algorithm';
 
 import { Message, MessageLoop } from '@lumino/messaging';
 
@@ -45,20 +45,20 @@ class LogTabBar extends TabBar<Widget> {
 
 function populateBar(bar: TabBar<Widget>): void {
   // Add some tabs with labels.
-  each(range(3), i => {
+  for (const i of range(3)) {
     let widget = new Widget();
     widget.title.label = `Test - ${i}`;
     widget.title.closable = true;
     bar.addTab(widget.title);
-  });
+  }
   // Force the tabs to render
   MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
   // Add the close icon content.
-  each(range(3), i => {
+  for (const i of range(3)) {
     let tab = bar.contentNode.children[i];
     let icon = tab.querySelector(bar.renderer.closeIconSelector);
     icon!.textContent = 'X';
-  });
+  }
 }
 
 type Action = 'pointerdown' | 'pointermove' | 'pointerup';
@@ -877,13 +877,13 @@ describe('@lumino/widgets', () => {
       it('should get the read-only array of titles in the tab bar', () => {
         let bar = new TabBar<Widget>();
         let widgets = [new Widget(), new Widget(), new Widget()];
-        each(widgets, widget => {
+        widgets.forEach(widget => {
           bar.addTab(widget.title);
         });
         expect(bar.titles.length).to.equal(3);
-        each(bar.titles, (title, i) => {
+        for (const [i, title] of bar.titles.entries()) {
           expect(title.owner).to.equal(widgets[i]);
-        });
+        }
       });
     });
 
@@ -1588,7 +1588,7 @@ describe('@lumino/widgets', () => {
         bar.currentIndex = 0;
         MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
         expect(bar.methods.indexOf('onUpdateRequest')).to.not.equal(-1);
-        each(bar.titles, (title, i) => {
+        for (const [i, title] of bar.titles.entries()) {
           let tab = bar.contentNode.children[i] as HTMLElement;
           let label = tab.getElementsByClassName(
             'lm-TabBar-tabLabel'
@@ -1596,7 +1596,7 @@ describe('@lumino/widgets', () => {
           expect(label.textContent).to.equal(title.label);
           let current = i === 0;
           expect(tab.classList.contains('lm-mod-current')).to.equal(current);
-        });
+        }
       });
     });
 
