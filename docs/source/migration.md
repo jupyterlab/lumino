@@ -10,7 +10,7 @@ These are some guiding principles that came up over the course of refactoring th
 
 Iterating through an iterable `bar: Iterable<T>` using native `for...of`, e.g., `for (const foo of bar) {...}` is a better option than using `each(bar, foo => ...)`.
 
-Nearly all invocations of `each(...)` have been removed in Lumino 2. See, for example, [this commit](https://github.com/jupyterlab/lumino/pull/346/commits/efb1e919bb359192caeedb726e16ec42d17b3b0f).
+All invocations of `each(...)` have been removed in Lumino 2. See, for example, [this commit](https://github.com/jupyterlab/lumino/pull/346/commits/efb1e919bb359192caeedb726e16ec42d17b3b0f).
 
 ### Use `[].forEach(...)` sparingly
 
