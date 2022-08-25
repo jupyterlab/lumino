@@ -210,7 +210,7 @@ export class Application<T extends Widget> {
     }
 
     // Add the plugin to the plugin map.
-    this._pluginMap[data.id] = data;
+    this._pluginMap.set(data.id, data);
   }
 
   /**
@@ -228,6 +228,24 @@ export class Application<T extends Widget> {
   }
 
   /**
+   *
+   * @param id - id of the plugin to unregister
+   * @param force - whether to unregister the plugin even if it is active
+   */
+  unregisterPlugins(id: string, force?: boolean): void {
+    const data = this._pluginMap.get(id);
+    if (!data) {
+      return;
+    }
+
+    if (data.activated && !force) {
+      throw new Error('Plugin is still active.');
+    }
+
+    this._pluginMap.delete(id);
+  }
+
+  /**
    * Activate the plugin with the given id.
    *
    * @param id - The ID of the plugin of interest.
@@ -237,7 +255,7 @@ export class Application<T extends Widget> {
    */
   activatePlugin(id: string): Promise<void> {
     // Reject the promise if the plugin is not registered.
-    let data = this._pluginMap[id];
+    let data = this._pluginMap.get(id);
     if (!data) {
       return Promise.reject(new Error(`Plugin '${id}' is not registered.`));
     }
@@ -264,15 +282,15 @@ export class Application<T extends Widget> {
     // Setup the resolver promise for the plugin.
     data.promise = Promise.all(promises)
       .then(services => {
-        return data.activate.apply(undefined, [this, ...services]);
+        return data!.activate.apply(undefined, [this, ...services]);
       })
       .then(service => {
-        data.service = service;
-        data.activated = true;
-        data.promise = null;
+        data!.service = service;
+        data!.activated = true;
+        data!.promise = null;
       })
       .catch(error => {
-        data.promise = null;
+        data!.promise = null;
         throw error;
       });
 
@@ -299,7 +317,7 @@ export class Application<T extends Widget> {
    * the required services for the user's plugins will be resolved
    * automatically when the plugin is activated.
    */
-  resolveRequiredService<U>(token: Token<U>): Promise<U> {
+  async resolveRequiredService<U>(token: Token<U>): Promise<U> {
     // Reject the promise if there is no provider for the type.
     let id = this._serviceMap.get(token);
     if (!id) {
@@ -307,13 +325,14 @@ export class Application<T extends Widget> {
     }
 
     // Resolve immediately if the plugin is already activated.
-    let data = this._pluginMap[id];
+    let data = this._pluginMap.get(id)!;
     if (data.activated) {
       return Promise.resolve(data.service);
     }
 
     // Otherwise, activate the plugin and wait on the results.
-    return this.activatePlugin(id).then(() => data.service);
+    await this.activatePlugin(id);
+    return data.service;
   }
 
   /**
@@ -335,7 +354,7 @@ export class Application<T extends Widget> {
    * the optional services for the user's plugins will be resolved
    * automatically when the plugin is activated.
    */
-  resolveOptionalService<U>(token: Token<U>): Promise<U | null> {
+  async resolveOptionalService<U>(token: Token<U>): Promise<U | null> {
     // Resolve with `null` if there is no provider for the type.
     let id = this._serviceMap.get(token);
     if (!id) {
@@ -343,20 +362,19 @@ export class Application<T extends Widget> {
     }
 
     // Resolve immediately if the plugin is already activated.
-    let data = this._pluginMap[id];
+    let data = this._pluginMap.get(id)!;
     if (data.activated) {
       return Promise.resolve(data.service);
     }
 
     // Otherwise, activate the plugin and wait on the results.
-    return this.activatePlugin(id)
-      .then(() => {
-        return data.service;
-      })
-      .catch(reason => {
-        console.error(reason);
-        return null;
-      });
+    try {
+      await this.activatePlugin(id);
+      return data.service;
+    } catch (reason) {
+      console.error(reason);
+      return null;
+    }
   }
 
   /**
@@ -396,11 +414,13 @@ export class Application<T extends Widget> {
     let startups = Private.collectStartupPlugins(this._pluginMap, options);
 
     // Generate the activation promises.
-    let promises = startups.map(id => {
-      return this.activatePlugin(id).catch(error => {
+    let promises = startups.map(async id => {
+      try {
+        return await this.activatePlugin(id);
+      } catch (error) {
         console.error(`Plugin '${id}' failed to activate.`);
         console.error(error);
-      });
+      }
     });
 
     // Wait for the plugins to activate, then finalize startup.
@@ -634,7 +654,7 @@ namespace Private {
   /**
    * A type alias for a mapping of plugin id to plugin data.
    */
-  export type PluginMap = { [id: string]: IPluginData };
+  export type PluginMap = Map<string, IPluginData>;
 
   /**
    * A type alias for a mapping of service token to plugin id.
@@ -645,7 +665,7 @@ namespace Private {
    * Create a new plugin map.
    */
   export function createPluginMap(): PluginMap {
-    return Object.create(null);
+    return new Map<string, IPluginData>();
   }
 
   /**
@@ -704,7 +724,7 @@ namespace Private {
       if (!id) {
         return false;
       }
-      let other = pluginMap[id];
+      let other = pluginMap.get(id)!;
       let otherDependencies = other.requires.concat(other.optional);
       if (otherDependencies.length === 0) {
         return false;
@@ -726,30 +746,30 @@ namespace Private {
     options: Application.IStartOptions
   ): string[] {
     // Create a map to hold the plugin IDs.
-    let resultMap: { [id: string]: boolean } = Object.create(null);
+    let resultMap = new Map<string, boolean>();
 
     // Collect the auto-start plugins.
     for (let id in pluginMap) {
-      if (pluginMap[id].autoStart) {
-        resultMap[id] = true;
+      if (pluginMap.get(id)!.autoStart) {
+        resultMap.set(id, true);
       }
     }
 
     // Add the startup plugins.
     if (options.startPlugins) {
       for (let id of options.startPlugins) {
-        resultMap[id] = true;
+        resultMap.set(id, true);
       }
     }
 
     // Remove the ignored plugins.
     if (options.ignorePlugins) {
       for (let id of options.ignorePlugins) {
-        delete resultMap[id];
+        resultMap.delete(id);
       }
     }
 
     // Return the final startup plugins.
-    return Object.keys(resultMap);
+    return Array.from(resultMap.keys());
   }
 }
