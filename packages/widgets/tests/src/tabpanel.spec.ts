@@ -9,8 +9,6 @@
 |----------------------------------------------------------------------------*/
 import { expect } from 'chai';
 
-import { each } from '@lumino/algorithm';
-
 import { StackedPanel, TabBar, TabPanel, Widget } from '@lumino/widgets';
 
 import { LogWidget } from './widget.spec';
@@ -224,7 +222,7 @@ describe('@lumino/widgets', () => {
       it('should move the widget in the stacked panel when a tab is moved', () => {
         let panel = new TabPanel();
         let widgets = [new LogWidget(), new LogWidget()];
-        each(widgets, w => {
+        widgets.forEach(w => {
           panel.addWidget(w);
         });
         Widget.attach(panel, document.body);
@@ -247,10 +245,10 @@ describe('@lumino/widgets', () => {
       it('should show the new widget when the current tab changes', () => {
         let panel = new TabPanel();
         let widgets = [new LogWidget(), new LogWidget(), new LogWidget()];
-        each(widgets, w => {
+        widgets.forEach(w => {
           panel.addWidget(w);
         });
-        each(widgets, w => {
+        widgets.forEach(w => {
           w.node.tabIndex = -1;
         });
         Widget.attach(panel, document.body);
@@ -312,7 +310,7 @@ describe('@lumino/widgets', () => {
       it('should get a read-only array of the widgets in the panel', () => {
         let panel = new TabPanel();
         let widgets = [new Widget(), new Widget(), new Widget()];
-        each(widgets, w => {
+        widgets.forEach(w => {
           panel.addWidget(w);
         });
         expect(panel.widgets).to.deep.equal(widgets);
@@ -323,7 +321,7 @@ describe('@lumino/widgets', () => {
       it('should add a widget to the end of the tab panel', () => {
         let panel = new TabPanel();
         let widgets = [new Widget(), new Widget(), new Widget()];
-        each(widgets, w => {
+        widgets.forEach(w => {
           panel.addWidget(w);
         });
         let widget = new Widget();
@@ -335,7 +333,7 @@ describe('@lumino/widgets', () => {
       it('should move an existing widget', () => {
         let panel = new TabPanel();
         let widgets = [new Widget(), new Widget(), new Widget()];
-        each(widgets, w => {
+        widgets.forEach(w => {
           panel.addWidget(w);
         });
         panel.addWidget(widgets[0]);
@@ -347,7 +345,7 @@ describe('@lumino/widgets', () => {
       it('should insert a widget into the tab panel at a specified index', () => {
         let panel = new TabPanel();
         let widgets = [new Widget(), new Widget(), new Widget()];
-        each(widgets, w => {
+        widgets.forEach(w => {
           panel.addWidget(w);
         });
         let widget = new Widget();
@@ -359,7 +357,7 @@ describe('@lumino/widgets', () => {
       it('should move an existing widget', () => {
         let panel = new TabPanel();
         let widgets = [new Widget(), new Widget(), new Widget()];
-        each(widgets, w => {
+        widgets.forEach(w => {
           panel.addWidget(w);
         });
         panel.insertWidget(0, widgets[2]);

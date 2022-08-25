@@ -9,8 +9,6 @@
 |----------------------------------------------------------------------------*/
 import { expect } from 'chai';
 
-import { each } from '@lumino/algorithm';
-
 import {
   IMessageHandler,
   IMessageHook,
@@ -138,7 +136,7 @@ describe('@lumino/widgets', () => {
         let widgets = [new Widget(), new Widget(), new Widget()];
         let parent = new Widget();
         parent.layout = layout;
-        each(widgets, w => {
+        widgets.forEach(w => {
           layout.addWidget(w);
         });
         layout.insertWidget(2, widgets[0]);
@@ -151,7 +149,7 @@ describe('@lumino/widgets', () => {
         let widgets = [new Widget(), new Widget(), new Widget()];
         let parent = new Widget();
         parent.layout = layout;
-        each(widgets, w => {
+        widgets.forEach(w => {
           layout.addWidget(w);
         });
         layout.insertWidget(2, widgets[0]);
@@ -269,7 +267,7 @@ describe('@lumino/widgets', () => {
         parent.layout = layout;
         let widgets = [new Widget(), new Widget(), new Widget()];
         widgets[0].hide();
-        each(widgets, w => {
+        widgets.forEach(w => {
           layout.addWidget(w);
         });
         Widget.attach(parent, document.body);
@@ -289,7 +287,7 @@ describe('@lumino/widgets', () => {
         let layout = new LogStackedLayout();
         parent.layout = layout;
         let widgets = [new Widget(), new Widget(), new Widget()];
-        each(widgets, w => {
+        widgets.forEach(w => {
           layout.addWidget(w);
         });
         Widget.attach(parent, document.body);
