@@ -79,7 +79,7 @@ export class CommandRegistry {
    * @returns A new array of the registered command ids.
    */
   listCommands(): string[] {
-    return Object.keys(this._commands);
+    return Array.from(this._commands.keys());
   }
 
   /**
@@ -90,7 +90,7 @@ export class CommandRegistry {
    * @returns `true` if the command is registered, `false` otherwise.
    */
   hasCommand(id: string): boolean {
-    return id in this._commands;
+    return this._commands.has(id);
   }
 
   /**
@@ -109,7 +109,7 @@ export class CommandRegistry {
     options: CommandRegistry.ICommandOptions
   ): IDisposable {
     // Throw an error if the id is already registered.
-    if (id in this._commands) {
+    if (this._commands.has(id)) {
       throw new Error(`Command '${id}' already registered.`);
     }
 
@@ -145,7 +145,7 @@ export class CommandRegistry {
    * This will cause the `commandChanged` signal to be emitted.
    */
   notifyCommandChanged(id?: string): void {
-    if (id !== undefined && !(id in this._commands)) {
+    if (id !== undefined && !this._commands.has(id)) {
       throw new Error(`Command '${id}' is not registered.`);
     }
     this._commandChanged.emit({ id, type: id ? 'changed' : 'many-changed' });
