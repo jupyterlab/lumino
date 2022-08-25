@@ -7,6 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
+import { topologicSort } from '@lumino/algorithm';
 import { CommandRegistry } from '@lumino/commands';
 
 import { PromiseDelegate, Token } from '@lumino/coreutils';
@@ -27,7 +28,7 @@ import { ContextMenu, Menu, Widget } from '@lumino/widgets';
  * service producer from the service consumer, allowing an application
  * to be easily customized by third parties in a type-safe fashion.
  */
-export interface IPlugin<T, U> {
+export interface IPlugin<T extends Application<Widget>, U> {
   /**
    * The human readable id of the plugin.
    *
@@ -79,7 +80,7 @@ export interface IPlugin<T, U> {
    * When the plugin is activated, the return value of `activate()`
    * is used as the concrete instance of the type.
    */
-  provides?: Token<U>;
+  provides?: Token<U> | null;
 
   /**
    * A function invoked to activate the plugin.
@@ -98,7 +99,16 @@ export interface IPlugin<T, U> {
    * This function will not be called unless all of its required
    * services can be fulfilled.
    */
-  activate: (app: T, ...args: any[]) => U | Promise<U>;
+  activate: (app: T, ...args: Token<any>[]) => U | Promise<U>;
+
+  /**
+   * A function invoked to deactivate the plugin.
+   *
+   * @param app - The application which owns the plugin.
+   *
+   * @param args - The services specified by the `requires` property.
+   */
+  deactivate?: ((app: T, ...args: Token<any>[]) => void | Promise<void>) | null;
 }
 
 /**
@@ -116,16 +126,12 @@ export class Application<T extends Widget> {
    * @param options - The options for creating the application.
    */
   constructor(options: Application.IOptions<T>) {
-    // Create the application command registry.
-    let commands = new CommandRegistry();
-
-    // Create the application context menu.
-    let renderer = options.contextMenuRenderer;
-    let contextMenu = new ContextMenu({ commands, renderer });
-
     // Initialize the application state.
-    this.commands = commands;
-    this.contextMenu = contextMenu;
+    this.commands = new CommandRegistry();
+    this.contextMenu = new ContextMenu({
+      commands: this.commands,
+      renderer: options.contextMenuRenderer
+    });
     this.shell = options.shell;
   }
 
@@ -168,7 +174,18 @@ export class Application<T extends Widget> {
    * @returns `true` if the plugin is registered, `false` otherwise.
    */
   hasPlugin(id: string): boolean {
-    return id in this._pluginMap;
+    return this._pluginMap.has(id);
+  }
+
+  /**
+   * Test whether a plugin is activated with the application.
+   *
+   * @param id - The id of the plugin of interest.
+   *
+   * @returns `true` if the plugin is activated, `false` otherwise.
+   */
+  isPluginActivated(id: string): boolean {
+    return this._pluginMap.get(id)?.activated ?? false;
   }
 
   /**
@@ -177,7 +194,7 @@ export class Application<T extends Widget> {
    * @returns A new array of the registered plugin IDs.
    */
   listPlugins(): string[] {
-    return Object.keys(this._pluginMap);
+    return Array.from(this._pluginMap.keys());
   }
 
   /**
@@ -194,7 +211,7 @@ export class Application<T extends Widget> {
    */
   registerPlugin(plugin: IPlugin<this, any>): void {
     // Throw an error if the plugin id is already registered.
-    if (plugin.id in this._pluginMap) {
+    if (this._pluginMap.has(plugin.id)) {
       throw new Error(`Plugin '${plugin.id}' is already registered.`);
     }
 
@@ -232,7 +249,7 @@ export class Application<T extends Widget> {
    * @param id - id of the plugin to unregister
    * @param force - whether to unregister the plugin even if it is active
    */
-  unregisterPlugins(id: string, force?: boolean): void {
+  unregisterPlugin(id: string, force?: boolean): void {
     const data = this._pluginMap.get(id);
     if (!data) {
       return;
@@ -296,6 +313,70 @@ export class Application<T extends Widget> {
 
     // Return the pending resolver promise.
     return data.promise;
+  }
+
+  /**
+   * Will deactivate the plugin and its dependants if and only if the plugin
+   * and its dependants all support `deactivate`.
+   *
+   * @param id - Plugin id to deactivate
+   *
+   * @returns Other dependent plugin ids deactivated as a consequence
+   */
+  async deactivatePlugin(id: string): Promise<string[]> {
+    // Reject the promise if the plugin is not registered.
+    let data = this._pluginMap.get(id);
+    if (!data) {
+      return Promise.reject(new Error(`Plugin '${id}' is not registered.`));
+    }
+
+    if (!data.activated) {
+      // Bail early if the plugin is not activated
+      return Promise.resolve([]);
+    }
+
+    if (!data.deactivate) {
+      return Promise.reject(`Plugin '${id}' does not support deactivation`);
+    }
+
+    // find an optimal deactivation order for dependants
+    const dependentIds = Private.findDependants(
+      id,
+      this._pluginMap,
+      this._serviceMap
+    );
+
+    const dependants = dependentIds.map(d => this._pluginMap.get(d)!);
+
+    // Check all dependents
+    for (const dependant of dependants) {
+      if (!dependant.deactivate) {
+        Promise.reject(
+          `Dependent plugin ${dependant.id} does not support deactivation.`
+        );
+      }
+    }
+
+    for (const dependant of dependants) {
+      const deps = dependant.requires.concat(dependant.optional);
+      await Promise.resolve(
+        dependant.deactivate!(
+          this,
+          ...deps.map(d => {
+            const id = this._serviceMap.get(d);
+            if (id) {
+              return this._pluginMap.get(id)!.service;
+            } else {
+              return null;
+            }
+          })
+        )
+      );
+      dependant.service = null;
+      dependant.activated = false;
+    }
+
+    return dependentIds.slice(0, dependentIds.length - 1);
   }
 
   /**
@@ -633,7 +714,20 @@ namespace Private {
     /**
      * The function which activates the plugin.
      */
-    readonly activate: (app: any, ...args: any[]) => any;
+    readonly activate: (
+      app: Application<Widget>,
+      ...args: Token<any>[]
+    ) => Token<any> | Promise<Token<any>>;
+
+    /**
+     * The optional function which deactivates the plugin.
+     */
+    readonly deactivate:
+      | ((
+          app: Application<Widget>,
+          ...args: Token<any>[]
+        ) => void | Promise<void>)
+      | null;
 
     /**
      * Whether the plugin has been activated.
@@ -685,8 +779,9 @@ namespace Private {
       promise: null,
       activated: false,
       activate: plugin.activate,
-      provides: plugin.provides || null,
-      autoStart: plugin.autoStart || false,
+      deactivate: plugin.deactivate ?? null,
+      provides: plugin.provides ?? null,
+      autoStart: plugin.autoStart ?? false,
       requires: plugin.requires ? plugin.requires.slice() : [],
       optional: plugin.optional ? plugin.optional.slice() : []
     };
@@ -736,6 +831,54 @@ namespace Private {
       trace.pop();
       return false;
     }
+  }
+
+  /**
+   * Find dependants in deactivation order.
+   *
+   * @param id Plugin id
+   * @param pluginMap Plugins map
+   * @param serviceMap Services map
+   * @returns List of dependent plugin ids and the plugin id itself
+   * in the order to be deactivated.
+   */
+  export function findDependants(
+    id: string,
+    pluginMap: PluginMap,
+    serviceMap: ServiceMap
+  ): string[] {
+    const edges = new Array<[string, string]>();
+
+    function addEdges(id: string): void {
+      const data = pluginMap.get(id)!;
+      // FIXME we consider optional links => we may deactivate plugin that actually could be reactivated
+      // with one optional dep less.
+      const dependencies = data.requires.concat(data.optional);
+      edges.push(
+        ...dependencies.reduce<[string, string][]>((agg, dep) => {
+          const service = serviceMap.get(dep);
+          if (service) {
+            // An edge is oriented from dependant to provider
+            agg.push([id, service]);
+          }
+          return agg;
+        }, [])
+      );
+    }
+
+    for (const pluginId of pluginMap.keys()) {
+      addEdges(pluginId);
+    }
+
+    const topologicList = topologicSort(edges);
+
+    const index = topologicList.findIndex(pluginId => pluginId === id);
+
+    if (index === -1) {
+      return [id];
+    }
+
+    return topologicList.slice(0, index + 1);
   }
 
   /**
