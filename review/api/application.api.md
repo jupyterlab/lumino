@@ -18,11 +18,13 @@ export class Application<T extends Widget> {
     protected attachShell(id: string): void;
     readonly commands: CommandRegistry;
     readonly contextMenu: ContextMenu;
+    deactivatePlugin(id: string): Promise<string[]>;
     protected evtContextMenu(event: MouseEvent): void;
     protected evtKeydown(event: KeyboardEvent): void;
     protected evtResize(event: Event): void;
     handleEvent(event: Event): void;
     hasPlugin(id: string): boolean;
+    isPluginActivated(id: string): boolean;
     listPlugins(): string[];
     registerPlugin(plugin: IPlugin<this, any>): void;
     registerPlugins(plugins: IPlugin<this, any>[]): void;
@@ -31,6 +33,8 @@ export class Application<T extends Widget> {
     readonly shell: T;
     start(options?: Application.IStartOptions): Promise<void>;
     get started(): Promise<void>;
+    // (undocumented)
+    unregisterPlugin(id: string, force?: boolean): void;
 }
 
 // @public
@@ -47,12 +51,13 @@ export namespace Application {
 }
 
 // @public
-export interface IPlugin<T, U> {
-    activate: (app: T, ...args: any[]) => U | Promise<U>;
+export interface IPlugin<T extends Application<Widget>, U> {
+    activate: (app: T, ...args: Token<any>[]) => U | Promise<U>;
     autoStart?: boolean;
+    deactivate?: ((app: T, ...args: Token<any>[]) => void | Promise<void>) | null;
     id: string;
     optional?: Token<any>[];
-    provides?: Token<U>;
+    provides?: Token<U> | null;
     requires?: Token<any>[];
 }
 
