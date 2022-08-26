@@ -11,6 +11,8 @@
 /**
  * Chain together several iterables.
  *
+ * @deprecated
+ *
  * @param objects - The iterable objects of interest.
  *
  * @returns An iterator which yields the values of the iterables

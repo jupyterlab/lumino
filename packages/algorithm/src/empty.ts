@@ -11,6 +11,8 @@
 /**
  * Create an empty iterator.
  *
+ * @deprecated
+ *
  * @returns A new iterator which yields nothing.
  *
  * #### Example

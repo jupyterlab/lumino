@@ -35,6 +35,8 @@ export function* repeat<T>(value: T, count: number): IterableIterator<T> {
 /**
  * Create an iterator which yields a value a single time.
  *
+ * @deprecated
+ *
  * @param value - The value to wrap in an iterator.
  *
  * @returns A new iterator which yields the value a single time.
