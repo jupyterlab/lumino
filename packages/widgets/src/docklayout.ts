@@ -7,7 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { ArrayExt, chain, empty, map, once } from '@lumino/algorithm';
+import { ArrayExt } from '@lumino/algorithm';
 
 import { ElementExt } from '@lumino/domutils';
 
@@ -145,8 +145,10 @@ export class DockLayout extends Layout {
    * #### Notes
    * This iterator includes the generated tab bars.
    */
-  [Symbol.iterator](): IterableIterator<Widget> {
-    return this._root ? this._root.iterAllWidgets() : empty<Widget>();
+  *[Symbol.iterator](): IterableIterator<Widget> {
+    if (this._root) {
+      yield* this._root.iterAllWidgets();
+    }
   }
 
   /**
@@ -157,8 +159,10 @@ export class DockLayout extends Layout {
    * #### Notes
    * This iterator does not include the generated tab bars.
    */
-  widgets(): IterableIterator<Widget> {
-    return this._root ? this._root.iterUserWidgets() : empty<Widget>();
+  *widgets(): IterableIterator<Widget> {
+    if (this._root) {
+      yield* this._root.iterUserWidgets();
+    }
   }
 
   /**
@@ -170,8 +174,10 @@ export class DockLayout extends Layout {
    * This iterator yields the widgets corresponding to the current tab
    * of each tab bar in the layout.
    */
-  selectedWidgets(): IterableIterator<Widget> {
-    return this._root ? this._root.iterSelectedWidgets() : empty<Widget>();
+  *selectedWidgets(): IterableIterator<Widget> {
+    if (this._root) {
+      yield* this._root.iterSelectedWidgets();
+    }
   }
 
   /**
@@ -182,8 +188,10 @@ export class DockLayout extends Layout {
    * #### Notes
    * This iterator does not include the user widgets.
    */
-  tabBars(): IterableIterator<TabBar<Widget>> {
-    return this._root ? this._root.iterTabBars() : empty<TabBar<Widget>>();
+  *tabBars(): IterableIterator<TabBar<Widget>> {
+    if (this._root) {
+      yield* this._root.iterTabBars();
+    }
   }
 
   /**
@@ -191,8 +199,10 @@ export class DockLayout extends Layout {
    *
    * @returns A new iterator over the handles in the layout.
    */
-  handles(): IterableIterator<HTMLDivElement> {
-    return this._root ? this._root.iterHandles() : empty<HTMLDivElement>();
+  *handles(): IterableIterator<HTMLDivElement> {
+    if (this._root) {
+      yield* this._root.iterHandles();
+    }
   }
 
   /**
@@ -1551,37 +1561,43 @@ namespace Private {
     /**
      * Create an iterator for all widgets in the layout tree.
      */
-    iterAllWidgets(): IterableIterator<Widget> {
-      return chain(once(this.tabBar), this.iterUserWidgets());
+    *iterAllWidgets(): IterableIterator<Widget> {
+      yield this.tabBar;
+      yield* this.iterUserWidgets();
     }
 
     /**
      * Create an iterator for the user widgets in the layout tree.
      */
-    iterUserWidgets(): IterableIterator<Widget> {
-      return map(this.tabBar.titles, title => title.owner);
+    *iterUserWidgets(): IterableIterator<Widget> {
+      for (const title of this.tabBar.titles) {
+        yield title.owner;
+      }
     }
 
     /**
      * Create an iterator for the selected widgets in the layout tree.
      */
-    iterSelectedWidgets(): IterableIterator<Widget> {
+    *iterSelectedWidgets(): IterableIterator<Widget> {
       let title = this.tabBar.currentTitle;
-      return title ? once(title.owner) : empty<Widget>();
+      if (title) {
+        yield title.owner;
+      }
     }
 
     /**
      * Create an iterator for the tab bars in the layout tree.
      */
-    iterTabBars(): IterableIterator<TabBar<Widget>> {
-      return once(this.tabBar);
+    *iterTabBars(): IterableIterator<TabBar<Widget>> {
+      yield this.tabBar;
     }
 
     /**
      * Create an iterator for the handles in the layout tree.
      */
-    iterHandles(): IterableIterator<HTMLDivElement> {
-      return empty<HTMLDivElement>();
+    // eslint-disable-next-line require-yield
+    *iterHandles(): IterableIterator<HTMLDivElement> {
+      return;
     }
 
     /**
@@ -1787,41 +1803,46 @@ namespace Private {
     /**
      * Create an iterator for all widgets in the layout tree.
      */
-    iterAllWidgets(): IterableIterator<Widget> {
-      let children = map(this.children, child => child.iterAllWidgets());
-      return chain<Widget>(...children);
+    *iterAllWidgets(): IterableIterator<Widget> {
+      for (const child of this.children) {
+        yield* child.iterAllWidgets();
+      }
     }
 
     /**
      * Create an iterator for the user widgets in the layout tree.
      */
-    iterUserWidgets(): IterableIterator<Widget> {
-      let children = map(this.children, child => child.iterUserWidgets());
-      return chain<Widget>(...children);
+    *iterUserWidgets(): IterableIterator<Widget> {
+      for (const child of this.children) {
+        yield* child.iterUserWidgets();
+      }
     }
 
     /**
      * Create an iterator for the selected widgets in the layout tree.
      */
-    iterSelectedWidgets(): IterableIterator<Widget> {
-      let children = map(this.children, child => child.iterSelectedWidgets());
-      return chain<Widget>(...children);
+    *iterSelectedWidgets(): IterableIterator<Widget> {
+      for (const child of this.children) {
+        yield* child.iterSelectedWidgets();
+      }
     }
 
     /**
      * Create an iterator for the tab bars in the layout tree.
      */
-    iterTabBars(): IterableIterator<TabBar<Widget>> {
-      let children = map(this.children, child => child.iterTabBars());
-      return chain<TabBar<Widget>>(...children);
+    *iterTabBars(): IterableIterator<TabBar<Widget>> {
+      for (const child of this.children) {
+        yield* child.iterTabBars();
+      }
     }
 
     /**
      * Create an iterator for the handles in the layout tree.
      */
-    iterHandles(): IterableIterator<HTMLDivElement> {
-      let children = map(this.children, child => child.iterHandles());
-      return chain<HTMLDivElement>(this.handles, ...children);
+    *iterHandles(): IterableIterator<HTMLDivElement> {
+      for (const child of this.children) {
+        yield* child.iterHandles();
+      }
     }
 
     /**

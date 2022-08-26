@@ -41,12 +41,8 @@ export interface IRetroable<T> {
 export function* retro<T>(
   object: IRetroable<T> | ArrayLike<T>
 ): IterableIterator<T> {
-  if (typeof (object as any).retro === 'function') {
-    const it = (object as IRetroable<T>).retro();
-    let item: IteratorResult<T>;
-    while (!(item = it.next()).done) {
-      yield item.value;
-    }
+  if (typeof (object as IRetroable<T>).retro === 'function') {
+    yield* (object as IRetroable<T>).retro();
   } else {
     for (let index = (object as ArrayLike<T>).length - 1; index > -1; index--) {
       yield (object as ArrayLike<T>)[index];

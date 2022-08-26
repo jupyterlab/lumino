@@ -270,8 +270,8 @@ export class DockPanel extends Widget {
    * #### Notes
    * This iterator does not include the generated tab bars.
    */
-  widgets(): IterableIterator<Widget> {
-    return (this.layout as DockLayout).widgets();
+  *widgets(): IterableIterator<Widget> {
+    yield* (this.layout as DockLayout).widgets();
   }
 
   /**
@@ -283,8 +283,8 @@ export class DockPanel extends Widget {
    * This iterator yields the widgets corresponding to the current tab
    * of each tab bar in the panel.
    */
-  selectedWidgets(): IterableIterator<Widget> {
-    return (this.layout as DockLayout).selectedWidgets();
+  *selectedWidgets(): IterableIterator<Widget> {
+    yield* (this.layout as DockLayout).selectedWidgets();
   }
 
   /**
@@ -295,8 +295,8 @@ export class DockPanel extends Widget {
    * #### Notes
    * This iterator does not include the user widgets.
    */
-  tabBars(): IterableIterator<TabBar<Widget>> {
-    return (this.layout as DockLayout).tabBars();
+  *tabBars(): IterableIterator<TabBar<Widget>> {
+    yield* (this.layout as DockLayout).tabBars();
   }
 
   /**
@@ -304,8 +304,8 @@ export class DockPanel extends Widget {
    *
    * @returns A new iterator over the handles in the panel.
    */
-  handles(): IterableIterator<HTMLDivElement> {
-    return (this.layout as DockLayout).handles();
+  *handles(): IterableIterator<HTMLDivElement> {
+    yield* (this.layout as DockLayout).handles();
   }
 
   /**

@@ -30,8 +30,6 @@
  */
 export function* chain<T>(...objects: Iterable<T>[]): IterableIterator<T> {
   for (const object of objects) {
-    for (const value of object) {
-      yield value;
-    }
+    yield* object;
   }
 }

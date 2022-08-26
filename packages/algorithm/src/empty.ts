@@ -22,7 +22,7 @@
  * Array.from(stream);  // []
  * ```
  */
-// eslint-disable-next-line require-yield, @typescript-eslint/no-unused-vars
+// eslint-disable-next-line require-yield
 export function* empty<T>(): IterableIterator<T> {
   return;
 }
