@@ -28,6 +28,24 @@ In many places where the Lumino `iter()` utility function has been replaced in L
 
 If you need a snapshot of every item in your iterable as an array, then `Array.from(...)` is an appropriate replacement for `toArray(...)`.
 
+### Look out for `iterator.next() !== undefined`
+
+This pattern may appear in your code if you were using Lumino 1 iterators. Instead of checking `iterator.next().done`, as is the case with native iterators, Lumino 1 iterators set `next()` to the value `undefined` as an optimization to prevent allocation an object with `.value` and `.done`, so when migrating from Lumino 1 to Lumino 2, this is a common cause of confusion. For example, a `while` loop in Lumino 1 may have had this predicate:
+
+```typescript
+while ((it = it.next()) !== undefined) {
+  // loop logic
+}
+```
+
+The native (Lumino 2) version of this loop would be:
+
+```typescript
+while (!(it = it.next()).done) {
+  // loop logic
+}
+```
+
 ## Public API changes
 
 ### `@lumino/algorithm`
