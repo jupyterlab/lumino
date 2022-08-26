@@ -11,6 +11,8 @@
 /**
  * Create an iterator which repeats a value a number of times.
  *
+ * @deprecated
+ *
  * @param value - The value to repeat.
  *
  * @param count - The number of times to repeat the value.
