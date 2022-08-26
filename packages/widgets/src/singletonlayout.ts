@@ -7,8 +7,6 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { empty, once } from '@lumino/algorithm';
-
 import { MessageLoop } from '@lumino/messaging';
 
 import { Layout } from './layout';
@@ -81,8 +79,10 @@ export class SingletonLayout extends Layout {
    *
    * @returns A new iterator over the widgets in the layout.
    */
-  [Symbol.iterator](): IterableIterator<Widget> {
-    return this._widget ? once(this._widget) : empty<Widget>();
+  *[Symbol.iterator](): IterableIterator<Widget> {
+    if (this._widget) {
+      yield this._widget;
+    }
   }
 
   /**

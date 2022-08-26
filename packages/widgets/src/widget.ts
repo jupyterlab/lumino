@@ -8,8 +8,6 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { empty } from '@lumino/algorithm';
-
 import { IObservableDisposable } from '@lumino/disposable';
 
 import {
@@ -283,8 +281,10 @@ export class Widget implements IMessageHandler, IObservableDisposable {
    *
    * If a layout is not installed, the returned iterator will be empty.
    */
-  children(): IterableIterator<Widget> {
-    return this._layout ? this._layout[Symbol.iterator]() : empty<Widget>();
+  *children(): IterableIterator<Widget> {
+    if (this._layout) {
+      yield* this._layout;
+    }
   }
 
   /**
