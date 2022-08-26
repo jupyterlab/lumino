@@ -53,8 +53,8 @@ export class PanelLayout extends Layout {
    *
    * @returns A new iterator over the widgets in the layout.
    */
-  [Symbol.iterator](): IterableIterator<Widget> {
-    return this._widgets[Symbol.iterator]();
+  *[Symbol.iterator](): IterableIterator<Widget> {
+    yield* this._widgets;
   }
 
   /**

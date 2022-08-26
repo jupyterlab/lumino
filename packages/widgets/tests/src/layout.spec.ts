@@ -29,8 +29,8 @@ class LogLayout extends Layout {
     super.dispose();
   }
 
-  [Symbol.iterator](): IterableIterator<Widget> {
-    return this.widgets[Symbol.iterator]();
+  *[Symbol.iterator](): IterableIterator<Widget> {
+    yield* this.widgets;
   }
 
   removeWidget(widget: Widget): void {

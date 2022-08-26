@@ -47,13 +47,13 @@ export namespace ArrayExt {
     export function upperBound<T, U>(array: ArrayLike<T>, value: U, fn: (element: T, value: U) => number, start?: number, stop?: number): number;
 }
 
-// @public
+// @public @deprecated
 export function chain<T>(...objects: Iterable<T>[]): IterableIterator<T>;
 
 // @public @deprecated
 export function each<T>(object: Iterable<T>, fn: (value: T, index: number) => boolean | void): void;
 
-// @public
+// @public @deprecated
 export function empty<T>(): IterableIterator<T>;
 
 // @public
@@ -88,7 +88,7 @@ export function min<T>(object: Iterable<T>, fn: (first: T, second: T) => number)
 // @public
 export function minmax<T>(object: Iterable<T>, fn: (first: T, second: T) => number): [T, T] | undefined;
 
-// @public
+// @public @deprecated
 export function once<T>(value: T): IterableIterator<T>;
 
 // @public
@@ -100,7 +100,7 @@ export function reduce<T>(object: Iterable<T>, fn: (accumulator: T, value: T, in
 // @public (undocumented)
 export function reduce<T, U>(object: Iterable<T>, fn: (accumulator: U, value: T, index: number) => U, initial: U): U;
 
-// @public
+// @public @deprecated
 export function repeat<T>(value: T, count: number): IterableIterator<T>;
 
 // @public

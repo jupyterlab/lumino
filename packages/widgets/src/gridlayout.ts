@@ -7,7 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { ArrayExt, map } from '@lumino/algorithm';
+import { ArrayExt } from '@lumino/algorithm';
 
 import { ElementExt } from '@lumino/domutils';
 
@@ -288,8 +288,10 @@ export class GridLayout extends Layout {
    *
    * @returns A new iterator over the widgets in the layout.
    */
-  [Symbol.iterator](): IterableIterator<Widget> {
-    return map(this._items, item => item.widget);
+  *[Symbol.iterator](): IterableIterator<Widget> {
+    for (const item of this._items) {
+      yield item.widget;
+    }
   }
 
   /**

@@ -11,6 +11,8 @@
 /**
  * Create an iterator which repeats a value a number of times.
  *
+ * @deprecated
+ *
  * @param value - The value to repeat.
  *
  * @param count - The number of times to repeat the value.
@@ -34,6 +36,8 @@ export function* repeat<T>(value: T, count: number): IterableIterator<T> {
 
 /**
  * Create an iterator which yields a value a single time.
+ *
+ * @deprecated
  *
  * @param value - The value to wrap in an iterator.
  *

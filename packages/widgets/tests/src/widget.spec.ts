@@ -93,8 +93,8 @@ class TestLayout extends Layout {
     super.dispose();
   }
 
-  [Symbol.iterator](): IterableIterator<Widget> {
-    return this._widgets[Symbol.iterator]();
+  *[Symbol.iterator](): IterableIterator<Widget> {
+    yield* this._widgets;
   }
 
   removeWidget(widget: Widget): void {

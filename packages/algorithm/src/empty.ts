@@ -11,6 +11,8 @@
 /**
  * Create an empty iterator.
  *
+ * @deprecated
+ *
  * @returns A new iterator which yields nothing.
  *
  * #### Example
@@ -22,7 +24,7 @@
  * Array.from(stream);  // []
  * ```
  */
-// eslint-disable-next-line require-yield, @typescript-eslint/no-unused-vars
+// eslint-disable-next-line require-yield
 export function* empty<T>(): IterableIterator<T> {
   return;
 }

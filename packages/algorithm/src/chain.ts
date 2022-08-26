@@ -11,6 +11,8 @@
 /**
  * Chain together several iterables.
  *
+ * @deprecated
+ *
  * @param objects - The iterable objects of interest.
  *
  * @returns An iterator which yields the values of the iterables
@@ -30,8 +32,6 @@
  */
 export function* chain<T>(...objects: Iterable<T>[]): IterableIterator<T> {
   for (const object of objects) {
-    for (const value of object) {
-      yield value;
-    }
+    yield* object;
   }
 }

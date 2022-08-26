@@ -150,8 +150,8 @@ export class BasicSelectionModel extends SelectionModel {
    * #### Notes
    * The data grid will render the selections in order.
    */
-  selections(): IterableIterator<SelectionModel.Selection> {
-    return this._selections[Symbol.iterator]();
+  *selections(): IterableIterator<SelectionModel.Selection> {
+    yield* this._selections;
   }
 
   /**
