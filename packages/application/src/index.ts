@@ -8,6 +8,7 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 import { topologicSort } from '@lumino/algorithm';
+
 import { CommandRegistry } from '@lumino/commands';
 
 import { PromiseDelegate, Token } from '@lumino/coreutils';
@@ -256,7 +257,7 @@ export class Application<T extends Widget> {
     }
 
     if (data.activated && !force) {
-      throw new Error('Plugin is still active.');
+      throw new Error(`Plugin '${id}' is still active.`);
     }
 
     this._pluginMap.delete(id);
@@ -270,16 +271,16 @@ export class Application<T extends Widget> {
    * @returns A promise which resolves when the plugin is activated
    *   or rejects with an error if it cannot be activated.
    */
-  activatePlugin(id: string): Promise<void> {
+  async activatePlugin(id: string): Promise<void> {
     // Reject the promise if the plugin is not registered.
     let data = this._pluginMap.get(id);
     if (!data) {
-      return Promise.reject(new Error(`Plugin '${id}' is not registered.`));
+      throw new Error(`Plugin '${id}' is not registered.`);
     }
 
     // Resolve immediately if the plugin is already activated.
     if (data.activated) {
-      return Promise.resolve(undefined);
+      return;
     }
 
     // Return the pending resolver promise if it exists.
@@ -316,8 +317,8 @@ export class Application<T extends Widget> {
   }
 
   /**
-   * Will deactivate the plugin and its dependants if and only if the plugin
-   * and its dependants all support `deactivate`.
+   * Deactivate the plugin and its dependents if and only if the plugin
+   * and its dependents all support `deactivate`.
    *
    * @param id - Plugin id to deactivate
    *
@@ -327,54 +328,58 @@ export class Application<T extends Widget> {
     // Reject the promise if the plugin is not registered.
     let data = this._pluginMap.get(id);
     if (!data) {
-      return Promise.reject(new Error(`Plugin '${id}' is not registered.`));
+      throw new Error(`Plugin '${id}' is not registered.`);
     }
 
+    // Bail early if the plugin is not activated
     if (!data.activated) {
-      // Bail early if the plugin is not activated
-      return Promise.resolve([]);
+      return [];
     }
 
     if (!data.deactivate) {
-      return Promise.reject(`Plugin '${id}' does not support deactivation`);
+      throw new Error(`Plugin '${id}' does not support deactivation`);
     }
 
-    // find an optimal deactivation order for dependants
-    const dependentIds = Private.findDependants(
+    // Find the optimal deactivation order for dependents.
+    const dependentIds = Private.findDependents(
       id,
       this._pluginMap,
       this._serviceMap
     );
 
-    const dependants = dependentIds.map(d => this._pluginMap.get(d)!);
+    const dependents = dependentIds.map(d => this._pluginMap.get(d)!);
 
-    // Check all dependents
-    for (const dependant of dependants) {
-      if (!dependant.deactivate) {
-        Promise.reject(
-          `Dependent plugin ${dependant.id} does not support deactivation.`
+    // Check to make sure all dependent plugins can deactivate.
+    for (const dependent of dependents) {
+      if (!dependent.deactivate) {
+        throw new Error(
+          `Dependent plugin ${dependent.id} does not support deactivation.`
         );
       }
     }
 
-    for (const dependant of dependants) {
-      const deps = dependant.requires.concat(dependant.optional);
-      await Promise.resolve(
-        dependant.deactivate!(
-          this,
-          ...deps.map(d => {
-            const id = this._serviceMap.get(d);
-            if (id) {
-              return this._pluginMap.get(id)!.service;
-            } else {
-              return null;
-            }
-          })
-        )
+    // Deactivate all dependent plugins.
+    const promises: Promise<void>[] = [];
+    for (const dependent of dependents) {
+      const dependencies = dependent.requires.concat(dependent.optional);
+      const promise = dependent.deactivate!(
+        this,
+        ...dependencies.map(dependency => {
+          const id = this._serviceMap.get(dependency);
+          if (id) {
+            return this._pluginMap.get(id)!.service;
+          } else {
+            return null;
+          }
+        })
       );
-      dependant.service = null;
-      dependant.activated = false;
+      dependent.service = null;
+      dependent.activated = false;
+      if (promise) {
+        promises.push(promise);
+      }
     }
+    await Promise.all(promises);
 
     return dependentIds.slice(0, dependentIds.length - 1);
   }
@@ -402,17 +407,15 @@ export class Application<T extends Widget> {
     // Reject the promise if there is no provider for the type.
     let id = this._serviceMap.get(token);
     if (!id) {
-      return Promise.reject(new Error(`No provider for: ${token.name}.`));
+      throw new Error(`No provider for: ${token.name}.`);
     }
 
-    // Resolve immediately if the plugin is already activated.
+    // Activate the plugin if necessary.
     let data = this._pluginMap.get(id)!;
-    if (data.activated) {
-      return Promise.resolve(data.service);
+    if (!data.activated) {
+      await this.activatePlugin(id);
     }
 
-    // Otherwise, activate the plugin and wait on the results.
-    await this.activatePlugin(id);
     return data.service;
   }
 
@@ -439,23 +442,21 @@ export class Application<T extends Widget> {
     // Resolve with `null` if there is no provider for the type.
     let id = this._serviceMap.get(token);
     if (!id) {
-      return Promise.resolve(null);
-    }
-
-    // Resolve immediately if the plugin is already activated.
-    let data = this._pluginMap.get(id)!;
-    if (data.activated) {
-      return Promise.resolve(data.service);
-    }
-
-    // Otherwise, activate the plugin and wait on the results.
-    try {
-      await this.activatePlugin(id);
-      return data.service;
-    } catch (reason) {
-      console.error(reason);
       return null;
     }
+
+    // Activate the plugin if necessary.
+    let data = this._pluginMap.get(id)!;
+    if (!data.activated) {
+      try {
+        await this.activatePlugin(id);
+      } catch (reason) {
+        console.error(reason);
+        return null;
+      }
+    }
+
+    return data.service;
   }
 
   /**
@@ -495,13 +496,11 @@ export class Application<T extends Widget> {
     let startups = Private.collectStartupPlugins(this._pluginMap, options);
 
     // Generate the activation promises.
-    let promises = startups.map(async id => {
-      try {
-        return await this.activatePlugin(id);
-      } catch (error) {
+    let promises = startups.map(id => {
+      return this.activatePlugin(id).catch(error => {
         console.error(`Plugin '${id}' failed to activate.`);
         console.error(error);
-      }
+      });
     });
 
     // Wait for the plugins to activate, then finalize startup.
@@ -534,7 +533,7 @@ export class Application<T extends Widget> {
         this.evtKeydown(event as KeyboardEvent);
         break;
       case 'contextmenu':
-        this.evtContextMenu(event as MouseEvent);
+        this.evtContextMenu(event as PointerEvent);
         break;
     }
   }
@@ -597,7 +596,7 @@ export class Application<T extends Widget> {
    *
    * A subclass may reimplement this method as needed.
    */
-  protected evtContextMenu(event: MouseEvent): void {
+  protected evtContextMenu(event: PointerEvent): void {
     if (event.shiftKey) {
       return;
     }
@@ -714,19 +713,13 @@ namespace Private {
     /**
      * The function which activates the plugin.
      */
-    readonly activate: (
-      app: Application<Widget>,
-      ...args: Token<any>[]
-    ) => Token<any> | Promise<Token<any>>;
+    readonly activate: (app: any, ...args: any[]) => any;
 
     /**
      * The optional function which deactivates the plugin.
      */
     readonly deactivate:
-      | ((
-          app: Application<Widget>,
-          ...args: Token<any>[]
-        ) => void | Promise<void>)
+      | ((app: Application<Widget>, ...args: any[]) => void | Promise<void>)
       | null;
 
     /**
@@ -834,15 +827,17 @@ namespace Private {
   }
 
   /**
-   * Find dependants in deactivation order.
+   * Find dependents in deactivation order.
    *
-   * @param id Plugin id
-   * @param pluginMap Plugins map
-   * @param serviceMap Services map
-   * @returns List of dependent plugin ids and the plugin id itself
-   * in the order to be deactivated.
+   * @param id - The plugin id of interest.
+   * @param pluginMap - The map containing all plugins.
+   * @param serviceMap - The map containing all services.
+   * @returns A list of dependent plugin ids in order of deactivation
+   *
+   * #### Notes
+   * The final item of the return list is always the plugin of interest.
    */
-  export function findDependants(
+  export function findDependents(
     id: string,
     pluginMap: PluginMap,
     serviceMap: ServiceMap
@@ -855,13 +850,13 @@ namespace Private {
       // with one optional dep less.
       const dependencies = data.requires.concat(data.optional);
       edges.push(
-        ...dependencies.reduce<[string, string][]>((agg, dep) => {
+        ...dependencies.reduce<[string, string][]>((acc, dep) => {
           const service = serviceMap.get(dep);
           if (service) {
-            // An edge is oriented from dependant to provider
-            agg.push([id, service]);
+            // An edge is oriented from dependent to provider
+            acc.push([id, service]);
           }
-          return agg;
+          return acc;
         }, [])
       );
     }
@@ -870,15 +865,15 @@ namespace Private {
       addEdges(pluginId);
     }
 
-    const topologicList = topologicSort(edges);
+    const sorted = topologicSort(edges);
 
-    const index = topologicList.findIndex(pluginId => pluginId === id);
+    const index = sorted.findIndex(pluginId => pluginId === id);
 
     if (index === -1) {
       return [id];
     }
 
-    return topologicList.slice(0, index + 1);
+    return sorted.slice(0, index + 1);
   }
 
   /**
