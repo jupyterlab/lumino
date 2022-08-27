@@ -373,10 +373,16 @@ export class Application<T extends Widget> {
           }
         })
       );
-      dependent.service = null;
-      dependent.activated = false;
       if (promise) {
-        promises.push(promise);
+        promises.push(
+          promise.then(() => {
+            dependent.service = null;
+            dependent.activated = false;
+          })
+        );
+      } else {
+        dependent.service = null;
+        dependent.activated = false;
       }
     }
     await Promise.all(promises);
@@ -835,7 +841,7 @@ namespace Private {
    * @returns A list of dependent plugin ids in order of deactivation
    *
    * #### Notes
-   * The final item of the return list is always the plugin of interest.
+   * The final item of the returned list is always the plugin of interest.
    */
   export function findDependents(
     id: string,
