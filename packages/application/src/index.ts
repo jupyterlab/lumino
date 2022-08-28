@@ -213,11 +213,11 @@ export class Application<T extends Widget> {
   registerPlugin(plugin: IPlugin<this, any>): void {
     // Throw an error if the plugin id is already registered.
     if (this._pluginMap.has(plugin.id)) {
-      throw new Error(`Plugin '${plugin.id}' is already registered.`);
+      throw new TypeError(`Plugin '${plugin.id}' is already registered.`);
     }
 
     // Create the normalized plugin data.
-    let data = Private.createPluginData(plugin);
+    const data = Private.createPluginData(plugin);
 
     // Ensure the plugin does not cause a cyclic dependency.
     Private.ensureNoCycle(data, this._pluginMap, this._serviceMap);
@@ -240,7 +240,7 @@ export class Application<T extends Widget> {
    * This calls `registerPlugin()` for each of the given plugins.
    */
   registerPlugins(plugins: IPlugin<this, any>[]): void {
-    for (let plugin of plugins) {
+    for (const plugin of plugins) {
       this.registerPlugin(plugin);
     }
   }
@@ -251,12 +251,12 @@ export class Application<T extends Widget> {
    * @param force - whether to unregister the plugin even if it is active
    */
   unregisterPlugin(id: string, force?: boolean): void {
-    const data = this._pluginMap.get(id);
-    if (!data) {
+    const plugin = this._pluginMap.get(id);
+    if (!plugin) {
       return;
     }
 
-    if (data.activated && !force) {
+    if (plugin.activated && !force) {
       throw new Error(`Plugin '${id}' is still active.`);
     }
 
@@ -273,47 +273,45 @@ export class Application<T extends Widget> {
    */
   async activatePlugin(id: string): Promise<void> {
     // Reject the promise if the plugin is not registered.
-    let data = this._pluginMap.get(id);
-    if (!data) {
-      throw new Error(`Plugin '${id}' is not registered.`);
+    const plugin = this._pluginMap.get(id);
+    if (!plugin) {
+      throw new ReferenceError(`Plugin '${id}' is not registered.`);
     }
 
     // Resolve immediately if the plugin is already activated.
-    if (data.activated) {
+    if (plugin.activated) {
       return;
     }
 
     // Return the pending resolver promise if it exists.
-    if (data.promise) {
-      return data.promise;
+    if (plugin.promise) {
+      return plugin.promise;
     }
 
     // Resolve the required services for the plugin.
-    let required = data.requires.map(t => this.resolveRequiredService(t));
+    const required = plugin.requires.map(t => this.resolveRequiredService(t));
 
     // Resolve the optional services for the plugin.
-    let optional = data.optional.map(t => this.resolveOptionalService(t));
+    const optional = plugin.optional.map(t => this.resolveOptionalService(t));
 
     // Create the array of promises to resolve.
-    let promises = required.concat(optional);
+    const promises = required.concat(optional);
 
     // Setup the resolver promise for the plugin.
-    data.promise = Promise.all(promises)
-      .then(services => {
-        return data!.activate.apply(undefined, [this, ...services]);
-      })
+    plugin.promise = Promise.all(promises)
+      .then(services => plugin!.activate.apply(undefined, [this, ...services]))
       .then(service => {
-        data!.service = service;
-        data!.activated = true;
-        data!.promise = null;
+        plugin!.service = service;
+        plugin!.activated = true;
+        plugin!.promise = null;
       })
       .catch(error => {
-        data!.promise = null;
+        plugin!.promise = null;
         throw error;
       });
 
     // Return the pending resolver promise.
-    return data.promise;
+    return plugin.promise;
   }
 
   /**
@@ -326,7 +324,7 @@ export class Application<T extends Widget> {
    */
   async deactivatePlugin(id: string): Promise<string[]> {
     // Reject the promise if the plugin is not registered.
-    let plugin = this._pluginMap.get(id);
+    const plugin = this._pluginMap.get(id);
     if (!plugin) {
       throw new ReferenceError(`Plugin '${id}' is not registered.`);
     }
@@ -412,18 +410,18 @@ export class Application<T extends Widget> {
    */
   async resolveRequiredService<U>(token: Token<U>): Promise<U> {
     // Reject the promise if there is no provider for the type.
-    let id = this._serviceMap.get(token);
+    const id = this._serviceMap.get(token);
     if (!id) {
-      throw new Error(`No provider for: ${token.name}.`);
+      throw new TypeError(`No provider for: ${token.name}.`);
     }
 
     // Activate the plugin if necessary.
-    let data = this._pluginMap.get(id)!;
-    if (!data.activated) {
+    const plugin = this._pluginMap.get(id)!;
+    if (!plugin.activated) {
       await this.activatePlugin(id);
     }
 
-    return data.service;
+    return plugin.service;
   }
 
   /**
@@ -447,14 +445,14 @@ export class Application<T extends Widget> {
    */
   async resolveOptionalService<U>(token: Token<U>): Promise<U | null> {
     // Resolve with `null` if there is no provider for the type.
-    let id = this._serviceMap.get(token);
+    const id = this._serviceMap.get(token);
     if (!id) {
       return null;
     }
 
     // Activate the plugin if necessary.
-    let data = this._pluginMap.get(id)!;
-    if (!data.activated) {
+    const plugin = this._pluginMap.get(id)!;
+    if (!plugin.activated) {
       try {
         await this.activatePlugin(id);
       } catch (reason) {
@@ -463,7 +461,7 @@ export class Application<T extends Widget> {
       }
     }
 
-    return data.service;
+    return plugin.service;
   }
 
   /**
@@ -497,13 +495,13 @@ export class Application<T extends Widget> {
     this._started = true;
 
     // Parse the host id for attaching the shell.
-    let hostID = options.hostID || '';
+    const hostID = options.hostID || '';
 
     // Collect the ids of the startup plugins.
-    let startups = Private.collectStartupPlugins(this._pluginMap, options);
+    const startups = Private.collectStartupPlugins(this._pluginMap, options);
 
     // Generate the activation promises.
-    let promises = startups.map(id => {
+    const promises = startups.map(id => {
       return this.activatePlugin(id).catch(error => {
         console.error(`Plugin '${id}' failed to activate.`);
         console.error(error);
@@ -797,30 +795,30 @@ namespace Private {
     pluginMap: PluginMap,
     serviceMap: ServiceMap
   ): void {
-    let dependencies = data.requires.concat(data.optional);
+    const dependencies = data.requires.concat(data.optional);
     // Bail early if there cannot be a cycle.
     if (!data.provides || dependencies.length === 0) {
       return;
     }
 
     // Setup a stack to trace service resolution.
-    let trace = [data.id];
+    const trace = [data.id];
 
     // Throw an exception if a cycle is present.
     if (dependencies.some(visit)) {
-      throw new Error(`Cycle detected: ${trace.join(' -> ')}.`);
+      throw new ReferenceError(`Cycle detected: ${trace.join(' -> ')}.`);
     }
 
     function visit(token: Token<any>): boolean {
       if (token === data.provides) {
         return true;
       }
-      let id = serviceMap.get(token);
+      const id = serviceMap.get(token);
       if (!id) {
         return false;
       }
-      let other = pluginMap.get(id)!;
-      let otherDependencies = other.requires.concat(other.optional);
+      const other = pluginMap.get(id)!;
+      const otherDependencies = other.requires.concat(other.optional);
       if (otherDependencies.length === 0) {
         return false;
       }
@@ -852,10 +850,10 @@ namespace Private {
     const edges = new Array<[string, string]>();
 
     function addEdges(id: string): void {
-      const data = pluginMap.get(id)!;
+      const plugin = pluginMap.get(id)!;
       // FIXME we consider optional links => we may deactivate plugin that actually could be reactivated
       // with one optional dep less.
-      const dependencies = data.requires.concat(data.optional);
+      const dependencies = plugin.requires.concat(plugin.optional);
       edges.push(
         ...dependencies.reduce<[string, string][]>((acc, dep) => {
           const service = serviceMap.get(dep);
@@ -868,13 +866,13 @@ namespace Private {
       );
     }
 
-    for (const pluginId of pluginMap.keys()) {
-      addEdges(pluginId);
+    for (const id of pluginMap.keys()) {
+      addEdges(id);
     }
 
     const sorted = topologicSort(edges);
 
-    const index = sorted.findIndex(pluginId => pluginId === id);
+    const index = sorted.findIndex(candidate => candidate === id);
 
     if (index === -1) {
       return [id];
@@ -891,10 +889,10 @@ namespace Private {
     options: Application.IStartOptions
   ): string[] {
     // Create a map to hold the plugin IDs.
-    let resultMap = new Map<string, boolean>();
+    const resultMap = new Map<string, boolean>();
 
     // Collect the auto-start plugins.
-    for (let id in pluginMap) {
+    for (const id in pluginMap) {
       if (pluginMap.get(id)!.autoStart) {
         resultMap.set(id, true);
       }
@@ -902,14 +900,14 @@ namespace Private {
 
     // Add the startup plugins.
     if (options.startPlugins) {
-      for (let id of options.startPlugins) {
+      for (const id of options.startPlugins) {
         resultMap.set(id, true);
       }
     }
 
     // Remove the ignored plugins.
     if (options.ignorePlugins) {
-      for (let id of options.ignorePlugins) {
+      for (const id of options.ignorePlugins) {
         resultMap.delete(id);
       }
     }
