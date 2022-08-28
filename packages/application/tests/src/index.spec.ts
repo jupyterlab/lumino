@@ -187,8 +187,8 @@ describe('@lumino/application', () => {
       });
     });
 
-    describe('#unregisterPlugin', () => {
-      it('should unregistered a deactivated registered plugin', () => {
+    describe('#deregisterPlugin', () => {
+      it('should deregister a deactivated registered plugin', () => {
         const app = new Application({ shell: new Widget() });
         const id = 'plugin1';
         app.registerPlugin({
@@ -198,12 +198,12 @@ describe('@lumino/application', () => {
           }
         });
 
-        app.unregisterPlugin(id);
+        app.deregisterPlugin(id);
 
         expect(app.hasPlugin(id)).to.be.false;
       });
 
-      it('should not unregistered an activated registered plugin', async () => {
+      it('should not deregister an activated registered plugin', async () => {
         const app = new Application({ shell: new Widget() });
         const id = 'plugin1';
         app.registerPlugin({
@@ -216,12 +216,12 @@ describe('@lumino/application', () => {
         await app.activatePlugin(id);
 
         expect(() => {
-          app.unregisterPlugin(id);
+          app.deregisterPlugin(id);
         }).to.throw();
         expect(app.hasPlugin(id)).to.be.true;
       });
 
-      it('should force unregistered an activated registered plugin', async () => {
+      it('should force deregister an activated registered plugin', async () => {
         const app = new Application({ shell: new Widget() });
         const id = 'plugin1';
         app.registerPlugin({
@@ -233,7 +233,7 @@ describe('@lumino/application', () => {
 
         await app.activatePlugin(id);
 
-        app.unregisterPlugin(id, true);
+        app.deregisterPlugin(id, true);
         expect(app.hasPlugin(id)).to.be.false;
       });
     });

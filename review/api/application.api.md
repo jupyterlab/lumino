@@ -19,7 +19,8 @@ export class Application<T extends Widget> {
     readonly commands: CommandRegistry;
     readonly contextMenu: ContextMenu;
     deactivatePlugin(id: string): Promise<string[]>;
-    protected evtContextMenu(event: MouseEvent): void;
+    deregisterPlugin(id: string, force?: boolean): void;
+    protected evtContextMenu(event: PointerEvent): void;
     protected evtKeydown(event: KeyboardEvent): void;
     protected evtResize(event: Event): void;
     handleEvent(event: Event): void;
@@ -33,8 +34,6 @@ export class Application<T extends Widget> {
     readonly shell: T;
     start(options?: Application.IStartOptions): Promise<void>;
     get started(): Promise<void>;
-    // (undocumented)
-    unregisterPlugin(id: string, force?: boolean): void;
 }
 
 // @public

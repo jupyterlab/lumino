@@ -246,13 +246,13 @@ export class Application<T extends Widget> {
   }
 
   /**
-   * Register a plugin with the application.
+   * Deregister a plugin with the application.
    *
    * @param id - The ID of the plugin of interest.
    *
-   * @param force - Whether to unregister the plugin even if it is active.
+   * @param force - Whether to deregister the plugin even if it is active.
    */
-  unregisterPlugin(id: string, force?: boolean): void {
+  deregisterPlugin(id: string, force?: boolean): void {
     const plugin = this._plugins.get(id);
     if (!plugin) {
       return;
@@ -848,7 +848,6 @@ namespace Private {
     }
 
     const sorted = topologicSort(edges);
-
     const index = sorted.findIndex(candidate => candidate === id);
 
     if (index === -1) {
@@ -866,30 +865,30 @@ namespace Private {
     options: Application.IStartOptions
   ): string[] {
     // Create a map to hold the plugin IDs.
-    const resultMap = new Map<string, boolean>();
+    const collection = new Map<string, boolean>();
 
     // Collect the auto-start plugins.
     for (const id in plugins) {
       if (plugins.get(id)!.autoStart) {
-        resultMap.set(id, true);
+        collection.set(id, true);
       }
     }
 
     // Add the startup plugins.
     if (options.startPlugins) {
       for (const id of options.startPlugins) {
-        resultMap.set(id, true);
+        collection.set(id, true);
       }
     }
 
     // Remove the ignored plugins.
     if (options.ignorePlugins) {
       for (const id of options.ignorePlugins) {
-        resultMap.delete(id);
+        collection.delete(id);
       }
     }
 
-    // Return the final startup plugins.
-    return Array.from(resultMap.keys());
+    // Return the collected startup plugins.
+    return Array.from(collection.keys());
   }
 }
