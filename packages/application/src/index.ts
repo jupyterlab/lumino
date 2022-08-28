@@ -302,11 +302,8 @@ export class Application<T extends Widget = Widget> {
     // Resolve the optional services for the plugin.
     const optional = plugin.optional.map(t => this.resolveOptionalService(t));
 
-    // Create the array of promises to resolve.
-    const promises = required.concat(optional);
-
     // Setup the resolver promise for the plugin.
-    plugin.promise = Promise.all(promises)
+    plugin.promise = Promise.all([...required, ...optional])
       .then(services => plugin!.activate.apply(undefined, [this, ...services]))
       .then(service => {
         plugin!.service = service;
@@ -516,7 +513,7 @@ export class Application<T extends Widget = Widget> {
     Promise.all(promises).then(() => {
       this.attachShell(hostID);
       this.addEventListeners();
-      this._delegate.resolve(undefined);
+      this._delegate.resolve();
     });
 
     // Return the pending delegate promise.
