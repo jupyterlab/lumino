@@ -18,6 +18,10 @@ import { ContextMenu, Menu, Widget } from '@lumino/widgets';
 /**
  * A user-defined application plugin.
  *
+ * @typeparam T - The type for the application.
+ *
+ * @typeparam U - The service type, if the plugin `provides` one.
+ *
  * #### Notes
  * Plugins are the foundation for building an extensible application.
  *
@@ -29,7 +33,7 @@ import { ContextMenu, Menu, Widget } from '@lumino/widgets';
  * service producer from the service consumer, allowing an application
  * to be easily customized by third parties in a type-safe fashion.
  */
-export interface IPlugin<T extends Application<Widget>, U> {
+export interface IPlugin<T extends Application, U> {
   /**
    * The human readable ID of the plugin.
    *
@@ -115,12 +119,14 @@ export interface IPlugin<T extends Application<Widget>, U> {
 /**
  * A class for creating pluggable applications.
  *
+ * @typeparam T - The type of the application shell.
+ *
  * #### Notes
  * The `Application` class is useful when creating large, complex
  * UI applications with the ability to be safely extended by third
  * party code via plugins.
  */
-export class Application<T extends Widget> {
+export class Application<T extends Widget = Widget> {
   /**
    * Construct a new application.
    *
@@ -716,13 +722,13 @@ namespace Private {
     /**
      * The function which activates the plugin.
      */
-    readonly activate: (app: any, ...args: any[]) => any;
+    readonly activate: (app: Application, ...args: any[]) => any;
 
     /**
      * The optional function which deactivates the plugin.
      */
     readonly deactivate:
-      | ((app: Application<Widget>, ...args: any[]) => void | Promise<void>)
+      | ((app: Application, ...args: any[]) => void | Promise<void>)
       | null;
 
     /**

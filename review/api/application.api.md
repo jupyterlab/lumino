@@ -11,7 +11,7 @@ import { Token } from '@lumino/coreutils';
 import { Widget } from '@lumino/widgets';
 
 // @public
-export class Application<T extends Widget> {
+export class Application<T extends Widget = Widget> {
     constructor(options: Application.IOptions<T>);
     activatePlugin(id: string): Promise<void>;
     protected addEventListeners(): void;
@@ -50,7 +50,7 @@ export namespace Application {
 }
 
 // @public
-export interface IPlugin<T extends Application<Widget>, U> {
+export interface IPlugin<T extends Application, U> {
     activate: (app: T, ...args: Token<any>[]) => U | Promise<U>;
     autoStart?: boolean;
     deactivate?: ((app: T, ...args: Token<any>[]) => void | Promise<void>) | null;
