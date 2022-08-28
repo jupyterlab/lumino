@@ -317,77 +317,78 @@ export class Application<T extends Widget> {
   }
 
   /**
-   * Deactivate the plugin and its dependents if and only if the plugin
-   * and its dependents all support `deactivate`.
+   * Deactivate the plugin and its downstream dependents if and only if the
+   * plugin and its dependents all support `deactivate`.
    *
-   * @param id - Plugin id to deactivate
+   * @param id - Plugin ID to deactivate
    *
-   * @returns Other dependent plugin ids deactivated as a consequence
+   * @returns List of IDs of downstream plugins deactivated along with this one.
    */
   async deactivatePlugin(id: string): Promise<string[]> {
     // Reject the promise if the plugin is not registered.
-    let data = this._pluginMap.get(id);
-    if (!data) {
-      throw new Error(`Plugin '${id}' is not registered.`);
+    let plugin = this._pluginMap.get(id);
+    if (!plugin) {
+      throw new ReferenceError(`Plugin '${id}' is not registered.`);
     }
 
-    // Bail early if the plugin is not activated
-    if (!data.activated) {
+    // Bail early if the plugin is not activated.
+    if (!plugin.activated) {
       return [];
     }
 
-    if (!data.deactivate) {
-      throw new Error(`Plugin '${id}' does not support deactivation`);
+    // Check that this plugin can deactivate.
+    if (!plugin.deactivate) {
+      throw new TypeError(`Plugin '${id}'#deactivate() method missing`);
     }
 
-    // Find the optimal deactivation order for dependents.
-    const dependentIds = Private.findDependents(
+    // Find the optimal deactivation order for plugins downstream of this one.
+    const manifest = Private.findDependents(
       id,
       this._pluginMap,
       this._serviceMap
     );
+    const downstream = manifest.map(id => this._pluginMap.get(id)!);
 
-    const dependents = dependentIds.map(d => this._pluginMap.get(d)!);
-
-    // Check to make sure all dependent plugins can deactivate.
-    for (const dependent of dependents) {
-      if (!dependent.deactivate) {
-        throw new Error(
-          `Dependent plugin ${dependent.id} does not support deactivation.`
+    // Check that all downstream plugins can deactivate.
+    for (const plugin of downstream) {
+      if (!plugin.deactivate) {
+        throw new TypeError(
+          `Plugin ${plugin.id}#deactivate() method missing (depends on ${id})`
         );
       }
     }
 
-    // Deactivate all dependent plugins.
-    const promises: Promise<void>[] = [];
-    for (const dependent of dependents) {
-      const dependencies = dependent.requires.concat(dependent.optional);
-      const promise = dependent.deactivate!(
-        this,
-        ...dependencies.map(dependency => {
-          const id = this._serviceMap.get(dependency);
-          if (id) {
-            return this._pluginMap.get(id)!.service;
-          } else {
-            return null;
-          }
-        })
-      );
-      if (promise) {
-        promises.push(
-          promise.then(() => {
-            dependent.service = null;
-            dependent.activated = false;
+    // Deactivate all downstream plugins.
+    const deactivations: Promise<void>[] = [];
+    for (const plugin of downstream) {
+      const dependencies = plugin.requires.concat(plugin.optional);
+      const services = dependencies.map(dependency => {
+        const id = this._serviceMap.get(dependency);
+        return id ? this._pluginMap.get(id)!.service : null;
+      });
+
+      // If deactivating is asynchronous, save the promise.
+      const deactivating = plugin.deactivate!(this, ...services);
+      if (deactivating) {
+        deactivations.push(
+          // Clear plugin state after deactivating.
+          deactivating.then(() => {
+            plugin.service = null;
+            plugin.activated = false;
           })
         );
-      } else {
-        dependent.service = null;
-        dependent.activated = false;
+        continue;
       }
-    }
-    await Promise.all(promises);
 
-    return dependentIds.slice(0, dependentIds.length - 1);
+      // If deactivating is synchronous, clear plugin state immediately.
+      plugin.service = null;
+      plugin.activated = false;
+    }
+    await Promise.all(deactivations);
+
+    // Remove plugin ID and return manifest of deactivated plugins.
+    manifest.pop();
+    return manifest;
   }
 
   /**
