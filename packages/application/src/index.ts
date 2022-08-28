@@ -31,7 +31,7 @@ import { ContextMenu, Menu, Widget } from '@lumino/widgets';
  */
 export interface IPlugin<T extends Application<Widget>, U> {
   /**
-   * The human readable id of the plugin.
+   * The human readable ID of the plugin.
    *
    * #### Notes
    * This must be unique within an application.
@@ -170,23 +170,23 @@ export class Application<T extends Widget> {
   /**
    * Test whether a plugin is registered with the application.
    *
-   * @param id - The id of the plugin of interest.
+   * @param id - The ID of the plugin of interest.
    *
    * @returns `true` if the plugin is registered, `false` otherwise.
    */
   hasPlugin(id: string): boolean {
-    return this._pluginMap.has(id);
+    return this._plugins.has(id);
   }
 
   /**
    * Test whether a plugin is activated with the application.
    *
-   * @param id - The id of the plugin of interest.
+   * @param id - The ID of the plugin of interest.
    *
    * @returns `true` if the plugin is activated, `false` otherwise.
    */
   isPluginActivated(id: string): boolean {
-    return this._pluginMap.get(id)?.activated ?? false;
+    return this._plugins.get(id)?.activated ?? false;
   }
 
   /**
@@ -195,7 +195,7 @@ export class Application<T extends Widget> {
    * @returns A new array of the registered plugin IDs.
    */
   listPlugins(): string[] {
-    return Array.from(this._pluginMap.keys());
+    return Array.from(this._plugins.keys());
   }
 
   /**
@@ -204,15 +204,15 @@ export class Application<T extends Widget> {
    * @param plugin - The plugin to register.
    *
    * #### Notes
-   * An error will be thrown if a plugin with the same id is already
+   * An error will be thrown if a plugin with the same ID is already
    * registered, or if the plugin has a circular dependency.
    *
    * If the plugin provides a service which has already been provided
    * by another plugin, the new service will override the old service.
    */
   registerPlugin(plugin: IPlugin<this, any>): void {
-    // Throw an error if the plugin id is already registered.
-    if (this._pluginMap.has(plugin.id)) {
+    // Throw an error if the plugin ID is already registered.
+    if (this._plugins.has(plugin.id)) {
       throw new TypeError(`Plugin '${plugin.id}' is already registered.`);
     }
 
@@ -220,15 +220,15 @@ export class Application<T extends Widget> {
     const data = Private.createPluginData(plugin);
 
     // Ensure the plugin does not cause a cyclic dependency.
-    Private.ensureNoCycle(data, this._pluginMap, this._serviceMap);
+    Private.ensureNoCycle(data, this._plugins, this._services);
 
     // Add the service token to the service map.
     if (data.provides) {
-      this._serviceMap.set(data.provides, data.id);
+      this._services.set(data.provides, data.id);
     }
 
     // Add the plugin to the plugin map.
-    this._pluginMap.set(data.id, data);
+    this._plugins.set(data.id, data);
   }
 
   /**
@@ -246,12 +246,14 @@ export class Application<T extends Widget> {
   }
 
   /**
+   * Register a plugin with the application.
    *
-   * @param id - id of the plugin to unregister
-   * @param force - whether to unregister the plugin even if it is active
+   * @param id - The ID of the plugin of interest.
+   *
+   * @param force - Whether to unregister the plugin even if it is active.
    */
   unregisterPlugin(id: string, force?: boolean): void {
-    const plugin = this._pluginMap.get(id);
+    const plugin = this._plugins.get(id);
     if (!plugin) {
       return;
     }
@@ -260,11 +262,11 @@ export class Application<T extends Widget> {
       throw new Error(`Plugin '${id}' is still active.`);
     }
 
-    this._pluginMap.delete(id);
+    this._plugins.delete(id);
   }
 
   /**
-   * Activate the plugin with the given id.
+   * Activate the plugin with the given ID.
    *
    * @param id - The ID of the plugin of interest.
    *
@@ -273,7 +275,7 @@ export class Application<T extends Widget> {
    */
   async activatePlugin(id: string): Promise<void> {
     // Reject the promise if the plugin is not registered.
-    const plugin = this._pluginMap.get(id);
+    const plugin = this._plugins.get(id);
     if (!plugin) {
       throw new ReferenceError(`Plugin '${id}' is not registered.`);
     }
@@ -318,13 +320,13 @@ export class Application<T extends Widget> {
    * Deactivate the plugin and its downstream dependents if and only if the
    * plugin and its dependents all support `deactivate`.
    *
-   * @param id - Plugin ID to deactivate
+   * @param id - The ID of the plugin of interest.
    *
-   * @returns List of IDs of downstream plugins deactivated along with this one.
+   * @returns A list of IDs of downstream plugins deactivated with this one.
    */
   async deactivatePlugin(id: string): Promise<string[]> {
     // Reject the promise if the plugin is not registered.
-    const plugin = this._pluginMap.get(id);
+    const plugin = this._plugins.get(id);
     if (!plugin) {
       throw new ReferenceError(`Plugin '${id}' is not registered.`);
     }
@@ -340,12 +342,8 @@ export class Application<T extends Widget> {
     }
 
     // Find the optimal deactivation order for plugins downstream of this one.
-    const manifest = Private.findDependents(
-      id,
-      this._pluginMap,
-      this._serviceMap
-    );
-    const downstream = manifest.map(id => this._pluginMap.get(id)!);
+    const manifest = Private.findDependents(id, this._plugins, this._services);
+    const downstream = manifest.map(id => this._plugins.get(id)!);
 
     // Check that all downstream plugins can deactivate.
     for (const plugin of downstream) {
@@ -361,8 +359,8 @@ export class Application<T extends Widget> {
     for (const plugin of downstream) {
       const dependencies = plugin.requires.concat(plugin.optional);
       const services = dependencies.map(dependency => {
-        const id = this._serviceMap.get(dependency);
-        return id ? this._pluginMap.get(id)!.service : null;
+        const id = this._services.get(dependency);
+        return id ? this._plugins.get(id)!.service : null;
       });
 
       // If deactivating is asynchronous, save the promise.
@@ -410,13 +408,13 @@ export class Application<T extends Widget> {
    */
   async resolveRequiredService<U>(token: Token<U>): Promise<U> {
     // Reject the promise if there is no provider for the type.
-    const id = this._serviceMap.get(token);
+    const id = this._services.get(token);
     if (!id) {
       throw new TypeError(`No provider for: ${token.name}.`);
     }
 
     // Activate the plugin if necessary.
-    const plugin = this._pluginMap.get(id)!;
+    const plugin = this._plugins.get(id)!;
     if (!plugin.activated) {
       await this.activatePlugin(id);
     }
@@ -445,13 +443,13 @@ export class Application<T extends Widget> {
    */
   async resolveOptionalService<U>(token: Token<U>): Promise<U | null> {
     // Resolve with `null` if there is no provider for the type.
-    const id = this._serviceMap.get(token);
+    const id = this._services.get(token);
     if (!id) {
       return null;
     }
 
     // Activate the plugin if necessary.
-    const plugin = this._pluginMap.get(id)!;
+    const plugin = this._plugins.get(id)!;
     if (!plugin.activated) {
       try {
         await this.activatePlugin(id);
@@ -494,11 +492,11 @@ export class Application<T extends Widget> {
     // Mark the application as started;
     this._started = true;
 
-    // Parse the host id for attaching the shell.
+    // Parse the host ID for attaching the shell.
     const hostID = options.hostID || '';
 
     // Collect the ids of the startup plugins.
-    const startups = Private.collectStartupPlugins(this._pluginMap, options);
+    const startups = Private.collectStartupPlugins(this._plugins, options);
 
     // Generate the activation promises.
     const promises = startups.map(id => {
@@ -546,10 +544,10 @@ export class Application<T extends Widget> {
   /**
    * Attach the application shell to the DOM.
    *
-   * @param id - The id of the host node for the shell, or `''`.
+   * @param id - The ID of the host node for the shell, or `''`.
    *
    * #### Notes
-   * If the id is not provided, the document body will be the host.
+   * If the ID is not provided, the document body will be the host.
    *
    * A subclass may reimplement this method as needed.
    */
@@ -623,10 +621,10 @@ export class Application<T extends Widget> {
     this.shell.update();
   }
 
-  private _started = false;
-  private _pluginMap = Private.createPluginMap();
-  private _serviceMap = Private.createServiceMap();
   private _delegate = new PromiseDelegate<void>();
+  private _plugins = new Map<string, Private.IPluginData>();
+  private _services = new Map<Token<any>, string>();
+  private _started = false;
 }
 
 /**
@@ -691,7 +689,7 @@ namespace Private {
    */
   export interface IPluginData {
     /**
-     * The human readable id of the plugin.
+     * The human readable ID of the plugin.
      */
     readonly id: string;
 
@@ -744,30 +742,6 @@ namespace Private {
   }
 
   /**
-   * A type alias for a mapping of plugin id to plugin data.
-   */
-  export type PluginMap = Map<string, IPluginData>;
-
-  /**
-   * A type alias for a mapping of service token to plugin id.
-   */
-  export type ServiceMap = Map<Token<any>, string>;
-
-  /**
-   * Create a new plugin map.
-   */
-  export function createPluginMap(): PluginMap {
-    return new Map<string, IPluginData>();
-  }
-
-  /**
-   * Create a new service map.
-   */
-  export function createServiceMap(): ServiceMap {
-    return new Map<Token<any>, string>();
-  }
-
-  /**
    * Create a normalized plugin data object for the given plugin.
    */
   export function createPluginData(plugin: IPlugin<any, any>): IPluginData {
@@ -792,8 +766,8 @@ namespace Private {
    */
   export function ensureNoCycle(
     data: IPluginData,
-    pluginMap: PluginMap,
-    serviceMap: ServiceMap
+    plugins: Map<string, IPluginData>,
+    services: Map<Token<any>, string>
   ): void {
     const dependencies = data.requires.concat(data.optional);
     // Bail early if there cannot be a cycle.
@@ -813,11 +787,11 @@ namespace Private {
       if (token === data.provides) {
         return true;
       }
-      const id = serviceMap.get(token);
+      const id = services.get(token);
       if (!id) {
         return false;
       }
-      const other = pluginMap.get(id)!;
+      const other = plugins.get(id)!;
       const otherDependencies = other.requires.concat(other.optional);
       if (otherDependencies.length === 0) {
         return false;
@@ -834,29 +808,32 @@ namespace Private {
   /**
    * Find dependents in deactivation order.
    *
-   * @param id - The plugin id of interest.
-   * @param pluginMap - The map containing all plugins.
-   * @param serviceMap - The map containing all services.
-   * @returns A list of dependent plugin ids in order of deactivation
+   * @param id - The ID of the plugin of interest.
+   *
+   * @param plugins - The map containing all plugins.
+   *
+   * @param services - The map containing all services.
+   *
+   * @returns A list of dependent plugin IDs in order of deactivation
    *
    * #### Notes
    * The final item of the returned list is always the plugin of interest.
    */
   export function findDependents(
     id: string,
-    pluginMap: PluginMap,
-    serviceMap: ServiceMap
+    plugins: Map<string, IPluginData>,
+    services: Map<Token<any>, string>
   ): string[] {
     const edges = new Array<[string, string]>();
 
     function addEdges(id: string): void {
-      const plugin = pluginMap.get(id)!;
+      const plugin = plugins.get(id)!;
       // FIXME we consider optional links => we may deactivate plugin that actually could be reactivated
       // with one optional dep less.
       const dependencies = plugin.requires.concat(plugin.optional);
       edges.push(
         ...dependencies.reduce<[string, string][]>((acc, dep) => {
-          const service = serviceMap.get(dep);
+          const service = services.get(dep);
           if (service) {
             // An edge is oriented from dependent to provider
             acc.push([id, service]);
@@ -866,7 +843,7 @@ namespace Private {
       );
     }
 
-    for (const id of pluginMap.keys()) {
+    for (const id of plugins.keys()) {
       addEdges(id);
     }
 
@@ -885,15 +862,15 @@ namespace Private {
    * Collect the IDs of the plugins to activate on startup.
    */
   export function collectStartupPlugins(
-    pluginMap: PluginMap,
+    plugins: Map<string, IPluginData>,
     options: Application.IStartOptions
   ): string[] {
     // Create a map to hold the plugin IDs.
     const resultMap = new Map<string, boolean>();
 
     // Collect the auto-start plugins.
-    for (const id in pluginMap) {
-      if (pluginMap.get(id)!.autoStart) {
+    for (const id in plugins) {
+      if (plugins.get(id)!.autoStart) {
         resultMap.set(id, true);
       }
     }
