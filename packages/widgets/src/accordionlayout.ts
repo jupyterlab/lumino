@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) Jupyter Development Team.
+ * Distributed under the terms of the Modified BSD License.
+ */
+
 import { ArrayExt } from '@lumino/algorithm';
 import { SplitLayout } from './splitlayout';
 import { Title } from './title';

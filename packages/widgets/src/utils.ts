@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) Jupyter Development Team.
+ * Distributed under the terms of the Modified BSD License.
+ */
+
 export namespace Utils {
   /**
    * Clamp a dimension value to an integer >= 0.
