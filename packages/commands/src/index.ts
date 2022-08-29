@@ -79,7 +79,7 @@ export class CommandRegistry {
    * @returns A new array of the registered command ids.
    */
   listCommands(): string[] {
-    return Object.keys(this._commands);
+    return Array.from(this._commands.keys());
   }
 
   /**
@@ -90,7 +90,7 @@ export class CommandRegistry {
    * @returns `true` if the command is registered, `false` otherwise.
    */
   hasCommand(id: string): boolean {
-    return id in this._commands;
+    return this._commands.has(id);
   }
 
   /**
@@ -109,12 +109,12 @@ export class CommandRegistry {
     options: CommandRegistry.ICommandOptions
   ): IDisposable {
     // Throw an error if the id is already registered.
-    if (id in this._commands) {
+    if (this._commands.has(id)) {
       throw new Error(`Command '${id}' already registered.`);
     }
 
     // Add the command to the registry.
-    this._commands[id] = Private.createCommand(options);
+    this._commands.set(id, Private.createCommand(options));
 
     // Emit the `commandChanged` signal.
     this._commandChanged.emit({ id, type: 'added' });
@@ -122,7 +122,7 @@ export class CommandRegistry {
     // Return a disposable which will remove the command.
     return new DisposableDelegate(() => {
       // Remove the command from the registry.
-      delete this._commands[id];
+      this._commands.delete(id);
 
       // Emit the `commandChanged` signal.
       this._commandChanged.emit({ id, type: 'removed' });
@@ -145,7 +145,7 @@ export class CommandRegistry {
    * This will cause the `commandChanged` signal to be emitted.
    */
   notifyCommandChanged(id?: string): void {
-    if (id !== undefined && !(id in this._commands)) {
+    if (id !== undefined && !this._commands.has(id)) {
       throw new Error(`Command '${id}' is not registered.`);
     }
     this._commandChanged.emit({ id, type: id ? 'changed' : 'many-changed' });
@@ -164,7 +164,7 @@ export class CommandRegistry {
     id: string,
     args: ReadonlyPartialJSONObject = JSONExt.emptyObject
   ): Promise<CommandRegistry.Description> {
-    let cmd = this._commands[id];
+    let cmd = this._commands.get(id);
     return Promise.resolve(
       cmd?.describedBy.call(undefined, args) ?? { args: null }
     );
@@ -184,7 +184,7 @@ export class CommandRegistry {
     id: string,
     args: ReadonlyPartialJSONObject = JSONExt.emptyObject
   ): string {
-    let cmd = this._commands[id];
+    let cmd = this._commands.get(id);
     return cmd?.label.call(undefined, args) ?? '';
   }
 
@@ -202,7 +202,7 @@ export class CommandRegistry {
     id: string,
     args: ReadonlyPartialJSONObject = JSONExt.emptyObject
   ): number {
-    let cmd = this._commands[id];
+    let cmd = this._commands.get(id);
     return cmd ? cmd.mnemonic.call(undefined, args) : -1;
   }
 
@@ -224,7 +224,7 @@ export class CommandRegistry {
     id: string,
     args: ReadonlyPartialJSONObject = JSONExt.emptyObject
   ): VirtualElement.IRenderer | undefined {
-    return this._commands[id]?.icon.call(undefined, args);
+    return this._commands.get(id)?.icon.call(undefined, args);
   }
 
   /**
@@ -241,7 +241,7 @@ export class CommandRegistry {
     id: string,
     args: ReadonlyPartialJSONObject = JSONExt.emptyObject
   ): string {
-    let cmd = this._commands[id];
+    let cmd = this._commands.get(id);
     return cmd ? cmd.iconClass.call(undefined, args) : '';
   }
 
@@ -259,7 +259,7 @@ export class CommandRegistry {
     id: string,
     args: ReadonlyPartialJSONObject = JSONExt.emptyObject
   ): string {
-    let cmd = this._commands[id];
+    let cmd = this._commands.get(id);
     return cmd ? cmd.iconLabel.call(undefined, args) : '';
   }
 
@@ -277,7 +277,7 @@ export class CommandRegistry {
     id: string,
     args: ReadonlyPartialJSONObject = JSONExt.emptyObject
   ): string {
-    let cmd = this._commands[id];
+    let cmd = this._commands.get(id);
     return cmd ? cmd.caption.call(undefined, args) : '';
   }
 
@@ -295,7 +295,7 @@ export class CommandRegistry {
     id: string,
     args: ReadonlyPartialJSONObject = JSONExt.emptyObject
   ): string {
-    let cmd = this._commands[id];
+    let cmd = this._commands.get(id);
     return cmd ? cmd.usage.call(undefined, args) : '';
   }
 
@@ -313,7 +313,7 @@ export class CommandRegistry {
     id: string,
     args: ReadonlyPartialJSONObject = JSONExt.emptyObject
   ): string {
-    let cmd = this._commands[id];
+    let cmd = this._commands.get(id);
     return cmd ? cmd.className.call(undefined, args) : '';
   }
 
@@ -331,7 +331,7 @@ export class CommandRegistry {
     id: string,
     args: ReadonlyPartialJSONObject = JSONExt.emptyObject
   ): CommandRegistry.Dataset {
-    let cmd = this._commands[id];
+    let cmd = this._commands.get(id);
     return cmd ? cmd.dataset.call(undefined, args) : {};
   }
 
@@ -349,7 +349,7 @@ export class CommandRegistry {
     id: string,
     args: ReadonlyPartialJSONObject = JSONExt.emptyObject
   ): boolean {
-    let cmd = this._commands[id];
+    let cmd = this._commands.get(id);
     return cmd ? cmd.isEnabled.call(undefined, args) : false;
   }
 
@@ -367,7 +367,7 @@ export class CommandRegistry {
     id: string,
     args: ReadonlyPartialJSONObject = JSONExt.emptyObject
   ): boolean {
-    let cmd = this._commands[id];
+    let cmd = this._commands.get(id);
     return cmd ? cmd.isToggled.call(undefined, args) : false;
   }
 
@@ -385,7 +385,7 @@ export class CommandRegistry {
     id: string,
     args: ReadonlyJSONObject = JSONExt.emptyObject
   ): boolean {
-    let cmd = this._commands[id];
+    let cmd = this._commands.get(id);
     return cmd ? cmd.isToggleable : false;
   }
 
@@ -403,7 +403,7 @@ export class CommandRegistry {
     id: string,
     args: ReadonlyPartialJSONObject = JSONExt.emptyObject
   ): boolean {
-    let cmd = this._commands[id];
+    let cmd = this._commands.get(id);
     return cmd ? cmd.isVisible.call(undefined, args) : false;
   }
 
@@ -425,7 +425,7 @@ export class CommandRegistry {
     args: ReadonlyPartialJSONObject = JSONExt.emptyObject
   ): Promise<any> {
     // Reject if the command is not registered.
-    let cmd = this._commands[id];
+    let cmd = this._commands.get(id);
     if (!cmd) {
       return Promise.reject(new Error(`Command '${id}' not registered.`));
     }
@@ -649,7 +649,7 @@ export class CommandRegistry {
   private _keydownEvents: KeyboardEvent[] = [];
   private _keyBindings: CommandRegistry.IKeyBinding[] = [];
   private _exactKeyMatch: CommandRegistry.IKeyBinding | null = null;
-  private _commands: { [id: string]: Private.ICommand } = Object.create(null);
+  private _commands = new Map<string, Private.ICommand>();
   private _commandChanged = new Signal<
     this,
     CommandRegistry.ICommandChangedArgs
