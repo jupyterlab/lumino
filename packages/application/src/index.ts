@@ -358,32 +358,17 @@ export class Application<T extends Widget = Widget> {
     }
 
     // Deactivate all downstream plugins.
-    const deactivations: Promise<void>[] = [];
     for (const plugin of downstream) {
-      const dependencies = plugin.requires.concat(plugin.optional);
-      const services = dependencies.map(dependency => {
-        const id = this._services.get(dependency);
+      const services = [...plugin.requires, ...plugin.optional].map(service => {
+        const id = this._services.get(service);
         return id ? this._plugins.get(id)!.service : null;
       });
 
-      // If deactivating is asynchronous, save the promise.
-      const deactivating = plugin.deactivate!(this, ...services);
-      if (deactivating) {
-        deactivations.push(
-          // Clear plugin state after deactivating.
-          deactivating.then(() => {
-            plugin.service = null;
-            plugin.activated = false;
-          })
-        );
-        continue;
-      }
-
-      // If deactivating is synchronous, clear plugin state immediately.
+      // Await deactivation so the next plugins only receive active services.
+      await plugin.deactivate!(this, ...services);
       plugin.service = null;
       plugin.activated = false;
     }
-    await Promise.all(deactivations);
 
     // Remove plugin ID and return manifest of deactivated plugins.
     manifest.pop();
@@ -768,43 +753,43 @@ namespace Private {
    * If a cycle is detected, an error will be thrown.
    */
   export function ensureNoCycle(
-    data: IPluginData,
+    plugin: IPluginData,
     plugins: Map<string, IPluginData>,
     services: Map<Token<any>, string>
   ): void {
-    const dependencies = data.requires.concat(data.optional);
-    // Bail early if there cannot be a cycle.
-    if (!data.provides || dependencies.length === 0) {
-      return;
-    }
-
-    // Setup a stack to trace service resolution.
-    const trace = [data.id];
-
-    // Throw an exception if a cycle is present.
-    if (dependencies.some(visit)) {
-      throw new ReferenceError(`Cycle detected: ${trace.join(' -> ')}.`);
-    }
-
-    function visit(token: Token<any>): boolean {
-      if (token === data.provides) {
+    const dependencies = [...plugin.requires, ...plugin.optional];
+    const visit = (token: Token<any>): boolean => {
+      if (token === plugin.provides) {
         return true;
       }
       const id = services.get(token);
       if (!id) {
         return false;
       }
-      const other = plugins.get(id)!;
-      const otherDependencies = other.requires.concat(other.optional);
-      if (otherDependencies.length === 0) {
+      const visited = plugins.get(id)!;
+      const dependencies = [...visited.requires, ...visited.optional];
+      if (dependencies.length === 0) {
         return false;
       }
       trace.push(id);
-      if (otherDependencies.some(visit)) {
+      if (dependencies.some(visit)) {
         return true;
       }
       trace.pop();
       return false;
+    };
+
+    // Bail early if there cannot be a cycle.
+    if (!plugin.provides || dependencies.length === 0) {
+      return;
+    }
+
+    // Setup a stack to trace service resolution.
+    const trace = [plugin.id];
+
+    // Throw an exception if a cycle is present.
+    if (dependencies.some(visit)) {
+      throw new ReferenceError(`Cycle detected: ${trace.join(' -> ')}.`);
     }
   }
 
@@ -828,26 +813,25 @@ namespace Private {
     services: Map<Token<any>, string>
   ): string[] {
     const edges = new Array<[string, string]>();
-
-    function addEdges(id: string): void {
+    const add = (id: string): void => {
       const plugin = plugins.get(id)!;
-      // FIXME we consider optional links => we may deactivate plugin that actually could be reactivated
-      // with one optional dep less.
-      const dependencies = plugin.requires.concat(plugin.optional);
+      // FIXME In the case of missing optional dependencies, we may consider
+      // deactivating and reactivating the plugin without the missing service.
+      const dependencies = [...plugin.requires, ...plugin.optional];
       edges.push(
         ...dependencies.reduce<[string, string][]>((acc, dep) => {
           const service = services.get(dep);
           if (service) {
-            // An edge is oriented from dependent to provider
+            // An edge is oriented from dependent to provider.
             acc.push([id, service]);
           }
           return acc;
         }, [])
       );
-    }
+    };
 
     for (const id of plugins.keys()) {
-      addEdges(id);
+      add(id);
     }
 
     const sorted = topologicSort(edges);
