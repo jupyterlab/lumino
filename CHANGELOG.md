@@ -6,6 +6,36 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2022.8.29
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/algorithm@2.0.0-alpha.1...ed506c2b38e28bae14cdc829f7606cd7aaf92907))
+
+### Enhancements made
+
+- Dynamic extensions reloading [#377](https://github.com/jupyterlab/lumino/pull/377) ([@fcollonval](https://github.com/fcollonval))
+- Fix tab trap in menubar [#373](https://github.com/jupyterlab/lumino/pull/373) ([@gabalafou](https://github.com/gabalafou))
+
+### Maintenance and upkeep improvements
+
+- Bump alpha versions [#380](https://github.com/jupyterlab/lumino/pull/380) ([@blink1073](https://github.com/blink1073))
+- Bump tj-actions/changed-files from 28 to 29.0.2 [#379](https://github.com/jupyterlab/lumino/pull/379) ([@dependabot](https://github.com/dependabot))
+- Iterate on iterators [#378](https://github.com/jupyterlab/lumino/pull/378) ([@afshin](https://github.com/afshin))
+- Deprecate `each<T>(...)` [#376](https://github.com/jupyterlab/lumino/pull/376) ([@afshin](https://github.com/afshin))
+- Bump tj-actions/changed-files from 26.1 to 28 [#372](https://github.com/jupyterlab/lumino/pull/372) ([@dependabot](https://github.com/dependabot))
+
+### Documentation improvements
+
+- Iterate on iterators [#378](https://github.com/jupyterlab/lumino/pull/378) ([@afshin](https://github.com/afshin))
+- Deprecate `each<T>(...)` [#376](https://github.com/jupyterlab/lumino/pull/376) ([@afshin](https://github.com/afshin))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2022-08-22&to=2022-08-29&type=c))
+
+[@afshin](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aafshin+updated%3A2022-08-22..2022-08-29&type=Issues) | [@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2022-08-22..2022-08-29&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2022-08-22..2022-08-29&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2022-08-22..2022-08-29&type=Issues) | [@gabalafou](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Agabalafou+updated%3A2022-08-22..2022-08-29&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2022.8.22-alpha.1
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2022.7.21...bbfb9e2c37a2cf195a990c33a0ebbb1c64e9da26))
@@ -47,8 +77,6 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2022-07-21&to=2022-08-22&type=c))
 
 [@afshin](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aafshin+updated%3A2022-07-21..2022-08-22&type=Issues) | [@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2022-07-21..2022-08-22&type=Issues) | [@bollwyvl](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Abollwyvl+updated%3A2022-07-21..2022-08-22&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2022-07-21..2022-08-22&type=Issues) | [@ellisonbg](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aellisonbg+updated%3A2022-07-21..2022-08-22&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2022-07-21..2022-08-22&type=Issues) | [@gabalafou](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Agabalafou+updated%3A2022-07-21..2022-08-22&type=Issues) | [@ian-r-rose](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aian-r-rose+updated%3A2022-07-21..2022-08-22&type=Issues) | [@jasongrout](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajasongrout+updated%3A2022-07-21..2022-08-22&type=Issues) | [@jweill-aws](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajweill-aws+updated%3A2022-07-21..2022-08-22&type=Issues) | [@SylvainCorlay](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3ASylvainCorlay+updated%3A2022-07-21..2022-08-22&type=Issues) | [@vidartf](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Avidartf+updated%3A2022-07-21..2022-08-22&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Awelcome+updated%3A2022-07-21..2022-08-22&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2022.8.8
 
