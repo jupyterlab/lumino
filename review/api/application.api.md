@@ -51,9 +51,9 @@ export namespace Application {
 
 // @public
 export interface IPlugin<T extends Application, U> {
-    activate: (app: T, ...args: Token<any>[]) => U | Promise<U>;
+    activate: (app: T, ...args: any[]) => U | Promise<U>;
     autoStart?: boolean;
-    deactivate?: ((app: T, ...args: Token<any>[]) => void | Promise<void>) | null;
+    deactivate?: ((app: T, ...args: any[]) => void | Promise<void>) | null;
     id: string;
     optional?: Token<any>[];
     provides?: Token<U> | null;

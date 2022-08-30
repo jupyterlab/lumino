@@ -104,7 +104,7 @@ export interface IPlugin<T extends Application, U> {
    * This function will not be called unless all of its required
    * services can be fulfilled.
    */
-  activate: (app: T, ...args: Token<any>[]) => U | Promise<U>;
+  activate: (app: T, ...args: any[]) => U | Promise<U>;
 
   /**
    * A function invoked to deactivate the plugin.
@@ -113,7 +113,7 @@ export interface IPlugin<T extends Application, U> {
    *
    * @param args - The services specified by the `requires` property.
    */
-  deactivate?: ((app: T, ...args: Token<any>[]) => void | Promise<void>) | null;
+  deactivate?: ((app: T, ...args: any[]) => void | Promise<void>) | null;
 }
 
 /**
