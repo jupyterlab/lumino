@@ -195,6 +195,71 @@ describe('Poll', () => {
     });
   });
 
+  describe('#[Symbol.asyncIterator]', () => {
+    it('should yield after each tick', async () => {
+      const total = 15;
+      let i = 0;
+      poll = new Poll({
+        auto: false,
+        factory: () => (++i > total ? poll.stop() : Promise.resolve()),
+        frequency: { interval: Poll.IMMEDIATE },
+        name: '@lumino/polling:Poll#[Symbol.asyncIterator]-1'
+      });
+      const expected = `started ${'resolved '.repeat(total)}stopped`;
+      const ticker: IPoll.Phase<any>[] = [];
+      void poll.start();
+      for await (const state of poll) {
+        ticker.push(state.phase);
+        if (state.phase === 'stopped') {
+          break;
+        }
+      }
+      expect(ticker.join(' ')).to.equal(expected);
+    });
+
+    it('should yield rejections', async () => {
+      const total = 11;
+      let i = 0;
+      poll = new Poll({
+        auto: false,
+        factory: () => (++i > total ? poll.stop() : Promise.reject()),
+        frequency: { interval: Poll.IMMEDIATE },
+        name: '@lumino/polling:Poll#[Symbol.asyncIterator]-2'
+      });
+      const expected = `started ${'rejected '.repeat(total)}stopped`;
+      const ticker: IPoll.Phase<any>[] = [];
+      void poll.start();
+      for await (const state of poll) {
+        ticker.push(state.phase);
+        if (state.phase === 'stopped') {
+          break;
+        }
+      }
+      expect(ticker.join(' ')).to.equal(expected);
+    });
+
+    it('should yield disposal', async () => {
+      const total = 2;
+      let i = 0;
+      poll = new Poll({
+        auto: false,
+        factory: () => Promise.resolve(++i > total ? poll.dispose() : void 0),
+        frequency: { interval: Poll.IMMEDIATE },
+        name: '@lumino/polling:Poll#[Symbol.asyncIterator]-3'
+      });
+      const expected = `started ${'resolved '.repeat(total)}disposed`;
+      const ticker: IPoll.Phase<any>[] = [];
+      void poll.start();
+      for await (const state of poll) {
+        ticker.push(state.phase);
+        if (poll.isDisposed) {
+          break;
+        }
+      }
+      expect(ticker.join(' ')).to.equal(expected);
+    });
+  });
+
   describe('#tick', () => {
     it('should resolve after a tick', async () => {
       poll = new Poll({

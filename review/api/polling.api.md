@@ -15,7 +15,7 @@ export class Debouncer<T = any, U = any, V extends any[] = any[]> extends RateLi
 }
 
 // @public
-export interface IPoll<T, U, V extends string> {
+export interface IPoll<T, U, V extends string> extends AsyncIterable<IPoll.State<T, U, V>> {
     readonly disposed: ISignal<this, void>;
     readonly frequency: IPoll.Frequency;
     readonly isDisposed: boolean;
@@ -50,6 +50,7 @@ export interface IRateLimiter<T = any, U = any, V extends any[] = any[]> extends
 
 // @public
 export class Poll<T = any, U = any, V extends string = 'standby'> implements IObservableDisposable, IPoll<T, U, V> {
+    [Symbol.asyncIterator](): AsyncIterableIterator<IPoll.State<T, U, V>>;
     constructor(options: Poll.IOptions<T, U, V>);
     dispose(): void;
     get disposed(): ISignal<this, void>;
