@@ -89,7 +89,7 @@ poll = new Poll({
   frequency: { interval: Poll.IMMEDIATE }
 });
 
-const expected = `started ${'resolved '.repeat(total)}disposed`;
+const expected = `started${' resolved'.repeat(total)}`;
 const ticker: IPoll.Phase<any>[] = [];
 ```
 

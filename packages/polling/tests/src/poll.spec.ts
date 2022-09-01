@@ -256,7 +256,6 @@ describe('Poll', () => {
           break;
         }
       }
-      expect(poll.state.phase).to.equal('disposed');
       expect(ticker.join(' ')).to.equal(expected);
     });
   });
