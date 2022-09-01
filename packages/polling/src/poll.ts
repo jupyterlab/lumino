@@ -157,10 +157,9 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
    * Return an async iterator that yields every tick.
    */
   async *[Symbol.asyncIterator](): AsyncIterableIterator<IPoll.State<T, U, V>> {
-    yield this.state;
     while (!this.isDisposed) {
-      await this.tick.catch(() => undefined);
       yield this.state;
+      await this.tick.catch(() => undefined);
     }
   }
 
