@@ -238,8 +238,8 @@ describe('Poll', () => {
       expect(ticker.join(' ')).to.equal(expected);
     });
 
-    it('should yield disposal', async () => {
-      const total = 2;
+    it('should yield until disposed', async () => {
+      const total = 7;
       let i = 0;
       poll = new Poll({
         auto: false,
@@ -247,7 +247,7 @@ describe('Poll', () => {
         frequency: { interval: Poll.IMMEDIATE },
         name: '@lumino/polling:Poll#[Symbol.asyncIterator]-3'
       });
-      const expected = `started ${'resolved '.repeat(total)}disposed`;
+      const expected = `started${' resolved'.repeat(total)}`;
       const ticker: IPoll.Phase<any>[] = [];
       void poll.start();
       for await (const state of poll) {
@@ -256,6 +256,7 @@ describe('Poll', () => {
           break;
         }
       }
+      expect(poll.state.phase).to.equal('disposed');
       expect(ticker.join(' ')).to.equal(expected);
     });
   });
