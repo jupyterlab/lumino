@@ -154,6 +154,16 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
   }
 
   /**
+   * Return an async iterator that yields every tick.
+   */
+  async *[Symbol.asyncIterator](): AsyncIterableIterator<IPoll.State<T, U, V>> {
+    while (!this.isDisposed) {
+      yield this.state;
+      await this.tick.catch(() => undefined);
+    }
+  }
+
+  /**
    * Dispose the poll.
    */
   dispose(): void {
