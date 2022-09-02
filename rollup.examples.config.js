@@ -1,6 +1,8 @@
 import nodeResolve from '@rollup/plugin-node-resolve';
 import styles from 'rollup-plugin-styles';
-import { globals } from './rollup.src.config';
+
+export const globals = id =>
+  id.indexOf('@lumino/') === 0 ? id.replace('@lumino/', 'lumino_') : id;
 
 export function createRollupConfig(options) {
   return {

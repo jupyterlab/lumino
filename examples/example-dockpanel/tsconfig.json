@@ -6,7 +6,7 @@
     "noUnusedLocals": true,
     "strictNullChecks": true,
     "sourceMap": true,
-    "module": "commonjs",
+    "module": "ES6",
     "moduleResolution": "node",
     "target": "ES6",
     "outDir": "./build",
