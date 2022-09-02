@@ -7,7 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { ArrayExt, each, IIterator, iter } from '@lumino/algorithm';
+import { ArrayExt } from '@lumino/algorithm';
 
 import { MessageLoop } from '@lumino/messaging';
 
@@ -53,8 +53,8 @@ export class PanelLayout extends Layout {
    *
    * @returns A new iterator over the widgets in the layout.
    */
-  iter(): IIterator<Widget> {
-    return iter(this._widgets);
+  *[Symbol.iterator](): IterableIterator<Widget> {
+    yield* this._widgets;
   }
 
   /**
@@ -178,9 +178,10 @@ export class PanelLayout extends Layout {
    */
   protected init(): void {
     super.init();
-    each(this, (widget, index) => {
-      this.attachWidget(index, widget);
-    });
+    let index = 0;
+    for (const widget of this) {
+      this.attachWidget(index++, widget);
+    }
   }
 
   /**

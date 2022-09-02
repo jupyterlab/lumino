@@ -7,7 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { ArrayExt, each } from '@lumino/algorithm';
+import { ArrayExt } from '@lumino/algorithm';
 
 import { CommandRegistry } from '@lumino/commands';
 
@@ -100,9 +100,9 @@ export class ContextMenu {
     }
 
     // Add the filtered items to the menu.
-    each(items, item => {
+    for (const item of items) {
       this.menu.addItem(item);
-    });
+    }
 
     // Open the context menu at the current mouse position.
     this.menu.open(event.clientX, event.clientY);

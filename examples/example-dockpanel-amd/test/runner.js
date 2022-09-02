@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) Jupyter Development Team.
+ * Distributed under the terms of the Modified BSD License.
+ */
+
 const puppeteer = require('puppeteer');
 
 const url = `file://${process.cwd()}/index.html`;

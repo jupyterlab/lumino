@@ -10,12 +10,12 @@ import { ISignal } from '@lumino/signaling';
 import { PromiseDelegate } from '@lumino/coreutils';
 
 // @public
-export class Debouncer<T = any, U = any> extends RateLimiter<T, U> {
-    invoke(): Promise<T>;
+export class Debouncer<T = any, U = any, V extends any[] = any[]> extends RateLimiter<T, U, V> {
+    invoke(...args: V): Promise<T>;
 }
 
 // @public
-export interface IPoll<T, U, V extends string> {
+export interface IPoll<T, U, V extends string> extends AsyncIterable<IPoll.State<T, U, V>> {
     readonly disposed: ISignal<this, void>;
     readonly frequency: IPoll.Frequency;
     readonly isDisposed: boolean;
@@ -42,31 +42,34 @@ export namespace IPoll {
 }
 
 // @public
-export interface IRateLimiter<T = any, U = any> extends IDisposable {
-    invoke(): Promise<T>;
+export interface IRateLimiter<T = any, U = any, V extends any[] = any[]> extends IDisposable {
+    invoke(...args: V): Promise<T>;
     readonly limit: number;
     stop(): Promise<void>;
 }
 
 // @public
 export class Poll<T = any, U = any, V extends string = 'standby'> implements IObservableDisposable, IPoll<T, U, V> {
+    [Symbol.asyncIterator](): AsyncIterableIterator<IPoll.State<T, U, V>>;
     constructor(options: Poll.IOptions<T, U, V>);
     dispose(): void;
-    readonly disposed: ISignal<this, void>;
-    frequency: IPoll.Frequency;
-    readonly isDisposed: boolean;
+    get disposed(): ISignal<this, void>;
+    get frequency(): IPoll.Frequency;
+    set frequency(frequency: IPoll.Frequency);
+    get isDisposed(): boolean;
     readonly name: string;
     refresh(): Promise<void>;
     schedule(next?: Partial<IPoll.State<T, U, V> & {
         cancel: (last: IPoll.State<T, U, V>) => boolean;
     }>): Promise<void>;
-    standby: Poll.Standby | (() => boolean | Poll.Standby);
+    get standby(): Poll.Standby | (() => boolean | Poll.Standby);
+    set standby(standby: Poll.Standby | (() => boolean | Poll.Standby));
     start(): Promise<void>;
-    readonly state: IPoll.State<T, U, V>;
+    get state(): IPoll.State<T, U, V>;
     stop(): Promise<void>;
-    readonly tick: Promise<this>;
-    readonly ticked: ISignal<this, IPoll.State<T, U, V>>;
-    }
+    get tick(): Promise<this>;
+    get ticked(): ISignal<this, IPoll.State<T, U, V>>;
+}
 
 // @public
 export namespace Poll {
@@ -85,11 +88,12 @@ export namespace Poll {
 }
 
 // @public
-export abstract class RateLimiter<T, U> implements IRateLimiter<T, U> {
-    constructor(fn: () => T | Promise<T>, limit?: number);
+export abstract class RateLimiter<T, U, V extends any[]> implements IRateLimiter<T, U, V> {
+    constructor(fn: (...args: V) => T | Promise<T>, limit?: number);
+    protected args: V | undefined;
     dispose(): void;
-    abstract invoke(): Promise<T>;
-    readonly isDisposed: boolean;
+    abstract invoke(...args: V): Promise<T>;
+    get isDisposed(): boolean;
     readonly limit: number;
     protected payload: PromiseDelegate<T> | null;
     protected poll: Poll<T, U, 'invoked'>;
@@ -97,10 +101,18 @@ export abstract class RateLimiter<T, U> implements IRateLimiter<T, U> {
 }
 
 // @public
-export class Throttler<T = any, U = any> extends RateLimiter<T, U> {
-    invoke(): Promise<T>;
+export class Throttler<T = any, U = any, V extends any[] = any[]> extends RateLimiter<T, U, V> {
+    constructor(fn: (...args: V) => T | Promise<T>, options?: Throttler.IOptions | number);
+    invoke(...args: V): Promise<T>;
 }
 
+// @public
+export namespace Throttler {
+    export interface IOptions {
+        edge?: 'leading' | 'trailing';
+        limit?: number;
+    }
+}
 
 // (No @packageDocumentation comment for this package)
 

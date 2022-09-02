@@ -7,7 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { ArrayExt, each, every, retro, some } from '@lumino/algorithm';
+import { ArrayExt, every, retro, some } from '@lumino/algorithm';
 
 import { LinkedList } from '@lumino/collections';
 
@@ -366,12 +366,12 @@ export namespace MessageLoop {
     }
 
     // Clear all posted messages for the handler.
-    each(messageQueue, posted => {
+    for (const posted of messageQueue) {
       if (posted.handler === handler) {
         posted.handler = null;
         posted.msg = null;
       }
-    });
+    }
   }
 
   /**

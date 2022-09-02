@@ -7,7 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { each, find, IIterator, toArray } from '@lumino/algorithm';
+import { find } from '@lumino/algorithm';
 
 import { MimeData } from '@lumino/coreutils';
 
@@ -15,7 +15,7 @@ import { IDisposable } from '@lumino/disposable';
 
 import { ElementExt, Platform } from '@lumino/domutils';
 
-import { Drag, IDragEvent } from '@lumino/dragdrop';
+import { Drag } from '@lumino/dragdrop';
 
 import { ConflatableMessage, Message, MessageLoop } from '@lumino/messaging';
 
@@ -192,9 +192,9 @@ export class DockPanel extends Widget {
     // Configure the layout for the specified mode.
     switch (value) {
       case 'multiple-document':
-        each(layout.tabBars(), tabBar => {
+        for (const tabBar of layout.tabBars()) {
           tabBar.show();
-        });
+        }
         break;
       case 'single-document':
         layout.restoreLayout(Private.createSingleDocumentConfig(this));
@@ -219,9 +219,9 @@ export class DockPanel extends Widget {
    */
   set tabsMovable(value: boolean) {
     this._tabsMovable = value;
-    each(this.tabBars(), tabbar => {
-      tabbar.tabsMovable = value;
-    });
+    for (const tabBar of this.tabBars()) {
+      tabBar.tabsMovable = value;
+    }
   }
 
   /**
@@ -250,9 +250,9 @@ export class DockPanel extends Widget {
    */
   set addButtonEnabled(value: boolean) {
     this._addButtonEnabled = value;
-    each(this.tabBars(), tabbar => {
-      tabbar.addButtonEnabled = value;
-    });
+    for (const tabBar of this.tabBars()) {
+      tabBar.addButtonEnabled = value;
+    }
   }
 
   /**
@@ -270,8 +270,8 @@ export class DockPanel extends Widget {
    * #### Notes
    * This iterator does not include the generated tab bars.
    */
-  widgets(): IIterator<Widget> {
-    return (this.layout as DockLayout).widgets();
+  *widgets(): IterableIterator<Widget> {
+    yield* (this.layout as DockLayout).widgets();
   }
 
   /**
@@ -283,8 +283,8 @@ export class DockPanel extends Widget {
    * This iterator yields the widgets corresponding to the current tab
    * of each tab bar in the panel.
    */
-  selectedWidgets(): IIterator<Widget> {
-    return (this.layout as DockLayout).selectedWidgets();
+  *selectedWidgets(): IterableIterator<Widget> {
+    yield* (this.layout as DockLayout).selectedWidgets();
   }
 
   /**
@@ -295,8 +295,8 @@ export class DockPanel extends Widget {
    * #### Notes
    * This iterator does not include the user widgets.
    */
-  tabBars(): IIterator<TabBar<Widget>> {
-    return (this.layout as DockLayout).tabBars();
+  *tabBars(): IterableIterator<TabBar<Widget>> {
+    yield* (this.layout as DockLayout).tabBars();
   }
 
   /**
@@ -304,8 +304,8 @@ export class DockPanel extends Widget {
    *
    * @returns A new iterator over the handles in the panel.
    */
-  handles(): IIterator<HTMLDivElement> {
-    return (this.layout as DockLayout).handles();
+  *handles(): IterableIterator<HTMLDivElement> {
+    yield* (this.layout as DockLayout).handles();
   }
 
   /**
@@ -434,16 +434,16 @@ export class DockPanel extends Widget {
   handleEvent(event: Event): void {
     switch (event.type) {
       case 'lm-dragenter':
-        this._evtDragEnter(event as IDragEvent);
+        this._evtDragEnter(event as Drag.Event);
         break;
       case 'lm-dragleave':
-        this._evtDragLeave(event as IDragEvent);
+        this._evtDragLeave(event as Drag.Event);
         break;
       case 'lm-dragover':
-        this._evtDragOver(event as IDragEvent);
+        this._evtDragOver(event as Drag.Event);
         break;
       case 'lm-drop':
-        this._evtDrop(event as IDragEvent);
+        this._evtDrop(event as Drag.Event);
         break;
       case 'pointerdown':
         this._evtPointerDown(event as MouseEvent);
@@ -519,7 +519,7 @@ export class DockPanel extends Widget {
   /**
    * Handle the `'lm-dragenter'` event for the dock panel.
    */
-  private _evtDragEnter(event: IDragEvent): void {
+  private _evtDragEnter(event: Drag.Event): void {
     // If the factory mime type is present, mark the event as
     // handled in order to get the rest of the drag events.
     if (event.mimeData.hasData('application/vnd.lumino.widget-factory')) {
@@ -531,7 +531,7 @@ export class DockPanel extends Widget {
   /**
    * Handle the `'lm-dragleave'` event for the dock panel.
    */
-  private _evtDragLeave(event: IDragEvent): void {
+  private _evtDragLeave(event: Drag.Event): void {
     // Mark the event as handled.
     event.preventDefault();
     event.stopPropagation();
@@ -545,7 +545,7 @@ export class DockPanel extends Widget {
   /**
    * Handle the `'lm-dragover'` event for the dock panel.
    */
-  private _evtDragOver(event: IDragEvent): void {
+  private _evtDragOver(event: Drag.Event): void {
     // Mark the event as handled.
     event.preventDefault();
     event.stopPropagation();
@@ -565,7 +565,7 @@ export class DockPanel extends Widget {
   /**
    * Handle the `'lm-drop'` event for the dock panel.
    */
-  private _evtDrop(event: IDragEvent): void {
+  private _evtDrop(event: Drag.Event): void {
     // Mark the event as handled.
     event.preventDefault();
     event.stopPropagation();
@@ -1553,10 +1553,10 @@ namespace Private {
     }
 
     // Get a flat array of the widgets in the panel.
-    let widgets = toArray(panel.widgets());
+    let widgets = Array.from(panel.widgets());
 
     // Get the first selected widget in the panel.
-    let selected = panel.selectedWidgets().next();
+    let selected = panel.selectedWidgets().next().value;
 
     // Compute the current index for the new config.
     let currentIndex = selected ? widgets.indexOf(selected) : -1;

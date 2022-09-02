@@ -1,6 +1,6 @@
 {
   "name": "@lumino/commands",
-  "version": "1.20.0",
+  "version": "2.0.0-alpha.3",
   "description": "Lumino Commands",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -29,7 +29,6 @@
     "build:test": "tsc --build tests && cd tests && webpack",
     "clean": "rimraf ./lib && rimraf *.tsbuildinfo && rimraf ./types && rimraf ./dist",
     "clean:test": "rimraf tests/build",
-    "docs": "typedoc --options ../../typedoc.js src",
     "minimize": "terser dist/index.js -c -m --source-map \"content='dist/index.js.map',url='index.min.js.map'\" -o dist/index.min.js",
     "test": "npm run test:firefox-headless",
     "test:chrome": "npm run test:nobrowser -- --browsers=Chrome",
@@ -46,14 +45,18 @@
     "test:nobrowser": "cd tests && karma start",
     "watch": "tsc --build --watch"
   },
+  "typedoc": {
+    "entryPoint": "./src/index.ts",
+    "displayName": "commands"
+  },
   "dependencies": {
-    "@lumino/algorithm": "^1.9.1",
-    "@lumino/coreutils": "^1.12.0",
-    "@lumino/disposable": "^1.10.1",
-    "@lumino/domutils": "^1.8.1",
-    "@lumino/keyboard": "^1.8.1",
-    "@lumino/signaling": "^1.10.1",
-    "@lumino/virtualdom": "^1.14.1"
+    "@lumino/algorithm": "^2.0.0-alpha.3",
+    "@lumino/coreutils": "^2.0.0-alpha.3",
+    "@lumino/disposable": "^2.0.0-alpha.3",
+    "@lumino/domutils": "^2.0.0-alpha.3",
+    "@lumino/keyboard": "^2.0.0-alpha.3",
+    "@lumino/signaling": "^2.0.0-alpha.3",
+    "@lumino/virtualdom": "^2.0.0-alpha.3"
   },
   "devDependencies": {
     "@microsoft/api-extractor": "^7.6.0",

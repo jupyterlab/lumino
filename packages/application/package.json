@@ -1,6 +1,6 @@
 {
   "name": "@lumino/application",
-  "version": "1.29.2",
+  "version": "2.0.0-alpha.3",
   "description": "Lumino Pluggable Application",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -29,7 +29,6 @@
     "build:test": "tsc --build tests && cd tests && webpack",
     "clean": "rimraf ./lib && rimraf *.tsbuildinfo && rimraf ./types && rimraf ./dist",
     "clean:test": "rimraf tests/build",
-    "docs": "typedoc --options ../../typedoc.js src",
     "minimize": "terser dist/index.js -c -m --source-map \"content='dist/index.js.map',url='index.min.js.map'\" -o dist/index.min.js",
     "test": "npm run test:firefox-headless",
     "test:chrome": "cd tests && karma start --browsers=Chrome",
@@ -39,10 +38,14 @@
     "test:ie": "cd tests && karma start --browsers=IE",
     "watch": "tsc --build --watch"
   },
+  "typedoc": {
+    "entryPoint": "./src/index.ts",
+    "displayName": "application"
+  },
   "dependencies": {
-    "@lumino/commands": "^1.20.0",
-    "@lumino/coreutils": "^1.12.0",
-    "@lumino/widgets": "^1.33.0"
+    "@lumino/commands": "^2.0.0-alpha.3",
+    "@lumino/coreutils": "^2.0.0-alpha.3",
+    "@lumino/widgets": "^2.0.0-alpha.3"
   },
   "devDependencies": {
     "@microsoft/api-extractor": "^7.6.0",

@@ -2,7 +2,7 @@
   "extends": "../../tsconfigbase",
   "compilerOptions": {
     "declarationDir": "types",
-    "lib": ["DOM", "ES6"],
+    "lib": ["DOM", "DOM.Iterable", "ES6"],
     "outDir": "lib",
     "rootDir": "src"
   },

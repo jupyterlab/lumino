@@ -7,54 +7,24 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { IIterator } from './iter';
 
 /**
  * Create an empty iterator.
+ *
+ * @deprecated
  *
  * @returns A new iterator which yields nothing.
  *
  * #### Example
  * ```typescript
- * import { empty, toArray } from '@lumino/algorithm';
+ * import { empty } from '@lumino/algorithm';
  *
  * let stream = empty<number>();
  *
- * toArray(stream);  // []
+ * Array.from(stream);  // []
  * ```
  */
-export function empty<T>(): IIterator<T> {
-  return new EmptyIterator<T>();
-}
-
-/**
- * An iterator which is always empty.
- */
-export class EmptyIterator<T> implements IIterator<T> {
-  /**
-   * Get an iterator over the object's values.
-   *
-   * @returns An iterator which yields the object's values.
-   */
-  iter(): IIterator<T> {
-    return this;
-  }
-
-  /**
-   * Create an independent clone of the iterator.
-   *
-   * @returns A new independent clone of the iterator.
-   */
-  clone(): IIterator<T> {
-    return new EmptyIterator<T>();
-  }
-
-  /**
-   * Get the next value from the iterator.
-   *
-   * @returns The next value from the iterator, or `undefined`.
-   */
-  next(): T | undefined {
-    return undefined;
-  }
+// eslint-disable-next-line require-yield
+export function* empty<T>(): IterableIterator<T> {
+  return;
 }

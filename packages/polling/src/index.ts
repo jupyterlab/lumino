@@ -18,7 +18,8 @@ export { Debouncer, RateLimiter, Throttler } from './ratelimiter';
  *
  * @typeparam V - The type to extend the phases supported by a poll.
  */
-export interface IPoll<T, U, V extends string> {
+export interface IPoll<T, U, V extends string>
+  extends AsyncIterable<IPoll.State<T, U, V>> {
   /**
    * A signal emitted when the poll is disposed.
    */
@@ -49,8 +50,8 @@ export interface IPoll<T, U, V extends string> {
    *
    * #### Notes
    * Usually this will resolve after `state.interval` milliseconds from
-   * `state.timestamp`. It can resolve earlier if the user starts or refreshes the
-   * poll, etc.
+   * `state.timestamp`. It can resolve earlier if the user starts or refreshes
+   * the poll, etc.
    */
   readonly tick: Promise<IPoll<T, U, V>>;
 

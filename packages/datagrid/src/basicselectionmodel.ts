@@ -7,8 +7,6 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { IIterator, iter } from '@lumino/algorithm';
-
 import { DataModel } from './datamodel';
 
 import { SelectionModel } from './selectionmodel';
@@ -152,8 +150,8 @@ export class BasicSelectionModel extends SelectionModel {
    * #### Notes
    * The data grid will render the selections in order.
    */
-  selections(): IIterator<SelectionModel.Selection> {
-    return iter(this._selections);
+  *selections(): IterableIterator<SelectionModel.Selection> {
+    yield* this._selections;
   }
 
   /**

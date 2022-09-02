@@ -1,6 +1,6 @@
 {
   "name": "@lumino/datagrid",
-  "version": "0.36.2",
+  "version": "1.0.0-alpha.3",
   "description": "Lumino Tabular Data Grid",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -27,20 +27,23 @@
     "build": "npm run build:src && rollup -c",
     "build:src": "tsc --build",
     "clean": "rimraf ./lib && rimraf *.tsbuildinfo && rimraf ./types && rimraf ./dist",
-    "docs": "typedoc --options ../../typedoc.js src",
     "minimize": "terser dist/index.js -c -m --source-map \"content='dist/index.js.map',url='index.min.js.map'\" -o dist/index.min.js",
     "watch": "tsc --build --watch"
   },
+  "typedoc": {
+    "entryPoint": "./src/index.ts",
+    "displayName": "datagrid"
+  },
   "dependencies": {
-    "@lumino/algorithm": "^1.9.1",
-    "@lumino/coreutils": "^1.12.0",
-    "@lumino/disposable": "^1.10.1",
-    "@lumino/domutils": "^1.8.1",
-    "@lumino/dragdrop": "^1.14.0",
-    "@lumino/keyboard": "^1.8.1",
-    "@lumino/messaging": "^1.10.1",
-    "@lumino/signaling": "^1.10.1",
-    "@lumino/widgets": "^1.33.0"
+    "@lumino/algorithm": "^2.0.0-alpha.3",
+    "@lumino/coreutils": "^2.0.0-alpha.3",
+    "@lumino/disposable": "^2.0.0-alpha.3",
+    "@lumino/domutils": "^2.0.0-alpha.3",
+    "@lumino/dragdrop": "^2.0.0-alpha.3",
+    "@lumino/keyboard": "^2.0.0-alpha.3",
+    "@lumino/messaging": "^2.0.0-alpha.3",
+    "@lumino/signaling": "^2.0.0-alpha.3",
+    "@lumino/widgets": "^2.0.0-alpha.3"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^13.3.0",

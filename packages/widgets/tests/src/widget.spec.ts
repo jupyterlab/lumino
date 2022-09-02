@@ -9,7 +9,7 @@
 |----------------------------------------------------------------------------*/
 import { expect } from 'chai';
 
-import { ArrayExt, each, IIterator, iter } from '@lumino/algorithm';
+import { ArrayExt } from '@lumino/algorithm';
 
 import { Message, MessageLoop } from '@lumino/messaging';
 
@@ -93,8 +93,8 @@ class TestLayout extends Layout {
     super.dispose();
   }
 
-  iter(): IIterator<Widget> {
-    return iter(this._widgets);
+  *[Symbol.iterator](): IterableIterator<Widget> {
+    yield* this._widgets;
   }
 
   removeWidget(widget: Widget): void {
@@ -394,14 +394,14 @@ describe('@lumino/widgets', () => {
       it('should return an iterator over the widget children', () => {
         let widget = new Widget();
         widget.layout = new TestLayout();
-        each(widget.children(), child => {
+        for (const child of widget.children()) {
           expect(child).to.be.an.instanceof(Widget);
-        });
+        }
       });
 
       it('should return an empty iterator if there is no layout', () => {
         let widget = new Widget();
-        expect(widget.children().next()).to.equal(undefined);
+        expect(widget.children().next().done).to.equal(true);
       });
     });
 

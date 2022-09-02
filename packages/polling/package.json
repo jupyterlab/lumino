@@ -1,6 +1,6 @@
 {
   "name": "@lumino/polling",
-  "version": "1.11.0",
+  "version": "2.0.0-alpha.3",
   "description": "Lumino Polling",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -29,7 +29,6 @@
     "build:test": "tsc --build tests && cd tests && webpack",
     "clean": "rimraf ./lib && rimraf *.tsbuildinfo && rimraf ./types && rimraf ./dist",
     "clean:test": "rimraf tests/build",
-    "docs": "typedoc --options ../../typedoc.js src",
     "minimize": "terser dist/index.js -c -m --source-map \"content='dist/index.js.map',url='index.min.js.map'\" -o dist/index.min.js",
     "test": "npm run test:firefox-headless",
     "test:chrome": "cd tests && karma start --browsers=Chrome",
@@ -39,10 +38,14 @@
     "test:ie": "cd tests && karma start --browsers=IE",
     "watch": "tsc --build --watch"
   },
+  "typedoc": {
+    "entryPoint": "./src/index.ts",
+    "displayName": "polling"
+  },
   "dependencies": {
-    "@lumino/coreutils": "^1.12.0",
-    "@lumino/disposable": "^1.10.1",
-    "@lumino/signaling": "^1.10.1"
+    "@lumino/coreutils": "^2.0.0-alpha.3",
+    "@lumino/disposable": "^2.0.0-alpha.3",
+    "@lumino/signaling": "^2.0.0-alpha.3"
   },
   "devDependencies": {
     "@microsoft/api-extractor": "^7.6.0",

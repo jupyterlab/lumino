@@ -1,6 +1,6 @@
 {
   "name": "lumino-top-level",
-  "version": "2022.7.21",
+  "version": "2022.8.30",
   "private": true,
   "workspaces": [
     "examples/*",
@@ -19,7 +19,8 @@
     "clean:examples": "lerna run clean --scope \"@lumino/example-*\"",
     "clean:src": "lerna run clean --scope \"@lumino/!(test-|example-)*\"",
     "clean:tests": "lerna run clean:tests",
-    "docs": "rimraf docs/source/api && lerna run build:src --concurrency 1 && lerna run docs",
+    "predocs": "lerna run build:src",
+    "docs": "typedoc",
     "eslint": "eslint --ext .js,.jsx,.ts,.tsx --cache --fix .",
     "eslint:check": "eslint --ext .js,.jsx,.ts,.tsx --cache .",
     "get:dependency": "get-dependency",
@@ -65,7 +66,8 @@
         "examples/accordionpanel/index.html",
         "examples/datagrid/index.html",
         "examples/dockpanel/index.html"
-      ]
+      ],
+      "npm-cmd": "npm publish --tag next"
     },
     "hooks": {
       "after-build-changelog": [

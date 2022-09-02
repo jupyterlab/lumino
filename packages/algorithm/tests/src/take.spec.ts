@@ -7,20 +7,31 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { iter, take, TakeIterator } from '@lumino/algorithm';
+import { take } from '@lumino/algorithm';
 
 import { testIterator } from './iter.spec';
 
 describe('@lumino/algorithm', () => {
-  describe('take()', () => {
+  describe('take() from an array', () => {
     testIterator(() => {
       return [take([1, 2, 3, 4, 5], 2), [1, 2]];
     });
   });
 
-  describe('TakeIterator', () => {
+  describe('take() from an iterable iterator', () => {
     testIterator(() => {
-      return [new TakeIterator(iter([0, 1, 2, 3]), 1), [0]];
+      return [take([0, 1, 2, 3], 1), [0]];
     });
+  });
+
+  describe('take() with count=0', () => {
+    testIterator(() => [take([0, 1, 2, 3], 0), []]);
+  });
+
+  describe('take() only takes as many as count or are left', () => {
+    const it = [0, 1, 2, 3, 4, 5, 6][Symbol.iterator]();
+    testIterator(() => [take(it, 2), [0, 1]]);
+    testIterator(() => [take(it, 4), [2, 3, 4, 5]]);
+    testIterator(() => [take(it, 25), [6]]);
   });
 });

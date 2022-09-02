@@ -1,6 +1,100 @@
+---
+github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
+---
+
 # Changelog
 
 <!-- <START NEW CHANGELOG ENTRY> -->
+
+## 2022.8.30
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/algorithm@2.0.0-alpha.2...e76aa2e8463aeae489ca79598e3dac9bb504272f))
+
+### Bugs fixed
+
+- Fix service type [#382](https://github.com/jupyterlab/lumino/pull/382) ([@afshin](https://github.com/afshin))
+
+### Maintenance and upkeep improvements
+
+- Bump packages to v2-alpha.3 [#383](https://github.com/jupyterlab/lumino/pull/383) ([@fcollonval](https://github.com/fcollonval))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2022-08-29&to=2022-08-30&type=c))
+
+[@afshin](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aafshin+updated%3A2022-08-29..2022-08-30&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2022-08-29..2022-08-30&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
+## 2022.8.29
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/algorithm@2.0.0-alpha.1...ed506c2b38e28bae14cdc829f7606cd7aaf92907))
+
+### Enhancements made
+
+- Dynamic extensions reloading [#377](https://github.com/jupyterlab/lumino/pull/377) ([@fcollonval](https://github.com/fcollonval))
+- Fix tab trap in menubar [#373](https://github.com/jupyterlab/lumino/pull/373) ([@gabalafou](https://github.com/gabalafou))
+
+### Maintenance and upkeep improvements
+
+- Bump alpha versions [#380](https://github.com/jupyterlab/lumino/pull/380) ([@blink1073](https://github.com/blink1073))
+- Bump tj-actions/changed-files from 28 to 29.0.2 [#379](https://github.com/jupyterlab/lumino/pull/379) ([@dependabot](https://github.com/dependabot))
+- Iterate on iterators [#378](https://github.com/jupyterlab/lumino/pull/378) ([@afshin](https://github.com/afshin))
+- Deprecate `each<T>(...)` [#376](https://github.com/jupyterlab/lumino/pull/376) ([@afshin](https://github.com/afshin))
+- Bump tj-actions/changed-files from 26.1 to 28 [#372](https://github.com/jupyterlab/lumino/pull/372) ([@dependabot](https://github.com/dependabot))
+
+### Documentation improvements
+
+- Iterate on iterators [#378](https://github.com/jupyterlab/lumino/pull/378) ([@afshin](https://github.com/afshin))
+- Deprecate `each<T>(...)` [#376](https://github.com/jupyterlab/lumino/pull/376) ([@afshin](https://github.com/afshin))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2022-08-22&to=2022-08-29&type=c))
+
+[@afshin](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aafshin+updated%3A2022-08-22..2022-08-29&type=Issues) | [@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2022-08-22..2022-08-29&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2022-08-22..2022-08-29&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2022-08-22..2022-08-29&type=Issues) | [@gabalafou](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Agabalafou+updated%3A2022-08-22..2022-08-29&type=Issues)
+
+## 2022.8.22-alpha.1
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2022.7.21...bbfb9e2c37a2cf195a990c33a0ebbb1c64e9da26))
+
+### Enhancements made
+
+- Add `describedBy` to command [#322](https://github.com/jupyterlab/lumino/pull/322) ([@fcollonval](https://github.com/fcollonval))
+- Allow `describedBy` to be an async function [#331](https://github.com/jupyterlab/lumino/pull/331) ([@fcollonval](https://github.com/fcollonval))
+- Add `collapse` and `expand` methods to `AccordionPanel` [#321](https://github.com/jupyterlab/lumino/pull/321) ([@fcollonval](https://github.com/fcollonval))
+- Lumino 2 - meta PR [#319](https://github.com/jupyterlab/lumino/pull/319) ([@afshin](https://github.com/afshin))
+
+### Maintenance and upkeep improvements
+
+- Refactor `retro()`, clean up iterators [#361](https://github.com/jupyterlab/lumino/pull/361) ([@afshin](https://github.com/afshin))
+- Update `dragdrop` to use `PointerEvent` and `DragEvent` [#355](https://github.com/jupyterlab/lumino/pull/355) ([@afshin](https://github.com/afshin))
+- Use native iterators instead of Lumino iterators [#346](https://github.com/jupyterlab/lumino/pull/346) ([@afshin](https://github.com/afshin))
+- Remove `BPlusTree` class from `@lumino/collections` [#345](https://github.com/jupyterlab/lumino/pull/345) ([@afshin](https://github.com/afshin))
+- Remove mouse event handlers from SplitPanel [#327](https://github.com/jupyterlab/lumino/pull/327) ([@afshin](https://github.com/afshin))
+- Update `devDependencies`, fix `eslint`, use `ES6` [#330](https://github.com/jupyterlab/lumino/pull/330) ([@afshin](https://github.com/afshin))
+
+- Bump tj-actions/changed-files from 24 to 26.1 [#352](https://github.com/jupyterlab/lumino/pull/352) ([@dependabot](https://github.com/dependabot))
+- Bump actions/setup-python from 2 to 4 [#351](https://github.com/jupyterlab/lumino/pull/351) ([@dependabot](https://github.com/dependabot))
+- Set npm tag to next for prerelease [#369](https://github.com/jupyterlab/lumino/pull/369) ([@fcollonval](https://github.com/fcollonval))
+- Fix license header following 231f01c [#365](https://github.com/jupyterlab/lumino/pull/365) ([@fcollonval](https://github.com/fcollonval))
+- Bump to v2 alpha 1 [#370](https://github.com/jupyterlab/lumino/pull/370) ([@fcollonval](https://github.com/fcollonval))
+- First Lumino 2 pre-release [#359](https://github.com/jupyterlab/lumino/pull/359) ([@fcollonval](https://github.com/fcollonval))
+- Add more safety workflows [#350](https://github.com/jupyterlab/lumino/pull/350) ([@fcollonval](https://github.com/fcollonval))
+
+### Documentation improvements
+
+- Fix documentation CI error [#368](https://github.com/jupyterlab/lumino/pull/368) ([@fcollonval](https://github.com/fcollonval))
+- Update license copyright date [#363](https://github.com/jupyterlab/lumino/pull/363) ([@fcollonval](https://github.com/fcollonval))
+- Update and fix docs [#354](https://github.com/jupyterlab/lumino/pull/354) ([@gabalafou](https://github.com/gabalafou))
+- Update NPM package author to Project Jupyter [#342](https://github.com/jupyterlab/lumino/pull/342) ([@afshin](https://github.com/afshin))
+- Update my name and email [#323](https://github.com/jupyterlab/lumino/pull/323) ([@afshin](https://github.com/afshin))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2022-07-21&to=2022-08-22&type=c))
+
+[@afshin](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aafshin+updated%3A2022-07-21..2022-08-22&type=Issues) | [@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2022-07-21..2022-08-22&type=Issues) | [@bollwyvl](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Abollwyvl+updated%3A2022-07-21..2022-08-22&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2022-07-21..2022-08-22&type=Issues) | [@ellisonbg](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aellisonbg+updated%3A2022-07-21..2022-08-22&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2022-07-21..2022-08-22&type=Issues) | [@gabalafou](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Agabalafou+updated%3A2022-07-21..2022-08-22&type=Issues) | [@ian-r-rose](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aian-r-rose+updated%3A2022-07-21..2022-08-22&type=Issues) | [@jasongrout](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajasongrout+updated%3A2022-07-21..2022-08-22&type=Issues) | [@jweill-aws](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajweill-aws+updated%3A2022-07-21..2022-08-22&type=Issues) | [@SylvainCorlay](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3ASylvainCorlay+updated%3A2022-07-21..2022-08-22&type=Issues) | [@vidartf](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Avidartf+updated%3A2022-07-21..2022-08-22&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Awelcome+updated%3A2022-07-21..2022-08-22&type=Issues)
 
 ## 2022.8.8
 
@@ -19,8 +113,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2022-07-21&to=2022-08-08&type=c))
 
 [@afshin](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aafshin+updated%3A2022-07-21..2022-08-08&type=Issues) | [@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2022-07-21..2022-08-08&type=Issues) | [@bollwyvl](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Abollwyvl+updated%3A2022-07-21..2022-08-08&type=Issues) | [@ellisonbg](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aellisonbg+updated%3A2022-07-21..2022-08-08&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2022-07-21..2022-08-08&type=Issues) | [@ian-r-rose](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aian-r-rose+updated%3A2022-07-21..2022-08-08&type=Issues) | [@jweill-aws](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajweill-aws+updated%3A2022-07-21..2022-08-08&type=Issues) | [@meeseeksmachine](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ameeseeksmachine+updated%3A2022-07-21..2022-08-08&type=Issues) | [@SylvainCorlay](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3ASylvainCorlay+updated%3A2022-07-21..2022-08-08&type=Issues) | [@vidartf](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Avidartf+updated%3A2022-07-21..2022-08-08&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2022.7.21
 
@@ -708,7 +800,7 @@
     @lumino/example-datagrid@0.11.0
     @lumino/datagrid@0.14.0
 
-- Make private \_drawCornerHeaderRegion protected drawCornerHeaderRegion [#116](https://github.com/jupyterlab/lumino/pull/116) ([@lmcnichols](https://github.com/lmcnichols))
+- Make private \_drawCornerHeaderRegion protected drawCornerHeaderRegion [#116](https://github.com/jupyterlab/lumino/pull/116) (@lmcnichols)
 - Text eliding with ellipsis on datagrid text renderer [#105](https://github.com/jupyterlab/lumino/pull/105) ([@nmichaud](https://github.com/nmichaud))
 
 ## 2020-8-20
@@ -724,9 +816,9 @@
 
 - mouseDown now uses cell, column, and row selection modes [#114](https://github.com/jupyterlab/lumino/pull/114) ([@kgoo124](https://github.com/kgoo124))
 - Double-click to edit tab title in TabBars [#112](https://github.com/jupyterlab/lumino/pull/112) ([@nmichaud](https://github.com/nmichaud))
-- Give extending classes access to some of the data grid's paint utilities. [#111](https://github.com/jupyterlab/lumino/pull/111) ([@lmcnichols](https://github.com/lmcnichols))
+- Give extending classes access to some of the data grid's paint utilities. [#111](https://github.com/jupyterlab/lumino/pull/111) (@lmcnichols)
 - Fix for DockPanel.tabsMovable to set false to all tabs [#109](https://github.com/jupyterlab/lumino/pull/109) ([@nmichaud](https://github.com/nmichaud))
-- Modified function spliceArray in datastore/src/listfield.ts so that it behaves like Array.splice on large inputs. [#101](https://github.com/jupyterlab/lumino/pull/101) ([@lmcnichols](https://github.com/lmcnichols))
+- Modified function spliceArray in datastore/src/listfield.ts so that it behaves like Array.splice on large inputs. [#101](https://github.com/jupyterlab/lumino/pull/101) (@lmcnichols)
 - Bump elliptic from 6.5.2 to 6.5.3 [#99](https://github.com/jupyterlab/lumino/pull/99) ([@dependabot](https://github.com/dependabot))
 
 ## 2020-7-27
@@ -740,7 +832,7 @@
     @lumino/datagrid@0.12.0
     @lumino/application@1.10.4
 
-- Change the Drag class's private method \_moveDragImage to a public method moveDragImage. [#96](https://github.com/jupyterlab/lumino/pull/96) ([@lmcnichols](https://github.com/lmcnichols))
+- Change the Drag class's private method \_moveDragImage to a public method moveDragImage. [#96](https://github.com/jupyterlab/lumino/pull/96) (@lmcnichols)
 
 ## 2020-7-21
 
@@ -766,14 +858,14 @@
     @lumino/application@1.10.3
     @lumino/algorithm@1.3.3
 
-- Have the DataGrid syncViewport when receiving a DataModel.ChangedArgs signal of type "rows-moved" or "columns-moved" [#94](https://github.com/jupyterlab/lumino/pull/94) ([@lmcnichols](https://github.com/lmcnichols))
+- Have the DataGrid syncViewport when receiving a DataModel.ChangedArgs signal of type "rows-moved" or "columns-moved" [#94](https://github.com/jupyterlab/lumino/pull/94) (@lmcnichols)
 
 ## 2020-7-21
 
     @lumino/example-datagrid@0.8.0
     @lumino/datagrid@0.11.0
 
-- Make cursorForHandle and it's argument type accessible from outside BasicMouseHandler. [#92](https://github.com/jupyterlab/lumino/pull/92) ([@lmcnichols](https://github.com/lmcnichols))
+- Make cursorForHandle and it's argument type accessible from outside BasicMouseHandler. [#92](https://github.com/jupyterlab/lumino/pull/92) (@lmcnichols)
 - Bump lodash from 4.17.15 to 4.17.19 [#90](https://github.com/jupyterlab/lumino/pull/90) ([@dependabot](https://github.com/dependabot))
 
 ## 2020-7-5

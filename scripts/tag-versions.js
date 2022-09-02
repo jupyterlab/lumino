@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) Jupyter Development Team.
+ * Distributed under the terms of the Modified BSD License.
+ */
+
 const path = require('path');
 const fs = require('fs');
 const utils = require('@jupyterlab/buildutils');

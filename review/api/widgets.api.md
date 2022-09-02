@@ -6,18 +6,80 @@
 
 import { CommandRegistry } from '@lumino/commands';
 import { ConflatableMessage } from '@lumino/messaging';
+import { ElementARIAAttrs } from '@lumino/virtualdom';
 import { ElementDataset } from '@lumino/virtualdom';
 import { ElementInlineStyle } from '@lumino/virtualdom';
 import { h } from '@lumino/virtualdom';
 import { IDisposable } from '@lumino/disposable';
-import { IIterable } from '@lumino/algorithm';
-import { IIterator } from '@lumino/algorithm';
 import { IMessageHandler } from '@lumino/messaging';
 import { IObservableDisposable } from '@lumino/disposable';
 import { ISignal } from '@lumino/signaling';
 import { Message } from '@lumino/messaging';
 import { ReadonlyJSONObject } from '@lumino/coreutils';
 import { VirtualElement } from '@lumino/virtualdom';
+
+// @public
+export class AccordionLayout extends SplitLayout {
+    constructor(options: AccordionLayout.IOptions);
+    protected attachWidget(index: number, widget: Widget): void;
+    protected detachWidget(index: number, widget: Widget): void;
+    dispose(): void;
+    protected moveWidget(fromIndex: number, toIndex: number, widget: Widget): void;
+    readonly renderer: AccordionLayout.IRenderer;
+    get titles(): ReadonlyArray<HTMLElement>;
+    get titleSpace(): number;
+    set titleSpace(value: number);
+    protected updateItemPosition(i: number, isHorizontal: boolean, left: number, top: number, height: number, width: number, size: number): void;
+    // (undocumented)
+    updateTitle(index: number, widget: Widget): void;
+}
+
+// @public (undocumented)
+export namespace AccordionLayout {
+    export type Alignment = SplitLayout.Alignment;
+    export interface IOptions extends SplitLayout.IOptions {
+        renderer: IRenderer;
+        titleSpace?: number;
+    }
+    export interface IRenderer extends SplitLayout.IRenderer {
+        createSectionTitle(title: Title<Widget>): HTMLElement;
+        readonly titleClassName: string;
+    }
+    export type Orientation = SplitLayout.Orientation;
+}
+
+// @public
+export class AccordionPanel extends SplitPanel {
+    constructor(options?: AccordionPanel.IOptions);
+    addWidget(widget: Widget): void;
+    collapse(index: number): void;
+    expand(index: number): void;
+    handleEvent(event: Event): void;
+    insertWidget(index: number, widget: Widget): void;
+    protected onAfterDetach(msg: Message): void;
+    protected onBeforeAttach(msg: Message): void;
+    get renderer(): AccordionPanel.IRenderer;
+    get titles(): ReadonlyArray<HTMLElement>;
+    get titleSpace(): number;
+    set titleSpace(value: number);
+}
+
+// @public
+export namespace AccordionPanel {
+    export type Alignment = SplitLayout.Alignment;
+    export interface IOptions extends Partial<AccordionLayout.IOptions> {
+        layout?: AccordionLayout;
+    }
+    export type IRenderer = AccordionLayout.IRenderer;
+    export type Orientation = SplitLayout.Orientation;
+    export class Renderer extends SplitPanel.Renderer implements IRenderer {
+        createCollapseIcon(data: Title<Widget>): HTMLElement;
+        createSectionTitle(data: Title<Widget>): HTMLElement;
+        createTitleKey(data: Title<Widget>): string;
+        readonly titleClassName = "lm-AccordionPanel-title";
+    }
+    const defaultRenderer: Renderer;
+}
 
 // @public
 export namespace BoxEngine {
@@ -28,10 +90,12 @@ export namespace BoxEngine {
 // @public
 export class BoxLayout extends PanelLayout {
     constructor(options?: BoxLayout.IOptions);
-    alignment: BoxLayout.Alignment;
+    get alignment(): BoxLayout.Alignment;
+    set alignment(value: BoxLayout.Alignment);
     protected attachWidget(index: number, widget: Widget): void;
     protected detachWidget(index: number, widget: Widget): void;
-    direction: BoxLayout.Direction;
+    get direction(): BoxLayout.Direction;
+    set direction(value: BoxLayout.Direction);
     dispose(): void;
     protected init(): void;
     protected moveWidget(fromIndex: number, toIndex: number, widget: Widget): void;
@@ -42,13 +106,14 @@ export class BoxLayout extends PanelLayout {
     protected onFitRequest(msg: Message): void;
     protected onResize(msg: Widget.ResizeMessage): void;
     protected onUpdateRequest(msg: Message): void;
-    spacing: number;
-    }
+    get spacing(): number;
+    set spacing(value: number);
+}
 
 // @public
 export namespace BoxLayout {
     export type Alignment = 'start' | 'center' | 'end' | 'justify';
-    export type Direction = ('left-to-right' | 'right-to-left' | 'top-to-bottom' | 'bottom-to-top');
+    export type Direction = 'left-to-right' | 'right-to-left' | 'top-to-bottom' | 'bottom-to-top';
     export function getSizeBasis(widget: Widget): number;
     export function getStretch(widget: Widget): number;
     export interface IOptions {
@@ -63,11 +128,14 @@ export namespace BoxLayout {
 // @public
 export class BoxPanel extends Panel {
     constructor(options?: BoxPanel.IOptions);
-    alignment: BoxPanel.Alignment;
-    direction: BoxPanel.Direction;
+    get alignment(): BoxPanel.Alignment;
+    set alignment(value: BoxPanel.Alignment);
+    get direction(): BoxPanel.Direction;
+    set direction(value: BoxPanel.Direction);
     protected onChildAdded(msg: Widget.ChildMessage): void;
     protected onChildRemoved(msg: Widget.ChildMessage): void;
-    spacing: number;
+    get spacing(): number;
+    set spacing(value: number);
 }
 
 // @public
@@ -100,13 +168,14 @@ export class BoxSizer {
 export class CommandPalette extends Widget {
     constructor(options: CommandPalette.IOptions);
     addItem(options: CommandPalette.IItemOptions): CommandPalette.IItem;
+    addItems(items: CommandPalette.IItemOptions[]): CommandPalette.IItem[];
     clearItems(): void;
     readonly commands: CommandRegistry;
-    readonly contentNode: HTMLUListElement;
+    get contentNode(): HTMLUListElement;
     dispose(): void;
     handleEvent(event: Event): void;
-    readonly inputNode: HTMLInputElement;
-    readonly items: ReadonlyArray<CommandPalette.IItem>;
+    get inputNode(): HTMLInputElement;
+    get items(): ReadonlyArray<CommandPalette.IItem>;
     protected onActivateRequest(msg: Message): void;
     protected onAfterDetach(msg: Message): void;
     protected onBeforeAttach(msg: Message): void;
@@ -115,8 +184,8 @@ export class CommandPalette extends Widget {
     removeItem(item: CommandPalette.IItem): void;
     removeItemAt(index: number): void;
     readonly renderer: CommandPalette.IRenderer;
-    readonly searchNode: HTMLDivElement;
-    }
+    get searchNode(): HTMLDivElement;
+}
 
 // @public
 export namespace CommandPalette {
@@ -134,9 +203,11 @@ export namespace CommandPalette {
         readonly className: string;
         readonly command: string;
         readonly dataset: CommandRegistry.Dataset;
+        readonly icon: VirtualElement.IRenderer | undefined;
         readonly iconClass: string;
         readonly iconLabel: string;
         readonly isEnabled: boolean;
+        readonly isToggleable: boolean;
         readonly isToggled: boolean;
         readonly isVisible: boolean;
         readonly keyBinding: CommandRegistry.IKeyBinding | null;
@@ -200,22 +271,26 @@ export namespace ContextMenu {
     }
     export interface IOptions {
         commands: CommandRegistry;
+        groupByTarget?: boolean;
         renderer?: Menu.IRenderer;
+        sortBySelector?: boolean;
     }
 }
 
 // @public
 export class DockLayout extends Layout {
+    [Symbol.iterator](): IterableIterator<Widget>;
     constructor(options: DockLayout.IOptions);
     addWidget(widget: Widget, options?: DockLayout.IAddOptions): void;
     protected attachWidget(widget: Widget): void;
     protected detachWidget(widget: Widget): void;
     dispose(): void;
-    handles(): IIterator<HTMLDivElement>;
+    handles(): IterableIterator<HTMLDivElement>;
+    get hiddenMode(): Widget.HiddenMode;
+    set hiddenMode(v: Widget.HiddenMode);
     hitTestTabAreas(clientX: number, clientY: number): DockLayout.ITabAreaGeometry | null;
     protected init(): void;
-    readonly isEmpty: boolean;
-    iter(): IIterator<Widget>;
+    get isEmpty(): boolean;
     moveHandle(handle: HTMLDivElement, offsetX: number, offsetY: number): void;
     protected onBeforeAttach(msg: Message): void;
     protected onBeforeShow(msg: Message): void;
@@ -228,10 +303,11 @@ export class DockLayout extends Layout {
     readonly renderer: DockLayout.IRenderer;
     restoreLayout(config: DockLayout.ILayoutConfig): void;
     saveLayout(): DockLayout.ILayoutConfig;
-    selectedWidgets(): IIterator<Widget>;
-    spacing: number;
-    tabBars(): IIterator<TabBar<Widget>>;
-    widgets(): IIterator<Widget>;
+    selectedWidgets(): IterableIterator<Widget>;
+    get spacing(): number;
+    set spacing(value: number);
+    tabBars(): IterableIterator<TabBar<Widget>>;
+    widgets(): IterableIterator<Widget>;
 }
 
 // @public
@@ -244,68 +320,68 @@ export namespace DockLayout {
     export interface ILayoutConfig {
         main: AreaConfig | null;
     }
-    export type InsertMode = (
+    export type InsertMode = /**
+    * The area to the top of the reference widget.
+    *
+    * The widget will be inserted just above the reference widget.
+    *
+    * If the reference widget is null or invalid, the widget will be
+    * inserted at the top edge of the dock layout.
+    */ 'split-top'
     /**
-     * The area to the top of the reference widget.
-     *
-     * The widget will be inserted just above the reference widget.
-     *
-     * If the reference widget is null or invalid, the widget will be
-     * inserted at the top edge of the dock layout.
-     */
-    'split-top' |
+    * The area to the left of the reference widget.
+    *
+    * The widget will be inserted just left of the reference widget.
+    *
+    * If the reference widget is null or invalid, the widget will be
+    * inserted at the left edge of the dock layout.
+    */
+    | 'split-left'
     /**
-     * The area to the left of the reference widget.
-     *
-     * The widget will be inserted just left of the reference widget.
-     *
-     * If the reference widget is null or invalid, the widget will be
-     * inserted at the left edge of the dock layout.
-     */
-    'split-left' |
+    * The area to the right of the reference widget.
+    *
+    * The widget will be inserted just right of the reference widget.
+    *
+    * If the reference widget is null or invalid, the widget will be
+    * inserted  at the right edge of the dock layout.
+    */
+    | 'split-right'
     /**
-     * The area to the right of the reference widget.
-     *
-     * The widget will be inserted just right of the reference widget.
-     *
-     * If the reference widget is null or invalid, the widget will be
-     * inserted  at the right edge of the dock layout.
-     */
-    'split-right' |
+    * The area to the bottom of the reference widget.
+    *
+    * The widget will be inserted just below the reference widget.
+    *
+    * If the reference widget is null or invalid, the widget will be
+    * inserted at the bottom edge of the dock layout.
+    */
+    | 'split-bottom'
     /**
-     * The area to the bottom of the reference widget.
-     *
-     * The widget will be inserted just below the reference widget.
-     *
-     * If the reference widget is null or invalid, the widget will be
-     * inserted at the bottom edge of the dock layout.
-     */
-    'split-bottom' |
+    * The tab position before the reference widget.
+    *
+    * The widget will be added as a tab before the reference widget.
+    *
+    * If the reference widget is null or invalid, a sensible default
+    * will be used.
+    */
+    | 'tab-before'
     /**
-     * The tab position before the reference widget.
-     *
-     * The widget will be added as a tab before the reference widget.
-     *
-     * If the reference widget is null or invalid, a sensible default
-     * will be used.
-     */
-    'tab-before' |
-    /**
-     * The tab position after the reference widget.
-     *
-     * The widget will be added as a tab after the reference widget.
-     *
-     * If the reference widget is null or invalid, a sensible default
-     * will be used.
-     */
-    'tab-after');
+    * The tab position after the reference widget.
+    *
+    * The widget will be added as a tab after the reference widget.
+    *
+    * If the reference widget is null or invalid, a sensible default
+    * will be used.
+    */
+    | 'tab-after';
     export interface IOptions {
+        document?: Document | ShadowRoot;
+        hiddenMode?: Widget.HiddenMode;
         renderer: IRenderer;
         spacing?: number;
     }
     export interface IRenderer {
         createHandle(): HTMLDivElement;
-        createTabBar(): TabBar<Widget>;
+        createTabBar(document?: Document | ShadowRoot): TabBar<Widget>;
     }
     export interface ISplitAreaConfig {
         children: AreaConfig[];
@@ -335,28 +411,38 @@ export namespace DockLayout {
 export class DockPanel extends Widget {
     constructor(options?: DockPanel.IOptions);
     activateWidget(widget: Widget): void;
+    get addButtonEnabled(): boolean;
+    set addButtonEnabled(value: boolean);
+    get addRequested(): ISignal<this, TabBar<Widget>>;
     addWidget(widget: Widget, options?: DockPanel.IAddOptions): void;
     dispose(): void;
     handleEvent(event: Event): void;
-    handles(): IIterator<HTMLDivElement>;
-    readonly isEmpty: boolean;
-    readonly layoutModified: ISignal<this, void>;
-    mode: DockPanel.Mode;
+    handles(): IterableIterator<HTMLDivElement>;
+    get hiddenMode(): Widget.HiddenMode;
+    set hiddenMode(v: Widget.HiddenMode);
+    get isEmpty(): boolean;
+    get layoutModified(): ISignal<this, void>;
+    get mode(): DockPanel.Mode;
+    set mode(value: DockPanel.Mode);
     protected onAfterDetach(msg: Message): void;
     protected onBeforeAttach(msg: Message): void;
     protected onChildAdded(msg: Widget.ChildMessage): void;
     protected onChildRemoved(msg: Widget.ChildMessage): void;
     readonly overlay: DockPanel.IOverlay;
     processMessage(msg: Message): void;
-    readonly renderer: DockPanel.IRenderer;
+    get renderer(): DockPanel.IRenderer;
     restoreLayout(config: DockPanel.ILayoutConfig): void;
     saveLayout(): DockPanel.ILayoutConfig;
-    selectedWidgets(): IIterator<Widget>;
+    selectedWidgets(): IterableIterator<Widget>;
     selectWidget(widget: Widget): void;
-    spacing: number;
-    tabBars(): IIterator<TabBar<Widget>>;
-    tabsMovable: boolean;
-    widgets(): IIterator<Widget>;
+    get spacing(): number;
+    set spacing(value: number);
+    tabBars(): IterableIterator<TabBar<Widget>>;
+    get tabsConstrained(): boolean;
+    set tabsConstrained(value: boolean);
+    get tabsMovable(): boolean;
+    set tabsMovable(value: boolean);
+    widgets(): IterableIterator<Widget>;
 }
 
 // @public
@@ -371,11 +457,15 @@ export namespace DockPanel {
     export type ILayoutConfig = DockLayout.ILayoutConfig;
     export type InsertMode = DockLayout.InsertMode;
     export interface IOptions {
+        addButtonEnabled?: boolean;
+        document?: Document | ShadowRoot;
         edges?: IEdges;
+        hiddenMode?: Widget.HiddenMode;
         mode?: DockPanel.Mode;
         overlay?: IOverlay;
         renderer?: IRenderer;
         spacing?: number;
+        tabsConstrained?: boolean;
         tabsMovable?: boolean;
     }
     export interface IOverlay {
@@ -390,50 +480,47 @@ export namespace DockPanel {
         top: number;
     }
     export type IRenderer = DockLayout.IRenderer;
-    export type Mode = (
+    export type Mode = /**
+    * The single document mode.
+    *
+    * In this mode, only a single widget is visible at a time, and that
+    * widget fills the available layout space. No tab bars are visible.
+    */ 'single-document'
     /**
-     * The single document mode.
-     *
-     * In this mode, only a single widget is visible at a time, and that
-     * widget fills the available layout space. No tab bars are visible.
-     */
-    'single-document' |
-    /**
-     * The multiple document mode.
-     *
-     * In this mode, multiple documents are displayed in separate tab
-     * areas, and those areas can be individually resized by the user.
-     */
-    'multiple-document');
+    * The multiple document mode.
+    *
+    * In this mode, multiple documents are displayed in separate tab
+    * areas, and those areas can be individually resized by the user.
+    */
+    | 'multiple-document';
     export class Overlay implements IOverlay {
         constructor();
         hide(delay: number): void;
         readonly node: HTMLDivElement;
         show(geo: IOverlayGeometry): void;
-        }
+    }
     export class Renderer implements IRenderer {
         createHandle(): HTMLDivElement;
-        createTabBar(): TabBar<Widget>;
+        createTabBar(document?: Document | ShadowRoot): TabBar<Widget>;
     }
     const defaultRenderer: Renderer;
 }
 
 // @public
 export class FocusTracker<T extends Widget> implements IDisposable {
-    constructor();
-    readonly activeChanged: ISignal<this, FocusTracker.IChangedArgs<T>>;
-    readonly activeWidget: T | null;
+    get activeChanged(): ISignal<this, FocusTracker.IChangedArgs<T>>;
+    get activeWidget(): T | null;
     add(widget: T): void;
-    readonly currentChanged: ISignal<this, FocusTracker.IChangedArgs<T>>;
-    readonly currentWidget: T | null;
+    get currentChanged(): ISignal<this, FocusTracker.IChangedArgs<T>>;
+    get currentWidget(): T | null;
     dispose(): void;
     focusNumber(widget: T): number;
     handleEvent(event: Event): void;
     has(widget: T): boolean;
-    readonly isDisposed: boolean;
+    get isDisposed(): boolean;
     remove(widget: T): void;
-    readonly widgets: ReadonlyArray<T>;
-    }
+    get widgets(): ReadonlyArray<T>;
+}
 
 // @public
 export namespace FocusTracker {
@@ -445,16 +532,18 @@ export namespace FocusTracker {
 
 // @public
 export class GridLayout extends Layout {
+    [Symbol.iterator](): IterableIterator<Widget>;
     constructor(options?: GridLayout.IOptions);
     addWidget(widget: Widget): void;
     protected attachWidget(widget: Widget): void;
-    columnCount: number;
-    columnSpacing: number;
+    get columnCount(): number;
+    set columnCount(value: number);
+    get columnSpacing(): number;
+    set columnSpacing(value: number);
     columnStretch(index: number): number;
     protected detachWidget(widget: Widget): void;
     dispose(): void;
     protected init(): void;
-    iter(): IIterator<Widget>;
     protected onBeforeAttach(msg: Message): void;
     protected onBeforeShow(msg: Message): void;
     protected onChildHidden(msg: Widget.ChildMessage): void;
@@ -463,12 +552,14 @@ export class GridLayout extends Layout {
     protected onResize(msg: Widget.ResizeMessage): void;
     protected onUpdateRequest(msg: Message): void;
     removeWidget(widget: Widget): void;
-    rowCount: number;
-    rowSpacing: number;
+    get rowCount(): number;
+    set rowCount(value: number);
+    get rowSpacing(): number;
+    set rowSpacing(value: number);
     rowStretch(index: number): number;
     setColumnStretch(index: number, value: number): void;
     setRowStretch(index: number, value: number): void;
-    }
+}
 
 // @public
 export namespace GridLayout {
@@ -489,13 +580,14 @@ export namespace GridLayout {
 }
 
 // @public
-export abstract class Layout implements IIterable<Widget>, IDisposable {
+export abstract class Layout implements Iterable<Widget>, IDisposable {
+    abstract [Symbol.iterator](): IterableIterator<Widget>;
     constructor(options?: Layout.IOptions);
     dispose(): void;
-    fitPolicy: Layout.FitPolicy;
+    get fitPolicy(): Layout.FitPolicy;
+    set fitPolicy(value: Layout.FitPolicy);
     protected init(): void;
-    readonly isDisposed: boolean;
-    abstract iter(): IIterator<Widget>;
+    get isDisposed(): boolean;
     protected onAfterAttach(msg: Message): void;
     protected onAfterDetach(msg: Message): void;
     protected onAfterHide(msg: Message): void;
@@ -510,22 +602,21 @@ export abstract class Layout implements IIterable<Widget>, IDisposable {
     protected onFitRequest(msg: Message): void;
     protected onResize(msg: Widget.ResizeMessage): void;
     protected onUpdateRequest(msg: Message): void;
-    parent: Widget | null;
+    get parent(): Widget | null;
+    set parent(value: Widget | null);
     processParentMessage(msg: Message): void;
     abstract removeWidget(widget: Widget): void;
 }
 
 // @public
 export namespace Layout {
-    export type FitPolicy = (
+    export type FitPolicy = /**
+    * No size constraint will be applied to the parent widget.
+    */ 'set-no-constraint'
     /**
-     * No size constraint will be applied to the parent widget.
-     */
-    'set-no-constraint' |
-    /**
-     * The computed min size will be applied to the parent widget.
-     */
-    'set-min-size');
+    * The computed min size will be applied to the parent widget.
+    */
+    | 'set-min-size';
     export function getHorizontalAlignment(widget: Widget): HorizontalAlignment;
     export function getVerticalAlignment(widget: Widget): VerticalAlignment;
     export type HorizontalAlignment = 'left' | 'center' | 'right';
@@ -542,48 +633,50 @@ export class LayoutItem implements IDisposable {
     constructor(widget: Widget);
     dispose(): void;
     fit(): void;
-    readonly isAttached: boolean;
-    readonly isDisposed: boolean;
-    readonly isHidden: boolean;
-    readonly isVisible: boolean;
-    readonly maxHeight: number;
-    readonly maxWidth: number;
-    readonly minHeight: number;
-    readonly minWidth: number;
+    get isAttached(): boolean;
+    get isDisposed(): boolean;
+    get isHidden(): boolean;
+    get isVisible(): boolean;
+    get maxHeight(): number;
+    get maxWidth(): number;
+    get minHeight(): number;
+    get minWidth(): number;
     update(left: number, top: number, width: number, height: number): void;
     readonly widget: Widget;
-    }
+}
 
 // @public
 export class Menu extends Widget {
     constructor(options: Menu.IOptions);
-    readonly aboutToClose: ISignal<this, void>;
+    get aboutToClose(): ISignal<this, void>;
     activateNextItem(): void;
     activatePreviousItem(): void;
-    activeIndex: number;
-    activeItem: Menu.IItem | null;
+    get activeIndex(): number;
+    set activeIndex(value: number);
+    get activeItem(): Menu.IItem | null;
+    set activeItem(value: Menu.IItem | null);
     addItem(options: Menu.IItemOptions): Menu.IItem;
-    readonly childMenu: Menu | null;
+    get childMenu(): Menu | null;
     clearItems(): void;
     readonly commands: CommandRegistry;
-    readonly contentNode: HTMLUListElement;
+    get contentNode(): HTMLUListElement;
     dispose(): void;
     handleEvent(event: Event): void;
     insertItem(index: number, options: Menu.IItemOptions): Menu.IItem;
-    readonly items: ReadonlyArray<Menu.IItem>;
-    readonly leafMenu: Menu;
-    readonly menuRequested: ISignal<this, 'next' | 'previous'>;
+    get items(): ReadonlyArray<Menu.IItem>;
+    get leafMenu(): Menu;
+    get menuRequested(): ISignal<this, 'next' | 'previous'>;
     protected onActivateRequest(msg: Message): void;
     protected onAfterDetach(msg: Message): void;
     protected onBeforeAttach(msg: Message): void;
     protected onCloseRequest(msg: Message): void;
     protected onUpdateRequest(msg: Message): void;
     open(x: number, y: number, options?: Menu.IOpenOptions): void;
-    readonly parentMenu: Menu | null;
+    get parentMenu(): Menu | null;
     removeItem(item: Menu.IItem): void;
     removeItemAt(index: number): void;
     readonly renderer: Menu.IRenderer;
-    readonly rootMenu: Menu;
+    get rootMenu(): Menu;
     triggerActiveItem(): void;
 }
 
@@ -595,8 +688,7 @@ export namespace Menu {
         readonly className: string;
         readonly command: string;
         readonly dataset: CommandRegistry.Dataset;
-        // @deprecated (undocumented)
-        readonly icon: string;
+        readonly icon: VirtualElement.IRenderer | undefined;
         readonly iconClass: string;
         readonly iconLabel: string;
         readonly isEnabled: boolean;
@@ -626,14 +718,15 @@ export namespace Menu {
         readonly active: boolean;
         readonly collapsed: boolean;
         readonly item: IItem;
+        readonly onfocus?: () => void;
     }
     export interface IRenderer {
         renderItem(data: IRenderData): VirtualElement;
     }
     export type ItemType = 'command' | 'submenu' | 'separator';
     export class Renderer implements IRenderer {
-        constructor();
         createIconClass(data: IRenderData): string;
+        createItemARIA(data: IRenderData): ElementARIAAttrs;
         createItemClass(data: IRenderData): string;
         createItemDataset(data: IRenderData): ElementDataset;
         formatLabel(data: IRenderData): h.Child;
@@ -650,16 +743,18 @@ export namespace Menu {
 // @public
 export class MenuBar extends Widget {
     constructor(options?: MenuBar.IOptions);
-    activeIndex: number;
-    activeMenu: Menu | null;
+    get activeIndex(): number;
+    set activeIndex(value: number);
+    get activeMenu(): Menu | null;
+    set activeMenu(value: Menu | null);
     addMenu(menu: Menu): void;
-    readonly childMenu: Menu | null;
+    get childMenu(): Menu | null;
     clearMenus(): void;
-    readonly contentNode: HTMLUListElement;
+    get contentNode(): HTMLUListElement;
     dispose(): void;
     handleEvent(event: Event): void;
     insertMenu(index: number, menu: Menu): void;
-    readonly menus: ReadonlyArray<Menu>;
+    get menus(): ReadonlyArray<Menu>;
     protected onActivateRequest(msg: Message): void;
     protected onAfterDetach(msg: Message): void;
     protected onBeforeAttach(msg: Message): void;
@@ -673,18 +768,21 @@ export class MenuBar extends Widget {
 // @public
 export namespace MenuBar {
     export interface IOptions {
+        forceItemsPosition?: Menu.IOpenOptions;
         renderer?: IRenderer;
     }
     export interface IRenderData {
         readonly active: boolean;
+        // (undocumented)
+        readonly onfocus?: (event: FocusEvent) => void;
         readonly title: Title<Widget>;
     }
     export interface IRenderer {
         renderItem(data: IRenderData): VirtualElement;
     }
     export class Renderer implements IRenderer {
-        constructor();
         createIconClass(data: IRenderData): string;
+        createItemARIA(data: IRenderData): ElementARIAAttrs;
         createItemClass(data: IRenderData): string;
         createItemDataset(data: IRenderData): ElementDataset;
         formatLabel(data: IRenderData): h.Child;
@@ -700,7 +798,7 @@ export class Panel extends Widget {
     constructor(options?: Panel.IOptions);
     addWidget(widget: Widget): void;
     insertWidget(index: number, widget: Widget): void;
-    readonly widgets: ReadonlyArray<Widget>;
+    get widgets(): ReadonlyArray<Widget>;
 }
 
 // @public
@@ -712,38 +810,42 @@ export namespace Panel {
 
 // @public
 export class PanelLayout extends Layout {
+    [Symbol.iterator](): IterableIterator<Widget>;
     addWidget(widget: Widget): void;
     protected attachWidget(index: number, widget: Widget): void;
     protected detachWidget(index: number, widget: Widget): void;
     dispose(): void;
     protected init(): void;
     insertWidget(index: number, widget: Widget): void;
-    iter(): IIterator<Widget>;
     protected moveWidget(fromIndex: number, toIndex: number, widget: Widget): void;
     removeWidget(widget: Widget): void;
     removeWidgetAt(index: number): void;
-    readonly widgets: ReadonlyArray<Widget>;
-    }
+    get widgets(): ReadonlyArray<Widget>;
+}
 
 // @public
 export class ScrollBar extends Widget {
     constructor(options?: ScrollBar.IOptions);
-    readonly decrementNode: HTMLDivElement;
+    get decrementNode(): HTMLDivElement;
     handleEvent(event: Event): void;
-    readonly incrementNode: HTMLDivElement;
-    maximum: number;
+    get incrementNode(): HTMLDivElement;
+    get maximum(): number;
+    set maximum(value: number);
     protected onAfterDetach(msg: Message): void;
     protected onBeforeAttach(msg: Message): void;
     protected onUpdateRequest(msg: Message): void;
-    orientation: ScrollBar.Orientation;
-    page: number;
-    readonly pageRequested: ISignal<this, 'decrement' | 'increment'>;
-    readonly stepRequested: ISignal<this, 'decrement' | 'increment'>;
-    readonly thumbMoved: ISignal<this, number>;
-    readonly thumbNode: HTMLDivElement;
-    readonly trackNode: HTMLDivElement;
-    value: number;
-    }
+    get orientation(): ScrollBar.Orientation;
+    set orientation(value: ScrollBar.Orientation);
+    get page(): number;
+    set page(value: number);
+    get pageRequested(): ISignal<this, 'decrement' | 'increment'>;
+    get stepRequested(): ISignal<this, 'decrement' | 'increment'>;
+    get thumbMoved(): ISignal<this, number>;
+    get thumbNode(): HTMLDivElement;
+    get trackNode(): HTMLDivElement;
+    get value(): number;
+    set value(value: number);
+}
 
 // @public
 export namespace ScrollBar {
@@ -758,23 +860,26 @@ export namespace ScrollBar {
 
 // @public
 export class SingletonLayout extends Layout {
+    [Symbol.iterator](): IterableIterator<Widget>;
     protected attachWidget(widget: Widget): void;
     protected detachWidget(widget: Widget): void;
     dispose(): void;
     protected init(): void;
-    iter(): IIterator<Widget>;
     removeWidget(widget: Widget): void;
-    widget: Widget | null;
-    }
+    get widget(): Widget | null;
+    set widget(widget: Widget | null);
+}
 
 // @public
 export class SplitLayout extends PanelLayout {
     constructor(options: SplitLayout.IOptions);
-    alignment: SplitLayout.Alignment;
+    absoluteSizes(): number[];
+    get alignment(): SplitLayout.Alignment;
+    set alignment(value: SplitLayout.Alignment);
     protected attachWidget(index: number, widget: Widget): void;
     protected detachWidget(index: number, widget: Widget): void;
     dispose(): void;
-    readonly handles: ReadonlyArray<HTMLDivElement>;
+    get handles(): ReadonlyArray<HTMLDivElement>;
     protected init(): void;
     moveHandle(index: number, position: number): void;
     protected moveWidget(fromIndex: number, toIndex: number, widget: Widget): void;
@@ -785,12 +890,17 @@ export class SplitLayout extends PanelLayout {
     protected onFitRequest(msg: Message): void;
     protected onResize(msg: Widget.ResizeMessage): void;
     protected onUpdateRequest(msg: Message): void;
-    orientation: SplitLayout.Orientation;
+    get orientation(): SplitLayout.Orientation;
+    set orientation(value: SplitLayout.Orientation);
     relativeSizes(): number[];
     readonly renderer: SplitLayout.IRenderer;
-    setRelativeSizes(sizes: number[]): void;
-    spacing: number;
-    }
+    setRelativeSizes(sizes: number[], update?: boolean): void;
+    get spacing(): number;
+    set spacing(value: number);
+    protected updateItemPosition(i: number, isHorizontal: boolean, left: number, top: number, height: number, width: number, size: number): void;
+    // (undocumented)
+    protected widgetOffset: number;
+}
 
 // @public
 export namespace SplitLayout {
@@ -812,19 +922,23 @@ export namespace SplitLayout {
 // @public
 export class SplitPanel extends Panel {
     constructor(options?: SplitPanel.IOptions);
-    alignment: SplitPanel.Alignment;
+    get alignment(): SplitPanel.Alignment;
+    set alignment(value: SplitPanel.Alignment);
     dispose(): void;
     handleEvent(event: Event): void;
-    readonly handles: ReadonlyArray<HTMLDivElement>;
+    get handleMoved(): ISignal<this, void>;
+    get handles(): ReadonlyArray<HTMLDivElement>;
     protected onAfterDetach(msg: Message): void;
     protected onBeforeAttach(msg: Message): void;
     protected onChildAdded(msg: Widget.ChildMessage): void;
     protected onChildRemoved(msg: Widget.ChildMessage): void;
-    orientation: SplitPanel.Orientation;
+    get orientation(): SplitPanel.Orientation;
+    set orientation(value: SplitPanel.Orientation);
     relativeSizes(): number[];
-    readonly renderer: SplitPanel.IRenderer;
-    setRelativeSizes(sizes: number[]): void;
-    spacing: number;
+    get renderer(): SplitPanel.IRenderer;
+    setRelativeSizes(sizes: number[], update?: boolean): void;
+    get spacing(): number;
+    set spacing(value: number);
 }
 
 // @public
@@ -849,9 +963,12 @@ export namespace SplitPanel {
 
 // @public
 export class StackedLayout extends PanelLayout {
+    constructor(options?: StackedLayout.IOptions);
     protected attachWidget(index: number, widget: Widget): void;
     protected detachWidget(index: number, widget: Widget): void;
     dispose(): void;
+    get hiddenMode(): Widget.HiddenMode;
+    set hiddenMode(v: Widget.HiddenMode);
     protected moveWidget(fromIndex: number, toIndex: number, widget: Widget): void;
     protected onBeforeAttach(msg: Message): void;
     protected onBeforeShow(msg: Message): void;
@@ -860,15 +977,24 @@ export class StackedLayout extends PanelLayout {
     protected onFitRequest(msg: Message): void;
     protected onResize(msg: Widget.ResizeMessage): void;
     protected onUpdateRequest(msg: Message): void;
+}
+
+// @public
+export namespace StackedLayout {
+    export interface IOptions extends Layout.IOptions {
+        hiddenMode?: Widget.HiddenMode;
     }
+}
 
 // @public
 export class StackedPanel extends Panel {
     constructor(options?: StackedPanel.IOptions);
+    get hiddenMode(): Widget.HiddenMode;
+    set hiddenMode(v: Widget.HiddenMode);
     protected onChildAdded(msg: Widget.ChildMessage): void;
     protected onChildRemoved(msg: Widget.ChildMessage): void;
-    readonly widgetRemoved: ISignal<this, Widget>;
-    }
+    get widgetRemoved(): ISignal<this, Widget>;
+}
 
 // @public
 export namespace StackedPanel {
@@ -880,33 +1006,45 @@ export namespace StackedPanel {
 // @public
 export class TabBar<T> extends Widget {
     constructor(options?: TabBar.IOptions<T>);
+    get addButtonEnabled(): boolean;
+    set addButtonEnabled(value: boolean);
+    get addButtonNode(): HTMLDivElement;
+    get addRequested(): ISignal<this, void>;
     addTab(value: Title<T> | Title.IOptions<T>): Title<T>;
     allowDeselect: boolean;
     clearTabs(): void;
-    readonly contentNode: HTMLUListElement;
-    readonly currentChanged: ISignal<this, TabBar.ICurrentChangedArgs<T>>;
-    currentIndex: number;
-    currentTitle: Title<T> | null;
+    get contentNode(): HTMLUListElement;
+    get currentChanged(): ISignal<this, TabBar.ICurrentChangedArgs<T>>;
+    get currentIndex(): number;
+    set currentIndex(value: number);
+    get currentTitle(): Title<T> | null;
+    set currentTitle(value: Title<T> | null);
     dispose(): void;
+    get document(): Document | ShadowRoot;
     handleEvent(event: Event): void;
     insertBehavior: TabBar.InsertBehavior;
     insertTab(index: number, value: Title<T> | Title.IOptions<T>): Title<T>;
+    get name(): string;
+    set name(value: string);
     protected onAfterDetach(msg: Message): void;
     protected onBeforeAttach(msg: Message): void;
     protected onUpdateRequest(msg: Message): void;
-    orientation: TabBar.Orientation;
+    get orientation(): TabBar.Orientation;
+    set orientation(value: TabBar.Orientation);
     releaseMouse(): void;
     removeBehavior: TabBar.RemoveBehavior;
     removeTab(title: Title<T>): void;
     removeTabAt(index: number): void;
     readonly renderer: TabBar.IRenderer<T>;
-    readonly tabActivateRequested: ISignal<this, TabBar.ITabActivateRequestedArgs<T>>;
-    readonly tabCloseRequested: ISignal<this, TabBar.ITabCloseRequestedArgs<T>>;
-    readonly tabDetachRequested: ISignal<this, TabBar.ITabDetachRequestedArgs<T>>;
-    readonly tabMoved: ISignal<this, TabBar.ITabMovedArgs<T>>;
+    get tabActivateRequested(): ISignal<this, TabBar.ITabActivateRequestedArgs<T>>;
+    get tabCloseRequested(): ISignal<this, TabBar.ITabCloseRequestedArgs<T>>;
+    get tabDetachRequested(): ISignal<this, TabBar.ITabDetachRequestedArgs<T>>;
+    get tabMoved(): ISignal<this, TabBar.ITabMovedArgs<T>>;
     tabsMovable: boolean;
-    readonly titles: ReadonlyArray<Title<T>>;
-    }
+    get titles(): ReadonlyArray<Title<T>>;
+    get titlesEditable(): boolean;
+    set titlesEditable(value: boolean);
+}
 
 // @public
 export namespace TabBar {
@@ -916,26 +1054,28 @@ export namespace TabBar {
         readonly previousIndex: number;
         readonly previousTitle: Title<T> | null;
     }
-    export type InsertBehavior = (
+    export type InsertBehavior = /**
+    * The selected tab will not be changed.
+    */ 'none'
     /**
-     * The selected tab will not be changed.
-     */
-    'none' |
+    * The inserted tab will be selected.
+    */
+    | 'select-tab'
     /**
-     * The inserted tab will be selected.
-     */
-    'select-tab' |
-    /**
-     * The inserted tab will be selected if the current tab is null.
-     */
-    'select-tab-if-needed');
+    * The inserted tab will be selected if the current tab is null.
+    */
+    | 'select-tab-if-needed';
     export interface IOptions<T> {
+        addButtonEnabled?: boolean;
         allowDeselect?: boolean;
+        document?: Document | ShadowRoot;
         insertBehavior?: TabBar.InsertBehavior;
+        name?: string;
         orientation?: TabBar.Orientation;
         removeBehavior?: TabBar.RemoveBehavior;
         renderer?: IRenderer<T>;
         tabsMovable?: boolean;
+        titlesEditable?: boolean;
     }
     export interface IRenderData<T> {
         readonly current: boolean;
@@ -966,40 +1106,36 @@ export namespace TabBar {
         readonly title: Title<T>;
         readonly toIndex: number;
     }
-    export type Orientation = (
+    export type Orientation = /**
+    * The tabs are arranged in a single row, left-to-right.
+    *
+    * The tab text orientation is horizontal.
+    */ 'horizontal'
     /**
-     * The tabs are arranged in a single row, left-to-right.
-     *
-     * The tab text orientation is horizontal.
-     */
-    'horizontal' |
+    * The tabs are arranged in a single column, top-to-bottom.
+    *
+    * The tab text orientation is horizontal.
+    */
+    | 'vertical';
+    export type RemoveBehavior = /**
+    * No tab will be selected.
+    */ 'none'
     /**
-     * The tabs are arranged in a single column, top-to-bottom.
-     *
-     * The tab text orientation is horizontal.
-     */
-    'vertical');
-    export type RemoveBehavior = (
+    * The tab after the removed tab will be selected if possible.
+    */
+    | 'select-tab-after'
     /**
-     * No tab will be selected.
-     */
-    'none' |
+    * The tab before the removed tab will be selected if possible.
+    */
+    | 'select-tab-before'
     /**
-     * The tab after the removed tab will be selected if possible.
-     */
-    'select-tab-after' |
-    /**
-     * The tab before the removed tab will be selected if possible.
-     */
-    'select-tab-before' |
-    /**
-     * The previously selected tab will be selected if possible.
-     */
-    'select-previous-tab');
+    * The previously selected tab will be selected if possible.
+    */
+    | 'select-previous-tab';
     export class Renderer implements IRenderer<any> {
-        constructor();
-        readonly closeIconSelector: string;
+        readonly closeIconSelector = ".lm-TabBar-tabCloseIcon";
         createIconClass(data: IRenderData<any>): string;
+        createTabARIA(data: IRenderData<any>): ElementARIAAttrs;
         createTabClass(data: IRenderData<any>): string;
         createTabDataset(data: IRenderData<any>): ElementDataset;
         createTabKey(data: IRenderData<any>): string;
@@ -1008,23 +1144,31 @@ export namespace TabBar {
         renderIcon(data: IRenderData<any>): VirtualElement;
         renderLabel(data: IRenderData<any>): VirtualElement;
         renderTab(data: IRenderData<any>): VirtualElement;
-        }
+    }
     const defaultRenderer: Renderer;
+    const addButtonSelector = ".lm-TabBar-addButton";
 }
 
 // @public
 export class TabPanel extends Widget {
     constructor(options?: TabPanel.IOptions);
+    get addButtonEnabled(): boolean;
+    set addButtonEnabled(value: boolean);
+    get addRequested(): ISignal<this, TabBar<Widget>>;
     addWidget(widget: Widget): void;
-    readonly currentChanged: ISignal<this, TabPanel.ICurrentChangedArgs>;
-    currentIndex: number;
-    currentWidget: Widget | null;
+    get currentChanged(): ISignal<this, TabPanel.ICurrentChangedArgs>;
+    get currentIndex(): number;
+    set currentIndex(value: number);
+    get currentWidget(): Widget | null;
+    set currentWidget(value: Widget | null);
     insertWidget(index: number, widget: Widget): void;
     readonly stackedPanel: StackedPanel;
     readonly tabBar: TabBar<Widget>;
-    tabPlacement: TabPanel.TabPlacement;
-    tabsMovable: boolean;
-    readonly widgets: ReadonlyArray<Widget>;
+    get tabPlacement(): TabPanel.TabPlacement;
+    set tabPlacement(value: TabPanel.TabPlacement);
+    get tabsMovable(): boolean;
+    set tabsMovable(value: boolean);
+    get widgets(): ReadonlyArray<Widget>;
 }
 
 // @public
@@ -1036,43 +1180,53 @@ export namespace TabPanel {
         previousWidget: Widget | null;
     }
     export interface IOptions {
+        addButtonEnabled?: boolean;
+        document?: Document | ShadowRoot;
         renderer?: TabBar.IRenderer<Widget>;
         tabPlacement?: TabPlacement;
         tabsMovable?: boolean;
     }
-    export type TabPlacement = (
+    export type TabPlacement = /**
+    * The tabs are placed as a row above the content.
+    */ 'top'
     /**
-     * The tabs are placed as a row above the content.
-     */
-    'top' |
+    * The tabs are placed as a column to the left of the content.
+    */
+    | 'left'
     /**
-     * The tabs are placed as a column to the left of the content.
-     */
-    'left' |
+    * The tabs are placed as a column to the right of the content.
+    */
+    | 'right'
     /**
-     * The tabs are placed as a column to the right of the content.
-     */
-    'right' |
-    /**
-     * The tabs are placed as a row below the content.
-     */
-    'bottom');
+    * The tabs are placed as a row below the content.
+    */
+    | 'bottom';
 }
 
 // @public
-export class Title<T> {
+export class Title<T> implements IDisposable {
     constructor(options: Title.IOptions<T>);
-    caption: string;
-    readonly changed: ISignal<this, void>;
-    className: string;
-    closable: boolean;
-    dataset: Title.Dataset;
-    // @deprecated (undocumented)
-    icon: string;
-    iconClass: string;
-    iconLabel: string;
-    label: string;
-    mnemonic: number;
+    get caption(): string;
+    set caption(value: string);
+    get changed(): ISignal<this, void>;
+    get className(): string;
+    set className(value: string);
+    get closable(): boolean;
+    set closable(value: boolean);
+    get dataset(): Title.Dataset;
+    set dataset(value: Title.Dataset);
+    dispose(): void;
+    get icon(): VirtualElement.IRenderer | undefined;
+    set icon(value: VirtualElement.IRenderer | undefined);
+    get iconClass(): string;
+    set iconClass(value: string);
+    get iconLabel(): string;
+    set iconLabel(value: string);
+    get isDisposed(): boolean;
+    get label(): string;
+    set label(value: string);
+    get mnemonic(): number;
+    set mnemonic(value: number);
     readonly owner: T;
 }
 
@@ -1086,8 +1240,7 @@ export namespace Title {
         className?: string;
         closable?: boolean;
         dataset?: Dataset;
-        // @deprecated (undocumented)
-        icon?: string;
+        icon?: VirtualElement.IRenderer;
         iconClass?: string;
         iconLabel?: string;
         label?: string;
@@ -1101,22 +1254,26 @@ export class Widget implements IMessageHandler, IObservableDisposable {
     constructor(options?: Widget.IOptions);
     activate(): void;
     addClass(name: string): void;
-    children(): IIterator<Widget>;
+    children(): IterableIterator<Widget>;
     clearFlag(flag: Widget.Flag): void;
     close(): void;
     contains(widget: Widget): boolean;
-    readonly dataset: DOMStringMap;
+    get dataset(): DOMStringMap;
     dispose(): void;
-    readonly disposed: ISignal<this, void>;
+    get disposed(): ISignal<this, void>;
     fit(): void;
     hasClass(name: string): boolean;
+    get hiddenMode(): Widget.HiddenMode;
+    set hiddenMode(value: Widget.HiddenMode);
     hide(): void;
-    id: string;
-    readonly isAttached: boolean;
-    readonly isDisposed: boolean;
-    readonly isHidden: boolean;
-    readonly isVisible: boolean;
-    layout: Layout | null;
+    get id(): string;
+    set id(value: string);
+    get isAttached(): boolean;
+    get isDisposed(): boolean;
+    get isHidden(): boolean;
+    get isVisible(): boolean;
+    get layout(): Layout | null;
+    set layout(value: Layout | null);
     readonly node: HTMLElement;
     protected notifyLayout(msg: Message): void;
     protected onActivateRequest(msg: Message): void;
@@ -1134,14 +1291,15 @@ export class Widget implements IMessageHandler, IObservableDisposable {
     protected onFitRequest(msg: Message): void;
     protected onResize(msg: Widget.ResizeMessage): void;
     protected onUpdateRequest(msg: Message): void;
-    parent: Widget | null;
+    get parent(): Widget | null;
+    set parent(value: Widget | null);
     processMessage(msg: Message): void;
     removeClass(name: string): void;
     setFlag(flag: Widget.Flag): void;
     setHidden(hidden: boolean): void;
     show(): void;
     testFlag(flag: Widget.Flag): boolean;
-    readonly title: Title<Widget>;
+    get title(): Title<Widget>;
     toggleClass(name: string, force?: boolean): boolean;
     update(): void;
 }
@@ -1161,8 +1319,13 @@ export namespace Widget {
         IsHidden = 4,
         IsVisible = 8
     }
+    export enum HiddenMode {
+        Display = 0,
+        Scale = 1
+    }
     export interface IOptions {
         node?: HTMLElement;
+        tag?: keyof HTMLElementTagNameMap;
     }
     export namespace Msg {
         const BeforeShow: Message;
@@ -1188,7 +1351,6 @@ export namespace Widget {
         const UnknownSize: ResizeMessage;
     }
 }
-
 
 // (No @packageDocumentation comment for this package)
 
