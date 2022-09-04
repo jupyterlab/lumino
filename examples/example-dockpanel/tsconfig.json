@@ -8,9 +8,9 @@
     "sourceMap": true,
     "module": "commonjs",
     "moduleResolution": "node",
-    "target": "ES6",
+    "target": "ES2018",
     "outDir": "./build",
-    "lib": ["ES6", "DOM"],
+    "lib": ["DOM", "ES2018"],
     "types": []
   },
   "include": ["src/*"]

@@ -14,7 +14,7 @@ All invocations of `each(...)` have been removed in Lumino 2. See, for example, 
 
 ### Use `[].forEach(...)` sparingly
 
-Now that we support native ES6 iteration, `for (const value of someArray) {...}` should be favored over `someArray.forEach(...)` because it will not require a context shift every time it invokes the function being applied.
+Now that we support native ES2018 iteration, `for (const value of someArray) {...}` should be favored over `someArray.forEach(...)` because it will not require a context shift every time it invokes the function being applied.
 
 ### Use `[Symbol.iterator]()` sparingly
 

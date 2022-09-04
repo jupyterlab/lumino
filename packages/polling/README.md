@@ -120,4 +120,4 @@ expect(ticker.join(' ')).to.equal(expected);
 
 ### Note for consumers of async iterators
 
-The `Poll` class itself only uses `ES6` (and `DOM`) types in its `lib` collection **but** in order to use `for-await...of` loops in TypeScript, you will need to use `ES2018` or above in your `lib` array in `tsconfig.json`.
+In order to use `for-await...of` loops in TypeScript, you will need to use `ES2018` or above in your `lib` array in `tsconfig.json`.

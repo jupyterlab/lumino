@@ -2,7 +2,7 @@
   "extends": "../../tsconfigbase",
   "compilerOptions": {
     "declarationDir": "types",
-    "lib": ["ES6"],
+    "lib": ["ES2018"],
     "outDir": "lib",
     "rootDir": "src"
   },
