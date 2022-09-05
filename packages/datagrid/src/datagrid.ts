@@ -3484,7 +3484,7 @@ export class DataGrid extends Widget {
       let x = this.headerWidth + this._columnSections.offsetOf(c);
       this.paintContent(x, 0, vw - x, vh);
     } else if (delta < 0) {
-      this.paintContent(vw + delta, 0, -delta + 1, vh);
+      this.paintContent(vw + delta, 0, -delta, vh);
     }
 
     // Paint the overlay.
@@ -3585,7 +3585,7 @@ export class DataGrid extends Widget {
       let y = this.headerHeight + this._rowSections.offsetOf(r);
       this.paintContent(0, y, vw, vh - y);
     } else if (delta < 0) {
-      this.paintContent(0, vh + delta, vw, -delta + 1);
+      this.paintContent(0, vh + delta, vw, -delta);
     }
 
     // Paint the overlay.
@@ -4668,30 +4668,30 @@ export class DataGrid extends Widget {
     // after the move, new region contains entirety of the merge groups
     rgn = JSONExt.deepCopy(rgn);
 
-    const joinedGroup = CellGroup.joinCellGroupWithMergedCellGroups(
-      this.dataModel!,
-      {
-        r1: rgn.row,
-        r2: rgn.row + rgn.rowSizes.length - 1,
-        c1: rgn.column,
-        c2: rgn.column + rgn.columnSizes.length - 1
-      },
-      rgn.region
-    );
+    // const joinedGroup = CellGroup.joinCellGroupWithMergedCellGroups(
+    //   this.dataModel!,
+    //   {
+    //     r1: rgn.row,
+    //     r2: rgn.row + rgn.rowSizes.length - 1,
+    //     c1: rgn.column,
+    //     c2: rgn.column + rgn.columnSizes.length - 1
+    //   },
+    //   rgn.region
+    // );
 
-    for (let r = joinedGroup.r1; r < rgn.row; r++) {
-      const h = this._getRowSize(rgn.region, r);
-      rgn.y -= h;
-      rgn.rowSizes = [h].concat(rgn.rowSizes);
-    }
-    rgn.row = joinedGroup.r1;
+    // for (let r = joinedGroup.r1; r < rgn.row; r++) {
+    //   const h = this._getRowSize(rgn.region, r);
+    //   rgn.y -= h;
+    //   rgn.rowSizes = [h].concat(rgn.rowSizes);
+    // }
+    // rgn.row = joinedGroup.r1;
 
-    for (let c = joinedGroup.c1; c < rgn.column; c++) {
-      const w = this._getColumnSize(rgn.region, c);
-      rgn.x -= w;
-      rgn.columnSizes = [w].concat(rgn.columnSizes);
-    }
-    rgn.column = joinedGroup.c1;
+    // for (let c = joinedGroup.c1; c < rgn.column; c++) {
+    //   const w = this._getColumnSize(rgn.region, c);
+    //   rgn.x -= w;
+    //   rgn.columnSizes = [w].concat(rgn.columnSizes);
+    // }
+    // rgn.column = joinedGroup.c1;
 
     // Set up the cell config object for rendering.
     let config = {
@@ -4794,10 +4794,6 @@ export class DataGrid extends Widget {
         // Clear the buffer rect for the cell.
         gc.clearRect(x, y, width, height);
 
-        // Why are there two saves?
-        // Save the GC state.
-        gc.save();
-
         // Get the value for the cell.
         let value: any;
         try {
@@ -4832,9 +4828,6 @@ export class DataGrid extends Widget {
 
         // Paint the cell into the off-screen buffer.
         try {
-          if (groupIndex !== -1) {
-            console.log('drawing merged cell anyway')
-          }
           renderer.paint(gc, config);
         } catch (err) {
           console.error(err);
@@ -4897,16 +4890,6 @@ export class DataGrid extends Widget {
     );
 
     for (const group of cellGroups) {
-      let x = 0;
-      for (let c = 0; c < group.c1; c++) {
-        x += this._getColumnSize(rgn.region, c);
-      }
-
-      let y = 0;
-      for (let r = 0; r < group.r1; r++) {
-        y += this._getRowSize(rgn.region, r);
-      }
-
       let width = 0;
       for (let c = group.c1; c <= group.c2; c++) {
         width += this._getColumnSize(rgn.region, c);
@@ -4934,8 +4917,29 @@ export class DataGrid extends Widget {
         console.error(err);
       }
 
-      config.x = rgn.x + x;
-      config.y = rgn.y + y;
+      let x = 0;
+      let y = 0;
+      switch (rgn.region) {
+        case 'body':
+          x = this._columnSections.offsetOf(group.c1) + this.headerWidth - this._scrollX;
+          y = this._rowSections.offsetOf(group.r1) + this.headerHeight - this._scrollY;
+          break;
+        case 'column-header':
+          x = this._columnSections.offsetOf(group.c1) + this.headerWidth - this._scrollX;
+          y = this._rowSections.offsetOf(group.r1) - this._scrollY;
+          break;
+        case 'row-header':
+          x = this._columnSections.offsetOf(group.c1) - this._scrollX;
+          y = this._rowSections.offsetOf(group.r1) + this.headerHeight - this._scrollY;
+          break;
+        case 'corner-header':
+          x = this._columnSections.offsetOf(group.c1);
+          y = this._rowSections.offsetOf(group.r1);
+          break;
+      }
+
+      config.x = x;
+      config.y = y;
       config.width = width;
       config.height = height;
       config.region = rgn.region;
@@ -4944,13 +4948,13 @@ export class DataGrid extends Widget {
       config.value = value;
       config.metadata = metadata;
 
-      console.log('trying to draw', JSON.stringify(config))
+      // console.log('trying to draw', JSON.stringify(config))
 
       // Get the renderer for the cell.
       let renderer = this._cellRenderers.get(config);
 
       // Clear the buffer rect for the cell.
-      gc.clearRect(x, y, width, height);
+      gc.clearRect(config.x, config.y, width, height);
 
       // Save the GC state.
       gc.save();
