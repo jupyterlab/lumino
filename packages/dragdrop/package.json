@@ -47,8 +47,7 @@
   },
   "dependencies": {
     "@lumino/coreutils": "^2.0.0-alpha.3",
-    "@lumino/disposable": "^2.0.0-alpha.3",
-    "rollup-plugin-styles": "^4.0.0"
+    "@lumino/disposable": "^2.0.0-alpha.3"
   },
   "devDependencies": {
     "@microsoft/api-extractor": "^7.6.0",
@@ -71,6 +70,7 @@
     "rollup": "^2.77.2",
     "rollup-plugin-postcss": "^4.0.2",
     "rollup-plugin-sourcemaps": "^0.6.3",
+    "rollup-plugin-styles": "^4.0.0",
     "style-loader": "^1.0.2",
     "terser": "^5.7.1",
     "tslib": "^2.4.0",
