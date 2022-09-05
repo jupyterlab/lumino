@@ -3189,14 +3189,14 @@ export class DataGrid extends Widget {
     }
 
     // Render entire grid if scrolling merged cells grid
-    const paintEverything = Private.shouldPaintEverything(this._dataModel!);
+    // const paintEverything = Private.shouldPaintEverything(this._dataModel!);
 
-    if (paintEverything) {
-      this.paintContent(0, 0, vw, vh);
-      this._paintOverlay();
-      this._syncScrollState();
-      return;
-    }
+    // if (paintEverything) {
+    //   this.paintContent(0, 0, vw, vh);
+    //   this._paintOverlay();
+    //   this._syncScrollState();
+    //   return;
+    // }
 
     // Compute the size delta.
     let delta = newSize - oldSize;
@@ -3311,14 +3311,14 @@ export class DataGrid extends Widget {
     }
 
     // Render entire grid if scrolling merged cells grid
-    const paintEverything = Private.shouldPaintEverything(this._dataModel!);
+    // const paintEverything = Private.shouldPaintEverything(this._dataModel!);
 
-    if (paintEverything) {
-      this.paintContent(0, 0, vw, vh);
-      this._paintOverlay();
-      this._syncScrollState();
-      return;
-    }
+    // if (paintEverything) {
+    //   this.paintContent(0, 0, vw, vh);
+    //   this._paintOverlay();
+    //   this._syncScrollState();
+    //   return;
+    // }
 
     // Compute the size delta.
     let delta = newSize - oldSize;
@@ -3433,14 +3433,14 @@ export class DataGrid extends Widget {
     }
 
     // Render entire grid if scrolling merged cells grid
-    const paintEverything = Private.shouldPaintEverything(this._dataModel!);
+    // const paintEverything = Private.shouldPaintEverything(this._dataModel!);
 
-    if (paintEverything) {
-      this.paintContent(0, 0, vw, vh);
-      this._paintOverlay();
-      this._syncScrollState();
-      return;
-    }
+    // if (paintEverything) {
+    //   this.paintContent(0, 0, vw, vh);
+    //   this._paintOverlay();
+    //   this._syncScrollState();
+    //   return;
+    // }
 
     // Compute the size delta.
     let delta = newSize - oldSize;
@@ -3531,14 +3531,14 @@ export class DataGrid extends Widget {
     }
 
     // Render entire grid if scrolling merged cells grid
-    const paintEverything = Private.shouldPaintEverything(this._dataModel!);
+    // const paintEverything = Private.shouldPaintEverything(this._dataModel!);
 
-    if (paintEverything) {
-      this.paintContent(0, 0, vw, vh);
-      this._paintOverlay();
-      this._syncScrollState();
-      return;
-    }
+    // if (paintEverything) {
+    //   this.paintContent(0, 0, vw, vh);
+    //   this._paintOverlay();
+    //   this._syncScrollState();
+    //   return;
+    // }
 
     // Paint the overlay.
     this._paintOverlay();
@@ -4652,17 +4652,17 @@ export class DataGrid extends Widget {
       return;
     }
 
-    // Determine if the cell intersects with a merged group at row or column
-    let intersectingColumnGroups = CellGroup.getCellGroupsAtColumn(
-      this._dataModel!,
-      rgn.region,
-      rgn.column
-    );
-    let intersectingRowGroups = CellGroup.getCellGroupsAtRow(
-      this._dataModel!,
-      rgn.region,
-      rgn.row
-    );
+    // // Determine if the region intersects with a merged group at row or column
+    // let intersectingColumnGroups = CellGroup.getCellGroupsAtColumn(
+    //   this._dataModel!,
+    //   rgn.region,
+    //   rgn.column
+    // );
+    // let intersectingRowGroups = CellGroup.getCellGroupsAtRow(
+    //   this._dataModel!,
+    //   rgn.region,
+    //   rgn.row
+    // );
 
     // move the bounds of the region if edges of the region are part of a merge group.
     // after the move, new region contains entirety of the merge groups
@@ -4761,38 +4761,40 @@ export class DataGrid extends Widget {
         yOffset = height;
 
         /**
-         * For merged cell regions, only rendering the merged region
-         * if the "parent" cell is the one being painted. Bail otherwise.
+         * For merged cell regions, don't do anything, we draw merged regions later.
          */
         if (groupIndex !== -1) {
-          const group = this.dataModel!.group(config.region, groupIndex)!;
-          if (group.r1 === row && group.c1 === column) {
-            width = 0;
-            for (let c = group.c1; c <= group.c2; c++) {
-              width += this._getColumnSize(config.region, c);
-            }
+          y += yOffset;
+          continue;
+        //   const group = this.dataModel!.group(config.region, groupIndex)!;
+        //   if (group.r1 === row && group.c1 === column) {
+        //     width = 0;
+        //     for (let c = group.c1; c <= group.c2; c++) {
+        //       width += this._getColumnSize(config.region, c);
+        //     }
 
-            height = 0;
-            for (let r = group.r1; r <= group.r2; r++) {
-              height += this._getRowSize(config.region, r);
-            }
-          } else {
-            y += yOffset;
-            continue;
-          }
-        } else {
-          /**
-           * Reset column width if we're rendering a column-header
-           * which is not part of a merged cell group.
-           */
-          if (rgn.region == 'column-header') {
-            width = rgn.columnSizes[i];
-          }
+        //     height = 0;
+        //     for (let r = group.r1; r <= group.r2; r++) {
+        //       height += this._getRowSize(config.region, r);
+        //     }
+        //   } else {
+        //     y += yOffset;
+        //     continue;
+        //   }
+        // } else {
+        //   /**
+        //    * Reset column width if we're rendering a column-header
+        //    * which is not part of a merged cell group.
+        //    */
+        //   if (rgn.region == 'column-header') {
+        //     width = rgn.columnSizes[i];
+        //   }
         }
 
         // Clear the buffer rect for the cell.
         gc.clearRect(x, y, width, height);
 
+        // Why are there two saves?
         // Save the GC state.
         gc.save();
 
@@ -4830,6 +4832,9 @@ export class DataGrid extends Widget {
 
         // Paint the cell into the off-screen buffer.
         try {
+          if (groupIndex !== -1) {
+            console.log('drawing merged cell anyway')
+          }
           renderer.paint(gc, config);
         } catch (err) {
           console.error(err);
@@ -4846,32 +4851,33 @@ export class DataGrid extends Widget {
         let y1 = Math.max(rgn.yMin, config.y);
         let y2 = Math.min(config.y + config.height - 1, rgn.yMax);
 
-        if (
-          intersectingColumnGroups.length !== 0 ||
-          intersectingRowGroups.length !== 0
-        ) {
-          if (x2 > x1 && y2 > y1) {
-            this._blitContent(
-              this._buffer,
-              x1,
-              y1,
-              x2 - x1 + 1,
-              y2 - y1 + 1,
-              x1,
-              y1
-            );
-          }
-        } else {
-          this._blitContent(
-            this._buffer,
-            x1,
-            y1,
-            x2 - x1 + 1,
-            y2 - y1 + 1,
-            x1,
-            y1
-          );
-        }
+        // TODO Do we still need this?
+        // if (
+        //   intersectingColumnGroups.length !== 0 ||
+        //   intersectingRowGroups.length !== 0
+        // ) {
+        //   if (x2 > x1 && y2 > y1) {
+        //     this._blitContent(
+        //       this._buffer,
+        //       x1,
+        //       y1,
+        //       x2 - x1 + 1,
+        //       y2 - y1 + 1,
+        //       x1,
+        //       y1
+        //     );
+        //   }
+        // } else {
+        this._blitContent(
+          this._buffer,
+          x1,
+          y1,
+          x2 - x1 + 1,
+          y2 - y1 + 1,
+          x1,
+          y1
+        );
+        // }
 
         // Increment the running Y coordinate.
         y += yOffset;
@@ -4882,6 +4888,100 @@ export class DataGrid extends Widget {
 
       // Increment the running X coordinate.
       x += xOffset;
+    }
+
+    // Draw merged groups that intersects with the region
+    const cellGroups = CellGroup.getCellGroupsAtRegion(
+      this.dataModel!,
+      rgn.region
+    );
+
+    for (const group of cellGroups) {
+      let x = 0;
+      for (let c = 0; c < group.c1; c++) {
+        x += this._getColumnSize(rgn.region, c);
+      }
+
+      let y = 0;
+      for (let r = 0; r < group.r1; r++) {
+        y += this._getRowSize(rgn.region, r);
+      }
+
+      let width = 0;
+      for (let c = group.c1; c <= group.c2; c++) {
+        width += this._getColumnSize(rgn.region, c);
+      }
+
+      let height = 0;
+      for (let r = group.r1; r <= group.r2; r++) {
+        height += this._getRowSize(rgn.region, r);
+      }
+
+      let value: any;
+      try {
+        value = this._dataModel.data(rgn.region, group.r1, group.c1);
+      } catch (err) {
+        value = undefined;
+        console.error(err);
+      }
+
+      // Get the metadata for the cell.
+      let metadata: DataModel.Metadata;
+      try {
+        metadata = this._dataModel.metadata(rgn.region, group.r1, group.c1);
+      } catch (err) {
+        metadata = DataModel.emptyMetadata;
+        console.error(err);
+      }
+
+      config.x = rgn.x + x;
+      config.y = rgn.y + y;
+      config.width = width;
+      config.height = height;
+      config.region = rgn.region;
+      config.row = group.r1;
+      config.column = group.c1;
+      config.value = value;
+      config.metadata = metadata;
+
+      console.log('trying to draw', JSON.stringify(config))
+
+      // Get the renderer for the cell.
+      let renderer = this._cellRenderers.get(config);
+
+      // Clear the buffer rect for the cell.
+      gc.clearRect(x, y, width, height);
+
+      // Save the GC state.
+      gc.save();
+
+      // Paint the cell into the off-screen buffer.
+      try {
+        renderer.paint(gc, config);
+      } catch (err) {
+        console.error(err);
+      }
+
+      // Restore the GC state.
+      gc.restore();
+
+      // Compute the actual X bounds for the cell.
+      let x1 = Math.max(rgn.xMin, config.x);
+      let x2 = Math.min(config.x + config.width - 1, rgn.xMax);
+
+      // Compute the actual Y bounds for the cell.
+      let y1 = Math.max(rgn.yMin, config.y);
+      let y2 = Math.min(config.y + config.height - 1, rgn.yMax);
+
+      this._blitContent(
+        this._buffer,
+        x1,
+        y1,
+        x2 - x1 + 1,
+        y2 - y1 + 1,
+        x1,
+        y1
+      );
     }
 
     // Dispose of the wrapped gc.
