@@ -855,7 +855,7 @@ namespace Private {
     const collection = new Map<string, boolean>();
 
     // Collect the auto-start plugins.
-    for (const id in plugins) {
+    for (const id of plugins.keys()) {
       if (plugins.get(id)!.autoStart) {
         collection.set(id, true);
       }

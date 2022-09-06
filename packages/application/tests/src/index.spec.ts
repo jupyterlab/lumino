@@ -72,6 +72,20 @@ describe('@lumino/application', () => {
         expect(app.isPluginActivated(id)).to.be.true;
       });
 
+      it('should be true for an autoStart plugin', async () => {
+        const app = new Application({ shell: new Widget() });
+        const id = 'plugin1';
+        app.registerPlugin({
+          id,
+          activate: () => {
+            // no-op
+          },
+          autoStart: true
+        });
+        await app.start();
+        expect(app.isPluginActivated(id)).to.be.true;
+      });
+
       it('should be false for not activated plugin', async () => {
         const app = new Application({ shell: new Widget() });
         const id = 'plugin1';
