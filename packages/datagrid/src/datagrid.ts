@@ -39,8 +39,6 @@ import {
   ICellEditorController
 } from './celleditorcontroller';
 
-import { JSONExt } from '@lumino/coreutils';
-
 import { TextRenderer } from './textrenderer';
 
 /**
@@ -3355,10 +3353,16 @@ export class DataGrid extends Widget {
     // Blit the valid content to the destination.
     this._blitContent(this._canvas, sx, sy, sw, sh, dx, dy);
 
+    // this._canvasGC.lineWidth = 10;
+    // this._canvasGC.strokeRect(sx, sy, sw, sh);
+
     // Repaint the section if needed.
     if (newSize > 0 && offset + newSize > hw) {
       this.paintContent(pos, 0, offset + newSize - pos, vh);
     }
+
+    // this._canvasGC.lineWidth = 10;
+    // this._canvasGC.strokeRect(pos, 0, offset + newSize - pos, vh);
 
     // Paint the trailing space as needed.
     if (this._stretchLastColumn && this.pageWidth > this.bodyWidth) {
@@ -3368,6 +3372,19 @@ export class DataGrid extends Widget {
     } else if (delta < 0) {
       this.paintContent(vw + delta, 0, -delta, vh);
     }
+
+    // Repaint merged cells that are intersected by the resized column
+    // Otherwise it will be cut in two and drawn incorrectly
+
+    // x = this._columnSections.offsetOf(0) + this.headerWidth - this._scrollX;
+    // y = this._rowSections.offsetOf(group.r1) + this.headerHeight - this._scrollY;
+
+    this.paintMergedCellsAtColumn(
+      'body', index,
+      this._columnSections.offsetOf(0), 3000,
+      this._rowSections.offsetOf(0), 3000
+    );
+    // this.paintMergedCellsAtColumn('column-header', index);
 
     // Paint the overlay.
     this._paintOverlay();
@@ -3765,6 +3782,56 @@ export class DataGrid extends Widget {
   }
 
   /**
+   * Force a repaint of cells group.
+   */
+  //  protected paintCellGroup(cellGroup: CellGroup, rgn: DataModel.CellRegion, xMin: number, xMax: number, yMin: number, yMax: number) {
+  //   const mergedCellRegion: Private.PaintRegion = {
+  //     region: rgn,
+  //     xMin: ,
+  //     yMin: ,
+  //     xMax: x2,
+  //     yMax: y2,
+  //     x,
+  //     y,
+  //     width,
+  //     height,
+  //     row: r1,
+  //     column: c1,
+  //     rowSizes,
+  //     columnSizes
+  //   };
+
+    // Draw the background.
+    // this._drawBackground(mergedCellRegion, this._style.backgroundColor);
+
+    // Draw the row background.
+    // this._drawRowBackground(mergedCellRegion, this._style.rowBackgroundColor);
+
+    // Draw the column background.
+    // this._drawColumnBackground(mergedCellRegion, this._style.columnBackgroundColor);
+
+  //   this._drawCellGroup(cellGroup, mergedCellRegion);
+  // }
+
+  /**
+   * Force a repaint of some grouped cells that are intersecting a given column.
+   */
+  protected paintMergedCellsAtColumn(rgn: DataModel.CellRegion, index: number, xMin: number, xMax: number, yMin: number, yMax: number) {
+    const cellGroups = CellGroup.getCellGroupsAtColumn(this.dataModel!, rgn, index);
+
+    this._drawMergedCellsGroups(cellGroups, rgn, xMin, yMin, xMax, yMax);
+  }
+
+  /**
+   * Force a repaint of some grouped cells that are intersecting a given row.
+   */
+   protected paintMergedCellsAtRow(rgn: DataModel.CellRegion, index: number, xMin: number, xMax: number, yMin: number, yMax: number) {
+    const cellGroups = CellGroup.getCellGroupsAtRow(this.dataModel!, rgn, index);
+
+    this._drawMergedCellsGroups(cellGroups, rgn, xMin, yMin, xMax, yMax);
+  }
+
+  /**
    * Resizes body column headers so their text fits
    * without clipping or wrapping.
    * @param dataModel
@@ -4073,6 +4140,9 @@ export class DataGrid extends Widget {
     // Draw the cell content for the paint region.
     this._drawCells(rgn);
 
+    // Draw the cell groups for the paint region
+    this._drawMergedCells(rgn);
+
     // Draw the horizontal grid lines.
     this._drawHorizontalGridLines(
       rgn,
@@ -4206,6 +4276,9 @@ export class DataGrid extends Widget {
 
     // Draw the cell content for the paint region.
     this._drawCells(rgn);
+
+    // Draw the cell groups for the paint region
+    this._drawMergedCells(rgn);
 
     // Draw the horizontal grid lines.
     this._drawHorizontalGridLines(
@@ -4342,6 +4415,9 @@ export class DataGrid extends Widget {
     // Draw the cell content for the paint region.
     this._drawCells(rgn);
 
+    // Draw the cell groups for the paint region
+    this._drawMergedCells(rgn);
+
     // Draw the horizontal grid lines.
     this._drawHorizontalGridLines(
       rgn,
@@ -4460,6 +4536,9 @@ export class DataGrid extends Widget {
 
     // Draw the cell content for the paint region.
     this._drawCells(rgn);
+
+    // Draw the cell groups for the paint region
+    this._drawMergedCells(rgn);
 
     // Draw the horizontal grid lines.
     this._drawHorizontalGridLines(
@@ -4612,10 +4691,6 @@ export class DataGrid extends Widget {
       return;
     }
 
-    // move the bounds of the region if edges of the region are part of a merge group.
-    // after the move, new region contains entirety of the merge groups
-    rgn = JSONExt.deepCopy(rgn);
-
     // Set up the cell config object for rendering.
     let config = {
       x: 0,
@@ -4757,11 +4832,21 @@ export class DataGrid extends Widget {
       x += width;
     }
 
-    // Draw merged groups that intersects with the region
-    const cellGroups = CellGroup.getCellGroupsAtRegion(
-      this.dataModel!,
-      rgn.region
-    );
+    // Dispose of the wrapped gc.
+    gc.dispose();
+
+    // Restore the final buffer gc state.
+    this._bufferGC.restore();
+  }
+
+  /**
+   * Draw the cell groups for the given paint region.
+   */
+  private _drawMergedCells(rgn: Private.PaintRegion): void {
+    // Bail if there is no data model.
+    if (!this._dataModel) {
+      return;
+    }
 
     // TODO Move this in the utils dir (but we need the PaintRegion typing)
     const intersects = (grp: CellGroup, rgn: Private.PaintRegion) => {
@@ -4777,24 +4862,59 @@ export class DataGrid extends Widget {
       return dx >= 0 && dy >= 0;
     }
 
-    for (const group of cellGroups) {
-      if (!intersects(group, rgn)) {
-        continue;
-      }
+    // Draw only merged groups that intersects with the region
+    const cellGroups = CellGroup.getCellGroupsAtRegion(
+      this.dataModel!,
+      rgn.region
+    ).filter((group) => {
+      return intersects(group, rgn);
+    });
 
+    return this._drawMergedCellsGroups(cellGroups, rgn.region, rgn.xMin, rgn.yMin, rgn.xMax, rgn.yMax);
+  }
+
+  /**
+   * Draw the given cell groups.
+   */
+  private _drawMergedCellsGroups(cellGroups: CellGroup[], rgn: DataModel.CellRegion, xMin: number, yMin: number, xMax: number, yMax: number): void {
+    // Bail if there is no data model.
+    if (!this._dataModel) {
+      return;
+    }
+
+    // Set up the cell config object for rendering.
+    let config = {
+      x: 0,
+      y: 0,
+      width: 0,
+      height: 0,
+      region: rgn,
+      row: 0,
+      column: 0,
+      value: null as any,
+      metadata: DataModel.emptyMetadata
+    };
+
+    // Save the buffer gc before wrapping.
+    this._bufferGC.save();
+
+    // Wrap the buffer gc for painting the cells.
+    let gc = new GraphicsContext(this._bufferGC);
+
+    for (const group of cellGroups) {
       let width = 0;
       for (let c = group.c1; c <= group.c2; c++) {
-        width += this._getColumnSize(rgn.region, c);
+        width += this._getColumnSize(rgn, c);
       }
 
       let height = 0;
       for (let r = group.r1; r <= group.r2; r++) {
-        height += this._getRowSize(rgn.region, r);
+        height += this._getRowSize(rgn, r);
       }
 
       let value: any;
       try {
-        value = this._dataModel.data(rgn.region, group.r1, group.c1);
+        value = this._dataModel.data(rgn, group.r1, group.c1);
       } catch (err) {
         value = undefined;
         console.error(err);
@@ -4803,7 +4923,7 @@ export class DataGrid extends Widget {
       // Get the metadata for the cell.
       let metadata: DataModel.Metadata;
       try {
-        metadata = this._dataModel.metadata(rgn.region, group.r1, group.c1);
+        metadata = this._dataModel.metadata(rgn, group.r1, group.c1);
       } catch (err) {
         metadata = DataModel.emptyMetadata;
         console.error(err);
@@ -4811,7 +4931,7 @@ export class DataGrid extends Widget {
 
       let x = 0;
       let y = 0;
-      switch (rgn.region) {
+      switch (rgn) {
         case 'body':
           x = this._columnSections.offsetOf(group.c1) + this.headerWidth - this._scrollX;
           y = this._rowSections.offsetOf(group.r1) + this.headerHeight - this._scrollY;
@@ -4834,17 +4954,32 @@ export class DataGrid extends Widget {
       config.y = y;
       config.width = width;
       config.height = height;
-      config.region = rgn.region;
+      config.region = rgn;
       config.row = group.r1;
       config.column = group.c1;
       config.value = value;
       config.metadata = metadata;
+
+      // Compute the actual X bounds for the cell.
+      let x1 = Math.max(xMin, config.x);
+      let x2 = Math.min(config.x + config.width - 1, xMax);
+
+      // Compute the actual Y bounds for the cell.
+      let y1 = Math.max(yMin, config.y);
+      let y2 = Math.min(config.y + config.height - 1, yMax);
 
       // Get the renderer for the cell.
       let renderer = this._cellRenderers.get(config);
 
       // Clear the buffer rect for the cell.
       gc.clearRect(config.x, config.y, width, height);
+
+      // TODO Remove this workaround
+      // Fill the region with the specified color.
+      gc.save();
+      this._canvasGC.fillStyle = this._style.backgroundColor!;
+      this._canvasGC.fillRect(x1, y1, x2 - x1 + 1, y2 - y1 + 1);
+      gc.restore();
 
       // Save the GC state.
       gc.save();
@@ -4858,14 +4993,6 @@ export class DataGrid extends Widget {
 
       // Restore the GC state.
       gc.restore();
-
-      // Compute the actual X bounds for the cell.
-      let x1 = Math.max(rgn.xMin, config.x);
-      let x2 = Math.min(config.x + config.width - 1, rgn.xMax);
-
-      // Compute the actual Y bounds for the cell.
-      let y1 = Math.max(rgn.yMin, config.y);
-      let y2 = Math.min(config.y + config.height - 1, rgn.yMax);
 
       this._blitContent(
         this._buffer,
