@@ -1,17 +1,17 @@
 {
   "name": "@lumino/example-dockpanel",
-  "version": "0.22.0-alpha.3",
+  "version": "0.22.0-alpha.4",
   "private": true,
   "scripts": {
     "build": "tsc && webpack",
     "clean": "rimraf build"
   },
   "dependencies": {
-    "@lumino/commands": "^2.0.0-alpha.3",
-    "@lumino/default-theme": "^1.0.0-alpha.3",
-    "@lumino/dragdrop": "^2.0.0-alpha.3",
-    "@lumino/messaging": "^2.0.0-alpha.3",
-    "@lumino/widgets": "^2.0.0-alpha.3"
+    "@lumino/commands": "^2.0.0-alpha.4",
+    "@lumino/default-theme": "^1.0.0-alpha.4",
+    "@lumino/dragdrop": "^2.0.0-alpha.4",
+    "@lumino/messaging": "^2.0.0-alpha.4",
+    "@lumino/widgets": "^2.0.0-alpha.4"
   },
   "devDependencies": {
     "css-loader": "^3.4.0",

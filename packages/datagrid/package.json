@@ -1,6 +1,6 @@
 {
   "name": "@lumino/datagrid",
-  "version": "1.0.0-alpha.3",
+  "version": "1.0.0-alpha.4",
   "description": "Lumino Tabular Data Grid",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -35,15 +35,15 @@
     "displayName": "datagrid"
   },
   "dependencies": {
-    "@lumino/algorithm": "^2.0.0-alpha.3",
-    "@lumino/coreutils": "^2.0.0-alpha.3",
-    "@lumino/disposable": "^2.0.0-alpha.3",
-    "@lumino/domutils": "^2.0.0-alpha.3",
-    "@lumino/dragdrop": "^2.0.0-alpha.3",
-    "@lumino/keyboard": "^2.0.0-alpha.3",
-    "@lumino/messaging": "^2.0.0-alpha.3",
-    "@lumino/signaling": "^2.0.0-alpha.3",
-    "@lumino/widgets": "^2.0.0-alpha.3"
+    "@lumino/algorithm": "^2.0.0-alpha.4",
+    "@lumino/coreutils": "^2.0.0-alpha.4",
+    "@lumino/disposable": "^2.0.0-alpha.4",
+    "@lumino/domutils": "^2.0.0-alpha.4",
+    "@lumino/dragdrop": "^2.0.0-alpha.4",
+    "@lumino/keyboard": "^2.0.0-alpha.4",
+    "@lumino/messaging": "^2.0.0-alpha.4",
+    "@lumino/signaling": "^2.0.0-alpha.4",
+    "@lumino/widgets": "^2.0.0-alpha.4"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^13.3.0",

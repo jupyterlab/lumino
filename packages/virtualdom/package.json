@@ -1,6 +1,6 @@
 {
   "name": "@lumino/virtualdom",
-  "version": "2.0.0-alpha.3",
+  "version": "2.0.0-alpha.4",
   "description": "Lumino Virtual DOM",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -50,7 +50,7 @@
     "displayName": "virtualdom"
   },
   "dependencies": {
-    "@lumino/algorithm": "^2.0.0-alpha.3"
+    "@lumino/algorithm": "^2.0.0-alpha.4"
   },
   "devDependencies": {
     "@microsoft/api-extractor": "^7.6.0",
