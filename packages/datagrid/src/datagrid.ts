@@ -3188,16 +3188,6 @@ export class DataGrid extends Widget {
       return;
     }
 
-    // Render entire grid if scrolling merged cells grid
-    // const paintEverything = Private.shouldPaintEverything(this._dataModel!);
-
-    // if (paintEverything) {
-    //   this.paintContent(0, 0, vw, vh);
-    //   this._paintOverlay();
-    //   this._syncScrollState();
-    //   return;
-    // }
-
     // Compute the size delta.
     let delta = newSize - oldSize;
 
@@ -3309,16 +3299,6 @@ export class DataGrid extends Widget {
       this._syncScrollState();
       return;
     }
-
-    // Render entire grid if scrolling merged cells grid
-    // const paintEverything = Private.shouldPaintEverything(this._dataModel!);
-
-    // if (paintEverything) {
-    //   this.paintContent(0, 0, vw, vh);
-    //   this._paintOverlay();
-    //   this._syncScrollState();
-    //   return;
-    // }
 
     // Compute the size delta.
     let delta = newSize - oldSize;
@@ -3432,16 +3412,6 @@ export class DataGrid extends Widget {
       return;
     }
 
-    // Render entire grid if scrolling merged cells grid
-    // const paintEverything = Private.shouldPaintEverything(this._dataModel!);
-
-    // if (paintEverything) {
-    //   this.paintContent(0, 0, vw, vh);
-    //   this._paintOverlay();
-    //   this._syncScrollState();
-    //   return;
-    // }
-
     // Compute the size delta.
     let delta = newSize - oldSize;
 
@@ -3529,16 +3499,6 @@ export class DataGrid extends Widget {
       this._syncScrollState();
       return;
     }
-
-    // Render entire grid if scrolling merged cells grid
-    // const paintEverything = Private.shouldPaintEverything(this._dataModel!);
-
-    // if (paintEverything) {
-    //   this.paintContent(0, 0, vw, vh);
-    //   this._paintOverlay();
-    //   this._syncScrollState();
-    //   return;
-    // }
 
     // Paint the overlay.
     this._paintOverlay();

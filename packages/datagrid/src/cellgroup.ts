@@ -272,29 +272,6 @@ export namespace CellGroup {
   }
 
   /**
-   * Checks if cell group 1 is above cell group 2.
-   * @param group1 cell group 1.
-   * @param group2 cell group 2.
-   * @returns boolean.
-   */
-  export function isCellGroupAbove(
-    group1: CellGroup,
-    group2: CellGroup
-  ): boolean {
-    return group2.r2 >= group1.r1;
-  }
-
-  /**
-   * Checks if cell group 1 is below cell group 2.
-   */
-  export function isCellGroupBelow(
-    group1: CellGroup,
-    group2: CellGroup
-  ): boolean {
-    return group2.r1 <= group1.r2;
-  }
-
-  /**
    * Merges a target cell group with any cell groups
    * it intersects with at a given row or column.
    * @param dataModel data model of the grid.
