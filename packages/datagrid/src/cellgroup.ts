@@ -4,7 +4,6 @@
  */
 
 import { DataModel } from './datamodel';
-import { SectionList } from './sectionlist';
 
 /**
  * An interface describing a merged cell group.
@@ -50,78 +49,6 @@ export namespace CellGroup {
       }
     }
     return false;
-  }
-
-  /**
-   * Calculates the cell boundary offsets needed for
-   * a row or column at the given index by taking
-   * into account merged cell groups in the region.
-   * @param dataModel
-   * @param regions
-   * @param axis
-   * @param sectionList
-   * @param index
-   */
-  export function calculateMergeOffsets(
-    dataModel: DataModel,
-    regions: DataModel.CellRegion[],
-    axis: 'row' | 'column',
-    sectionList: SectionList,
-    index: number
-  ): [number, number, CellGroup] {
-    let mergeStartOffset = 0;
-    let mergeEndOffset = 0;
-    let mergedCellGroups: CellGroup[] = [];
-
-    for (const region of regions) {
-      mergedCellGroups = mergedCellGroups.concat(
-        getCellGroupsAtRegion(dataModel, region)
-      );
-    }
-
-    let groupsAtAxis: CellGroup[] = [];
-
-    if (axis === 'row') {
-      for (const region of regions) {
-        groupsAtAxis = groupsAtAxis.concat(
-          getCellGroupsAtRow(dataModel, region, index)
-        );
-      }
-    } else {
-      for (const region of regions) {
-        groupsAtAxis = groupsAtAxis.concat(
-          getCellGroupsAtColumn(dataModel, region, index)
-        );
-      }
-    }
-
-    if (groupsAtAxis.length === 0) {
-      return [0, 0, { r1: -1, r2: -1, c1: -1, c2: -1 }];
-    }
-
-    let joinedGroup = groupsAtAxis[0];
-
-    for (let g = 0; g < mergedCellGroups.length; g++) {
-      const group = mergedCellGroups[g];
-      if (areCellGroupsIntersectingAtAxis(joinedGroup, group, axis)) {
-        joinedGroup = joinCellGroups([group, joinedGroup]);
-        mergedCellGroups.splice(g, 1);
-        g = 0;
-      }
-    }
-
-    let minRow = joinedGroup.r1;
-    let maxRow = joinedGroup.r2;
-
-    for (let r = index - 1; r >= minRow; r--) {
-      mergeStartOffset += sectionList.sizeOf(r);
-    }
-
-    for (let r = index + 1; r <= maxRow; r++) {
-      mergeEndOffset += sectionList.sizeOf(r);
-    }
-
-    return [mergeStartOffset, mergeEndOffset, joinedGroup];
   }
 
   /**

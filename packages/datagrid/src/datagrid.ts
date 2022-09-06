@@ -2146,7 +2146,7 @@ export class DataGrid extends Widget {
     }
 
     // Test whether there is content to blit.
-    let needBlit = curH > 0 && curH > 0 && width > 0 && height > 0;
+    let needBlit = curW > 0 && curH > 0 && width > 0 && height > 0;
 
     // Copy the valid canvas content into the buffer if needed.
     if (needBlit) {
@@ -4652,46 +4652,9 @@ export class DataGrid extends Widget {
       return;
     }
 
-    // // Determine if the region intersects with a merged group at row or column
-    // let intersectingColumnGroups = CellGroup.getCellGroupsAtColumn(
-    //   this._dataModel!,
-    //   rgn.region,
-    //   rgn.column
-    // );
-    // let intersectingRowGroups = CellGroup.getCellGroupsAtRow(
-    //   this._dataModel!,
-    //   rgn.region,
-    //   rgn.row
-    // );
-
     // move the bounds of the region if edges of the region are part of a merge group.
     // after the move, new region contains entirety of the merge groups
     rgn = JSONExt.deepCopy(rgn);
-
-    // const joinedGroup = CellGroup.joinCellGroupWithMergedCellGroups(
-    //   this.dataModel!,
-    //   {
-    //     r1: rgn.row,
-    //     r2: rgn.row + rgn.rowSizes.length - 1,
-    //     c1: rgn.column,
-    //     c2: rgn.column + rgn.columnSizes.length - 1
-    //   },
-    //   rgn.region
-    // );
-
-    // for (let r = joinedGroup.r1; r < rgn.row; r++) {
-    //   const h = this._getRowSize(rgn.region, r);
-    //   rgn.y -= h;
-    //   rgn.rowSizes = [h].concat(rgn.rowSizes);
-    // }
-    // rgn.row = joinedGroup.r1;
-
-    // for (let c = joinedGroup.c1; c < rgn.column; c++) {
-    //   const w = this._getColumnSize(rgn.region, c);
-    //   rgn.x -= w;
-    //   rgn.columnSizes = [w].concat(rgn.columnSizes);
-    // }
-    // rgn.column = joinedGroup.c1;
 
     // Set up the cell config object for rendering.
     let config = {
@@ -4718,9 +4681,6 @@ export class DataGrid extends Widget {
 
     // Loop over the columns in the region.
     for (let x = rgn.x, i = 0, n = rgn.columnSizes.length; i < n; ++i) {
-      let xOffset = 0;
-      let yOffset = 0;
-
       // Fetch the size of the column.
       let width = rgn.columnSizes[i];
 
@@ -4728,8 +4688,6 @@ export class DataGrid extends Widget {
       if (width === 0) {
         continue;
       }
-
-      xOffset = width;
 
       // Compute the column index.
       let column = rgn.column + i;
@@ -4758,37 +4716,11 @@ export class DataGrid extends Widget {
           row,
           column
         );
-        yOffset = height;
 
-        /**
-         * For merged cell regions, don't do anything, we draw merged regions later.
-         */
+        // For merged cell regions, don't do anything, we draw merged regions later.
         if (groupIndex !== -1) {
-          y += yOffset;
+          y += height;
           continue;
-        //   const group = this.dataModel!.group(config.region, groupIndex)!;
-        //   if (group.r1 === row && group.c1 === column) {
-        //     width = 0;
-        //     for (let c = group.c1; c <= group.c2; c++) {
-        //       width += this._getColumnSize(config.region, c);
-        //     }
-
-        //     height = 0;
-        //     for (let r = group.r1; r <= group.r2; r++) {
-        //       height += this._getRowSize(config.region, r);
-        //     }
-        //   } else {
-        //     y += yOffset;
-        //     continue;
-        //   }
-        // } else {
-        //   /**
-        //    * Reset column width if we're rendering a column-header
-        //    * which is not part of a merged cell group.
-        //    */
-        //   if (rgn.region == 'column-header') {
-        //     width = rgn.columnSizes[i];
-        //   }
         }
 
         // Clear the buffer rect for the cell.
@@ -4844,23 +4776,6 @@ export class DataGrid extends Widget {
         let y1 = Math.max(rgn.yMin, config.y);
         let y2 = Math.min(config.y + config.height - 1, rgn.yMax);
 
-        // TODO Do we still need this?
-        // if (
-        //   intersectingColumnGroups.length !== 0 ||
-        //   intersectingRowGroups.length !== 0
-        // ) {
-        //   if (x2 > x1 && y2 > y1) {
-        //     this._blitContent(
-        //       this._buffer,
-        //       x1,
-        //       y1,
-        //       x2 - x1 + 1,
-        //       y2 - y1 + 1,
-        //       x1,
-        //       y1
-        //     );
-        //   }
-        // } else {
         this._blitContent(
           this._buffer,
           x1,
@@ -4870,17 +4785,16 @@ export class DataGrid extends Widget {
           x1,
           y1
         );
-        // }
 
         // Increment the running Y coordinate.
-        y += yOffset;
+        y += height;
       }
 
       // Restore the GC state.
       gc.restore();
 
       // Increment the running X coordinate.
-      x += xOffset;
+      x += width;
     }
 
     // Draw merged groups that intersects with the region
@@ -4889,7 +4803,25 @@ export class DataGrid extends Widget {
       rgn.region
     );
 
+    // TODO Move this in the utils dir (but we need the PaintRegion typing)
+    const intersects = (grp: CellGroup, rgn: Private.PaintRegion) => {
+      const rgnR1 = rgn.row;
+      const rgnR2 = rgn.row + rgn.rowSizes.length;
+
+      const rgnC1 = rgn.column;
+      const rgnC2 = rgn.column + rgn.columnSizes.length;
+
+      const dx = Math.min(grp.r2, rgnR2) - Math.max(grp.r1, rgnR1);
+      const dy = Math.min(grp.c2, rgnC2) - Math.max(grp.c1, rgnC1);
+
+      return dx >= 0 && dy >= 0;
+    }
+
     for (const group of cellGroups) {
+      if (!intersects(group, rgn)) {
+        continue;
+      }
+
       let width = 0;
       for (let c = group.c1; c <= group.c2; c++) {
         width += this._getColumnSize(rgn.region, c);
@@ -4947,8 +4879,6 @@ export class DataGrid extends Widget {
       config.column = group.c1;
       config.value = value;
       config.metadata = metadata;
-
-      // console.log('trying to draw', JSON.stringify(config))
 
       // Get the renderer for the cell.
       let renderer = this._cellRenderers.get(config);
