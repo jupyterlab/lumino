@@ -6,6 +6,32 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2022.9.6
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/algorithm@2.0.0-alpha.3...04e2e5beff2277f29a9b9168fbbd19915c238245))
+
+### Enhancements made
+
+- Make `Poll` an async iterable [#386](https://github.com/jupyterlab/lumino/pull/386) ([@afshin](https://github.com/afshin))
+
+### Bugs fixed
+
+- Fix bug that prevents any startup plugins from activating [#391](https://github.com/jupyterlab/lumino/pull/391) ([@afshin](https://github.com/afshin))
+
+### Maintenance and upkeep improvements
+
+- Use `pull_request_target` to have write access on fork [#390](https://github.com/jupyterlab/lumino/pull/390) ([@fcollonval](https://github.com/fcollonval))
+- Bump tj-actions/changed-files from 29.0.2 to 29.0.3 [#389](https://github.com/jupyterlab/lumino/pull/389) ([@dependabot](https://github.com/dependabot))
+- Target ES2018 [#388](https://github.com/jupyterlab/lumino/pull/388) ([@afshin](https://github.com/afshin))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2022-08-30&to=2022-09-06&type=c))
+
+[@afshin](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aafshin+updated%3A2022-08-30..2022-09-06&type=Issues) | [@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2022-08-30..2022-09-06&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2022-08-30..2022-09-06&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2022-08-30..2022-09-06&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2022.8.30
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/algorithm@2.0.0-alpha.2...e76aa2e8463aeae489ca79598e3dac9bb504272f))
@@ -23,8 +49,6 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2022-08-29&to=2022-08-30&type=c))
 
 [@afshin](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aafshin+updated%3A2022-08-29..2022-08-30&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2022-08-29..2022-08-30&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2022.8.29
 
