@@ -3258,7 +3258,11 @@ export class DataGrid extends Widget {
     // Repaint merged cells that are intersected by the resized row
     // Otherwise it will be cut in two by the valid content, and drawn incorrectly
     for (const rgn of ['body', 'row-header'] as DataModel.CellRegion[]) {
-      const cellGroups = CellGroup.getCellGroupsAtRow(this.dataModel!, rgn, index);
+      const cellGroups = CellGroup.getCellGroupsAtRow(
+        this.dataModel!,
+        rgn,
+        index
+      );
 
       // TODO We're not creating a fully implemented paint-region,
       // We probably need another type
@@ -3282,8 +3286,10 @@ export class DataGrid extends Widget {
           paintRgn.yMax = this.headerHeight + this.bodyHeight;
 
           backgroundColor = this._style.backgroundColor;
-          horizontalColor = this._style.horizontalGridLineColor || this._style.gridLineColor;
-          verticalColor = this._style.verticalGridLineColor || this._style.gridLineColor;
+          horizontalColor =
+            this._style.horizontalGridLineColor || this._style.gridLineColor;
+          verticalColor =
+            this._style.verticalGridLineColor || this._style.gridLineColor;
           break;
         case 'row-header':
           paintRgn.xMin = 0;
@@ -3292,8 +3298,12 @@ export class DataGrid extends Widget {
           paintRgn.yMax = this.headerHeight + this.bodyHeight;
 
           backgroundColor = this._style.headerBackgroundColor;
-          horizontalColor = this._style.headerHorizontalGridLineColor || this._style.headerGridLineColor;
-          verticalColor = this._style.headerVerticalGridLineColor || this._style.headerGridLineColor;
+          horizontalColor =
+            this._style.headerHorizontalGridLineColor ||
+            this._style.headerGridLineColor;
+          verticalColor =
+            this._style.headerVerticalGridLineColor ||
+            this._style.headerGridLineColor;
           break;
       }
 
@@ -3421,7 +3431,11 @@ export class DataGrid extends Widget {
     // Repaint merged cells that are intersected by the resized column
     // Otherwise it will be cut in two by the valid content, and drawn incorrectly
     for (const rgn of ['body', 'column-header'] as DataModel.CellRegion[]) {
-      const cellGroups = CellGroup.getCellGroupsAtColumn(this.dataModel!, rgn, index);
+      const cellGroups = CellGroup.getCellGroupsAtColumn(
+        this.dataModel!,
+        rgn,
+        index
+      );
 
       // TODO We're not creating a fully implemented paint-region,
       // We probably need another type
@@ -3445,8 +3459,10 @@ export class DataGrid extends Widget {
           paintRgn.yMax = this.headerHeight + this.bodyHeight;
 
           backgroundColor = this._style.backgroundColor;
-          horizontalColor = this._style.horizontalGridLineColor || this._style.gridLineColor;
-          verticalColor = this._style.verticalGridLineColor || this._style.gridLineColor;
+          horizontalColor =
+            this._style.horizontalGridLineColor || this._style.gridLineColor;
+          verticalColor =
+            this._style.verticalGridLineColor || this._style.gridLineColor;
           break;
         case 'column-header':
           paintRgn.xMin = this.headerWidth;
@@ -3455,8 +3471,12 @@ export class DataGrid extends Widget {
           paintRgn.yMax = this.headerHeight;
 
           backgroundColor = this._style.headerBackgroundColor;
-          horizontalColor = this._style.headerHorizontalGridLineColor || this._style.headerGridLineColor;
-          verticalColor = this._style.headerVerticalGridLineColor || this._style.headerGridLineColor;
+          horizontalColor =
+            this._style.headerHorizontalGridLineColor ||
+            this._style.headerGridLineColor;
+          verticalColor =
+            this._style.headerVerticalGridLineColor ||
+            this._style.headerGridLineColor;
           break;
       }
 
@@ -3559,8 +3579,15 @@ export class DataGrid extends Widget {
 
     // Repaint merged cells that are intersected by the resized row
     // Otherwise it will be cut in two by the valid content, and drawn incorrectly
-    for (const rgn of ['corner-header', 'row-header'] as DataModel.CellRegion[]) {
-      const cellGroups = CellGroup.getCellGroupsAtColumn(this.dataModel!, rgn, index);
+    for (const rgn of [
+      'corner-header',
+      'row-header'
+    ] as DataModel.CellRegion[]) {
+      const cellGroups = CellGroup.getCellGroupsAtColumn(
+        this.dataModel!,
+        rgn,
+        index
+      );
 
       // TODO We're not creating a fully implemented paint-region,
       // We probably need another type
@@ -3591,8 +3618,10 @@ export class DataGrid extends Widget {
         cellGroups,
         paintRgn as Private.PaintRegion,
         this._style.headerBackgroundColor,
-        this._style.headerHorizontalGridLineColor || this._style.headerGridLineColor,
-        this._style.headerVerticalGridLineColor || this._style.headerGridLineColor
+        this._style.headerHorizontalGridLineColor ||
+          this._style.headerGridLineColor,
+        this._style.headerVerticalGridLineColor ||
+          this._style.headerGridLineColor
       );
     }
 
@@ -3689,8 +3718,15 @@ export class DataGrid extends Widget {
 
     // Repaint merged cells that are intersected by the resized row
     // Otherwise it will be cut in two by the valid content, and drawn incorrectly
-    for (const rgn of ['corner-header', 'column-header'] as DataModel.CellRegion[]) {
-      const cellGroups = CellGroup.getCellGroupsAtRow(this.dataModel!, rgn, index);
+    for (const rgn of [
+      'corner-header',
+      'column-header'
+    ] as DataModel.CellRegion[]) {
+      const cellGroups = CellGroup.getCellGroupsAtRow(
+        this.dataModel!,
+        rgn,
+        index
+      );
 
       // TODO We're not creating a fully implemented paint-region,
       // We probably need another type
@@ -3721,8 +3757,10 @@ export class DataGrid extends Widget {
         cellGroups,
         paintRgn as Private.PaintRegion,
         this._style.headerBackgroundColor,
-        this._style.headerHorizontalGridLineColor || this._style.headerGridLineColor,
-        this._style.headerVerticalGridLineColor || this._style.headerGridLineColor
+        this._style.headerHorizontalGridLineColor ||
+          this._style.headerGridLineColor,
+        this._style.headerVerticalGridLineColor ||
+          this._style.headerGridLineColor
       );
     }
 
@@ -4428,7 +4466,8 @@ export class DataGrid extends Widget {
       cellGroups,
       rgn,
       this._style.headerBackgroundColor,
-      this._style.headerHorizontalGridLineColor || this._style.headerGridLineColor,
+      this._style.headerHorizontalGridLineColor ||
+        this._style.headerGridLineColor,
       this._style.headerVerticalGridLineColor || this._style.headerGridLineColor
     );
   }
@@ -4580,7 +4619,8 @@ export class DataGrid extends Widget {
       cellGroups,
       rgn,
       this._style.headerBackgroundColor,
-      this._style.headerHorizontalGridLineColor || this._style.headerGridLineColor,
+      this._style.headerHorizontalGridLineColor ||
+        this._style.headerGridLineColor,
       this._style.headerVerticalGridLineColor || this._style.headerGridLineColor
     );
   }
@@ -4716,7 +4756,8 @@ export class DataGrid extends Widget {
       cellGroups,
       rgn,
       this._style.headerBackgroundColor,
-      this._style.headerHorizontalGridLineColor || this._style.headerGridLineColor,
+      this._style.headerHorizontalGridLineColor ||
+        this._style.headerGridLineColor,
       this._style.headerVerticalGridLineColor || this._style.headerGridLineColor
     );
   }
@@ -5007,7 +5048,10 @@ export class DataGrid extends Widget {
   }
 
   // TODO Move this in the utils file (but we need the PaintRegion typing)
-  private cellGroupInteresectsRegion(group: CellGroup, rgn: Private.PaintRegion) {
+  private cellGroupInteresectsRegion(
+    group: CellGroup,
+    rgn: Private.PaintRegion
+  ) {
     const rgnR1 = rgn.row;
     const rgnR2 = rgn.row + rgn.rowSizes.length;
 
@@ -5092,16 +5136,28 @@ export class DataGrid extends Widget {
       let y = 0;
       switch (rgn.region) {
         case 'body':
-          x = this._columnSections.offsetOf(group.c1) + this.headerWidth - this._scrollX;
-          y = this._rowSections.offsetOf(group.r1) + this.headerHeight - this._scrollY;
+          x =
+            this._columnSections.offsetOf(group.c1) +
+            this.headerWidth -
+            this._scrollX;
+          y =
+            this._rowSections.offsetOf(group.r1) +
+            this.headerHeight -
+            this._scrollY;
           break;
         case 'column-header':
-          x = this._columnSections.offsetOf(group.c1) + this.headerWidth - this._scrollX;
+          x =
+            this._columnSections.offsetOf(group.c1) +
+            this.headerWidth -
+            this._scrollX;
           y = this._rowSections.offsetOf(group.r1) - this._scrollY;
           break;
         case 'row-header':
           x = this._columnSections.offsetOf(group.c1) - this._scrollX;
-          y = this._rowSections.offsetOf(group.r1) + this.headerHeight - this._scrollY;
+          y =
+            this._rowSections.offsetOf(group.r1) +
+            this.headerHeight -
+            this._scrollY;
           break;
         case 'corner-header':
           x = this._columnSections.offsetOf(group.c1);
@@ -5129,12 +5185,7 @@ export class DataGrid extends Widget {
 
       // Draw the background.
       if (backgroundColor) {
-        this._canvasGC.fillRect(
-          x1,
-          y1,
-          x2 - x1 + 1,
-          y2 - y1 + 1
-        );
+        this._canvasGC.fillRect(x1, y1, x2 - x1 + 1, y2 - y1 + 1);
       }
 
       // Get the renderer for the cell.
@@ -5156,15 +5207,7 @@ export class DataGrid extends Widget {
       // Restore the GC state.
       gc.restore();
 
-      this._blitContent(
-        this._buffer,
-        x1,
-        y1,
-        x2 - x1 + 1,
-        y2 - y1 + 1,
-        x1,
-        y1
-      );
+      this._blitContent(this._buffer, x1, y1, x2 - x1 + 1, y2 - y1 + 1, x1, y1);
 
       if (verticalColor) {
         // Begin the path for the grid lines.
