@@ -3404,12 +3404,12 @@ export class DataGrid extends Widget {
       this._drawMergedCells(cellGroups, paintRgn as Private.PaintRegion);
 
       // Draw grid lines close to merged cells
-      // this._drawMergedCellsBorder(
-      //   cellGroups,
-      //   rgn,
-      //   this._style.horizontalGridLineColor || this._style.gridLineColor,
-      //   this._style.verticalGridLineColor || this._style.gridLineColor
-      // );
+      this._drawMergedCellsBorder(
+        cellGroups,
+        paintRgn as Private.PaintRegion,
+        this._style.horizontalGridLineColor || this._style.gridLineColor,
+        this._style.verticalGridLineColor || this._style.gridLineColor
+      );
     }
 
     // Paint the overlay.
@@ -3808,56 +3808,6 @@ export class DataGrid extends Widget {
   }
 
   /**
-   * Force a repaint of cells group.
-   */
-  //  protected paintCellGroup(cellGroup: CellGroup, rgn: DataModel.CellRegion, xMin: number, xMax: number, yMin: number, yMax: number) {
-  //   const mergedCellRegion: Private.PaintRegion = {
-  //     region: rgn,
-  //     xMin: ,
-  //     yMin: ,
-  //     xMax: x2,
-  //     yMax: y2,
-  //     x,
-  //     y,
-  //     width,
-  //     height,
-  //     row: r1,
-  //     column: c1,
-  //     rowSizes,
-  //     columnSizes
-  //   };
-
-    // Draw the background.
-    // this._drawBackground(mergedCellRegion, this._style.backgroundColor);
-
-    // Draw the row background.
-    // this._drawRowBackground(mergedCellRegion, this._style.rowBackgroundColor);
-
-    // Draw the column background.
-    // this._drawColumnBackground(mergedCellRegion, this._style.columnBackgroundColor);
-
-  //   this._drawCellGroup(cellGroup, mergedCellRegion);
-  // }
-
-  // /**
-  //  * Force a repaint of some grouped cells that are intersecting a given column.
-  //  */
-  // protected paintMergedCellsAtColumn(rgn: DataModel.CellRegion, index: number, xMin: number, xMax: number, yMin: number, yMax: number) {
-  //   const cellGroups = CellGroup.getCellGroupsAtColumn(this.dataModel!, rgn, index);
-
-  //   this._drawMergedCellsGroups(cellGroups, rgn, xMin, yMin, xMax, yMax);
-  // }
-
-  // /**
-  //  * Force a repaint of some grouped cells that are intersecting a given row.
-  //  */
-  //  protected paintMergedCellsAtRow(rgn: DataModel.CellRegion, index: number, xMin: number, xMax: number, yMin: number, yMax: number) {
-  //   const cellGroups = CellGroup.getCellGroupsAtRow(this.dataModel!, rgn, index);
-
-  //   this._drawMergedCellsGroups(cellGroups, rgn, xMin, yMin, xMax, yMax);
-  // }
-
-  /**
    * Resizes body column headers so their text fits
    * without clipping or wrapping.
    * @param dataModel
@@ -4193,12 +4143,12 @@ export class DataGrid extends Widget {
     this._drawMergedCells(cellGroups, rgn);
 
     // Draw grid lines close to merged cells
-    // this._drawMergedCellsBorder(
-    //   cellGroups,
-    //   rgn,
-    //   this._style.horizontalGridLineColor || this._style.gridLineColor,
-    //   this._style.verticalGridLineColor || this._style.gridLineColor
-    // );
+    this._drawMergedCellsBorder(
+      cellGroups,
+      rgn,
+      this._style.horizontalGridLineColor || this._style.gridLineColor,
+      this._style.verticalGridLineColor || this._style.gridLineColor
+    );
   }
 
   /**
@@ -4348,6 +4298,14 @@ export class DataGrid extends Widget {
 
     // Draw the cell groups for the paint region
     this._drawMergedCells(cellGroups, rgn);
+
+    // Draw grid lines close to merged cells
+    this._drawMergedCellsBorder(
+      cellGroups,
+      rgn,
+      this._style.headerHorizontalGridLineColor || this._style.headerGridLineColor,
+      this._style.headerVerticalGridLineColor || this._style.headerGridLineColor
+    );
   }
 
   /**
@@ -4497,6 +4455,15 @@ export class DataGrid extends Widget {
 
     // Draw the cell groups for the paint region
     this._drawMergedCells(cellGroups, rgn);
+
+    // Draw grid lines close to merged cells
+    this._drawMergedCellsBorder(
+      cellGroups,
+      rgn,
+      this._style.headerHorizontalGridLineColor ||
+        this._style.headerGridLineColor,
+      this._style.headerVerticalGridLineColor || this._style.headerGridLineColor
+    );
   }
 
   /**
@@ -4630,6 +4597,15 @@ export class DataGrid extends Widget {
 
     // Draw the cell groups for the paint region
     this._drawMergedCells(cellGroups, rgn);
+
+    // Draw grid lines close to merged cells
+    this._drawMergedCellsBorder(
+      cellGroups,
+      rgn,
+      this._style.headerHorizontalGridLineColor ||
+        this._style.headerGridLineColor,
+      this._style.headerVerticalGridLineColor || this._style.headerGridLineColor
+    );
   }
 
   /**
@@ -5132,6 +5108,23 @@ export class DataGrid extends Widget {
   }
 
   /**
+   * Draw the cell groups for the given paint region.
+   */
+  private _drawMergedCellsBorder(
+      cellGroups: CellGroup[],
+      rgn: Private.PaintRegion,
+      verticalColor: string | undefined,
+      horizontalColor: string | undefined
+  ): void {
+    // Bail if there is no data model.
+    if (!this._dataModel) {
+      return;
+    }
+
+
+  }
+
+  /**
    * Draw the horizontal grid lines for the given paint region.
    */
   private _drawHorizontalGridLines(
@@ -5204,19 +5197,9 @@ export class DataGrid extends Widget {
 
       // Draw the line if it's in range of the dirty rect.
       if (pos >= rgn.yMin && pos <= rgn.yMax) {
-        // Render entire grid if scrolling merged cells grid
-        const extendLines = Private.shouldPaintEverything(this._dataModel!);
-        if (extendLines) {
-          for (const line of lines) {
-            const [x1, x2] = line;
-            this._canvasGC.moveTo(x1, pos + 0.5);
-            this._canvasGC.lineTo(x2, pos + 0.5);
-          }
-        } else {
-          const x2 = Math.min(rgn.x + rgn.width, rgn.xMax + 1);
-          this._canvasGC.moveTo(x1, pos + 0.5);
-          this._canvasGC.lineTo(x2, pos + 0.5);
-        }
+        const x2 = Math.min(rgn.x + rgn.width, rgn.xMax + 1);
+        this._canvasGC.moveTo(x1, pos + 0.5);
+        this._canvasGC.lineTo(x2, pos + 0.5);
       }
 
       // Increment the running Y coordinate.
@@ -5301,19 +5284,9 @@ export class DataGrid extends Widget {
 
       // Draw the line if it's in range of the dirty rect.
       if (pos >= rgn.xMin && pos <= rgn.xMax) {
-        // Render entire grid if scrolling merged cells grid
-        const extendLines = Private.shouldPaintEverything(this._dataModel!);
-        if (extendLines) {
-          for (const line of lines) {
-            // this._canvasGC.strokeStyle = color;
-            this._canvasGC.moveTo(pos + 0.5, line[0]);
-            this._canvasGC.lineTo(pos + 0.5, line[1]);
-          }
-        } else {
-          let y2 = Math.min(rgn.y + rgn.height, rgn.yMax + 1);
-          this._canvasGC.moveTo(pos + 0.5, y1);
-          this._canvasGC.lineTo(pos + 0.5, y2);
-        }
+        let y2 = Math.min(rgn.y + rgn.height, rgn.yMax + 1);
+        this._canvasGC.moveTo(pos + 0.5, y1);
+        this._canvasGC.lineTo(pos + 0.5, y2);
       }
 
       // Increment the running X coordinate.
@@ -6604,34 +6577,6 @@ namespace Private {
     canvas.width = 0;
     canvas.height = 0;
     return canvas;
-  }
-
-  /**
-   * A function to check whether the entire grid should be rendered
-   * when dealing with merged cell regions.
-   * @param dataModel grid's data model.
-   * @returns boolean.
-   */
-  export function shouldPaintEverything(dataModel: DataModel): boolean {
-    const colGroups = CellGroup.getCellGroupsAtRegion(
-      dataModel!,
-      'column-header'
-    );
-    const rowHeaderGroups = CellGroup.getCellGroupsAtRegion(
-      dataModel!,
-      'row-header'
-    );
-    const cornerHeaderGroups = CellGroup.getCellGroupsAtRegion(
-      dataModel!,
-      'corner-header'
-    );
-    const bodyGroups = CellGroup.getCellGroupsAtRegion(dataModel!, 'body');
-    return (
-      colGroups.length > 0 ||
-      rowHeaderGroups.length > 0 ||
-      cornerHeaderGroups.length > 0 ||
-      bodyGroups.length > 0
-    );
   }
 
   /**
