@@ -3382,27 +3382,39 @@ export class DataGrid extends Widget {
         yMax: 0
       };
 
+      let backgroundColor = undefined;
+      let horizontalColor = undefined;
+      let verticalColor = undefined;
+
       switch (rgn) {
         case 'body':
           paintRgn.xMin = this.headerWidth;
           paintRgn.xMax = this.headerWidth + this.bodyWidth;
           paintRgn.yMin = this.headerHeight;
           paintRgn.yMax = this.headerHeight + this.bodyHeight;
+
+          backgroundColor = this._style.backgroundColor;
+          horizontalColor = this._style.horizontalGridLineColor || this._style.gridLineColor;
+          verticalColor = this._style.verticalGridLineColor || this._style.gridLineColor;
           break;
         case 'column-header':
           paintRgn.xMin = this.headerWidth;
           paintRgn.xMax = this.headerWidth + this.bodyWidth;
           paintRgn.yMin = 0;
           paintRgn.yMax = this.headerHeight;
+
+          backgroundColor = this._style.headerBackgroundColor;
+          horizontalColor = this._style.headerHorizontalGridLineColor || this._style.headerGridLineColor;
+          verticalColor = this._style.headerVerticalGridLineColor || this._style.headerGridLineColor;
           break;
       }
 
       this._paintMergedCells(
         cellGroups,
         paintRgn as Private.PaintRegion,
-        this._style.backgroundColor,
-        this._style.horizontalGridLineColor || this._style.gridLineColor,
-        this._style.verticalGridLineColor || this._style.gridLineColor
+        backgroundColor,
+        horizontalColor,
+        verticalColor
       );
     }
 
