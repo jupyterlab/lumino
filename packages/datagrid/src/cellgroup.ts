@@ -23,34 +23,6 @@ export interface CellGroup {
  * A collection of helper functions relating to merged cell groups
  */
 export namespace CellGroup {
-  export function areCellsMerged(
-    dataModel: DataModel,
-    rgn: DataModel.CellRegion,
-    cell1: number[],
-    cell2: number[]
-  ): boolean {
-    const numGroups = dataModel.groupCount(rgn);
-    const [row1, column1] = cell1;
-    const [row2, column2] = cell2;
-
-    for (let i = 0; i < numGroups; i++) {
-      const group = dataModel.group(rgn, i)!;
-      if (
-        row1 >= group.r1 &&
-        row1 <= group.r2 &&
-        column1 >= group.c1 &&
-        column1 <= group.c2 &&
-        row2 >= group.r1 &&
-        row2 <= group.r2 &&
-        column2 >= group.c1 &&
-        column2 <= group.c2
-      ) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   /**
    * Checks if two cell-groups are intersecting
    * in the given axis.

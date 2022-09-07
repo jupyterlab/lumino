@@ -5183,26 +5183,10 @@ export class DataGrid extends Widget {
 
       for (let c = rgn.column; c < rgn.column + rgn.columnSizes.length; c++) {
         const cIndex = c - rgn.column;
-        const cellUp = [rgn.row + j, c];
-        const cellDown = [rgn.row + j + 1, c];
 
-        if (
-          CellGroup.areCellsMerged(
-            this.dataModel!,
-            rgn.region,
-            cellUp,
-            cellDown
-          )
-        ) {
-          if (lineStarted) {
-            lines.push([xStart, leftCurrent]);
-          }
-          lineStarted = false;
-        } else {
-          if (!lineStarted) {
-            lineStarted = true;
-            xStart = leftCurrent;
-          }
+        if (!lineStarted) {
+          lineStarted = true;
+          xStart = leftCurrent;
         }
 
         leftCurrent += rgn.columnSizes[cIndex];
@@ -5296,26 +5280,10 @@ export class DataGrid extends Widget {
 
       for (let r = rgn.row; r < rgn.row + rgn.rowSizes.length; r++) {
         const rIndex = r - rgn.row;
-        const cellLeft = [r, rgn.column + i];
-        const cellRight = [r, rgn.column + i + 1];
 
-        if (
-          CellGroup.areCellsMerged(
-            this.dataModel!,
-            rgn.region,
-            cellLeft,
-            cellRight
-          )
-        ) {
-          if (lineStarted) {
-            lines.push([yStart, topCurrent]);
-          }
-          lineStarted = false;
-        } else {
-          if (!lineStarted) {
-            lineStarted = true;
-            yStart = topCurrent;
-          }
+        if (!lineStarted) {
+          lineStarted = true;
+          yStart = topCurrent;
         }
 
         topCurrent += rgn.rowSizes[rIndex];
