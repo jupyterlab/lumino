@@ -3397,16 +3397,10 @@ export class DataGrid extends Widget {
           break;
       }
 
-      // Draw the background for merged cells
-      this._drawMergedCellsBackground(cellGroups, paintRgn as Private.PaintRegion, this._style.backgroundColor);
-
-      // Draw the cell groups for the paint region
-      this._drawMergedCells(cellGroups, paintRgn as Private.PaintRegion);
-
-      // Draw grid lines close to merged cells
-      this._drawMergedCellsBorder(
+      this._paintMergedCells(
         cellGroups,
         paintRgn as Private.PaintRegion,
+        this._style.backgroundColor,
         this._style.horizontalGridLineColor || this._style.gridLineColor,
         this._style.verticalGridLineColor || this._style.gridLineColor
       );
@@ -4136,16 +4130,11 @@ export class DataGrid extends Widget {
       return this.cellGroupInteresectsRegion(group, rgn);
     });
 
-    // Draw the background for merged cells
-    this._drawMergedCellsBackground(cellGroups, rgn, this._style.backgroundColor);
-
-    // Draw the cell groups for the paint region
-    this._drawMergedCells(cellGroups, rgn);
-
-    // Draw grid lines close to merged cells
-    this._drawMergedCellsBorder(
+    // Draw merged cells
+    this._paintMergedCells(
       cellGroups,
       rgn,
+      this._style.backgroundColor,
       this._style.horizontalGridLineColor || this._style.gridLineColor,
       this._style.verticalGridLineColor || this._style.gridLineColor
     );
@@ -4293,16 +4282,11 @@ export class DataGrid extends Widget {
       return this.cellGroupInteresectsRegion(group, rgn);
     });
 
-    // Draw the background for merged cells
-    this._drawMergedCellsBackground(cellGroups, rgn, this._style.headerBackgroundColor);
-
-    // Draw the cell groups for the paint region
-    this._drawMergedCells(cellGroups, rgn);
-
-    // Draw grid lines close to merged cells
-    this._drawMergedCellsBorder(
+    // Draw merged cells
+    this._paintMergedCells(
       cellGroups,
       rgn,
+      this._style.headerBackgroundColor,
       this._style.headerHorizontalGridLineColor || this._style.headerGridLineColor,
       this._style.headerVerticalGridLineColor || this._style.headerGridLineColor
     );
@@ -4450,18 +4434,12 @@ export class DataGrid extends Widget {
       return this.cellGroupInteresectsRegion(group, rgn);
     });
 
-    // Draw the background for merged cells
-    this._drawMergedCellsBackground(cellGroups, rgn, this._style.headerBackgroundColor);
-
-    // Draw the cell groups for the paint region
-    this._drawMergedCells(cellGroups, rgn);
-
-    // Draw grid lines close to merged cells
-    this._drawMergedCellsBorder(
+    // Draw merged cells
+    this._paintMergedCells(
       cellGroups,
       rgn,
-      this._style.headerHorizontalGridLineColor ||
-        this._style.headerGridLineColor,
+      this._style.headerBackgroundColor,
+      this._style.headerHorizontalGridLineColor || this._style.headerGridLineColor,
       this._style.headerVerticalGridLineColor || this._style.headerGridLineColor
     );
   }
@@ -4592,18 +4570,12 @@ export class DataGrid extends Widget {
       return this.cellGroupInteresectsRegion(group, rgn);
     });
 
-    // Draw the background for merged cells
-    this._drawMergedCellsBackground(cellGroups, rgn, this._style.headerBackgroundColor);
-
-    // Draw the cell groups for the paint region
-    this._drawMergedCells(cellGroups, rgn);
-
-    // Draw grid lines close to merged cells
-    this._drawMergedCellsBorder(
+    // Draw merged cells
+    this._paintMergedCells(
       cellGroups,
       rgn,
-      this._style.headerHorizontalGridLineColor ||
-        this._style.headerGridLineColor,
+      this._style.headerBackgroundColor,
+      this._style.headerHorizontalGridLineColor || this._style.headerGridLineColor,
       this._style.headerVerticalGridLineColor || this._style.headerGridLineColor
     );
   }
@@ -4908,77 +4880,15 @@ export class DataGrid extends Widget {
   }
 
   /**
-   * Draw the background for given group cells.
+   * Paint group cells.
    */
-  private _drawMergedCellsBackground(
+  private _paintMergedCells(
     cellGroups: CellGroup[],
     rgn: Private.PaintRegion,
-    color: string | undefined
+    backgroundColor: string | undefined,
+    verticalColor: string | undefined,
+    horizontalColor: string | undefined
   ): void {
-    // Bail if there is no color to draw.
-    if (!color) {
-      return;
-    }
-
-    // Unpack the region.
-    let { xMin, yMin, xMax, yMax } = rgn;
-
-    this._canvasGC.fillStyle = color;
-
-    for (const group of cellGroups) {
-      let width = 0;
-      for (let c = group.c1; c <= group.c2; c++) {
-        width += this._getColumnSize(rgn.region, c);
-      }
-
-      let height = 0;
-      for (let r = group.r1; r <= group.r2; r++) {
-        height += this._getRowSize(rgn.region, r);
-      }
-
-      let x = 0;
-      let y = 0;
-      switch (rgn.region) {
-        case 'body':
-          x = this._columnSections.offsetOf(group.c1) + this.headerWidth - this._scrollX;
-          y = this._rowSections.offsetOf(group.r1) + this.headerHeight - this._scrollY;
-          break;
-        case 'column-header':
-          x = this._columnSections.offsetOf(group.c1) + this.headerWidth - this._scrollX;
-          y = this._rowSections.offsetOf(group.r1) - this._scrollY;
-          break;
-        case 'row-header':
-          x = this._columnSections.offsetOf(group.c1) - this._scrollX;
-          y = this._rowSections.offsetOf(group.r1) + this.headerHeight - this._scrollY;
-          break;
-        case 'corner-header':
-          x = this._columnSections.offsetOf(group.c1);
-          y = this._rowSections.offsetOf(group.r1);
-          break;
-      }
-
-      // Compute the actual X bounds for the cell.
-      let x1 = Math.max(xMin, x);
-      let x2 = Math.min(x + width - 1, xMax);
-
-      // Compute the actual Y bounds for the cell.
-      let y1 = Math.max(yMin, y);
-      let y2 = Math.min(y + height - 1, yMax);
-
-      // Fill the region with the specified color.
-      this._canvasGC.fillRect(
-        x1,
-        y1,
-        x2 - x1 + 1,
-        y2 - y1 + 1
-      );
-    }
-  }
-
-  /**
-   * Draw the cell groups for the given paint region.
-   */
-  private _drawMergedCells(cellGroups: CellGroup[], rgn: Private.PaintRegion): void {
     // Bail if there is no data model.
     if (!this._dataModel) {
       return;
@@ -4996,6 +4906,12 @@ export class DataGrid extends Widget {
       value: null as any,
       metadata: DataModel.emptyMetadata
     };
+
+    if (backgroundColor) {
+      this._canvasGC.fillStyle = backgroundColor;
+    }
+    // Set the line width for the grid lines.
+    this._canvasGC.lineWidth = 1;
 
     // Save the buffer gc before wrapping.
     this._bufferGC.save();
@@ -5063,12 +4979,22 @@ export class DataGrid extends Widget {
       config.metadata = metadata;
 
       // Compute the actual X bounds for the cell.
-      let x1 = Math.max(rgn.xMin, config.x);
-      let x2 = Math.min(config.x + config.width - 1, rgn.xMax);
+      let x1 = Math.max(rgn.xMin, x);
+      let x2 = Math.min(x + width - 1, rgn.xMax);
 
       // Compute the actual Y bounds for the cell.
-      let y1 = Math.max(rgn.yMin, config.y);
-      let y2 = Math.min(config.y + config.height - 1, rgn.yMax);
+      let y1 = Math.max(rgn.yMin, y);
+      let y2 = Math.min(y + height - 1, rgn.yMax);
+
+      // Draw the background.
+      if (backgroundColor) {
+        this._canvasGC.fillRect(
+          x1,
+          y1,
+          x2 - x1 + 1,
+          y2 - y1 + 1
+        );
+      }
 
       // Get the renderer for the cell.
       let renderer = this._cellRenderers.get(config);
@@ -5098,63 +5024,6 @@ export class DataGrid extends Widget {
         x1,
         y1
       );
-    }
-
-    // Dispose of the wrapped gc.
-    gc.dispose();
-
-    // Restore the final buffer gc state.
-    this._bufferGC.restore();
-  }
-
-  /**
-   * Draw the cell groups for the given paint region.
-   */
-  private _drawMergedCellsBorder(
-      cellGroups: CellGroup[],
-      rgn: Private.PaintRegion,
-      verticalColor: string | undefined,
-      horizontalColor: string | undefined
-  ): void {
-    // Bail if there is no data model.
-    if (!this._dataModel) {
-      return;
-    }
-
-    // Set the line width for the grid lines.
-    this._canvasGC.lineWidth = 1;
-
-    for (const group of cellGroups) {
-      let width = 0;
-      for (let c = group.c1; c <= group.c2; c++) {
-        width += this._getColumnSize(rgn.region, c);
-      }
-
-      let height = 0;
-      for (let r = group.r1; r <= group.r2; r++) {
-        height += this._getRowSize(rgn.region, r);
-      }
-
-      let x = 0;
-      let y = 0;
-      switch (rgn.region) {
-        case 'body':
-          x = this._columnSections.offsetOf(group.c1) + this.headerWidth - this._scrollX;
-          y = this._rowSections.offsetOf(group.r1) + this.headerHeight - this._scrollY;
-          break;
-        case 'column-header':
-          x = this._columnSections.offsetOf(group.c1) + this.headerWidth - this._scrollX;
-          y = this._rowSections.offsetOf(group.r1) - this._scrollY;
-          break;
-        case 'row-header':
-          x = this._columnSections.offsetOf(group.c1) - this._scrollX;
-          y = this._rowSections.offsetOf(group.r1) + this.headerHeight - this._scrollY;
-          break;
-        case 'corner-header':
-          x = this._columnSections.offsetOf(group.c1);
-          y = this._rowSections.offsetOf(group.r1);
-          break;
-      }
 
       if (verticalColor) {
         // Begin the path for the grid lines.
@@ -5188,6 +5057,12 @@ export class DataGrid extends Widget {
         this._canvasGC.stroke();
       }
     }
+
+    // Dispose of the wrapped gc.
+    gc.dispose();
+
+    // Restore the final buffer gc state.
+    this._bufferGC.restore();
   }
 
   /**
