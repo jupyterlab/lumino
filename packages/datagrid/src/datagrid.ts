@@ -5030,11 +5030,11 @@ export class DataGrid extends Widget {
         this._canvasGC.beginPath();
 
         // Why do we not need this?
-        // this._canvasGC.moveTo(x, y);
-        // this._canvasGC.lineTo(x, y + height);
+        // this._canvasGC.moveTo(x1, y1);
+        // this._canvasGC.lineTo(x1, y2);
 
-        this._canvasGC.moveTo(x + width - 0.5, y);
-        this._canvasGC.lineTo(x + width - 0.5, y + height);
+        this._canvasGC.moveTo(x2 + 0.5, y1);
+        this._canvasGC.lineTo(x2 + 0.5, y2);
 
         // Stroke the lines with the specified color.
         this._canvasGC.strokeStyle = verticalColor;
@@ -5046,11 +5046,11 @@ export class DataGrid extends Widget {
         this._canvasGC.beginPath();
 
         // Why do we not need this?
-        // this._canvasGC.moveTo(x, y);
-        // this._canvasGC.lineTo(x + width, y);
+        // this._canvasGC.moveTo(x1, y1);
+        // this._canvasGC.lineTo(x2, y1);
 
-        this._canvasGC.moveTo(x, y + height - 0.5);
-        this._canvasGC.lineTo(x + width, y + height - 0.5);
+        this._canvasGC.moveTo(x1, y2 + 0.5);
+        this._canvasGC.lineTo(x2, y2 + 0.5);
 
         // Stroke the lines with the specified color.
         this._canvasGC.strokeStyle = horizontalColor;
