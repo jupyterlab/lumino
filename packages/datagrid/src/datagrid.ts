@@ -5121,7 +5121,73 @@ export class DataGrid extends Widget {
       return;
     }
 
+    // Set the line width for the grid lines.
+    this._canvasGC.lineWidth = 1;
 
+    for (const group of cellGroups) {
+      let width = 0;
+      for (let c = group.c1; c <= group.c2; c++) {
+        width += this._getColumnSize(rgn.region, c);
+      }
+
+      let height = 0;
+      for (let r = group.r1; r <= group.r2; r++) {
+        height += this._getRowSize(rgn.region, r);
+      }
+
+      let x = 0;
+      let y = 0;
+      switch (rgn.region) {
+        case 'body':
+          x = this._columnSections.offsetOf(group.c1) + this.headerWidth - this._scrollX;
+          y = this._rowSections.offsetOf(group.r1) + this.headerHeight - this._scrollY;
+          break;
+        case 'column-header':
+          x = this._columnSections.offsetOf(group.c1) + this.headerWidth - this._scrollX;
+          y = this._rowSections.offsetOf(group.r1) - this._scrollY;
+          break;
+        case 'row-header':
+          x = this._columnSections.offsetOf(group.c1) - this._scrollX;
+          y = this._rowSections.offsetOf(group.r1) + this.headerHeight - this._scrollY;
+          break;
+        case 'corner-header':
+          x = this._columnSections.offsetOf(group.c1);
+          y = this._rowSections.offsetOf(group.r1);
+          break;
+      }
+
+      if (verticalColor) {
+        // Begin the path for the grid lines.
+        this._canvasGC.beginPath();
+
+        // Why do we not need this?
+        // this._canvasGC.moveTo(x, y);
+        // this._canvasGC.lineTo(x, y + height);
+
+        this._canvasGC.moveTo(x + width - 0.5, y);
+        this._canvasGC.lineTo(x + width - 0.5, y + height);
+
+        // Stroke the lines with the specified color.
+        this._canvasGC.strokeStyle = verticalColor;
+        this._canvasGC.stroke();
+      }
+
+      if (horizontalColor) {
+        // Begin the path for the grid lines.
+        this._canvasGC.beginPath();
+
+        // Why do we not need this?
+        // this._canvasGC.moveTo(x, y);
+        // this._canvasGC.lineTo(x + width, y);
+
+        this._canvasGC.moveTo(x, y + height - 0.5);
+        this._canvasGC.lineTo(x + width, y + height - 0.5);
+
+        // Stroke the lines with the specified color.
+        this._canvasGC.strokeStyle = horizontalColor;
+        this._canvasGC.stroke();
+      }
+    }
   }
 
   /**
