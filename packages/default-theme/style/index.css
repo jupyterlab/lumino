@@ -10,8 +10,8 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-@import '~@lumino/dragdrop/style/index.css';
-@import '~@lumino/widgets/style/index.css';
+@import '@lumino/dragdrop/style/index.css';
+@import '@lumino/widgets/style/index.css';
 @import './accordionpanel.css';
 @import './commandpalette.css';
 @import './datagrid.css';
