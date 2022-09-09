@@ -1,6 +1,6 @@
 {
   "name": "@lumino/messaging",
-  "version": "2.0.0-alpha.4",
+  "version": "2.0.0-alpha.5",
   "description": "Lumino Message Passing",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -43,8 +43,8 @@
     "displayName": "messaging"
   },
   "dependencies": {
-    "@lumino/algorithm": "^2.0.0-alpha.4",
-    "@lumino/collections": "^2.0.0-alpha.4"
+    "@lumino/algorithm": "^2.0.0-alpha.5",
+    "@lumino/collections": "^2.0.0-alpha.5"
   },
   "devDependencies": {
     "@microsoft/api-extractor": "^7.6.0",
