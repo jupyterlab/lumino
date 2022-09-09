@@ -326,13 +326,7 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
   private _state: IPoll.State<T, U, V>;
   private _tick = new PromiseDelegate<this>();
   private _ticked = new Signal<this, IPoll.State<T, U, V>>(this);
-  /*
-   * If set, the timeout handle for this poller. We use this complex formulation
-   * for the type since the NodeJS environment has a different return type
-   * (`NodeJS.Timeout`) from the browser environment (`number`) and we want this
-   * to compile in both places.
-   */
-  private _timeout?: ReturnType<typeof setTimeout>;
+  private _timeout?: ReturnType<typeof setTimeout>; // Support node and browser.
 }
 
 /**
@@ -401,8 +395,7 @@ export namespace Poll {
     standby?: Standby | (() => boolean | Standby);
   }
   /**
-   * An interval value that indicates the poll should tick immediately,
-   * i.e. 0 msec.
+   * An interval value (0ms) that indicates the poll should tick immediately.
    */
   export const IMMEDIATE = 0;
 
