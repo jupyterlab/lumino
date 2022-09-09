@@ -1,16 +1,16 @@
 {
   "name": "@lumino/example-datagrid",
-  "version": "0.33.0-alpha.4",
+  "version": "0.33.0-alpha.5",
   "private": true,
   "scripts": {
     "build": "tsc && rollup -c",
     "clean": "rimraf build"
   },
   "dependencies": {
-    "@lumino/datagrid": "^1.0.0-alpha.4",
-    "@lumino/default-theme": "^1.0.0-alpha.4",
-    "@lumino/dragdrop": "^2.0.0-alpha.4",
-    "@lumino/widgets": "^2.0.0-alpha.4"
+    "@lumino/datagrid": "^1.0.0-alpha.5",
+    "@lumino/default-theme": "^1.0.0-alpha.5",
+    "@lumino/dragdrop": "^2.0.0-alpha.5",
+    "@lumino/widgets": "^2.0.0-alpha.5"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^13.3.0",
