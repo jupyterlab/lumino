@@ -315,7 +315,7 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
   private _state: IPoll.State<T, U, V>;
   private _tick = new PromiseDelegate<this>();
   private _ticked = new Signal<this, IPoll.State<T, U, V>>(this);
-  private _timeout?: ReturnType<typeof setTimeout>; // Support node and browser.
+  private _timeout?: any; // Support node and browser. Type fixed in Lumino 2.
 }
 
 /**
