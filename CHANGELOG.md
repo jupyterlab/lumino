@@ -6,6 +6,28 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2022.9.9-alpha.5
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/algorithm@2.0.0-alpha.4...9ddf6c5dc51e04f0a289ebfb2f2e9993b2b87a48))
+
+### Bugs fixed
+
+- Switch to using `setTimeout` for all deferred processing. [#395](https://github.com/jupyterlab/lumino/pull/395) ([@thetorpedodog](https://github.com/thetorpedodog))
+
+### Maintenance and upkeep improvements
+
+- Update versions to v2 alpha.5 [#398](https://github.com/jupyterlab/lumino/pull/398) ([@fcollonval](https://github.com/fcollonval))
+- Remove some webpack artifacts from `devDependencies` [#396](https://github.com/jupyterlab/lumino/pull/396) ([@afshin](https://github.com/afshin))
+- Use Rollup for tests and examples [#348](https://github.com/jupyterlab/lumino/pull/348) ([@gabalafou](https://github.com/gabalafou))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2022-09-06&to=2022-09-09&type=c))
+
+[@afshin](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aafshin+updated%3A2022-09-06..2022-09-09&type=Issues) | [@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2022-09-06..2022-09-09&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2022-09-06..2022-09-09&type=Issues) | [@gabalafou](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Agabalafou+updated%3A2022-09-06..2022-09-09&type=Issues) | [@thetorpedodog](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Athetorpedodog+updated%3A2022-09-06..2022-09-09&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Awelcome+updated%3A2022-09-06..2022-09-09&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2022.9.6
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/algorithm@2.0.0-alpha.3...04e2e5beff2277f29a9b9168fbbd19915c238245))
@@ -29,8 +51,6 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2022-08-30&to=2022-09-06&type=c))
 
 [@afshin](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aafshin+updated%3A2022-08-30..2022-09-06&type=Issues) | [@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2022-08-30..2022-09-06&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2022-08-30..2022-09-06&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2022-08-30..2022-09-06&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2022.8.30
 
