@@ -708,7 +708,7 @@
     @lumino/example-datagrid@0.11.0
     @lumino/datagrid@0.14.0
 
-- Make private \_drawCornerHeaderRegion protected drawCornerHeaderRegion [#116](https://github.com/jupyterlab/lumino/pull/116) ([@lmcnichols](https://github.com/lmcnichols))
+- Make private \_drawCornerHeaderRegion protected drawCornerHeaderRegion [#116](https://github.com/jupyterlab/lumino/pull/116) (@lmcnichols)
 - Text eliding with ellipsis on datagrid text renderer [#105](https://github.com/jupyterlab/lumino/pull/105) ([@nmichaud](https://github.com/nmichaud))
 
 ## 2020-8-20
@@ -724,9 +724,9 @@
 
 - mouseDown now uses cell, column, and row selection modes [#114](https://github.com/jupyterlab/lumino/pull/114) ([@kgoo124](https://github.com/kgoo124))
 - Double-click to edit tab title in TabBars [#112](https://github.com/jupyterlab/lumino/pull/112) ([@nmichaud](https://github.com/nmichaud))
-- Give extending classes access to some of the data grid's paint utilities. [#111](https://github.com/jupyterlab/lumino/pull/111) ([@lmcnichols](https://github.com/lmcnichols))
+- Give extending classes access to some of the data grid's paint utilities. [#111](https://github.com/jupyterlab/lumino/pull/111) (@lmcnichols)
 - Fix for DockPanel.tabsMovable to set false to all tabs [#109](https://github.com/jupyterlab/lumino/pull/109) ([@nmichaud](https://github.com/nmichaud))
-- Modified function spliceArray in datastore/src/listfield.ts so that it behaves like Array.splice on large inputs. [#101](https://github.com/jupyterlab/lumino/pull/101) ([@lmcnichols](https://github.com/lmcnichols))
+- Modified function spliceArray in datastore/src/listfield.ts so that it behaves like Array.splice on large inputs. [#101](https://github.com/jupyterlab/lumino/pull/101) (@lmcnichols)
 - Bump elliptic from 6.5.2 to 6.5.3 [#99](https://github.com/jupyterlab/lumino/pull/99) ([@dependabot](https://github.com/dependabot))
 
 ## 2020-7-27
@@ -740,7 +740,7 @@
     @lumino/datagrid@0.12.0
     @lumino/application@1.10.4
 
-- Change the Drag class's private method \_moveDragImage to a public method moveDragImage. [#96](https://github.com/jupyterlab/lumino/pull/96) ([@lmcnichols](https://github.com/lmcnichols))
+- Change the Drag class's private method \_moveDragImage to a public method moveDragImage. [#96](https://github.com/jupyterlab/lumino/pull/96) (@lmcnichols)
 
 ## 2020-7-21
 
@@ -766,14 +766,14 @@
     @lumino/application@1.10.3
     @lumino/algorithm@1.3.3
 
-- Have the DataGrid syncViewport when receiving a DataModel.ChangedArgs signal of type "rows-moved" or "columns-moved" [#94](https://github.com/jupyterlab/lumino/pull/94) ([@lmcnichols](https://github.com/lmcnichols))
+- Have the DataGrid syncViewport when receiving a DataModel.ChangedArgs signal of type "rows-moved" or "columns-moved" [#94](https://github.com/jupyterlab/lumino/pull/94) (@lmcnichols)
 
 ## 2020-7-21
 
     @lumino/example-datagrid@0.8.0
     @lumino/datagrid@0.11.0
 
-- Make cursorForHandle and it's argument type accessible from outside BasicMouseHandler. [#92](https://github.com/jupyterlab/lumino/pull/92) ([@lmcnichols](https://github.com/lmcnichols))
+- Make cursorForHandle and it's argument type accessible from outside BasicMouseHandler. [#92](https://github.com/jupyterlab/lumino/pull/92) (@lmcnichols)
 - Bump lodash from 4.17.15 to 4.17.19 [#90](https://github.com/jupyterlab/lumino/pull/90) ([@dependabot](https://github.com/dependabot))
 
 ## 2020-7-5
