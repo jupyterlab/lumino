@@ -11,6 +11,8 @@ import { ArrayExt, every, retro, some } from '@lumino/algorithm';
 
 import { LinkedList } from '@lumino/collections';
 
+import { schedule, unschedule } from '@lumino/coreutils';
+
 /**
  * A message which can be delivered to a message handler.
  *
@@ -467,33 +469,15 @@ export namespace MessageLoop {
     console.error(err);
   };
 
-  type ScheduleHandle = number | any; //  requestAnimationFrame (number) and setImmediate (any)
-
   /**
    * The id of the pending loop task animation frame.
    */
-  let loopTaskID: ScheduleHandle = 0;
+  let loopTaskID: ReturnType<typeof schedule> = 0;
 
   /**
    * A guard flag to prevent flush recursion.
    */
   let flushGuard = false;
-
-  /**
-   * A function to schedule an event loop callback.
-   */
-  const schedule = ((): ScheduleHandle => {
-    let ok = typeof requestAnimationFrame === 'function';
-    return ok ? requestAnimationFrame : setImmediate;
-  })();
-
-  /**
-   * A function to unschedule an event loop callback.
-   */
-  const unschedule = (() => {
-    let ok = typeof cancelAnimationFrame === 'function';
-    return ok ? cancelAnimationFrame : clearImmediate;
-  })();
 
   /**
    * Invoke a message hook with the specified handler and message.
