@@ -5,6 +5,7 @@ import {
   JSONExt,
   PromiseDelegate,
   schedule,
+  ScheduleHandle,
   unschedule
 } from '@lumino/coreutils';
 
@@ -38,7 +39,7 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
   constructor(options: Poll.IOptions<T, U, V>) {
     this.standby = options.standby || Private.DEFAULT_STANDBY;
     this._factory = options.factory;
-    this._linger = options.linger ?? 1;
+    this._linger = options.linger ?? Private.DEFAULT_LINGER;
     this._state = { ...Private.DEFAULT_STATE, timestamp: new Date().getTime() };
 
     // Normalize poll frequency `max` to be the greater of
@@ -339,7 +340,7 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
   private _disposed = new Signal<this, void>(this);
   private _factory: Poll.Factory<T, U, V>;
   private _frequency: IPoll.Frequency;
-  private _handle: ReturnType<typeof schedule> = -1;
+  private _handle: ScheduleHandle = -1;
   private _linger: number;
   private _lingered = 0;
   private _state: IPoll.State<T, U, V>;
@@ -454,6 +455,11 @@ namespace Private {
     interval: 1000,
     max: 30 * 1000
   };
+
+  /**
+   * The default number of times to `linger` when a poll is hidden.
+   */
+  export const DEFAULT_LINGER = 1;
 
   /**
    * The default poll name.

@@ -11,7 +11,7 @@ import { ArrayExt, every, retro, some } from '@lumino/algorithm';
 
 import { LinkedList } from '@lumino/collections';
 
-import { schedule, unschedule } from '@lumino/coreutils';
+import { schedule, ScheduleHandle, unschedule } from '@lumino/coreutils';
 
 /**
  * A message which can be delivered to a message handler.
@@ -472,7 +472,7 @@ export namespace MessageLoop {
   /**
    * The id of the pending loop task animation frame.
    */
-  let loopTaskID: ReturnType<typeof schedule> = 0;
+  let loopTaskID: ScheduleHandle = 0;
 
   /**
    * A guard flag to prevent flush recursion.

@@ -25,7 +25,7 @@ describe('@lumino/coreutils', () => {
     it('should allow a callback to be unscheduled', async () => {
       let called = false;
       unschedule(schedule(() => (called = true)));
-      await sleep(20);
+      await sleep(100);
       expect(called).to.equal(false);
     });
   });
