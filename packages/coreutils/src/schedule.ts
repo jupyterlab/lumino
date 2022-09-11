@@ -2,19 +2,19 @@
 // Distributed under the terms of the Modified BSD License.
 
 /**
- * A composite type for callback handles, useful for unscheduling the callback.
- */
-type Handle =
-  | ReturnType<typeof requestAnimationFrame>
-  | ReturnType<typeof setImmediate>
-  | ReturnType<typeof setTimeout>;
-
-/**
- * Whether the client is a brower and can request animation frames.
+ * Test whether the client is a brower and can request animation frames.
  */
 const BROWSER =
   typeof document !== 'undefined' &&
   typeof requestAnimationFrame === 'function';
+
+/**
+ * A composite type for callback handles, useful for unscheduling the callback.
+ */
+export type ScheduleHandle =
+  | ReturnType<typeof requestAnimationFrame>
+  | ReturnType<typeof setImmediate>
+  | ReturnType<typeof setTimeout>;
 
 /**
  * Schedules a function for invocation as soon as possible asynchronously.
@@ -23,7 +23,7 @@ const BROWSER =
  *
  * @returns A handle that can be used to `unschedule` the `fn` if possible.
  */
-export function schedule(fn: () => unknown): Handle {
+export function schedule(fn: () => unknown): ScheduleHandle {
   if (BROWSER && document.visibilityState === 'hidden') {
     return setTimeout(fn);
   }
@@ -38,7 +38,7 @@ export function schedule(fn: () => unknown): Handle {
  *
  * @param handle The handle for the callback to unschedule.
  */
-export function unschedule(handle: Handle): void {
+export function unschedule(handle: ScheduleHandle): void {
   if (BROWSER && document.visibilityState === 'hidden') {
     return clearTimeout(handle as ReturnType<typeof setTimeout>);
   }

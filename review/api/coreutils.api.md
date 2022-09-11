@@ -4,6 +4,8 @@
 
 ```ts
 
+/// <reference types="node" />
+
 // @public
 export interface JSONArray extends Array<JSONValue> {
 }
@@ -107,10 +109,19 @@ export interface ReadonlyPartialJSONObject {
 export type ReadonlyPartialJSONValue = JSONPrimitive | ReadonlyPartialJSONObject | ReadonlyPartialJSONArray;
 
 // @public
+export function schedule(fn: () => unknown): ScheduleHandle;
+
+// @public
+export type ScheduleHandle = ReturnType<typeof requestAnimationFrame> | ReturnType<typeof setImmediate> | ReturnType<typeof setTimeout>;
+
+// @public
 export class Token<T> {
     constructor(name: string);
     readonly name: string;
 }
+
+// @public
+export function unschedule(handle: ScheduleHandle): void;
 
 // @public
 export namespace UUID {
