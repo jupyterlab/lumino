@@ -37,9 +37,9 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
    * @param options - The poll instantiation options.
    */
   constructor(options: Poll.IOptions<T, U, V>) {
-    this.standby = options.standby || Private.DEFAULT_STANDBY;
     this._factory = options.factory;
     this._linger = options.linger ?? Private.DEFAULT_LINGER;
+    this._standby = options.standby || Private.DEFAULT_STANDBY;
     this._state = { ...Private.DEFAULT_STATE, timestamp: new Date().getTime() };
 
     // Normalize poll frequency `max` to be the greater of
@@ -121,7 +121,16 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
   /**
    * Indicates when the poll switches to standby.
    */
-  public standby: Poll.Standby | (() => boolean | Poll.Standby);
+  get standby(): Poll.Standby | (() => boolean | Poll.Standby) {
+    return this._standby;
+  }
+  set standby(standby: Poll.Standby | (() => boolean | Poll.Standby)) {
+    if (this.isDisposed || this.standby === standby) {
+      return;
+    }
+
+    this._standby = standby;
+  }
 
   /**
    * The poll state, which is the content of the current poll tick.
@@ -343,6 +352,7 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
   private _handle: ScheduleHandle = -1;
   private _linger: number;
   private _lingered = 0;
+  private _standby: Poll.Standby | (() => boolean | Poll.Standby);
   private _state: IPoll.State<T, U, V>;
   private _tick = new PromiseDelegate<this>();
   private _ticked = new Signal<this, IPoll.State<T, U, V>>(this);

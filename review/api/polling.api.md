@@ -63,7 +63,8 @@ export class Poll<T = any, U = any, V extends string = 'standby'> implements IOb
     schedule(next?: Partial<IPoll.State<T, U, V> & {
         cancel: (last: IPoll.State<T, U, V>) => boolean;
     }>): Promise<void>;
-    standby: Poll.Standby | (() => boolean | Poll.Standby);
+    get standby(): Poll.Standby | (() => boolean | Poll.Standby);
+    set standby(standby: Poll.Standby | (() => boolean | Poll.Standby));
     start(): Promise<void>;
     get state(): IPoll.State<T, U, V>;
     stop(): Promise<void>;
