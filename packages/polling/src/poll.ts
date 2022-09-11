@@ -1,29 +1,18 @@
 // Copyright (c) Jupyter Development Team.
 // Distributed under the terms of the Modified BSD License.
 
-import { JSONExt, PromiseDelegate } from '@lumino/coreutils';
+import {
+  JSONExt,
+  PromiseDelegate,
+  schedule,
+  unschedule
+} from '@lumino/coreutils';
 
 import { IObservableDisposable } from '@lumino/disposable';
 
 import { ISignal, Signal } from '@lumino/signaling';
 
 import { IPoll } from './index';
-
-/**
- * A function to defer an action immediately.
- */
-const defer =
-  typeof requestAnimationFrame === 'function'
-    ? requestAnimationFrame
-    : setImmediate;
-
-/**
- * A function to cancel a deferred action.
- */
-const cancel: (timeout: any) => void =
-  typeof cancelAnimationFrame === 'function'
-    ? cancelAnimationFrame
-    : clearImmediate;
 
 /**
  * A class that wraps an asynchronous function to poll at a regular interval
@@ -64,7 +53,7 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
     this.name = options.name || Private.DEFAULT_NAME;
 
     if ('auto' in options ? options.auto : true) {
-      defer(() => void this.start());
+      schedule(() => void this.start());
     }
   }
 
@@ -242,9 +231,9 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
 
     // Clear the schedule if possible.
     if (last.interval === Poll.IMMEDIATE) {
-      cancel(this._timeout);
+      unschedule(this._handle);
     } else {
-      clearTimeout(this._timeout);
+      clearTimeout(this._handle as ReturnType<typeof setTimeout>);
     }
 
     // Emit ticked signal, resolve pending promise, and await its settlement.
@@ -260,9 +249,9 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
 
       this._execute();
     };
-    this._timeout =
+    this._handle =
       state.interval === Poll.IMMEDIATE
-        ? defer(execute)
+        ? schedule(execute)
         : state.interval === Poll.NEVER
         ? -1
         : setTimeout(execute, state.interval);
@@ -343,11 +332,11 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
   private _disposed = new Signal<this, void>(this);
   private _factory: Poll.Factory<T, U, V>;
   private _frequency: IPoll.Frequency;
+  private _handle: ReturnType<typeof schedule> = -1;
   private _standby: Poll.Standby | (() => boolean | Poll.Standby);
   private _state: IPoll.State<T, U, V>;
   private _tick = new PromiseDelegate<this>();
   private _ticked = new Signal<this, IPoll.State<T, U, V>>(this);
-  private _timeout: any = -1;
 }
 
 /**
