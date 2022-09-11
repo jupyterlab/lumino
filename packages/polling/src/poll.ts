@@ -36,8 +36,9 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
    * @param options - The poll instantiation options.
    */
   constructor(options: Poll.IOptions<T, U, V>) {
+    this.standby = options.standby || Private.DEFAULT_STANDBY;
     this._factory = options.factory;
-    this._standby = options.standby || Private.DEFAULT_STANDBY;
+    this._linger = options.linger ?? 1;
     this._state = { ...Private.DEFAULT_STATE, timestamp: new Date().getTime() };
 
     // Normalize poll frequency `max` to be the greater of
@@ -101,6 +102,15 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
   }
 
   /**
+   * Whether the poll is in a hidden document.
+   */
+  get hidden(): boolean {
+    return (
+      typeof document !== 'undefined' && document.visibilityState === 'hidden'
+    );
+  }
+
+  /**
    * Whether the poll is disposed.
    */
   get isDisposed(): boolean {
@@ -110,16 +120,7 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
   /**
    * Indicates when the poll switches to standby.
    */
-  get standby(): Poll.Standby | (() => boolean | Poll.Standby) {
-    return this._standby;
-  }
-  set standby(standby: Poll.Standby | (() => boolean | Poll.Standby)) {
-    if (this.isDisposed || this.standby === standby) {
-      return;
-    }
-
-    this._standby = standby;
-  }
+  public standby: Poll.Standby | (() => boolean | Poll.Standby);
 
   /**
    * The poll state, which is the content of the current poll tick.
@@ -290,12 +291,18 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
   private _execute(): void {
     let standby =
       typeof this.standby === 'function' ? this.standby() : this.standby;
-    standby =
-      standby === 'never'
-        ? false
-        : standby === 'when-hidden'
-        ? !!(typeof document !== 'undefined' && document && document.hidden)
-        : standby;
+
+    // Check if execution should proceed, linger, or stand by.
+    if (standby === 'never') {
+      standby = false;
+    } else if (standby === 'when-hidden') {
+      if (this.hidden) {
+        standby = ++this._lingered > this._linger;
+      } else {
+        this._lingered = 0;
+        standby = false;
+      }
+    }
 
     // If in standby mode schedule next tick without calling the factory.
     if (standby) {
@@ -333,7 +340,8 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
   private _factory: Poll.Factory<T, U, V>;
   private _frequency: IPoll.Frequency;
   private _handle: ReturnType<typeof schedule> = -1;
-  private _standby: Poll.Standby | (() => boolean | Poll.Standby);
+  private _linger: number;
+  private _lingered = 0;
   private _state: IPoll.State<T, U, V>;
   private _tick = new PromiseDelegate<this>();
   private _ticked = new Signal<this, IPoll.State<T, U, V>>(this);
@@ -380,6 +388,12 @@ export namespace Poll {
      * A factory function that is passed a poll tick and returns a poll promise.
      */
     factory: Factory<T, U, V>;
+
+    /**
+     * The number of ticks to linger if poll switches to standby `when-hidden`.
+     * Defaults to `1`.
+     */
+    linger?: number;
 
     /**
      * The polling frequency parameters.

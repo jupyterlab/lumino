@@ -154,6 +154,43 @@ describe('Poll', () => {
     });
   });
 
+  describe('#hidden', () => {
+    class HiddenPoll extends Poll {
+      get hidden(): boolean {
+        return true;
+      }
+    }
+
+    it('should tick `linger` times when the document is hidden', async () => {
+      const total = 24;
+      const linger = 19;
+      const ticker: IPoll.Phase<any>[] = [];
+      const expected = `started${' resolved'.repeat(linger)}${' standby'.repeat(
+        total - linger
+      )}`;
+      let lingered = 0;
+      const poll = new HiddenPoll({
+        auto: false,
+        factory: async () => lingered++,
+        frequency: { interval: Poll.IMMEDIATE },
+        linger,
+        standby: 'when-hidden',
+        name: '@lumino/polling:Poll#hidden-1'
+      });
+      poll.ticked.connect((_, tick) => {
+        ticker.push(tick.phase);
+      });
+      await poll.start();
+      let i = 0;
+      while (i++ < total) {
+        await poll.tick;
+      }
+      expect(ticker.join(' ')).to.equal(expected);
+      expect(lingered).to.equal(linger);
+      poll.dispose();
+    });
+  });
+
   describe('#name', () => {
     it('should be set to value passed in during instantation', () => {
       const factory = () => Promise.resolve();
