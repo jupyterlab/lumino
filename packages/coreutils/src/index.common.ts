@@ -10,4 +10,5 @@
 export * from './json';
 export * from './mime';
 export * from './promise';
+export * from './schedule';
 export * from './token';

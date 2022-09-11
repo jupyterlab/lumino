@@ -50,6 +50,7 @@
     "@rollup/plugin-node-resolve": "^13.3.0",
     "@types/chai": "^3.4.35",
     "@types/mocha": "^2.2.39",
+    "@types/node": "^12.12.17",
     "chai": "^4.3.4",
     "karma": "^6.3.4",
     "karma-chrome-launcher": "^3.1.0",

@@ -1,7 +1,7 @@
 {
   "extends": "../../../tsconfigbase",
   "compilerOptions": {
-    "lib": ["ES2018"],
+    "lib": ["ES2018", "DOM"],
     "outDir": "lib",
     "rootDir": "src",
     "types": ["chai", "mocha"]

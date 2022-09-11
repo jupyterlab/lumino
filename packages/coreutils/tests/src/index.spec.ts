@@ -11,4 +11,5 @@
 import './json.spec';
 import './mime.spec';
 import './promise.spec';
+import './schedule.spec';
 import './token.spec';
