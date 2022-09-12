@@ -20,7 +20,7 @@ describe('@lumino/coreutils', () => {
   describe('schedule() and unschedule()', () => {
     it('should schedule a deferred function invocation', done => {
       schedule(() => void done());
-    });
+    }).timeout(5000); // Increase test timeout for Windows.
 
     it('should allow a callback to be unscheduled', async () => {
       let called = false;
