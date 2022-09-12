@@ -12,9 +12,9 @@ const BROWSER =
  * A composite type for callback handles, useful for unscheduling the callback.
  */
 export type ScheduleHandle =
-  | ReturnType<typeof requestAnimationFrame>
-  | ReturnType<typeof setImmediate>
-  | ReturnType<typeof setTimeout>;
+  | ReturnType<typeof requestAnimationFrame> // (DOM) number
+  | ReturnType<typeof setImmediate> // (node) NodeJS.Immediate
+  | ReturnType<typeof setTimeout>; // (DOM) number | (node) NodeJS.Timeout
 
 /**
  * Schedules a function for invocation as soon as possible asynchronously.
