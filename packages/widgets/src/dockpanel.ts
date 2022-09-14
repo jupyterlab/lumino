@@ -446,13 +446,13 @@ export class DockPanel extends Widget {
         this._evtDrop(event as Drag.Event);
         break;
       case 'pointerdown':
-        this._evtPointerDown(event as MouseEvent);
+        this._evtPointerDown(event as PointerEvent);
         break;
       case 'pointermove':
-        this._evtPointerMove(event as MouseEvent);
+        this._evtPointerMove(event as PointerEvent);
         break;
       case 'pointerup':
-        this._evtPointerUp(event as MouseEvent);
+        this._evtPointerUp(event as PointerEvent);
         break;
       case 'keydown':
         this._evtKeyDown(event as KeyboardEvent);
@@ -685,7 +685,7 @@ export class DockPanel extends Widget {
   /**
    * Handle the `'pointerdown'` event for the dock panel.
    */
-  private _evtPointerDown(event: MouseEvent): void {
+  private _evtPointerDown(event: PointerEvent): void {
     // Do nothing if the left mouse button is not pressed.
     if (event.button !== 0) {
       return;
@@ -723,7 +723,7 @@ export class DockPanel extends Widget {
   /**
    * Handle the `'pointermove'` event for the dock panel.
    */
-  private _evtPointerMove(event: MouseEvent): void {
+  private _evtPointerMove(event: PointerEvent): void {
     // Bail early if no drag is in progress.
     if (!this._pressData) {
       return;
@@ -746,7 +746,7 @@ export class DockPanel extends Widget {
   /**
    * Handle the `'pointerup'` event for the dock panel.
    */
-  private _evtPointerUp(event: MouseEvent): void {
+  private _evtPointerUp(event: PointerEvent): void {
     // Do nothing if the left mouse button is not released.
     if (event.button !== 0) {
       return;
