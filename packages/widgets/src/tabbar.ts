@@ -1519,6 +1519,9 @@ export namespace TabBar {
    * Subclasses are free to reimplement rendering methods as needed.
    */
   export class Renderer implements IRenderer<any> {
+    constructor() {
+      this._uuid = ++Renderer._nInstance;
+    }
     /**
      * A selector which matches the close icon node in a tab.
      */
@@ -1607,7 +1610,7 @@ export namespace TabBar {
     createTabKey(data: IRenderData<any>): string {
       let key = this._tabKeys.get(data.title);
       if (key === undefined) {
-        key = `tab-key-${this._tabID++}`;
+        key = `tab-key-${this._uuid}-${this._tabID++}`;
         this._tabKeys.set(data.title, key);
       }
       return key;
@@ -1680,6 +1683,8 @@ export namespace TabBar {
       return extra ? `${name} ${extra}` : name;
     }
 
+    private static _nInstance = 0;
+    private readonly _uuid: number;
     private _tabID = 0;
     private _tabKeys = new WeakMap<Title<any>, string>();
   }
