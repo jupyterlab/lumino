@@ -73,6 +73,7 @@ export namespace AccordionPanel {
     export type IRenderer = AccordionLayout.IRenderer;
     export type Orientation = SplitLayout.Orientation;
     export class Renderer extends SplitPanel.Renderer implements IRenderer {
+        constructor();
         createCollapseIcon(data: Title<Widget>): HTMLElement;
         createSectionTitle(data: Title<Widget>): HTMLElement;
         createTitleKey(data: Title<Widget>): string;
@@ -1133,6 +1134,7 @@ export namespace TabBar {
     */
     | 'select-previous-tab';
     export class Renderer implements IRenderer<any> {
+        constructor();
         readonly closeIconSelector = ".lm-TabBar-tabCloseIcon";
         createIconClass(data: IRenderData<any>): string;
         createTabARIA(data: IRenderData<any>): ElementARIAAttrs;
