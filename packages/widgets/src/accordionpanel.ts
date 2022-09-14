@@ -401,7 +401,6 @@ export namespace AccordionPanel {
       handle.setAttribute('tabindex', '0');
       handle.id = this.createTitleKey(data);
       handle.className = this.titleClassName;
-      handle.title = data.caption;
       for (const aData in data.dataset) {
         handle.dataset[aData] = data.dataset[aData];
       }
@@ -412,6 +411,7 @@ export namespace AccordionPanel {
       const label = handle.appendChild(document.createElement('span'));
       label.className = 'lm-AccordionPanel-titleLabel';
       label.textContent = data.label;
+      label.title = data.caption || data.label;
 
       return handle;
     }
