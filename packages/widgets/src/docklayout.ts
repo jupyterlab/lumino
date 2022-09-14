@@ -1840,6 +1840,7 @@ namespace Private {
      * Create an iterator for the handles in the layout tree.
      */
     *iterHandles(): IterableIterator<HTMLDivElement> {
+      yield* this.handles;
       for (const child of this.children) {
         yield* child.iterHandles();
       }
