@@ -1519,7 +1519,6 @@ export namespace TabBar {
    * Subclasses are free to reimplement rendering methods as needed.
    */
   export class Renderer implements IRenderer<any> {
-
     constructor() {
       this._uuid = ++Renderer._nInstance;
     }
