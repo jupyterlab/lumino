@@ -372,6 +372,10 @@ export namespace AccordionPanel {
    * The default implementation of `IRenderer`.
    */
   export class Renderer extends SplitPanel.Renderer implements IRenderer {
+    constructor() {
+      super();
+      this._uuid = ++Renderer._nInstance;
+    }
     /**
      * A selector which matches any title node in the accordion.
      */
@@ -430,12 +434,14 @@ export namespace AccordionPanel {
     createTitleKey(data: Title<Widget>): string {
       let key = this._titleKeys.get(data);
       if (key === undefined) {
-        key = `title-key-${this._titleID++}`;
+        key = `title-key-${this._uuid}-${this._titleID++}`;
         this._titleKeys.set(data, key);
       }
       return key;
     }
 
+    private static _nInstance = 0;
+    private readonly _uuid: number;
     private _titleID = 0;
     private _titleKeys = new WeakMap<Title<Widget>, string>();
   }
