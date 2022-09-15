@@ -145,10 +145,8 @@ export class DockLayout extends Layout {
    * #### Notes
    * This iterator includes the generated tab bars.
    */
-  *[Symbol.iterator](): IterableIterator<Widget> {
-    if (this._root) {
-      yield* this._root.iterAllWidgets();
-    }
+  [Symbol.iterator](): IterableIterator<Widget> {
+    return this._root ? this._root.iterAllWidgets() : Private.empty;
   }
 
   /**
@@ -159,10 +157,8 @@ export class DockLayout extends Layout {
    * #### Notes
    * This iterator does not include the generated tab bars.
    */
-  *widgets(): IterableIterator<Widget> {
-    if (this._root) {
-      yield* this._root.iterUserWidgets();
-    }
+  widgets(): IterableIterator<Widget> {
+    return this._root ? this._root.iterUserWidgets() : Private.empty;
   }
 
   /**
@@ -174,10 +170,8 @@ export class DockLayout extends Layout {
    * This iterator yields the widgets corresponding to the current tab
    * of each tab bar in the layout.
    */
-  *selectedWidgets(): IterableIterator<Widget> {
-    if (this._root) {
-      yield* this._root.iterSelectedWidgets();
-    }
+  selectedWidgets(): IterableIterator<Widget> {
+    return this._root ? this._root.iterSelectedWidgets() : Private.empty;
   }
 
   /**
@@ -188,10 +182,8 @@ export class DockLayout extends Layout {
    * #### Notes
    * This iterator does not include the user widgets.
    */
-  *tabBars(): IterableIterator<TabBar<Widget>> {
-    if (this._root) {
-      yield* this._root.iterTabBars();
-    }
+  tabBars(): IterableIterator<TabBar<Widget>> {
+    return this._root ? this._root.iterTabBars() : Private.empty;
   }
 
   /**
@@ -199,10 +191,8 @@ export class DockLayout extends Layout {
    *
    * @returns A new iterator over the handles in the layout.
    */
-  *handles(): IterableIterator<HTMLDivElement> {
-    if (this._root) {
-      yield* this._root.iterHandles();
-    }
+  handles(): IterableIterator<HTMLDivElement> {
+    return this._root ? this._root.iterHandles() : Private.empty;
   }
 
   /**
@@ -1435,6 +1425,11 @@ export namespace DockLayout {
  */
 namespace Private {
   /**
+   * An empty iterator.
+   */
+  export const empty = [][Symbol.iterator]();
+
+  /**
    * A fraction used for sizing root panels; ~= `1 / golden_ratio`.
    */
   export const GOLDEN_RATIO = 0.618;
@@ -1840,6 +1835,7 @@ namespace Private {
      * Create an iterator for the handles in the layout tree.
      */
     *iterHandles(): IterableIterator<HTMLDivElement> {
+      yield* this.handles;
       for (const child of this.children) {
         yield* child.iterHandles();
       }

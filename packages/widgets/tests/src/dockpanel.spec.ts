@@ -57,6 +57,16 @@ describe('@lumino/widgets', () => {
       });
     });
 
+    describe('#handles()', () => {
+      it('should return the handles within the dock panel', () => {
+        let dock = new DockPanel();
+        dock.addWidget(new Widget());
+        dock.addWidget(new Widget(), { mode: 'split-bottom' });
+        expect(Array.from(dock.handles())).to.have.lengthOf(2); // one is hidden
+        dock.dispose();
+      });
+    });
+
     describe('hiddenMode', () => {
       let panel: DockPanel;
       let widgets: Widget[] = [];
