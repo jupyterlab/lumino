@@ -7,7 +7,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { ArrayExt } from '@lumino/algorithm';
+import { ArrayExt, empty } from '@lumino/algorithm';
 
 import { ElementExt } from '@lumino/domutils';
 
@@ -146,7 +146,7 @@ export class DockLayout extends Layout {
    * This iterator includes the generated tab bars.
    */
   [Symbol.iterator](): IterableIterator<Widget> {
-    return this._root ? this._root.iterAllWidgets() : Private.empty;
+    return this._root ? this._root.iterAllWidgets() : empty();
   }
 
   /**
@@ -158,7 +158,7 @@ export class DockLayout extends Layout {
    * This iterator does not include the generated tab bars.
    */
   widgets(): IterableIterator<Widget> {
-    return this._root ? this._root.iterUserWidgets() : Private.empty;
+    return this._root ? this._root.iterUserWidgets() : empty();
   }
 
   /**
@@ -171,7 +171,7 @@ export class DockLayout extends Layout {
    * of each tab bar in the layout.
    */
   selectedWidgets(): IterableIterator<Widget> {
-    return this._root ? this._root.iterSelectedWidgets() : Private.empty;
+    return this._root ? this._root.iterSelectedWidgets() : empty();
   }
 
   /**
@@ -183,7 +183,7 @@ export class DockLayout extends Layout {
    * This iterator does not include the user widgets.
    */
   tabBars(): IterableIterator<TabBar<Widget>> {
-    return this._root ? this._root.iterTabBars() : Private.empty;
+    return this._root ? this._root.iterTabBars() : empty();
   }
 
   /**
@@ -192,7 +192,7 @@ export class DockLayout extends Layout {
    * @returns A new iterator over the handles in the layout.
    */
   handles(): IterableIterator<HTMLDivElement> {
-    return this._root ? this._root.iterHandles() : Private.empty;
+    return this._root ? this._root.iterHandles() : empty();
   }
 
   /**
@@ -1424,11 +1424,6 @@ export namespace DockLayout {
  * The namespace for the module implementation details.
  */
 namespace Private {
-  /**
-   * An empty iterator.
-   */
-  export const empty = [][Symbol.iterator]();
-
   /**
    * A fraction used for sizing root panels; ~= `1 / golden_ratio`.
    */
