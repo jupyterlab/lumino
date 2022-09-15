@@ -22,6 +22,45 @@ Unless you need a handle on multiple iterators simultaneously (e.g., the way `zi
 
 In many places where the Lumino `iter()` utility function has been replaced in Lumino 2 it is not replaced with an invocation of the new `Symbol.iterator` method.
 
+### Consider `yield*` usage carefully
+
+If you have a method or function that returns an `Iterable` or `IterableIterator`, you might simply return values using the `yield` keyword. If you are returning the contents of another iterable, you can use `yield*`. However, if your logic depends on some predicate, remember that the predicate is check _when you iterate_ if you use `yield*`. For example, consider the following:
+
+```typescript
+const source = [1, 2, 3, 4, 5];
+let flagged = false;
+
+function* counter(): IterableIterator {
+  if (!flagged) {
+    yield* source;
+  }
+}
+
+const iterable = counter();
+flagged = true;
+console.log(Array.from(iterable)); // []
+```
+
+Instead, if we modify the code:
+
+```typescript
+const source = [1, 2, 3, 4, 5];
+let flagged = false;
+
+function counter(): IterableIterator<number> {
+  if (!flagged) {
+    return source[Symbol.iterator]();
+  }
+  return empty();
+}
+
+const iterable = counter();
+flagged = true;
+console.log(Array.from(iterable)); // [1, 2, 3, 4. 5]
+```
+
+Both are _correct_, but depending on your use case, one may be more appropriate than the other. Crucially, the two implementations are _not_ identical.
+
 ### Use `Array.from(...)` sparingly
 
 `toArray(...)` has been deprecated. You may be tempted to swap in `Array.from(...)` when you update your code. This _will_ work, but if you simply need to iterate through an iterable, you can use `for...of` directly on the iterable object. This is more performant both in terms of CPU and memory than allocating and populating new `Array` instance before iteration.
@@ -79,7 +118,7 @@ All of the iterator utilities have been changed to use native generators and ite
 | ❌  | `class`     | `ZipIterator<T>`         | Previous implementation of `zip<T>()`                                                                                                                                                                                                                                                                                                        |
 | ☑️  | `function`  | `chain<T>(...)`          | `@deprecated`, use native [`yield`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/yield) instead                                                                                                                                                                                                               |
 | ☑️  | `function`  | `each<T>(...)`           | `@deprecated`, use native `for...of`, `[].forEach`, etc.                                                                                                                                                                                                                                                                                     |
-| ☑️  | `function`  | `empty<T>(...)`          | `@deprecated`, use native generator functions                                                                                                                                                                                                                                                                                                |
+| ✅  | `function`  | `empty<T>(...)`          | Reimplement with native types                                                                                                                                                                                                                                                                                                                |
 | ✅  | `function`  | `enumerate<T>(...)`      | Reimplement with native types                                                                                                                                                                                                                                                                                                                |
 | ✅  | `function`  | `every<T>(...)`          | Reimplement with native types                                                                                                                                                                                                                                                                                                                |
 | ✅  | `function`  | `filter<T>(...)`         | Reimplement with native types                                                                                                                                                                                                                                                                                                                |
