@@ -53,7 +53,7 @@ export function chain<T>(...objects: Iterable<T>[]): IterableIterator<T>;
 // @public @deprecated
 export function each<T>(object: Iterable<T>, fn: (value: T, index: number) => boolean | void): void;
 
-// @public @deprecated
+// @public
 export function empty<T>(): IterableIterator<T>;
 
 // @public
