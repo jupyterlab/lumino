@@ -1,6 +1,6 @@
 {
   "name": "@lumino/dragdrop",
-  "version": "2.0.0-alpha.5",
+  "version": "2.0.0-alpha.6",
   "description": "Lumino Drag and Drop",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -46,8 +46,8 @@
     "displayName": "dragdrop"
   },
   "dependencies": {
-    "@lumino/coreutils": "^2.0.0-alpha.5",
-    "@lumino/disposable": "^2.0.0-alpha.5"
+    "@lumino/coreutils": "^2.0.0-alpha.6",
+    "@lumino/disposable": "^2.0.0-alpha.6"
   },
   "devDependencies": {
     "@microsoft/api-extractor": "^7.6.0",
