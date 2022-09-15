@@ -6,6 +6,34 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2022.9.15-alpha.6
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/algorithm@2.0.0-alpha.5...14aed9f818ef3d6dac4693eb3d7722dc27820664))
+
+### Enhancements made
+
+- Improve title on accordion label [#406](https://github.com/jupyterlab/lumino/pull/406) ([@fcollonval](https://github.com/fcollonval))
+
+### Bugs fixed
+
+- Fix resizing and mode switching in `DockPanel` [#411](https://github.com/jupyterlab/lumino/pull/411) ([@afshin](https://github.com/afshin))
+- Fix labelledby to support multiple elements on page [#407](https://github.com/jupyterlab/lumino/pull/407) ([@fcollonval](https://github.com/fcollonval))
+
+### Maintenance and upkeep improvements
+
+- Bump packages to v2 alpha 6 [#413](https://github.com/jupyterlab/lumino/pull/413) ([@fcollonval](https://github.com/fcollonval))
+- Bump actions/setup-node from 1 to 3 [#405](https://github.com/jupyterlab/lumino/pull/405) ([@dependabot](https://github.com/dependabot))
+- Bump tj-actions/changed-files from 29.0.3 to 29.0.4 [#404](https://github.com/jupyterlab/lumino/pull/404) ([@dependabot](https://github.com/dependabot))
+- Bump actions/cache from 2 to 3 [#403](https://github.com/jupyterlab/lumino/pull/403) ([@dependabot](https://github.com/dependabot))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2022-09-09&to=2022-09-15&type=c))
+
+[@afshin](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aafshin+updated%3A2022-09-09..2022-09-15&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2022-09-09..2022-09-15&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2022-09-09..2022-09-15&type=Issues) | [@vidartf](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Avidartf+updated%3A2022-09-09..2022-09-15&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2022.9.9-alpha.5
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/algorithm@2.0.0-alpha.4...9ddf6c5dc51e04f0a289ebfb2f2e9993b2b87a48))
@@ -25,8 +53,6 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2022-09-06&to=2022-09-09&type=c))
 
 [@afshin](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aafshin+updated%3A2022-09-06..2022-09-09&type=Issues) | [@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2022-09-06..2022-09-09&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2022-09-06..2022-09-09&type=Issues) | [@gabalafou](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Agabalafou+updated%3A2022-09-06..2022-09-09&type=Issues) | [@thetorpedodog](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Athetorpedodog+updated%3A2022-09-06..2022-09-09&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Awelcome+updated%3A2022-09-06..2022-09-09&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2022.9.6
 
