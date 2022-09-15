@@ -24,7 +24,7 @@ In many places where the Lumino `iter()` utility function has been replaced in L
 
 ### Consider `yield*` usage carefully
 
-If you have a method or function that returns an `Iterable` or `IterableIterator`, you might simply return values using the `yield` keyword. If you are returning the contents of another iterable, you can use `yield*`. However, if your logic depends on some predicate, remember that the predicate is check _when you iterate_ if you use `yield*`. For example, consider the following:
+If you have a method or function that returns an iterator, you might simply return values using the `yield` keyword. If you are returning the contents of another iterable, you can use `yield*`. However, if your logic depends on some predicate, remember that the predicate is checked _when you iterate_ if you use `yield*`. For example, consider the following:
 
 ```typescript
 const source = [1, 2, 3, 4, 5];
@@ -36,6 +36,7 @@ function* counter(): IterableIterator {
   }
 }
 
+// This is how a client would use the `counter()` function.
 const iterable = counter();
 flagged = true;
 console.log(Array.from(iterable)); // []
@@ -44,6 +45,8 @@ console.log(Array.from(iterable)); // []
 Instead, if we modify the code:
 
 ```typescript
+import { empty } from '@lumino/algorithm';
+
 const source = [1, 2, 3, 4, 5];
 let flagged = false;
 
@@ -54,12 +57,13 @@ function counter(): IterableIterator<number> {
   return empty();
 }
 
+// This is how a client would use the `counter()` function.
 const iterable = counter();
 flagged = true;
 console.log(Array.from(iterable)); // [1, 2, 3, 4. 5]
 ```
 
-Both are _correct_, but depending on your use case, one may be more appropriate than the other. Crucially, the two implementations are _not_ identical.
+In these two examples, the client code that consumes `counter()` is identical. But the results are different. Both implementations are _correct_, but depending on your use case, one may be more appropriate than the other. The important thing to consider is that the two implementations are _not_ identical and yield different results.
 
 ### Use `Array.from(...)` sparingly
 
