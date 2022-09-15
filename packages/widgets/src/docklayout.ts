@@ -306,10 +306,10 @@ export class DockLayout extends Layout {
       mainConfig = null;
     }
 
-    // Create iterators over the old content.
-    let oldWidgets = this.widgets();
-    let oldTabBars = this.tabBars();
-    let oldHandles = this.handles();
+    // Create a snapshot of the old content.
+    let oldWidgets = Array.from(this.widgets());
+    let oldTabBars = Array.from(this.tabBars());
+    let oldHandles = Array.from(this.handles());
 
     // Clear the root before removing the old content.
     this._root = null;
