@@ -4794,13 +4794,6 @@ karma-firefox-launcher@^2.1.1:
     is-wsl "^2.2.0"
     which "^2.0.1"
 
-karma-ie-launcher@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/karma-ie-launcher/-/karma-ie-launcher-1.0.0.tgz#497986842c490190346cd89f5494ca9830c6d59c"
-  integrity sha512-ts71ke8pHvw6qdRtq0+7VY3ANLoZuUNNkA8abRaWV13QRPNm7TtSOqyszjHUtuwOWKcsSz4tbUtrNICrQC+SXQ==
-  dependencies:
-    lodash "^4.6.1"
-
 karma-mocha-reporter@^2.2.5:
   version "2.2.5"
   resolved "https://registry.yarnpkg.com/karma-mocha-reporter/-/karma-mocha-reporter-2.2.5.tgz#15120095e8ed819186e47a0b012f3cd741895560"
@@ -4816,6 +4809,13 @@ karma-mocha@^2.0.1:
   integrity sha512-Tzd5HBjm8his2OA4bouAsATYEpZrp9vC7z5E5j4C5Of5Rrs1jY67RAwXNcVmd/Bnk1wgvQRou0zGVLey44G4tQ==
   dependencies:
     minimist "^1.2.3"
+
+karma-webkit-launcher@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/karma-webkit-launcher/-/karma-webkit-launcher-1.0.2.tgz#d576902b0c1308de8fac3fc666ac2e0a1e6a574d"
+  integrity sha512-FJVxo3rVDCORh84ETTE0oTUPa76lGKIzHkZ1+7zQ+iLNBMpxGGUJ8k6FMqqZCLB/dYuTkV6azDf1q/sB2olIfQ==
+  dependencies:
+    uuid "^8.3.2"
 
 karma@^6.3.4:
   version "6.4.0"
@@ -5102,7 +5102,7 @@ lodash.uniq@^4.5.0:
   resolved "https://registry.yarnpkg.com/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
   integrity sha512-xfBaXQd9ryd9dlSDvnvI0lvxfLJlYAZzXomUYzLKtUeOQvOP5piqAWuGtrhWeqaXK9hhoM/iyJc5AV+XfsX3HQ==
 
-lodash@4, lodash@4.17.21, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.21, lodash@^4.6.1, lodash@^4.7.0, lodash@~4.17.15:
+lodash@4, lodash@4.17.21, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.21, lodash@^4.7.0, lodash@~4.17.15:
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==

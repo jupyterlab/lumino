@@ -37,7 +37,7 @@
     "test:examples": "lerna run test --scope \"@lumino/example-*\"",
     "test:firefox": "lerna run test:firefox",
     "test:firefox-headless": "lerna run test:firefox-headless",
-    "test:ie": "lerna run test:ie --concurrency 1",
+    "test:webkit": "lerna run test:webkit --concurrency 1",
     "update:dependency": "update-dependency --lerna",
     "update:versions": "lerna version --no-push --no-git-tag-version"
   },

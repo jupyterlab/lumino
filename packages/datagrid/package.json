@@ -48,6 +48,7 @@
   "devDependencies": {
     "@rollup/plugin-commonjs": "^22.0.2",
     "@rollup/plugin-node-resolve": "^13.3.0",
+    "karma-webkit-launcher": "^1.0.2",
     "postcss": "^8.4.14",
     "rimraf": "^3.0.2",
     "rollup": "^2.77.3",
