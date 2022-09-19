@@ -3275,8 +3275,6 @@ export class DataGrid extends Widget {
       };
 
       let backgroundColor = undefined;
-      let horizontalColor = undefined;
-      let verticalColor = undefined;
 
       switch (rgn) {
         case 'body':
@@ -3286,10 +3284,6 @@ export class DataGrid extends Widget {
           paintRgn.yMax = this.headerHeight + this.bodyHeight;
 
           backgroundColor = this._style.backgroundColor;
-          horizontalColor =
-            this._style.horizontalGridLineColor || this._style.gridLineColor;
-          verticalColor =
-            this._style.verticalGridLineColor || this._style.gridLineColor;
           break;
         case 'row-header':
           paintRgn.xMin = 0;
@@ -3298,21 +3292,13 @@ export class DataGrid extends Widget {
           paintRgn.yMax = this.headerHeight + this.bodyHeight;
 
           backgroundColor = this._style.headerBackgroundColor;
-          horizontalColor =
-            this._style.headerHorizontalGridLineColor ||
-            this._style.headerGridLineColor;
-          verticalColor =
-            this._style.headerVerticalGridLineColor ||
-            this._style.headerGridLineColor;
           break;
       }
 
       this._paintMergedCells(
         cellGroups,
         paintRgn as Private.PaintRegion,
-        backgroundColor,
-        horizontalColor,
-        verticalColor
+        backgroundColor
       );
     }
 
@@ -3448,8 +3434,6 @@ export class DataGrid extends Widget {
       };
 
       let backgroundColor = undefined;
-      let horizontalColor = undefined;
-      let verticalColor = undefined;
 
       switch (rgn) {
         case 'body':
@@ -3459,10 +3443,6 @@ export class DataGrid extends Widget {
           paintRgn.yMax = this.headerHeight + this.bodyHeight;
 
           backgroundColor = this._style.backgroundColor;
-          horizontalColor =
-            this._style.horizontalGridLineColor || this._style.gridLineColor;
-          verticalColor =
-            this._style.verticalGridLineColor || this._style.gridLineColor;
           break;
         case 'column-header':
           paintRgn.xMin = this.headerWidth;
@@ -3471,21 +3451,13 @@ export class DataGrid extends Widget {
           paintRgn.yMax = this.headerHeight;
 
           backgroundColor = this._style.headerBackgroundColor;
-          horizontalColor =
-            this._style.headerHorizontalGridLineColor ||
-            this._style.headerGridLineColor;
-          verticalColor =
-            this._style.headerVerticalGridLineColor ||
-            this._style.headerGridLineColor;
           break;
       }
 
       this._paintMergedCells(
         cellGroups,
         paintRgn as Private.PaintRegion,
-        backgroundColor,
-        horizontalColor,
-        verticalColor
+        backgroundColor
       );
     }
 
@@ -3617,11 +3589,7 @@ export class DataGrid extends Widget {
       this._paintMergedCells(
         cellGroups,
         paintRgn as Private.PaintRegion,
-        this._style.headerBackgroundColor,
-        this._style.headerHorizontalGridLineColor ||
-          this._style.headerGridLineColor,
-        this._style.headerVerticalGridLineColor ||
-          this._style.headerGridLineColor
+        this._style.headerBackgroundColor
       );
     }
 
@@ -3756,11 +3724,7 @@ export class DataGrid extends Widget {
       this._paintMergedCells(
         cellGroups,
         paintRgn as Private.PaintRegion,
-        this._style.headerBackgroundColor,
-        this._style.headerHorizontalGridLineColor ||
-          this._style.headerGridLineColor,
-        this._style.headerVerticalGridLineColor ||
-          this._style.headerGridLineColor
+        this._style.headerBackgroundColor
       );
     }
 
@@ -4313,9 +4277,7 @@ export class DataGrid extends Widget {
     this._paintMergedCells(
       cellGroups,
       rgn,
-      this._style.backgroundColor,
-      this._style.horizontalGridLineColor || this._style.gridLineColor,
-      this._style.verticalGridLineColor || this._style.gridLineColor
+      this._style.backgroundColor
     );
   }
 
@@ -4465,10 +4427,7 @@ export class DataGrid extends Widget {
     this._paintMergedCells(
       cellGroups,
       rgn,
-      this._style.headerBackgroundColor,
-      this._style.headerHorizontalGridLineColor ||
-        this._style.headerGridLineColor,
-      this._style.headerVerticalGridLineColor || this._style.headerGridLineColor
+      this._style.headerBackgroundColor
     );
   }
 
@@ -4618,10 +4577,7 @@ export class DataGrid extends Widget {
     this._paintMergedCells(
       cellGroups,
       rgn,
-      this._style.headerBackgroundColor,
-      this._style.headerHorizontalGridLineColor ||
-        this._style.headerGridLineColor,
-      this._style.headerVerticalGridLineColor || this._style.headerGridLineColor
+      this._style.headerBackgroundColor
     );
   }
 
@@ -4755,10 +4711,7 @@ export class DataGrid extends Widget {
     this._paintMergedCells(
       cellGroups,
       rgn,
-      this._style.headerBackgroundColor,
-      this._style.headerHorizontalGridLineColor ||
-        this._style.headerGridLineColor,
-      this._style.headerVerticalGridLineColor || this._style.headerGridLineColor
+      this._style.headerBackgroundColor
     );
   }
 
@@ -5070,9 +5023,7 @@ export class DataGrid extends Widget {
   private _paintMergedCells(
     cellGroups: CellGroup[],
     rgn: Private.PaintRegion,
-    backgroundColor: string | undefined,
-    verticalColor: string | undefined,
-    horizontalColor: string | undefined
+    backgroundColor: string | undefined
   ): void {
     // Bail if there is no data model.
     if (!this._dataModel) {
@@ -5176,12 +5127,16 @@ export class DataGrid extends Widget {
       config.metadata = metadata;
 
       // Compute the actual X bounds for the cell.
-      let x1 = Math.max(rgn.xMin, x);
-      let x2 = Math.min(x + width - 1, rgn.xMax);
+      const x1 = Math.max(rgn.xMin, x);
+      const x2 = Math.min(x + width - 2, rgn.xMax);
 
       // Compute the actual Y bounds for the cell.
-      let y1 = Math.max(rgn.yMin, y);
-      let y2 = Math.min(y + height - 1, rgn.yMax);
+      const y1 = Math.max(rgn.yMin, y);
+      const y2 = Math.min(y + height - 2, rgn.yMax);
+
+      if (x2 <= x1 || y2 <= y1) {
+        continue;
+      }
 
       // Draw the background.
       if (backgroundColor) {
@@ -5208,38 +5163,6 @@ export class DataGrid extends Widget {
       gc.restore();
 
       this._blitContent(this._buffer, x1, y1, x2 - x1 + 1, y2 - y1 + 1, x1, y1);
-
-      if (verticalColor) {
-        // Begin the path for the grid lines.
-        this._canvasGC.beginPath();
-
-        // Why do we not need this?
-        // this._canvasGC.moveTo(x1, y1);
-        // this._canvasGC.lineTo(x1, y2);
-
-        this._canvasGC.moveTo(x2 + 0.5, y1);
-        this._canvasGC.lineTo(x2 + 0.5, y2 + 1);
-
-        // Stroke the lines with the specified color.
-        this._canvasGC.strokeStyle = verticalColor;
-        this._canvasGC.stroke();
-      }
-
-      if (horizontalColor) {
-        // Begin the path for the grid lines.
-        this._canvasGC.beginPath();
-
-        // Why do we not need this?
-        // this._canvasGC.moveTo(x1, y1);
-        // this._canvasGC.lineTo(x2, y1);
-
-        this._canvasGC.moveTo(x1, y2 + 0.5);
-        this._canvasGC.lineTo(x2 + 1, y2 + 0.5);
-
-        // Stroke the lines with the specified color.
-        this._canvasGC.strokeStyle = horizontalColor;
-        this._canvasGC.stroke();
-      }
     }
 
     // Dispose of the wrapped gc.
@@ -5262,7 +5185,8 @@ export class DataGrid extends Widget {
     }
 
     // Compute the X bounds for the horizontal lines.
-    let x1 = Math.max(rgn.xMin, rgn.x);
+    const x1 = Math.max(rgn.xMin, rgn.x);
+    const x2 = Math.min(rgn.x + rgn.width, rgn.xMax + 1);
 
     // Begin the path for the grid lines.
     this._canvasGC.beginPath();
@@ -5271,8 +5195,8 @@ export class DataGrid extends Widget {
     this._canvasGC.lineWidth = 1;
 
     // Fetch the geometry.
-    let bh = this.bodyHeight;
-    let ph = this.pageHeight;
+    const bh = this.bodyHeight;
+    const ph = this.pageHeight;
 
     // Fetch the number of grid lines to be drawn.
     let n = rgn.rowSizes.length;
@@ -5299,7 +5223,6 @@ export class DataGrid extends Widget {
 
       // Draw the line if it's in range of the dirty rect.
       if (pos >= rgn.yMin && pos <= rgn.yMax) {
-        const x2 = Math.min(rgn.x + rgn.width, rgn.xMax + 1);
         this._canvasGC.moveTo(x1, pos + 0.5);
         this._canvasGC.lineTo(x2, pos + 0.5);
       }
@@ -5326,7 +5249,8 @@ export class DataGrid extends Widget {
     }
 
     // Compute the Y bounds for the vertical lines.
-    let y1 = Math.max(rgn.yMin, rgn.y);
+    const y1 = Math.max(rgn.yMin, rgn.y);
+    const y2 = Math.min(rgn.y + rgn.height, rgn.yMax + 1);
 
     // Begin the path for the grid lines
     this._canvasGC.beginPath();
@@ -5335,8 +5259,8 @@ export class DataGrid extends Widget {
     this._canvasGC.lineWidth = 1;
 
     // Fetch the geometry.
-    let bw = this.bodyWidth;
-    let pw = this.pageWidth;
+    const bw = this.bodyWidth;
+    const pw = this.pageWidth;
 
     // Fetch the number of grid lines to be drawn.
     let n = rgn.columnSizes.length;
@@ -5363,7 +5287,6 @@ export class DataGrid extends Widget {
 
       // Draw the line if it's in range of the dirty rect.
       if (pos >= rgn.xMin && pos <= rgn.xMax) {
-        let y2 = Math.min(rgn.y + rgn.height, rgn.yMax + 1);
         this._canvasGC.moveTo(pos + 0.5, y1);
         this._canvasGC.lineTo(pos + 0.5, y2);
       }
