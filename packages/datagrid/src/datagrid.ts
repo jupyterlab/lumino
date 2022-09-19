@@ -3264,8 +3264,6 @@ export class DataGrid extends Widget {
         index
       );
 
-      // TODO We're not creating a fully implemented paint-region,
-      // We probably need another type
       let paintRgn = {
         region: rgn,
         xMin: 0,
@@ -3297,7 +3295,7 @@ export class DataGrid extends Widget {
 
       this._paintMergedCells(
         cellGroups,
-        paintRgn as Private.PaintRegion,
+        paintRgn,
         backgroundColor
       );
     }
@@ -3423,8 +3421,6 @@ export class DataGrid extends Widget {
         index
       );
 
-      // TODO We're not creating a fully implemented paint-region,
-      // We probably need another type
       let paintRgn = {
         region: rgn,
         xMin: 0,
@@ -3456,7 +3452,7 @@ export class DataGrid extends Widget {
 
       this._paintMergedCells(
         cellGroups,
-        paintRgn as Private.PaintRegion,
+        paintRgn,
         backgroundColor
       );
     }
@@ -3561,8 +3557,6 @@ export class DataGrid extends Widget {
         index
       );
 
-      // TODO We're not creating a fully implemented paint-region,
-      // We probably need another type
       let paintRgn = {
         region: rgn,
         xMin: 0,
@@ -3588,7 +3582,7 @@ export class DataGrid extends Widget {
 
       this._paintMergedCells(
         cellGroups,
-        paintRgn as Private.PaintRegion,
+        paintRgn,
         this._style.headerBackgroundColor
       );
     }
@@ -3696,8 +3690,6 @@ export class DataGrid extends Widget {
         index
       );
 
-      // TODO We're not creating a fully implemented paint-region,
-      // We probably need another type
       let paintRgn = {
         region: rgn,
         xMin: 0,
@@ -3723,7 +3715,7 @@ export class DataGrid extends Widget {
 
       this._paintMergedCells(
         cellGroups,
-        paintRgn as Private.PaintRegion,
+        paintRgn,
         this._style.headerBackgroundColor
       );
     }
@@ -5006,7 +4998,7 @@ export class DataGrid extends Widget {
    */
   private _paintMergedCells(
     cellGroups: CellGroup[],
-    rgn: Private.PaintRegion,
+    rgn: Private.PixelRegion,
     backgroundColor: string | undefined
   ): void {
     // Bail if there is no data model.
@@ -6580,9 +6572,9 @@ namespace Private {
   }
 
   /**
-   * An object which represents a region to be painted.
+   * An object which represents a canvas region in pixels.
    */
-  export type PaintRegion = {
+  export type PixelRegion = {
     /**
      * The min X coordinate the of the dirty viewport rect.
      *
@@ -6616,6 +6608,16 @@ namespace Private {
     yMax: number;
 
     /**
+     * The cell region.
+     */
+    region: DataModel.CellRegion;
+  };
+
+  /**
+   * An object which represents a region to be painted.
+   */
+  export type PaintRegion = PixelRegion & {
+    /**
      * The X coordinate the of the region, in viewport coordinates.
      *
      * #### Notes
@@ -6646,11 +6648,6 @@ namespace Private {
      * This is aligned to the cell boundaries.
      */
     height: number;
-
-    /**
-     * The cell region being painted.
-     */
-    region: DataModel.CellRegion;
 
     /**
      * The row index of the first cell in the region.
