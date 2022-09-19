@@ -5218,7 +5218,7 @@ export class DataGrid extends Widget {
         // this._canvasGC.lineTo(x1, y2);
 
         this._canvasGC.moveTo(x2 + 0.5, y1);
-        this._canvasGC.lineTo(x2 + 0.5, y2);
+        this._canvasGC.lineTo(x2 + 0.5, y2 + 1);
 
         // Stroke the lines with the specified color.
         this._canvasGC.strokeStyle = verticalColor;
@@ -5234,7 +5234,7 @@ export class DataGrid extends Widget {
         // this._canvasGC.lineTo(x2, y1);
 
         this._canvasGC.moveTo(x1, y2 + 0.5);
-        this._canvasGC.lineTo(x2, y2 + 0.5);
+        this._canvasGC.lineTo(x2 + 1, y2 + 0.5);
 
         // Stroke the lines with the specified color.
         this._canvasGC.strokeStyle = horizontalColor;
