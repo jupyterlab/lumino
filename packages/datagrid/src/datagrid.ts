@@ -5294,29 +5294,6 @@ export class DataGrid extends Widget {
         continue;
       }
 
-      let xStart = 0;
-      let lineStarted = false;
-      let lines = [];
-      let leftCurrent = x1;
-
-      for (let c = rgn.column; c < rgn.column + rgn.columnSizes.length; c++) {
-        const cIndex = c - rgn.column;
-
-        if (!lineStarted) {
-          lineStarted = true;
-          xStart = leftCurrent;
-        }
-
-        leftCurrent += rgn.columnSizes[cIndex];
-        if (c === rgn.column) {
-          leftCurrent -= rgn.xMin - rgn.x;
-        }
-      }
-
-      if (lineStarted) {
-        lines.push([xStart, rgn.xMax + 1]);
-      }
-
       // Compute the Y position of the line.
       let pos = y + size - 1;
 
@@ -5379,29 +5356,6 @@ export class DataGrid extends Widget {
       // Skip zero sized columns.
       if (size === 0) {
         continue;
-      }
-
-      let yStart = 0;
-      let lineStarted = false;
-      let lines = [];
-      let topCurrent = y1;
-
-      for (let r = rgn.row; r < rgn.row + rgn.rowSizes.length; r++) {
-        const rIndex = r - rgn.row;
-
-        if (!lineStarted) {
-          lineStarted = true;
-          yStart = topCurrent;
-        }
-
-        topCurrent += rgn.rowSizes[rIndex];
-        if (r === rgn.row) {
-          topCurrent -= rgn.yMin - rgn.y;
-        }
-      }
-
-      if (lineStarted) {
-        lines.push([yStart, rgn.yMax + 1]);
       }
 
       // Compute the X position of the line.
