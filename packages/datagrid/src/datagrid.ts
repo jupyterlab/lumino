@@ -5085,10 +5085,10 @@ export class DataGrid extends Widget {
             this._columnSections.offsetOf(group.c1) +
             this.headerWidth -
             this._scrollX;
-          y = this._rowSections.offsetOf(group.r1) - this._scrollY;
+          y = this._rowSections.offsetOf(group.r1);
           break;
         case 'row-header':
-          x = this._columnSections.offsetOf(group.c1) - this._scrollX;
+          x = this._columnSections.offsetOf(group.c1);
           y =
             this._rowSections.offsetOf(group.r1) +
             this.headerHeight -
