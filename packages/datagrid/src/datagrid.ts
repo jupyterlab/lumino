@@ -4274,11 +4274,7 @@ export class DataGrid extends Widget {
     });
 
     // Draw merged cells
-    this._paintMergedCells(
-      cellGroups,
-      rgn,
-      this._style.backgroundColor
-    );
+    this._paintMergedCells(cellGroups, rgn, this._style.backgroundColor);
   }
 
   /**
@@ -4424,11 +4420,7 @@ export class DataGrid extends Widget {
     });
 
     // Draw merged cells
-    this._paintMergedCells(
-      cellGroups,
-      rgn,
-      this._style.headerBackgroundColor
-    );
+    this._paintMergedCells(cellGroups, rgn, this._style.headerBackgroundColor);
   }
 
   /**
@@ -4574,11 +4566,7 @@ export class DataGrid extends Widget {
     });
 
     // Draw merged cells
-    this._paintMergedCells(
-      cellGroups,
-      rgn,
-      this._style.headerBackgroundColor
-    );
+    this._paintMergedCells(cellGroups, rgn, this._style.headerBackgroundColor);
   }
 
   /**
@@ -4708,11 +4696,7 @@ export class DataGrid extends Widget {
     });
 
     // Draw merged cells
-    this._paintMergedCells(
-      cellGroups,
-      rgn,
-      this._style.headerBackgroundColor
-    );
+    this._paintMergedCells(cellGroups, rgn, this._style.headerBackgroundColor);
   }
 
   /**
