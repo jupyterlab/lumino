@@ -3293,11 +3293,7 @@ export class DataGrid extends Widget {
           break;
       }
 
-      this._paintMergedCells(
-        cellGroups,
-        paintRgn,
-        backgroundColor
-      );
+      this._paintMergedCells(cellGroups, paintRgn, backgroundColor);
     }
 
     // Paint the overlay.
@@ -3450,11 +3446,7 @@ export class DataGrid extends Widget {
           break;
       }
 
-      this._paintMergedCells(
-        cellGroups,
-        paintRgn,
-        backgroundColor
-      );
+      this._paintMergedCells(cellGroups, paintRgn, backgroundColor);
     }
 
     // Paint the overlay.
