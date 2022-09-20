@@ -3828,6 +3828,45 @@ export class DataGrid extends Widget {
           width,
           Math.abs(dy)
         );
+
+        // Repaint merged cells that are intersected by the scroll level
+        // Otherwise it will be cut in two by the valid content, and drawn incorrectly
+        for (const rgn of ['body', 'row-header'] as DataModel.CellRegion[]) {
+          const cellgroups = CellGroup.getCellGroupsAtRegion(
+            this.dataModel, rgn
+          );
+
+          let paintRgn = {
+            region: rgn,
+            xMin: 0,
+            xMax: 0,
+            yMin: 0,
+            yMax: 0
+          };
+
+          let backgroundColor = undefined;
+
+          switch (rgn) {
+            case 'body':
+              paintRgn.xMin = this.headerWidth;
+              paintRgn.xMax = this.headerWidth + this.bodyWidth;
+              paintRgn.yMin = this.headerHeight;
+              paintRgn.yMax = this.headerHeight + this.bodyHeight;
+
+              backgroundColor = this._style.backgroundColor;
+              break;
+            case 'row-header':
+              paintRgn.xMin = 0;
+              paintRgn.xMax = this.headerWidth;
+              paintRgn.yMin = this.headerHeight;
+              paintRgn.yMax = this.headerHeight + this.bodyHeight;
+
+              backgroundColor = this._style.headerBackgroundColor;
+              break;
+          }
+
+          this._paintMergedCells(cellgroups, paintRgn, backgroundColor);
+        }
       }
     }
 
@@ -3852,6 +3891,46 @@ export class DataGrid extends Widget {
           Math.abs(dx),
           height
         );
+
+        // Repaint merged cells that are intersected by the scroll level
+        // Otherwise it will be cut in two by the valid content, and drawn incorrectly
+        for (const rgn of ['body', 'column-header'] as DataModel.CellRegion[]) {
+          const cellGroups = CellGroup.getCellGroupsAtRegion(
+            this.dataModel,
+            rgn
+          );
+
+          let paintRgn = {
+            region: rgn,
+            xMin: 0,
+            xMax: 0,
+            yMin: 0,
+            yMax: 0
+          };
+
+          let backgroundColor = undefined;
+
+          switch (rgn) {
+            case 'body':
+              paintRgn.xMin = this.headerWidth;
+              paintRgn.xMax = this.headerWidth + this.bodyWidth;
+              paintRgn.yMin = this.headerHeight;
+              paintRgn.yMax = this.headerHeight + this.bodyHeight;
+
+              backgroundColor = this._style.backgroundColor;
+              break;
+            case 'column-header':
+              paintRgn.xMin = this.headerWidth;
+              paintRgn.xMax = this.headerWidth + this.bodyWidth;
+              paintRgn.yMin = 0;
+              paintRgn.yMax = this.headerHeight;
+
+              backgroundColor = this._style.headerBackgroundColor;
+              break;
+          }
+
+          this._paintMergedCells(cellGroups, paintRgn, backgroundColor);
+        }
       }
     }
 
