@@ -55,7 +55,7 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
     this.name = options.name || Private.DEFAULT_NAME;
 
     if ('auto' in options ? options.auto : true) {
-      schedule(() => void this.start());
+      schedule(() => void this.start(), true);
     }
   }
 
@@ -262,7 +262,7 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
     };
     this._handle =
       state.interval === Poll.IMMEDIATE
-        ? schedule(execute)
+        ? schedule(execute, true)
         : state.interval === Poll.NEVER
         ? -1
         : setTimeout(execute, state.interval);
