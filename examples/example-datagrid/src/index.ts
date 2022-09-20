@@ -30,12 +30,30 @@ import { getKeyboardLayout } from '@lumino/keyboard';
 import '../style/index.css';
 
 class MergedCellModel extends DataModel {
+  constructor() {
+    super();
+
+    // Initializing the body groups
+    for (
+      let r = 0, c = 0;
+      r < this.rowCount('body') && c < this.columnCount('body');
+      r += 3, c += 3
+    ) {
+      this.bodyGroups.push({ r1: r, c1: c, r2: r + 2, c2: c + 2 });
+    }
+
+    // Initializing the row-header groups
+    for (let r = 0; r < this.rowCount('body'); r += 2) {
+      this.rowHeaderGroups.push({ r1: r, c1: 0, r2: r + 1, c2: 1 });
+    }
+  }
+
   rowCount(region: DataModel.RowRegion): number {
-    return region === 'body' ? 20 : 3;
+    return region === 'body' ? 500 : 3;
   }
 
   columnCount(region: DataModel.ColumnRegion): number {
-    return region === 'body' ? 6 : 3;
+    return region === 'body' ? 500 : 3;
   }
 
   data(region: DataModel.CellRegion, row: number, column: number): any {
@@ -53,11 +71,11 @@ class MergedCellModel extends DataModel {
 
   groupCount(region: DataModel.RowRegion): number {
     if (region === 'body') {
-      return 3;
+      return this.bodyGroups.length;
     } else if (region === 'column-header') {
       return 1;
     } else if (region === 'row-header') {
-      return 2;
+      return this.rowHeaderGroups.length;
     } else if (region === 'corner-header') {
       return 1;
     }
@@ -66,11 +84,7 @@ class MergedCellModel extends DataModel {
 
   group(region: DataModel.CellRegion, groupIndex: number): CellGroup | null {
     if (region === 'body') {
-      return [
-        { r1: 1, c1: 1, r2: 2, c2: 2 },
-        { r1: 5, c1: 1, r2: 5, c2: 2 },
-        { r1: 3, c1: 5, r2: 4, c2: 5 }
-      ][groupIndex];
+      return this.bodyGroups[groupIndex];
     }
 
     if (region === 'column-header') {
@@ -78,10 +92,7 @@ class MergedCellModel extends DataModel {
     }
 
     if (region === 'row-header') {
-      return [
-        { r1: 0, c1: 0, r2: 1, c2: 1 },
-        { r1: 4, c1: 0, r2: 5, c2: 0 }
-      ][groupIndex];
+      return this.rowHeaderGroups[groupIndex];
     }
 
     if (region === 'corner-header') {
@@ -90,6 +101,9 @@ class MergedCellModel extends DataModel {
 
     return null;
   }
+
+  rowHeaderGroups: CellGroup[] = [];
+  bodyGroups: CellGroup[] = [];
 }
 
 class LargeDataModel extends DataModel {
