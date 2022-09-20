@@ -758,7 +758,7 @@ namespace Private {
    * Create a normalized plugin data object for the given plugin.
    */
   export function createPluginData(plugin: IPlugin<any, any>): IPluginData {
-    return Object.freeze({
+    return {
       id: plugin.id,
       description: plugin.description ?? '',
       service: null,
@@ -770,7 +770,7 @@ namespace Private {
       autoStart: plugin.autoStart ?? false,
       requires: plugin.requires ? plugin.requires.slice() : [],
       optional: plugin.optional ? plugin.optional.slice() : []
-    });
+    };
   }
 
   /**
