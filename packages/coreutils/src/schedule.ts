@@ -21,10 +21,26 @@ export type ScheduleHandle =
  *
  * @param fn The function to invoke when called back.
  *
+ * @param background Whether run if the document is hidden. Defaults to `false`.
+ *
  * @returns A handle that can be used to `unschedule` the `fn` if possible.
+ *
+ * #### Notes
+ * The `background` argument is only relevant in the browser context. If set to
+ * `true`, the function will be scheduled using `setTimeout` so that it executes
+ * even when the document is in a background tab. If left `false`, the function
+ * is scheduled using `requestAnimationFrame`, which is faster than `setTimeout`
+ * but paused when the document is in a background tab.
+ *
+ * A client should not switch back and forth between the two modes if the order
+ * of scheduled functions is important and when the ability to unschedule a
+ * function is important.
  */
-export function schedule(fn: () => unknown): ScheduleHandle {
-  if (BROWSER && document.visibilityState === 'hidden') {
+export function schedule(
+  fn: () => unknown,
+  background = false
+): ScheduleHandle {
+  if (BROWSER && background) {
     return setTimeout(fn);
   }
   if (BROWSER) {
@@ -37,9 +53,11 @@ export function schedule(fn: () => unknown): ScheduleHandle {
  * Unschedules a function invocation if possible.
  *
  * @param handle The handle for the callback to unschedule.
+ *
+ * @param background The value when `handle` was scheduled. Defaults to `false`.
  */
-export function unschedule(handle: ScheduleHandle): void {
-  if (BROWSER && document.visibilityState === 'hidden') {
+export function unschedule(handle: ScheduleHandle, background = false): void {
+  if (BROWSER && background) {
     return clearTimeout(handle as ReturnType<typeof setTimeout>);
   }
   if (BROWSER) {
