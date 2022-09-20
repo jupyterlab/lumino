@@ -243,7 +243,7 @@ describe('@lumino/application', () => {
         const id = 'plugin1';
         const plugin = new class {
           readonly id = id;
-          activate: () => {
+          activate = () => {
             // Check this.id is accessible as expected
             // as we are tearing a part the plugin object.
             expect(this.id).to.equal(id);
