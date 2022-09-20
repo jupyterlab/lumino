@@ -198,6 +198,23 @@ export type MessageHook =
  */
 export namespace MessageLoop {
   /**
+   * Whether to schedule messages if running in background. Defaults to `false`.
+   *
+   * #### Notes
+   * This flag is only relevant in the browser context and otherwise ignored.
+   *
+   * If set to `true`, the messages will be scheduled using `setTimeout`, which
+   * is less performant but will invoke when the document is in a background
+   * tab. If `false`, the message is scheduled using `requestAnimationFrame`,
+   * which is faster but paused when the document is in a background tab.
+   *
+   * A client should not switch back and forth between the two modes without
+   * first calling `flush()` because the order of scheduled messages can only
+   * be guaranteed when nothing is enqueued.
+   */
+  export let background = false;
+
+  /**
    * Send a message to a message handler to process immediately.
    *
    * @param handler - The handler which should process the message.
@@ -298,7 +315,7 @@ export namespace MessageLoop {
     handler: IMessageHandler,
     hook: MessageHook
   ): void {
-    // Lookup the hooks for the handler.
+    // Look up the hooks for the handler.
     let hooks = messageHooks.get(handler);
 
     // Bail early if the hook is already installed.
@@ -395,7 +412,7 @@ export namespace MessageLoop {
     }
 
     // Unschedule the pending loop task.
-    unschedule(loopTaskID);
+    unschedule(loopTaskID, background);
 
     // Run the message loop within the recursion guard.
     flushGuard = true;
@@ -532,7 +549,7 @@ export namespace MessageLoop {
     }
 
     // Schedule a run of the message loop.
-    loopTaskID = schedule(runMessageLoop);
+    loopTaskID = schedule(runMessageLoop, background);
   }
 
   /**
@@ -584,7 +601,7 @@ export namespace MessageLoop {
    */
   function scheduleCleanup(hooks: Array<MessageHook | null>): void {
     if (dirtySet.size === 0) {
-      schedule(cleanupDirtySet);
+      schedule(cleanupDirtySet, background);
     }
     dirtySet.add(hooks);
   }
