@@ -44,7 +44,7 @@ export interface IPlugin<T extends Application, U> {
 
   /**
    * Plugin description.
-   * 
+   *
    * #### Notes
    * This can be used to provide user documentation on the feature
    * brought by a plugin.
