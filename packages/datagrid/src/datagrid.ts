@@ -3833,7 +3833,8 @@ export class DataGrid extends Widget {
         // Otherwise it will be cut in two by the valid content, and drawn incorrectly
         for (const rgn of ['body', 'row-header'] as DataModel.CellRegion[]) {
           const cellgroups = CellGroup.getCellGroupsAtRegion(
-            this.dataModel, rgn
+            this.dataModel,
+            rgn
           );
 
           let paintRgn = {
