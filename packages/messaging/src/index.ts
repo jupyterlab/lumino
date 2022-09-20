@@ -198,23 +198,6 @@ export type MessageHook =
  */
 export namespace MessageLoop {
   /**
-   * Whether to schedule messages if running in background. Defaults to `false`.
-   *
-   * #### Notes
-   * This flag is only relevant in the browser context and otherwise ignored.
-   *
-   * If set to `true`, the messages will be scheduled using `setTimeout`, which
-   * is less performant but will invoke when the document is in a background
-   * tab. If `false`, the message is scheduled using `requestAnimationFrame`,
-   * which is faster but paused when the document is in a background tab.
-   *
-   * A client should not switch back and forth between the two modes without
-   * first calling `flush()` because the order of scheduled messages can only
-   * be guaranteed when nothing is enqueued.
-   */
-  export let background = false;
-
-  /**
    * Send a message to a message handler to process immediately.
    *
    * @param handler - The handler which should process the message.
@@ -418,6 +401,36 @@ export namespace MessageLoop {
     flushGuard = true;
     runMessageLoop();
     flushGuard = false;
+  }
+
+  /**
+   * The background flag.
+   */
+  let background = false;
+
+  /**
+   * Sets whether messages are scheduled in the background. Defaults to `false`.
+   *
+   * #### Notes
+   * This flag is only relevant in the browser context and otherwise ignored.
+   *
+   * If set to `true`, the messages will be scheduled using `setTimeout`, which
+   * is less performant but will invoke when the document is in a background
+   * tab. If `false`, the message is scheduled using `requestAnimationFrame`,
+   * which is faster but paused when the document is in a background tab.
+   */
+  export function setBackground(value: boolean): void {
+    if (background !== value) {
+      flush();
+      background = value;
+    }
+  }
+
+  /**
+   * Get whether messages are scheduled in the background.
+   */
+  export function getBackground(): boolean {
+    return background;
   }
 
   /**

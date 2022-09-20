@@ -33,15 +33,16 @@ export type MessageHook = IMessageHook | ((handler: IMessageHandler, msg: Messag
 
 // @public
 export namespace MessageLoop {
-    let background: boolean;
     export function clearData(handler: IMessageHandler): void;
     export type ExceptionHandler = (err: Error) => void;
     export function flush(): void;
+    export function getBackground(): boolean;
     export function getExceptionHandler(): ExceptionHandler;
     export function installMessageHook(handler: IMessageHandler, hook: MessageHook): void;
     export function postMessage(handler: IMessageHandler, msg: Message): void;
     export function removeMessageHook(handler: IMessageHandler, hook: MessageHook): void;
     export function sendMessage(handler: IMessageHandler, msg: Message): void;
+    export function setBackground(value: boolean): void;
     export function setExceptionHandler(handler: ExceptionHandler): ExceptionHandler;
 }
 
