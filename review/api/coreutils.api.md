@@ -109,7 +109,7 @@ export interface ReadonlyPartialJSONObject {
 export type ReadonlyPartialJSONValue = JSONPrimitive | ReadonlyPartialJSONObject | ReadonlyPartialJSONArray;
 
 // @public
-export function schedule(fn: () => unknown): ScheduleHandle;
+export function schedule(fn: () => unknown, background?: boolean): ScheduleHandle;
 
 // @public
 export type ScheduleHandle = ReturnType<typeof requestAnimationFrame> | ReturnType<typeof setImmediate> | ReturnType<typeof setTimeout>;
@@ -121,7 +121,7 @@ export class Token<T> {
 }
 
 // @public
-export function unschedule(handle: ScheduleHandle): void;
+export function unschedule(handle: ScheduleHandle, background?: boolean): void;
 
 // @public
 export namespace UUID {
