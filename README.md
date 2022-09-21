@@ -50,3 +50,7 @@ To learn more on how to use Lumino, check out the documentation: https://lumino.
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) to know how to contribute and set up
 a development environment.
+
+## Learning Resources
+
+- [PhosphorJS 2019 Mentor Sessions on YouTube](https://www.youtube.com/channel/UCejhDXmzOrxhsTsQBWe-pww/videos).
