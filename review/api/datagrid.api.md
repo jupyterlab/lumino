@@ -131,16 +131,11 @@ export interface CellGroup {
 export namespace CellGroup {
     export function areCellGroupsIntersecting(group1: CellGroup, group2: CellGroup): boolean;
     export function areCellGroupsIntersectingAtAxis(group1: CellGroup, group2: CellGroup, axis: 'row' | 'column'): boolean;
-    // (undocumented)
-    export function areCellsMerged(dataModel: DataModel, rgn: DataModel.CellRegion, cell1: number[], cell2: number[]): boolean;
-    export function calculateMergeOffsets(dataModel: DataModel, regions: DataModel.CellRegion[], axis: 'row' | 'column', sectionList: SectionList, index: number): [number, number, CellGroup];
     export function getCellGroupsAtColumn(dataModel: DataModel, rgn: DataModel.CellRegion, column: number): CellGroup[];
     export function getCellGroupsAtRegion(dataModel: DataModel, rgn: DataModel.CellRegion): CellGroup[];
     export function getCellGroupsAtRow(dataModel: DataModel, rgn: DataModel.CellRegion, row: number): CellGroup[];
     export function getGroup(dataModel: DataModel, rgn: DataModel.CellRegion, row: number, column: number): CellGroup | null;
     export function getGroupIndex(dataModel: DataModel, rgn: DataModel.CellRegion, row: number, column: number): number;
-    export function isCellGroupAbove(group1: CellGroup, group2: CellGroup): boolean;
-    export function isCellGroupBelow(group1: CellGroup, group2: CellGroup): boolean;
     export function joinCellGroups(groups: CellGroup[]): CellGroup;
     export function joinCellGroupsIntersectingAtAxis(dataModel: DataModel, regions: DataModel.CellRegion[], axis: 'row' | 'column', group: CellGroup): CellGroup;
     export function joinCellGroupWithMergedCellGroups(dataModel: DataModel, group: CellGroup, region: DataModel.CellRegion): CellGroup;
