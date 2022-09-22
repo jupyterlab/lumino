@@ -56,7 +56,7 @@ export class Poll<T = any, U = any, V extends string = 'standby'> implements IOb
     get disposed(): ISignal<this, void>;
     get frequency(): IPoll.Frequency;
     set frequency(frequency: IPoll.Frequency);
-    get hidden(): boolean;
+    protected get hidden(): boolean;
     get isDisposed(): boolean;
     readonly name: string;
     refresh(): Promise<void>;
