@@ -404,36 +404,6 @@ export namespace MessageLoop {
   }
 
   /**
-   * The background flag.
-   */
-  let background = false;
-
-  /**
-   * Sets whether messages are scheduled in the background. Defaults to `false`.
-   *
-   * #### Notes
-   * This flag is only relevant in the browser context and otherwise ignored.
-   *
-   * If set to `true`, the messages will be scheduled using `setTimeout`, which
-   * is less performant but will invoke when the document is in a background
-   * tab. If `false`, the message is scheduled using `requestAnimationFrame`,
-   * which is faster but paused when the document is in a background tab.
-   */
-  export function setBackground(value: boolean): void {
-    if (background !== value) {
-      flush();
-      background = value;
-    }
-  }
-
-  /**
-   * Get whether messages are scheduled in the background.
-   */
-  export function getBackground(): boolean {
-    return background;
-  }
-
-  /**
    * A type alias for the exception handler function.
    */
   export type ExceptionHandler = (err: Error) => void;
@@ -648,4 +618,38 @@ export namespace MessageLoop {
   function isNull<T>(value: T | null): boolean {
     return value === null;
   }
+
+  /**
+   * Set whether messages are scheduled to run in the background. This flag is
+   * only relevant in a browser context.
+   *
+   * When `true`, the messages will be scheduled using `setTimeout`, which
+   * is less performant but will invoke when the document is in a background
+   * tab. If `false`, the message is scheduled using `requestAnimationFrame`,
+   * which is faster but paused when the document is in a background tab.
+   *
+   * Listen to `visibilitychange` event to set the `background` flag.
+   *
+   * Listening to `pagehide` is also necessary because Safari support for
+   * `visibilitychange` events is partial, cf.
+   * https://developer.mozilla.org/docs/Web/API/Document/visibilitychange_event
+   */
+  let background = (() => {
+    if (typeof document === 'undefined') {
+      return false;
+    }
+    document.addEventListener('visibilitychange', () => {
+      if (background !== (document.visibilityState === 'hidden')) {
+        flush();
+        background = !background;
+      }
+    });
+    document.addEventListener('pagehide', () => {
+      if (background !== (document.visibilityState === 'hidden')) {
+        flush();
+        background = !background;
+      }
+    });
+    return document.visibilityState === 'hidden';
+  })();
 }
