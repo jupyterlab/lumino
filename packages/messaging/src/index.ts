@@ -640,13 +640,13 @@ export namespace MessageLoop {
     }
     document.addEventListener('visibilitychange', () => {
       if (background !== (document.visibilityState === 'hidden')) {
-        flush();
+        flush(); // Always flush the queue before modifying the background flag.
         background = !background;
       }
     });
     document.addEventListener('pagehide', () => {
       if (background !== (document.visibilityState === 'hidden')) {
-        flush();
+        flush(); // Always flush the queue before modifying the background flag.
         background = !background;
       }
     });
