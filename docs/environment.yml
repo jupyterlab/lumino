@@ -4,15 +4,14 @@ channels:
   - conda-forge
   - nodefaults
 dependencies:
-- python=3.8
-- sphinx>=1.8
+- python=3.10
+- jsx-lexer
+- sphinx>=5.0
 - sphinx-copybutton
-- sphinx_rtd_theme
+- pydata_sphinx_theme
+- myst_parser
 - pytest
+- pytest-check-links
+- requests-cache
 - pip
 - nodejs
-- pip:
-  - jsx-lexer
-  - pytest-check-links[cache]>=0.4.3
-  - myst_parser
-  - requests_cache
