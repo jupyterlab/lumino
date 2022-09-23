@@ -8,8 +8,8 @@ dependencies:
 - jsx-lexer
 - sphinx>=5.0
 - sphinx-copybutton
-- pydata_sphinx_theme
-- myst_parser
+- pydata-sphinx-theme
+- myst-parser
 - pytest
 - pytest-check-links
 - requests-cache
