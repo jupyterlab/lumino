@@ -37,6 +37,15 @@ export interface IPlugin<T, U> {
   id: string;
 
   /**
+   * Plugin description.
+   *
+   * #### Notes
+   * This can be used to provide user documentation on the feature
+   * brought by a plugin.
+   */
+  description?: string;
+
+  /**
    * Whether the plugin should be activated on application start.
    *
    * #### Notes
@@ -158,6 +167,18 @@ export class Application<T extends Widget> {
    */
   get started(): Promise<void> {
     return this._delegate.promise;
+  }
+
+  /**
+   * Get a plugin description.
+   *
+   * @param id - The ID of the plugin of interest.
+   *
+   * @returns The plugin description.
+   */
+  getPluginDescription(id: string): string {
+    const plugin = this._pluginMap[id];
+    return plugin ? plugin.description || '' : '';
   }
 
   /**
@@ -591,6 +612,11 @@ namespace Private {
     readonly id: string;
 
     /**
+     * The description of the plugin.
+     */
+    readonly description: string;
+
+    /**
      * Whether the plugin should be activated on application start.
      */
     readonly autoStart: boolean;
@@ -661,6 +687,7 @@ namespace Private {
   export function createPluginData(plugin: IPlugin<any, any>): IPluginData {
     return {
       id: plugin.id,
+      description: plugin.description || '',
       service: null,
       promise: null,
       activated: false,
