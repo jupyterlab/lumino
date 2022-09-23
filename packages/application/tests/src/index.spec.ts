@@ -30,6 +30,43 @@ describe('@lumino/application', () => {
       });
     });
 
+    describe('#getPluginDescription', () => {
+      it('should return the plugin description', () => {
+        const app = new Application({ shell: new Widget() });
+        const id = 'plugin1';
+        const description = 'Plugin 1 description';
+        app.registerPlugin({
+          id,
+          description,
+          activate: () => {
+            // no-op
+          }
+        });
+
+        expect(app.getPluginDescription(id)).to.equal(description);
+      });
+
+      it('should return an empty string if plugin has no description', () => {
+        const app = new Application({ shell: new Widget() });
+        const id = 'plugin1';
+        app.registerPlugin({
+          id,
+          activate: () => {
+            // no-op
+          }
+        });
+
+        expect(app.getPluginDescription(id)).to.equal('');
+      });
+
+      it('should return an empty string if plugin does not exist', () => {
+        const app = new Application({ shell: new Widget() });
+        const id = 'plugin1';
+
+        expect(app.getPluginDescription(id)).to.equal('');
+      });
+    });
+
     describe('#hasPlugin', () => {
       it('should be true for registered plugin', () => {
         const app = new Application({ shell: new Widget() });
@@ -198,6 +235,22 @@ describe('@lumino/application', () => {
             provides: token3
           });
         }).to.throw();
+      });
+
+      it('should register a plugin defined by a class', () => {
+        const app = new Application({ shell: new Widget() });
+        const id = 'plugin1';
+        const plugin = new (class {
+          readonly id = id;
+          activate = () => {
+            // Check this.id is accessible as expected
+            // as we are tearing a part the plugin object.
+            expect(this.id).to.equal(id);
+          };
+        })();
+        app.registerPlugin(plugin);
+
+        expect(app.hasPlugin(id)).to.be.true;
       });
     });
 

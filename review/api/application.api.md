@@ -23,6 +23,7 @@ export class Application<T extends Widget = Widget> {
     protected evtContextMenu(event: PointerEvent): void;
     protected evtKeydown(event: KeyboardEvent): void;
     protected evtResize(event: Event): void;
+    getPluginDescription(id: string): string;
     handleEvent(event: Event): void;
     hasPlugin(id: string): boolean;
     isPluginActivated(id: string): boolean;
@@ -54,6 +55,7 @@ export interface IPlugin<T extends Application, U> {
     activate: (app: T, ...args: any[]) => U | Promise<U>;
     autoStart?: boolean;
     deactivate?: ((app: T, ...args: any[]) => void | Promise<void>) | null;
+    description?: string;
     id: string;
     optional?: Token<any>[];
     provides?: Token<U> | null;
