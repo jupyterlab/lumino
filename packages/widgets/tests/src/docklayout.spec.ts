@@ -1,7 +1,12 @@
 // Copyright (c) Jupyter Development Team.
 // Distributed under the terms of the Modified BSD License.
 
-import { Message } from '@lumino/messaging';
+import {
+  IMessageHandler,
+  IMessageHook,
+  Message,
+  MessageLoop
+} from '@lumino/messaging';
 import { DockLayout, TabBar, Widget } from '@lumino/widgets';
 import { expect } from 'chai';
 
@@ -31,6 +36,23 @@ class LogDockLayout extends DockLayout {
   protected onFitRequest(msg: Message) {
     super.onFitRequest(msg);
     this.methods.push('onFitRequest');
+  }
+
+  resetMethods() {
+    this.methods = [];
+  }
+}
+
+class LogHook implements IMessageHook {
+  messages: string[] = [];
+
+  messageHook(target: IMessageHandler, msg: Message): boolean {
+    this.messages.push(msg.type);
+    return true;
+  }
+
+  resetMessages() {
+    this.messages = [];
   }
 }
 
@@ -154,24 +176,37 @@ describe('@lumino/widgets', () => {
         const layout = new LogDockLayout({ renderer });
         const parent = new Widget();
         parent.layout = layout;
-        layout.spacing = 6;
-
+        const hook = new LogHook();
+        MessageLoop.installMessageHook(parent, hook);
         requestAnimationFrame(() => {
-          expect(layout.methods).to.contain('onFitRequest');
-          done();
+          hook.resetMessages();
+          layout.resetMethods();
+          layout.spacing = layout.spacing + 1;
+          requestAnimationFrame(() => {
+            expect(hook.messages).to.contain('fit-request');
+            expect(layout.methods).to.contain('onFitRequest');
+            done();
+          });
         });
       });
 
       // This should not be failing, but it does
-      it.skip('should be a no-op if value does not change', done => {
+      it('should be a no-op if value does not change', done => {
         const layout = new LogDockLayout({ renderer });
         const parent = new Widget();
         parent.layout = layout;
-        layout.spacing = 4;
-
+        const hook = new LogHook();
+        MessageLoop.installMessageHook(parent, hook);
         requestAnimationFrame(() => {
-          expect(layout.methods).to.not.contain('onFitRequest');
-          done();
+          hook.resetMessages();
+          layout.resetMethods();
+          const spacing = layout.spacing;
+          layout.spacing = spacing;
+          requestAnimationFrame(() => {
+            expect(hook.messages).to.not.contain('fit-request');
+            expect(layout.methods).to.not.contain('onFitRequest');
+            done();
+          });
         });
       });
     });
@@ -218,6 +253,8 @@ describe('@lumino/widgets', () => {
       it.skip('should have some tests');
     });
     describe('#attachWidget()', () => {
+      const hook = new LogHook();
+      expect(hook.messages).to.be.empty;
       it.skip('should have some tests');
     });
     describe('#detachWidget()', () => {
