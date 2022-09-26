@@ -6289,6 +6289,18 @@ pkginfo@0.4.1:
   resolved "https://registry.yarnpkg.com/pkginfo/-/pkginfo-0.4.1.tgz#b5418ef0439de5425fc4995042dced14fb2a84ff"
   integrity sha512-8xCNE/aT/EXKenuMDZ+xTVwkT8gsoHN2z/Q29l80u0ppGEXVvsKRzNMbtKhg8LS8k1tJLAHHylf6p4VFmP6XUQ==
 
+playwright-core@1.26.0:
+  version "1.26.0"
+  resolved "https://registry.yarnpkg.com/playwright-core/-/playwright-core-1.26.0.tgz#850228f0638d410a5cdd69800d552f60e4d295cd"
+  integrity sha512-p8huU8eU4gD3VkJd3DA1nA7R3XA6rFvFL+1RYS96cSljCF2yJE9CWEHTPF4LqX8KN9MoWCrAfVKP5381X3CZqg==
+
+playwright@^1.26.0:
+  version "1.26.0"
+  resolved "https://registry.yarnpkg.com/playwright/-/playwright-1.26.0.tgz#b351990ff03a7e422bf585233eb53651fc363896"
+  integrity sha512-XxTVlvFEYHdatxUkh1KiPq9BclNtFKMi3BgQnl/aactmhN4G9AkZUXwt0ck6NDAOrDFlfibhbM7A1kZwQJKSBw==
+  dependencies:
+    playwright-core "1.26.0"
+
 please-upgrade-node@^3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/please-upgrade-node/-/please-upgrade-node-3.2.0.tgz#aeddd3f994c933e4ad98b99d9a556efa0e2fe942"
