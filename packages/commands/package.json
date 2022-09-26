@@ -41,7 +41,8 @@
     "test:debug:nobrowser": "cd tests && karma start --singleRun=false --debug=true --browserNoActivityTimeout=10000000 --browserDisconnectTimeout=10000000",
     "test:firefox": "npm run test:nobrowser -- --browsers=Firefox",
     "test:firefox-headless": "npm run test:nobrowser -- --browsers=FirefoxHeadless",
-    "test:ie": "npm run test:nobrowser -- --browsers=IE",
+    "test:webkit": "cd tests && karma start --browsers=Webkit",
+    "test:webkit-headless": "cd tests && karma start --browsers=WebkitHeadless",
     "test:nobrowser": "cd tests && karma start",
     "watch": "tsc --build --watch"
   },

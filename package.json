@@ -38,6 +38,7 @@
     "test:firefox": "lerna run test:firefox",
     "test:firefox-headless": "lerna run test:firefox-headless",
     "test:webkit": "lerna run test:webkit --concurrency 1",
+    "test:webkit-headless": "lerna run test:webkit-headless --concurrency 1",
     "update:dependency": "update-dependency --lerna",
     "update:versions": "lerna version --no-push --no-git-tag-version"
   },

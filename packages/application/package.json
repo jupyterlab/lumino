@@ -36,6 +36,7 @@
     "test:firefox": "cd tests && karma start --browsers=Firefox",
     "test:firefox-headless": "cd tests && karma start --browsers=FirefoxHeadless",
     "test:webkit": "cd tests && karma start --browsers=Webkit",
+    "test:webkit-headless": "cd tests && karma start --browsers=WebkitHeadless",
     "watch": "tsc --build --watch"
   },
   "typedoc": {
