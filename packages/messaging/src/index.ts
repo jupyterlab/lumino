@@ -11,8 +11,6 @@ import { ArrayExt, every, retro, some } from '@lumino/algorithm';
 
 import { LinkedList } from '@lumino/collections';
 
-import { schedule, ScheduleHandle, unschedule } from '@lumino/coreutils';
-
 /**
  * A message which can be delivered to a message handler.
  *
@@ -198,6 +196,29 @@ export type MessageHook =
  */
 export namespace MessageLoop {
   /**
+   * A function that cancels the pending loop task; `null` if unavailable.
+   */
+  let pending: (() => void) | null = null;
+
+  /**
+   * Schedules a function for invocation as soon as possible asynchronously.
+   *
+   * @param fn The function to invoke when called back.
+   *
+   * @returns An anonymous function that will unschedule invocation if possible.
+   */
+  const schedule = (
+    resolved =>
+    (fn: () => unknown): (() => void) => {
+      let rejected = false;
+      resolved.then(() => !rejected && fn());
+      return () => {
+        rejected = true;
+      };
+    }
+  )(Promise.resolve());
+
+  /**
    * Send a message to a message handler to process immediately.
    *
    * @param handler - The handler which should process the message.
@@ -380,8 +401,7 @@ export namespace MessageLoop {
    * Process the pending posted messages in the queue immediately.
    *
    * #### Notes
-   * This function is useful when posted messages must be processed
-   * immediately, instead of on the next animation frame.
+   * This function is useful when posted messages must be processed immediately.
    *
    * This function should normally not be needed, but it may be
    * required to work around certain browser idiosyncrasies.
@@ -390,12 +410,13 @@ export namespace MessageLoop {
    */
   export function flush(): void {
     // Bail if recursion is detected or if there is no pending task.
-    if (flushGuard || loopTaskID === 0) {
+    if (flushGuard || pending === null) {
       return;
     }
 
     // Unschedule the pending loop task.
-    unschedule(loopTaskID, background);
+    pending();
+    pending = null;
 
     // Run the message loop within the recursion guard.
     flushGuard = true;
@@ -470,11 +491,6 @@ export namespace MessageLoop {
   };
 
   /**
-   * The id of the pending loop task animation frame.
-   */
-  let loopTaskID: ScheduleHandle = 0;
-
-  /**
    * A guard flag to prevent flush recursion.
    */
   let flushGuard = false;
@@ -527,12 +543,12 @@ export namespace MessageLoop {
     messageQueue.addLast({ handler, msg });
 
     // Bail if a loop task is already pending.
-    if (loopTaskID !== 0) {
+    if (pending !== null) {
       return;
     }
 
     // Schedule a run of the message loop.
-    loopTaskID = schedule(runMessageLoop, background);
+    pending = schedule(runMessageLoop);
   }
 
   /**
@@ -543,8 +559,8 @@ export namespace MessageLoop {
    * be processed on the next cycle of the loop.
    */
   function runMessageLoop(): void {
-    // Clear the task ID so the next loop can be scheduled.
-    loopTaskID = 0;
+    // Clear the task so the next loop can be scheduled.
+    pending = null;
 
     // If the message queue is empty, there is nothing else to do.
     if (messageQueue.isEmpty) {
@@ -584,7 +600,7 @@ export namespace MessageLoop {
    */
   function scheduleCleanup(hooks: Array<MessageHook | null>): void {
     if (dirtySet.size === 0) {
-      schedule(cleanupDirtySet, background);
+      schedule(cleanupDirtySet);
     }
     dirtySet.add(hooks);
   }
@@ -618,38 +634,4 @@ export namespace MessageLoop {
   function isNull<T>(value: T | null): boolean {
     return value === null;
   }
-
-  /**
-   * Set whether messages are scheduled to run in the background. This flag is
-   * only relevant in a browser context.
-   *
-   * When `true`, the messages will be scheduled using `setTimeout`, which
-   * is less performant but will invoke when the document is in a background
-   * tab. If `false`, the message is scheduled using `requestAnimationFrame`,
-   * which is faster but paused when the document is in a background tab.
-   *
-   * Listen to `visibilitychange` event to set the `background` flag.
-   *
-   * Listening to `pagehide` is also necessary because Safari support for
-   * `visibilitychange` events is partial, cf.
-   * https://developer.mozilla.org/docs/Web/API/Document/visibilitychange_event
-   */
-  let background = (() => {
-    if (typeof document === 'undefined') {
-      return false;
-    }
-    document.addEventListener('visibilitychange', () => {
-      if (background !== (document.visibilityState === 'hidden')) {
-        flush(); // Always flush the queue before modifying the background flag.
-        background = !background;
-      }
-    });
-    document.addEventListener('pagehide', () => {
-      if (background !== (document.visibilityState === 'hidden')) {
-        flush(); // Always flush the queue before modifying the background flag.
-        background = !background;
-      }
-    });
-    return document.visibilityState === 'hidden';
-  })();
 }
