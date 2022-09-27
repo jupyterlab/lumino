@@ -1,13 +1,7 @@
 // Copyright (c) Jupyter Development Team.
 // Distributed under the terms of the Modified BSD License.
 
-import {
-  JSONExt,
-  PromiseDelegate,
-  schedule,
-  ScheduleHandle,
-  unschedule
-} from '@lumino/coreutils';
+import { JSONExt, PromiseDelegate } from '@lumino/coreutils';
 
 import { IObservableDisposable } from '@lumino/disposable';
 
@@ -39,7 +33,6 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
   constructor(options: Poll.IOptions<T, U, V>) {
     this._factory = options.factory;
     this._linger = options.linger ?? Private.DEFAULT_LINGER;
-    this._scheduled = { background: false, handle: -1 };
     this._standby = options.standby || Private.DEFAULT_STANDBY;
     this._state = { ...Private.DEFAULT_STATE, timestamp: new Date().getTime() };
 
@@ -56,7 +49,7 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
     this.name = options.name || Private.DEFAULT_NAME;
 
     if ('auto' in options ? options.auto : true) {
-      schedule(() => void this.start(), true);
+      setTimeout(() => void this.start(), 0);
     }
   }
 
@@ -218,10 +211,12 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
       return;
     }
 
+    // Clear the schedule if possible.
+    clearTimeout(this._scheduled);
+
     // Update poll state.
-    const last = this.state;
     const pending = this._tick;
-    const scheduled = new PromiseDelegate<this>();
+    const tick = new PromiseDelegate<this>();
     const state = {
       interval: this.frequency.interval,
       payload: null,
@@ -230,14 +225,7 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
       ...next
     } as IPoll.State<T, U, V>;
     this._state = state;
-    this._tick = scheduled;
-
-    // Clear the schedule if possible.
-    if (last.interval === Poll.IMMEDIATE) {
-      unschedule(this._scheduled.handle, this._scheduled.background);
-    } else {
-      clearTimeout(this._scheduled.handle as ReturnType<typeof setTimeout>);
-    }
+    this._tick = tick;
 
     // Emit ticked signal, resolve pending promise, and await its settlement.
     this._ticked.emit(this.state);
@@ -246,22 +234,17 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
 
     // Schedule next execution and cache its timeout handle.
     const execute = () => {
-      if (this.isDisposed || this.tick !== scheduled.promise) {
+      if (this.isDisposed || this.tick !== tick.promise) {
         return;
       }
 
       this._execute();
     };
 
-    // If running in a hidden document, guarantee the poll will still tick.
-    this._scheduled.background = this.hidden;
-
     // Cache the handle in case it needs to be unscheduled.
-    this._scheduled.handle =
-      state.interval === Poll.IMMEDIATE
-        ? schedule(execute, this._scheduled.background)
-        : state.interval === Poll.NEVER
-        ? -1
+    this._scheduled =
+      state.interval === Poll.NEVER
+        ? undefined
         : setTimeout(execute, state.interval);
   }
 
@@ -358,7 +341,7 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
   private _frequency: IPoll.Frequency;
   private _linger: number;
   private _lingered = 0;
-  private _scheduled: { handle: ScheduleHandle; background: boolean };
+  private _scheduled: ReturnType<typeof setTimeout> | undefined;
   private _standby: Poll.Standby | (() => boolean | Poll.Standby);
   private _state: IPoll.State<T, U, V>;
   private _tick = new PromiseDelegate<this>();
@@ -534,15 +517,6 @@ namespace Private {
   /**
    * Keep track of whether the document is hidden. This flag is only relevant in
    * a browser context.
-   *
-   * All poll ticks are scheduled with `setTimeout` if the poll interval is not
-   * `Poll.IMMEDIATE` (i.e., 0ms). Immediate invocations are done with
-   * `setImmediate` in non-browser settings and `requestAnimationFrame` in a
-   * browser context. However, if the document is hidden, even immediate
-   * deferred poll invocations will use `setTimeout`, which is less performant
-   * but will invoke even if the document is hidden whereas
-   * `requestAnimationFrame` is paused and enqueued when the document is in a
-   * background tab.
    *
    * Listen to `visibilitychange` event to set the `hidden` flag.
    *

@@ -17,10 +17,11 @@ function sleep<T>(milliseconds: number = 0, value?: T): Promise<T | undefined> {
 }
 
 describe('Poll', () => {
-  let poll: Poll;
+  let poll: Poll | undefined;
 
   afterEach(() => {
-    poll.dispose();
+    poll?.dispose();
+    poll = undefined;
   });
 
   describe('#constructor()', () => {
@@ -238,7 +239,7 @@ describe('Poll', () => {
       let i = 0;
       poll = new Poll({
         auto: false,
-        factory: () => (++i > total ? poll.stop() : Promise.resolve()),
+        factory: async () => (++i > total ? poll?.stop() : undefined),
         frequency: { interval: Poll.IMMEDIATE },
         name: '@lumino/polling:Poll#[Symbol.asyncIterator]-1'
       });
@@ -259,7 +260,7 @@ describe('Poll', () => {
       let i = 0;
       poll = new Poll({
         auto: false,
-        factory: () => (++i > total ? poll.stop() : Promise.reject()),
+        factory: () => (++i > total ? poll!.stop() : Promise.reject()),
         frequency: { interval: Poll.IMMEDIATE },
         name: '@lumino/polling:Poll#[Symbol.asyncIterator]-2'
       });
@@ -280,7 +281,7 @@ describe('Poll', () => {
       let i = 0;
       poll = new Poll({
         auto: false,
-        factory: () => Promise.resolve(++i > total ? poll.dispose() : void 0),
+        factory: () => Promise.resolve(++i > total ? poll!.dispose() : void 0),
         frequency: { interval: Poll.IMMEDIATE },
         name: '@lumino/polling:Poll#[Symbol.asyncIterator]-3'
       });
@@ -330,14 +331,14 @@ describe('Poll', () => {
         ticker.push(state.phase);
         expect(ticker.length).to.equal(tocker.length + 1);
       });
-      const tock = async (poll: Poll) => {
+      const tock = (poll: Poll): void => {
         tocker.push(poll.state.phase);
         expect(ticker.join(' ')).to.equal(tocker.join(' '));
-        poll.tick.then(tock).catch(() => undefined);
+        poll.tick.then(tock);
       };
       // Kick off the promise listener, but void its settlement to verify that
       // the poll's internal sync of the promise and the signal is correct.
-      void poll.tick.then(tock);
+      poll.tick.then(tock);
       await poll.stop();
       await poll.start();
       await poll.tick;
@@ -363,7 +364,7 @@ describe('Poll', () => {
         frequency: { interval: 100, backoff: false },
         name: '@lumino/polling:Poll#ticked-3'
       });
-      poll.ticked.connect((_, tick) => {
+      poll.ticked.connect((poll, tick) => {
         expect(tick).to.equal(poll.state);
       });
       await sleep(1000); // Sleep for longer than the interval.
