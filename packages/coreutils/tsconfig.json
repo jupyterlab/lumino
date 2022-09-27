@@ -2,10 +2,9 @@
   "extends": "../../tsconfigbase",
   "compilerOptions": {
     "declarationDir": "types",
-    "lib": ["ES2018", "DOM"],
+    "lib": ["ES2018"],
     "outDir": "lib",
-    "rootDir": "src",
-    "types": ["node"]
+    "rootDir": "src"
   },
   "include": ["src/*"]
 }
