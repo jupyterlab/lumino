@@ -24,7 +24,7 @@ To run the tests, run:
 
 ```bash
 yarn build:test
-yarn test  # optionally test:chrome, test:firefox, or test:ie
+yarn test  # optionally test:chrome, test:firefox, or test:webkit
 ```
 
 ## Examples

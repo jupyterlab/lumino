@@ -3,6 +3,9 @@
  * Distributed under the terms of the Modified BSD License.
  */
 
+process.env.WEBKIT_BIN = require('playwright').webkit.executablePath();
+process.env.WEBKIT_HEADLESS_BIN = process.env.WEBKIT_BIN;
+
 module.exports = function (config) {
   config.set({
     basePath: '.',
