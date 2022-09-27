@@ -260,7 +260,7 @@ describe('Poll', () => {
       let i = 0;
       poll = new Poll({
         auto: false,
-        factory: () => (++i > total ? poll!.stop() : Promise.reject()),
+        factory: async () => (++i > total ? poll!.stop() : Promise.reject()),
         frequency: { interval: Poll.IMMEDIATE },
         name: '@lumino/polling:Poll#[Symbol.asyncIterator]-2'
       });
@@ -281,7 +281,7 @@ describe('Poll', () => {
       let i = 0;
       poll = new Poll({
         auto: false,
-        factory: () => Promise.resolve(++i > total ? poll!.dispose() : void 0),
+        factory: async () => (++i > total ? poll!.dispose() : undefined),
         frequency: { interval: Poll.IMMEDIATE },
         name: '@lumino/polling:Poll#[Symbol.asyncIterator]-3'
       });

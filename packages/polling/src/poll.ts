@@ -49,7 +49,7 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
     this.name = options.name || Private.DEFAULT_NAME;
 
     if ('auto' in options ? options.auto : true) {
-      setTimeout(() => void this.start(), 0);
+      setTimeout(() => this.start());
     }
   }
 
@@ -211,12 +211,9 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
       return;
     }
 
-    // Clear the schedule if possible.
-    clearTimeout(this._scheduled);
-
     // Update poll state.
     const pending = this._tick;
-    const tick = new PromiseDelegate<this>();
+    const scheduled = new PromiseDelegate<this>();
     const state = {
       interval: this.frequency.interval,
       payload: null,
@@ -225,16 +222,24 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
       ...next
     } as IPoll.State<T, U, V>;
     this._state = state;
-    this._tick = tick;
+    this._tick = scheduled;
+
+    // Clear the schedule if possible.
+    clearTimeout(this._timeout);
 
     // Emit ticked signal, resolve pending promise, and await its settlement.
     this._ticked.emit(this.state);
     pending.resolve(this);
     await pending.promise;
 
+    if (state.interval === Poll.NEVER) {
+      this._timeout = undefined;
+      return;
+    }
+
     // Schedule next execution and cache its timeout handle.
     const execute = () => {
-      if (this.isDisposed || this.tick !== tick.promise) {
+      if (this.isDisposed || this.tick !== scheduled.promise) {
         return;
       }
 
@@ -242,10 +247,7 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
     };
 
     // Cache the handle in case it needs to be unscheduled.
-    this._scheduled =
-      state.interval === Poll.NEVER
-        ? undefined
-        : setTimeout(execute, state.interval);
+    this._timeout = setTimeout(execute, state.interval);
   }
 
   /**
@@ -341,11 +343,11 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
   private _frequency: IPoll.Frequency;
   private _linger: number;
   private _lingered = 0;
-  private _scheduled: ReturnType<typeof setTimeout> | undefined;
   private _standby: Poll.Standby | (() => boolean | Poll.Standby);
   private _state: IPoll.State<T, U, V>;
   private _tick = new PromiseDelegate<this>();
   private _ticked = new Signal<this, IPoll.State<T, U, V>>(this);
+  private _timeout: ReturnType<typeof setTimeout> | undefined;
 }
 
 /**
