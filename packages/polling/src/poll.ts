@@ -422,7 +422,7 @@ export namespace Poll {
     standby?: Standby | (() => boolean | Standby);
   }
   /**
-   * An interval value that indicates the poll should tick immediately.
+   * An interval value in ms that indicates the poll should tick immediately.
    */
   export const IMMEDIATE = 0;
 
