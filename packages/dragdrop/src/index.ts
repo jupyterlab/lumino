@@ -37,7 +37,7 @@ export type SupportedActions =
  * In order to receive `'lm-dragover'`, `'lm-dragleave'`, or `'lm-drop'`
  * events, a drop target must cancel the `'lm-dragenter'` event by
  * calling the event's `preventDefault()` method.
- * 
+ *
  * @deprecated This interface will be deprecated in @lumino/dragdrop@^2.0.0 in favor
  * of ``Drag.Event``.
  */
