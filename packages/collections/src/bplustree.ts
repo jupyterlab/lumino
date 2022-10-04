@@ -21,6 +21,8 @@ import {
  *
  * #### Notes
  * Most operations have `O(log32 n)` or better complexity.
+ *
+ * @deprecated This class will be removed in @lumino/collections@^2.0.0
  */
 export class BPlusTree<T> implements IIterable<T>, IRetroable<T> {
   /**
@@ -316,6 +318,8 @@ export class BPlusTree<T> implements IIterable<T>, IRetroable<T> {
 
 /**
  * The namespace for the `BPlusTree` class statics.
+ *
+ * @deprecated This namespace will be removed in @lumino/collections@^2.0.0
  */
 export namespace BPlusTree {
   /**
