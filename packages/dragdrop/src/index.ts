@@ -13,11 +13,15 @@ import { DisposableDelegate, IDisposable } from '@lumino/disposable';
 
 /**
  * A type alias which defines the possible independent drop actions.
+ *
+ * @deprecated This type will be renamed Drag.DropAction in @lumino/dragdrop@^2.0.0
  */
 export type DropAction = 'none' | 'copy' | 'link' | 'move';
 
 /**
  * A type alias which defines the possible supported drop actions.
+ *
+ * @deprecated This type will be renamed Drag.SupportedActions in @lumino/dragdrop@^2.0.0
  */
 export type SupportedActions =
   | DropAction
@@ -33,6 +37,9 @@ export type SupportedActions =
  * In order to receive `'lm-dragover'`, `'lm-dragleave'`, or `'lm-drop'`
  * events, a drop target must cancel the `'lm-dragenter'` event by
  * calling the event's `preventDefault()` method.
+ *
+ * @deprecated This interface will be deprecated in @lumino/dragdrop@^2.0.0 in favor
+ * of ``Drag.Event``.
  */
 export interface IDragEvent extends MouseEvent {
   /**
