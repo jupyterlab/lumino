@@ -366,7 +366,6 @@ describe('@lumino/widgets', () => {
         let widget = new Widget();
         let layout = new TestLayout();
         widget.layout = layout;
-        widget.layout = layout;
         expect(widget.layout).to.equal(layout);
       });
 

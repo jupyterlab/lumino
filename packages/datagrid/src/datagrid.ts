@@ -1516,7 +1516,6 @@ export class DataGrid extends Widget {
           */
           if (colsRemaining - bodyColumnCount < 0) {
             this._fitBodyColumnHeaders(this.dataModel, padding, colsRemaining);
-            colsRemaining = 0;
           } else {
             /*
               Otherwise the entire body column count can be resized.
