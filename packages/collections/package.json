@@ -1,6 +1,6 @@
 {
   "name": "@lumino/collections",
-  "version": "1.9.2",
+  "version": "1.9.3",
   "description": "Lumino Generic Collections",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
