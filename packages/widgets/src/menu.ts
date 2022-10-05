@@ -32,6 +32,13 @@ import {
 
 import { Widget } from './widget';
 
+interface IWindowData {
+  pageXOffset: number;
+  pageYOffset: number;
+  clientWidth: number;
+  clientHeight: number;
+}
+
 /**
  * A widget which displays items as a canonical menu.
  */
@@ -908,6 +915,17 @@ export class Menu extends Widget {
     }
   }
 
+  /**
+   * Update window data used for menu positioning in window data cache.
+   *
+   * In order to avoid layout trashing it is recommended to invoke this
+   * method immediately prior to opening the menu and any DOM modifications
+   * (like closing previously visible menu, or adding a class to menu widget).
+   */
+  static updateWindowData(): void {
+    Private.updateWindowData();
+  }
+
   private _childIndex = -1;
   private _activeIndex = -1;
   private _openTimerID = 0;
@@ -1373,6 +1391,50 @@ namespace Private {
   export const SUBMENU_OVERLAP = 3;
 
   /**
+   * How long the window data cache should be kept (ms).
+   */
+  export const WINDOW_DATA_CACHE_DURATION = 1000;
+
+  let latestWindowData: IWindowData | null = null;
+  let latestWindowDataTimestamp: number;
+
+  function getLatestWindowData(): IWindowData | null {
+    const currentTimestamp = Date.now();
+    if (isWindowDataCacheValid(currentTimestamp)) {
+      return latestWindowData;
+    }
+    return null;
+  }
+
+  function isWindowDataCacheValid(timestamp: number) {
+    return timestamp - latestWindowDataTimestamp < WINDOW_DATA_CACHE_DURATION;
+  }
+
+  /**
+   * Update window data cache.
+   *
+   * Note: should be called before any DOM modifications.
+   */
+  export function updateWindowData(): void {
+    const currentTimestamp = Date.now();
+    if (isWindowDataCacheValid(currentTimestamp)) {
+      // If cache is still valid, try again as soon as it expires and layout is be ready,
+      // which drastically reduces the chance of cache timeout occurring just as we start
+      // showing or switching the menu.
+      setTimeout(() => {
+        requestAnimationFrame(() => {
+          latestWindowData = _getWindowData();
+          latestWindowDataTimestamp = currentTimestamp;
+        });
+      }, WINDOW_DATA_CACHE_DURATION - (currentTimestamp - latestWindowDataTimestamp));
+    } else {
+      // Update immediately
+      latestWindowData = _getWindowData();
+      latestWindowDataTimestamp = currentTimestamp;
+    }
+  }
+
+  /**
    * Create the DOM node for a menu.
    */
   export function createNode(): HTMLDivElement {
@@ -1471,6 +1533,15 @@ namespace Private {
     return result;
   }
 
+  function _getWindowData(): IWindowData {
+    return {
+      pageXOffset: window.pageXOffset,
+      pageYOffset: window.pageYOffset,
+      clientWidth: document.documentElement.clientWidth,
+      clientHeight: document.documentElement.clientHeight
+    };
+  }
+
   /**
    * Open a menu as a root menu at the target location.
    */
@@ -1485,10 +1556,11 @@ namespace Private {
     MessageLoop.sendMessage(menu, Widget.Msg.UpdateRequest);
 
     // Get the current position and size of the main viewport.
-    let px = window.pageXOffset;
-    let py = window.pageYOffset;
-    let cw = document.documentElement.clientWidth;
-    let ch = document.documentElement.clientHeight;
+    const windowData = getLatestWindowData() || _getWindowData();
+    let px = windowData.pageXOffset;
+    let py = windowData.pageYOffset;
+    let cw = windowData.clientWidth;
+    let ch = windowData.clientHeight;
 
     // Compute the maximum allowed height for the menu.
     let maxHeight = ch - (forceY ? y : 0);
@@ -1498,11 +1570,7 @@ namespace Private {
     let style = node.style;
 
     // Clear the menu geometry and prepare it for measuring.
-    style.top = '';
-    style.left = '';
-    style.width = '';
-    style.height = '';
-    style.visibility = 'hidden';
+    style.opacity = '0';
     style.maxHeight = `${maxHeight}px`;
 
     // Attach the menu to the document.
@@ -1526,11 +1594,10 @@ namespace Private {
     }
 
     // Update the position of the menu to the computed position.
-    style.top = `${Math.max(0, y)}px`;
-    style.left = `${Math.max(0, x)}px`;
+    style.transform = `translate(${Math.max(0, x)}px, ${Math.max(0, y)}px`;
 
     // Finally, make the menu visible on the screen.
-    style.visibility = '';
+    style.opacity = '1';
   }
 
   /**
@@ -1541,10 +1608,11 @@ namespace Private {
     MessageLoop.sendMessage(submenu, Widget.Msg.UpdateRequest);
 
     // Get the current position and size of the main viewport.
-    let px = window.pageXOffset;
-    let py = window.pageYOffset;
-    let cw = document.documentElement.clientWidth;
-    let ch = document.documentElement.clientHeight;
+    const windowData = getLatestWindowData() || _getWindowData();
+    let px = windowData.pageXOffset;
+    let py = windowData.pageYOffset;
+    let cw = windowData.clientWidth;
+    let ch = windowData.clientHeight;
 
     // Compute the maximum allowed height for the menu.
     let maxHeight = ch;
@@ -1554,11 +1622,7 @@ namespace Private {
     let style = node.style;
 
     // Clear the menu geometry and prepare it for measuring.
-    style.top = '';
-    style.left = '';
-    style.width = '';
-    style.height = '';
-    style.visibility = 'hidden';
+    style.opacity = '0';
     style.maxHeight = `${maxHeight}px`;
 
     // Attach the menu to the document.
@@ -1590,11 +1654,10 @@ namespace Private {
     }
 
     // Update the position of the menu to the computed position.
-    style.top = `${Math.max(0, y)}px`;
-    style.left = `${Math.max(0, x)}px`;
+    style.transform = `translate(${Math.max(0, x)}px, ${Math.max(0, y)}px`;
 
     // Finally, make the menu visible on the screen.
-    style.visibility = '';
+    style.opacity = '1';
   }
 
   /**

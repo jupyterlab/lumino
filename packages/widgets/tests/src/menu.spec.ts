@@ -582,30 +582,28 @@ describe('@lumino/widgets', () => {
       it('should open the menu at the specified location', () => {
         menu.addItem({ command: 'test' });
         menu.open(10, 10);
-        expect(menu.node.style.left).to.equal('10px');
-        expect(menu.node.style.top).to.equal('10px');
+        expect(menu.node.style.transform).to.equal('translate(10px, 10px)');
       });
 
       it('should be adjusted to fit naturally on the screen', () => {
         menu.addItem({ command: 'test' });
         menu.open(-10, 10000);
-        expect(menu.node.style.left).to.equal('0px');
-        expect(menu.node.style.top).to.not.equal('10000px');
+        expect(menu.node.style.transform).to.equal('translate(0px, 10000px)');
       });
 
       it('should accept flags to force the location', () => {
         menu.addItem({ command: 'test' });
         menu.open(10000, 10000, { forceX: true, forceY: true });
-        expect(menu.node.style.left).to.equal('10000px');
-        expect(menu.node.style.top).to.equal('10000px');
+        expect(menu.node.style.transform).to.equal(
+          'translate(10000px, 10000px)'
+        );
       });
 
       it('should bail if already attached', () => {
         menu.addItem({ command: 'test' });
         menu.open(10, 10);
         menu.open(100, 100);
-        expect(menu.node.style.left).to.equal('10px');
-        expect(menu.node.style.top).to.equal('10px');
+        expect(menu.node.style.transform).to.equal('translate(10px, 10px)');
       });
     });
 

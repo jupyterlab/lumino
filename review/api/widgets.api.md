@@ -679,6 +679,7 @@ export class Menu extends Widget {
     readonly renderer: Menu.IRenderer;
     get rootMenu(): Menu;
     triggerActiveItem(): void;
+    static updateWindowData(): void;
 }
 
 // @public
