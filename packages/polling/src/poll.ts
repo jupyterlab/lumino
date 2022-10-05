@@ -10,6 +10,22 @@ import { ISignal, Signal } from '@lumino/signaling';
 import { IPoll } from './index';
 
 /**
+ * A function to defer an action immediately.
+ */
+const defer =
+  typeof requestAnimationFrame === 'function'
+    ? requestAnimationFrame
+    : setImmediate;
+
+/**
+ * A function to cancel a deferred action.
+ */
+const cancel: (timeout: any) => void =
+  typeof cancelAnimationFrame === 'function'
+    ? cancelAnimationFrame
+    : clearImmediate;
+
+/**
  * A class that wraps an asynchronous function to poll at a regular interval
  * with exponential increases to the interval length if the poll fails.
  *
@@ -47,7 +63,7 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
     this.name = options.name || Private.DEFAULT_NAME;
 
     if ('auto' in options ? options.auto : true) {
-      setTimeout(() => this.start());
+      defer(() => void this.start());
     }
   }
 
@@ -200,6 +216,7 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
     }
 
     // Update poll state.
+    const last = this.state;
     const pending = this._tick;
     const scheduled = new PromiseDelegate<this>();
     const state = {
@@ -213,17 +230,16 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
     this._tick = scheduled;
 
     // Clear the schedule if possible.
-    clearTimeout(this._timeout);
+    if (last.interval === Poll.IMMEDIATE) {
+      cancel(this._timeout);
+    } else {
+      clearTimeout(this._timeout);
+    }
 
     // Emit ticked signal, resolve pending promise, and await its settlement.
     this._ticked.emit(this.state);
     pending.resolve(this);
     await pending.promise;
-
-    if (state.interval === Poll.NEVER) {
-      this._timeout = undefined;
-      return;
-    }
 
     // Schedule next execution and cache its timeout handle.
     const execute = () => {
@@ -233,7 +249,12 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
 
       this._execute();
     };
-    this._timeout = setTimeout(execute, state.interval);
+    this._timeout =
+      state.interval === Poll.IMMEDIATE
+        ? defer(execute)
+        : state.interval === Poll.NEVER
+        ? -1
+        : setTimeout(execute, state.interval);
   }
 
   /**
@@ -315,7 +336,7 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
   private _state: IPoll.State<T, U, V>;
   private _tick = new PromiseDelegate<this>();
   private _ticked = new Signal<this, IPoll.State<T, U, V>>(this);
-  private _timeout?: any; // Support node and browser. Type fixed in Lumino 2.
+  private _timeout: any = -1;
 }
 
 /**
@@ -384,7 +405,7 @@ export namespace Poll {
     standby?: Standby | (() => boolean | Standby);
   }
   /**
-   * An interval value (0ms) that indicates the poll should tick immediately.
+   * An interval value that indicates the poll should tick immediately.
    */
   export const IMMEDIATE = 0;
 
