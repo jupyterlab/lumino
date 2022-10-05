@@ -253,8 +253,6 @@ describe('@lumino/widgets', () => {
       it.skip('should have some tests');
     });
     describe('#attachWidget()', () => {
-      const hook = new LogHook();
-      expect(hook.messages).to.be.empty;
       it.skip('should have some tests');
     });
     describe('#detachWidget()', () => {
