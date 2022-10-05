@@ -1247,7 +1247,7 @@ namespace Private {
       }
 
       // Update the match if the score is better.
-      if (match && match.score <= score) {
+      if (match.score <= score) {
         score = match.score;
         indices = match.indices;
       }
