@@ -588,7 +588,12 @@ describe('@lumino/widgets', () => {
       it('should be adjusted to fit naturally on the screen', () => {
         menu.addItem({ command: 'test' });
         menu.open(-10, 10000);
-        expect(menu.node.style.transform).to.equal('translate(0px, 10000px)');
+        expect(
+          menu.node.style.transform.startsWith('translate(0px, ')
+        ).to.equal(true);
+        expect(menu.node.style.transform.endsWith(', 10000px)')).to.equal(
+          false
+        );
       });
 
       it('should accept flags to force the location', () => {

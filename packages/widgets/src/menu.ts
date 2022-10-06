@@ -833,6 +833,9 @@ export class Menu extends Widget {
       return;
     }
 
+    // Prior to any DOM modifications save window data
+    Menu.saveWindowData();
+
     // Ensure the current child menu is closed.
     this._closeChildMenu();
 
@@ -916,14 +919,16 @@ export class Menu extends Widget {
   }
 
   /**
-   * Update window data used for menu positioning in window data cache.
+   * Save window data used for menu positioning in transient cache.
    *
    * In order to avoid layout trashing it is recommended to invoke this
    * method immediately prior to opening the menu and any DOM modifications
    * (like closing previously visible menu, or adding a class to menu widget).
+   *
+   * The transient cache will be released upon `open()` call.
    */
-  static updateWindowData(): void {
-    Private.updateWindowData();
+  static saveWindowData(): void {
+    Private.saveWindowData();
   }
 
   private _childIndex = -1;
@@ -1390,48 +1395,30 @@ namespace Private {
    */
   export const SUBMENU_OVERLAP = 3;
 
-  /**
-   * How long the window data cache should be kept (ms).
-   */
-  export const WINDOW_DATA_CACHE_DURATION = 1000;
+  let transientWindowDataCache: IWindowData | null = null;
+  let transientCacheCounter: number = 0;
 
-  let latestWindowData: IWindowData | null = null;
-  let latestWindowDataTimestamp: number;
-
-  function getLatestWindowData(): IWindowData | null {
-    const currentTimestamp = Date.now();
-    if (isWindowDataCacheValid(currentTimestamp)) {
-      return latestWindowData;
+  function getWindowData(): IWindowData {
+    // if transient cache is in use, take one from it
+    if (transientCacheCounter > 0) {
+      transientCacheCounter--;
+      return transientWindowDataCache!;
     }
-    return null;
-  }
-
-  function isWindowDataCacheValid(timestamp: number) {
-    return timestamp - latestWindowDataTimestamp < WINDOW_DATA_CACHE_DURATION;
+    return _getWindowData();
   }
 
   /**
-   * Update window data cache.
+   * Store window data in transient cache.
+   *
+   * The transient cache will be released upon `getWindowData()` call.
+   * If this function is called multiple times, the cache will be
+   * retained until as many calls to `getWindowData()` were made.
    *
    * Note: should be called before any DOM modifications.
    */
-  export function updateWindowData(): void {
-    const currentTimestamp = Date.now();
-    if (isWindowDataCacheValid(currentTimestamp)) {
-      // If cache is still valid, try again as soon as it expires and layout is be ready,
-      // which drastically reduces the chance of cache timeout occurring just as we start
-      // showing or switching the menu.
-      setTimeout(() => {
-        requestAnimationFrame(() => {
-          latestWindowData = _getWindowData();
-          latestWindowDataTimestamp = currentTimestamp;
-        });
-      }, WINDOW_DATA_CACHE_DURATION - (currentTimestamp - latestWindowDataTimestamp));
-    } else {
-      // Update immediately
-      latestWindowData = _getWindowData();
-      latestWindowDataTimestamp = currentTimestamp;
-    }
+  export function saveWindowData(): void {
+    transientWindowDataCache = _getWindowData();
+    transientCacheCounter++;
   }
 
   /**
@@ -1552,15 +1539,15 @@ namespace Private {
     forceX: boolean,
     forceY: boolean
   ): void {
-    // Ensure the menu is updated before attaching and measuring.
-    MessageLoop.sendMessage(menu, Widget.Msg.UpdateRequest);
-
     // Get the current position and size of the main viewport.
-    const windowData = getLatestWindowData() || _getWindowData();
+    const windowData = getWindowData();
     let px = windowData.pageXOffset;
     let py = windowData.pageYOffset;
     let cw = windowData.clientWidth;
     let ch = windowData.clientHeight;
+
+    // Ensure the menu is updated before attaching and measuring.
+    MessageLoop.sendMessage(menu, Widget.Msg.UpdateRequest);
 
     // Compute the maximum allowed height for the menu.
     let maxHeight = ch - (forceY ? y : 0);
@@ -1604,15 +1591,15 @@ namespace Private {
    * Open a menu as a submenu using an item node for positioning.
    */
   export function openSubmenu(submenu: Menu, itemNode: HTMLElement): void {
-    // Ensure the menu is updated before opening.
-    MessageLoop.sendMessage(submenu, Widget.Msg.UpdateRequest);
-
     // Get the current position and size of the main viewport.
-    const windowData = getLatestWindowData() || _getWindowData();
+    const windowData = getWindowData();
     let px = windowData.pageXOffset;
     let py = windowData.pageYOffset;
     let cw = windowData.clientWidth;
     let ch = windowData.clientHeight;
+
+    // Ensure the menu is updated before opening.
+    MessageLoop.sendMessage(submenu, Widget.Msg.UpdateRequest);
 
     // Compute the maximum allowed height for the menu.
     let maxHeight = ch;

@@ -520,7 +520,7 @@ export class MenuBar extends Widget {
       this.activeIndex = index;
     } else {
       const position = this._positionForMenu(index);
-      Menu.updateWindowData();
+      Menu.saveWindowData();
       // Begin DOM modifications.
       this.activeIndex = index;
       this._openChildMenu(position);
@@ -552,7 +552,7 @@ export class MenuBar extends Widget {
     const position = this._positionForMenu(index);
 
     // Before any modification, update window data.
-    Menu.updateWindowData();
+    Menu.saveWindowData();
 
     // Begin DOM modifications.
 
@@ -629,7 +629,6 @@ export class MenuBar extends Widget {
     if (typeof left === 'undefined' || typeof top === 'undefined') {
       ({ left, top } = this._positionForMenu(this._activeIndex));
     }
-
     // Begin DOM modifications
 
     if (!oldMenu) {
