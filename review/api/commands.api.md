@@ -48,7 +48,7 @@ export namespace CommandRegistry {
     export type Description = {
         args: ReadonlyJSONObject | null;
     };
-    export function formatKeystroke(keystroke: string): string;
+    export function formatKeystroke(keystroke: string | readonly string[]): string;
     export interface ICommandChangedArgs {
         readonly id: string | undefined;
         readonly type: 'added' | 'removed' | 'changed' | 'many-changed';

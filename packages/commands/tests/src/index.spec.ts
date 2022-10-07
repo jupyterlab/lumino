@@ -1271,6 +1271,11 @@ describe('@lumino/commands', () => {
           expect(label).to.equal('Alt+Down');
         }
       });
+
+      it('should format a list of keys', () => {
+        let label = CommandRegistry.formatKeystroke(['D', 'D']);
+        expect(label).to.equal('D, D');
+      });
     });
 
     describe('.normalizeKeystroke()', () => {
