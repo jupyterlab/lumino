@@ -519,8 +519,11 @@ export class MenuBar extends Widget {
       this._closeChildMenu();
       this.activeIndex = index;
     } else {
+      const position = this._positionForMenu(index);
+      Menu.saveWindowData();
+      // Begin DOM modifications.
       this.activeIndex = index;
-      this._openChildMenu();
+      this._openChildMenu(position);
     }
   }
 
@@ -545,13 +548,37 @@ export class MenuBar extends Widget {
       return;
     }
 
+    // Get position for the new menu >before< updating active index.
+    const position = this._positionForMenu(index);
+
+    // Before any modification, update window data.
+    Menu.saveWindowData();
+
+    // Begin DOM modifications.
+
     // Update the active index to the hovered item.
     this.activeIndex = index;
 
     // Open the new menu if a menu is already open.
     if (this._childMenu) {
-      this._openChildMenu();
+      this._openChildMenu(position);
     }
+  }
+
+  /**
+   * Find initial position for the menu based on menubar item position.
+   *
+   * NOTE: this should be called before updating active index to avoid
+   * an additional layout and style invalidation as changing active
+   * index modifies DOM.
+   */
+  private _positionForMenu(index: number): Private.IPosition {
+    let itemNode = this.contentNode.children[index];
+    let { left, bottom } = (itemNode as HTMLElement).getBoundingClientRect();
+    return {
+      top: bottom,
+      left
+    };
   }
 
   /**
@@ -570,7 +597,7 @@ export class MenuBar extends Widget {
    * If a different child menu is already open, it will be closed,
    * even if there is no active menu.
    */
-  private _openChildMenu(): void {
+  private _openChildMenu(options: { left?: number; top?: number } = {}): void {
     // If there is no active menu, close the current menu.
     let newMenu = this.activeMenu;
     if (!newMenu) {
@@ -591,20 +618,27 @@ export class MenuBar extends Widget {
     if (oldMenu) {
       oldMenu.close();
     } else {
-      this.addClass('lm-mod-active');
       document.addEventListener('mousedown', this, true);
     }
 
     // Ensure the menu bar is updated and look up the item node.
     MessageLoop.sendMessage(this, Widget.Msg.UpdateRequest);
-    let itemNode = this.contentNode.children[this._activeIndex];
 
     // Get the positioning data for the new menu.
-    let { left, bottom } = (itemNode as HTMLElement).getBoundingClientRect();
+    let { left, top } = options;
+    if (typeof left === 'undefined' || typeof top === 'undefined') {
+      ({ left, top } = this._positionForMenu(this._activeIndex));
+    }
+    // Begin DOM modifications
+
+    if (!oldMenu) {
+      // Continue setup for new menu
+      this.addClass('lm-mod-active');
+    }
 
     // Open the new menu at the computed location.
     if (newMenu.items.length > 0) {
-      newMenu.open(left, bottom, this._forceItemsPosition);
+      newMenu.open(left, top, this._forceItemsPosition);
     }
   }
 
@@ -910,6 +944,20 @@ namespace Private {
     node.tabIndex = 0;
     content.tabIndex = 0;
     return node;
+  }
+
+  /**
+   * Position for the menu relative to top-left screen corner.
+   */
+  export interface IPosition {
+    /**
+     * Pixels right from screen origin.
+     */
+    left: number;
+    /**
+     * Pixels down from screen origin.
+     */
+    top: number;
   }
 
   /**
