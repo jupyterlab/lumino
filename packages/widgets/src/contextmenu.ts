@@ -78,6 +78,9 @@ export class ContextMenu {
    * position indicated by the event.
    */
   open(event: MouseEvent): boolean {
+    // Prior to any DOM modifications update the window data.
+    Menu.saveWindowData();
+
     // Clear the current contents of the context menu.
     this.menu.clearItems();
 
