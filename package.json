@@ -58,16 +58,7 @@
     "typescript": "~4.7.3"
   },
   "jupyter-releaser": {
-    "skip": [
-      "check-links"
-    ],
     "options": {
-      "ignore-links": [
-        "./api/index.html",
-        "examples/accordionpanel/index.html",
-        "examples/datagrid/index.html",
-        "examples/dockpanel/index.html"
-      ],
       "npm-cmd": "npm publish --tag next"
     },
     "hooks": {
