@@ -1186,26 +1186,40 @@ export namespace CommandRegistry {
   }
 
   /**
-   * Format a keystroke for display on the local system.
+   * Format keystrokes for display on the local system.
+   *
+   * If a list of keystrokes is provided, it will be displayed as
+   * a comma-separated string
+   *
+   * @param keystroke The keystrokes to format
+   * @returns The keystrokes representation
    */
-  export function formatKeystroke(keystroke: string): string {
-    let mods = [];
-    let separator = Platform.IS_MAC ? ' ' : '+';
-    let parts = parseKeystroke(keystroke);
-    if (parts.ctrl) {
-      mods.push('Ctrl');
+  export function formatKeystroke(
+    keystroke: string | readonly string[]
+  ): string {
+    return typeof keystroke === 'string'
+      ? formatSingleKey(keystroke)
+      : keystroke.map(formatSingleKey).join(', ');
+
+    function formatSingleKey(key: string) {
+      let mods = [];
+      let separator = Platform.IS_MAC ? ' ' : '+';
+      let parts = parseKeystroke(key);
+      if (parts.ctrl) {
+        mods.push('Ctrl');
+      }
+      if (parts.alt) {
+        mods.push('Alt');
+      }
+      if (parts.shift) {
+        mods.push('Shift');
+      }
+      if (Platform.IS_MAC && parts.cmd) {
+        mods.push('Cmd');
+      }
+      mods.push(parts.key);
+      return mods.map(Private.formatKey).join(separator);
     }
-    if (parts.alt) {
-      mods.push('Alt');
-    }
-    if (parts.shift) {
-      mods.push('Shift');
-    }
-    if (Platform.IS_MAC && parts.cmd) {
-      mods.push('Cmd');
-    }
-    mods.push(parts.key);
-    return mods.map(Private.formatKey).join(separator);
   }
 
   /**
