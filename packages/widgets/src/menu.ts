@@ -1436,9 +1436,7 @@ export namespace Menu {
      */
     formatShortcut(data: IRenderData): h.Child {
       let kb = data.item.keyBinding;
-      return kb
-        ? kb.keys.map(CommandRegistry.formatKeystroke).join(', ')
-        : null;
+      return kb ? CommandRegistry.formatKeystroke(kb.keys) : null;
     }
   }
 
