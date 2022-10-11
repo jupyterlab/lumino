@@ -584,6 +584,7 @@ export class Menu extends Widget {
     removeItemAt(index: number): void;
     readonly renderer: Menu.IRenderer;
     readonly rootMenu: Menu;
+    static saveWindowData(): void;
     triggerActiveItem(): void;
 }
 
