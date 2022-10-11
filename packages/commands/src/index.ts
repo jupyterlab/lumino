@@ -160,7 +160,7 @@ export class CommandRegistry {
    */
   describedBy(id: string): { args: ReadonlyJSONObject | null } {
     let cmd = this._commands[id];
-    return cmd?.describedBy ?? { args: null };
+    return cmd ? cmd.describedBy || { args: null } : { args: null };
   }
 
   /**
