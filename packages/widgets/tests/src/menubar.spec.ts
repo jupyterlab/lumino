@@ -453,6 +453,12 @@ describe('@lumino/widgets', () => {
       });
 
       context('keydown', () => {
+        it('should bail on Tab', () => {
+          let event = new KeyboardEvent('keydown', { key: 'Tab' });
+          bar.node.dispatchEvent(event);
+          expect(event.defaultPrevented).to.equal(false);
+        });
+
         it('should open the active menu on Enter', () => {
           let menu = bar.activeMenu!;
           simulate(bar.node, 'keydown', { keyCode: 13 });
