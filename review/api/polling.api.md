@@ -56,6 +56,7 @@ export class Poll<T = any, U = any, V extends string = 'standby'> implements IOb
     get disposed(): ISignal<this, void>;
     get frequency(): IPoll.Frequency;
     set frequency(frequency: IPoll.Frequency);
+    protected get hidden(): boolean;
     get isDisposed(): boolean;
     readonly name: string;
     refresh(): Promise<void>;
@@ -78,6 +79,7 @@ export namespace Poll {
         auto?: boolean;
         factory: Factory<T, U, V>;
         frequency?: Partial<IPoll.Frequency>;
+        linger?: number;
         name?: string;
         standby?: Standby | (() => boolean | Standby);
     }

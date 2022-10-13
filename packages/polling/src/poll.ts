@@ -32,6 +32,7 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
    */
   constructor(options: Poll.IOptions<T, U, V>) {
     this._factory = options.factory;
+    this._linger = options.linger ?? Private.DEFAULT_LINGER;
     this._standby = options.standby || Private.DEFAULT_STANDBY;
     this._state = { ...Private.DEFAULT_STATE, timestamp: new Date().getTime() };
 
@@ -244,6 +245,8 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
 
       this._execute();
     };
+
+    // Cache the handle in case it needs to be unscheduled.
     this._timeout = setTimeout(execute, state.interval);
   }
 
@@ -275,17 +278,33 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
   }
 
   /**
+   * Whether the poll is hidden.
+   *
+   * #### Notes
+   * This property is only relevant in a browser context.
+   */
+  protected get hidden(): boolean {
+    return Private.hidden;
+  }
+
+  /**
    * Execute a new poll factory promise or stand by if necessary.
    */
   private _execute(): void {
     let standby =
       typeof this.standby === 'function' ? this.standby() : this.standby;
-    standby =
-      standby === 'never'
-        ? false
-        : standby === 'when-hidden'
-        ? !!(typeof document !== 'undefined' && document && document.hidden)
-        : standby;
+
+    // Check if execution should proceed, linger, or stand by.
+    if (standby === 'never') {
+      standby = false;
+    } else if (standby === 'when-hidden') {
+      if (this.hidden) {
+        standby = ++this._lingered > this._linger;
+      } else {
+        this._lingered = 0;
+        standby = false;
+      }
+    }
 
     // If in standby mode schedule next tick without calling the factory.
     if (standby) {
@@ -322,11 +341,13 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
   private _disposed = new Signal<this, void>(this);
   private _factory: Poll.Factory<T, U, V>;
   private _frequency: IPoll.Frequency;
+  private _linger: number;
+  private _lingered = 0;
   private _standby: Poll.Standby | (() => boolean | Poll.Standby);
   private _state: IPoll.State<T, U, V>;
   private _tick = new PromiseDelegate<this>();
   private _ticked = new Signal<this, IPoll.State<T, U, V>>(this);
-  private _timeout?: ReturnType<typeof setTimeout>; // Support node and browser.
+  private _timeout: ReturnType<typeof setTimeout> | undefined;
 }
 
 /**
@@ -372,6 +393,12 @@ export namespace Poll {
     factory: Factory<T, U, V>;
 
     /**
+     * The number of ticks to linger if poll switches to standby `when-hidden`.
+     * Defaults to `1`.
+     */
+    linger?: number;
+
+    /**
      * The polling frequency parameters.
      */
     frequency?: Partial<IPoll.Frequency>;
@@ -395,7 +422,7 @@ export namespace Poll {
     standby?: Standby | (() => boolean | Standby);
   }
   /**
-   * An interval value (0ms) that indicates the poll should tick immediately.
+   * An interval value in ms that indicates the poll should tick immediately.
    */
   export const IMMEDIATE = 0;
 
@@ -432,6 +459,11 @@ namespace Private {
   };
 
   /**
+   * The default number of times to `linger` when a poll is hidden.
+   */
+  export const DEFAULT_LINGER = 1;
+
+  /**
    * The default poll name.
    */
   export const DEFAULT_NAME = 'unknown';
@@ -462,23 +494,6 @@ namespace Private {
   };
 
   /**
-   * Get a random integer between min and max, inclusive of both.
-   *
-   * #### Notes
-   * From
-   * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random#Getting_a_random_integer_between_two_values_inclusive
-   *
-   * From the MDN page: It might be tempting to use Math.round() to accomplish
-   * that, but doing so would cause your random numbers to follow a non-uniform
-   * distribution, which may not be acceptable for your needs.
-   */
-  function getRandomIntInclusive(min: number, max: number) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  }
-
-  /**
    * Returns the number of milliseconds to sleep before the next tick.
    *
    * @param frequency - The poll's base frequency.
@@ -499,5 +514,45 @@ namespace Private {
     const random = getRandomIntInclusive(interval, last.interval * growth);
 
     return Math.min(max, random);
+  }
+
+  /**
+   * Keep track of whether the document is hidden. This flag is only relevant in
+   * a browser context.
+   *
+   * Listen to `visibilitychange` event to set the `hidden` flag.
+   *
+   * Listening to `pagehide` is also necessary because Safari support for
+   * `visibilitychange` events is partial, cf.
+   * https://developer.mozilla.org/docs/Web/API/Document/visibilitychange_event
+   */
+  export let hidden = (() => {
+    if (typeof document === 'undefined') {
+      return false;
+    }
+    document.addEventListener('visibilitychange', () => {
+      hidden = document.visibilityState === 'hidden';
+    });
+    document.addEventListener('pagehide', () => {
+      hidden = document.visibilityState === 'hidden';
+    });
+    return document.visibilityState === 'hidden';
+  })();
+
+  /**
+   * Get a random integer between min and max, inclusive of both.
+   *
+   * #### Notes
+   * From
+   * https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Math/random#Getting_a_random_integer_between_two_values_inclusive
+   *
+   * From the MDN page: It might be tempting to use Math.round() to accomplish
+   * that, but doing so would cause your random numbers to follow a non-uniform
+   * distribution, which may not be acceptable for your needs.
+   */
+  function getRandomIntInclusive(min: number, max: number) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 }

@@ -472,6 +472,7 @@ describe('@lumino/messaging', () => {
 
     describe('flush()', () => {
       it('should immediately process all posted messages', () => {
+        const expected = ['one', 'two', 'three', 'six', 'four', 'five'];
         let h1 = new Handler();
         let h2 = new Handler();
         MessageLoop.postMessage(h1, new Message('one'));
@@ -480,9 +481,21 @@ describe('@lumino/messaging', () => {
         MessageLoop.postMessage(h2, new Message('two'));
         MessageLoop.postMessage(h1, new Message('three'));
         MessageLoop.postMessage(h2, new Message('three'));
+
         MessageLoop.flush();
-        expect(h1.messages).to.deep.equal(['one', 'two', 'three']);
-        expect(h2.messages).to.deep.equal(['one', 'two', 'three']);
+
+        MessageLoop.postMessage(h1, new Message('four'));
+        MessageLoop.postMessage(h2, new Message('four'));
+        MessageLoop.postMessage(h1, new Message('five'));
+        MessageLoop.postMessage(h2, new Message('five'));
+
+        MessageLoop.sendMessage(h1, new Message('six'));
+        MessageLoop.sendMessage(h2, new Message('six'));
+
+        MessageLoop.flush();
+
+        expect(h1.messages).to.deep.equal(expected);
+        expect(h2.messages).to.deep.equal(expected);
       });
 
       it('should ignore recursive calls', () => {

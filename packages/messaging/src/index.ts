@@ -196,6 +196,29 @@ export type MessageHook =
  */
 export namespace MessageLoop {
   /**
+   * A function that cancels the pending loop task; `null` if unavailable.
+   */
+  let pending: (() => void) | null = null;
+
+  /**
+   * Schedules a function for invocation as soon as possible asynchronously.
+   *
+   * @param fn The function to invoke when called back.
+   *
+   * @returns An anonymous function that will unschedule invocation if possible.
+   */
+  const schedule = (
+    resolved =>
+    (fn: () => unknown): (() => void) => {
+      let rejected = false;
+      resolved.then(() => !rejected && fn());
+      return () => {
+        rejected = true;
+      };
+    }
+  )(Promise.resolve());
+
+  /**
    * Send a message to a message handler to process immediately.
    *
    * @param handler - The handler which should process the message.
@@ -296,7 +319,7 @@ export namespace MessageLoop {
     handler: IMessageHandler,
     hook: MessageHook
   ): void {
-    // Lookup the hooks for the handler.
+    // Look up the hooks for the handler.
     let hooks = messageHooks.get(handler);
 
     // Bail early if the hook is already installed.
@@ -378,8 +401,7 @@ export namespace MessageLoop {
    * Process the pending posted messages in the queue immediately.
    *
    * #### Notes
-   * This function is useful when posted messages must be processed
-   * immediately, instead of on the next animation frame.
+   * This function is useful when posted messages must be processed immediately.
    *
    * This function should normally not be needed, but it may be
    * required to work around certain browser idiosyncrasies.
@@ -388,12 +410,13 @@ export namespace MessageLoop {
    */
   export function flush(): void {
     // Bail if recursion is detected or if there is no pending task.
-    if (flushGuard || loopTaskID === 0) {
+    if (flushGuard || pending === null) {
       return;
     }
 
     // Unschedule the pending loop task.
-    unschedule(loopTaskID);
+    pending();
+    pending = null;
 
     // Run the message loop within the recursion guard.
     flushGuard = true;
@@ -467,33 +490,10 @@ export namespace MessageLoop {
     console.error(err);
   };
 
-  type ScheduleHandle = number | any; //  requestAnimationFrame (number) and setImmediate (any)
-
-  /**
-   * The id of the pending loop task animation frame.
-   */
-  let loopTaskID: ScheduleHandle = 0;
-
   /**
    * A guard flag to prevent flush recursion.
    */
   let flushGuard = false;
-
-  /**
-   * A function to schedule an event loop callback.
-   */
-  const schedule = ((): ScheduleHandle => {
-    let ok = typeof requestAnimationFrame === 'function';
-    return ok ? requestAnimationFrame : setImmediate;
-  })();
-
-  /**
-   * A function to unschedule an event loop callback.
-   */
-  const unschedule = (() => {
-    let ok = typeof cancelAnimationFrame === 'function';
-    return ok ? cancelAnimationFrame : clearImmediate;
-  })();
 
   /**
    * Invoke a message hook with the specified handler and message.
@@ -543,12 +543,12 @@ export namespace MessageLoop {
     messageQueue.addLast({ handler, msg });
 
     // Bail if a loop task is already pending.
-    if (loopTaskID !== 0) {
+    if (pending !== null) {
       return;
     }
 
     // Schedule a run of the message loop.
-    loopTaskID = schedule(runMessageLoop);
+    pending = schedule(runMessageLoop);
   }
 
   /**
@@ -559,8 +559,8 @@ export namespace MessageLoop {
    * be processed on the next cycle of the loop.
    */
   function runMessageLoop(): void {
-    // Clear the task ID so the next loop can be scheduled.
-    loopTaskID = 0;
+    // Clear the task so the next loop can be scheduled.
+    pending = null;
 
     // If the message queue is empty, there is nothing else to do.
     if (messageQueue.isEmpty) {
