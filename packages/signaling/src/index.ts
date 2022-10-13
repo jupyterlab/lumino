@@ -8,6 +8,7 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 import { ArrayExt, find } from '@lumino/algorithm';
+import { AttachedProperty } from '@lumino/properties';
 
 /**
  * A type alias for a slot function.
@@ -226,12 +227,12 @@ export namespace Signal {
    * @param fn The callback during which all signals are blocked
    */
   export function blockAll(sender: unknown, fn: () => void): void {
-    Private.blockedSenders.unshift(sender);
+    const { blockedProperty } = Private;
+    blockedProperty.set(sender, blockedProperty.get(sender) + 1);
     try {
       fn();
     } finally {
-      const index = Private.blockedSenders.indexOf(sender);
-      Private.blockedSenders.splice(index, 1);
+      blockedProperty.set(sender, blockedProperty.get(sender) - 1);
     }
   }
 
@@ -575,7 +576,7 @@ namespace Private {
    * Exceptions thrown by connected slots will be caught and logged.
    */
   export function emit<T, U>(signal: Signal<T, U>, args: U): void {
-    if (blockedSenders.includes(signal.sender)) {
+    if (Private.blockedProperty.get(signal.sender) > 0) {
       return;
     }
 
@@ -721,10 +722,10 @@ namespace Private {
   }
 
   /**
-   * The list of senders that are blocked.
-   *
-   * ### Notes
-   * This is an array as a sender may be blocked recursively.
+   * A property indicating a sender has been blocked if its value is not 0.
    */
-  export const blockedSenders: Array<unknown> = [];
+  export const blockedProperty = new AttachedProperty<unknown, number>({
+    name: 'blocked',
+    create: () => 0
+  });
 }
