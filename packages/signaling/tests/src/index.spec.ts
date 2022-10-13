@@ -74,7 +74,7 @@ describe('@lumino/signaling', () => {
         obj.two.connect(handler2.onTwo, handler2);
 
         obj.two.block(() => {
-          obj.two.emit(15);
+          obj.two.emit(4);
         });
 
         expect(handler1.twoSender).to.equal(null);
@@ -97,7 +97,7 @@ describe('@lumino/signaling', () => {
         obj.two.connect(handler2.onTwo, handler2);
 
         obj.two.block(() => {
-          obj.two.emit(15);
+          obj.two.emit(4);
           obj.two.block(() => {
             obj.two.emit(42);
           });
@@ -351,7 +351,7 @@ describe('@lumino/signaling', () => {
       });
     });
 
-    describe('.block()', () => {
+    describe('.blockAll()', () => {
       it('should block all signals from a given sender', () => {
         let obj = new TestObject();
         let handler1 = new TestHandler();

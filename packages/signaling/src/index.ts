@@ -724,7 +724,7 @@ namespace Private {
    * The list of senders that are blocked.
    *
    * ### Notes
-   * This is an array as a sender may be blocked recursively
+   * This is an array as a sender may be blocked recursively.
    */
   export const blockedSenders: Array<unknown> = [];
 }
