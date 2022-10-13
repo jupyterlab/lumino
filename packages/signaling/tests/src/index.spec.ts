@@ -396,7 +396,7 @@ describe('@lumino/signaling', () => {
             obj.one.emit(undefined);
             obj.two.emit(12);
           });
-          
+
           obj.one.emit(undefined);
           obj.two.emit(6);
         });
