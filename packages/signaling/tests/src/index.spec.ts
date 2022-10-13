@@ -101,6 +101,7 @@ describe('@lumino/signaling', () => {
           obj.two.block(() => {
             obj.two.emit(42);
           });
+          obj.two.emit(6);
         });
 
         expect(handler1.twoSender).to.equal(null);
@@ -389,12 +390,15 @@ describe('@lumino/signaling', () => {
 
         Signal.blockAll(obj, () => {
           obj.one.emit(undefined);
-          obj.two.emit(42);
+          obj.two.emit(4);
 
           Signal.blockAll(obj, () => {
             obj.one.emit(undefined);
             obj.two.emit(12);
           });
+          
+          obj.one.emit(undefined);
+          obj.two.emit(6);
         });
 
         expect(handler1.oneCount).to.equal(0);
