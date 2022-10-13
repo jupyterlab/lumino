@@ -32,6 +32,16 @@ export type Slot<T, U> = (sender: T, args: U) => void;
  */
 export interface ISignal<T, U> {
   /**
+   * Block the signal during the execution of a callback.
+   *
+   * ### Notes
+   * The callback function must be synchronous.
+   *
+   * @param fn The callback during which the signal is blocked
+   */
+  block(fn: () => void): void;
+
+  /**
    * Connect a slot to the signal.
    *
    * @param slot - The slot to invoke when the signal is emitted.
@@ -138,6 +148,23 @@ export class Signal<T, U> implements ISignal<T, U> {
   readonly sender: T;
 
   /**
+   * Block the signal during the execution of a callback.
+   *
+   * ### Notes
+   * The callback function must be synchronous.
+   *
+   * @param fn The callback during which the signal is blocked
+   */
+  block(fn: () => void): void {
+    this._blockedCount++;
+    try {
+      fn();
+    } finally {
+      this._blockedCount--;
+    }
+  }
+
+  /**
    * Connect a slot to the signal.
    *
    * @param slot - The slot to invoke when the signal is emitted.
@@ -176,14 +203,38 @@ export class Signal<T, U> implements ISignal<T, U> {
    * Exceptions thrown by connected slots will be caught and logged.
    */
   emit(args: U): void {
-    Private.emit(this, args);
+    if (!this._blockedCount) {
+      Private.emit(this, args);
+    }
   }
+
+  private _blockedCount = 0;
 }
 
 /**
  * The namespace for the `Signal` class statics.
  */
 export namespace Signal {
+  /**
+   * Block all signals emitted by an object during
+   * the execution of a callback.
+   *
+   * ### Notes
+   * The callback function must be synchronous.
+   *
+   * @param sender The signals sender
+   * @param fn The callback during which all signals are blocked
+   */
+  export function blockAll(sender: unknown, fn: () => void): void {
+    Private.blockedSenders.unshift(sender);
+    try {
+      fn();
+    } finally {
+      const index = Private.blockedSenders.indexOf(sender);
+      Private.blockedSenders.splice(index, 1);
+    }
+  }
+
   /**
    * Remove all connections between a sender and receiver.
    *
@@ -524,6 +575,10 @@ namespace Private {
    * Exceptions thrown by connected slots will be caught and logged.
    */
   export function emit<T, U>(signal: Signal<T, U>, args: U): void {
+    if (blockedSenders.includes(signal.sender)) {
+      return;
+    }
+
     // If there are no receivers, there is nothing to do.
     let receivers = receiversForSender.get(signal.sender);
     if (!receivers || receivers.length === 0) {
@@ -664,4 +719,12 @@ namespace Private {
   function isDeadConnection(connection: IConnection): boolean {
     return connection.signal === null;
   }
+
+  /**
+   * The list of senders that are blocked.
+   *
+   * ### Notes
+   * This is an array as a sender may be blocked recursively
+   */
+  export const blockedSenders: Array<unknown> = [];
 }

@@ -65,6 +65,57 @@ describe('@lumino/signaling', () => {
       });
     });
 
+    describe('#block()', () => {
+      it('should block the signal emission', () => {
+        let obj = new TestObject();
+        let handler1 = new TestHandler();
+        let handler2 = new TestHandler();
+        obj.two.connect(handler1.onTwo, handler1);
+        obj.two.connect(handler2.onTwo, handler2);
+
+        obj.two.block(() => {
+          obj.two.emit(15);
+        });
+
+        expect(handler1.twoSender).to.equal(null);
+        expect(handler2.twoSender).to.equal(null);
+        expect(handler1.twoValue).to.equal(0);
+        expect(handler2.twoValue).to.equal(0);
+
+        obj.two.emit(15);
+        expect(handler1.twoSender).to.equal(obj);
+        expect(handler2.twoSender).to.equal(obj);
+        expect(handler1.twoValue).to.equal(15);
+        expect(handler2.twoValue).to.equal(15);
+      });
+
+      it('should block the signal emission for nested loop', () => {
+        let obj = new TestObject();
+        let handler1 = new TestHandler();
+        let handler2 = new TestHandler();
+        obj.two.connect(handler1.onTwo, handler1);
+        obj.two.connect(handler2.onTwo, handler2);
+
+        obj.two.block(() => {
+          obj.two.emit(15);
+          obj.two.block(() => {
+            obj.two.emit(42);
+          });
+        });
+
+        expect(handler1.twoSender).to.equal(null);
+        expect(handler2.twoSender).to.equal(null);
+        expect(handler1.twoValue).to.equal(0);
+        expect(handler2.twoValue).to.equal(0);
+
+        obj.two.emit(15);
+        expect(handler1.twoSender).to.equal(obj);
+        expect(handler2.twoSender).to.equal(obj);
+        expect(handler1.twoValue).to.equal(15);
+        expect(handler2.twoValue).to.equal(15);
+      });
+    });
+
     describe('#connect()', () => {
       it('should return true on success', () => {
         let obj = new TestObject();
@@ -297,6 +348,66 @@ describe('@lumino/signaling', () => {
         let names: string[] = [];
         obj.three.emit(names);
         expect(names).to.deep.equal(['foo', 'bar']);
+      });
+    });
+
+    describe('.block()', () => {
+      it('should block all signals from a given sender', () => {
+        let obj = new TestObject();
+        let handler1 = new TestHandler();
+        let handler2 = new TestHandler();
+        obj.one.connect(handler1.onOne, handler1);
+        obj.one.connect(handler2.onOne, handler2);
+        obj.two.connect(handler1.onTwo, handler1);
+        obj.two.connect(handler2.onTwo, handler2);
+
+        Signal.blockAll(obj, () => {
+          obj.one.emit(undefined);
+          obj.two.emit(42);
+        });
+        expect(handler1.oneCount).to.equal(0);
+        expect(handler2.oneCount).to.equal(0);
+        expect(handler1.twoValue).to.equal(0);
+        expect(handler2.twoValue).to.equal(0);
+
+        obj.one.emit(undefined);
+        obj.two.emit(42);
+        expect(handler1.oneCount).to.equal(1);
+        expect(handler2.oneCount).to.equal(1);
+        expect(handler1.twoValue).to.equal(42);
+        expect(handler2.twoValue).to.equal(42);
+      });
+
+      it('should block all signals from a given sender for nested loop', () => {
+        let obj = new TestObject();
+        let handler1 = new TestHandler();
+        let handler2 = new TestHandler();
+        obj.one.connect(handler1.onOne, handler1);
+        obj.one.connect(handler2.onOne, handler2);
+        obj.two.connect(handler1.onTwo, handler1);
+        obj.two.connect(handler2.onTwo, handler2);
+
+        Signal.blockAll(obj, () => {
+          obj.one.emit(undefined);
+          obj.two.emit(42);
+
+          Signal.blockAll(obj, () => {
+            obj.one.emit(undefined);
+            obj.two.emit(12);
+          });
+        });
+
+        expect(handler1.oneCount).to.equal(0);
+        expect(handler2.oneCount).to.equal(0);
+        expect(handler1.twoValue).to.equal(0);
+        expect(handler2.twoValue).to.equal(0);
+
+        obj.one.emit(undefined);
+        obj.two.emit(42);
+        expect(handler1.oneCount).to.equal(1);
+        expect(handler2.oneCount).to.equal(1);
+        expect(handler1.twoValue).to.equal(42);
+        expect(handler2.twoValue).to.equal(42);
       });
     });
 
