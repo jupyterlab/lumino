@@ -46,7 +46,8 @@
     "watch": "tsc --build --watch"
   },
   "dependencies": {
-    "@lumino/algorithm": "^1.9.2"
+    "@lumino/algorithm": "^1.9.2",
+    "@lumino/properties": "^1.8.2"
   },
   "devDependencies": {
     "@microsoft/api-extractor": "^7.6.0",
