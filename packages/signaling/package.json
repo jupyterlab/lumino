@@ -44,7 +44,8 @@
     "displayName": "signaling"
   },
   "dependencies": {
-    "@lumino/algorithm": "^2.0.0-alpha.6"
+    "@lumino/algorithm": "^2.0.0-alpha.6",
+    "@lumino/properties": "^2.0.0-alpha.6"
   },
   "devDependencies": {
     "@microsoft/api-extractor": "^7.6.0",

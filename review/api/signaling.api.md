@@ -6,6 +6,7 @@
 
 // @public
 export interface ISignal<T, U> {
+    block(fn: () => void): void;
     connect(slot: Slot<T, U>, thisArg?: any): boolean;
     disconnect(slot: Slot<T, U>, thisArg?: any): boolean;
 }
@@ -13,6 +14,7 @@ export interface ISignal<T, U> {
 // @public
 export class Signal<T, U> implements ISignal<T, U> {
     constructor(sender: T);
+    block(fn: () => void): void;
     connect(slot: Slot<T, U>, thisArg?: unknown): boolean;
     disconnect(slot: Slot<T, U>, thisArg?: unknown): boolean;
     emit(args: U): void;
@@ -21,6 +23,7 @@ export class Signal<T, U> implements ISignal<T, U> {
 
 // @public
 export namespace Signal {
+    export function blockAll(sender: unknown, fn: () => void): void;
     export function clearData(object: unknown): void;
     export function disconnectAll(object: unknown): void;
     export function disconnectBetween(sender: unknown, receiver: unknown): void;
