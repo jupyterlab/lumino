@@ -682,8 +682,23 @@ export class BasicMouseHandler implements DataGrid.IMouseHandler {
         throw 'unreachable';
     }
 
-    // Scroll by the desired amount.
-    grid.scrollBy(dx, dy);
+    // Only scroll and stop the event propagation if needed.
+    if (
+      // Scrolling left and not reached min already
+      (dx < 0 && grid.scrollX !== 0) ||
+      // Scrolling right and not reached max already
+      (dx > 0 && grid.scrollX !== grid.maxScrollX) ||
+      // Scrolling top and not reached min already
+      (dy < 0 && grid.scrollY !== 0) ||
+      // Scrolling down and not reached max already
+      (dy > 0 && grid.scrollY !== grid.maxScrollY)
+    ) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      // Scroll by the desired amount.
+      grid.scrollBy(dx, dy);
+    }
   }
 
   /**

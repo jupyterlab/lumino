@@ -3088,10 +3088,6 @@ export class DataGrid extends Widget {
       return;
     }
 
-    // Stop the event propagation.
-    event.preventDefault();
-    event.stopPropagation();
-
     // Dispatch to the mouse handler.
     this._mouseHandler.onWheel(this, event);
   }
