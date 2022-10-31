@@ -63,7 +63,7 @@ export class TextRenderer extends CellRenderer {
   readonly format: TextRenderer.FormatFunc;
 
   /**
-   * Which side to draw the ellipsis. Set to false to disable ellipsis.
+   * Which side to draw the ellipsis. Set to 'none' to disable ellipsis.
    */
   readonly elideDirection: CellRenderer.ConfigOption<TextRenderer.ElideDirection>;
 
