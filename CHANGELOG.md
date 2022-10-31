@@ -2,6 +2,34 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2022.10.31
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/application@1.29.4...8362e3daa3afac6b2e832b5bd225b662bdbd6593))
+
+### Enhancements made
+
+- Add blocking signal feature [#443](https://github.com/jupyterlab/lumino/pull/443) ([@fcollonval](https://github.com/fcollonval))
+- Add plugin description [#419](https://github.com/jupyterlab/lumino/pull/419) ([@fcollonval](https://github.com/fcollonval))
+- Add support for list of keystrokes [#433](https://github.com/jupyterlab/lumino/pull/433) ([@fcollonval](https://github.com/fcollonval))
+- Add `describedBy` to command [#322](https://github.com/jupyterlab/lumino/pull/322) ([@fcollonval](https://github.com/fcollonval))
+- Fix tab trap in menubar [#373](https://github.com/jupyterlab/lumino/pull/373) ([@gabalafou](https://github.com/gabalafou))
+
+### Bugs fixed
+
+- Avoid menu layout trashing by moving DOM queries [#432](https://github.com/jupyterlab/lumino/pull/432) ([@krassowski](https://github.com/krassowski))
+
+### Maintenance and upkeep improvements
+
+- Update versions [#452](https://github.com/jupyterlab/lumino/pull/452) ([@fcollonval](https://github.com/fcollonval))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2022-10-05&to=2022-10-31&type=c))
+
+[@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2022-10-05..2022-10-31&type=Issues) | [@krassowski](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2022-10-05..2022-10-31&type=Issues) | [@meeseeksdev](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ameeseeksdev+updated%3A2022-10-05..2022-10-31&type=Issues) | [@meeseeksmachine](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ameeseeksmachine+updated%3A2022-10-05..2022-10-31&type=Issues) | [@vidartf](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Avidartf+updated%3A2022-10-05..2022-10-31&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Awelcome+updated%3A2022-10-05..2022-10-31&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2022.10.5
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/algorithm@1.9.2...013594a89254d533b687d98e61dde5a537acc1c1))
@@ -23,8 +51,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2022-08-08&to=2022-10-05&type=c))
 
 [@afshin](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aafshin+updated%3A2022-08-08..2022-10-05&type=Issues) | [@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2022-08-08..2022-10-05&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2022-08-08..2022-10-05&type=Issues) | [@ibdafna](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aibdafna+updated%3A2022-08-08..2022-10-05&type=Issues) | [@jasongrout](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajasongrout+updated%3A2022-08-08..2022-10-05&type=Issues) | [@martinRenou](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3AmartinRenou+updated%3A2022-08-08..2022-10-05&type=Issues) | [@meeseeksdev](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ameeseeksdev+updated%3A2022-08-08..2022-10-05&type=Issues) | [@meeseeksmachine](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ameeseeksmachine+updated%3A2022-08-08..2022-10-05&type=Issues) | [@vidartf](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Avidartf+updated%3A2022-08-08..2022-10-05&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Awelcome+updated%3A2022-08-08..2022-10-05&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2022.8.8
 
