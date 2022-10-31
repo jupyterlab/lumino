@@ -1,6 +1,6 @@
 {
   "name": "@lumino/virtualdom",
-  "version": "1.14.2",
+  "version": "1.14.3",
   "description": "Lumino Virtual DOM",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
