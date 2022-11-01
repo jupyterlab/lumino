@@ -4,8 +4,7 @@
 
 The recommended way to make a release is to use [`jupyter_releaser`](https://github.com/jupyter-server/jupyter_releaser#checklist-for-adoption).
 
-Because `lumino` uses independent versions, the versioning must be
-done manually as follows:
+`lumino` uses a fixed version for all packages. The version is defined in `lerna.json`. To update package versions, run:
 
 ```bash
 yarn
