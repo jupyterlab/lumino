@@ -1,7 +1,8 @@
 {
   "name": "lumino_notebooks",
   "version": "0.1",
-  "description": "A set of JavaScript notebooks for lumino.",
+  "private": true,
+  "description": "A set of JavaScript notebooks for Lumino.",
   "keywords": [],
   "author": "Project Jupyter Contributors",
   "license": "Revised BSD",
