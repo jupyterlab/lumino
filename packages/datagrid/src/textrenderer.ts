@@ -28,7 +28,7 @@ export class TextRenderer extends CellRenderer {
     this.verticalAlignment = options.verticalAlignment || 'center';
     this.horizontalAlignment = options.horizontalAlignment || 'left';
     this.format = options.format || TextRenderer.formatGeneric();
-    this.elideDirection = options.elideDirection || 'right';
+    this.elideDirection = options.elideDirection || 'none';
     this.wrapText = options.wrapText || false;
   }
 
@@ -63,7 +63,7 @@ export class TextRenderer extends CellRenderer {
   readonly format: TextRenderer.FormatFunc;
 
   /**
-   * Which side to draw the ellipsis.
+   * Which side to draw the ellipsis. Set to 'none' to disable ellipsis.
    */
   readonly elideDirection: CellRenderer.ConfigOption<TextRenderer.ElideDirection>;
 
@@ -213,6 +213,12 @@ export class TextRenderer extends CellRenderer {
     gc.textAlign = hAlign;
     gc.textBaseline = 'bottom';
 
+    // Terminate call here if we're not eliding or wrapping text
+    if (elideDirection === 'none' && !wrapText) {
+      gc.fillText(text, textX, textY);
+      return;
+    }
+
     // The current text width in pixels.
     let textWidth = gc.measureText(text).width;
 
@@ -345,7 +351,7 @@ export namespace TextRenderer {
   /**
    * A type alias for the supported ellipsis sides.
    */
-  export type ElideDirection = 'left' | 'right';
+  export type ElideDirection = 'left' | 'right' | 'none';
 
   /**
    * An options object for initializing a text renderer.
@@ -396,7 +402,7 @@ export namespace TextRenderer {
     /**
      * The ellipsis direction for the cell text.
      *
-     * The default is `'right'`.
+     * The default is `'none'`.
      */
     elideDirection?: CellRenderer.ConfigOption<ElideDirection>;
 

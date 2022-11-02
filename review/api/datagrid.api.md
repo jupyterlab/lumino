@@ -598,7 +598,7 @@ export class HyperlinkRenderer extends TextRenderer {
 
 // @public (undocumented)
 export namespace HyperlinkRenderer {
-    export type ElideDirection = 'left' | 'right';
+    export type ElideDirection = 'left' | 'right' | 'none';
     export type HorizontalAlignment = 'left' | 'center' | 'right';
     export interface IOptions extends TextRenderer.IOptions {
         url?: CellRenderer.ConfigOption<string> | undefined;
@@ -907,7 +907,7 @@ export class TextRenderer extends CellRenderer {
 
 // @public
 export namespace TextRenderer {
-    export type ElideDirection = 'left' | 'right';
+    export type ElideDirection = 'left' | 'right' | 'none';
     export function formatDate(options?: formatDate.IOptions): FormatFunc;
     export namespace formatDate {
         export interface IOptions {

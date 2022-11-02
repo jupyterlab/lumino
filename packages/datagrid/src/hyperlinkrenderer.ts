@@ -162,6 +162,12 @@ export class HyperlinkRenderer extends TextRenderer {
     gc.textAlign = hAlign;
     gc.textBaseline = 'bottom';
 
+    // Terminate call here if we're not eliding or wrapping text
+    if (elideDirection === 'none' && !wrapText) {
+      gc.fillText(text, textX, textY);
+      return;
+    }
+
     // The current text width in pixels.
     let textWidth = gc.measureText(text).width;
 
@@ -291,7 +297,7 @@ export namespace HyperlinkRenderer {
   /**
    * A type alias for the supported ellipsis sides.
    */
-  export type ElideDirection = 'left' | 'right';
+  export type ElideDirection = 'left' | 'right' | 'none';
 
   /**
    * An options object for initializing a text renderer.
