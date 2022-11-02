@@ -63,6 +63,7 @@
     },
     "hooks": {
       "after-build-changelog": [
+        "yarn",
         "yarn build:dist",
         "node scripts/format-changelog.js"
       ],
