@@ -598,7 +598,7 @@ export class HyperlinkRenderer extends TextRenderer {
 
 // @public (undocumented)
 export namespace HyperlinkRenderer {
-    export type ElideDirection = 'left' | 'right' | 'none;
+    export type ElideDirection = 'left' | 'right' | 'none';
     export type HorizontalAlignment = 'left' | 'center' | 'right';
     export interface IOptions extends TextRenderer.IOptions {
         url?: CellRenderer.ConfigOption<string> | undefined;
