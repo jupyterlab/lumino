@@ -63,10 +63,14 @@
     },
     "hooks": {
       "after-build-changelog": [
+        "yarn",
         "yarn build:dist",
         "node scripts/format-changelog.js"
       ],
-      "before-build-npm": "yarn build:dist",
+      "before-build-npm": [
+        "yarn",
+        "yarn build:dist"
+      ],
       "before-draft-release": "node scripts/tag-versions.js"
     }
   },
