@@ -734,7 +734,7 @@ export class VirtualText {
    * This value can be used as a type guard for discriminating the
    * `VirtualNode` union type.
    */
-  readonly type: 'text' = 'text';
+  readonly type = 'text' as const;
 
   /**
    * Construct a new virtual text node.
@@ -782,7 +782,7 @@ export class VirtualElement {
    * This value can be used as a type guard for discriminating the
    * `VirtualNode` union type.
    */
-  readonly type: 'element' = 'element';
+  readonly type = 'element' as const;
 
   /**
    * Construct a new virtual element node.
