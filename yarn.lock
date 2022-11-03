@@ -830,6 +830,29 @@
   resolved "https://registry.yarnpkg.com/@lumino/coreutils/-/coreutils-1.12.1.tgz#79860c9937483ddf6cda87f6c2b9da8eb1a5d768"
   integrity sha512-JLu3nTHzJk9N8ohZ85u75YxemMrmDzJdNgZztfP7F7T7mxND3YVNCkJG35a6aJ7edu1sIgCjBxOvV+hv27iYvQ==
 
+"@lumino/datagrid@^1.0.0-alpha.6":
+  version "1.0.0-alpha.6"
+  resolved "https://registry.yarnpkg.com/@lumino/datagrid/-/datagrid-1.0.0-alpha.6.tgz#90364797ab0cc7cdb60b72b6448462d56e07219c"
+  integrity sha512-dwQvaEzka8DBbaHHi/HHtzI4sW+U0iX/RgBFfOlFQWtprZfV+Rjeaw2TWPmXPiR/ugy8zGBYhwxPigfR4zO2Kg==
+  dependencies:
+    "@lumino/algorithm" "^2.0.0-alpha.6"
+    "@lumino/coreutils" "^2.0.0-alpha.6"
+    "@lumino/disposable" "^2.0.0-alpha.6"
+    "@lumino/domutils" "^2.0.0-alpha.6"
+    "@lumino/dragdrop" "^2.0.0-alpha.6"
+    "@lumino/keyboard" "^2.0.0-alpha.6"
+    "@lumino/messaging" "^2.0.0-alpha.6"
+    "@lumino/signaling" "^2.0.0-alpha.6"
+    "@lumino/widgets" "^2.0.0-alpha.6"
+
+"@lumino/default-theme@^1.0.0-alpha.6":
+  version "1.0.0-alpha.6"
+  resolved "https://registry.yarnpkg.com/@lumino/default-theme/-/default-theme-1.0.0-alpha.6.tgz#99abfd1710e103564192ae3cff6d676a7d280cee"
+  integrity sha512-PGuh8BzJ+DS4sKAY6b6EcgMUsduEALp2JuPJe7dFRgOxUk9y66hb84g42BapET+nqtnxaiWqrory3Ek+eU57+A==
+  dependencies:
+    "@lumino/dragdrop" "^2.0.0-alpha.6"
+    "@lumino/widgets" "^2.0.0-alpha.6"
+
 "@microsoft/api-extractor-model@7.25.2":
   version "7.25.2"
   resolved "https://registry.yarnpkg.com/@microsoft/api-extractor-model/-/api-extractor-model-7.25.2.tgz#a3e69e952122bbe3f0fc339a8ce0d9d20dd06406"
