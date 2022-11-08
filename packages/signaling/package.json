@@ -45,6 +45,7 @@
   },
   "dependencies": {
     "@lumino/algorithm": "^2.0.0-alpha.6",
+    "@lumino/coreutils": "^2.0.0-alpha.6",
     "@lumino/properties": "^2.0.0-alpha.6"
   },
   "devDependencies": {

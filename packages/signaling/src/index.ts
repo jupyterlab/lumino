@@ -8,6 +8,7 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 import { ArrayExt, find } from '@lumino/algorithm';
+import { PromiseDelegate } from '@lumino/coreutils';
 import { AttachedProperty } from '@lumino/properties';
 
 /**
@@ -157,11 +158,11 @@ export class Signal<T, U> implements ISignal<T, U> {
    * @param fn The callback during which the signal is blocked
    */
   block(fn: () => void): void {
-    this._blockedCount++;
+    this.blocked++;
     try {
       fn();
     } finally {
-      this._blockedCount--;
+      this.blocked--;
     }
   }
 
@@ -204,12 +205,15 @@ export class Signal<T, U> implements ISignal<T, U> {
    * Exceptions thrown by connected slots will be caught and logged.
    */
   emit(args: U): void {
-    if (!this._blockedCount) {
+    if (!this.blocked) {
       Private.emit(this, args);
     }
   }
 
-  private _blockedCount = 0;
+  /**
+   * If `blocked` is not `0`, the signal will not emit.
+   */
+  protected blocked = 0;
 }
 
 /**
@@ -336,6 +340,52 @@ export namespace Signal {
     Private.exceptionHandler = handler;
     return old;
   }
+}
+
+/**
+ * A stream with the characteristics of a signal and an async iterator.
+ */
+  export class Stream<T, U>
+    extends Signal<T, U>
+    implements AsyncIterableIterator<U>
+{
+  /**
+   * Return an async iterator that yields every emission.
+   */
+  async *[Symbol.asyncIterator](): AsyncIterableIterator<U> {
+    while (this.pending) {
+      yield this.pending.promise;
+    }
+  }
+
+  /**
+   * Emit the signal, invoke the connected slots, and yield the emission.
+   *
+   * @param args - The args to pass to the connected slots.
+   */
+  emit(args: U): void {
+    if (this.blocked) {
+      return;
+    }
+    const { pending } = this;
+    super.emit(args);
+    this.pending = new PromiseDelegate();
+    pending.resolve(args);
+  }
+
+  /**
+   * Await the next value of the stream.
+   *
+   * @returns the next async iterator value in the stream.
+   */
+  async next(): Promise<IteratorResult<U>> {
+    return { value: await this.pending.promise };
+  }
+
+  /**
+   * A promise that resolves the currently pending iteration.
+   */
+  protected pending = new PromiseDelegate<U>();
 }
 
 /**
