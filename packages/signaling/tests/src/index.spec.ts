@@ -9,14 +9,14 @@
 |----------------------------------------------------------------------------*/
 import { expect } from 'chai';
 
-import { Signal } from '@lumino/signaling';
+import { Signal, Stream } from '@lumino/signaling';
 
 class TestObject {
   readonly one = new Signal<this, void>(this);
 
   readonly two = new Signal<this, number>(this);
 
-  readonly three = new Signal<this, string[]>(this);
+  readonly three = new Stream<this, string[]>(this);
 }
 
 class ExtendedObject extends TestObject {
@@ -579,6 +579,38 @@ describe('@lumino/signaling', () => {
         expect(called).to.equal(false);
         obj.one.emit(undefined);
         expect(called).to.equal(true);
+      });
+    });
+  });
+
+  describe('Stream', () => {
+    describe('#[Symbol.asyncIterator]()', () => {
+      it('should yield emissions and respected blocking', async () => {
+        const stream = new Stream<unknown, string>({});
+        const expected = 'async';
+        let emitted = '';
+        setTimeout(() => stream.block(() => stream.emit('BLOCKED EMISSION 1')));
+        expected.split('').forEach(x => setTimeout(() => stream.emit(x)));
+        setTimeout(() => stream.block(() => stream.emit('BLOCKED EMISSION 2')));
+        for await (const letter of stream) {
+          emitted = emitted.concat(letter)
+          if (emitted === expected) break;
+        }
+      });
+    });
+
+    describe('#next()', () => {
+      it('should resolve an iterator result and respect blocking', async () => {
+        const stream = new Stream<unknown, string>({});
+        const expected = 'next';
+        let emitted = '';
+        setTimeout(() => stream.block(() => stream.emit('BLOCKED EMISSION 1')));
+        expected.split('').forEach(x => setTimeout(() => stream.emit(x)));
+        setTimeout(() => stream.block(() => stream.emit('BLOCKED EMISSION 2')));
+        for (let it = await stream.next(); !it.done; it = await stream.next()) {
+          emitted = emitted.concat(it.value);
+          if (emitted === expected) break;
+        }
       });
     });
   });
