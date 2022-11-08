@@ -4,6 +4,8 @@
 
 ```ts
 
+import { PromiseDelegate } from '@lumino/coreutils';
+
 // @public
 export interface ISignal<T, U> {
     block(fn: () => void): void;
@@ -15,6 +17,7 @@ export interface ISignal<T, U> {
 export class Signal<T, U> implements ISignal<T, U> {
     constructor(sender: T);
     block(fn: () => void): void;
+    protected blocked: number;
     connect(slot: Slot<T, U>, thisArg?: unknown): boolean;
     disconnect(slot: Slot<T, U>, thisArg?: unknown): boolean;
     emit(args: U): void;
@@ -36,6 +39,14 @@ export namespace Signal {
 
 // @public
 export type Slot<T, U> = (sender: T, args: U) => void;
+
+// @public
+export class Stream<T, U> extends Signal<T, U> implements AsyncIterableIterator<U> {
+    [Symbol.asyncIterator](): AsyncIterableIterator<U>;
+    emit(args: U): void;
+    next(): Promise<IteratorResult<U>>;
+    protected pending: PromiseDelegate<U>;
+}
 
 // (No @packageDocumentation comment for this package)
 
