@@ -14,6 +14,10 @@ export interface ISignal<T, U> {
 }
 
 // @public
+export interface IStream<T, U> extends ISignal<T, U>, AsyncIterableIterator<U> {
+}
+
+// @public
 export class Signal<T, U> implements ISignal<T, U> {
     constructor(sender: T);
     block(fn: () => void): void;
@@ -41,7 +45,7 @@ export namespace Signal {
 export type Slot<T, U> = (sender: T, args: U) => void;
 
 // @public
-export class Stream<T, U> extends Signal<T, U> implements AsyncIterableIterator<U> {
+export class Stream<T, U> extends Signal<T, U> implements IStream<T, U> {
     [Symbol.asyncIterator](): AsyncIterableIterator<U>;
     emit(args: U): void;
     next(): Promise<IteratorResult<U>>;

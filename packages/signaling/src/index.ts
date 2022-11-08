@@ -86,6 +86,13 @@ export interface ISignal<T, U> {
 }
 
 /**
+ * An object that is both a signal and an async iterable iterator.
+ */
+export interface IStream<T, U>
+  extends ISignal<T, U>,
+    AsyncIterableIterator<U> {}
+
+/**
  * A concrete implementation of `ISignal`.
  *
  * #### Example
@@ -345,10 +352,7 @@ export namespace Signal {
 /**
  * A stream with the characteristics of a signal and an async iterator.
  */
-export class Stream<T, U>
-  extends Signal<T, U>
-  implements AsyncIterableIterator<U>
-{
+export class Stream<T, U> extends Signal<T, U> implements IStream<T, U> {
   /**
    * Return an async iterator that yields every emission.
    */
