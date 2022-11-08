@@ -106,6 +106,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+      - name: Bump artificially the top version
+        shell: python
+        run: |
+          import json
+          from datetime import datetime
+
+          with open("package.json") as f:
+            data = json.load(f)
+
+          data["version"] = datetime.now().strftime("%Y.%m.%d")
+          data["jupyter-releaser"]["options"]["version-cmd"] = "npm run update:versions -- --yes"
+
+          with open("package.json", "w") as f:
+            data = json.dump(f)
+
+
       - name: Check Release
         uses: jupyter-server/jupyter_releaser/.github/actions/check-release@v2
         with:
