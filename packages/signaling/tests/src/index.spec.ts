@@ -593,7 +593,7 @@ describe('@lumino/signaling', () => {
         expected.split('').forEach(x => setTimeout(() => stream.emit(x)));
         setTimeout(() => stream.block(() => stream.emit('BLOCKED EMISSION 2')));
         for await (const letter of stream) {
-          emitted = emitted.concat(letter)
+          emitted = emitted.concat(letter);
           if (emitted === expected) break;
         }
       });

@@ -345,9 +345,9 @@ export namespace Signal {
 /**
  * A stream with the characteristics of a signal and an async iterator.
  */
-  export class Stream<T, U>
-    extends Signal<T, U>
-    implements AsyncIterableIterator<U>
+export class Stream<T, U>
+  extends Signal<T, U>
+  implements AsyncIterableIterator<U>
 {
   /**
    * Return an async iterator that yields every emission.
