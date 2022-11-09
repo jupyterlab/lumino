@@ -638,13 +638,13 @@ describe('@lumino/signaling', () => {
         input.split('').forEach(x => wait.then(() => stream.emit(x)));
         wait.then(() => stream.block(() => stream.emit('BLOCKED EMISSION 2')));
         wait.then(() => stream.stop());
+
         let it = stream[Symbol.asyncIterator]();
-        // eslint-disable-next-line no-constant-condition
-        while (true) {
-          const emission = await it.next();
-          emitted = emitted.concat(emission.value || '');
-          if (emission.done) break;
+        let emission: IteratorResult<string, any>;
+        while (!(emission = await it.next()).done) {
+          emitted = emitted.concat(emission.value);
         }
+
         expect(emitted).to.equal(expected);
       });
     });
@@ -699,13 +699,13 @@ describe('@lumino/signaling', () => {
         });
         input.split('').forEach(x => wait.then(() => stream.emit(x)));
         wait.then(() => stream.stop());
+
         let it = stream[Symbol.asyncIterator]();
-        // eslint-disable-next-line no-constant-condition
-        while (true) {
-          const emission = await it.next();
-          emitted = emitted.concat(emission.value || '');
-          if (emission.done) break;
+        let emission: IteratorResult<string, any>;
+        while (!(emission = await it.next()).done) {
+          emitted = emitted.concat(emission.value);
         }
+
         expect(emitted).to.equal(expected);
       });
     });
