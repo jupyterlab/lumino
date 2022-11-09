@@ -615,6 +615,32 @@ describe('@lumino/signaling', () => {
           if (emitted === expected) break;
         }
       });
+      it('should return an async iterator', async () => {
+        const stream = new Stream<unknown, string>({});
+        const input = 'iterator';
+        const expected = 'iAHEMterator';
+        let emitted = '';
+        let once = true;
+        stream.connect((_, emitted) => {
+          if (once) {
+            once = false;
+            stream.emit('A');
+            stream.emit('H');
+            stream.emit('E');
+            stream.emit('M');
+          }
+        });
+        setTimeout(() => stream.block(() => stream.emit('BLOCKED EMISSION 1')));
+        input.split('').forEach(x => setTimeout(() => stream.emit(x)));
+        setTimeout(() => stream.block(() => stream.emit('BLOCKED EMISSION 2')));
+        let it = stream[Symbol.asyncIterator]();
+        // eslint-disable-next-line no-constant-condition
+        while (true) {
+          const emission = await it.next();
+          emitted = emitted.concat(emission.value);
+          if (emitted === expected) break;
+        }
+      });
     });
   });
 });
