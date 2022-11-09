@@ -51,6 +51,7 @@ export class Stream<T, U> extends Signal<T, U> implements IStream<T, U> {
     emit(args: U): void;
     // Warning: (ae-forgotten-export) The symbol "Private" needs to be exported by the entry point index.d.ts
     protected pending: Private.Pending<U>;
+    stop(): void;
 }
 
 // (No @packageDocumentation comment for this package)

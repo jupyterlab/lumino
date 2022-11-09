@@ -357,9 +357,13 @@ export class Stream<T, U> extends Signal<T, U> implements IStream<T, U> {
   async *[Symbol.asyncIterator](): AsyncIterableIterator<U> {
     let pending = this.pending;
     while (true) {
-      const resolved = await pending.promise;
-      pending = resolved.next;
-      yield resolved.args;
+      try {
+        const { args, next } = await pending.promise;
+        pending = next;
+        yield args;
+      } catch (_) {
+        return; // Any promise rejection stops the iterator.
+      }
     }
   }
 
@@ -375,6 +379,13 @@ export class Stream<T, U> extends Signal<T, U> implements IStream<T, U> {
       pending.resolve({ args, next: this.pending });
       super.emit(args);
     }
+  }
+
+  /**
+   * Stop the stream's async iteration.
+   */
+  stop(): void {
+    this.pending.reject('stop');
   }
 
   /**

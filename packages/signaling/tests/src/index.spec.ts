@@ -589,9 +589,10 @@ describe('@lumino/signaling', () => {
         const stream = new Stream<unknown, string>({});
         const input = 'async';
         const expected = 'aINTERRUPTEDsync';
+        const wait = Promise.resolve();
         let emitted = '';
         let once = true;
-        stream.connect((_, emitted) => {
+        stream.connect(() => {
           if (once) {
             once = false;
             stream.emit('I');
@@ -607,21 +608,24 @@ describe('@lumino/signaling', () => {
             stream.emit('D');
           }
         });
-        setTimeout(() => stream.block(() => stream.emit('BLOCKED EMISSION 1')));
-        input.split('').forEach(x => setTimeout(() => stream.emit(x)));
-        setTimeout(() => stream.block(() => stream.emit('BLOCKED EMISSION 2')));
+        wait.then(() => stream.block(() => stream.emit('BLOCKED EMISSION 1')));
+        input.split('').forEach(x => wait.then(() => stream.emit(x)));
+        wait.then(() => stream.block(() => stream.emit('BLOCKED EMISSION 2')));
+        wait.then(() => stream.stop());
         for await (const letter of stream) {
           emitted = emitted.concat(letter);
-          if (emitted === expected) break;
         }
+        expect(emitted).to.equal(expected);
       });
+
       it('should return an async iterator', async () => {
         const stream = new Stream<unknown, string>({});
         const input = 'iterator';
         const expected = 'iAHEMterator';
+        const wait = Promise.resolve();
         let emitted = '';
         let once = true;
-        stream.connect((_, emitted) => {
+        stream.connect(() => {
           if (once) {
             once = false;
             stream.emit('A');
@@ -630,16 +634,79 @@ describe('@lumino/signaling', () => {
             stream.emit('M');
           }
         });
-        setTimeout(() => stream.block(() => stream.emit('BLOCKED EMISSION 1')));
-        input.split('').forEach(x => setTimeout(() => stream.emit(x)));
-        setTimeout(() => stream.block(() => stream.emit('BLOCKED EMISSION 2')));
+        wait.then(() => stream.block(() => stream.emit('BLOCKED EMISSION 1')));
+        input.split('').forEach(x => wait.then(() => stream.emit(x)));
+        wait.then(() => stream.block(() => stream.emit('BLOCKED EMISSION 2')));
+        wait.then(() => stream.stop());
         let it = stream[Symbol.asyncIterator]();
         // eslint-disable-next-line no-constant-condition
         while (true) {
           const emission = await it.next();
-          emitted = emitted.concat(emission.value);
-          if (emitted === expected) break;
+          emitted = emitted.concat(emission.value || '');
+          if (emission.done) break;
         }
+        expect(emitted).to.equal(expected);
+      });
+    });
+
+    describe('#stop()', () => {
+      it('should stop emissions in the async interable', async () => {
+        const stream = new Stream<unknown, string>({});
+        const input = 'continuing';
+        const expected = 'cINTERRUPTEDontinuing';
+        const wait = Promise.resolve();
+        let emitted = '';
+        let once = true;
+        stream.connect(() => {
+          if (once) {
+            once = false;
+            stream.emit('I');
+            stream.emit('N');
+            stream.emit('T');
+            stream.emit('E');
+            stream.emit('R');
+            stream.emit('R');
+            stream.emit('U');
+            stream.emit('P');
+            stream.emit('T');
+            stream.emit('E');
+            stream.emit('D');
+          }
+        });
+        input.split('').forEach(x => wait.then(() => stream.emit(x)));
+        wait.then(() => stream.stop());
+        for await (const letter of stream) {
+          emitted = emitted.concat(letter);
+        }
+        expect(emitted).to.equal(expected);
+      });
+
+      it('should resolve to `done` in an async iterator', async () => {
+        const stream = new Stream<unknown, string>({});
+        const input = 'stopiterator';
+        const expected = 'sAHEMtopiterator';
+        const wait = Promise.resolve();
+        let emitted = '';
+        let once = true;
+        stream.connect(() => {
+          if (once) {
+            once = false;
+            stream.emit('A');
+            stream.emit('H');
+            stream.emit('E');
+            stream.emit('M');
+          }
+        });
+        input.split('').forEach(x => wait.then(() => stream.emit(x)));
+        wait.then(() => stream.stop());
+        let it = stream[Symbol.asyncIterator]();
+        // eslint-disable-next-line no-constant-condition
+        while (true) {
+          const emission = await it.next();
+          emitted = emitted.concat(emission.value || '');
+          if (emission.done) break;
+        }
+        expect(emitted).to.equal(expected);
       });
     });
   });
