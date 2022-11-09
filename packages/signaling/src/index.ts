@@ -86,11 +86,9 @@ export interface ISignal<T, U> {
 }
 
 /**
- * An object that is both a signal and an async iterable iterator.
+ * An object that is both a signal and an async iterable.
  */
-export interface IStream<T, U>
-  extends ISignal<T, U>,
-    AsyncIterableIterator<U> {}
+export interface IStream<T, U> extends ISignal<T, U>, AsyncIterable<U> {}
 
 /**
  * A concrete implementation of `ISignal`.
@@ -350,15 +348,18 @@ export namespace Signal {
 }
 
 /**
- * A stream with the characteristics of a signal and an async iterator.
+ * A stream with the characteristics of a signal and an async iterable.
  */
 export class Stream<T, U> extends Signal<T, U> implements IStream<T, U> {
   /**
    * Return an async iterator that yields every emission.
    */
   async *[Symbol.asyncIterator](): AsyncIterableIterator<U> {
-    while (this.pending) {
-      yield this.pending.promise;
+    let pending = this.pending;
+    while (true) {
+      const resolved = await pending.promise;
+      pending = resolved.next;
+      yield resolved.args;
     }
   }
 
@@ -368,34 +369,29 @@ export class Stream<T, U> extends Signal<T, U> implements IStream<T, U> {
    * @param args - The args to pass to the connected slots.
    */
   emit(args: U): void {
-    if (this.blocked) {
-      return;
+    if (!this.blocked) {
+      const { pending } = this;
+      this.pending = new PromiseDelegate();
+      pending.resolve({ args, next: this.pending });
+      super.emit(args);
     }
-    const { pending } = this;
-    super.emit(args);
-    this.pending = new PromiseDelegate();
-    pending.resolve(args);
-  }
-
-  /**
-   * Await the next value of the stream.
-   *
-   * @returns the next async iterator value in the stream.
-   */
-  async next(): Promise<IteratorResult<U>> {
-    return { value: await this.pending.promise };
   }
 
   /**
    * A promise that resolves the currently pending iteration.
    */
-  protected pending = new PromiseDelegate<U>();
+  protected pending: Private.Pending<U> = new PromiseDelegate();
 }
 
 /**
  * The namespace for the module implementation details.
  */
 namespace Private {
+  /**
+   * A pending promise in a promise chain underlying a stream.
+   */
+  export type Pending<U> = PromiseDelegate<{ args: U; next: Pending<U> }>;
+
   /**
    * The signal exception handler function.
    */

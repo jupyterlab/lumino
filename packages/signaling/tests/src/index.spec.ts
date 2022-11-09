@@ -585,30 +585,33 @@ describe('@lumino/signaling', () => {
 
   describe('Stream', () => {
     describe('#[Symbol.asyncIterator]()', () => {
-      it('should yield emissions and respected blocking', async () => {
+      it('should yield emissions and respect blocking', async () => {
         const stream = new Stream<unknown, string>({});
-        const expected = 'async';
+        const input = 'async';
+        const expected = 'aINTERRUPTEDsync';
         let emitted = '';
+        let once = true;
+        stream.connect((_, emitted) => {
+          if (once) {
+            once = false;
+            stream.emit('I');
+            stream.emit('N');
+            stream.emit('T');
+            stream.emit('E');
+            stream.emit('R');
+            stream.emit('R');
+            stream.emit('U');
+            stream.emit('P');
+            stream.emit('T');
+            stream.emit('E');
+            stream.emit('D');
+          }
+        });
         setTimeout(() => stream.block(() => stream.emit('BLOCKED EMISSION 1')));
-        expected.split('').forEach(x => setTimeout(() => stream.emit(x)));
+        input.split('').forEach(x => setTimeout(() => stream.emit(x)));
         setTimeout(() => stream.block(() => stream.emit('BLOCKED EMISSION 2')));
         for await (const letter of stream) {
           emitted = emitted.concat(letter);
-          if (emitted === expected) break;
-        }
-      });
-    });
-
-    describe('#next()', () => {
-      it('should resolve an iterator result and respect blocking', async () => {
-        const stream = new Stream<unknown, string>({});
-        const expected = 'next';
-        let emitted = '';
-        setTimeout(() => stream.block(() => stream.emit('BLOCKED EMISSION 1')));
-        expected.split('').forEach(x => setTimeout(() => stream.emit(x)));
-        setTimeout(() => stream.block(() => stream.emit('BLOCKED EMISSION 2')));
-        for (let it = await stream.next(); !it.done; it = await stream.next()) {
-          emitted = emitted.concat(it.value);
           if (emitted === expected) break;
         }
       });

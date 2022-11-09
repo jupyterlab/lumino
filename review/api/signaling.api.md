@@ -4,6 +4,7 @@
 
 ```ts
 
+import { AttachedProperty } from '@lumino/properties';
 import { PromiseDelegate } from '@lumino/coreutils';
 
 // @public
@@ -14,7 +15,7 @@ export interface ISignal<T, U> {
 }
 
 // @public
-export interface IStream<T, U> extends ISignal<T, U>, AsyncIterableIterator<U> {
+export interface IStream<T, U> extends ISignal<T, U>, AsyncIterable<U> {
 }
 
 // @public
@@ -48,8 +49,8 @@ export type Slot<T, U> = (sender: T, args: U) => void;
 export class Stream<T, U> extends Signal<T, U> implements IStream<T, U> {
     [Symbol.asyncIterator](): AsyncIterableIterator<U>;
     emit(args: U): void;
-    next(): Promise<IteratorResult<U>>;
-    protected pending: PromiseDelegate<U>;
+    // Warning: (ae-forgotten-export) The symbol "Private" needs to be exported by the entry point index.d.ts
+    protected pending: Private.Pending<U>;
 }
 
 // (No @packageDocumentation comment for this package)
