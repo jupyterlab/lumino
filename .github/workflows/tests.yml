@@ -120,7 +120,7 @@ jobs:
           data["jupyter-releaser"]["options"]["version-cmd"] = "npm run update:versions -- --yes"
 
           with open("package.json", "w") as f:
-            data = json.dump(f)
+            data = json.dump(data, f)
 
       - name: Check Release
         uses: jupyter-server/jupyter_releaser/.github/actions/check-release@v2
