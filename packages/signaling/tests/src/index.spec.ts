@@ -639,7 +639,7 @@ describe('@lumino/signaling', () => {
         wait.then(() => stream.block(() => stream.emit('BLOCKED EMISSION 2')));
         wait.then(() => stream.stop());
 
-        let it = stream[Symbol.asyncIterator]();
+        const it = stream[Symbol.asyncIterator]();
         let emission: IteratorResult<string, any>;
         while (!(emission = await it.next()).done) {
           emitted = emitted.concat(emission.value);
@@ -700,7 +700,7 @@ describe('@lumino/signaling', () => {
         input.split('').forEach(x => wait.then(() => stream.emit(x)));
         wait.then(() => stream.stop());
 
-        let it = stream[Symbol.asyncIterator]();
+        const it = stream[Symbol.asyncIterator]();
         let emission: IteratorResult<string, any>;
         while (!(emission = await it.next()).done) {
           emitted = emitted.concat(emission.value);
