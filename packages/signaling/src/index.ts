@@ -8,6 +8,7 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 import { ArrayExt, find } from '@lumino/algorithm';
+import { PromiseDelegate } from '@lumino/coreutils';
 import { AttachedProperty } from '@lumino/properties';
 
 /**
@@ -85,6 +86,11 @@ export interface ISignal<T, U> {
 }
 
 /**
+ * An object that is both a signal and an async iterable.
+ */
+export interface IStream<T, U> extends ISignal<T, U>, AsyncIterable<U> {}
+
+/**
  * A concrete implementation of `ISignal`.
  *
  * #### Example
@@ -157,11 +163,11 @@ export class Signal<T, U> implements ISignal<T, U> {
    * @param fn The callback during which the signal is blocked
    */
   block(fn: () => void): void {
-    this._blockedCount++;
+    this.blocked++;
     try {
       fn();
     } finally {
-      this._blockedCount--;
+      this.blocked--;
     }
   }
 
@@ -204,12 +210,15 @@ export class Signal<T, U> implements ISignal<T, U> {
    * Exceptions thrown by connected slots will be caught and logged.
    */
   emit(args: U): void {
-    if (!this._blockedCount) {
+    if (!this.blocked) {
       Private.emit(this, args);
     }
   }
 
-  private _blockedCount = 0;
+  /**
+   * If `blocked` is not `0`, the signal will not emit.
+   */
+  protected blocked = 0;
 }
 
 /**
@@ -339,9 +348,58 @@ export namespace Signal {
 }
 
 /**
+ * A stream with the characteristics of a signal and an async iterable.
+ */
+export class Stream<T, U> extends Signal<T, U> implements IStream<T, U> {
+  /**
+   * Return an async iterator that yields every emission.
+   */
+  async *[Symbol.asyncIterator](): AsyncIterableIterator<U> {
+    let pending = this._pending;
+    while (true) {
+      try {
+        const { args, next } = await pending.promise;
+        pending = next;
+        yield args;
+      } catch (_) {
+        return; // Any promise rejection stops the iterator.
+      }
+    }
+  }
+
+  /**
+   * Emit the signal, invoke the connected slots, and yield the emission.
+   *
+   * @param args - The args to pass to the connected slots.
+   */
+  emit(args: U): void {
+    if (!this.blocked) {
+      const pending = this._pending;
+      this._pending = new PromiseDelegate();
+      pending.resolve({ args, next: this._pending });
+      super.emit(args);
+    }
+  }
+
+  /**
+   * Stop the stream's async iteration.
+   */
+  stop(): void {
+    this._pending.reject('stop');
+  }
+
+  private _pending: Private.Pending<U> = new PromiseDelegate();
+}
+
+/**
  * The namespace for the module implementation details.
  */
 namespace Private {
+  /**
+   * A pending promise in a promise chain underlying a stream.
+   */
+  export type Pending<U> = PromiseDelegate<{ args: U; next: Pending<U> }>;
+
   /**
    * The signal exception handler function.
    */
