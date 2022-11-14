@@ -385,6 +385,7 @@ export class Stream<T, U> extends Signal<T, U> implements IStream<T, U> {
    * Stop the stream's async iteration.
    */
   stop(): void {
+    this._pending.promise.catch(() => undefined);
     this._pending.reject('stop');
   }
 
