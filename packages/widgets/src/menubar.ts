@@ -971,7 +971,6 @@ namespace Private {
     content.className = 'lm-MenuBar-content';
     node.appendChild(content);
     content.setAttribute('role', 'menubar');
-    //node.tabIndex = 0;
     content.tabIndex = 0;
     return node;
   }
