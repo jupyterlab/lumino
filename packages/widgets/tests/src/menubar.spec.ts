@@ -74,6 +74,15 @@ describe('@lumino/widgets', () => {
     return bar;
   }
 
+  /**
+   * Create a MenuBar that has no active menu item.
+   */
+  function createUnfocusedMenuBar(): MenuBar {
+    const bar = createMenuBar();
+    bar.activeIndex = -1;
+    return bar;
+  }
+
   before(() => {
     commands = new CommandRegistry();
     const iconRenderer = {
@@ -763,9 +772,8 @@ describe('@lumino/widgets', () => {
 
       context('focus', () => {
         it('should focus the first menu item on keyboard focus', () => {
-          let bar = createMenuBar();
+          let bar = createUnfocusedMenuBar();
           bar.contentNode.focus();
-          console.log(document.activeElement);
           expect(
             bar.contentNode.contains(document.activeElement) &&
               bar.contentNode !== document.activeElement
@@ -773,19 +781,49 @@ describe('@lumino/widgets', () => {
           bar.dispose();
         });
 
-        it('should loose focus on tab key', () => {
-          let bar = createMenuBar();
+        it('should loose focus on tab key', done => {
+          let bar = createUnfocusedMenuBar();
           bar.contentNode.focus();
           expect(
             bar.contentNode.contains(document.activeElement) &&
               bar.contentNode !== document.activeElement
           ).to.equal(true);
-          let event = new KeyboardEvent('keydown', { keyCode: 9 });
-          bar.node.dispatchEvent(event);
+          let event = new KeyboardEvent('keydown', {
+            keyCode: 9,
+            bubbles: true,
+            cancelable: true,
+            composed: true
+          });
+          console.log(bar.activeIndex);
+          bar.contentNode.dispatchEvent(event);
+          console.log(bar.activeIndex);
+          console.log(document.activeElement);
           expect(
             bar.contentNode.contains(document.activeElement) &&
               bar.contentNode !== document.activeElement
           ).to.equal(false);
+          bar.dispose();
+        });
+
+        it('should loose focus on shift-tab key', done => {
+          let bar = createUnfocusedMenuBar();
+          bar.contentNode.focus();
+          expect(
+            bar.contentNode.contains(document.activeElement) &&
+              bar.contentNode !== document.activeElement
+          ).to.equal(true);
+          let event = new KeyboardEvent('keydown', {
+            keyCode: 9,
+            shiftKey: true,
+            bubbles: true,
+            cancelable: true,
+            composed: true
+          });
+          console.log(bar.activeIndex);
+          bar.contentNode.dispatchEvent(event);
+          console.log(bar.activeIndex);
+          console.log(document.activeElement);
+          expect(bar.contentNode === document.activeElement).to.equal(true);
           bar.dispose();
         });
       });
@@ -844,7 +882,7 @@ describe('@lumino/widgets', () => {
       });
 
       it('should focus the node if attached', () => {
-        let bar = createMenuBar();
+        let bar = createUnfocusedMenuBar();
         MessageLoop.sendMessage(bar, Widget.Msg.ActivateRequest);
         expect(
           bar.contentNode.contains(document.activeElement) &&
