@@ -885,7 +885,8 @@ describe('@lumino/widgets', () => {
         widget.title.closable = true;
         data = {
           title: widget.title,
-          active: true
+          active: true,
+          index: 0
         };
       });
 
