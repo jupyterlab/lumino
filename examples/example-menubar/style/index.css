@@ -17,12 +17,3 @@ body {
   padding: 0;
   overflow: hidden;
 }
-
-#main {
-  flex: 1 1 auto;
-}
-
-#accordion {
-  flex: 1 1 auto;
-  padding: 4px;
-}

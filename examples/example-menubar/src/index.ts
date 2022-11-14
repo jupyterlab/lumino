@@ -6,13 +6,22 @@ import { Menu, MenuBar, PanelLayout, Widget } from '@lumino/widgets';
 
 import '../style/index.css';
 
+/**
+ * Wrapper widget containing the example application.
+ */
 class Application extends Widget {
   constructor() {
     super({ tag: 'main' });
   }
 }
 
+/**
+ * Skip link to jump to the main content.
+ */
 class SkipLink extends Widget {
+  /**
+   * Create a HTMLElement that statically links to "#content".
+   */
   static createNode(): HTMLElement {
     const node = document.createElement('a');
     node.setAttribute('href', '#content');
@@ -26,13 +35,19 @@ class SkipLink extends Widget {
   }
 }
 
+/**
+ * A Widget containing some content to provide context example.
+ */
 class Article extends Widget {
+  /**
+   * Create the content structure.
+   */
   static createNode(): HTMLElement {
     const node = document.createElement('div');
     node.setAttribute('id', 'content');
     node.setAttribute('tabindex', '-1');
     const h1 = document.createElement('h1');
-    h1.innerHTML = 'Menubar Example';
+    h1.innerHTML = 'MenuBar Example';
     node.appendChild(h1);
     const label = document.createElement('label');
     label.appendChild(
@@ -50,6 +65,9 @@ class Article extends Widget {
   }
 }
 
+/**
+ * Helper Function to add menu items.
+ */
 function addMenuItem(
   commands: CommandRegistry,
   menu: Menu,
@@ -69,6 +87,9 @@ function addMenuItem(
   });
 }
 
+/**
+ * Create the MenuBar example application.
+ */
 function main(): void {
   const app = new Application();
   const appLayout = new PanelLayout();

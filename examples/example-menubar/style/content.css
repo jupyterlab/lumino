@@ -24,3 +24,7 @@
 textarea {
   display: block;
 }
+
+#content {
+  padding: 0 1rem;
+}
