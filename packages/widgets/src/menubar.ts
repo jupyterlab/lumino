@@ -347,6 +347,9 @@ export class MenuBar extends Widget {
         event.preventDefault();
         event.stopPropagation();
         break;
+      case 'focus':
+        this._evtFocus(event as FocusEvent);
+        break;
     }
   }
 
@@ -359,6 +362,7 @@ export class MenuBar extends Widget {
     this.node.addEventListener('mousemove', this);
     this.node.addEventListener('mouseleave', this);
     this.node.addEventListener('contextmenu', this);
+    this.contentNode.addEventListener('focus', this);
   }
 
   /**
@@ -370,6 +374,7 @@ export class MenuBar extends Widget {
     this.node.removeEventListener('mousemove', this);
     this.node.removeEventListener('mouseleave', this);
     this.node.removeEventListener('contextmenu', this);
+    this.contentNode.removeEventListener('focus', this);
     this._closeChildMenu();
   }
 
@@ -399,6 +404,7 @@ export class MenuBar extends Widget {
       content[i] = renderer.renderItem({
         title,
         active,
+        index: i,
         onfocus: () => {
           this.activeIndex = i;
         }
@@ -417,8 +423,11 @@ export class MenuBar extends Widget {
     // Fetch the key code for the event.
     let kc = event.keyCode;
 
-    // Do not trap the tab key.
+    // Reset the active index on tab (but not reverse tab), but do not trap the tab key.
     if (kc === 9) {
+      if (!event.shiftKey) {
+        this.activeIndex = -1;
+      }
       return;
     }
 
@@ -426,8 +435,8 @@ export class MenuBar extends Widget {
     event.preventDefault();
     event.stopPropagation();
 
-    // Enter, Up Arrow, Down Arrow
-    if (kc === 13 || kc === 38 || kc === 40) {
+    // Enter, Space, Up Arrow, Down Arrow
+    if (kc === 13 || kc === 32 || kc === 38 || kc === 40) {
       this.openActiveMenu();
       return;
     }
@@ -592,6 +601,17 @@ export class MenuBar extends Widget {
   }
 
   /**
+   * Handle the `'focus'` event for the menu bar.
+   */
+  private _evtFocus(event: FocusEvent): void {
+    if (this.activeIndex === -1) {
+      this.activeIndex = 0;
+    } else {
+      this.activeIndex = -1;
+    }
+  }
+
+  /**
    * Open the child menu at the active index immediately.
    *
    * If a different child menu is already open, it will be closed,
@@ -652,7 +672,6 @@ export class MenuBar extends Widget {
     if (!this._childMenu) {
       return;
     }
-
     // Remove the active class from the menu bar.
     this.removeClass('lm-mod-active');
 
@@ -772,6 +791,11 @@ export namespace MenuBar {
      */
     readonly active: boolean;
 
+    /**
+     * The index of the item in the list of items.
+     */
+    readonly index: number;
+
     readonly onfocus?: (event: FocusEvent) => void;
   }
 
@@ -808,7 +832,13 @@ export namespace MenuBar {
       let dataset = this.createItemDataset(data);
       let aria = this.createItemARIA(data);
       return h.li(
-        { className, dataset, tabindex: '0', onfocus: data.onfocus, ...aria },
+        {
+          className,
+          dataset,
+          tabindex: data.index === 0 ? '0' : '-1',
+          onfocus: data.onfocus,
+          ...aria
+        },
         this.renderIcon(data),
         this.renderLabel(data)
       );
@@ -941,7 +971,7 @@ namespace Private {
     content.className = 'lm-MenuBar-content';
     node.appendChild(content);
     content.setAttribute('role', 'menubar');
-    node.tabIndex = 0;
+    //node.tabIndex = 0;
     content.tabIndex = 0;
     return node;
   }
