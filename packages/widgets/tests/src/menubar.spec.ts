@@ -760,6 +760,35 @@ describe('@lumino/widgets', () => {
           expect(cancelled).to.equal(true);
         });
       });
+
+      context('focus', () => {
+        it('should focus the first menu item on keyboard focus', () => {
+          let bar = createMenuBar();
+          bar.contentNode.focus();
+          console.log(document.activeElement);
+          expect(
+            bar.contentNode.contains(document.activeElement) &&
+              bar.contentNode !== document.activeElement
+          ).to.equal(true);
+          bar.dispose();
+        });
+
+        it('should loose focus on tab key', () => {
+          let bar = createMenuBar();
+          bar.contentNode.focus();
+          expect(
+            bar.contentNode.contains(document.activeElement) &&
+              bar.contentNode !== document.activeElement
+          ).to.equal(true);
+          let event = new KeyboardEvent('keydown', { keyCode: 9 });
+          bar.node.dispatchEvent(event);
+          expect(
+            bar.contentNode.contains(document.activeElement) &&
+              bar.contentNode !== document.activeElement
+          ).to.equal(false);
+          bar.dispose();
+        });
+      });
     });
 
     describe('#onBeforeAttach()', () => {
@@ -808,14 +837,19 @@ describe('@lumino/widgets', () => {
         let bar = createMenuBar();
         Widget.detach(bar);
         MessageLoop.sendMessage(bar, Widget.Msg.ActivateRequest);
-        expect(bar.node.contains(document.activeElement)).to.equal(false);
+        expect(bar.contentNode.contains(document.activeElement)).to.equal(
+          false
+        );
         bar.dispose();
       });
 
       it('should focus the node if attached', () => {
         let bar = createMenuBar();
         MessageLoop.sendMessage(bar, Widget.Msg.ActivateRequest);
-        expect(bar.node.contains(document.activeElement)).to.equal(true);
+        expect(
+          bar.contentNode.contains(document.activeElement) &&
+            bar.contentNode !== document.activeElement
+        ).to.equal(true);
         bar.dispose();
       });
     });
