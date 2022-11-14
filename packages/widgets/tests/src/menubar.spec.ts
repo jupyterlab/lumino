@@ -495,6 +495,17 @@ describe('@lumino/widgets', () => {
           expect(menu.isAttached).to.equal(true);
         });
 
+        it('should open the active menu on Space', () => {
+          let menu = bar.activeMenu!;
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 32
+            })
+          );
+          expect(menu.isAttached).to.equal(true);
+        });
+
         it('should open the active menu on Up Arrow', () => {
           let menu = bar.activeMenu!;
           bar.node.dispatchEvent(
