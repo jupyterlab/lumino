@@ -798,7 +798,6 @@ describe('@lumino/widgets', () => {
         it('should lose focus on shift-tab key', () => {
           let bar = createUnfocusedMenuBar();
           bar.activeIndex = 0;
-          console.log(document.activeElement);
           expect(
             bar.contentNode.contains(document.activeElement) &&
               bar.contentNode !== document.activeElement
