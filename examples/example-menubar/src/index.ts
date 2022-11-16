@@ -49,14 +49,9 @@ class Article extends Widget {
     const h1 = document.createElement('h1');
     h1.innerHTML = 'MenuBar Example';
     node.appendChild(h1);
-    const label = document.createElement('label');
-    label.appendChild(
-      document.createTextNode('A textarea to demonstrate the tab handling.')
-    );
-    const textarea = document.createElement('textarea');
-    textarea.setAttribute('autocomplete', 'off');
-    label.appendChild(textarea);
-    node.appendChild(label);
+    const button = document.createElement('button');
+    button.innerHTML = 'A button you can tab to out of the menubar';
+    node.appendChild(button);
     return node;
   }
 
@@ -96,7 +91,6 @@ function main(): void {
   app.layout = appLayout;
 
   const skipLink = new SkipLink();
-  appLayout.addWidget(skipLink);
 
   const menubar = new MenuBar();
   const commands = new CommandRegistry();
@@ -114,9 +108,11 @@ function main(): void {
   addMenuItem(commands, editMenu, 'copy', 'Copy', 'Edit > Copy');
   addMenuItem(commands, editMenu, 'paste', 'Paste', 'Edit > Paste');
   menubar.addMenu(editMenu);
-  appLayout.addWidget(menubar);
 
   const article = new Article();
+
+  appLayout.addWidget(skipLink);
+  appLayout.addWidget(menubar);
   appLayout.addWidget(article);
 
   Widget.attach(app, document.body);

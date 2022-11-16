@@ -347,9 +347,6 @@ export class MenuBar extends Widget {
         event.preventDefault();
         event.stopPropagation();
         break;
-      case 'focus':
-        this._evtFocus(event as FocusEvent);
-        break;
     }
   }
 
@@ -423,11 +420,9 @@ export class MenuBar extends Widget {
     // Fetch the key code for the event.
     let kc = event.keyCode;
 
-    // Reset the active index on tab (but not reverse tab), but do not trap the tab key.
+    // Reset the active index on tab, but do not trap the tab key.
     if (kc === 9) {
-      if (!event.shiftKey) {
-        this.activeIndex = -1;
-      }
+      this.activeIndex = -1;
       return;
     }
 
@@ -596,17 +591,6 @@ export class MenuBar extends Widget {
   private _evtMouseLeave(event: MouseEvent): void {
     // Reset the active index if there is no open menu.
     if (!this._childMenu) {
-      this.activeIndex = -1;
-    }
-  }
-
-  /**
-   * Handle the `'focus'` event for the menu bar.
-   */
-  private _evtFocus(event: FocusEvent): void {
-    if (this.activeIndex === -1) {
-      this.activeIndex = 0;
-    } else {
       this.activeIndex = -1;
     }
   }
@@ -971,7 +955,6 @@ namespace Private {
     content.className = 'lm-MenuBar-content';
     node.appendChild(content);
     content.setAttribute('role', 'menubar');
-    content.tabIndex = 0;
     return node;
   }
 
