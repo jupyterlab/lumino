@@ -785,10 +785,9 @@ describe('@lumino/widgets', () => {
         it('should lose focus on tab key', () => {
           let bar = createUnfocusedMenuBar();
           bar.activeIndex = 0;
-          expect(
-            bar.contentNode.contains(document.activeElement) &&
-              bar.contentNode !== document.activeElement
-          ).to.equal(true);
+          expect(bar.contentNode.contains(document.activeElement)).to.equal(
+            true
+          );
           let event = new KeyboardEvent('keydown', { keyCode: 9, bubbles });
           bar.contentNode.dispatchEvent(event);
           expect(bar.activeIndex).to.equal(-1);
@@ -798,10 +797,9 @@ describe('@lumino/widgets', () => {
         it('should lose focus on shift-tab key', () => {
           let bar = createUnfocusedMenuBar();
           bar.activeIndex = 0;
-          expect(
-            bar.contentNode.contains(document.activeElement) &&
-              bar.contentNode !== document.activeElement
-          ).to.equal(true);
+          expect(bar.contentNode.contains(document.activeElement)).to.equal(
+            true
+          );
           let event = new KeyboardEvent('keydown', {
             keyCode: 9,
             shiftKey: true,
