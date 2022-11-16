@@ -134,6 +134,11 @@ export class MenuBar extends Widget {
     // Update the active index.
     this._activeIndex = value;
 
+    // Update the focus index.
+    if (value !== -1) {
+      this._focusIndex = value;
+    }
+
     // Update focus to new active index
     if (
       this._activeIndex >= 0 &&
@@ -389,6 +394,10 @@ export class MenuBar extends Widget {
     let menus = this._menus;
     let renderer = this.renderer;
     let activeIndex = this._activeIndex;
+    let focusIndex =
+      this._focusIndex >= 0 && this._focusIndex < menus.length
+        ? this._focusIndex
+        : 0;
     let content = new Array<VirtualElement>(menus.length);
     for (let i = 0, n = menus.length; i < n; ++i) {
       let title = menus[i].title;
@@ -399,7 +408,7 @@ export class MenuBar extends Widget {
       content[i] = renderer.renderItem({
         title,
         active,
-        index: i,
+        focusable: i === focusIndex,
         onfocus: () => {
           this.activeIndex = i;
         }
@@ -728,6 +737,7 @@ export class MenuBar extends Widget {
   }
 
   private _activeIndex = -1;
+  private _focusIndex = 0;
   private _forceItemsPosition: Menu.IOpenOptions;
   private _menus: Menu[] = [];
   private _childMenu: Menu | null = null;
@@ -776,7 +786,7 @@ export namespace MenuBar {
     /**
      * The index of the item in the list of items.
      */
-    readonly index: number;
+    readonly focusable: boolean;
 
     readonly onfocus?: (event: FocusEvent) => void;
   }
@@ -817,7 +827,7 @@ export namespace MenuBar {
         {
           className,
           dataset,
-          tabindex: data.index === 0 ? '0' : '-1',
+          tabindex: data.focusable ? '0' : '-1',
           onfocus: data.onfocus,
           ...aria
         },
