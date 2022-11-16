@@ -359,7 +359,6 @@ export class MenuBar extends Widget {
     this.node.addEventListener('mousemove', this);
     this.node.addEventListener('mouseleave', this);
     this.node.addEventListener('contextmenu', this);
-    this.contentNode.addEventListener('focus', this);
   }
 
   /**
@@ -371,7 +370,6 @@ export class MenuBar extends Widget {
     this.node.removeEventListener('mousemove', this);
     this.node.removeEventListener('mouseleave', this);
     this.node.removeEventListener('contextmenu', this);
-    this.contentNode.removeEventListener('focus', this);
     this._closeChildMenu();
   }
 
