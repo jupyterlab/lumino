@@ -380,7 +380,7 @@ export class MenuBar extends Widget {
    */
   protected onActivateRequest(msg: Message): void {
     if (this.isAttached) {
-      this.contentNode.focus();
+      this.activeIndex = 0;
     }
   }
 
