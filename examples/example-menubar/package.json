@@ -1,6 +1,6 @@
 {
   "name": "@lumino/example-menubar",
-  "version": "0.9.0-alpha.6",
+  "version": "0.1.0-alpha.6",
   "private": true,
   "scripts": {
     "build": "tsc && rollup -c",
