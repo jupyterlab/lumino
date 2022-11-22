@@ -136,7 +136,7 @@ export class MenuBar extends Widget {
 
     // Update the focus index.
     if (value !== -1) {
-      this._focusIndex = value;
+      this._tabFocusIndex = value;
     }
 
     // Update focus to new active index
@@ -394,9 +394,9 @@ export class MenuBar extends Widget {
     let menus = this._menus;
     let renderer = this.renderer;
     let activeIndex = this._activeIndex;
-    let focusIndex =
-      this._focusIndex >= 0 && this._focusIndex < menus.length
-        ? this._focusIndex
+    let tabFocusIndex =
+      this._tabFocusIndex >= 0 && this._tabFocusIndex < menus.length
+        ? this._tabFocusIndex
         : 0;
     let content = new Array<VirtualElement>(menus.length);
     for (let i = 0, n = menus.length; i < n; ++i) {
@@ -408,7 +408,7 @@ export class MenuBar extends Widget {
       content[i] = renderer.renderItem({
         title,
         active,
-        focusable: i === focusIndex,
+        tabbable: i === tabFocusIndex,
         onfocus: () => {
           this.activeIndex = i;
         }
@@ -737,7 +737,8 @@ export class MenuBar extends Widget {
   }
 
   private _activeIndex = -1;
-  private _focusIndex = 0;
+  // Track which item can be focused using the TAB key
+  private _tabFocusIndex = 0;
   private _forceItemsPosition: Menu.IOpenOptions;
   private _menus: Menu[] = [];
   private _childMenu: Menu | null = null;
@@ -784,9 +785,9 @@ export namespace MenuBar {
     readonly active: boolean;
 
     /**
-     * The index of the item in the list of items.
+     * Whether the user can tab to the item.
      */
-    readonly focusable: boolean;
+    readonly tabbable: boolean;
 
     readonly onfocus?: (event: FocusEvent) => void;
   }
@@ -827,7 +828,7 @@ export namespace MenuBar {
         {
           className,
           dataset,
-          tabindex: data.focusable ? '0' : '-1',
+          tabindex: data.tabbable ? '0' : '-1',
           onfocus: data.onfocus,
           ...aria
         },

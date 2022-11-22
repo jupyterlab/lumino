@@ -941,7 +941,7 @@ describe('@lumino/widgets', () => {
         data = {
           title: widget.title,
           active: true,
-          focusable: true
+          tabbable: true
         };
       });
 
