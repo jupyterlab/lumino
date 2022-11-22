@@ -736,8 +736,9 @@ export class MenuBar extends Widget {
     this.update();
   }
 
+  // Track the index of the item that is currently focused. -1 means nothing focused.
   private _activeIndex = -1;
-  // Track which item can be focused using the TAB key
+  // Track which item can be focused using the TAB key. Unlike _activeIndex will always point to a menuitem.
   private _tabFocusIndex = 0;
   private _forceItemsPosition: Menu.IOpenOptions;
   private _menus: Menu[] = [];
