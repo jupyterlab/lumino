@@ -366,7 +366,7 @@ export class VirtualElement {
     readonly children: ReadonlyArray<VirtualNode>;
     readonly renderer: VirtualElement.IRenderer | undefined;
     readonly tag: string;
-    readonly type: 'element';
+    readonly type: "element";
 }
 
 // @public (undocumented)
@@ -400,7 +400,7 @@ export type VirtualNode = VirtualElement | VirtualText;
 export class VirtualText {
     constructor(content: string);
     readonly content: string;
-    readonly type: 'text';
+    readonly type: "text";
 }
 
 // (No @packageDocumentation comment for this package)
