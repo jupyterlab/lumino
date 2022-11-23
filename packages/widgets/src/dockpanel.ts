@@ -534,6 +534,10 @@ export class DockPanel extends Widget {
   private _evtDragLeave(event: Drag.Event): void {
     // Mark the event as handled.
     event.preventDefault();
+
+    if (this._tabsConstrained && event.source !== this)
+      return;
+
     event.stopPropagation();
 
     // The new target might be a descendant, so we might still handle the drop.
@@ -548,7 +552,6 @@ export class DockPanel extends Widget {
   private _evtDragOver(event: Drag.Event): void {
     // Mark the event as handled.
     event.preventDefault();
-    event.stopPropagation();
 
     // Show the drop indicator overlay and update the drop
     // action based on the drop target zone under the mouse.
@@ -558,6 +561,7 @@ export class DockPanel extends Widget {
     ) {
       event.dropAction = 'none';
     } else {
+      event.stopPropagation();
       event.dropAction = event.proposedAction;
     }
   }
@@ -568,7 +572,6 @@ export class DockPanel extends Widget {
   private _evtDrop(event: Drag.Event): void {
     // Mark the event as handled.
     event.preventDefault();
-    event.stopPropagation();
 
     // Hide the drop indicator overlay.
     this.overlay.hide(0);
@@ -589,7 +592,7 @@ export class DockPanel extends Widget {
     );
 
     // Bail if the drop zone is invalid.
-    if (zone === 'invalid') {
+    if ((this._tabsConstrained && event.source !== this) || zone === 'invalid') {
       event.dropAction = 'none';
       return;
     }
@@ -659,6 +662,9 @@ export class DockPanel extends Widget {
 
     // Accept the proposed drop action.
     event.dropAction = event.proposedAction;
+
+    // Stop propagation if we have not bailed so far.
+    event.stopPropagation();
 
     // Activate the dropped widget.
     this.activateWidget(widget);
