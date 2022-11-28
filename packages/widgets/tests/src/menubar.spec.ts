@@ -478,9 +478,8 @@ describe('@lumino/widgets', () => {
           let menu = bar.activeMenu!;
           bar.node.dispatchEvent(
             new KeyboardEvent('keydown', {
-              bubbles,
               keyCode: 32
-            })
+            } as any)
           );
           expect(menu.isAttached).to.equal(true);
         });
@@ -692,7 +691,7 @@ describe('@lumino/widgets', () => {
           expect(bar.contentNode.contains(document.activeElement)).to.equal(
             true
           );
-          let event = new KeyboardEvent('keydown', { keyCode: 9, bubbles });
+          let event = new KeyboardEvent('keydown', { keyCode: 9 } as any);
           bar.contentNode.dispatchEvent(event);
           expect(bar.activeIndex).to.equal(-1);
           bar.dispose();
@@ -706,9 +705,8 @@ describe('@lumino/widgets', () => {
           );
           let event = new KeyboardEvent('keydown', {
             keyCode: 9,
-            shiftKey: true,
-            bubbles
-          });
+            shiftKey: true
+          } as any);
           bar.contentNode.dispatchEvent(event);
           expect(bar.activeIndex).to.equal(-1);
           bar.dispose();

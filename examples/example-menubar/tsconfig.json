@@ -6,11 +6,11 @@
     "noUnusedLocals": true,
     "strictNullChecks": true,
     "sourceMap": true,
-    "module": "ES6",
+    "module": "commonjs",
     "moduleResolution": "node",
-    "target": "ES2018",
+    "target": "ES5",
     "outDir": "./build",
-    "lib": ["DOM", "ES2018"],
+    "lib": ["ES5", "ES2015.Promise", "ES2015.Iterable", "DOM"],
     "types": []
   },
   "include": ["src/*"]
