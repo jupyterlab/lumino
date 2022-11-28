@@ -1,0 +1,25 @@
+{
+  "name": "@lumino/example-menubar",
+  "version": "0.1.0-alpha.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc && webpack",
+    "clean": "rimraf build"
+  },
+  "dependencies": {
+    "@lumino/default-theme": "^0.22.5",
+    "@lumino/messaging": "^1.10.3",
+    "@lumino/widgets": "^1.35.0",
+    "es6-promise": "^4.0.5"
+  },
+  "devDependencies": {
+    "css-loader": "^3.4.0",
+    "file-loader": "^5.0.2",
+    "rimraf": "^3.0.2",
+    "source-map-loader": "0.2.4",
+    "style-loader": "^1.0.2",
+    "typescript": "~3.6.0",
+    "webpack": "^4.41.3",
+    "webpack-cli": "^3.3.10"
+  }
+}

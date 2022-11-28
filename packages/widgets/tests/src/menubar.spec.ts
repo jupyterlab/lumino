@@ -49,6 +49,8 @@ class LogMenuBar extends MenuBar {
   }
 }
 
+const bubbles = true;
+
 describe('@lumino/widgets', () => {
   const DEFAULT_CMD = 'menubar.spec.ts:defaultCmd';
 
@@ -70,6 +72,15 @@ describe('@lumino/widgets', () => {
     Widget.attach(bar, document.body);
     // Force an update.
     MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+    return bar;
+  }
+
+  /**
+   * Create a MenuBar that has no active menu item.
+   */
+  function createUnfocusedMenuBar(): MenuBar {
+    const bar = createMenuBar();
+    bar.activeIndex = -1;
     return bar;
   }
 
@@ -465,6 +476,17 @@ describe('@lumino/widgets', () => {
           expect(menu.isAttached).to.equal(true);
         });
 
+        it('should open the active menu on Space', () => {
+          let menu = bar.activeMenu!;
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 32
+            } as any)
+          );
+          expect(menu.isAttached).to.equal(true);
+        });
+
         it('should open the active menu on Up Arrow', () => {
           let menu = bar.activeMenu!;
           simulate(bar.node, 'keydown', { keyCode: 38 });
@@ -664,6 +686,39 @@ describe('@lumino/widgets', () => {
           expect(cancelled).to.equal(true);
         });
       });
+
+      context('focus', () => {
+        it('should lose focus on tab key', () => {
+          let bar = createUnfocusedMenuBar();
+          bar.activeIndex = 0;
+          expect(bar.contentNode.contains(document.activeElement)).to.equal(
+            true
+          );
+          let event = new KeyboardEvent('keydown', {
+            bubbles,
+            keyCode: 9
+          } as any);
+          bar.contentNode.dispatchEvent(event);
+          expect(bar.activeIndex).to.equal(-1);
+          bar.dispose();
+        });
+
+        it('should lose focus on shift-tab key', () => {
+          let bar = createUnfocusedMenuBar();
+          bar.activeIndex = 0;
+          expect(bar.contentNode.contains(document.activeElement)).to.equal(
+            true
+          );
+          let event = new KeyboardEvent('keydown', {
+            bubbles,
+            keyCode: 9,
+            shiftKey: true
+          } as any);
+          bar.contentNode.dispatchEvent(event);
+          expect(bar.activeIndex).to.equal(-1);
+          bar.dispose();
+        });
+      });
     });
 
     describe('#onBeforeAttach()', () => {
@@ -712,13 +767,20 @@ describe('@lumino/widgets', () => {
         let bar = createMenuBar();
         Widget.detach(bar);
         MessageLoop.sendMessage(bar, Widget.Msg.ActivateRequest);
-        expect(bar.node.contains(document.activeElement)).to.equal(false);
+        expect(bar.contentNode.contains(document.activeElement)).to.equal(
+          false
+        );
+        bar.dispose();
       });
 
       it('should focus the node if attached', () => {
-        let bar = createMenuBar();
+        let bar = createUnfocusedMenuBar();
         MessageLoop.sendMessage(bar, Widget.Msg.ActivateRequest);
-        expect(bar.node.contains(document.activeElement)).to.equal(true);
+        expect(
+          bar.contentNode.contains(document.activeElement) &&
+            bar.contentNode !== document.activeElement
+        ).to.equal(true);
+        bar.dispose();
       });
     });
 
@@ -785,7 +847,8 @@ describe('@lumino/widgets', () => {
         widget.title.closable = true;
         data = {
           title: widget.title,
-          active: true
+          active: true,
+          tabbable: true
         };
       });
 
