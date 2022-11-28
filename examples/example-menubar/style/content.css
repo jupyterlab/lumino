@@ -1,0 +1,30 @@
+/*
+ Copyright (c) Jupyter Development Team.
+ Distributed under the terms of the Modified BSD License.
+*/
+
+.lm-example-skip-link {
+  position: absolute;
+  left: -1000px;
+  top: -1000px;
+}
+
+.lm-example-skip-link:focus {
+  position: fixed;
+  left: 50%;
+  top: 0;
+  z-index: 10;
+  padding: 0.5rem 1rem;
+  box-shadow: 0 0 5px #000;
+  border-bottom-left-radius: 0.2rem;
+  border-bottom-right-radius: 0.2rem;
+  background: #fff;
+}
+
+textarea {
+  display: block;
+}
+
+#content {
+  padding: 0 1rem;
+}
