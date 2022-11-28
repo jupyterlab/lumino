@@ -1,0 +1,51 @@
+/*
+ * Copyright (c) Jupyter Development Team.
+ * Distributed under the terms of the Modified BSD License.
+ */
+
+/*-----------------------------------------------------------------------------
+| Copyright (c) Jupyter Development Team.
+| Copyright (c) 2014-2017, PhosphorJS Contributors
+|
+| Distributed under the terms of the BSD 3-Clause License.
+|
+| The full license is in the file LICENSE, distributed with this software.
+|----------------------------------------------------------------------------*/
+
+.content {
+  min-width: 50px;
+  min-height: 50px;
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  border: 1px solid #c0c0c0;
+  border-top: none;
+  background: white;
+  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.content > div {
+  flex: 1 1 auto;
+  border: 1px solid #505050;
+  overflow: auto;
+}
+
+.content input {
+  margin: 8px;
+}
+
+.red > div {
+  background: #e74c3c;
+}
+
+.yellow > div {
+  background: #f1c40f;
+}
+
+.green > div {
+  background: #27ae60;
+}
+
+.blue > div {
+  background: #3498db;
+}

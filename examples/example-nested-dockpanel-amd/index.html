@@ -1,0 +1,54 @@
+<!--
+  ~ Copyright (c) Jupyter Development Team.
+  ~ Distributed under the terms of the Modified BSD License.
+-->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>example-dockpanel-iife</title>
+
+  <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.js"></script>
+
+  <script>
+    require.config({
+      baseUrl: ".",
+      paths: {
+        // CDN testing ---
+        // "@lumino": "https://cdn.jsdelivr.net/npm/@lumino",
+
+        // Local testing ---
+        "@lumino/algorithm": "../../packages/algorithm/dist/index.min",
+        "@lumino/collections": "../../packages/collections/dist/index.min",
+        "@lumino/properties": "../../packages/properties/dist/index.min",
+        "@lumino/messaging": "../../packages/messaging/dist/index.min",
+        "@lumino/signaling": "../../packages/signaling/dist/index.min",
+        "@lumino/disposable": "../../packages/disposable/dist/index.min",
+        "@lumino/domutils": "../../packages/domutils/dist/index.min",
+        "@lumino/coreutils": "../../packages/coreutils/dist/index.min",
+        "@lumino/keyboard": "../../packages/keyboard/dist/index.min",
+        "@lumino/commands": "../../packages/commands/dist/index.min",
+        "@lumino/dragdrop": "../../packages/dragdrop/dist/index.min",
+        "@lumino/virtualdom": "../../packages/virtualdom/dist/index.min",
+        "@lumino/widgets": "../../packages/widgets/dist/index.min"
+      }
+    });
+  </script>
+
+  <link href="./style/index.css" rel="stylesheet">
+</head>
+
+<body>
+  <script>
+    requirejs(['./src/index'], function (main) {
+      main();
+    });
+  </script>
+</body>
+
+</html>
