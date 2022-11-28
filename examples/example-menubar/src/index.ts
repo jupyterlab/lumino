@@ -100,6 +100,42 @@ function main(): void {
   addMenuItem(commands, fileMenu, 'new', 'New', 'File > New');
   addMenuItem(commands, fileMenu, 'open', 'Open', 'File > Open');
   addMenuItem(commands, fileMenu, 'save', 'Save', 'File > Save');
+
+  const recentMenu = new Menu({ commands: commands });
+  recentMenu.title.label = 'Open Recent';
+  addMenuItem(
+    commands,
+    recentMenu,
+    'file1',
+    'File1.txt',
+    'File > Open Recent > File1.txt'
+  );
+  addMenuItem(
+    commands,
+    recentMenu,
+    'file2',
+    'File2.md',
+    'File > Open Recent > File2.md'
+  );
+  addMenuItem(
+    commands,
+    recentMenu,
+    'file3',
+    'File3.xml',
+    'File > Open Recent > File3.xml'
+  );
+  addMenuItem(
+    commands,
+    recentMenu,
+    'file4',
+    'File4.txt',
+    'File > Open Recent > File4.txt'
+  );
+  fileMenu.addItem({
+    type: 'submenu',
+    submenu: recentMenu
+  });
+
   menubar.addMenu(fileMenu);
 
   const editMenu = new Menu({ commands: commands });
