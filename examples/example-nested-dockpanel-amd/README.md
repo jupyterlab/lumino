@@ -1,6 +1,6 @@
-# example-dockpanel-amd
+# example-nested-dockpanel-amd
 
-_AMD_ version of [example-dockpanel](../example-dockpanel)
+Example of nested dock panel.
 
 ## Prerequisites
 
