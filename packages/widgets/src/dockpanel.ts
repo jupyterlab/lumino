@@ -535,8 +535,7 @@ export class DockPanel extends Widget {
     // Mark the event as handled.
     event.preventDefault();
 
-    if (this._tabsConstrained && event.source !== this)
-      return;
+    if (this._tabsConstrained && event.source !== this) return;
 
     event.stopPropagation();
 
@@ -592,7 +591,10 @@ export class DockPanel extends Widget {
     );
 
     // Bail if the drop zone is invalid.
-    if ((this._tabsConstrained && event.source !== this) || zone === 'invalid') {
+    if (
+      (this._tabsConstrained && event.source !== this) ||
+      zone === 'invalid'
+    ) {
       event.dropAction = 'none';
       return;
     }
