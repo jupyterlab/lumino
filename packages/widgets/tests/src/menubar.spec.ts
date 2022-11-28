@@ -49,6 +49,8 @@ class LogMenuBar extends MenuBar {
   }
 }
 
+const bubbles = true;
+
 describe('@lumino/widgets', () => {
   const DEFAULT_CMD = 'menubar.spec.ts:defaultCmd';
 
@@ -478,6 +480,7 @@ describe('@lumino/widgets', () => {
           let menu = bar.activeMenu!;
           bar.node.dispatchEvent(
             new KeyboardEvent('keydown', {
+              bubbles,
               keyCode: 32
             } as any)
           );
@@ -691,7 +694,10 @@ describe('@lumino/widgets', () => {
           expect(bar.contentNode.contains(document.activeElement)).to.equal(
             true
           );
-          let event = new KeyboardEvent('keydown', { keyCode: 9 } as any);
+          let event = new KeyboardEvent('keydown', {
+            bubbles,
+            keyCode: 9
+          } as any);
           bar.contentNode.dispatchEvent(event);
           expect(bar.activeIndex).to.equal(-1);
           bar.dispose();
@@ -704,6 +710,7 @@ describe('@lumino/widgets', () => {
             true
           );
           let event = new KeyboardEvent('keydown', {
+            bubbles,
             keyCode: 9,
             shiftKey: true
           } as any);
