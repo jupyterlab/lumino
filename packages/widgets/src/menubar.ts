@@ -134,6 +134,11 @@ export class MenuBar extends Widget {
     // Update the active index.
     this._activeIndex = value;
 
+    // Update the focus index.
+    if (value !== -1) {
+      this._tabFocusIndex = value;
+    }
+
     // Update focus to new active index
     if (
       this._activeIndex >= 0 &&
@@ -378,7 +383,7 @@ export class MenuBar extends Widget {
    */
   protected onActivateRequest(msg: Message): void {
     if (this.isAttached) {
-      this.node.focus();
+      this.activeIndex = 0;
     }
   }
 
@@ -389,6 +394,10 @@ export class MenuBar extends Widget {
     let menus = this._menus;
     let renderer = this.renderer;
     let activeIndex = this._activeIndex;
+    let tabFocusIndex =
+      this._tabFocusIndex >= 0 && this._tabFocusIndex < menus.length
+        ? this._tabFocusIndex
+        : 0;
     let content = new Array<VirtualElement>(menus.length);
     for (let i = 0, n = menus.length; i < n; ++i) {
       let title = menus[i].title;
@@ -399,6 +408,7 @@ export class MenuBar extends Widget {
       content[i] = renderer.renderItem({
         title,
         active,
+        tabbable: i === tabFocusIndex,
         onfocus: () => {
           this.activeIndex = i;
         }
@@ -417,8 +427,9 @@ export class MenuBar extends Widget {
     // Fetch the key code for the event.
     let kc = event.keyCode;
 
-    // Do not trap the tab key.
+    // Reset the active index on tab, but do not trap the tab key.
     if (kc === 9) {
+      this.activeIndex = -1;
       return;
     }
 
@@ -426,8 +437,8 @@ export class MenuBar extends Widget {
     event.preventDefault();
     event.stopPropagation();
 
-    // Enter, Up Arrow, Down Arrow
-    if (kc === 13 || kc === 38 || kc === 40) {
+    // Enter, Space, Up Arrow, Down Arrow
+    if (kc === 13 || kc === 32 || kc === 38 || kc === 40) {
       this.openActiveMenu();
       return;
     }
@@ -652,7 +663,6 @@ export class MenuBar extends Widget {
     if (!this._childMenu) {
       return;
     }
-
     // Remove the active class from the menu bar.
     this.removeClass('lm-mod-active');
 
@@ -726,7 +736,10 @@ export class MenuBar extends Widget {
     this.update();
   }
 
+  // Track the index of the item that is currently focused. -1 means nothing focused.
   private _activeIndex = -1;
+  // Track which item can be focused using the TAB key. Unlike _activeIndex will always point to a menuitem.
+  private _tabFocusIndex = 0;
   private _forceItemsPosition: Menu.IOpenOptions;
   private _menus: Menu[] = [];
   private _childMenu: Menu | null = null;
@@ -772,6 +785,11 @@ export namespace MenuBar {
      */
     readonly active: boolean;
 
+    /**
+     * Whether the user can tab to the item.
+     */
+    readonly tabbable: boolean;
+
     readonly onfocus?: (event: FocusEvent) => void;
   }
 
@@ -808,7 +826,13 @@ export namespace MenuBar {
       let dataset = this.createItemDataset(data);
       let aria = this.createItemARIA(data);
       return h.li(
-        { className, dataset, tabindex: '0', onfocus: data.onfocus, ...aria },
+        {
+          className,
+          dataset,
+          tabindex: data.tabbable ? '0' : '-1',
+          onfocus: data.onfocus,
+          ...aria
+        },
         this.renderIcon(data),
         this.renderLabel(data)
       );
@@ -941,8 +965,6 @@ namespace Private {
     content.className = 'lm-MenuBar-content';
     node.appendChild(content);
     content.setAttribute('role', 'menubar');
-    node.tabIndex = 0;
-    content.tabIndex = 0;
     return node;
   }
 

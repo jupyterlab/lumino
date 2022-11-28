@@ -777,6 +777,7 @@ export namespace MenuBar {
         readonly active: boolean;
         // (undocumented)
         readonly onfocus?: (event: FocusEvent) => void;
+        readonly tabbable: boolean;
         readonly title: Title<Widget>;
     }
     export interface IRenderer {
