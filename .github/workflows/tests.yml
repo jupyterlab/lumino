@@ -13,6 +13,10 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         browser: [chrome-headless, firefox-headless, webkit-headless]
+        exclude:
+          # Playwright webkit binary is not compatible with ubuntu
+          - os: ubuntu-latest
+            browser: webkit-headless
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
