@@ -12,11 +12,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        browser: [chrome-headless, firefox-headless]
-        exclude:
-          # macos and firefox-headless seems to consistently fail.
-          - os: macos-latest
-            browser: firefox-headless
+        browser: [chrome-headless, firefox-headless, webkit-headless]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3

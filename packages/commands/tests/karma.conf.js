@@ -3,6 +3,8 @@
  * Distributed under the terms of the Modified BSD License.
  */
 
+process.env.FIREFOX_BIN = require('playwright').firefox.executablePath();
+process.env.FIREFOX_HEADLESS_BIN = process.env.FIREFOX_BIN;
 process.env.WEBKIT_BIN = require('playwright').webkit.executablePath();
 process.env.WEBKIT_HEADLESS_BIN = process.env.WEBKIT_BIN;
 
