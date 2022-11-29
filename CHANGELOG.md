@@ -8,7 +8,7 @@
 
 ### Enhancements made
 
-- Backport #465 on branch 1.x (Improve the menubar accessibility) [#476](https://github.com/jupyterlab/lumino/pull/476) ([@fcollonval](https://github.com/fcollonval))
+- Improve the menubar accessibility [#476](https://github.com/jupyterlab/lumino/pull/476) ([@fcollonval](https://github.com/fcollonval))
 
 ### Bugs fixed
 
