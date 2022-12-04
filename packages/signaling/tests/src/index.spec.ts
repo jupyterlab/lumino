@@ -657,6 +657,7 @@ describe('@lumino/signaling', () => {
         const wait = Promise.resolve();
         let emitted = '';
         let once = true;
+
         stream.connect(() => {
           if (once) {
             once = false;
@@ -673,8 +674,13 @@ describe('@lumino/signaling', () => {
             stream.emit('D');
           }
         });
+
         input.split('').forEach(x => wait.then(() => stream.emit(x)));
         wait.then(() => stream.stop());
+
+        // These should not be collected because the iterator has stopped.
+        input.split('').forEach(x => wait.then(() => stream.emit(x)));
+
         for await (const letter of stream) {
           emitted = emitted.concat(letter);
         }
