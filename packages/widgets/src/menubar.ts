@@ -809,7 +809,7 @@ export namespace MenuBar {
     /**
      * Whether the user can tab to the item.
      */
-    readonly tabbable: boolean;
+    readonly tabbable?: boolean;
 
     readonly onfocus?: (event: FocusEvent) => void;
   }
