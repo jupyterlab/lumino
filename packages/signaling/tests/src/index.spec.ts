@@ -652,8 +652,10 @@ describe('@lumino/signaling', () => {
     describe('#stop()', () => {
       it('should stop emissions in the async interable', async () => {
         const stream = new Stream<unknown, string>({});
-        const input = 'continuing';
-        const expected = 'cINTERRUPTEDontinuing';
+        const one = 'alpha';
+        const two = 'beta';
+        const three = 'delta';
+        const expected = 'aINTERRUPTEDlphadelta';
         const wait = Promise.resolve();
         let emitted = '';
         let once = true;
@@ -675,15 +677,25 @@ describe('@lumino/signaling', () => {
           }
         });
 
-        input.split('').forEach(x => wait.then(() => stream.emit(x)));
+        one.split('').forEach(x => wait.then(() => stream.emit(x)));
         wait.then(() => stream.stop());
 
         // These should not be collected because the iterator has stopped.
-        input.split('').forEach(x => wait.then(() => stream.emit(x)));
+        two.split('').forEach(x => wait.then(() => stream.emit(x)));
+        wait.then(() => stream.stop());
 
         for await (const letter of stream) {
           emitted = emitted.concat(letter);
         }
+
+        // These should be collected because there is a new iterator.
+        three.split('').forEach(x => wait.then(() => stream.emit(x)));
+        wait.then(() => stream.stop());
+
+        for await (const letter of stream) {
+          emitted = emitted.concat(letter);
+        }
+
         expect(emitted).to.equal(expected);
       });
 

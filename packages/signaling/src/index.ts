@@ -428,6 +428,7 @@ export class Stream<T, U> extends Signal<T, U> implements IStream<T, U> {
   stop(): void {
     this._pending.promise.catch(() => undefined);
     this._pending.reject('stop');
+    this._pending = new PromiseDelegate();
   }
 
   private _pending: Private.Pending<U> = new PromiseDelegate();
