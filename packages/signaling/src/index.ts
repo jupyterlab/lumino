@@ -348,7 +348,48 @@ export namespace Signal {
 }
 
 /**
- * A stream with the characteristics of a signal and an async iterable.
+ * A concrete implementation of `IStream`.
+ *
+ * #### Example
+ * ```typescript
+ * import { IStream, Stream } from '@lumino/signaling';
+ *
+ * class SomeClass {
+ *
+ *   constructor(name: string) {
+ *     this.name = name;
+ *   }
+ *
+ *   readonly name: string;
+ *
+ *   get pings(): IStream<this, string> {
+ *     return this._pings;
+ *   }
+ *
+ *   ping(value: string) {
+ *     this._pings.emit(value);
+ *   }
+ *
+ *   private _pings = new Stream<this, string>(this);
+ * }
+ *
+ * let m1 = new SomeClass('foo');
+ *
+ * m1.pings.connect((_, value: string) => {
+ *   console.log('connect', value);
+ * });
+ *
+ * void (async () => {
+ *   for await (const ping of m1.pings) {
+ *     console.log('iterator', ping);
+ *   }
+ * })();
+ *
+ * m1.ping('alpha');  // logs: connect alpha
+ *                    // logs: iterator alpha
+ * m1.ping('beta');   // logs: connect beta
+ *                    // logs: iterator beta
+ * ```
  */
 export class Stream<T, U> extends Signal<T, U> implements IStream<T, U> {
   /**
@@ -375,8 +416,8 @@ export class Stream<T, U> extends Signal<T, U> implements IStream<T, U> {
   emit(args: U): void {
     if (!this.blocked) {
       const pending = this._pending;
-      this._pending = new PromiseDelegate();
-      pending.resolve({ args, next: this._pending });
+      const next = (this._pending = new PromiseDelegate());
+      pending.resolve({ args, next });
       super.emit(args);
     }
   }
@@ -387,6 +428,7 @@ export class Stream<T, U> extends Signal<T, U> implements IStream<T, U> {
   stop(): void {
     this._pending.promise.catch(() => undefined);
     this._pending.reject('stop');
+    this._pending = new PromiseDelegate();
   }
 
   private _pending: Private.Pending<U> = new PromiseDelegate();
