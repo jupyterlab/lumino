@@ -7,49 +7,53 @@
 import { IDisposable } from '@lumino/disposable';
 import { ISignal } from '@lumino/signaling';
 import { ReadonlyJSONObject } from '@lumino/coreutils';
+import { ReadonlyPartialJSONObject } from '@lumino/coreutils';
+import { VirtualElement } from '@lumino/virtualdom';
 
 // @public
 export class CommandRegistry {
-    constructor();
     addCommand(id: string, options: CommandRegistry.ICommandOptions): IDisposable;
     addKeyBinding(options: CommandRegistry.IKeyBindingOptions): IDisposable;
-    caption(id: string, args?: ReadonlyJSONObject): string;
-    className(id: string, args?: ReadonlyJSONObject): string;
+    caption(id: string, args?: ReadonlyPartialJSONObject): string;
+    className(id: string, args?: ReadonlyPartialJSONObject): string;
     readonly commandChanged: ISignal<this, CommandRegistry.ICommandChangedArgs>;
     readonly commandExecuted: ISignal<this, CommandRegistry.ICommandExecutedArgs>;
-    dataset(id: string, args?: ReadonlyJSONObject): CommandRegistry.Dataset;
-    execute(id: string, args?: ReadonlyJSONObject): Promise<any>;
+    dataset(id: string, args?: ReadonlyPartialJSONObject): CommandRegistry.Dataset;
+    describedBy(id: string): {
+        args: ReadonlyJSONObject | null;
+    };
+    execute(id: string, args?: ReadonlyPartialJSONObject): Promise<any>;
     hasCommand(id: string): boolean;
-    // @deprecated (undocumented)
-    icon(id: string, args?: ReadonlyJSONObject): string;
-    iconClass(id: string, args?: ReadonlyJSONObject): string;
-    iconLabel(id: string, args?: ReadonlyJSONObject): string;
-    isEnabled(id: string, args?: ReadonlyJSONObject): boolean;
-    isToggled(id: string, args?: ReadonlyJSONObject): boolean;
-    isVisible(id: string, args?: ReadonlyJSONObject): boolean;
+    icon(id: string, args?: ReadonlyPartialJSONObject): VirtualElement.IRenderer | undefined | string;
+    iconClass(id: string, args?: ReadonlyPartialJSONObject): string;
+    iconLabel(id: string, args?: ReadonlyPartialJSONObject): string;
+    isEnabled(id: string, args?: ReadonlyPartialJSONObject): boolean;
+    isToggleable(id: string, args?: ReadonlyJSONObject): boolean;
+    isToggled(id: string, args?: ReadonlyPartialJSONObject): boolean;
+    isVisible(id: string, args?: ReadonlyPartialJSONObject): boolean;
     readonly keyBindingChanged: ISignal<this, CommandRegistry.IKeyBindingChangedArgs>;
     readonly keyBindings: ReadonlyArray<CommandRegistry.IKeyBinding>;
-    label(id: string, args?: ReadonlyJSONObject): string;
+    label(id: string, args?: ReadonlyPartialJSONObject): string;
     listCommands(): string[];
-    mnemonic(id: string, args?: ReadonlyJSONObject): number;
+    mnemonic(id: string, args?: ReadonlyPartialJSONObject): number;
     notifyCommandChanged(id?: string): void;
     processKeydownEvent(event: KeyboardEvent): void;
-    usage(id: string, args?: ReadonlyJSONObject): string;
+    usage(id: string, args?: ReadonlyPartialJSONObject): string;
 }
 
 // @public
 export namespace CommandRegistry {
-    export type CommandFunc<T> = (args: ReadonlyJSONObject) => T;
+    export type CommandFunc<T> = (args: ReadonlyPartialJSONObject) => T;
     export type Dataset = {
         readonly [key: string]: string;
     };
-    export function formatKeystroke(keystroke: string): string;
+    export function formatKeystroke(keystroke: string | readonly string[]): string;
     export interface ICommandChangedArgs {
         readonly id: string | undefined;
         readonly type: 'added' | 'removed' | 'changed' | 'many-changed';
     }
     export interface ICommandExecutedArgs {
-        readonly args: ReadonlyJSONObject;
+        readonly args: ReadonlyPartialJSONObject;
         readonly id: string;
         readonly result: Promise<any>;
     }
@@ -57,12 +61,15 @@ export namespace CommandRegistry {
         caption?: string | CommandFunc<string>;
         className?: string | CommandFunc<string>;
         dataset?: Dataset | CommandFunc<Dataset>;
+        describedBy?: {
+            args?: ReadonlyJSONObject;
+        };
         execute: CommandFunc<any | Promise<any>>;
-        // @deprecated (undocumented)
-        icon?: string | CommandFunc<string>;
+        icon?: VirtualElement.IRenderer | undefined | string | CommandFunc<VirtualElement.IRenderer | undefined | string>;
         iconClass?: string | CommandFunc<string>;
         iconLabel?: string | CommandFunc<string>;
         isEnabled?: CommandFunc<boolean>;
+        isToggleable?: boolean;
         isToggled?: CommandFunc<boolean>;
         isVisible?: CommandFunc<boolean>;
         label?: string | CommandFunc<string>;
@@ -70,7 +77,7 @@ export namespace CommandRegistry {
         usage?: string | CommandFunc<string>;
     }
     export interface IKeyBinding {
-        readonly args: ReadonlyJSONObject;
+        readonly args: ReadonlyPartialJSONObject;
         readonly command: string;
         readonly keys: ReadonlyArray<string>;
         readonly selector: string;
@@ -80,7 +87,7 @@ export namespace CommandRegistry {
         readonly type: 'added' | 'removed';
     }
     export interface IKeyBindingOptions {
-        args?: ReadonlyJSONObject;
+        args?: ReadonlyPartialJSONObject;
         command: string;
         keys: string[];
         linuxKeys?: string[];
@@ -95,12 +102,12 @@ export namespace CommandRegistry {
         key: string;
         shift: boolean;
     }
+    export function isModifierKeyPressed(event: KeyboardEvent): boolean;
     export function keystrokeForKeydownEvent(event: KeyboardEvent): string;
     export function normalizeKeys(options: IKeyBindingOptions): string[];
     export function normalizeKeystroke(keystroke: string): string;
     export function parseKeystroke(keystroke: string): IKeystrokeParts;
 }
-
 
 // (No @packageDocumentation comment for this package)
 

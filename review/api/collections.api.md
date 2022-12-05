@@ -9,7 +9,7 @@ import { IIterator } from '@lumino/algorithm';
 import { IRetroable } from '@lumino/algorithm';
 import { IterableOrArrayLike } from '@lumino/algorithm';
 
-// @public
+// @public @deprecated
 export class BPlusTree<T> implements IIterable<T>, IRetroable<T> {
     constructor(cmp: (a: T, b: T) => number);
     assign(items: IterableOrArrayLike<T>): void;
@@ -33,14 +33,13 @@ export class BPlusTree<T> implements IIterable<T>, IRetroable<T> {
     update(items: IterableOrArrayLike<T>): void;
 }
 
-// @public
+// @public @deprecated
 export namespace BPlusTree {
     export function from<T>(items: IterableOrArrayLike<T>, cmp: (a: T, b: T) => number): BPlusTree<T>;
 }
 
 // @public
 export class LinkedList<T> implements IIterable<T>, IRetroable<T> {
-    constructor();
     addFirst(value: T): LinkedList.INode<T>;
     addLast(value: T): LinkedList.INode<T>;
     assign(values: IterableOrArrayLike<T>): void;
@@ -74,13 +73,13 @@ export namespace LinkedList {
         clone(): IIterator<INode<T>>;
         iter(): IIterator<INode<T>>;
         next(): INode<T> | undefined;
-        }
+    }
     export class ForwardValueIterator<T> implements IIterator<T> {
         constructor(node: INode<T> | null);
         clone(): IIterator<T>;
         iter(): IIterator<T>;
         next(): T | undefined;
-        }
+    }
     export function from<T>(values: IterableOrArrayLike<T>): LinkedList<T>;
     export interface INode<T> {
         readonly list: LinkedList<T> | null;
@@ -93,15 +92,14 @@ export namespace LinkedList {
         clone(): IIterator<INode<T>>;
         iter(): IIterator<INode<T>>;
         next(): INode<T> | undefined;
-        }
+    }
     export class RetroValueIterator<T> implements IIterator<T> {
         constructor(node: INode<T> | null);
         clone(): IIterator<T>;
         iter(): IIterator<T>;
         next(): T | undefined;
-        }
+    }
 }
-
 
 // (No @packageDocumentation comment for this package)
 

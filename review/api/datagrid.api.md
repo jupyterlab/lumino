@@ -10,6 +10,7 @@ import { IMessageHandler } from '@lumino/messaging';
 import { ISignal } from '@lumino/signaling';
 import { Message } from '@lumino/messaging';
 import { ReadonlyJSONObject } from '@lumino/coreutils';
+import { Signal } from '@lumino/signaling';
 import { Widget } from '@lumino/widgets';
 
 // @public
@@ -20,6 +21,7 @@ export class BasicKeyHandler implements DataGrid.IKeyHandler {
     protected onArrowLeft(grid: DataGrid, event: KeyboardEvent): void;
     protected onArrowRight(grid: DataGrid, event: KeyboardEvent): void;
     protected onArrowUp(grid: DataGrid, event: KeyboardEvent): void;
+    protected onDelete(grid: DataGrid, event: KeyboardEvent): void;
     protected onEscape(grid: DataGrid, event: KeyboardEvent): void;
     protected onKeyC(grid: DataGrid, event: KeyboardEvent): void;
     onKeyDown(grid: DataGrid, event: KeyboardEvent): void;
@@ -29,15 +31,20 @@ export class BasicKeyHandler implements DataGrid.IKeyHandler {
 
 // @public
 export class BasicMouseHandler implements DataGrid.IMouseHandler {
+    cursorForHandle(handle: ResizeHandle): string;
     dispose(): void;
     readonly isDisposed: boolean;
     onContextMenu(grid: DataGrid, event: MouseEvent): void;
+    onMouseDoubleClick(grid: DataGrid, event: MouseEvent): void;
     onMouseDown(grid: DataGrid, event: MouseEvent): void;
     onMouseHover(grid: DataGrid, event: MouseEvent): void;
     onMouseLeave(grid: DataGrid, event: MouseEvent): void;
     onMouseMove(grid: DataGrid, event: MouseEvent): void;
     onMouseUp(grid: DataGrid, event: MouseEvent): void;
     onWheel(grid: DataGrid, event: WheelEvent): void;
+    readonly pressData: PressData.PressData | null;
+    // (undocumented)
+    protected _pressData: PressData.PressData | null;
     release(): void;
 }
 
@@ -48,10 +55,97 @@ export class BasicSelectionModel extends SelectionModel {
     readonly cursorColumn: number;
     readonly cursorRow: number;
     readonly isEmpty: boolean;
+    moveCursorWithinSelections(direction: SelectionModel.CursorMoveDirection): void;
     protected onDataModelChanged(sender: DataModel, args: DataModel.ChangedArgs): void;
     select(args: SelectionModel.SelectArgs): void;
     selections(): IIterator<SelectionModel.Selection>;
-    }
+}
+
+// @public
+export class BooleanCellEditor extends CellEditor {
+    dispose(): void;
+    protected getInput(): boolean | null;
+    handleEvent(event: Event): void;
+    protected startEditing(): void;
+}
+
+// @public (undocumented)
+export type CellDataType = 'string' | 'number' | 'integer' | 'boolean' | 'date' | 'string:option' | 'number:option' | 'integer:option' | 'date:option' | 'string:dynamic-option' | 'number:dynamic-option' | 'integer:dynamic-option' | 'date:dynamic-option';
+
+// @public
+export abstract class CellEditor implements ICellEditor, IDisposable {
+    constructor();
+    cancel(): void;
+    protected cell: CellEditor.CellConfig;
+    protected commit(cursorMovement?: SelectionModel.CursorMoveDirection): boolean;
+    protected createValidatorBasedOnType(): ICellInputValidator | undefined;
+    dispose(): void;
+    edit(cell: CellEditor.CellConfig, options?: ICellEditOptions): void;
+    protected editorContainer: HTMLDivElement;
+    // Warning: (ae-forgotten-export) The symbol "Private" needs to be exported by the entry point index.d.ts
+    protected getCellInfo(cell: CellEditor.CellConfig): Private_2.ICellInfo;
+    protected abstract getInput(): any;
+    protected inputChanged: Signal<this, void>;
+    readonly isDisposed: boolean;
+    protected onCancel?: () => void;
+    protected onCommit?: (response: ICellEditResponse) => void;
+    protected setValidity(valid: boolean, message?: string): void;
+    protected abstract startEditing(): void;
+    protected updatePosition(): void;
+    protected validate(): void;
+    protected validator: ICellInputValidator | undefined;
+    protected readonly validInput: boolean;
+    // Warning: (ae-forgotten-export) The symbol "Notification" needs to be exported by the entry point index.d.ts
+    protected validityNotification: Notification_2 | null;
+    protected viewportOccluder: HTMLDivElement;
+}
+
+// @public
+export namespace CellEditor {
+    export type CellConfig = {
+        readonly grid: DataGrid;
+        readonly row: number;
+        readonly column: number;
+    };
+}
+
+// @public
+export class CellEditorController implements ICellEditorController {
+    cancel(): void;
+    edit(cell: CellEditor.CellConfig, options?: ICellEditOptions): boolean;
+    setEditor(identifier: EditorOverrideIdentifier, editor: ICellEditor | Resolver): void;
+}
+
+// @public
+export interface CellGroup {
+    // (undocumented)
+    c1: number;
+    // (undocumented)
+    c2: number;
+    // (undocumented)
+    r1: number;
+    // (undocumented)
+    r2: number;
+}
+
+// @public
+export namespace CellGroup {
+    export function areCellGroupsIntersecting(group1: CellGroup, group2: CellGroup): boolean;
+    export function areCellGroupsIntersectingAtAxis(group1: CellGroup, group2: CellGroup, axis: 'row' | 'column'): boolean;
+    // (undocumented)
+    export function areCellsMerged(dataModel: DataModel, rgn: DataModel.CellRegion, cell1: number[], cell2: number[]): boolean;
+    export function calculateMergeOffsets(dataModel: DataModel, regions: DataModel.CellRegion[], axis: 'row' | 'column', sectionList: SectionList, index: number): [number, number, CellGroup];
+    export function getCellGroupsAtColumn(dataModel: DataModel, rgn: DataModel.CellRegion, column: number): CellGroup[];
+    export function getCellGroupsAtRegion(dataModel: DataModel, rgn: DataModel.CellRegion): CellGroup[];
+    export function getCellGroupsAtRow(dataModel: DataModel, rgn: DataModel.CellRegion, row: number): CellGroup[];
+    export function getGroup(dataModel: DataModel, rgn: DataModel.CellRegion, row: number, column: number): CellGroup | null;
+    export function getGroupIndex(dataModel: DataModel, rgn: DataModel.CellRegion, row: number, column: number): number;
+    export function isCellGroupAbove(group1: CellGroup, group2: CellGroup): boolean;
+    export function isCellGroupBelow(group1: CellGroup, group2: CellGroup): boolean;
+    export function joinCellGroups(groups: CellGroup[]): CellGroup;
+    export function joinCellGroupsIntersectingAtAxis(dataModel: DataModel, regions: DataModel.CellRegion[], axis: 'row' | 'column', group: CellGroup): CellGroup;
+    export function joinCellGroupWithMergedCellGroups(dataModel: DataModel, group: CellGroup, region: DataModel.CellRegion): CellGroup;
+}
 
 // @public
 export abstract class CellRenderer {
@@ -77,20 +171,34 @@ export namespace CellRenderer {
 }
 
 // @public
+export type ConfigFunc<T> = (config: CellEditor.CellConfig) => T;
+
+// @public
+export type ConfigOption<T> = T | ConfigFunc<T>;
+
+// @public
 export class DataGrid extends Widget {
     constructor(options?: DataGrid.IOptions);
     readonly bodyHeight: number;
     readonly bodyWidth: number;
+    protected readonly canvasGC: CanvasRenderingContext2D;
     cellRenderers: RendererMap;
     columnAt(region: DataModel.ColumnRegion, offset: number): number;
-    columnCount(region: DataModel.RowRegion): number;
+    columnCount(region: DataModel.ColumnRegion): number;
+    protected readonly columnHeaderSections: SectionList;
     columnOffset(region: DataModel.ColumnRegion, index: number): number;
+    protected readonly columnSections: SectionList;
     columnSize(region: DataModel.ColumnRegion, index: number): number;
     copyConfig: DataGrid.CopyConfig;
     copyToClipboard(): void;
     dataModel: DataModel | null;
     defaultSizes: DataGrid.DefaultSizes;
     dispose(): void;
+    protected drawCornerHeaderRegion(rx: number, ry: number, rw: number, rh: number): void;
+    readonly editable: boolean;
+    editingEnabled: boolean;
+    editorController: ICellEditorController | null;
+    fitColumnNames(area?: DataGrid.ColumnFitType, padding?: number, numCols?: number): void;
     handleEvent(event: Event): void;
     readonly headerHeight: number;
     headerVisibility: DataGrid.HeaderVisibility;
@@ -108,7 +216,9 @@ export class DataGrid extends Widget {
     readonly maxScrollX: number;
     readonly maxScrollY: number;
     messageHook(handler: IMessageHandler, msg: Message): boolean;
+    minimumSizes: DataGrid.DefaultSizes;
     mouseHandler: DataGrid.IMouseHandler | null;
+    moveCursor(direction: SelectionModel.CursorMoveDirection): void;
     protected onActivateRequest(msg: Message): void;
     protected onAfterDetach(msg: Message): void;
     protected onBeforeAttach(msg: Message): void;
@@ -116,14 +226,20 @@ export class DataGrid extends Widget {
     protected onResize(msg: Widget.ResizeMessage): void;
     readonly pageHeight: number;
     readonly pageWidth: number;
+    protected paintContent(rx: number, ry: number, rw: number, rh: number): void;
     processMessage(msg: Message): void;
+    protected repaintContent(): void;
+    protected repaintOverlay(): void;
+    protected repaintRegion(region: DataModel.CellRegion, r1: number, c1: number, r2: number, c2: number): void;
     resetColumns(region: DataModel.ColumnRegion | 'all'): void;
     resetRows(region: DataModel.RowRegion | 'all'): void;
     resizeColumn(region: DataModel.ColumnRegion, index: number, size: number): void;
     resizeRow(region: DataModel.RowRegion, index: number, size: number): void;
     rowAt(region: DataModel.RowRegion, offset: number): number;
     rowCount(region: DataModel.RowRegion): number;
+    protected readonly rowHeaderSections: SectionList;
     rowOffset(region: DataModel.RowRegion, index: number): number;
+    protected readonly rowSections: SectionList;
     rowSize(region: DataModel.RowRegion, index: number): number;
     scrollBy(dx: number, dy: number): void;
     scrollByPage(dir: 'up' | 'down' | 'left' | 'right'): void;
@@ -144,10 +260,11 @@ export class DataGrid extends Widget {
     readonly viewport: Widget;
     readonly viewportHeight: number;
     readonly viewportWidth: number;
-    }
+}
 
 // @public
 export namespace DataGrid {
+    export type ColumnFitType = 'all' | 'row-header' | 'body';
     export type CopyConfig = {
         readonly separator: string;
         readonly headers: 'none' | 'row' | 'column' | 'all';
@@ -184,6 +301,7 @@ export namespace DataGrid {
     }
     export interface IMouseHandler extends IDisposable {
         onContextMenu(grid: DataGrid, event: MouseEvent): void;
+        onMouseDoubleClick(grid: DataGrid, event: MouseEvent): void;
         onMouseDown(grid: DataGrid, event: MouseEvent): void;
         onMouseHover(grid: DataGrid, event: MouseEvent): void;
         onMouseLeave(grid: DataGrid, event: MouseEvent): void;
@@ -198,10 +316,17 @@ export namespace DataGrid {
         defaultRenderer?: CellRenderer;
         defaultSizes?: DefaultSizes;
         headerVisibility?: HeaderVisibility;
+        minimumSizes?: MinimumSizes;
         stretchLastColumn?: boolean;
         stretchLastRow?: boolean;
         style?: Style;
     }
+    export type MinimumSizes = {
+        readonly rowHeight: number;
+        readonly columnWidth: number;
+        readonly rowHeaderWidth: number;
+        readonly columnHeaderHeight: number;
+    };
     export type Style = {
         readonly voidColor?: string;
         readonly backgroundColor?: string;
@@ -229,6 +354,7 @@ export namespace DataGrid {
     };
     const defaultStyle: Style;
     const defaultSizes: DefaultSizes;
+    const minimumSizes: MinimumSizes;
     const defaultCopyConfig: CopyConfig;
 }
 
@@ -238,6 +364,8 @@ export abstract class DataModel {
     abstract columnCount(region: DataModel.ColumnRegion): number;
     abstract data(region: DataModel.CellRegion, row: number, column: number): any;
     protected emitChanged(args: DataModel.ChangedArgs): void;
+    group(region: DataModel.CellRegion, groupIndex: number): CellGroup | null;
+    groupCount(region: DataModel.CellRegion): number;
     metadata(region: DataModel.CellRegion, row: number, column: number): DataModel.Metadata;
     abstract rowCount(region: DataModel.RowRegion): number;
 }
@@ -253,7 +381,7 @@ export namespace DataModel {
         readonly rowSpan: number;
         readonly columnSpan: number;
     };
-    export type ChangedArgs = (RowsChangedArgs | ColumnsChangedArgs | RowsMovedArgs | ColumnsMovedArgs | CellsChangedArgs | ModelResetArgs);
+    export type ChangedArgs = RowsChangedArgs | ColumnsChangedArgs | RowsMovedArgs | ColumnsMovedArgs | CellsChangedArgs | ModelResetArgs;
     export type ColumnRegion = 'body' | 'row-header';
     const emptyMetadata: Metadata;
     export type ColumnsChangedArgs = {
@@ -292,6 +420,25 @@ export namespace DataModel {
 }
 
 // @public
+export class DateCellEditor extends CellEditor {
+    dispose(): void;
+    protected getInput(): string | null;
+    handleEvent(event: Event): void;
+    protected startEditing(): void;
+}
+
+// @public
+export class DynamicOptionCellEditor extends CellEditor {
+    dispose(): void;
+    protected getInput(): string | null;
+    handleEvent(event: Event): void;
+    protected startEditing(): void;
+}
+
+// @public
+export type EditorOverrideIdentifier = CellDataType | DataModel.Metadata | 'default';
+
+// @public
 export class GraphicsContext implements IDisposable {
     constructor(context: CanvasRenderingContext2D);
     // (undocumented)
@@ -315,7 +462,7 @@ export class GraphicsContext implements IDisposable {
     // (undocumented)
     createLinearGradient(x0: number, y0: number, x1: number, y1: number): CanvasGradient;
     // (undocumented)
-    createPattern(image: HTMLImageElement | HTMLCanvasElement | HTMLVideoElement, repetition: string): CanvasPattern;
+    createPattern(image: HTMLImageElement | HTMLCanvasElement | HTMLVideoElement, repetition: string): CanvasPattern | null;
     // (undocumented)
     createRadialGradient(x0: number, y0: number, r0: number, x1: number, y1: number, r1: number): CanvasGradient;
     // (undocumented)
@@ -355,11 +502,11 @@ export class GraphicsContext implements IDisposable {
     // (undocumented)
     isPointInPath(x: number, y: number, fillRule?: CanvasFillRule): boolean;
     // (undocumented)
-    lineCap: string;
+    lineCap: CanvasLineCap;
     // (undocumented)
     lineDashOffset: number;
     // (undocumented)
-    lineJoin: string;
+    lineJoin: CanvasLineJoin;
     // (undocumented)
     lineTo(x: number, y: number): void;
     // (undocumented)
@@ -407,13 +554,103 @@ export class GraphicsContext implements IDisposable {
     // (undocumented)
     strokeText(text: string, x: number, y: number, maxWidth?: number): void;
     // (undocumented)
-    textAlign: string;
+    textAlign: CanvasTextAlign;
     // (undocumented)
-    textBaseline: string;
+    textBaseline: CanvasTextBaseline;
     // (undocumented)
     transform(m11: number, m12: number, m21: number, m22: number, dx: number, dy: number): void;
     // (undocumented)
     translate(x: number, y: number): void;
+}
+
+// @public
+export class HyperlinkRenderer extends TextRenderer {
+    constructor(options?: HyperlinkRenderer.IOptions);
+    drawText(gc: GraphicsContext, config: CellRenderer.CellConfig): void;
+    readonly url: CellRenderer.ConfigOption<string> | undefined;
+    readonly urlName: CellRenderer.ConfigOption<string> | undefined;
+}
+
+// @public (undocumented)
+export namespace HyperlinkRenderer {
+    export type ElideDirection = 'left' | 'right';
+    export type HorizontalAlignment = 'left' | 'center' | 'right';
+    export interface IOptions extends TextRenderer.IOptions {
+        url?: CellRenderer.ConfigOption<string> | undefined;
+        urlName?: CellRenderer.ConfigOption<string> | undefined;
+    }
+    export type VerticalAlignment = 'top' | 'center' | 'bottom';
+}
+
+// @public
+export interface ICellEditOptions {
+    editor?: ICellEditor;
+    onCancel?: () => void;
+    onCommit?: (response: ICellEditResponse) => void;
+    validator?: ICellInputValidator;
+}
+
+// @public
+export interface ICellEditor {
+    cancel(): void;
+    edit(cell: CellEditor.CellConfig, options?: ICellEditOptions): void;
+}
+
+// @public
+export interface ICellEditorController {
+    cancel(): void;
+    edit(cell: CellEditor.CellConfig, options?: ICellEditOptions): boolean;
+    setEditor(identifier: EditorOverrideIdentifier, editor: ICellEditor | Resolver): void;
+}
+
+// @public
+export interface ICellEditResponse {
+    cell: CellEditor.CellConfig;
+    cursorMovement: SelectionModel.CursorMoveDirection;
+    value: any;
+}
+
+// @public
+export interface ICellInputValidator {
+    validate(cell: CellEditor.CellConfig, value: any): ICellInputValidatorResponse;
+}
+
+// @public
+export interface ICellInputValidatorResponse {
+    message?: string;
+    valid: boolean;
+}
+
+// @public
+export abstract class InputCellEditor extends CellEditor {
+    // (undocumented)
+    protected bindEvents(): void;
+    // (undocumented)
+    protected createWidget(): void;
+    // (undocumented)
+    protected deserialize(value: any): any;
+    dispose(): void;
+    handleEvent(event: Event): void;
+    // (undocumented)
+    protected input: HTMLInputElement;
+    // (undocumented)
+    protected abstract inputType: string;
+    protected startEditing(): void;
+}
+
+// @public
+export class IntegerCellEditor extends InputCellEditor {
+    protected getInput(): number | null;
+    // (undocumented)
+    protected inputType: string;
+    protected startEditing(): void;
+}
+
+// @public
+export class IntegerInputValidator implements ICellInputValidator {
+    max: number;
+    min: number;
+    validate(cell: CellEditor.CellConfig, value: number): ICellInputValidatorResponse;
 }
 
 // @public
@@ -446,12 +683,92 @@ export namespace JSONModel {
 }
 
 // @public
+export abstract class MutableDataModel extends DataModel {
+    abstract setData(region: DataModel.CellRegion, row: number, column: number, value: any): boolean;
+}
+
+// @public
+export class NumberCellEditor extends InputCellEditor {
+    protected getInput(): number | null;
+    // (undocumented)
+    protected inputType: string;
+    protected startEditing(): void;
+}
+
+// @public
+export class NumberInputValidator implements ICellInputValidator {
+    max: number;
+    min: number;
+    validate(cell: CellEditor.CellConfig, value: number): ICellInputValidatorResponse;
+}
+
+// @public
+export class OptionCellEditor extends CellEditor {
+    dispose(): void;
+    protected getInput(): string | string[] | null;
+    protected startEditing(): void;
+    protected updatePosition(): void;
+}
+
+// @public
+export class PassInputValidator implements ICellInputValidator {
+    validate(cell: CellEditor.CellConfig, value: any): ICellInputValidatorResponse;
+}
+
+// @public
+export namespace PressData {
+    export type ColumnResizeData = {
+        readonly type: 'column-resize';
+        readonly region: DataModel.ColumnRegion;
+        readonly index: number;
+        readonly size: number;
+        readonly clientX: number;
+        readonly override: IDisposable;
+    };
+    export type PressData = RowResizeData | ColumnResizeData | SelectData;
+    export type RowResizeData = {
+        readonly type: 'row-resize';
+        readonly region: DataModel.RowRegion;
+        readonly index: number;
+        readonly size: number;
+        readonly clientY: number;
+        readonly override: IDisposable;
+    };
+    export type SelectData = {
+        readonly type: 'select';
+        readonly region: DataModel.CellRegion;
+        readonly row: number;
+        readonly column: number;
+        readonly override: IDisposable;
+        localX: number;
+        localY: number;
+        timeout: number;
+    };
+}
+
+// @public
+export namespace Private {
+    export function autoselect(grid: DataGrid, data: PressData.SelectData): void;
+    export function computeTimeout(delta: number): number;
+    export function createCellConfigObject(grid: DataGrid, hit: DataGrid.HitTestResult): CellRenderer.CellConfig | undefined;
+    export function resizeHandleForHitTest(hit: DataGrid.HitTestResult): ResizeHandle;
+    const cursorMap: {
+        top: string;
+        left: string;
+        right: string;
+        bottom: string;
+        hyperlink: string;
+        none: string;
+    };
+}
+
+// @public
 export class RendererMap {
     constructor(values?: RendererMap.Values, fallback?: CellRenderer);
     readonly changed: ISignal<this, void>;
     get(config: CellRenderer.CellConfig): CellRenderer;
     update(values?: RendererMap.Values, fallback?: CellRenderer): void;
-    }
+}
 
 // @public
 export namespace RendererMap {
@@ -459,6 +776,43 @@ export namespace RendererMap {
     export type Values = {
         [R in DataModel.CellRegion]?: Resolver | CellRenderer | undefined;
     };
+}
+
+// @public
+export type ResizeHandle = 'top' | 'left' | 'right' | 'bottom' | 'none' | 'hyperlink';
+
+// @public
+export function resolveOption<T>(option: ConfigOption<T>, config: CellEditor.CellConfig): T;
+
+// @public
+export type Resolver = ConfigFunc<ICellEditor | undefined>;
+
+// @public
+export class SectionList {
+    constructor(options: SectionList.IOptions);
+    clampSize(size: number): number;
+    clear(): void;
+    readonly count: number;
+    defaultSize: number;
+    extentOf(index: number): number;
+    indexOf(offset: number): number;
+    insert(index: number, count: number): void;
+    readonly length: number;
+    minimumSize: number;
+    move(index: number, count: number, destination: number): void;
+    offsetOf(index: number): number;
+    remove(index: number, count: number): void;
+    reset(): void;
+    resize(index: number, size: number): void;
+    sizeOf(index: number): number;
+}
+
+// @public
+export namespace SectionList {
+    export interface IOptions {
+        defaultSize: number;
+        minimumSize?: number;
+    }
 }
 
 // @public
@@ -475,6 +829,7 @@ export abstract class SelectionModel {
     isColumnSelected(index: number): boolean;
     abstract readonly isEmpty: boolean;
     isRowSelected(index: number): boolean;
+    abstract moveCursorWithinSelections(direction: SelectionModel.CursorMoveDirection): void;
     protected onDataModelChanged(sender: DataModel, args: DataModel.ChangedArgs): void;
     abstract select(args: SelectionModel.SelectArgs): void;
     selectionMode: SelectionModel.SelectionMode;
@@ -484,6 +839,7 @@ export abstract class SelectionModel {
 // @public
 export namespace SelectionModel {
     export type ClearMode = 'all' | 'current' | 'none';
+    export type CursorMoveDirection = 'up' | 'down' | 'left' | 'right' | 'none';
     export interface IOptions {
         dataModel: DataModel;
         selectionMode?: SelectionMode;
@@ -507,21 +863,39 @@ export namespace SelectionModel {
 }
 
 // @public
+export class TextCellEditor extends InputCellEditor {
+    protected getInput(): string | null;
+    // (undocumented)
+    protected inputType: string;
+}
+
+// @public
+export class TextInputValidator implements ICellInputValidator {
+    maxLength: number;
+    minLength: number;
+    pattern: RegExp | null;
+    validate(cell: CellEditor.CellConfig, value: string): ICellInputValidatorResponse;
+}
+
+// @public
 export class TextRenderer extends CellRenderer {
     constructor(options?: TextRenderer.IOptions);
     readonly backgroundColor: CellRenderer.ConfigOption<string>;
     drawBackground(gc: GraphicsContext, config: CellRenderer.CellConfig): void;
     drawText(gc: GraphicsContext, config: CellRenderer.CellConfig): void;
+    readonly elideDirection: CellRenderer.ConfigOption<TextRenderer.ElideDirection>;
     readonly font: CellRenderer.ConfigOption<string>;
     readonly format: TextRenderer.FormatFunc;
     readonly horizontalAlignment: CellRenderer.ConfigOption<TextRenderer.HorizontalAlignment>;
     paint(gc: GraphicsContext, config: CellRenderer.CellConfig): void;
     readonly textColor: CellRenderer.ConfigOption<string>;
     readonly verticalAlignment: CellRenderer.ConfigOption<TextRenderer.VerticalAlignment>;
+    readonly wrapText: CellRenderer.ConfigOption<boolean>;
 }
 
 // @public
 export namespace TextRenderer {
+    export type ElideDirection = 'left' | 'right';
     export function formatDate(options?: formatDate.IOptions): FormatFunc;
     export namespace formatDate {
         export interface IOptions {
@@ -593,16 +967,17 @@ export namespace TextRenderer {
     export type HorizontalAlignment = 'left' | 'center' | 'right';
     export interface IOptions {
         backgroundColor?: CellRenderer.ConfigOption<string>;
+        elideDirection?: CellRenderer.ConfigOption<ElideDirection>;
         font?: CellRenderer.ConfigOption<string>;
         format?: FormatFunc;
         horizontalAlignment?: CellRenderer.ConfigOption<HorizontalAlignment>;
         textColor?: CellRenderer.ConfigOption<string>;
         verticalAlignment?: CellRenderer.ConfigOption<VerticalAlignment>;
+        wrapText?: CellRenderer.ConfigOption<boolean>;
     }
     export function measureFontHeight(font: string): number;
     export type VerticalAlignment = 'top' | 'center' | 'bottom';
 }
-
 
 // (No @packageDocumentation comment for this package)
 

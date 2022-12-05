@@ -16,7 +16,6 @@ export class DisposableDelegate implements IDisposable {
 
 // @public
 export class DisposableSet implements IDisposable {
-    constructor();
     add(item: IDisposable): void;
     clear(): void;
     contains(item: IDisposable): boolean;
@@ -45,19 +44,18 @@ export interface IObservableDisposable extends IDisposable {
 export class ObservableDisposableDelegate extends DisposableDelegate implements IObservableDisposable {
     dispose(): void;
     readonly disposed: ISignal<this, void>;
-    }
+}
 
 // @public
 export class ObservableDisposableSet extends DisposableSet implements IObservableDisposable {
     dispose(): void;
     readonly disposed: ISignal<this, void>;
-    }
+}
 
 // @public
 export namespace ObservableDisposableSet {
     export function from(items: IterableOrArrayLike<IDisposable>): ObservableDisposableSet;
 }
-
 
 // (No @packageDocumentation comment for this package)
 

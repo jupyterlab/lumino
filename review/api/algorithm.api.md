@@ -53,7 +53,7 @@ export class ArrayIterator<T> implements IIterator<T> {
     clone(): IIterator<T>;
     iter(): IIterator<T>;
     next(): T | undefined;
-    }
+}
 
 // @public
 export function chain<T>(...objects: IterableOrArrayLike<T>[]): IIterator<T>;
@@ -64,7 +64,7 @@ export class ChainIterator<T> implements IIterator<T> {
     clone(): IIterator<T>;
     iter(): IIterator<T>;
     next(): T | undefined;
-    }
+}
 
 // @public
 export function each<T>(object: IterableOrArrayLike<T>, fn: (value: T, index: number) => boolean | void): void;
@@ -74,7 +74,6 @@ export function empty<T>(): IIterator<T>;
 
 // @public
 export class EmptyIterator<T> implements IIterator<T> {
-    constructor();
     clone(): IIterator<T>;
     iter(): IIterator<T>;
     next(): T | undefined;
@@ -89,7 +88,7 @@ export class EnumerateIterator<T> implements IIterator<[number, T]> {
     clone(): IIterator<[number, T]>;
     iter(): IIterator<[number, T]>;
     next(): [number, T] | undefined;
-    }
+}
 
 // @public
 export function every<T>(object: IterableOrArrayLike<T>, fn: (value: T, index: number) => boolean): boolean;
@@ -103,7 +102,7 @@ export class FilterIterator<T> implements IIterator<T> {
     clone(): IIterator<T>;
     iter(): IIterator<T>;
     next(): T | undefined;
-    }
+}
 
 // @public
 export function find<T>(object: IterableOrArrayLike<T>, fn: (value: T, index: number) => boolean): T | undefined;
@@ -143,7 +142,7 @@ export class ItemIterator<T> implements IIterator<[string, T]> {
     clone(): IIterator<[string, T]>;
     iter(): IIterator<[string, T]>;
     next(): [string, T] | undefined;
-    }
+}
 
 // @public
 export function iter<T>(object: IterableOrArrayLike<T>): IIterator<T>;
@@ -177,7 +176,7 @@ export class KeyIterator implements IIterator<string> {
     clone(): IIterator<string>;
     iter(): IIterator<string>;
     next(): string | undefined;
-    }
+}
 
 // @public
 export function map<T, U>(object: IterableOrArrayLike<T>, fn: (value: T, index: number) => U): IIterator<U>;
@@ -188,7 +187,7 @@ export class MapIterator<T, U> implements IIterator<U> {
     clone(): IIterator<U>;
     iter(): IIterator<U>;
     next(): U | undefined;
-    }
+}
 
 // @public
 export function max<T>(object: IterableOrArrayLike<T>, fn: (first: T, second: T) => number): T | undefined;
@@ -211,7 +210,7 @@ export class RangeIterator implements IIterator<number> {
     clone(): IIterator<number>;
     iter(): IIterator<number>;
     next(): number | undefined;
-    }
+}
 
 // @public
 export function reduce<T>(object: IterableOrArrayLike<T>, fn: (accumulator: T, value: T, index: number) => T): T;
@@ -228,7 +227,7 @@ export class RepeatIterator<T> implements IIterator<T> {
     clone(): IIterator<T>;
     iter(): IIterator<T>;
     next(): T | undefined;
-    }
+}
 
 // @public
 export function retro<T>(object: RetroableOrArrayLike<T>): IIterator<T>;
@@ -242,7 +241,7 @@ export class RetroArrayIterator<T> implements IIterator<T> {
     clone(): IIterator<T>;
     iter(): IIterator<T>;
     next(): T | undefined;
-    }
+}
 
 // @public
 export function some<T>(object: IterableOrArrayLike<T>, fn: (value: T, index: number) => boolean): boolean;
@@ -256,7 +255,7 @@ export class StrideIterator<T> implements IIterator<T> {
     clone(): IIterator<T>;
     iter(): IIterator<T>;
     next(): T | undefined;
-    }
+}
 
 // @public
 export namespace StringExt {
@@ -280,7 +279,7 @@ export class TakeIterator<T> implements IIterator<T> {
     clone(): IIterator<T>;
     iter(): IIterator<T>;
     next(): T | undefined;
-    }
+}
 
 // @public
 export function toArray<T>(object: IterableOrArrayLike<T>): T[];
@@ -301,7 +300,7 @@ export class ValueIterator<T> implements IIterator<T> {
     clone(): IIterator<T>;
     iter(): IIterator<T>;
     next(): T | undefined;
-    }
+}
 
 // @public
 export function zip<T>(...objects: IterableOrArrayLike<T>[]): IIterator<T[]>;
@@ -312,8 +311,7 @@ export class ZipIterator<T> implements IIterator<T[]> {
     clone(): IIterator<T[]>;
     iter(): IIterator<T[]>;
     next(): T[] | undefined;
-    }
-
+}
 
 // (No @packageDocumentation comment for this package)
 

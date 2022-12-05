@@ -12,6 +12,7 @@ export function getKeyboardLayout(): IKeyboardLayout;
 
 // @public
 export interface IKeyboardLayout {
+    isModifierKey(key: string): boolean;
     isValidKey(key: string): boolean;
     keyForKeydownEvent(event: KeyboardEvent): string;
     keys(): string[];
@@ -20,7 +21,8 @@ export interface IKeyboardLayout {
 
 // @public
 export class KeycodeLayout implements IKeyboardLayout {
-    constructor(name: string, codes: KeycodeLayout.CodeMap);
+    constructor(name: string, codes: KeycodeLayout.CodeMap, modifierKeys?: string[]);
+    isModifierKey(key: string): boolean;
     isValidKey(key: string): boolean;
     keyForKeydownEvent(event: KeyboardEvent): string;
     keys(): string[];
@@ -32,6 +34,7 @@ export namespace KeycodeLayout {
     export type CodeMap = {
         readonly [code: number]: string;
     };
+    export function convertToKeySet(keys: string[]): KeySet;
     export function extractKeys(codes: CodeMap): KeySet;
     export type KeySet = {
         readonly [key: string]: boolean;
@@ -40,7 +43,6 @@ export namespace KeycodeLayout {
 
 // @public
 export function setKeyboardLayout(layout: IKeyboardLayout): void;
-
 
 // (No @packageDocumentation comment for this package)
 

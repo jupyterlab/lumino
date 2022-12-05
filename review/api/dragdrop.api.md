@@ -11,32 +11,35 @@ import { MimeData } from '@lumino/coreutils';
 export class Drag implements IDisposable {
     constructor(options: Drag.IOptions);
     dispose(): void;
+    readonly document: Document | ShadowRoot;
     readonly dragImage: HTMLElement | null;
     handleEvent(event: Event): void;
     readonly isDisposed: boolean;
     readonly mimeData: MimeData;
+    protected moveDragImage(clientX: number, clientY: number): void;
     readonly proposedAction: DropAction;
     readonly source: any;
     start(clientX: number, clientY: number): Promise<DropAction>;
     readonly supportedActions: SupportedActions;
-    }
+}
 
 // @public
 export namespace Drag {
     export interface IOptions {
+        document?: Document | ShadowRoot;
         dragImage?: HTMLElement;
         mimeData: MimeData;
         proposedAction?: DropAction;
         source?: any;
         supportedActions?: SupportedActions;
     }
-    export function overrideCursor(cursor: string): IDisposable;
+    export function overrideCursor(cursor: string, doc?: Document | ShadowRoot): IDisposable;
 }
 
-// @public
+// @public @deprecated
 export type DropAction = 'none' | 'copy' | 'link' | 'move';
 
-// @public
+// @public @deprecated
 export interface IDragEvent extends MouseEvent {
     dropAction: DropAction;
     readonly mimeData: MimeData;
@@ -45,9 +48,8 @@ export interface IDragEvent extends MouseEvent {
     readonly supportedActions: SupportedActions;
 }
 
-// @public
+// @public @deprecated
 export type SupportedActions = DropAction | 'copy-link' | 'copy-move' | 'link-move' | 'all';
-
 
 // (No @packageDocumentation comment for this package)
 
