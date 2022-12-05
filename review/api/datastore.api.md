@@ -52,7 +52,7 @@ export namespace Datastore {
         field: F;
     };
     export function getField<S extends Schema, F extends keyof S['fields']>(datastore: Datastore, loc: FieldLocation<S, F>): S['fields'][F]['ValueType'];
-    export function getRecord<S extends Schema>(datastore: Datastore, loc: RecordLocation<S>): Record.Value<S> | undefined;
+    export function getRecord<S extends Schema>(datastore: Datastore, loc: RecordLocation<S>): Record_2.Value<S> | undefined;
     export function getTable<S extends Schema>(datastore: Datastore, loc: TableLocation<S>): Table<S>;
     export interface IChangedArgs {
         readonly change: Change;
@@ -68,7 +68,7 @@ export namespace Datastore {
         transactionIdFactory?: TransactionIdFactory;
     }
     export function listenField<S extends Schema, F extends keyof S['fields']>(datastore: Datastore, loc: FieldLocation<S, F>, slot: (source: Datastore, args: S['fields'][F]['ChangeType']) => void, thisArg?: any): IDisposable;
-    export function listenRecord<S extends Schema>(datastore: Datastore, loc: RecordLocation<S>, slot: (source: Datastore, args: Record.Change<S>) => void, thisArg?: any): IDisposable;
+    export function listenRecord<S extends Schema>(datastore: Datastore, loc: RecordLocation<S>, slot: (source: Datastore, args: Record_2.Change<S>) => void, thisArg?: any): IDisposable;
     export function listenTable<S extends Schema>(datastore: Datastore, loc: TableLocation<S>, slot: (source: Datastore, args: Table.Change<S>) => void, thisArg?: any): IDisposable;
     // @internal (undocumented)
     export type MutableChange = {
@@ -96,7 +96,7 @@ export namespace Datastore {
     export type TransactionIdFactory = (version: number, storeId: number) => string;
     export type TransactionType = 'transaction' | 'undo' | 'redo';
     export function updateField<S extends Schema, F extends keyof S['fields']>(datastore: Datastore, loc: FieldLocation<S, F>, update: S['fields'][F]['UpdateType']): void;
-    export function updateRecord<S extends Schema>(datastore: Datastore, loc: RecordLocation<S>, update: Record.Update<S>): void;
+    export function updateRecord<S extends Schema>(datastore: Datastore, loc: RecordLocation<S>, update: Record_2.Update<S>): void;
     export function updateTable<S extends Schema>(datastore: Datastore, loc: TableLocation<S>, update: Table.Update<S>): void;
     export function withTransaction(datastore: Datastore, update: (id: string) => void): string;
 }
@@ -262,39 +262,40 @@ export namespace MapField {
 }
 
 // @public
-export type Record<S extends Schema> = Record.Base<S> & Record.Value<S>;
+type Record_2<S extends Schema> = Record_2.Base<S> & Record_2.Value<S>;
 
 // @public
-export namespace Record {
-    export type Base<S extends Schema> = {
+namespace Record_2 {
+    type Base<S extends Schema> = {
         readonly $id: string;
         readonly '@@metadata': Metadata<S>;
     };
-    export type Change<S extends Schema> = {
+    type Change<S extends Schema> = {
         readonly [N in keyof S['fields']]?: S['fields'][N]['ChangeType'];
     };
     // @internal
-    export type Metadata<S extends Schema> = {
+    type Metadata<S extends Schema> = {
         readonly [N in keyof S['fields']]: S['fields'][N]['MetadataType'];
     };
     // @internal
-    export type MutableChange<S extends Schema> = {
+    type MutableChange<S extends Schema> = {
         [N in keyof S['fields']]?: S['fields'][N]['ChangeType'];
     };
     // @internal
-    export type MutablePatch<S extends Schema> = {
+    type MutablePatch<S extends Schema> = {
         [N in keyof S['fields']]?: S['fields'][N]['PatchType'];
     };
-    export type Patch<S extends Schema> = {
+    type Patch<S extends Schema> = {
         readonly [N in keyof S['fields']]?: S['fields'][N]['PatchType'];
     };
-    export type Update<S extends Schema> = {
+    type Update<S extends Schema> = {
         readonly [N in keyof S['fields']]?: S['fields'][N]['UpdateType'];
     };
-    export type Value<S extends Schema> = {
+    type Value<S extends Schema> = {
         readonly [N in keyof S['fields']]: S['fields'][N]['ValueType'];
     };
 }
+export { Record_2 as Record }
 
 // @public
 export class RegisterField<T extends ReadonlyJSONValue> extends Field<RegisterField.Value<T>, RegisterField.Update<T>, RegisterField.Metadata<T>, RegisterField.Change<T>, RegisterField.Patch<T>> {
@@ -340,17 +341,17 @@ export type Schema = {
 };
 
 // @public
-export class Table<S extends Schema> implements IIterable<Record<S>> {
+export class Table<S extends Schema> implements IIterable<Record_2<S>> {
     // @internal
     static create<U extends Schema>(schema: U, context: Datastore.Context): Table<U>;
-    get(id: string): Record<S> | undefined;
+    get(id: string): Record_2<S> | undefined;
     has(id: string): boolean;
     readonly isEmpty: boolean;
-    iter(): IIterator<Record<S>>;
+    iter(): IIterator<Record_2<S>>;
     // @internal
     static patch<U extends Schema>(table: Table<U>, data: Table.Patch<U>): Table.Change<U>;
     // @internal
-    static recreate<U extends Schema>(schema: U, context: Datastore.Context, records: IterableOrArrayLike<Record<U>>): Table<U>;
+    static recreate<U extends Schema>(schema: U, context: Datastore.Context, records: IterableOrArrayLike<Record_2<U>>): Table<U>;
     readonly schema: S;
     readonly size: number;
     // @internal
@@ -361,21 +362,21 @@ export class Table<S extends Schema> implements IIterable<Record<S>> {
 // @public
 export namespace Table {
     export type Change<S extends Schema> = {
-        readonly [recordId: string]: Record.Change<S>;
+        readonly [recordId: string]: Record_2.Change<S>;
     };
     // @internal
     export type MutableChange<S extends Schema> = {
-        [recordId: string]: Record.MutableChange<S>;
+        [recordId: string]: Record_2.MutableChange<S>;
     };
     // @internal
     export type MutablePatch<S extends Schema> = {
-        [recordId: string]: Record.MutablePatch<S>;
+        [recordId: string]: Record_2.MutablePatch<S>;
     };
     export type Patch<S extends Schema> = {
-        readonly [recordId: string]: Record.Patch<S>;
+        readonly [recordId: string]: Record_2.Patch<S>;
     };
     export type Update<S extends Schema> = {
-        readonly [recordId: string]: Record.Update<S>;
+        readonly [recordId: string]: Record_2.Update<S>;
     };
 }
 
@@ -426,7 +427,6 @@ export namespace TextField {
 
 // @public
 export function validateSchema(schema: Schema): string[];
-
 
 // (No @packageDocumentation comment for this package)
 

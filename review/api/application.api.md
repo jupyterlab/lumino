@@ -11,18 +11,22 @@ import { Token } from '@lumino/coreutils';
 import { Widget } from '@lumino/widgets';
 
 // @public
-export class Application<T extends Widget> {
+export class Application<T extends Widget = Widget> {
     constructor(options: Application.IOptions<T>);
     activatePlugin(id: string): Promise<void>;
     protected addEventListeners(): void;
     protected attachShell(id: string): void;
     readonly commands: CommandRegistry;
     readonly contextMenu: ContextMenu;
+    deactivatePlugin(id: string): Promise<string[]>;
+    deregisterPlugin(id: string, force?: boolean): void;
     protected evtContextMenu(event: MouseEvent): void;
     protected evtKeydown(event: KeyboardEvent): void;
     protected evtResize(event: Event): void;
+    getPluginDescription(id: string): string;
     handleEvent(event: Event): void;
     hasPlugin(id: string): boolean;
+    isPluginActivated(id: string): boolean;
     listPlugins(): string[];
     registerPlugin(plugin: IPlugin<this, any>): void;
     registerPlugins(plugins: IPlugin<this, any>[]): void;
@@ -31,7 +35,7 @@ export class Application<T extends Widget> {
     readonly shell: T;
     start(options?: Application.IStartOptions): Promise<void>;
     readonly started: Promise<void>;
-    }
+}
 
 // @public
 export namespace Application {
@@ -47,15 +51,16 @@ export namespace Application {
 }
 
 // @public
-export interface IPlugin<T, U> {
+export interface IPlugin<T extends Application, U> {
     activate: (app: T, ...args: any[]) => U | Promise<U>;
     autoStart?: boolean;
+    deactivate?: ((app: T, ...args: Token<any>[]) => void | Promise<void>) | null;
+    description?: string;
     id: string;
     optional?: Token<any>[];
-    provides?: Token<U>;
+    provides?: Token<U> | null;
     requires?: Token<any>[];
 }
-
 
 // (No @packageDocumentation comment for this package)
 

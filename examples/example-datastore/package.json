@@ -1,6 +1,6 @@
 {
   "name": "@lumino/example-datastore",
-  "version": "0.21.5",
+  "version": "0.21.6",
   "private": true,
   "scripts": {
     "build": "tsc && webpack",
@@ -14,7 +14,7 @@
     "@lumino/datastore": "^0.18.3",
     "@lumino/disposable": "^1.10.3",
     "@lumino/dragdrop": "^1.14.3",
-    "@lumino/widgets": "^1.35.0",
+    "@lumino/widgets": "^1.36.0",
     "codemirror": "^5.48.2",
     "es6-promise": "^4.0.5",
     "websocket": "^1.0.28"

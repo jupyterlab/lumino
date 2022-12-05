@@ -10,8 +10,8 @@ import { ISignal } from '@lumino/signaling';
 import { PromiseDelegate } from '@lumino/coreutils';
 
 // @public
-export class Debouncer<T = any, U = any> extends RateLimiter<T, U> {
-    invoke(): Promise<T>;
+export class Debouncer<T = any, U = any, V extends any[] = any[]> extends RateLimiter<T, U, V> {
+    invoke(...args: V): Promise<T>;
 }
 
 // @public
@@ -42,8 +42,8 @@ export namespace IPoll {
 }
 
 // @public
-export interface IRateLimiter<T = any, U = any> extends IDisposable {
-    invoke(): Promise<T>;
+export interface IRateLimiter<T = any, U = any, V extends any[] = any[]> extends IDisposable {
+    invoke(...args: V): Promise<T>;
     readonly limit: number;
     stop(): Promise<void>;
 }
@@ -66,7 +66,7 @@ export class Poll<T = any, U = any, V extends string = 'standby'> implements IOb
     stop(): Promise<void>;
     readonly tick: Promise<this>;
     readonly ticked: ISignal<this, IPoll.State<T, U, V>>;
-    }
+}
 
 // @public
 export namespace Poll {
@@ -85,10 +85,11 @@ export namespace Poll {
 }
 
 // @public
-export abstract class RateLimiter<T, U> implements IRateLimiter<T, U> {
-    constructor(fn: () => T | Promise<T>, limit?: number);
+export abstract class RateLimiter<T, U, V extends any[]> implements IRateLimiter<T, U, V> {
+    constructor(fn: (...args: V) => T | Promise<T>, limit?: number);
+    protected args: V | undefined;
     dispose(): void;
-    abstract invoke(): Promise<T>;
+    abstract invoke(...args: V): Promise<T>;
     readonly isDisposed: boolean;
     readonly limit: number;
     protected payload: PromiseDelegate<T> | null;
@@ -97,10 +98,18 @@ export abstract class RateLimiter<T, U> implements IRateLimiter<T, U> {
 }
 
 // @public
-export class Throttler<T = any, U = any> extends RateLimiter<T, U> {
-    invoke(): Promise<T>;
+export class Throttler<T = any, U = any, V extends any[] = any[]> extends RateLimiter<T, U, V> {
+    constructor(fn: (...args: V) => T | Promise<T>, options?: Throttler.IOptions | number);
+    invoke(...args: V): Promise<T>;
 }
 
+// @public
+export namespace Throttler {
+    export interface IOptions {
+        edge?: 'leading' | 'trailing';
+        limit?: number;
+    }
+}
 
 // (No @packageDocumentation comment for this package)
 
