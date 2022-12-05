@@ -2,30 +2,6 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
-## 2022.11.29
-
-([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/application@1.30.0...047d42205a32de8ec502f0d57d70fb161f1d1f41))
-
-### Enhancements made
-
-- Improve the menubar accessibility [#476](https://github.com/jupyterlab/lumino/pull/476) ([@fcollonval](https://github.com/fcollonval))
-
-### Bugs fixed
-
-- Fix drag-and-drop of nested dock panel [#473](https://github.com/jupyterlab/lumino/pull/473) ([@drcd1](https://github.com/drcd1))
-
-### Maintenance and upkeep improvements
-
-- Correct example version for 1.x [#479](https://github.com/jupyterlab/lumino/pull/479) ([@fcollonval](https://github.com/fcollonval))
-
-### Contributors to this release
-
-([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2022-10-31&to=2022-11-29&type=c))
-
-[@afshin](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aafshin+updated%3A2022-10-31..2022-11-29&type=Issues) | [@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2022-10-31..2022-11-29&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2022-10-31..2022-11-29&type=Issues) | [@meeseeksmachine](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ameeseeksmachine+updated%3A2022-10-31..2022-11-29&type=Issues) | [@scmmmh](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ascmmmh+updated%3A2022-10-31..2022-11-29&type=Issues) | [@vidartf](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Avidartf+updated%3A2022-10-31..2022-11-29&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Awelcome+updated%3A2022-10-31..2022-11-29&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
-
 ## 2022.10.31
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/application@1.29.4...8362e3daa3afac6b2e832b5bd225b662bdbd6593))
@@ -51,6 +27,8 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2022-10-05&to=2022-10-31&type=c))
 
 [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2022-10-05..2022-10-31&type=Issues) | [@krassowski](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2022-10-05..2022-10-31&type=Issues) | [@meeseeksdev](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ameeseeksdev+updated%3A2022-10-05..2022-10-31&type=Issues) | [@meeseeksmachine](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ameeseeksmachine+updated%3A2022-10-05..2022-10-31&type=Issues) | [@vidartf](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Avidartf+updated%3A2022-10-05..2022-10-31&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Awelcome+updated%3A2022-10-05..2022-10-31&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2022.10.5
 
