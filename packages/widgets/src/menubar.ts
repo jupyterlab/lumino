@@ -15,6 +15,8 @@ import { getKeyboardLayout } from '@lumino/keyboard';
 
 import { Message, MessageLoop } from '@lumino/messaging';
 
+import { CommandRegistry } from '@lumino/commands';
+
 import {
   ElementARIAAttrs,
   ElementDataset,
@@ -47,6 +49,8 @@ export class MenuBar extends Widget {
       forceX: true,
       forceY: true
     };
+    this._hamburgerMenu = null;
+    this._menuItemSizes = [];
   }
 
   /**
@@ -347,6 +351,9 @@ export class MenuBar extends Widget {
         event.preventDefault();
         event.stopPropagation();
         break;
+      case 'resize':
+        this._evtResize(event);
+        break;
     }
   }
 
@@ -359,6 +366,7 @@ export class MenuBar extends Widget {
     this.node.addEventListener('mousemove', this);
     this.node.addEventListener('mouseleave', this);
     this.node.addEventListener('contextmenu', this);
+    window.addEventListener('resize', this);
   }
 
   /**
@@ -379,6 +387,74 @@ export class MenuBar extends Widget {
   protected onActivateRequest(msg: Message): void {
     if (this.isAttached) {
       this.node.focus();
+    }
+  }
+
+  /**
+   * A message handler invoked on an `'resize'` message.
+   */
+  protected _evtResize(event: Event): void {
+    let itemMenus = this.node.getElementsByClassName('lm-MenuBar-item');
+    let screenSize = this.node.offsetWidth;
+    let totalMenuSize = 0;
+    let index = -1;
+    let n = itemMenus.length;
+    let first = false;
+
+    if (this._menuItemSizes.length == 0) {
+      // Check if it is the first resize
+      first = true;
+    }
+
+    for (let i = 0; i < n; i++) {
+      let item = itemMenus[i] as HTMLLIElement;
+      totalMenuSize += item.offsetWidth;
+      if (first) {
+        // Add sizes to array
+        this._menuItemSizes.push(item.offsetWidth);
+      }
+      if (totalMenuSize > screenSize) {
+        index = i;
+        break;
+      }
+    }
+    if (first) {
+      first = false;
+    }
+    console.log(this._menuItemSizes);
+    if (index > -1) {
+      // Create hamburger menu
+      const commands = new CommandRegistry();
+      if (this._hamburgerMenu === null) {
+        this._hamburgerMenu = new Menu({ commands });
+        this._hamburgerMenu.title.label = '...';
+        this._hamburgerMenu.title.mnemonic = 0;
+        this.addMenu(this._hamburgerMenu);
+      }
+
+      // Move menus
+      for (let i = index; i < n - 1; i++) {
+        let submenu = this.menus[i];
+        submenu.title.mnemonic = 0;
+        this._hamburgerMenu.insertItem(0, {
+          type: 'submenu',
+          submenu: submenu
+        });
+        this.removeMenuAt(i);
+      }
+    } else if (this._hamburgerMenu !== null) {
+      let i = n - 1;
+      let hamburgerMenuItems = this._hamburgerMenu.items;
+      console.log(screenSize - totalMenuSize, this._menuItemSizes[i]);
+      if (screenSize - totalMenuSize > this._menuItemSizes[i]) {
+        let menu = hamburgerMenuItems[0].submenu as Menu;
+        this._hamburgerMenu.removeItemAt(0);
+        this.insertMenu(i, menu);
+      }
+      if (this._hamburgerMenu.items.length === 0) {
+        this.removeMenu(this._hamburgerMenu);
+        this._hamburgerMenu = null;
+      }
     }
   }
 
@@ -730,6 +806,8 @@ export class MenuBar extends Widget {
   private _forceItemsPosition: Menu.IOpenOptions;
   private _menus: Menu[] = [];
   private _childMenu: Menu | null = null;
+  private _hamburgerMenu: Menu | null = null;
+  private _menuItemSizes: number[] = [];
 }
 
 /**
