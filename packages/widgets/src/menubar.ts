@@ -378,6 +378,7 @@ export class MenuBar extends Widget {
     this.node.removeEventListener('mousemove', this);
     this.node.removeEventListener('mouseleave', this);
     this.node.removeEventListener('contextmenu', this);
+    window.removeEventListener('resize', this);
     this._closeChildMenu();
   }
 
@@ -421,12 +422,10 @@ export class MenuBar extends Widget {
     if (first) {
       first = false;
     }
-    console.log(this._menuItemSizes);
     if (index > -1) {
       // Create hamburger menu
-      const commands = new CommandRegistry();
       if (this._hamburgerMenu === null) {
-        this._hamburgerMenu = new Menu({ commands });
+        this._hamburgerMenu = new Menu({ commands: new CommandRegistry() });
         this._hamburgerMenu.title.label = '...';
         this._hamburgerMenu.title.mnemonic = 0;
         this.addMenu(this._hamburgerMenu);
@@ -445,7 +444,6 @@ export class MenuBar extends Widget {
     } else if (this._hamburgerMenu !== null) {
       let i = n - 1;
       let hamburgerMenuItems = this._hamburgerMenu.items;
-      console.log(screenSize - totalMenuSize, this._menuItemSizes[i]);
       if (screenSize - totalMenuSize > this._menuItemSizes[i]) {
         let menu = hamburgerMenuItems[0].submenu as Menu;
         this._hamburgerMenu.removeItemAt(0);
