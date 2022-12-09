@@ -881,9 +881,7 @@ namespace Private {
       oldSize = previousSize;
     }
 
-    console.log(newEdges);
     const sorted = topologicSort(newEdges);
-    console.log(sorted);
     const index = sorted.findIndex(candidate => candidate === id);
 
     if (index === -1) {
