@@ -890,7 +890,35 @@ namespace Private {
       add(id);
     }
 
-    const sorted = topologicSort(edges);
+    // Filter edges
+    // - Get all packages that dependent on the package to be deactivated
+    const newEdges = edges.filter(edge => edge[1] === id);
+    let oldSize = 0;
+    while (newEdges.length > oldSize) {
+      const previousSize = newEdges.length;
+      // Get all packages that dependent on packages that will be deactivated
+      const packagesOfInterest = newEdges
+        .map(edge => edge[0])
+        .reduce<string[]>((agg, value) => {
+          if (agg.indexOf(value) == -1) {
+            agg.push(value);
+          }
+          return agg;
+        }, []);
+      for (const poi of packagesOfInterest) {
+        edges
+          .filter(edge => edge[1] === poi)
+          .forEach(edge => {
+            // We check it is not already included to deal with circular dependencies
+            if (newEdges.indexOf(edge) == -1) {
+              newEdges.push(edge);
+            }
+          });
+      }
+      oldSize = previousSize;
+    }
+
+    const sorted = topologicSort(newEdges);
     const index = findIndex(sorted, candidate => candidate === id);
 
     if (index === -1) {
