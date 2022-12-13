@@ -481,6 +481,7 @@ export class MenuBar extends Widget {
         }
       });
     }
+    this._menuItemSizes = [];
     VirtualDOM.render(content, this.contentNode);
   }
 
