@@ -400,28 +400,31 @@ export class MenuBar extends Widget {
     let totalMenuSize = 0;
     let index = -1;
     let n = itemMenus.length;
-    let first = false;
 
     if (this._menuItemSizes.length == 0) {
-      // Check if it is the first resize
-      first = true;
+      // Check if it is the first resize and get info about menu items sizes
+      for (let i = 0; i < n; i++) {
+        let item = itemMenus[i] as HTMLLIElement;
+        let found = false;
+        // Add sizes to array
+        totalMenuSize += item.offsetWidth;
+        this._menuItemSizes.push(item.offsetWidth);
+        if (totalMenuSize > screenSize && !found) {
+          index = i;
+          found = true;
+        }
+      }
+    } else {
+      // Calculate current menu size
+      for (let i = 0; i < this._menuItemSizes.length; i++) {
+        totalMenuSize += this._menuItemSizes[i];
+        if (totalMenuSize > screenSize) {
+          index = i;
+          break;
+        }
+      }
     }
 
-    for (let i = 0; i < n; i++) {
-      let item = itemMenus[i] as HTMLLIElement;
-      totalMenuSize += item.offsetWidth;
-      if (first) {
-        // Add sizes to array
-        this._menuItemSizes.push(item.offsetWidth);
-      }
-      if (totalMenuSize > screenSize) {
-        index = i;
-        break;
-      }
-    }
-    if (first) {
-      first = false;
-    }
     if (index > -1) {
       // Create hamburger menu
       if (this._hamburgerMenu === null) {
