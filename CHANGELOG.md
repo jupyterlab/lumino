@@ -2,6 +2,26 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2022.12.13
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/application@1.31.0...80999a0e9fe4d518602822fcc1baefd0c27cfd22))
+
+### Bugs fixed
+
+- Fix finding dependents for deactivation [#490](https://github.com/jupyterlab/lumino/pull/490) ([@fcollonval](https://github.com/fcollonval))
+
+### Maintenance and upkeep improvements
+
+- Bump @lumino/application [#494](https://github.com/jupyterlab/lumino/pull/494) ([@fcollonval](https://github.com/fcollonval))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2022-12-05&to=2022-12-13&type=c))
+
+[@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2022-12-05..2022-12-13&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2022.12.5
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2022.10.31...1c0765d67ca74988319b4567ed6c2951a45b97f3))
@@ -25,8 +45,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2022-10-31&to=2022-12-05&type=c))
 
 [@afshin](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aafshin+updated%3A2022-10-31..2022-12-05&type=Issues) | [@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2022-10-31..2022-12-05&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2022-10-31..2022-12-05&type=Issues) | [@meeseeksmachine](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ameeseeksmachine+updated%3A2022-10-31..2022-12-05&type=Issues) | [@scmmmh](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ascmmmh+updated%3A2022-10-31..2022-12-05&type=Issues) | [@vidartf](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Avidartf+updated%3A2022-10-31..2022-12-05&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Awelcome+updated%3A2022-10-31..2022-12-05&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2022.10.31
 
