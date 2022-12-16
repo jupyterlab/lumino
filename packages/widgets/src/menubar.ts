@@ -49,7 +49,7 @@ export class MenuBar extends Widget {
       forceX: true,
       forceY: true
     };
-    this._hamburgerMenu = null;
+    this._overflowMenu = null;
     this._menuItemSizes = [];
   }
 
@@ -395,6 +395,7 @@ export class MenuBar extends Widget {
    * A message handler invoked on an `'resize'` message.
    */
   protected _evtResize(event: Event): void {
+    // Get elements visible in the main menu bar
     let itemMenus = this.node.getElementsByClassName('lm-MenuBar-item');
     let screenSize = this.node.offsetWidth;
     let totalMenuSize = 0;
@@ -405,13 +406,11 @@ export class MenuBar extends Widget {
       // Check if it is the first resize and get info about menu items sizes
       for (let i = 0; i < n; i++) {
         let item = itemMenus[i] as HTMLLIElement;
-        let found = false;
         // Add sizes to array
         totalMenuSize += item.offsetWidth;
         this._menuItemSizes.push(item.offsetWidth);
-        if (totalMenuSize > screenSize && !found) {
+        if (totalMenuSize > screenSize && index === -1) {
           index = i;
-          found = true;
         }
       }
     } else {
@@ -427,34 +426,34 @@ export class MenuBar extends Widget {
 
     if (index > -1) {
       // Create hamburger menu
-      if (this._hamburgerMenu === null) {
-        this._hamburgerMenu = new Menu({ commands: new CommandRegistry() });
-        this._hamburgerMenu.title.label = '...';
-        this._hamburgerMenu.title.mnemonic = 0;
-        this.addMenu(this._hamburgerMenu);
+      if (this._overflowMenu === null) {
+        this._overflowMenu = new Menu({ commands: new CommandRegistry() });
+        this._overflowMenu.title.label = '...';
+        this._overflowMenu.title.mnemonic = 0;
+        this.addMenu(this._overflowMenu);
       }
 
       // Move menus
       for (let i = index; i < n - 1; i++) {
         let submenu = this.menus[i];
         submenu.title.mnemonic = 0;
-        this._hamburgerMenu.insertItem(0, {
+        this._overflowMenu.insertItem(0, {
           type: 'submenu',
           submenu: submenu
         });
         this.removeMenuAt(i);
       }
-    } else if (this._hamburgerMenu !== null) {
+    } else if (this._overflowMenu !== null) {
       let i = n - 1;
-      let hamburgerMenuItems = this._hamburgerMenu.items;
+      let hamburgerMenuItems = this._overflowMenu.items;
       if (screenSize - totalMenuSize > this._menuItemSizes[i]) {
         let menu = hamburgerMenuItems[0].submenu as Menu;
-        this._hamburgerMenu.removeItemAt(0);
+        this._overflowMenu.removeItemAt(0);
         this.insertMenu(i, menu);
       }
-      if (this._hamburgerMenu.items.length === 0) {
-        this.removeMenu(this._hamburgerMenu);
-        this._hamburgerMenu = null;
+      if (this._overflowMenu.items.length === 0) {
+        this.removeMenu(this._overflowMenu);
+        this._overflowMenu = null;
       }
     }
   }
@@ -808,7 +807,7 @@ export class MenuBar extends Widget {
   private _forceItemsPosition: Menu.IOpenOptions;
   private _menus: Menu[] = [];
   private _childMenu: Menu | null = null;
-  private _hamburgerMenu: Menu | null = null;
+  private _overflowMenu: Menu | null = null;
   private _menuItemSizes: number[] = [];
 }
 
