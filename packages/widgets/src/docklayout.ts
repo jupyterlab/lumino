@@ -839,18 +839,21 @@ export class DockLayout extends Layout {
 
     // Using transform create an additional layer in the pixel pipeline
     // to limit the number of layer, it is set only if there is more than one widget.
-    if (
-      this._hiddenMode === Widget.HiddenMode.Scale &&
-      refNode.tabBar.titles.length > 0
-    ) {
-      if (refNode.tabBar.titles.length == 1) {
+    if (this._hiddenMode === Widget.HiddenMode.Scale) {
+      if (refNode.tabBar.titles.length === 0) {
+        // Singular tab should use display mode to limit number of layers.
+        widget.hiddenMode = Widget.HiddenMode.Display;
+      } else if (refNode.tabBar.titles.length == 1) {
+        // If we are adding a second tab, switch the existing tab back to scale.
         const existingWidget = refNode.tabBar.titles[0].owner;
         existingWidget.hiddenMode = Widget.HiddenMode.Scale;
+      } else {
+        // For the third and subsequent tabs no special action is needed.
+        widget.hiddenMode = Widget.HiddenMode.Scale;
       }
-
-      widget.hiddenMode = Widget.HiddenMode.Scale;
     } else {
-      widget.hiddenMode = Widget.HiddenMode.Display;
+      // For all other modes just propagate the current mode.
+      widget.hiddenMode = this._hiddenMode;
     }
 
     // Insert the widget's tab relative to the target index.
