@@ -1267,6 +1267,7 @@ export namespace Widget {
         IsVisible = 8
     }
     export enum HiddenMode {
+        ContentVisibility = 2,
         Display = 0,
         Scale = 1
     }
