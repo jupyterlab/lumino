@@ -231,8 +231,7 @@ export class Drag implements IDisposable {
       return;
     }
     let style = this.dragImage.style;
-    style.top = `${clientY}px`;
-    style.left = `${clientX}px`;
+    style.transform = `translate(${clientX}px, ${clientY}px)`;
   }
 
   /**
@@ -371,7 +370,7 @@ export class Drag implements IDisposable {
     let prevElem = this._currentElement;
 
     // Find the current indicated element at the given position.
-    let currElem = this.document.elementFromPoint(event.clientX, event.clientY);
+    let currElem = Private.findElementBehidBackdrop(event, this.document);
 
     // Update the current element reference.
     this._currentElement = currElem;
@@ -415,8 +414,7 @@ export class Drag implements IDisposable {
     let style = this.dragImage.style;
     style.pointerEvents = 'none';
     style.position = 'fixed';
-    style.top = `${clientY}px`;
-    style.left = `${clientX}px`;
+    style.transform = `translate(${clientX}px, ${clientY}px)`;
     const body =
       this.document instanceof Document
         ? this.document.body
@@ -789,25 +787,8 @@ export namespace Drag {
     cursor: string,
     doc: Document | ShadowRoot = document
   ): IDisposable {
-    let id = ++overrideCursorID;
-    const body =
-      doc instanceof Document
-        ? doc.body
-        : (doc.firstElementChild as HTMLElement);
-    body.style.cursor = cursor;
-    body.classList.add('lm-mod-override-cursor');
-    return new DisposableDelegate(() => {
-      if (id === overrideCursorID) {
-        body.style.cursor = '';
-        body.classList.remove('lm-mod-override-cursor');
-      }
-    });
+    return Private.overrideCursor(cursor, doc);
   }
-
-  /**
-   * The internal id for the active cursor override.
-   */
-  let overrideCursorID = 0;
 }
 
 /**
@@ -852,6 +833,32 @@ namespace Private {
   }
 
   /**
+   * Find the event target using pointer position.
+   */
+  export function findElementBehidBackdrop(
+    event: PointerEvent,
+    root: Document | ShadowRoot = document
+  ) {
+    // Check if we already cached element for this event.
+    if (lastElementSearch && event == lastElementSearch.event) {
+      return lastElementSearch.element;
+    }
+    Private.cursorBackdrop.style.zIndex = '-1000';
+    const element: Element | null = root.elementFromPoint(
+      event.clientX,
+      event.clientY
+    );
+    Private.cursorBackdrop.style.zIndex = '';
+    lastElementSearch = { event, element };
+    return element;
+  }
+
+  let lastElementSearch: {
+    event: PointerEvent;
+    element: Element | null;
+  } | null = null;
+
+  /**
    * Find the drag scroll target under the mouse, if any.
    */
   export function findScrollTarget(event: PointerEvent): IScrollTarget | null {
@@ -860,7 +867,7 @@ namespace Private {
     let y = event.clientY;
 
     // Get the element under the mouse.
-    let element: Element | null = document.elementFromPoint(x, y);
+    let element: Element | null = findElementBehidBackdrop(event);
 
     // Search for a scrollable target based on the mouse position.
     // The null assert in third clause of for-loop is required due to:
@@ -1211,4 +1218,67 @@ namespace Private {
     'link-move': actionTable['link'] | actionTable['move'],
     all: actionTable['copy'] | actionTable['link'] | actionTable['move']
   };
+
+  /**
+   * Implementation of `Drag.overrideCursor`.
+   */
+  export function overrideCursor(
+    cursor: string,
+    doc: Document | ShadowRoot = document
+  ): IDisposable {
+    let id = ++overrideCursorID;
+    const body =
+      doc instanceof Document
+        ? doc.body
+        : (doc.firstElementChild as HTMLElement);
+    if (!cursorBackdrop.isConnected) {
+      body.appendChild(cursorBackdrop);
+      document.addEventListener('pointermove', alignBackdrop, {
+        capture: true,
+        passive: true
+      });
+    }
+    cursorBackdrop.style.cursor = cursor;
+    return new DisposableDelegate(() => {
+      if (id === overrideCursorID && cursorBackdrop.isConnected) {
+        document.removeEventListener('pointermove', alignBackdrop, true);
+        body.removeChild(cursorBackdrop);
+      }
+    });
+  }
+
+  /**
+   * Move cursor backdrop to match cursor position.
+   */
+  function alignBackdrop(event: PointerEvent) {
+    if (!cursorBackdrop) {
+      return;
+    }
+    cursorBackdrop.style.transform = `translate(${event.clientX}px, ${event.clientY}px)`;
+  }
+
+  /**
+   * Create cursor backdrop node.
+   */
+  function createCursorBackdrop(): HTMLElement {
+    const backdrop = document.createElement('div');
+    backdrop.classList.add('lm-cursor-backdrop');
+    return backdrop;
+  }
+
+  /**
+   * The internal id for the active cursor override.
+   */
+  let overrideCursorID = 0;
+
+  /**
+   * A backdrop node overriding pointer cursor.
+   *
+   * #### Notes
+   * We use a backdrop node rather than setting the cursor directly on the body
+   * because setting it on body requires more extensive style recalculation for
+   * reliable application of the cursor, this is the cursor not being overriden
+   * when over child elements with another style like `cursor: other!important`.
+   */
+  export const cursorBackdrop: HTMLElement = createCursorBackdrop();
 }

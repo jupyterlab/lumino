@@ -215,8 +215,7 @@ describe('@lumino/dragdrop', () => {
         dragImage.style.minWidth = '10px';
         let drag = new Drag({ mimeData: new MimeData(), dragImage });
         drag.start(10, 20);
-        expect(dragImage.style.top).to.equal('20px');
-        expect(dragImage.style.left).to.equal('10px');
+        expect(dragImage.style.transform).to.equal(`translate(10px, 20px)`);
         drag.dispose();
       });
 
@@ -308,8 +307,9 @@ describe('@lumino/dragdrop', () => {
             })
           );
           let image = drag.dragImage!;
-          expect(image.style.top).to.equal(`${rect.top + 1}px`);
-          expect(image.style.left).to.equal(`${rect.left + 1}px`);
+          expect(image.style.transform).to.equal(
+            `translate(${rect.left + 1}px, ${rect.top + 1}px)`
+          );
         });
       });
 
@@ -554,93 +554,62 @@ describe('@lumino/dragdrop', () => {
     });
 
     describe('.overrideCursor()', () => {
-      it('should update the body `cursor` style', () => {
-        expect(document.body.style.cursor).to.equal('');
+      it('should attach a backdrop with `cursor` style', () => {
+        expect(document.querySelector('.lm-cursor-backdrop')).to.equal(null);
         let override = Drag.overrideCursor('wait');
-        expect(document.body.style.cursor).to.equal('wait');
+        const backdrop = document.querySelector(
+          '.lm-cursor-backdrop'
+        ) as HTMLElement;
+        expect(backdrop.style.cursor).to.equal('wait');
         override.dispose();
       });
 
-      it('should add the `lm-mod-override-cursor` class to the body', () => {
-        expect(
-          document.body.classList.contains('lm-mod-override-cursor')
-        ).to.equal(false);
+      it('should detach the backdrop when disposed', () => {
+        expect(document.querySelector('.lm-cursor-backdrop')).to.equal(null);
         let override = Drag.overrideCursor('wait');
-        expect(
-          document.body.classList.contains('lm-mod-override-cursor')
-        ).to.equal(true);
+        expect(document.querySelector('.lm-cursor-backdrop')).to.not.equal(
+          null
+        );
         override.dispose();
-      });
-
-      it('should clear the override when disposed', () => {
-        expect(document.body.style.cursor).to.equal('');
-        let override = Drag.overrideCursor('wait');
-        expect(document.body.style.cursor).to.equal('wait');
-        override.dispose();
-        expect(document.body.style.cursor).to.equal('');
-      });
-
-      it('should remove the `lm-mod-override-cursor` class when disposed', () => {
-        expect(
-          document.body.classList.contains('lm-mod-override-cursor')
-        ).to.equal(false);
-        let override = Drag.overrideCursor('wait');
-        expect(
-          document.body.classList.contains('lm-mod-override-cursor')
-        ).to.equal(true);
-        override.dispose();
-        expect(
-          document.body.classList.contains('lm-mod-override-cursor')
-        ).to.equal(false);
+        expect(document.querySelector('.lm-cursor-backdrop')).to.equal(null);
       });
 
       it('should respect the most recent override', () => {
-        expect(document.body.style.cursor).to.equal('');
-        expect(
-          document.body.classList.contains('lm-mod-override-cursor')
-        ).to.equal(false);
         let one = Drag.overrideCursor('wait');
-        expect(document.body.style.cursor).to.equal('wait');
-        expect(
-          document.body.classList.contains('lm-mod-override-cursor')
-        ).to.equal(true);
+        const backdrop = document.querySelector(
+          '.lm-cursor-backdrop'
+        ) as HTMLElement;
+        expect(backdrop.style.cursor).to.equal('wait');
+        expect(backdrop.isConnected).to.equal(true);
         let two = Drag.overrideCursor('default');
-        expect(document.body.style.cursor).to.equal('default');
-        expect(
-          document.body.classList.contains('lm-mod-override-cursor')
-        ).to.equal(true);
+        expect(backdrop.style.cursor).to.equal('default');
+        expect(backdrop.isConnected).to.equal(true);
         let three = Drag.overrideCursor('cell');
-        expect(document.body.style.cursor).to.equal('cell');
-        expect(
-          document.body.classList.contains('lm-mod-override-cursor')
-        ).to.equal(true);
+        expect(backdrop.style.cursor).to.equal('cell');
+        expect(backdrop.isConnected).to.equal(true);
         two.dispose();
-        expect(document.body.style.cursor).to.equal('cell');
-        expect(
-          document.body.classList.contains('lm-mod-override-cursor')
-        ).to.equal(true);
+        expect(backdrop.style.cursor).to.equal('cell');
+        expect(backdrop.isConnected).to.equal(true);
         one.dispose();
-        expect(document.body.style.cursor).to.equal('cell');
-        expect(
-          document.body.classList.contains('lm-mod-override-cursor')
-        ).to.equal(true);
+        expect(backdrop.style.cursor).to.equal('cell');
+        expect(backdrop.isConnected).to.equal(true);
         three.dispose();
-        expect(document.body.style.cursor).to.equal('');
-        expect(
-          document.body.classList.contains('lm-mod-override-cursor')
-        ).to.equal(false);
+        expect(backdrop.isConnected).to.equal(false);
       });
 
-      it('should override the computed cursor for a node', () => {
-        let div = document.createElement('div');
-        div.style.cursor = 'cell';
-        document.body.appendChild(div);
-        expect(window.getComputedStyle(div).cursor).to.equal('cell');
+      it('should move backdrop with pointer', () => {
         let override = Drag.overrideCursor('wait');
-        expect(window.getComputedStyle(div).cursor).to.equal('wait');
+        const backdrop = document.querySelector(
+          '.lm-cursor-backdrop'
+        ) as HTMLElement;
+        document.dispatchEvent(
+          new PointerEvent('pointermove', {
+            clientX: 100,
+            clientY: 500
+          })
+        );
+        expect(backdrop.style.transform).to.equal('translate(100px, 500px)');
         override.dispose();
-        expect(window.getComputedStyle(div).cursor).to.equal('cell');
-        document.body.removeChild(div);
       });
     });
   });
