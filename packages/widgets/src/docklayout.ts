@@ -1119,6 +1119,7 @@ export class DockLayout extends Layout {
     // Initialize the handle layout behavior.
     let style = handle.style;
     style.position = 'absolute';
+    style.contain = 'strict';
     style.top = '0';
     style.left = '0';
     style.width = '0';

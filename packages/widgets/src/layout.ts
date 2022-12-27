@@ -619,10 +619,12 @@ export class LayoutItem implements IDisposable {
    *
    * #### Notes
    * The widget will be set to absolute positioning.
+   * The widget will use strict CSS containment.
    */
   constructor(widget: Widget) {
     this.widget = widget;
     this.widget.node.style.position = 'absolute';
+    this.widget.node.style.contain = 'strict';
   }
 
   /**
@@ -647,6 +649,7 @@ export class LayoutItem implements IDisposable {
     style.left = '';
     style.width = '';
     style.height = '';
+    style.contain = '';
   }
 
   /**
