@@ -771,7 +771,7 @@ export namespace CommandPalette {
           {
             className,
             dataset,
-            role: 'checkbox',
+            role: 'menuitemcheckbox',
             'aria-checked': `${data.item.isToggled}`
           },
           this.renderItemIcon(data),
