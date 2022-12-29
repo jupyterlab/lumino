@@ -470,7 +470,7 @@ export class MenuBar extends Widget {
         this.addMenu(this._overflowMenu, false);
       }
       // Move menus to overflow menu
-      for (let i = length; i < menus.length - 1; ++i) {
+      for (let i = menus.length - 2; i >= length; i--) {
         let submenu = this.menus[i];
         submenu.title.mnemonic = 0;
         this._overflowMenu.insertItem(0, {
@@ -850,7 +850,7 @@ export class MenuBar extends Widget {
   private _childMenu: Menu | null = null;
   private _overflowMenu: Menu | null = null;
   private _menuItemSizes: number[] = [];
-  private _overflowIndex: number;
+  private _overflowIndex: number = -1;
 }
 
 /**
