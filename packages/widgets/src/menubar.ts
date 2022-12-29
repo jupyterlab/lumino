@@ -49,9 +49,6 @@ export class MenuBar extends Widget {
       forceX: true,
       forceY: true
     };
-    this._overflowMenu = null;
-    this._menuItemSizes = [];
-    this._overflowIndex = -1;
   }
 
   /**
