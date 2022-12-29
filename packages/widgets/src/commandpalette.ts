@@ -782,7 +782,8 @@ export namespace CommandPalette {
       return h.li(
         {
           className,
-          dataset
+          dataset,
+          role: 'menuitem'
         },
         this.renderItemIcon(data),
         this.renderItemContent(data),
@@ -1012,6 +1013,7 @@ namespace Private {
     clear.className = 'lm-close-icon';
 
     content.className = 'lm-CommandPalette-content';
+    content.setAttribute('role', 'menu');
     input.spellcheck = false;
     wrapper.appendChild(input);
     wrapper.appendChild(clear);
