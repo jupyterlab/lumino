@@ -51,6 +51,7 @@ export class MenuBar extends Widget {
     };
     this._overflowMenu = null;
     this._menuItemSizes = [];
+    this._overflowIndex = -1;
   }
 
   /**
@@ -187,8 +188,8 @@ export class MenuBar extends Widget {
    * #### Notes
    * If the menu is already added to the menu bar, it will be moved.
    */
-  addMenu(menu: Menu): void {
-    this.insertMenu(this._menus.length, menu);
+  addMenu(menu: Menu, update: boolean = true): void {
+    this.insertMenu(this._menus.length, menu, update);
   }
 
   /**
@@ -203,7 +204,7 @@ export class MenuBar extends Widget {
    *
    * If the menu is already added to the menu bar, it will be moved.
    */
-  insertMenu(index: number, menu: Menu): void {
+  insertMenu(index: number, menu: Menu, update: boolean = true): void {
     // Close the child menu before making changes.
     this._closeChildMenu();
 
@@ -227,7 +228,9 @@ export class MenuBar extends Widget {
       menu.title.changed.connect(this._onTitleChanged, this);
 
       // Schedule an update of the items.
-      this.update();
+      if (update) {
+        this.update();
+      }
 
       // There is nothing more to do.
       return;
@@ -249,7 +252,9 @@ export class MenuBar extends Widget {
     ArrayExt.move(this._menus, i, j);
 
     // Schedule an update of the items.
-    this.update();
+    if (update) {
+      this.update();
+    }
   }
 
   /**
@@ -260,8 +265,8 @@ export class MenuBar extends Widget {
    * #### Notes
    * This is a no-op if the menu is not in the menu bar.
    */
-  removeMenu(menu: Menu): void {
-    this.removeMenuAt(this._menus.indexOf(menu));
+  removeMenu(menu: Menu, update: boolean = true): void {
+    this.removeMenuAt(this._menus.indexOf(menu), update);
   }
 
   /**
@@ -272,7 +277,7 @@ export class MenuBar extends Widget {
    * #### Notes
    * This is a no-op if the index is out of range.
    */
-  removeMenuAt(index: number): void {
+  removeMenuAt(index: number, update: boolean = true): void {
     // Close the child menu before making changes.
     this._closeChildMenu();
 
@@ -293,7 +298,9 @@ export class MenuBar extends Widget {
     menu.removeClass('lm-MenuBar-menu');
 
     // Schedule an update of the items.
-    this.update();
+    if (update) {
+      this.update();
+    }
   }
 
   /**
@@ -351,9 +358,6 @@ export class MenuBar extends Widget {
         event.preventDefault();
         event.stopPropagation();
         break;
-      case 'resize':
-        this._evtResize(event);
-        break;
     }
   }
 
@@ -366,7 +370,6 @@ export class MenuBar extends Widget {
     this.node.addEventListener('mousemove', this);
     this.node.addEventListener('mouseleave', this);
     this.node.addEventListener('contextmenu', this);
-    window.addEventListener('resize', this);
   }
 
   /**
@@ -378,7 +381,6 @@ export class MenuBar extends Widget {
     this.node.removeEventListener('mousemove', this);
     this.node.removeEventListener('mouseleave', this);
     this.node.removeEventListener('contextmenu', this);
-    window.removeEventListener('resize', this);
     this._closeChildMenu();
   }
 
@@ -392,9 +394,13 @@ export class MenuBar extends Widget {
   }
 
   /**
-   * A message handler invoked on an `'resize'` message.
+   * A message handler invoked on a `'resize'` message.
    */
-  protected _evtResize(event: Event): void {
+  protected onResize(msg: Widget.ResizeMessage): void {
+    this.update();
+  }
+
+  protected updateOverflowIndex(): void {
     // Get elements visible in the main menu bar
     let itemMenus = this.node.getElementsByClassName('lm-MenuBar-item');
     let screenSize = this.node.offsetWidth;
@@ -423,39 +429,7 @@ export class MenuBar extends Widget {
         }
       }
     }
-
-    if (index > -1) {
-      // Create hamburger menu
-      if (this._overflowMenu === null) {
-        this._overflowMenu = new Menu({ commands: new CommandRegistry() });
-        this._overflowMenu.title.label = '...';
-        this._overflowMenu.title.mnemonic = 0;
-        this.addMenu(this._overflowMenu);
-      }
-
-      // Move menus
-      for (let i = index; i < n - 1; i++) {
-        let submenu = this.menus[i];
-        submenu.title.mnemonic = 0;
-        this._overflowMenu.insertItem(0, {
-          type: 'submenu',
-          submenu: submenu
-        });
-        this.removeMenuAt(i);
-      }
-    } else if (this._overflowMenu !== null) {
-      let i = n - 1;
-      let hamburgerMenuItems = this._overflowMenu.items;
-      if (screenSize - totalMenuSize > this._menuItemSizes[i]) {
-        let menu = hamburgerMenuItems[0].submenu as Menu;
-        this._overflowMenu.removeItemAt(0);
-        this.insertMenu(i, menu);
-      }
-      if (this._overflowMenu.items.length === 0) {
-        this.removeMenu(this._overflowMenu);
-        this._overflowMenu = null;
-      }
-    }
+    this._overflowIndex = index;
   }
 
   /**
@@ -465,8 +439,15 @@ export class MenuBar extends Widget {
     let menus = this._menus;
     let renderer = this.renderer;
     let activeIndex = this._activeIndex;
-    let content = new Array<VirtualElement>(menus.length);
-    for (let i = 0, n = menus.length; i < n; ++i) {
+    let length = this._overflowIndex > -1 ? this._overflowIndex : menus.length;
+    let content = new Array<VirtualElement>(length);
+    let totalMenuSize = 0;
+
+    // Check that the overflow menu doesn't count
+    length = this._overflowMenu !== null ? length - 1 : length;
+
+    // Render visible menus
+    for (let i = 0; i < length; ++i) {
       let title = menus[i].title;
       let active = i === activeIndex;
       if (active && menus[i].items.length == 0) {
@@ -479,9 +460,72 @@ export class MenuBar extends Widget {
           this.activeIndex = i;
         }
       });
+      // Calculate size of current menu
+      totalMenuSize += this._menuItemSizes[i];
     }
-    this._menuItemSizes = [];
+    // Render overflow menu if needed
+    if (this._overflowIndex > -1) {
+      // Create overflow menu
+      if (this._overflowMenu === null) {
+        this._overflowMenu = new Menu({ commands: new CommandRegistry() });
+        this._overflowMenu.title.label = '...';
+        this._overflowMenu.title.mnemonic = 0;
+        this.addMenu(this._overflowMenu, false);
+      }
+      // Move menus to overflow menu
+      for (let i = length; i < menus.length - 1; ++i) {
+        let submenu = this.menus[i];
+        submenu.title.mnemonic = 0;
+        this._overflowMenu.insertItem(0, {
+          type: 'submenu',
+          submenu: submenu
+        });
+        this.removeMenu(submenu, false);
+      }
+      let title = this._overflowMenu.title;
+      let active = length === activeIndex;
+      if (active && menus[length].items.length == 0) {
+        active = false;
+      }
+      content[length] = renderer.renderItem({
+        title,
+        active,
+        onfocus: () => {
+          this.activeIndex = length;
+        }
+      });
+    } else if (this._overflowMenu !== null) {
+      // Remove submenus from overflow menu
+      let overflowMenuItems = this._overflowMenu.items;
+      let screenSize = this.node.offsetWidth;
+      let n = this._overflowMenu.items.length;
+      for (let i = 0; i < n; ++i) {
+        let index = menus.length - 1 - i;
+        if (screenSize - totalMenuSize > this._menuItemSizes[index]) {
+          let menu = overflowMenuItems[0].submenu as Menu;
+          this._overflowMenu.removeItemAt(0);
+          this.insertMenu(length, menu, false);
+          let title = menu.title;
+          let active = false;
+          content[length] = renderer.renderItem({
+            title,
+            active,
+            onfocus: () => {
+              this.activeIndex = length;
+            }
+          });
+          length++;
+        }
+      }
+      if (this._overflowMenu.items.length === 0) {
+        this.removeMenu(this._overflowMenu, false);
+        content.pop();
+        this._overflowMenu = null;
+        this._overflowIndex = -1;
+      }
+    }
     VirtualDOM.render(content, this.contentNode);
+    this.updateOverflowIndex();
   }
 
   /**
@@ -809,6 +853,7 @@ export class MenuBar extends Widget {
   private _childMenu: Menu | null = null;
   private _overflowMenu: Menu | null = null;
   private _menuItemSizes: number[] = [];
+  private _overflowIndex: number;
 }
 
 /**
