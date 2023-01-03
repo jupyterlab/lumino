@@ -241,6 +241,7 @@ namespace Private {
   ): HTMLElement {
     const title = renderer.createSectionTitle(data);
     title.style.position = 'absolute';
+    title.style.contain = 'strict';
     title.setAttribute('aria-label', `${data.label} Section`);
     title.setAttribute('aria-expanded', expanded ? 'true' : 'false');
     title.setAttribute('aria-controls', data.owner.id);

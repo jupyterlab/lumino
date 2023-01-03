@@ -1281,6 +1281,7 @@ export namespace DockPanel {
       this.node.classList.add('lm-DockPanel-overlay');
       this.node.classList.add('lm-mod-hidden');
       this.node.style.position = 'absolute';
+      this.node.style.contain = 'strict';
     }
 
     /**
