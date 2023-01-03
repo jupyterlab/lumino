@@ -762,6 +762,7 @@ describe('@lumino/widgets', () => {
         widget.hiddenMode = Widget.HiddenMode.ContentVisibility;
         widget.hide();
         expect(widget.hasClass('lm-mod-hidden')).to.equal(false);
+        // @ts-expect-error content-visibility unknown by DOM lib types
         expect(widget.node.style.contentVisibility).to.equal('hidden');
         expect(widget.node.style.willChange).to.equal('auto');
         widget.dispose();

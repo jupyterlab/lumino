@@ -745,6 +745,7 @@ export class Widget implements IMessageHandler, IObservableDisposable {
           this.node.style.transform = 'scale(0)';
           break;
         case Widget.HiddenMode.ContentVisibility:
+          // @ts-expect-error content-visibility unknown by DOM lib types
           this.node.style.contentVisibility = 'hidden';
           this.node.style.zIndex = '-1';
           break;
@@ -758,6 +759,7 @@ export class Widget implements IMessageHandler, IObservableDisposable {
           this.node.style.transform = '';
           break;
         case Widget.HiddenMode.ContentVisibility:
+          // @ts-expect-error content-visibility unknown by DOM lib types
           this.node.style.contentVisibility = '';
           this.node.style.zIndex = '';
           break;
