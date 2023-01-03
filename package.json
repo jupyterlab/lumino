@@ -51,7 +51,7 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.0",
     "husky": "^8.0.0",
-    "lerna": "^5.5.4",
+    "lerna": "^6.3.0",
     "lint-staged": "^10.2.13",
     "prettier": "^2.7.1",
     "shell-quote": "^1.7.2",
