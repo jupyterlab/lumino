@@ -1,6 +1,6 @@
 {
   "name": "@lumino/polling",
-  "version": "2.0.0-alpha.6",
+  "version": "2.0.0-alpha.7",
   "description": "Lumino Polling",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -44,9 +44,9 @@
     "displayName": "polling"
   },
   "dependencies": {
-    "@lumino/coreutils": "^2.0.0-alpha.6",
-    "@lumino/disposable": "^2.0.0-alpha.6",
-    "@lumino/signaling": "^2.0.0-alpha.6"
+    "@lumino/coreutils": "^2.0.0-alpha.7",
+    "@lumino/disposable": "^2.0.0-alpha.7",
+    "@lumino/signaling": "^2.0.0-alpha.7"
   },
   "devDependencies": {
     "@microsoft/api-extractor": "^7.6.0",
