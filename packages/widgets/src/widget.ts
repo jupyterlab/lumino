@@ -423,7 +423,6 @@ export class Widget implements IMessageHandler, IObservableDisposable {
       MessageLoop.sendMessage(this, Widget.Msg.BeforeShow);
     }
     this.clearFlag(Widget.Flag.IsHidden);
-    this.node.removeAttribute('aria-hidden');
     this._toggleHidden(false);
 
     if (this.isAttached && (!this.parent || this.parent.isVisible)) {
@@ -451,7 +450,6 @@ export class Widget implements IMessageHandler, IObservableDisposable {
       MessageLoop.sendMessage(this, Widget.Msg.BeforeHide);
     }
     this.setFlag(Widget.Flag.IsHidden);
-    this.node.setAttribute('aria-hidden', 'true');
     this._toggleHidden(true);
 
     if (this.isAttached && (!this.parent || this.parent.isVisible)) {
@@ -743,6 +741,7 @@ export class Widget implements IMessageHandler, IObservableDisposable {
           break;
         case Widget.HiddenMode.Scale:
           this.node.style.transform = 'scale(0)';
+          this.node.setAttribute('aria-hidden', 'true');
           break;
         case Widget.HiddenMode.ContentVisibility:
           // @ts-expect-error content-visibility unknown by DOM lib types
@@ -757,6 +756,7 @@ export class Widget implements IMessageHandler, IObservableDisposable {
           break;
         case Widget.HiddenMode.Scale:
           this.node.style.transform = '';
+          this.node.removeAttribute('aria-hidden');
           break;
         case Widget.HiddenMode.ContentVisibility:
           // @ts-expect-error content-visibility unknown by DOM lib types
