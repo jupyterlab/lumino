@@ -1,6 +1,6 @@
 {
   "name": "@lumino/widgets",
-  "version": "2.0.0-alpha.7",
+  "version": "2.0.0-beta.0",
   "description": "Lumino Widgets",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -54,17 +54,17 @@
     "displayName": "widgets"
   },
   "dependencies": {
-    "@lumino/algorithm": "^2.0.0-alpha.7",
-    "@lumino/commands": "^2.0.0-alpha.7",
-    "@lumino/coreutils": "^2.0.0-alpha.7",
-    "@lumino/disposable": "^2.0.0-alpha.7",
-    "@lumino/domutils": "^2.0.0-alpha.7",
-    "@lumino/dragdrop": "^2.0.0-alpha.7",
-    "@lumino/keyboard": "^2.0.0-alpha.7",
-    "@lumino/messaging": "^2.0.0-alpha.7",
-    "@lumino/properties": "^2.0.0-alpha.7",
-    "@lumino/signaling": "^2.0.0-alpha.7",
-    "@lumino/virtualdom": "^2.0.0-alpha.7"
+    "@lumino/algorithm": "^2.0.0-beta.0",
+    "@lumino/commands": "^2.0.0-beta.0",
+    "@lumino/coreutils": "^2.0.0-beta.0",
+    "@lumino/disposable": "^2.0.0-beta.0",
+    "@lumino/domutils": "^2.0.0-beta.0",
+    "@lumino/dragdrop": "^2.0.0-beta.0",
+    "@lumino/keyboard": "^2.0.0-beta.0",
+    "@lumino/messaging": "^2.0.0-beta.0",
+    "@lumino/properties": "^2.0.0-beta.0",
+    "@lumino/signaling": "^2.0.0-beta.0",
+    "@lumino/virtualdom": "^2.0.0-beta.0"
   },
   "devDependencies": {
     "@microsoft/api-extractor": "^7.6.0",
