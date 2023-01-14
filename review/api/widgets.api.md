@@ -1258,6 +1258,8 @@ export class Widget implements IMessageHandler, IObservableDisposable {
     constructor(options?: Widget.IOptions);
     activate(): void;
     addClass(name: string): void;
+    adoptStyleSheet(sheet: CSSStyleSheet): boolean;
+    readonly attachmentNode: HTMLElement;
     children(): IterableIterator<Widget>;
     clearFlag(flag: Widget.Flag): void;
     close(): void;
@@ -1298,6 +1300,7 @@ export class Widget implements IMessageHandler, IObservableDisposable {
     get parent(): Widget | null;
     set parent(value: Widget | null);
     processMessage(msg: Message): void;
+    removeAdoptedStyleSheet(sheet: CSSStyleSheet): boolean;
     removeClass(name: string): void;
     setFlag(flag: Widget.Flag): void;
     setHidden(hidden: boolean): void;
@@ -1330,6 +1333,7 @@ export namespace Widget {
     }
     export interface IOptions {
         node?: HTMLElement;
+        shadowDOM?: boolean;
         tag?: keyof HTMLElementTagNameMap;
     }
     export namespace Msg {

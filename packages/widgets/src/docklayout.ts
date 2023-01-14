@@ -533,7 +533,7 @@ export class DockLayout extends Layout {
    */
   protected attachWidget(widget: Widget): void {
     // Do nothing if the widget is already attached.
-    if (this.parent!.node === widget.node.parentNode) {
+    if (this.parent!.node === widget.attachmentNode.parentNode) {
       return;
     }
 
@@ -546,7 +546,7 @@ export class DockLayout extends Layout {
     }
 
     // Add the widget's node to the parent.
-    this.parent!.node.appendChild(widget.node);
+    this.parent!.node.appendChild(widget.attachmentNode);
 
     // Send an `'after-attach'` message if the parent is attached.
     if (this.parent!.isAttached) {
@@ -564,7 +564,7 @@ export class DockLayout extends Layout {
    */
   protected detachWidget(widget: Widget): void {
     // Do nothing if the widget is not attached.
-    if (this.parent!.node !== widget.node.parentNode) {
+    if (this.parent!.node !== widget.attachmentNode.parentNode) {
       return;
     }
 
@@ -574,7 +574,7 @@ export class DockLayout extends Layout {
     }
 
     // Remove the widget's node from the parent.
-    this.parent!.node.removeChild(widget.node);
+    this.parent!.node.removeChild(widget.attachmentNode);
 
     // Send an `'after-detach'` message if the parent is attached.
     if (this.parent!.isAttached) {
