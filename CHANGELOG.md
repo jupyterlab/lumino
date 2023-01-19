@@ -2,6 +2,26 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2023.1.19
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/application@1.31.1...2485c99523f14772f9520c0879c4404328ae1d7d))
+
+### Enhancements made
+
+- Add content-visibility hide mode [#497](https://github.com/jupyterlab/lumino/pull/497) ([@krassowski](https://github.com/krassowski))
+
+### Maintenance and upkeep improvements
+
+- Bump versions for 1.x [#519](https://github.com/jupyterlab/lumino/pull/519) ([@fcollonval](https://github.com/fcollonval))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2022-12-13&to=2023-01-19&type=c))
+
+[@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2022-12-13..2023-01-19&type=Issues) | [@krassowski](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2022-12-13..2023-01-19&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Awelcome+updated%3A2022-12-13..2023-01-19&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2022.12.13
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/application@1.31.0...80999a0e9fe4d518602822fcc1baefd0c27cfd22))
@@ -19,8 +39,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2022-12-05&to=2022-12-13&type=c))
 
 [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2022-12-05..2022-12-13&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2022.12.5
 
