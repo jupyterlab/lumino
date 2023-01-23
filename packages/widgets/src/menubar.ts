@@ -498,7 +498,7 @@ export class MenuBar extends Widget {
    */
   private _updateOverflowIndex(): void {
     // Get elements visible in the main menu bar
-    let itemMenus = this.node.getElementsByClassName('lm-MenuBar-item');
+    const itemMenus = this.contentNode.childNodes;
     let screenSize = this.node.offsetWidth;
     let totalMenuSize = 0;
     let index = -1;
