@@ -38,9 +38,11 @@ export interface ISignal<T, U> {
    * ### Notes
    * The callback function must be synchronous.
    *
+   * @deprecated This feature will be removed in Lumino 2.
+   *
    * @param fn The callback during which the signal is blocked
    */
-  block(fn: () => void): void;
+  block?(fn: () => void): void;
 
   /**
    * Connect a slot to the signal.
@@ -154,6 +156,8 @@ export class Signal<T, U> implements ISignal<T, U> {
    * ### Notes
    * The callback function must be synchronous.
    *
+   * @deprecated This feature will be removed in Lumino 2.
+   *
    * @param fn The callback during which the signal is blocked
    */
   block(fn: () => void): void {
@@ -222,6 +226,8 @@ export namespace Signal {
    *
    * ### Notes
    * The callback function must be synchronous.
+   *
+   * @deprecated This feature will be removed in Lumino 2.
    *
    * @param sender The signals sender
    * @param fn The callback during which all signals are blocked
