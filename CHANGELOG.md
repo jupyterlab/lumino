@@ -2,6 +2,26 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2023.1.23
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/application@1.31.2...58081c0313e536ac9dbb86ee0a602a1fa8445130))
+
+### Bugs fixed
+
+- Add deprecation warning on Signal blocking feature [#521](https://github.com/jupyterlab/lumino/pull/521) ([@fcollonval](https://github.com/fcollonval))
+
+### Maintenance and upkeep improvements
+
+- Bump versions [#523](https://github.com/jupyterlab/lumino/pull/523) ([@fcollonval](https://github.com/fcollonval))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2023-01-19&to=2023-01-23&type=c))
+
+[@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2023-01-19..2023-01-23&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2023.1.19
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/application@1.31.1...2485c99523f14772f9520c0879c4404328ae1d7d))
@@ -19,8 +39,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2022-12-13&to=2023-01-19&type=c))
 
 [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2022-12-13..2023-01-19&type=Issues) | [@krassowski](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2022-12-13..2023-01-19&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Awelcome+updated%3A2022-12-13..2023-01-19&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2022.12.13
 
