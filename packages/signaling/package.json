@@ -1,6 +1,6 @@
 {
   "name": "@lumino/signaling",
-  "version": "1.11.0",
+  "version": "1.11.1",
   "description": "Lumino Signals and Slots",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
