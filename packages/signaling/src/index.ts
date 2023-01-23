@@ -227,6 +227,8 @@ export namespace Signal {
    * ### Notes
    * The callback function must be synchronous.
    *
+   * @deprecated This feature will be removed in Lumino 2.
+   *
    * @param sender The signals sender
    * @param fn The callback during which all signals are blocked
    */
