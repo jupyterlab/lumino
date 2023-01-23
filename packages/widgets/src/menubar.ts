@@ -397,38 +397,6 @@ export class MenuBar extends Widget {
     this.update();
   }
 
-  protected updateOverflowIndex(): void {
-    // Get elements visible in the main menu bar
-    let itemMenus = this.node.getElementsByClassName('lm-MenuBar-item');
-    let screenSize = this.node.offsetWidth;
-    let totalMenuSize = 0;
-    let index = -1;
-    let n = itemMenus.length;
-
-    if (this._menuItemSizes.length == 0) {
-      // Check if it is the first resize and get info about menu items sizes
-      for (let i = 0; i < n; i++) {
-        let item = itemMenus[i] as HTMLLIElement;
-        // Add sizes to array
-        totalMenuSize += item.offsetWidth;
-        this._menuItemSizes.push(item.offsetWidth);
-        if (totalMenuSize > screenSize && index === -1) {
-          index = i;
-        }
-      }
-    } else {
-      // Calculate current menu size
-      for (let i = 0; i < this._menuItemSizes.length; i++) {
-        totalMenuSize += this._menuItemSizes[i];
-        if (totalMenuSize > screenSize) {
-          index = i;
-          break;
-        }
-      }
-    }
-    this._overflowIndex = index;
-  }
-
   /**
    * A message handler invoked on an `'update-request'` message.
    */
@@ -471,7 +439,7 @@ export class MenuBar extends Widget {
       }
       // Move menus to overflow menu
       for (let i = menus.length - 2; i >= length; i--) {
-        let submenu = this.menus[i];
+        const submenu = this.menus[i];
         submenu.title.mnemonic = 0;
         this._overflowMenu.insertItem(0, {
           type: 'submenu',
@@ -484,7 +452,7 @@ export class MenuBar extends Widget {
       if (active && menus[length].items.length == 0) {
         active = false;
       }
-      content[length] = renderer.renderItem({
+      content[length] = renderer.renderOverflowItem({
         title,
         active,
         onfocus: () => {
@@ -522,7 +490,42 @@ export class MenuBar extends Widget {
       }
     }
     VirtualDOM.render(content, this.contentNode);
-    this.updateOverflowIndex();
+    this._updateOverflowIndex();
+  }
+
+  /**
+   * Calculate and update the current overflow index.
+   */
+  private _updateOverflowIndex(): void {
+    // Get elements visible in the main menu bar
+    let itemMenus = this.node.getElementsByClassName('lm-MenuBar-item');
+    let screenSize = this.node.offsetWidth;
+    let totalMenuSize = 0;
+    let index = -1;
+    let n = itemMenus.length;
+
+    if (this._menuItemSizes.length == 0) {
+      // Check if it is the first resize and get info about menu items sizes
+      for (let i = 0; i < n; i++) {
+        let item = itemMenus[i] as HTMLLIElement;
+        // Add sizes to array
+        totalMenuSize += item.offsetWidth;
+        this._menuItemSizes.push(item.offsetWidth);
+        if (totalMenuSize > screenSize && index === -1) {
+          index = i;
+        }
+      }
+    } else {
+      // Calculate current menu size
+      for (let i = 0; i < this._menuItemSizes.length; i++) {
+        totalMenuSize += this._menuItemSizes[i];
+        if (totalMenuSize > screenSize) {
+          index = i;
+          break;
+        }
+      }
+    }
+    this._overflowIndex = index;
   }
 
   /**
@@ -908,6 +911,15 @@ export namespace MenuBar {
      * @returns A virtual element representing the item.
      */
     renderItem(data: IRenderData): VirtualElement;
+
+    /**
+     * Render the virtual element for an overflow menu in the menu bar.
+     *
+     * @param data - The data to use for rendering the overflow item.
+     *
+     * @returns A virtual element representing the item.
+     */
+    renderOverflowItem(data: IRenderData): VirtualElement;
   }
 
   /**
@@ -925,6 +937,24 @@ export namespace MenuBar {
      * @returns A virtual element representing the item.
      */
     renderItem(data: IRenderData): VirtualElement {
+      let className = this.createItemClass(data);
+      let dataset = this.createItemDataset(data);
+      let aria = this.createItemARIA(data);
+      return h.li(
+        { className, dataset, tabindex: '0', onfocus: data.onfocus, ...aria },
+        this.renderIcon(data),
+        this.renderLabel(data)
+      );
+    }
+
+    /**
+     * Render the virtual element for an overflow menu in the menu bar.
+     *
+     * @param data - The data to use for rendering the overflow item.
+     *
+     * @returns A virtual element representing the item.
+     */
+    renderOverflowItem(data: IRenderData): VirtualElement {
       let className = this.createItemClass(data);
       let dataset = this.createItemDataset(data);
       let aria = this.createItemARIA(data);
