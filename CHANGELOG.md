@@ -6,6 +6,25 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2023.1.24-beta.1
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2023.1.13-beta.0...7005323d8598300a4ad2f05f6170bb701b71625c))
+
+### Maintenance and upkeep improvements
+
+- Bump to 2.0.0-beta.1 [#526](https://github.com/jupyterlab/lumino/pull/526) ([@fcollonval](https://github.com/fcollonval))
+- Bump tj-actions/changed-files from 35.4.1 to 35.4.4 [#525](https://github.com/jupyterlab/lumino/pull/525) ([@dependabot](https://github.com/dependabot))
+- Revert "Add blocking signal feature (#443)" [#522](https://github.com/jupyterlab/lumino/pull/522) ([@fcollonval](https://github.com/fcollonval))
+- Bump tj-actions/changed-files from 35.4.0 to 35.4.1 [#518](https://github.com/jupyterlab/lumino/pull/518) ([@dependabot](https://github.com/dependabot))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2023-01-13&to=2023-01-24&type=c))
+
+[@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2023-01-13..2023-01-24&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2023-01-13..2023-01-24&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2023.1.13-beta.0
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2022.9.6...5edb64e574394bc08e87476e304dd9b515608cdd))
@@ -95,8 +114,6 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2022-09-06&to=2023-01-13&type=c))
 
 [@3coins](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3A3coins+updated%3A2022-09-06..2023-01-13&type=Issues) | [@afshin](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aafshin+updated%3A2022-09-06..2023-01-13&type=Issues) | [@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2022-09-06..2023-01-13&type=Issues) | [@brichet](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Abrichet+updated%3A2022-09-06..2023-01-13&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2022-09-06..2023-01-13&type=Issues) | [@drcd1](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adrcd1+updated%3A2022-09-06..2023-01-13&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2022-09-06..2023-01-13&type=Issues) | [@gabalafou](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Agabalafou+updated%3A2022-09-06..2023-01-13&type=Issues) | [@ibdafna](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aibdafna+updated%3A2022-09-06..2023-01-13&type=Issues) | [@krassowski](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2022-09-06..2023-01-13&type=Issues) | [@martinRenou](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3AmartinRenou+updated%3A2022-09-06..2023-01-13&type=Issues) | [@meeseeksdev](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ameeseeksdev+updated%3A2022-09-06..2023-01-13&type=Issues) | [@scmmmh](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ascmmmh+updated%3A2022-09-06..2023-01-13&type=Issues) | [@thetorpedodog](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Athetorpedodog+updated%3A2022-09-06..2023-01-13&type=Issues) | [@vidartf](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Avidartf+updated%3A2022-09-06..2023-01-13&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Awelcome+updated%3A2022-09-06..2023-01-13&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2023.1.3-alpha.7
 
