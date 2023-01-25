@@ -413,14 +413,9 @@ export class MenuBar extends Widget {
 
     // Render visible menus
     for (let i = 0; i < length; ++i) {
-      let title = menus[i].title;
-      let active = i === activeIndex;
-      if (active && menus[i].items.length == 0) {
-        active = false;
-      }
       content[i] = renderer.renderItem({
-        title,
-        active,
+        title: menus[i].title,
+        active: i === activeIndex && menus[i].items.length !== 0,
         onfocus: () => {
           this.activeIndex = i;
         }
@@ -447,14 +442,9 @@ export class MenuBar extends Widget {
         });
         this.removeMenu(submenu, false);
       }
-      let title = this._overflowMenu.title;
-      let active = length === activeIndex;
-      if (active && menus[length].items.length == 0) {
-        active = false;
-      }
       content[length] = renderer.renderOverflowItem({
-        title,
-        active,
+        title: this._overflowMenu.title,
+        active: length === activeIndex && menus[length].items.length !== 0,
         onfocus: () => {
           this.activeIndex = length;
         }
@@ -470,11 +460,9 @@ export class MenuBar extends Widget {
           let menu = overflowMenuItems[0].submenu as Menu;
           this._overflowMenu.removeItemAt(0);
           this.insertMenu(length, menu, false);
-          let title = menu.title;
-          let active = false;
           content[length] = renderer.renderItem({
-            title,
-            active,
+            title: menu.title,
+            active: false,
             onfocus: () => {
               this.activeIndex = length;
             }
