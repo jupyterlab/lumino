@@ -49,6 +49,10 @@ export class MenuBar extends Widget {
       forceX: true,
       forceY: true
     };
+    this._overflowMenuOptions = options.overflowMenuOptions || {
+      overflowMenuVisible: true,
+      title: '...'
+    };
   }
 
   /**
@@ -423,58 +427,61 @@ export class MenuBar extends Widget {
       // Calculate size of current menu
       totalMenuSize += this._menuItemSizes[i];
     }
-    // Render overflow menu if needed
-    if (this._overflowIndex > -1) {
-      // Create overflow menu
-      if (this._overflowMenu === null) {
-        this._overflowMenu = new Menu({ commands: new CommandRegistry() });
-        this._overflowMenu.title.label = '...';
-        this._overflowMenu.title.mnemonic = 0;
-        this.addMenu(this._overflowMenu, false);
-      }
-      // Move menus to overflow menu
-      for (let i = menus.length - 2; i >= length; i--) {
-        const submenu = this.menus[i];
-        submenu.title.mnemonic = 0;
-        this._overflowMenu.insertItem(0, {
-          type: 'submenu',
-          submenu: submenu
-        });
-        this.removeMenu(submenu, false);
-      }
-      content[length] = renderer.renderOverflowItem({
-        title: this._overflowMenu.title,
-        active: length === activeIndex && menus[length].items.length !== 0,
-        onfocus: () => {
-          this.activeIndex = length;
+    // Render overflow menu if needed and active
+    if (this._overflowMenuOptions.overflowMenuVisible) {
+      if (this._overflowIndex > -1) {
+        // Create overflow menu
+        if (this._overflowMenu === null) {
+          this._overflowMenu = new Menu({ commands: new CommandRegistry() });
+          this._overflowMenu.title.label = this._overflowMenuOptions.title;
+          this._overflowMenu.title.mnemonic = 0;
+          this.addMenu(this._overflowMenu, false);
         }
-      });
-    } else if (this._overflowMenu !== null) {
-      // Remove submenus from overflow menu
-      let overflowMenuItems = this._overflowMenu.items;
-      let screenSize = this.node.offsetWidth;
-      let n = this._overflowMenu.items.length;
-      for (let i = 0; i < n; ++i) {
-        let index = menus.length - 1 - i;
-        if (screenSize - totalMenuSize > this._menuItemSizes[index]) {
-          let menu = overflowMenuItems[0].submenu as Menu;
-          this._overflowMenu.removeItemAt(0);
-          this.insertMenu(length, menu, false);
-          content[length] = renderer.renderItem({
-            title: menu.title,
-            active: false,
-            onfocus: () => {
-              this.activeIndex = length;
-            }
+        // Move menus to overflow menu
+        for (let i = menus.length - 2; i >= length; i--) {
+          const submenu = this.menus[i];
+          submenu.title.mnemonic = 0;
+          this._overflowMenu.insertItem(0, {
+            type: 'submenu',
+            submenu: submenu
           });
-          length++;
+          this.removeMenu(submenu, false);
         }
-      }
-      if (this._overflowMenu.items.length === 0) {
-        this.removeMenu(this._overflowMenu, false);
-        content.pop();
-        this._overflowMenu = null;
-        this._overflowIndex = -1;
+        content[length] = renderer.renderItem({
+          title: this._overflowMenu.title,
+          active: length === activeIndex && menus[length].items.length !== 0,
+          onfocus: () => {
+            this.activeIndex = length;
+          }
+        });
+        length++;
+      } else if (this._overflowMenu !== null) {
+        // Remove submenus from overflow menu
+        let overflowMenuItems = this._overflowMenu.items;
+        let screenSize = this.node.offsetWidth;
+        let n = this._overflowMenu.items.length;
+        for (let i = 0; i < n; ++i) {
+          let index = menus.length - 1 - i;
+          if (screenSize - totalMenuSize > this._menuItemSizes[index]) {
+            let menu = overflowMenuItems[0].submenu as Menu;
+            this._overflowMenu.removeItemAt(0);
+            this.insertMenu(length, menu, false);
+            content[length] = renderer.renderItem({
+              title: menu.title,
+              active: false,
+              onfocus: () => {
+                this.activeIndex = length;
+              }
+            });
+            length++;
+          }
+        }
+        if (this._overflowMenu.items.length === 0) {
+          this.removeMenu(this._overflowMenu, false);
+          content.pop();
+          this._overflowMenu = null;
+          this._overflowIndex = -1;
+        }
       }
     }
     VirtualDOM.render(content, this.contentNode);
@@ -837,6 +844,7 @@ export class MenuBar extends Widget {
 
   private _activeIndex = -1;
   private _forceItemsPosition: Menu.IOpenOptions;
+  private _overflowMenuOptions: IOverflowMenuOptions;
   private _menus: Menu[] = [];
   private _childMenu: Menu | null = null;
   private _overflowMenu: Menu | null = null;
@@ -868,6 +876,15 @@ export namespace MenuBar {
      * The default is `true`.
      */
     forceItemsPosition?: Menu.IOpenOptions;
+    /**
+     * Whether to add a overflow menu if there's overflow.
+     *
+     * Setting to `true` will enable the logic that creates an overflow menu
+     * to show the menu items that don't fit entirely on the screen.
+     *
+     * The default is `true`.
+     */
+    overflowMenuOptions?: IOverflowMenuOptions;
   }
 
   /**
@@ -899,15 +916,6 @@ export namespace MenuBar {
      * @returns A virtual element representing the item.
      */
     renderItem(data: IRenderData): VirtualElement;
-
-    /**
-     * Render the virtual element for an overflow menu in the menu bar.
-     *
-     * @param data - The data to use for rendering the overflow item.
-     *
-     * @returns A virtual element representing the item.
-     */
-    renderOverflowItem(data: IRenderData): VirtualElement;
   }
 
   /**
@@ -925,24 +933,6 @@ export namespace MenuBar {
      * @returns A virtual element representing the item.
      */
     renderItem(data: IRenderData): VirtualElement {
-      let className = this.createItemClass(data);
-      let dataset = this.createItemDataset(data);
-      let aria = this.createItemARIA(data);
-      return h.li(
-        { className, dataset, tabindex: '0', onfocus: data.onfocus, ...aria },
-        this.renderIcon(data),
-        this.renderLabel(data)
-      );
-    }
-
-    /**
-     * Render the virtual element for an overflow menu in the menu bar.
-     *
-     * @param data - The data to use for rendering the overflow item.
-     *
-     * @returns A virtual element representing the item.
-     */
-    renderOverflowItem(data: IRenderData): VirtualElement {
       let className = this.createItemClass(data);
       let dataset = this.createItemDataset(data);
       let aria = this.createItemARIA(data);
@@ -1065,6 +1055,22 @@ export namespace MenuBar {
    * The default `Renderer` instance.
    */
   export const defaultRenderer = new Renderer();
+}
+
+/**
+ * Options for overflow menu.
+ */
+export interface IOverflowMenuOptions {
+  /**
+   * Determines if a overflow menu appears when the menu items overflow.
+   */
+  overflowMenuVisible: boolean;
+  /**
+   * Determines the title of the overflow menu.
+   *
+   * Default: `...`.
+   */
+  title: string;
 }
 
 /**
