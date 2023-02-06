@@ -287,9 +287,10 @@ export class CommandPalette extends Widget {
    * A message handler invoked on an `'update-request'` message.
    */
   protected onUpdateRequest(msg: Message): void {
-    if (this.isHidden) {
+    if (this.isHidden()) {
       return;
     }
+
     // Fetch the current query text and content node.
     let query = this.inputNode.value;
     let contentNode = this.contentNode;
@@ -300,8 +301,8 @@ export class CommandPalette extends Widget {
       // Generate and store the new search results.
       results = this._results = Private.search(this._items, query);
 
-    // Reset the active index.
-    this._activeIndex = query
+      // Reset the active index.
+      this._activeIndex = query
         ? ArrayExt.findFirstIndex(results, Private.canActivate)
         : -1;
     }
@@ -326,14 +327,14 @@ export class CommandPalette extends Widget {
     for (let i = 0, n = results.length; i < n; ++i) {
       let result = results[i];
       if (result.type === 'header') {
-          let indices = result.indices;
-          let category = result.category;
-          content[i] = renderer.renderHeader({ category, indices });
+        let indices = result.indices;
+        let category = result.category;
+        content[i] = renderer.renderHeader({ category, indices });
       } else {
-          let item = result.item;
-          let indices = result.indices;
-          let active = i === activeIndex;
-          content[i] = renderer.renderItem({ item, indices, active });
+        let item = result.item;
+        let indices = result.indices;
+        let active = i === activeIndex;
+        content[i] = renderer.renderItem({ item, indices, active });
       }
     }
 
@@ -342,10 +343,10 @@ export class CommandPalette extends Widget {
 
     // Adjust the scroll position as needed.
     if (activeIndex < 0 || activeIndex >= results.length) {
-        contentNode.scrollTop = 0;
+      contentNode.scrollTop = 0;
     } else {
-        let element = contentNode.children[activeIndex];
-        ElementExt.scrollIntoViewIfNeeded(contentNode, element);
+      let element = contentNode.children[activeIndex];
+      ElementExt.scrollIntoViewIfNeeded(contentNode, element);
     }
   }
 
