@@ -287,64 +287,65 @@ export class CommandPalette extends Widget {
    * A message handler invoked on an `'update-request'` message.
    */
   protected onUpdateRequest(msg: Message): void {
-    if (!this.isHidden) {
-        // Fetch the current query text and content node.
-        let query = this.inputNode.value;
-        let contentNode = this.contentNode;
+    if (this.isHidden) {
+      return;
+    }
+    // Fetch the current query text and content node.
+    let query = this.inputNode.value;
+    let contentNode = this.contentNode;
 
-        // Ensure the search results are generated.
-        let results = this._results;
-        if (!results) {
-        // Generate and store the new search results.
-        results = this._results = Private.search(this._items, query);
+    // Ensure the search results are generated.
+    let results = this._results;
+    if (!results) {
+      // Generate and store the new search results.
+      results = this._results = Private.search(this._items, query);
 
-        // Reset the active index.
-        this._activeIndex = query
-            ? ArrayExt.findFirstIndex(results, Private.canActivate)
-            : -1;
-        }
+    // Reset the active index.
+    this._activeIndex = query
+        ? ArrayExt.findFirstIndex(results, Private.canActivate)
+        : -1;
+    }
 
-        // If there is no query and no results, clear the content.
-        if (!query && results.length === 0) {
-        VirtualDOM.render(null, contentNode);
-        return;
-        }
+    // If there is no query and no results, clear the content.
+    if (!query && results.length === 0) {
+      VirtualDOM.render(null, contentNode);
+      return;
+    }
 
-        // If the is a query but no results, render the empty message.
-        if (query && results.length === 0) {
-        let content = this.renderer.renderEmptyMessage({ query });
-        VirtualDOM.render(content, contentNode);
-        return;
-        }
+    // If the is a query but no results, render the empty message.
+    if (query && results.length === 0) {
+      let content = this.renderer.renderEmptyMessage({ query });
+      VirtualDOM.render(content, contentNode);
+      return;
+    }
 
-        // Create the render content for the search results.
-        let renderer = this.renderer;
-        let activeIndex = this._activeIndex;
-        let content = new Array<VirtualElement>(results.length);
-        for (let i = 0, n = results.length; i < n; ++i) {
-        let result = results[i];
-        if (result.type === 'header') {
-            let indices = result.indices;
-            let category = result.category;
-            content[i] = renderer.renderHeader({ category, indices });
-        } else {
-            let item = result.item;
-            let indices = result.indices;
-            let active = i === activeIndex;
-            content[i] = renderer.renderItem({ item, indices, active });
-        }
-        }
+    // Create the render content for the search results.
+    let renderer = this.renderer;
+    let activeIndex = this._activeIndex;
+    let content = new Array<VirtualElement>(results.length);
+    for (let i = 0, n = results.length; i < n; ++i) {
+      let result = results[i];
+      if (result.type === 'header') {
+          let indices = result.indices;
+          let category = result.category;
+          content[i] = renderer.renderHeader({ category, indices });
+      } else {
+          let item = result.item;
+          let indices = result.indices;
+          let active = i === activeIndex;
+          content[i] = renderer.renderItem({ item, indices, active });
+      }
+    }
 
-        // Render the search result content.
-        VirtualDOM.render(content, contentNode);
+    // Render the search result content.
+    VirtualDOM.render(content, contentNode);
 
-        // Adjust the scroll position as needed.
-        if (activeIndex < 0 || activeIndex >= results.length) {
-            contentNode.scrollTop = 0;
-        } else {
-            let element = contentNode.children[activeIndex];
-            ElementExt.scrollIntoViewIfNeeded(contentNode, element);
-        }
+    // Adjust the scroll position as needed.
+    if (activeIndex < 0 || activeIndex >= results.length) {
+        contentNode.scrollTop = 0;
+    } else {
+        let element = contentNode.children[activeIndex];
+        ElementExt.scrollIntoViewIfNeeded(contentNode, element);
     }
   }
 
