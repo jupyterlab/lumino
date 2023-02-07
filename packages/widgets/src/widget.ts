@@ -667,7 +667,10 @@ export class Widget implements IMessageHandler, IObservableDisposable {
    * #### Notes
    * The default implementation of this handler is a no-op.
    */
-  protected onAfterShow(msg: Message): void {}
+  protected onAfterShow(msg: Message): void {
+    this.update();
+    super.onAfterShow(msg);
+  }
 
   /**
    * A message handler invoked on a `'before-hide'` message.
