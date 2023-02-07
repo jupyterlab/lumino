@@ -16,7 +16,6 @@
   box-sizing: border-box;
   position: relative;
   overflow: hidden;
-  cursor: default;
 }
 
 .lm-Widget.lm-mod-hidden {
