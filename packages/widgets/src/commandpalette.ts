@@ -273,6 +273,14 @@ export class CommandPalette extends Widget {
   }
 
   /**
+   * A message handler invoked on an `'after-show'` message.
+   */
+  protected onAfterShow(msg: Message): void {
+    this.update();
+    super.onAfterShow(msg);
+  }
+  
+  /**
    * A message handler invoked on an `'activate-request'` message.
    */
   protected onActivateRequest(msg: Message): void {
