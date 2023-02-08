@@ -409,11 +409,12 @@ export class MenuBar extends Widget {
     let renderer = this.renderer;
     let activeIndex = this._activeIndex;
     let length = this._overflowIndex > -1 ? this._overflowIndex : menus.length;
-    let content = new Array<VirtualElement>(length);
     let totalMenuSize = 0;
+    let overflowMenuVisible = false;
 
     // Check that the overflow menu doesn't count
     length = this._overflowMenu !== null ? length - 1 : length;
+    let content = new Array<VirtualElement>(length);
 
     // Render visible menus
     for (let i = 0; i < length; ++i) {
@@ -426,10 +427,15 @@ export class MenuBar extends Widget {
       });
       // Calculate size of current menu
       totalMenuSize += this._menuItemSizes[i];
+      // Check if overflow menu is already rendered
+      if (menus[i].title.label === this._overflowMenuOptions.title) {
+        overflowMenuVisible = true;
+        length--;
+      }
     }
     // Render overflow menu if needed and active
     if (this._overflowMenuOptions.overflowMenuVisible) {
-      if (this._overflowIndex > -1) {
+      if (this._overflowIndex > -1 && !overflowMenuVisible) {
         // Create overflow menu
         if (this._overflowMenu === null) {
           this._overflowMenu = new Menu({ commands: new CommandRegistry() });
