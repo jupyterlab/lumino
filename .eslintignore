@@ -13,6 +13,7 @@ coverage
 *.bundle.js
 *.config.js
 .eslintrc.js
+docs/source/api
 
 # jetbrains IDE stuff
 .idea/
