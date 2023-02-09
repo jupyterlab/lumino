@@ -273,6 +273,14 @@ export class CommandPalette extends Widget {
   }
 
   /**
+   * A message handler invoked on an `'after-show'` message.
+   */
+  protected onAfterShow(msg: Message): void {
+    this.update();
+    super.onAfterShow(msg);
+  }
+
+  /**
    * A message handler invoked on an `'activate-request'` message.
    */
   protected onActivateRequest(msg: Message): void {
@@ -287,6 +295,10 @@ export class CommandPalette extends Widget {
    * A message handler invoked on an `'update-request'` message.
    */
   protected onUpdateRequest(msg: Message): void {
+    if (this.isHidden) {
+      return;
+    }
+
     // Fetch the current query text and content node.
     let query = this.inputNode.value;
     let contentNode = this.contentNode;

@@ -179,6 +179,7 @@ export class CommandPalette extends Widget {
     get items(): ReadonlyArray<CommandPalette.IItem>;
     protected onActivateRequest(msg: Message): void;
     protected onAfterDetach(msg: Message): void;
+    protected onAfterShow(msg: Message): void;
     protected onBeforeAttach(msg: Message): void;
     protected onUpdateRequest(msg: Message): void;
     refresh(): void;
