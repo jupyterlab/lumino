@@ -279,7 +279,7 @@ export class CommandPalette extends Widget {
     this.update();
     super.onAfterShow(msg);
   }
-  
+
   /**
    * A message handler invoked on an `'activate-request'` message.
    */
