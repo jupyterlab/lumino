@@ -994,9 +994,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@lumino/algorithm@workspace:packages/algorithm"
   dependencies:
+    "@lumino/buildutils": ^2.0.0-beta.0
     "@microsoft/api-extractor": ^7.6.0
     "@rollup/plugin-commonjs": ^24.0.0
     "@rollup/plugin-node-resolve": ^15.0.1
+    "@types/chai": ^4.3.4
     "@types/mocha": ^2.2.39
     chai: ^4.3.4
     karma: ^6.3.4
@@ -1023,6 +1025,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@lumino/application@workspace:packages/application"
   dependencies:
+    "@lumino/buildutils": ^2.0.0-beta.0
     "@lumino/commands": ^2.0.0-beta.1
     "@lumino/coreutils": ^2.0.0-beta.0
     "@lumino/widgets": ^2.0.0-beta.1
@@ -1052,13 +1055,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lumino/buildutils@workspace:buildutils":
+"@lumino/buildutils@^2.0.0-beta.0, @lumino/buildutils@workspace:buildutils":
   version: 0.0.0-use.local
   resolution: "@lumino/buildutils@workspace:buildutils"
   dependencies:
+    "@rollup/plugin-commonjs": ^24.0.0
     "@rollup/plugin-node-resolve": ^15.0.1
+    postcss: ^8.4.14
+    rollup: ^3.9.1
     rollup-plugin-postcss: ^4.0.2
     rollup-plugin-sourcemaps: ^0.6.3
+    rollup-plugin-styles: ^4.0.0
   languageName: unknown
   linkType: soft
 
@@ -1067,6 +1074,7 @@ __metadata:
   resolution: "@lumino/collections@workspace:packages/collections"
   dependencies:
     "@lumino/algorithm": ^2.0.0-beta.0
+    "@lumino/buildutils": ^2.0.0-beta.0
     "@microsoft/api-extractor": ^7.6.0
     "@rollup/plugin-commonjs": ^24.0.0
     "@rollup/plugin-node-resolve": ^15.0.1
@@ -1098,6 +1106,7 @@ __metadata:
   resolution: "@lumino/commands@workspace:packages/commands"
   dependencies:
     "@lumino/algorithm": ^2.0.0-beta.0
+    "@lumino/buildutils": ^2.0.0-beta.0
     "@lumino/coreutils": ^2.0.0-beta.0
     "@lumino/disposable": ^2.0.0-beta.1
     "@lumino/domutils": ^2.0.0-beta.0
@@ -1134,6 +1143,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@lumino/coreutils@workspace:packages/coreutils"
   dependencies:
+    "@lumino/buildutils": ^2.0.0-beta.0
     "@microsoft/api-extractor": ^7.6.0
     "@rollup/plugin-commonjs": ^24.0.0
     "@rollup/plugin-node-resolve": ^15.0.1
@@ -1174,6 +1184,7 @@ __metadata:
   resolution: "@lumino/datagrid@workspace:packages/datagrid"
   dependencies:
     "@lumino/algorithm": ^2.0.0-beta.0
+    "@lumino/buildutils": ^2.0.0-beta.0
     "@lumino/coreutils": ^2.0.0-beta.0
     "@lumino/disposable": ^2.0.0-beta.1
     "@lumino/domutils": ^2.0.0-beta.0
@@ -1182,6 +1193,7 @@ __metadata:
     "@lumino/messaging": ^2.0.0-beta.0
     "@lumino/signaling": ^2.0.0-beta.1
     "@lumino/widgets": ^2.0.0-beta.1
+    "@microsoft/api-extractor": ^7.6.0
     "@rollup/plugin-commonjs": ^24.0.0
     "@rollup/plugin-node-resolve": ^15.0.1
     postcss: ^8.4.14
@@ -1209,6 +1221,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@lumino/disposable@workspace:packages/disposable"
   dependencies:
+    "@lumino/buildutils": ^2.0.0-beta.0
     "@lumino/signaling": ^2.0.0-beta.1
     "@microsoft/api-extractor": ^7.6.0
     "@rollup/plugin-commonjs": ^24.0.0
@@ -1240,6 +1253,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@lumino/domutils@workspace:packages/domutils"
   dependencies:
+    "@lumino/buildutils": ^2.0.0-beta.0
     "@microsoft/api-extractor": ^7.6.0
     "@rollup/plugin-commonjs": ^24.0.0
     "@rollup/plugin-node-resolve": ^15.0.1
@@ -1270,6 +1284,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@lumino/dragdrop@workspace:packages/dragdrop"
   dependencies:
+    "@lumino/buildutils": ^2.0.0-beta.0
     "@lumino/coreutils": ^2.0.0-beta.0
     "@lumino/disposable": ^2.0.0-beta.1
     "@microsoft/api-extractor": ^7.6.0
@@ -1391,6 +1406,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@lumino/keyboard@workspace:packages/keyboard"
   dependencies:
+    "@lumino/buildutils": ^2.0.0-beta.0
     "@microsoft/api-extractor": ^7.6.0
     "@rollup/plugin-commonjs": ^24.0.0
     "@rollup/plugin-node-resolve": ^15.0.1
@@ -1422,6 +1438,7 @@ __metadata:
   resolution: "@lumino/messaging@workspace:packages/messaging"
   dependencies:
     "@lumino/algorithm": ^2.0.0-beta.0
+    "@lumino/buildutils": ^2.0.0-beta.0
     "@lumino/collections": ^2.0.0-beta.0
     "@microsoft/api-extractor": ^7.6.0
     "@rollup/plugin-commonjs": ^24.0.0
@@ -1454,6 +1471,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@lumino/polling@workspace:packages/polling"
   dependencies:
+    "@lumino/buildutils": ^2.0.0-beta.0
     "@lumino/coreutils": ^2.0.0-beta.0
     "@lumino/disposable": ^2.0.0-beta.1
     "@lumino/signaling": ^2.0.0-beta.1
@@ -1487,6 +1505,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@lumino/properties@workspace:packages/properties"
   dependencies:
+    "@lumino/buildutils": ^2.0.0-beta.0
     "@microsoft/api-extractor": ^7.6.0
     "@rollup/plugin-commonjs": ^24.0.0
     "@rollup/plugin-node-resolve": ^15.0.1
@@ -1518,6 +1537,7 @@ __metadata:
   resolution: "@lumino/signaling@workspace:packages/signaling"
   dependencies:
     "@lumino/algorithm": ^2.0.0-beta.0
+    "@lumino/buildutils": ^2.0.0-beta.0
     "@lumino/coreutils": ^2.0.0-beta.0
     "@microsoft/api-extractor": ^7.6.0
     "@rollup/plugin-commonjs": ^24.0.0
@@ -1551,6 +1571,7 @@ __metadata:
   resolution: "@lumino/virtualdom@workspace:packages/virtualdom"
   dependencies:
     "@lumino/algorithm": ^2.0.0-beta.0
+    "@lumino/buildutils": ^2.0.0-beta.0
     "@microsoft/api-extractor": ^7.6.0
     "@rollup/plugin-commonjs": ^24.0.0
     "@rollup/plugin-node-resolve": ^15.0.1
@@ -1582,6 +1603,7 @@ __metadata:
   resolution: "@lumino/widgets@workspace:packages/widgets"
   dependencies:
     "@lumino/algorithm": ^2.0.0-beta.0
+    "@lumino/buildutils": ^2.0.0-beta.0
     "@lumino/commands": ^2.0.0-beta.1
     "@lumino/coreutils": ^2.0.0-beta.0
     "@lumino/disposable": ^2.0.0-beta.1
@@ -2238,6 +2260,13 @@ __metadata:
   version: 3.5.2
   resolution: "@types/chai@npm:3.5.2"
   checksum: 45959e95049105fd00e6a6ad488667f5776492a13f42f3b89a01861a5bb6800002b3b23ffe99400c5a2d45bd192c5e5a936a3337779bc305792b14cb69cad9d5
+  languageName: node
+  linkType: hard
+
+"@types/chai@npm:^4.3.4":
+  version: 4.3.4
+  resolution: "@types/chai@npm:4.3.4"
+  checksum: 571184967beb03bf64c4392a13a7d44e72da9af5a1e83077ff81c39cf59c0fda2a5c78d2005084601cf8f3d11726608574d8b5b4a0e3e9736792807afd926cd0
   languageName: node
   linkType: hard
 

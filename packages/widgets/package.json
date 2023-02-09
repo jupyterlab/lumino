@@ -67,6 +67,7 @@
     "@lumino/virtualdom": "^2.0.0-beta.0"
   },
   "devDependencies": {
+    "@lumino/buildutils": "^2.0.0-beta.0",
     "@microsoft/api-extractor": "^7.6.0",
     "@rollup/plugin-commonjs": "^24.0.0",
     "@rollup/plugin-node-resolve": "^15.0.1",
