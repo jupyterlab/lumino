@@ -223,6 +223,14 @@ export namespace AccordionLayout {
      * @returns A element representing the section title.
      */
     createSectionTitle(title: Title<Widget>): HTMLElement;
+
+    /**
+     * Ensures the existence of the widget ID.
+     * It is useful to link the widget node to the 'aria-controls' attribute of the title.
+     *
+     * @param widget - The widget concerned.
+     */
+    addWidgetId(widget: Widget): void;
   }
 }
 

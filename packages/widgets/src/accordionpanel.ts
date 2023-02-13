@@ -62,6 +62,7 @@ export class AccordionPanel extends SplitPanel {
    * If the widget is already contained in the panel, it will be moved.
    */
   addWidget(widget: Widget): void {
+    this.renderer.addWidgetId(widget);
     super.addWidget(widget);
     widget.title.changed.connect(this._onTitleChanged, this);
   }
@@ -401,7 +402,6 @@ export namespace AccordionPanel {
      */
     createSectionTitle(data: Title<Widget>): HTMLElement {
       const handle = document.createElement('h3');
-      handle.setAttribute('role', 'tab');
       handle.setAttribute('tabindex', '0');
       handle.id = this.createTitleKey(data);
       handle.className = this.titleClassName;
@@ -440,9 +440,22 @@ export namespace AccordionPanel {
       return key;
     }
 
+    /**
+     * Ensures the existence of the widget ID.
+     * It is useful to link the widget node to the 'aria-controls' attribute of the title.
+     *
+     * @param widget - The widget concerned.
+     */
+    addWidgetId(widget: Widget): void {
+      if (!widget.id) {
+        widget.id = `accordion-item-${this._uuid}-${this._widgetID++}`;
+      }
+    }
+
     private static _nInstance = 0;
     private readonly _uuid: number;
     private _titleID = 0;
+    private _widgetID = 0;
     private _titleKeys = new WeakMap<Title<Widget>, string>();
   }
 
