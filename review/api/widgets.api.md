@@ -24,6 +24,7 @@ export class AccordionLayout extends SplitLayout {
     protected attachWidget(index: number, widget: Widget): void;
     protected detachWidget(index: number, widget: Widget): void;
     dispose(): void;
+    insertWidget(index: number, widget: Widget): void;
     protected moveWidget(fromIndex: number, toIndex: number, widget: Widget): void;
     readonly renderer: AccordionLayout.IRenderer;
     get titles(): ReadonlyArray<HTMLElement>;
