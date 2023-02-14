@@ -84,14 +84,14 @@ describe('@lumino/widgets', () => {
         let w2 = new Widget();
 
         // Expects a widget ID to be created.
-        expect(!w1.id);
+        expect(w1.id).to.be.empty;
         panel.addWidget(w1);
-        expect(w1.id);
+        expect(w1.id).to.match(/id-[0-9a-z\-]+/);
 
         // Expects the widget ID to be unchanged.
-        w2.id = 'test_id';
+        w2.id = 'test-id';
         panel.addWidget(w2);
-        expect(w2.id === 'test_id');
+        expect(w2.id).to.equal('test-id');
       });
 
       it('should link the widget to its title', () => {
@@ -100,10 +100,9 @@ describe('@lumino/widgets', () => {
         let w = new Widget();
         panel.addWidget(w);
 
-        expect(layout.titles[0].getAttribute('aria-controls') === w.id);
-        expect(
-          layout.widgets[0].node.getAttribute('aria-labelledby') ===
-            layout.titles[0].id
+        expect(layout.titles[0].getAttribute('aria-controls')).to.equal(w.id);
+        expect(layout.widgets[0].node.getAttribute('aria-labelledby')).to.equal(
+          layout.titles[0].id
         );
       });
     });
