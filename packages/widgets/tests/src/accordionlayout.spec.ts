@@ -9,8 +9,7 @@ import { expect } from 'chai';
 const renderer: AccordionLayout.IRenderer = {
   titleClassName: '.lm-AccordionTitle',
   createHandle: () => document.createElement('div'),
-  createSectionTitle: (title: Title<Widget>) => document.createElement('h3'),
-  addWidgetId: (widget: Widget) => (widget.id = 'accordion-test-id')
+  createSectionTitle: (title: Title<Widget>) => document.createElement('h3')
 };
 
 class LogAccordionLayout extends AccordionLayout {
