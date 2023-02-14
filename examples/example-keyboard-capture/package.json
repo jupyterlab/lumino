@@ -1,0 +1,26 @@
+{
+  "name": "@lumino/example-keyboard-capture",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc && webpack",
+    "clean": "rimraf build",
+    "start": "node build/server.js"
+  },
+  "dependencies": {
+    "@lumino/keyboard-capture": "^1.0.0",
+    "@lumino/signaling": "^1.10.1",
+    "@lumino/widgets": "^1.31.1",
+    "es6-promise": "^4.0.5"
+  },
+  "devDependencies": {
+    "@lumino/messaging": "^1.10.1",
+    "@types/node": "^10.12.19",
+    "css-loader": "^3.4.0",
+    "file-loader": "^5.0.2",
+    "rimraf": "^3.0.2",
+    "style-loader": "^1.0.2",
+    "typescript": "~3.6.0",
+    "webpack": "^4.41.3"
+  }
+}
