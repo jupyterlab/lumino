@@ -80,6 +80,20 @@ export class MenuBar extends Widget {
   }
 
   /**
+   * The overflow index of the menu bar.
+   */
+  get overflowIndex(): number {
+    return this._overflowIndex;
+  }
+
+  /**
+   * The overflow menu of the menu bar.
+   */
+  get overflowMenu(): Menu | null {
+    return this._overflowMenu;
+  }
+
+  /**
    * Get the menu bar content node.
    *
    * #### Notes
