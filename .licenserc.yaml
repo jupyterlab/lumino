@@ -21,6 +21,7 @@ header:
     - '*.map.js'
     - '*.bundle.js'
     - '**/.*'
+    - '.husky/pre-commit'
     - 'binder/postBuild'
     - 'binder/start'
     - 'CNAME'

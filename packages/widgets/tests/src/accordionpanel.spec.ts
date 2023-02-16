@@ -77,6 +77,36 @@ describe('@lumino/widgets', () => {
       });
     });
 
+    describe('#accessibility()', () => {
+      it('should create a widget ID if it does not exist', () => {
+        let panel = new LogAccordionPanel();
+        let w1 = new Widget();
+        let w2 = new Widget();
+
+        // Expects a widget ID to be created.
+        expect(w1.id).to.be.empty;
+        panel.addWidget(w1);
+        expect(w1.id).to.match(/id-[0-9a-z\-]+/);
+
+        // Expects the widget ID to be unchanged.
+        w2.id = 'test-id';
+        panel.addWidget(w2);
+        expect(w2.id).to.equal('test-id');
+      });
+
+      it('should link the widget to its title', () => {
+        let layout = new AccordionLayout({ renderer });
+        let panel = new LogAccordionPanel({ layout });
+        let w = new Widget();
+        panel.addWidget(w);
+
+        expect(layout.titles[0].getAttribute('aria-controls')).to.equal(w.id);
+        expect(layout.widgets[0].node.getAttribute('aria-labelledby')).to.equal(
+          layout.titles[0].id
+        );
+      });
+    });
+
     describe('#dispose()', () => {
       it('should dispose of the resources held by the panel', () => {
         let panel = new LogAccordionPanel();

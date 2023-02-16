@@ -1,20 +1,20 @@
 {
   "name": "lumino-top-level",
-  "version": "2022.9.15-alpha.6",
+  "version": "2023.1.24-beta.1",
   "private": true,
   "workspaces": [
     "examples/*",
     "packages/*",
-    "tests/*"
+    "buildutils"
   ],
   "scripts": {
     "api": "lerna run api",
     "build": "npm run build:src",
     "build:dist": "npm run build && npm run minimize",
     "build:examples": "lerna run build --scope \"@lumino/example-*\" --concurrency 1",
-    "build:src": "lerna run build --scope \"@lumino/!(test-|example-)*\"  --concurrency 1",
+    "build:src": "lerna run build --scope \"@lumino/!(test-|example-)*\" --concurrency 1",
     "build:test": "lerna run build:test",
-    "watch:src": "lerna run watch --scope \"@lumino/!(test-|example-)*\"  --parallel",
+    "watch:src": "lerna run watch --scope \"@lumino/!(test-|example-)*\" --parallel",
     "clean": "lerna run clean",
     "clean:examples": "lerna run clean --scope \"@lumino/example-*\"",
     "clean:src": "lerna run clean --scope \"@lumino/!(test-|example-)*\"",
@@ -40,7 +40,8 @@
     "test:webkit": "lerna run test:webkit --concurrency 1",
     "test:webkit-headless": "lerna run test:webkit-headless --concurrency 1",
     "update:dependency": "update-dependency --lerna",
-    "update:versions": "lerna version --no-push --no-git-tag-version"
+    "update:versions": "lerna version --no-push --no-git-tag-version",
+    "prepare": "husky install"
   },
   "devDependencies": {
     "@jupyterlab/buildutils": "^3.0.0",
@@ -49,13 +50,13 @@
     "eslint": "^8.21.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.0",
-    "husky": "^4.2.5",
-    "lerna": "^5.5.4",
-    "lint-staged": "^10.2.13",
+    "husky": "^8.0.0",
+    "lerna": "^6.3.0",
+    "lint-staged": "^13.1.0",
     "prettier": "^2.7.1",
     "shell-quote": "^1.7.2",
     "typedoc": "~0.23.9",
-    "typescript": "~4.7.3"
+    "typescript": "~4.9.4"
   },
   "jupyter-releaser": {
     "options": {
@@ -72,11 +73,6 @@
         "yarn build:dist"
       ],
       "before-draft-release": "node scripts/tag-versions.js"
-    }
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
     }
   }
 }

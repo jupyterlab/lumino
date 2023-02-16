@@ -273,6 +273,14 @@ export class CommandPalette extends Widget {
   }
 
   /**
+   * A message handler invoked on an `'after-show'` message.
+   */
+  protected onAfterShow(msg: Message): void {
+    this.update();
+    super.onAfterShow(msg);
+  }
+
+  /**
    * A message handler invoked on an `'activate-request'` message.
    */
   protected onActivateRequest(msg: Message): void {
@@ -287,6 +295,10 @@ export class CommandPalette extends Widget {
    * A message handler invoked on an `'update-request'` message.
    */
   protected onUpdateRequest(msg: Message): void {
+    if (this.isHidden) {
+      return;
+    }
+
     // Fetch the current query text and content node.
     let query = this.inputNode.value;
     let contentNode = this.contentNode;
@@ -771,7 +783,7 @@ export namespace CommandPalette {
           {
             className,
             dataset,
-            role: 'checkbox',
+            role: 'menuitemcheckbox',
             'aria-checked': `${data.item.isToggled}`
           },
           this.renderItemIcon(data),
@@ -782,7 +794,8 @@ export namespace CommandPalette {
       return h.li(
         {
           className,
-          dataset
+          dataset,
+          role: 'menuitem'
         },
         this.renderItemIcon(data),
         this.renderItemContent(data),
@@ -1012,6 +1025,7 @@ namespace Private {
     clear.className = 'lm-close-icon';
 
     content.className = 'lm-CommandPalette-content';
+    content.setAttribute('role', 'menu');
     input.spellcheck = false;
     wrapper.appendChild(input);
     wrapper.appendChild(clear);

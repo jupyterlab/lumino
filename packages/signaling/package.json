@@ -1,6 +1,6 @@
 {
   "name": "@lumino/signaling",
-  "version": "2.0.0-alpha.6",
+  "version": "2.0.0-beta.1",
   "description": "Lumino Signals and Slots",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -44,14 +44,13 @@
     "displayName": "signaling"
   },
   "dependencies": {
-    "@lumino/algorithm": "^2.0.0-alpha.6",
-    "@lumino/coreutils": "^2.0.0-alpha.6",
-    "@lumino/properties": "^2.0.0-alpha.6"
+    "@lumino/algorithm": "^2.0.0-beta.0",
+    "@lumino/coreutils": "^2.0.0-beta.0"
   },
   "devDependencies": {
     "@microsoft/api-extractor": "^7.6.0",
-    "@rollup/plugin-commonjs": "^22.0.2",
-    "@rollup/plugin-node-resolve": "^13.3.0",
+    "@rollup/plugin-commonjs": "^24.0.0",
+    "@rollup/plugin-node-resolve": "^15.0.1",
     "@types/chai": "^3.4.35",
     "@types/mocha": "^2.2.39",
     "@types/node": "^12.12.17",
@@ -63,16 +62,16 @@
     "karma-mocha-reporter": "^2.2.5",
     "karma-webkit-launcher": "^1.0.2",
     "mocha": "^9.0.3",
-    "playwright": "^1.26.0",
+    "playwright": "^1.29.0",
     "postcss": "^8.4.14",
     "rimraf": "^3.0.2",
-    "rollup": "^2.77.3",
+    "rollup": "^3.9.1",
     "rollup-plugin-postcss": "^4.0.2",
     "rollup-plugin-sourcemaps": "^0.6.3",
     "terser": "^5.7.1",
     "tslib": "^2.4.0",
     "typedoc": "~0.23.9",
-    "typescript": "~4.7.3"
+    "typescript": "~4.9.4"
   },
   "publishConfig": {
     "access": "public"

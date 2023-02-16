@@ -1,0 +1,21 @@
+{
+  "name": "@lumino/example-menubar",
+  "version": "2.0.0-beta.1",
+  "private": true,
+  "scripts": {
+    "build": "tsc && rollup -c",
+    "clean": "rimraf build"
+  },
+  "dependencies": {
+    "@lumino/default-theme": "^2.0.0-beta.1",
+    "@lumino/messaging": "^2.0.0-beta.0",
+    "@lumino/widgets": "^2.0.0-beta.1"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^15.0.1",
+    "rimraf": "^3.0.2",
+    "rollup": "^3.9.1",
+    "rollup-plugin-styles": "^4.0.0",
+    "typescript": "~4.9.4"
+  }
+}

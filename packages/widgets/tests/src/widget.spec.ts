@@ -739,10 +739,39 @@ describe('@lumino/widgets', () => {
         widget.dispose();
       });
 
-      it('should add class when switching from scale to display', () => {
+      for (const fromMode of [
+        Widget.HiddenMode.Scale,
+        Widget.HiddenMode.ContentVisibility
+      ]) {
+        it(`should add class when switching from ${fromMode} to display`, () => {
+          let widget = new Widget();
+          Widget.attach(widget, document.body);
+          widget.hiddenMode = fromMode;
+          widget.hide();
+          widget.hiddenMode = Widget.HiddenMode.Display;
+          expect(widget.hasClass('lm-mod-hidden')).to.equal(true);
+          expect(widget.node.style.transform).to.equal('');
+          expect(widget.node.style.willChange).to.equal('auto');
+          widget.dispose();
+        });
+      }
+
+      it('should use content-visibility in relevant mode', () => {
         let widget = new Widget();
         Widget.attach(widget, document.body);
-        widget.hiddenMode = Widget.HiddenMode.Scale;
+        widget.hiddenMode = Widget.HiddenMode.ContentVisibility;
+        widget.hide();
+        expect(widget.hasClass('lm-mod-hidden')).to.equal(false);
+        // @ts-expect-error content-visibility unknown by DOM lib types
+        expect(widget.node.style.contentVisibility).to.equal('hidden');
+        expect(widget.node.style.willChange).to.equal('auto');
+        widget.dispose();
+      });
+
+      it('should add class when switching from content-visibility to display', () => {
+        let widget = new Widget();
+        Widget.attach(widget, document.body);
+        widget.hiddenMode = Widget.HiddenMode.ContentVisibility;
         widget.hide();
         widget.hiddenMode = Widget.HiddenMode.Display;
         expect(widget.hasClass('lm-mod-hidden')).to.equal(true);

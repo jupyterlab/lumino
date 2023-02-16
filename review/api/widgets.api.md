@@ -24,6 +24,7 @@ export class AccordionLayout extends SplitLayout {
     protected attachWidget(index: number, widget: Widget): void;
     protected detachWidget(index: number, widget: Widget): void;
     dispose(): void;
+    insertWidget(index: number, widget: Widget): void;
     protected moveWidget(fromIndex: number, toIndex: number, widget: Widget): void;
     readonly renderer: AccordionLayout.IRenderer;
     get titles(): ReadonlyArray<HTMLElement>;
@@ -179,6 +180,7 @@ export class CommandPalette extends Widget {
     get items(): ReadonlyArray<CommandPalette.IItem>;
     protected onActivateRequest(msg: Message): void;
     protected onAfterDetach(msg: Message): void;
+    protected onAfterShow(msg: Message): void;
     protected onBeforeAttach(msg: Message): void;
     protected onUpdateRequest(msg: Message): void;
     refresh(): void;
@@ -777,6 +779,7 @@ export namespace MenuBar {
         readonly active: boolean;
         // (undocumented)
         readonly onfocus?: (event: FocusEvent) => void;
+        readonly tabbable: boolean;
         readonly title: Title<Widget>;
     }
     export interface IRenderer {
@@ -1323,6 +1326,7 @@ export namespace Widget {
         IsVisible = 8
     }
     export enum HiddenMode {
+        ContentVisibility = 2,
         Display = 0,
         Scale = 1
     }

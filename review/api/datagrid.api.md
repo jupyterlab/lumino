@@ -94,8 +94,7 @@ export abstract class CellEditor implements ICellEditor, IDisposable {
     protected validate(): void;
     protected validator: ICellInputValidator | undefined;
     protected get validInput(): boolean;
-    // Warning: (ae-forgotten-export) The symbol "Notification" needs to be exported by the entry point index.d.ts
-    protected validityNotification: Notification_2 | null;
+    protected validityNotification: CellEditor.Notification | null;
     protected viewportOccluder: HTMLDivElement;
 }
 
@@ -106,6 +105,28 @@ export namespace CellEditor {
         readonly row: number;
         readonly column: number;
     };
+    export class Notification extends Widget {
+        constructor(options: Notification.IOptions);
+        handleEvent(event: Event): void;
+        get message(): string;
+        set message(value: string);
+        get messageNode(): HTMLSpanElement;
+        protected onAfterDetach(msg: Message): void;
+        protected onBeforeAttach(msg: Message): void;
+        protected onUpdateRequest(msg: Message): void;
+        get placement(): Notification.Placement;
+        set placement(value: Notification.Placement);
+    }
+    export namespace Notification {
+        export function createNode(): HTMLElement;
+        export interface IOptions {
+            message?: string;
+            placement?: Placement;
+            target: HTMLElement;
+            timeout?: number;
+        }
+        export type Placement = 'top' | 'bottom' | 'left' | 'right';
+    }
 }
 
 // @public

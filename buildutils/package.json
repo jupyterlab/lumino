@@ -1,0 +1,19 @@
+{
+  "name": "@lumino/buildutils",
+  "version": "2.0.0-beta.0",
+  "description": "Utilities for building Lumino packages",
+  "type": "module",
+  "main": "src/index.js",
+  "files": [
+    "src/*"
+  ],
+  "repository": "https://github.com/jupyterlab/lumino",
+  "author": "Project Jupyter",
+  "license": "BSD-3-Clause",
+  "private": true,
+  "dependencies": {
+    "@rollup/plugin-node-resolve": "^15.0.1",
+    "rollup-plugin-postcss": "^4.0.2",
+    "rollup-plugin-sourcemaps": "^0.6.3"
+  }
+}

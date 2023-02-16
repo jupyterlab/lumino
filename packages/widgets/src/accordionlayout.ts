@@ -4,6 +4,7 @@
  */
 
 import { ArrayExt } from '@lumino/algorithm';
+import { UUID } from '@lumino/coreutils';
 import { SplitLayout } from './splitlayout';
 import { Title } from './title';
 import Utils from './utils';
@@ -81,6 +82,28 @@ export class AccordionLayout extends SplitLayout {
 
     // Add the title node to the parent before the widget.
     this.parent!.node.replaceChild(newTitle, oldTitle);
+  }
+
+  /**
+   * Insert a widget into the layout at the specified index.
+   *
+   * @param index - The index at which to insert the widget.
+   *
+   * @param widget - The widget to insert into the layout.
+   *
+   * #### Notes
+   * The index will be clamped to the bounds of the widgets.
+   *
+   * If the widget is already added to the layout, it will be moved.
+   *
+   * #### Undefined Behavior
+   * An `index` which is non-integral.
+   */
+  insertWidget(index: number, widget: Widget): void {
+    if (!widget.id) {
+      widget.id = `id-${UUID.uuid4()}`;
+    }
+    super.insertWidget(index, widget);
   }
 
   /**
@@ -241,6 +264,7 @@ namespace Private {
   ): HTMLElement {
     const title = renderer.createSectionTitle(data);
     title.style.position = 'absolute';
+    title.style.contain = 'strict';
     title.setAttribute('aria-label', `${data.label} Section`);
     title.setAttribute('aria-expanded', expanded ? 'true' : 'false');
     title.setAttribute('aria-controls', data.owner.id);

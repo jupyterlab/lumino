@@ -401,7 +401,6 @@ export namespace AccordionPanel {
      */
     createSectionTitle(data: Title<Widget>): HTMLElement {
       const handle = document.createElement('h3');
-      handle.setAttribute('role', 'button');
       handle.setAttribute('tabindex', '0');
       handle.id = this.createTitleKey(data);
       handle.className = this.titleClassName;
