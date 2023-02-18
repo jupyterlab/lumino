@@ -583,6 +583,12 @@ export namespace GridLayout {
 }
 
 // @public
+export interface IOverflowMenuOptions {
+    overflowMenuVisible: boolean;
+    title: string;
+}
+
+// @public
 export abstract class Layout implements Iterable<Widget>, IDisposable {
     abstract [Symbol.iterator](): IterableIterator<Widget>;
     constructor(options?: Layout.IOptions);
@@ -751,21 +757,24 @@ export class MenuBar extends Widget {
     set activeIndex(value: number);
     get activeMenu(): Menu | null;
     set activeMenu(value: Menu | null);
-    addMenu(menu: Menu): void;
+    addMenu(menu: Menu, update?: boolean): void;
     get childMenu(): Menu | null;
     clearMenus(): void;
     get contentNode(): HTMLUListElement;
     dispose(): void;
     handleEvent(event: Event): void;
-    insertMenu(index: number, menu: Menu): void;
+    insertMenu(index: number, menu: Menu, update?: boolean): void;
     get menus(): ReadonlyArray<Menu>;
     protected onActivateRequest(msg: Message): void;
     protected onAfterDetach(msg: Message): void;
     protected onBeforeAttach(msg: Message): void;
+    protected onResize(msg: Widget.ResizeMessage): void;
     protected onUpdateRequest(msg: Message): void;
     openActiveMenu(): void;
-    removeMenu(menu: Menu): void;
-    removeMenuAt(index: number): void;
+    get overflowIndex(): number;
+    get overflowMenu(): Menu | null;
+    removeMenu(menu: Menu, update?: boolean): void;
+    removeMenuAt(index: number, update?: boolean): void;
     readonly renderer: MenuBar.IRenderer;
 }
 
@@ -773,6 +782,7 @@ export class MenuBar extends Widget {
 export namespace MenuBar {
     export interface IOptions {
         forceItemsPosition?: Menu.IOpenOptions;
+        overflowMenuOptions?: IOverflowMenuOptions;
         renderer?: IRenderer;
     }
     export interface IRenderData {
