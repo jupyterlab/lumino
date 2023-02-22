@@ -418,6 +418,7 @@ export class MenuBar extends Widget {
    */
   protected onResize(msg: Widget.ResizeMessage): void {
     this.update();
+    super.onResize(msg);
   }
 
   /**
