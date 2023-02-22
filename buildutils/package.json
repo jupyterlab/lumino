@@ -10,7 +10,6 @@
   "repository": "https://github.com/jupyterlab/lumino",
   "author": "Project Jupyter",
   "license": "BSD-3-Clause",
-  "private": true,
   "dependencies": {
     "@rollup/plugin-commonjs": "^24.0.0",
     "@rollup/plugin-node-resolve": "^15.0.1",
