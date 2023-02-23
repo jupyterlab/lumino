@@ -1,6 +1,6 @@
 {
   "name": "@lumino/domutils",
-  "version": "2.0.0-beta.0",
+  "version": "2.0.0-rc.0",
   "description": "Lumino DOM Utilities",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -44,7 +44,7 @@
     "displayName": "domutils"
   },
   "devDependencies": {
-    "@lumino/buildutils": "^2.0.0-beta.0",
+    "@lumino/buildutils": "^2.0.0-rc.0",
     "@microsoft/api-extractor": "^7.6.0",
     "@rollup/plugin-commonjs": "^24.0.0",
     "@rollup/plugin-node-resolve": "^15.0.1",

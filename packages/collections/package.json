@@ -1,6 +1,6 @@
 {
   "name": "@lumino/collections",
-  "version": "2.0.0-beta.0",
+  "version": "2.0.0-rc.0",
   "description": "Lumino Generic Collections",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -44,10 +44,10 @@
     "displayName": "collections"
   },
   "dependencies": {
-    "@lumino/algorithm": "^2.0.0-beta.0"
+    "@lumino/algorithm": "^2.0.0-rc.0"
   },
   "devDependencies": {
-    "@lumino/buildutils": "^2.0.0-beta.0",
+    "@lumino/buildutils": "^2.0.0-rc.0",
     "@microsoft/api-extractor": "^7.6.0",
     "@rollup/plugin-commonjs": "^24.0.0",
     "@rollup/plugin-node-resolve": "^15.0.1",
