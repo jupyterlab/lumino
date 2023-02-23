@@ -411,7 +411,7 @@ export class Widget implements IMessageHandler, IObservableDisposable {
    * Show the widget and make it visible to its parent widget.
    *
    * #### Notes
-   * This causes the [[isHidden]] property to be `false`.
+   * This causes the {@link isHidden} property to be `false`.
    *
    * If the widget is not explicitly hidden, this is a no-op.
    */
@@ -438,7 +438,7 @@ export class Widget implements IMessageHandler, IObservableDisposable {
    * Hide the widget and make it hidden to its parent widget.
    *
    * #### Notes
-   * This causes the [[isHidden]] property to be `true`.
+   * This causes the {@link isHidden} property to be `true`.
    *
    * If the widget is explicitly hidden, this is a no-op.
    */

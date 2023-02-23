@@ -34,7 +34,7 @@
     "test:chrome": "cd tests && karma start --browsers=Chrome",
     "test:chrome-headless": "cd tests && karma start --browsers=ChromeHeadless",
     "test:firefox": "cd tests && karma start --browsers=Firefox",
-    "test:firefox-headless": "cd tests && karma start --browsers=FirefoxHeadless",
+    "test:firefox-headless": "cd tests && yarn karma start --browsers=FirefoxHeadless",
     "test:webkit": "cd tests && karma start --browsers=Webkit",
     "test:webkit-headless": "cd tests && karma start --browsers=WebkitHeadless",
     "watch": "tsc --build --watch"
@@ -44,9 +44,11 @@
     "displayName": "algorithm"
   },
   "devDependencies": {
+    "@lumino/buildutils": "^2.0.0-beta.0",
     "@microsoft/api-extractor": "^7.6.0",
     "@rollup/plugin-commonjs": "^24.0.0",
     "@rollup/plugin-node-resolve": "^15.0.1",
+    "@types/chai": "^4.3.4",
     "@types/mocha": "^2.2.39",
     "chai": "^4.3.4",
     "karma": "^6.3.4",
@@ -64,7 +66,7 @@
     "rollup-plugin-sourcemaps": "^0.6.3",
     "terser": "^5.7.1",
     "tslib": "^2.4.0",
-    "typedoc": "~0.23.9",
+    "typedoc": "^0.23.25",
     "typescript": "~4.9.4"
   },
   "publishConfig": {

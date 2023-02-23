@@ -45,8 +45,8 @@
   },
   "devDependencies": {
     "@jupyterlab/buildutils": "^3.0.0",
-    "@typescript-eslint/eslint-plugin": "^5.32.0",
-    "@typescript-eslint/parser": "^5.32.0",
+    "@typescript-eslint/eslint-plugin": "^5.45.0",
+    "@typescript-eslint/parser": "^5.45.0",
     "eslint": "^8.21.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.0",
@@ -55,7 +55,8 @@
     "lint-staged": "^13.1.0",
     "prettier": "^2.7.1",
     "shell-quote": "^1.7.2",
-    "typedoc": "~0.23.9",
+    "typedoc": "^0.23.25",
+    "typedoc-plugin-resolve-crossmodule-references": "^0.3.3",
     "typescript": "~4.9.4"
   },
   "jupyter-releaser": {
@@ -74,5 +75,6 @@
       ],
       "before-draft-release": "node scripts/tag-versions.js"
     }
-  }
+  },
+  "packageManager": "yarn@3.4.1"
 }

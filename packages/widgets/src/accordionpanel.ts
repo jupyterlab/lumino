@@ -13,7 +13,7 @@ import { Widget } from './widget';
  * A panel which arranges its widgets into resizable sections separated by a title widget.
  *
  * #### Notes
- * This class provides a convenience wrapper around [[AccordionLayout]].
+ * This class provides a convenience wrapper around {@link AccordionLayout}.
  */
 export class AccordionPanel extends SplitPanel {
   /**

@@ -17,7 +17,7 @@ import { Widget } from './widget';
  * A panel which arranges its widgets in a single row or column.
  *
  * #### Notes
- * This class provides a convenience wrapper around a [[BoxLayout]].
+ * This class provides a convenience wrapper around a {@link BoxLayout}.
  */
 export class BoxPanel extends Panel {
   /**
