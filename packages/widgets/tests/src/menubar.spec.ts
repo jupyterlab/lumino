@@ -901,6 +901,34 @@ describe('@lumino/widgets', () => {
         expect(child.className).to.contain('lm-MenuBar-item');
         bar.dispose();
       });
+
+      it('should render the overflow menu', () => {
+        let bar = createMenuBar();
+        expect(bar.overflowIndex).to.equal(-1);
+        expect(bar.overflowMenu).to.equal(null);
+        bar.node.style.maxWidth = '70px';
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        requestAnimationFrame(() => {
+          expect(bar.overflowMenu).to.not.equal(null);
+          expect(bar.overflowIndex).to.not.equal(-1);
+          bar.dispose();
+        });
+      });
+
+      it('should hide the overflow menu', () => {
+        let bar = createMenuBar();
+        expect(bar.overflowIndex).to.equal(-1);
+        expect(bar.overflowMenu).to.equal(null);
+        bar.node.style.maxWidth = '70px';
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        bar.node.style.maxWidth = '400px';
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        requestAnimationFrame(() => {
+          expect(bar.overflowMenu).to.equal(null);
+          expect(bar.overflowIndex).to.equal(-1);
+          bar.dispose();
+        });
+      });
     });
 
     context('`menuRequested` signal', () => {

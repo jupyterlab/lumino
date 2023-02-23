@@ -10,7 +10,7 @@
 |----------------------------------------------------------------------------*/
 import { CommandRegistry } from '@lumino/commands';
 
-import { Message } from '@lumino/messaging';
+import { Message, MessageLoop } from '@lumino/messaging';
 
 import {
   BoxPanel,
@@ -446,6 +446,7 @@ function main(): void {
   main.addWidget(dock);
 
   window.onresize = () => {
+    MessageLoop.postMessage(bar, new Widget.ResizeMessage(-1, -1));
     main.update();
   };
 

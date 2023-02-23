@@ -15,6 +15,8 @@ import { getKeyboardLayout } from '@lumino/keyboard';
 
 import { Message, MessageLoop } from '@lumino/messaging';
 
+import { CommandRegistry } from '@lumino/commands';
+
 import {
   ElementARIAAttrs,
   ElementDataset,
@@ -47,6 +49,10 @@ export class MenuBar extends Widget {
       forceX: true,
       forceY: true
     };
+    this._overflowMenuOptions = options.overflowMenuOptions || {
+      overflowMenuVisible: true,
+      title: '...'
+    };
   }
 
   /**
@@ -71,6 +77,20 @@ export class MenuBar extends Widget {
    */
   get childMenu(): Menu | null {
     return this._childMenu;
+  }
+
+  /**
+   * The overflow index of the menu bar.
+   */
+  get overflowIndex(): number {
+    return this._overflowIndex;
+  }
+
+  /**
+   * The overflow menu of the menu bar.
+   */
+  get overflowMenu(): Menu | null {
+    return this._overflowMenu;
   }
 
   /**
@@ -188,8 +208,8 @@ export class MenuBar extends Widget {
    * #### Notes
    * If the menu is already added to the menu bar, it will be moved.
    */
-  addMenu(menu: Menu): void {
-    this.insertMenu(this._menus.length, menu);
+  addMenu(menu: Menu, update: boolean = true): void {
+    this.insertMenu(this._menus.length, menu, update);
   }
 
   /**
@@ -204,7 +224,7 @@ export class MenuBar extends Widget {
    *
    * If the menu is already added to the menu bar, it will be moved.
    */
-  insertMenu(index: number, menu: Menu): void {
+  insertMenu(index: number, menu: Menu, update: boolean = true): void {
     // Close the child menu before making changes.
     this._closeChildMenu();
 
@@ -228,7 +248,9 @@ export class MenuBar extends Widget {
       menu.title.changed.connect(this._onTitleChanged, this);
 
       // Schedule an update of the items.
-      this.update();
+      if (update) {
+        this.update();
+      }
 
       // There is nothing more to do.
       return;
@@ -250,7 +272,9 @@ export class MenuBar extends Widget {
     ArrayExt.move(this._menus, i, j);
 
     // Schedule an update of the items.
-    this.update();
+    if (update) {
+      this.update();
+    }
   }
 
   /**
@@ -261,8 +285,8 @@ export class MenuBar extends Widget {
    * #### Notes
    * This is a no-op if the menu is not in the menu bar.
    */
-  removeMenu(menu: Menu): void {
-    this.removeMenuAt(this._menus.indexOf(menu));
+  removeMenu(menu: Menu, update: boolean = true): void {
+    this.removeMenuAt(this._menus.indexOf(menu), update);
   }
 
   /**
@@ -273,7 +297,7 @@ export class MenuBar extends Widget {
    * #### Notes
    * This is a no-op if the index is out of range.
    */
-  removeMenuAt(index: number): void {
+  removeMenuAt(index: number, update: boolean = true): void {
     // Close the child menu before making changes.
     this._closeChildMenu();
 
@@ -294,7 +318,9 @@ export class MenuBar extends Widget {
     menu.removeClass('lm-MenuBar-menu');
 
     // Schedule an update of the items.
-    this.update();
+    if (update) {
+      this.update();
+    }
   }
 
   /**
@@ -388,6 +414,14 @@ export class MenuBar extends Widget {
   }
 
   /**
+   * A message handler invoked on a `'resize'` message.
+   */
+  protected onResize(msg: Widget.ResizeMessage): void {
+    this.update();
+    super.onResize(msg);
+  }
+
+  /**
    * A message handler invoked on an `'update-request'` message.
    */
   protected onUpdateRequest(msg: Message): void {
@@ -398,23 +432,128 @@ export class MenuBar extends Widget {
       this._tabFocusIndex >= 0 && this._tabFocusIndex < menus.length
         ? this._tabFocusIndex
         : 0;
-    let content = new Array<VirtualElement>(menus.length);
-    for (let i = 0, n = menus.length; i < n; ++i) {
-      let title = menus[i].title;
-      let active = i === activeIndex;
-      if (active && menus[i].items.length == 0) {
-        active = false;
-      }
+    let length = this._overflowIndex > -1 ? this._overflowIndex : menus.length;
+    let totalMenuSize = 0;
+    let overflowMenuVisible = false;
+
+    // Check that the overflow menu doesn't count
+    length = this._overflowMenu !== null ? length - 1 : length;
+    let content = new Array<VirtualElement>(length);
+
+    // Render visible menus
+    for (let i = 0; i < length; ++i) {
       content[i] = renderer.renderItem({
-        title,
-        active,
+        title: menus[i].title,
+        active: i === activeIndex && menus[i].items.length !== 0,
         tabbable: i === tabFocusIndex,
         onfocus: () => {
           this.activeIndex = i;
         }
       });
+      // Calculate size of current menu
+      totalMenuSize += this._menuItemSizes[i];
+      // Check if overflow menu is already rendered
+      if (menus[i].title.label === this._overflowMenuOptions.title) {
+        overflowMenuVisible = true;
+        length--;
+      }
+    }
+    // Render overflow menu if needed and active
+    if (this._overflowMenuOptions.overflowMenuVisible) {
+      if (this._overflowIndex > -1 && !overflowMenuVisible) {
+        // Create overflow menu
+        if (this._overflowMenu === null) {
+          this._overflowMenu = new Menu({ commands: new CommandRegistry() });
+          this._overflowMenu.title.label = this._overflowMenuOptions.title;
+          this._overflowMenu.title.mnemonic = 0;
+          this.addMenu(this._overflowMenu, false);
+        }
+        // Move menus to overflow menu
+        for (let i = menus.length - 2; i >= length; i--) {
+          const submenu = this.menus[i];
+          submenu.title.mnemonic = 0;
+          this._overflowMenu.insertItem(0, {
+            type: 'submenu',
+            submenu: submenu
+          });
+          this.removeMenu(submenu, false);
+        }
+        content[length] = renderer.renderItem({
+          title: this._overflowMenu.title,
+          active: length === activeIndex && menus[length].items.length !== 0,
+          tabbable: length === tabFocusIndex,
+          onfocus: () => {
+            this.activeIndex = length;
+          }
+        });
+        length++;
+      } else if (this._overflowMenu !== null) {
+        // Remove submenus from overflow menu
+        let overflowMenuItems = this._overflowMenu.items;
+        let screenSize = this.node.offsetWidth;
+        let n = this._overflowMenu.items.length;
+        for (let i = 0; i < n; ++i) {
+          let index = menus.length - 1 - i;
+          if (screenSize - totalMenuSize > this._menuItemSizes[index]) {
+            let menu = overflowMenuItems[0].submenu as Menu;
+            this._overflowMenu.removeItemAt(0);
+            this.insertMenu(length, menu, false);
+            content[length] = renderer.renderItem({
+              title: menu.title,
+              active: false,
+              tabbable: length === tabFocusIndex,
+              onfocus: () => {
+                this.activeIndex = length;
+              }
+            });
+            length++;
+          }
+        }
+        if (this._overflowMenu.items.length === 0) {
+          this.removeMenu(this._overflowMenu, false);
+          content.pop();
+          this._overflowMenu = null;
+          this._overflowIndex = -1;
+        }
+      }
     }
     VirtualDOM.render(content, this.contentNode);
+    this._updateOverflowIndex();
+  }
+
+  /**
+   * Calculate and update the current overflow index.
+   */
+  private _updateOverflowIndex(): void {
+    // Get elements visible in the main menu bar
+    const itemMenus = this.contentNode.childNodes;
+    let screenSize = this.node.offsetWidth;
+    let totalMenuSize = 0;
+    let index = -1;
+    let n = itemMenus.length;
+
+    if (this._menuItemSizes.length == 0) {
+      // Check if it is the first resize and get info about menu items sizes
+      for (let i = 0; i < n; i++) {
+        let item = itemMenus[i] as HTMLLIElement;
+        // Add sizes to array
+        totalMenuSize += item.offsetWidth;
+        this._menuItemSizes.push(item.offsetWidth);
+        if (totalMenuSize > screenSize && index === -1) {
+          index = i;
+        }
+      }
+    } else {
+      // Calculate current menu size
+      for (let i = 0; i < this._menuItemSizes.length; i++) {
+        totalMenuSize += this._menuItemSizes[i];
+        if (totalMenuSize > screenSize) {
+          index = i;
+          break;
+        }
+      }
+    }
+    this._overflowIndex = index;
   }
 
   /**
@@ -741,8 +880,12 @@ export class MenuBar extends Widget {
   // Track which item can be focused using the TAB key. Unlike _activeIndex will always point to a menuitem.
   private _tabFocusIndex = 0;
   private _forceItemsPosition: Menu.IOpenOptions;
+  private _overflowMenuOptions: IOverflowMenuOptions;
   private _menus: Menu[] = [];
   private _childMenu: Menu | null = null;
+  private _overflowMenu: Menu | null = null;
+  private _menuItemSizes: number[] = [];
+  private _overflowIndex: number = -1;
 }
 
 /**
@@ -769,6 +912,15 @@ export namespace MenuBar {
      * The default is `true`.
      */
     forceItemsPosition?: Menu.IOpenOptions;
+    /**
+     * Whether to add a overflow menu if there's overflow.
+     *
+     * Setting to `true` will enable the logic that creates an overflow menu
+     * to show the menu items that don't fit entirely on the screen.
+     *
+     * The default is `true`.
+     */
+    overflowMenuOptions?: IOverflowMenuOptions;
   }
 
   /**
@@ -950,6 +1102,22 @@ export namespace MenuBar {
    * The default `Renderer` instance.
    */
   export const defaultRenderer = new Renderer();
+}
+
+/**
+ * Options for overflow menu.
+ */
+export interface IOverflowMenuOptions {
+  /**
+   * Determines if a overflow menu appears when the menu items overflow.
+   */
+  overflowMenuVisible: boolean;
+  /**
+   * Determines the title of the overflow menu.
+   *
+   * Default: `...`.
+   */
+  title: string;
 }
 
 /**
