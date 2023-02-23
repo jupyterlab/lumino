@@ -87,12 +87,15 @@ jobs:
           npm install -g verdaccio
           verdaccio --config .github/scripts/verdaccio.yml &
           npm set registry http://localhost:4873/
-          yarn config set registry http://localhost:4873/
+          yarn config set npmRegistryServer http://localhost:4873/
+          yarn config set unsafeHttpWhitelist --json ["localhost"]
           git config --global user.email "you@example.com"
           git config --global user.name "Your Name"
           yarn run update:versions patch --yes
           git commit -a -m "Update versions"
           yarn run publish
+          yarn config unset npmRegistryServer
+          yarn config unset unsafeHttpWhitelist
 
   check_links:
     runs-on: ubuntu-latest
