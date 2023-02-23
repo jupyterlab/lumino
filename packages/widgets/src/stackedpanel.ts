@@ -19,7 +19,7 @@ import { Widget } from './widget';
  * A panel where visible widgets are stacked atop one another.
  *
  * #### Notes
- * This class provides a convenience wrapper around a [[StackedLayout]].
+ * This class provides a convenience wrapper around a {@link StackedLayout}.
  */
 export class StackedPanel extends Panel {
   /**

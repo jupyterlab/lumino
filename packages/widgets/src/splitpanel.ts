@@ -27,7 +27,7 @@ import { Widget } from './widget';
  * A panel which arranges its widgets into resizable sections.
  *
  * #### Notes
- * This class provides a convenience wrapper around a [[SplitLayout]].
+ * This class provides a convenience wrapper around a {@link SplitLayout}.
  */
 export class SplitPanel extends Panel {
   /**

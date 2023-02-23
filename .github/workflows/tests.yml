@@ -78,6 +78,7 @@ jobs:
         run: |
           set -eux
           yarn clean
+          yarn build:src
           yarn docs
 
       - name: Publish with Verdaccio

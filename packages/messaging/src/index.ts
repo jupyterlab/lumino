@@ -164,7 +164,7 @@ export interface IMessageHandler {
  * If all installed message hooks return `true`, the message will
  * be delivered to the handler for processing.
  *
- * **See also:** [[installMessageHook]] and [[removeMessageHook]]
+ * **See also:** {@link MessageLoop.installMessageHook} and {@link MessageLoop.removeMessageHook}
  */
 export interface IMessageHook {
   /**
@@ -185,7 +185,7 @@ export interface IMessageHook {
  *
  * #### Notes
  * The signature and semantics of a message hook function are the same
- * as the `messageHook` method of [[IMessageHook]].
+ * as the `messageHook` method of {@link IMessageHook}.
  */
 export type MessageHook =
   | IMessageHook

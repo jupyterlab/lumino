@@ -19,7 +19,7 @@ import { Widget } from './widget';
  * convenience panel widgets, but can also be used directly with CSS to
  * arrange a collection of widgets.
  *
- * This class provides a convenience wrapper around a [[PanelLayout]].
+ * This class provides a convenience wrapper around a {@link PanelLayout}.
  */
 export class Panel extends Widget {
   /**
