@@ -18,5 +18,8 @@
     "rollup-plugin-postcss": "^4.0.2",
     "rollup-plugin-sourcemaps": "^0.6.3",
     "rollup-plugin-styles": "^4.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
