@@ -27,6 +27,7 @@ export class TextRenderer extends CellRenderer {
     this.backgroundColor = options.backgroundColor || '';
     this.verticalAlignment = options.verticalAlignment || 'center';
     this.horizontalAlignment = options.horizontalAlignment || 'left';
+    this.horizontalPadding = options.horizontalPadding || 8;
     this.format = options.format || TextRenderer.formatGeneric();
     this.elideDirection = options.elideDirection || 'none';
     this.wrapText = options.wrapText || false;
@@ -56,6 +57,11 @@ export class TextRenderer extends CellRenderer {
    * The horizontal alignment for the cell text.
    */
   readonly horizontalAlignment: CellRenderer.ConfigOption<TextRenderer.HorizontalAlignment>;
+
+  /**
+   * The horizontal alignment for the cell text.
+   */
+  readonly horizontalPadding: number;
 
   /**
    * The format function for the cell value.
@@ -106,6 +112,13 @@ export class TextRenderer extends CellRenderer {
   }
 
   /**
+   * Get the full text to be rendered by the cell.
+   */
+  getText(config: CellRenderer.CellConfig): string {
+    return this.format(config);
+  }
+
+  /**
    * Draw the text for the cell.
    *
    * @param gc - The graphics context to use for drawing.
@@ -130,8 +143,7 @@ export class TextRenderer extends CellRenderer {
     }
 
     // Format the cell value to text.
-    let format = this.format;
-    let text = format(config);
+    let text = this.getText(config);
 
     // Bail if there is no text to draw.
     if (!text) {
@@ -185,7 +197,7 @@ export class TextRenderer extends CellRenderer {
     // Compute the X position for the text.
     switch (hAlign) {
       case 'left':
-        textX = config.x + 8;
+        textX = config.x + this.horizontalPadding;
         boxWidth = config.width - 14;
         break;
       case 'center':
@@ -193,7 +205,7 @@ export class TextRenderer extends CellRenderer {
         boxWidth = config.width;
         break;
       case 'right':
-        textX = config.x + config.width - 8;
+        textX = config.x + config.width - this.horizontalPadding;
         boxWidth = config.width - 14;
         break;
       default:
@@ -395,6 +407,13 @@ export namespace TextRenderer {
      * The default is `'left'`.
      */
     horizontalAlignment?: CellRenderer.ConfigOption<HorizontalAlignment>;
+
+    /**
+     * The horizontal padding for the cell text in pixels.
+     *
+     * The default is `8`.
+     */
+    horizontalPadding?: number;
 
     /**
      * The format function for the renderer.

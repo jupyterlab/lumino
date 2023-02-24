@@ -1407,7 +1407,7 @@ export class DataGrid extends Widget {
   resizeColumn(
     region: DataModel.ColumnRegion,
     index: number,
-    size: number
+    size: number | null
   ): void {
     let msg = new Private.ColumnResizeRequest(region, index, size);
     MessageLoop.postMessage(this._viewport, msg);
@@ -1462,7 +1462,7 @@ export class DataGrid extends Widget {
   }
 
   /**
-   * Auto sizes column widths based on their text content.
+   * Auto sizes column-header widths based on their text content.
    * @param area which area to resize: 'body', 'row-header' or 'all'.
    * @param padding padding added to resized columns (pixels).
    * @param numCols specify cap on the number of column resizes (optional).
@@ -2094,6 +2094,102 @@ export class DataGrid extends Widget {
    */
   protected repaintOverlay(): void {
     MessageLoop.postMessage(this._viewport, Private.OverlayPaintRequest);
+  }
+
+  private _getMaxWidthInColumn(
+    index: number,
+    columnRegion: 'row-header' | 'body'
+  ): number | null {
+    const dataModel = this.dataModel;
+
+    if (!dataModel) {
+      return null;
+    }
+
+    const columnHeaderRegion =
+      columnRegion == 'row-header' ? 'corner-header' : 'column-header';
+
+    return Math.max(
+      this._getMaxWidthInArea(
+        dataModel,
+        index,
+        columnHeaderRegion,
+        'column-header'
+      ),
+      this._getMaxWidthInArea(dataModel, index, columnRegion, 'body')
+    );
+  }
+
+  private _getMaxWidthInArea(
+    dataModel: DataModel,
+    index: number,
+    region: DataModel.CellRegion,
+    rowRegion: DataModel.RowRegion
+  ): number {
+    const numRows = dataModel.rowCount(rowRegion);
+    // Will only allocate up to 1_000_000 elements otherwise performance can tank.
+    const configs = Array.from(
+      { length: Math.min(numRows, 1_000_000) },
+      (_val, idx) => DataGrid._getConfig(dataModel, idx, index, region)
+    );
+
+    // Heuristic: Sort by the length of the text to render and only fully calculate the text width
+    // for the top 100_000 rows by text length
+    if (numRows > 100_000) {
+      // Sort by descending length
+      configs.sort(x => -this._getTextToRender(x).length);
+    }
+
+    let maxWidth = 0;
+    for (let i = 0; i < numRows && i < 100_000; ++i) {
+      const textWidth = this._getCellTextWidth(configs[i]);
+      maxWidth = Math.max(maxWidth, textWidth);
+    }
+
+    return maxWidth;
+  }
+
+  private static _getConfig(
+    dataModel: DataModel,
+    row: number,
+    col: number,
+    location: DataModel.CellRegion
+  ): CellRenderer.CellConfig {
+    return {
+      x: 0,
+      y: 0,
+      width: 0,
+      height: 0,
+      region: location,
+      row: row,
+      column: col,
+      value: DataGrid._getCellValue(dataModel, location, row, col),
+      metadata: DataGrid._getCellMetadata(dataModel, location, row, col)
+    };
+  }
+
+  private _getTextToRender(config: CellRenderer.CellConfig): string {
+    const renderer = this.cellRenderers.get(config) as TextRenderer;
+    return renderer.getText(config);
+  }
+
+  private _getCellTextWidth(config: CellRenderer.CellConfig): number {
+    // Get the renderer for the given cell.
+    const renderer = this.cellRenderers.get(config) as TextRenderer;
+
+    // Use the canvas context to measure the cell's text width
+    const gc = this.canvasGC;
+    gc.font = CellRenderer.resolveOption(renderer.font, config);
+    gc.fillStyle = CellRenderer.resolveOption(renderer.textColor, config);
+    gc.textAlign = CellRenderer.resolveOption(
+      renderer.horizontalAlignment,
+      config
+    );
+    gc.textBaseline = 'bottom';
+
+    const text = this._getTextToRender(config);
+
+    return gc.measureText(text).width + 2 * renderer.horizontalPadding;
   }
 
   /**
@@ -3301,7 +3397,7 @@ export class DataGrid extends Widget {
   /**
    * Resize a column section immediately.
    */
-  private _resizeColumn(index: number, size: number): void {
+  private _resizeColumn(index: number, size: number | null): void {
     // Look up the target section list.
     let list = this._columnSections;
 
@@ -3310,11 +3406,17 @@ export class DataGrid extends Widget {
       return;
     }
 
+    const adjustedSize = size ?? this._getMaxWidthInColumn(index, 'body');
+
+    if (!adjustedSize || adjustedSize == 0) {
+      return;
+    }
+
     // Look up the old size of the section.
     let oldSize = list.sizeOf(index);
 
     // Normalize the new size of the section.
-    let newSize = list.clampSize(size);
+    let newSize = list.clampSize(adjustedSize);
 
     // Bail early if the size does not change.
     if (oldSize === newSize) {
@@ -3454,7 +3556,7 @@ export class DataGrid extends Widget {
   /**
    * Resize a row header section immediately.
    */
-  private _resizeRowHeader(index: number, size: number): void {
+  private _resizeRowHeader(index: number, size: number | null): void {
     // Look up the target section list.
     let list = this._rowHeaderSections;
 
@@ -3463,11 +3565,17 @@ export class DataGrid extends Widget {
       return;
     }
 
+    const adjustedSize = size ?? this._getMaxWidthInColumn(index, 'row-header');
+
+    if (!adjustedSize || adjustedSize == 0) {
+      return;
+    }
+
     // Look up the old size of the section.
     let oldSize = list.sizeOf(index);
 
     // Normalize the new size of the section.
-    let newSize = list.clampSize(size);
+    let newSize = list.clampSize(adjustedSize);
 
     // Bail early if the size does not change.
     if (oldSize === newSize) {
@@ -4025,34 +4133,13 @@ export class DataGrid extends Widget {
       const numRows = dataModel.rowCount('column-header');
 
       /*
-        Calculate the maximum text width vertically, across
+        Calculate the maximum text width, across
         all nested rows under a given column number.
       */
       let maxWidth = 0;
       for (let j = 0; j < numRows; j++) {
-        const cellValue = dataModel.data('column-header', j, i);
-
-        // Basic CellConfig object to get the renderer for that cell
-        let config = {
-          x: 0,
-          y: 0,
-          width: 0,
-          height: 0,
-          region: 'column-header' as DataModel.CellRegion,
-          row: 0,
-          column: i,
-          value: null as any,
-          metadata: DataModel.emptyMetadata
-        };
-
-        // Get the renderer for the given cell
-        const renderer = this.cellRenderers.get(config) as TextRenderer;
-
-        // Use the canvas context to measure the cell's text width
-        const gc = this.canvasGC;
-        gc.font = CellRenderer.resolveOption(renderer.font, config);
-        const textWidth = gc.measureText(cellValue).width;
-
+        const config = DataGrid._getConfig(dataModel, j, i, 'column-header');
+        const textWidth = this._getCellTextWidth(config);
         // Update the maximum width for that column.
         maxWidth = Math.max(maxWidth, textWidth);
       }
@@ -4085,33 +4172,13 @@ export class DataGrid extends Widget {
     for (let i = 0; i < rowColumnCount; i++) {
       const numCols = dataModel.rowCount('column-header');
       /*
-        Calculate the maximum text width vertically, across
+        Calculate the maximum text width, across
         all nested columns under a given row index.
       */
       let maxWidth = 0;
       for (let j = 0; j < numCols; j++) {
-        const cellValue = dataModel.data('corner-header', j, i);
-
-        // Basic CellConfig object to get the renderer for that cell.
-        let config = {
-          x: 0,
-          y: 0,
-          width: 0,
-          height: 0,
-          region: 'column-header' as DataModel.CellRegion,
-          row: 0,
-          column: i,
-          value: null as any,
-          metadata: DataModel.emptyMetadata
-        };
-
-        // Get the renderer for the given cell.
-        const renderer = this.cellRenderers.get(config) as TextRenderer;
-
-        // Use the canvas context to measure the cell's text width
-        const gc = this.canvasGC;
-        gc.font = CellRenderer.resolveOption(renderer.font, config);
-        const textWidth = gc.measureText(cellValue).width;
+        const config = DataGrid._getConfig(dataModel, j, i, 'corner-header');
+        const textWidth = this._getCellTextWidth(config);
         maxWidth = Math.max(maxWidth, textWidth);
       }
 
@@ -4965,23 +5032,18 @@ export class DataGrid extends Widget {
         // Clear the buffer rect for the cell.
         gc.clearRect(x, y, width, height);
 
-        // Get the value for the cell.
-        let value: any;
-        try {
-          value = this._dataModel.data(rgn.region, row, column);
-        } catch (err) {
-          value = undefined;
-          console.error(err);
-        }
-
-        // Get the metadata for the cell.
-        let metadata: DataModel.Metadata;
-        try {
-          metadata = this._dataModel.metadata(rgn.region, row, column);
-        } catch (err) {
-          metadata = DataModel.emptyMetadata;
-          console.error(err);
-        }
+        let value = DataGrid._getCellValue(
+          this.dataModel as DataModel,
+          rgn.region,
+          row,
+          column
+        );
+        let metadata = DataGrid._getCellMetadata(
+          this.dataModel as DataModel,
+          rgn.region,
+          row,
+          column
+        );
 
         // Update the config for the current cell.
         config.y = y;
@@ -5060,6 +5122,36 @@ export class DataGrid extends Widget {
     return dx >= 0 && dy >= 0;
   }
 
+  private static _getCellValue(
+    dm: DataModel,
+    region: DataModel.CellRegion,
+    row: number,
+    col: number
+  ) {
+    // Get the value for the cell.
+    try {
+      return dm.data(region, row, col);
+    } catch (err) {
+      console.error(err);
+      return null;
+    }
+  }
+
+  private static _getCellMetadata(
+    dm: DataModel,
+    region: DataModel.CellRegion,
+    row: number,
+    col: number
+  ) {
+    // Get the metadata for the cell.
+    try {
+      return dm.metadata(region, row, col);
+    } catch (err) {
+      console.error(err);
+      return DataModel.emptyMetadata;
+    }
+  }
+
   /**
    * Paint group cells.
    */
@@ -5109,22 +5201,18 @@ export class DataGrid extends Widget {
         height += this._getRowSize(rgn.region, r);
       }
 
-      let value: any;
-      try {
-        value = this._dataModel.data(rgn.region, group.r1, group.c1);
-      } catch (err) {
-        value = undefined;
-        console.error(err);
-      }
-
-      // Get the metadata for the cell.
-      let metadata: DataModel.Metadata;
-      try {
-        metadata = this._dataModel.metadata(rgn.region, group.r1, group.c1);
-      } catch (err) {
-        metadata = DataModel.emptyMetadata;
-        console.error(err);
-      }
+      let value = DataGrid._getCellValue(
+        this.dataModel as DataModel,
+        rgn.region,
+        group.r1,
+        group.c1
+      );
+      let metadata = DataGrid._getCellMetadata(
+        this.dataModel as DataModel,
+        rgn.region,
+        group.r1,
+        group.c2
+      );
 
       let x = 0;
       let y = 0;
@@ -6908,8 +6996,13 @@ namespace Private {
      * @param index - The index of column in the region.
      *
      * @param size - The target size of the section.
+     *               If null, then infer the size to fit.
      */
-    constructor(region: DataModel.ColumnRegion, index: number, size: number) {
+    constructor(
+      region: DataModel.ColumnRegion,
+      index: number,
+      size: number | null
+    ) {
       super('column-resize-request');
       this._region = region;
       this._index = index;
@@ -6933,7 +7026,7 @@ namespace Private {
     /**
      * The target size of the section.
      */
-    get size(): number {
+    get size(): number | null {
       return this._size;
     }
 
@@ -6950,6 +7043,6 @@ namespace Private {
 
     private _region: DataModel.ColumnRegion;
     private _index: number;
-    private _size: number;
+    private _size: number | null;
   }
 }
