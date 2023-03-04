@@ -51,7 +51,6 @@ export class MenuBar extends Widget {
     };
     this._overflowMenuOptions = options.overflowMenuOptions || {
       overflowMenuVisible: true,
-      title: '...'
     };
   }
 
@@ -463,8 +462,9 @@ export class MenuBar extends Widget {
       if (this._overflowIndex > -1 && !overflowMenuVisible) {
         // Create overflow menu
         if (this._overflowMenu === null) {
+          const overflowMenuTitle = this._overflowMenuOptions.title ?? '...';
           this._overflowMenu = new Menu({ commands: new CommandRegistry() });
-          this._overflowMenu.title.label = this._overflowMenuOptions.title;
+          this._overflowMenu.title.label = overflowMenuTitle;
           this._overflowMenu.title.mnemonic = 0;
           this.addMenu(this._overflowMenu, false);
         }
@@ -1110,6 +1110,8 @@ export namespace MenuBar {
 export interface IOverflowMenuOptions {
   /**
    * Determines if a overflow menu appears when the menu items overflow.
+   * 
+   * Defaults to `true`.
    */
   overflowMenuVisible: boolean;
   /**
@@ -1117,7 +1119,7 @@ export interface IOverflowMenuOptions {
    *
    * Default: `...`.
    */
-  title: string;
+  title?: string;
 }
 
 /**
