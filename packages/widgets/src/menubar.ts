@@ -525,6 +525,10 @@ export class MenuBar extends Widget {
    * Calculate and update the current overflow index.
    */
   private _updateOverflowIndex(): void {
+    if (!this._overflowMenuOptions.overflowMenuVisible) {
+      return;
+    }
+
     // Get elements visible in the main menu bar
     const itemMenus = this.contentNode.childNodes;
     let screenSize = this.node.offsetWidth;

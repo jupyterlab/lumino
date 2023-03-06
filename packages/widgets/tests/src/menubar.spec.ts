@@ -886,19 +886,16 @@ describe('@lumino/widgets', () => {
     });
 
     describe('#onUpdateRequest()', () => {
-      it('should be called when the title of a menu changes', done => {
+      it('should be called when the title of a menu changes', () => {
         let bar = new LogMenuBar();
         let menu = new Menu({ commands });
         bar.addMenu(menu);
         bar.activeIndex = 0;
-        expect(bar.methods.indexOf('onUpdateRequest')).to.equal(-1);
+        expect(bar.methods).to.not.include('onUpdateRequest');
         menu.title.label = 'foo';
-        expect(bar.methods.indexOf('onUpdateRequest')).to.equal(-1);
-        requestAnimationFrame(() => {
-          expect(bar.methods.indexOf('onUpdateRequest')).to.not.equal(-1);
-          bar.dispose();
-          done();
-        });
+        MessageLoop.flush();
+        expect(bar.methods).to.include('onUpdateRequest');
+        bar.dispose();
       });
 
       it('should render the content', () => {
@@ -918,11 +915,10 @@ describe('@lumino/widgets', () => {
         expect(bar.overflowMenu).to.equal(null);
         bar.node.style.maxWidth = '70px';
         MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
-        requestAnimationFrame(() => {
-          expect(bar.overflowMenu).to.not.equal(null);
-          expect(bar.overflowIndex).to.not.equal(-1);
-          bar.dispose();
-        });
+        MessageLoop.flush();
+        expect(bar.overflowMenu).to.not.equal(null);
+        expect(bar.overflowIndex).to.not.equal(-1);
+        bar.dispose();
       });
 
       it('should hide the overflow menu', () => {
@@ -933,11 +929,10 @@ describe('@lumino/widgets', () => {
         MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
         bar.node.style.maxWidth = '400px';
         MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
-        requestAnimationFrame(() => {
-          expect(bar.overflowMenu).to.equal(null);
-          expect(bar.overflowIndex).to.equal(-1);
-          bar.dispose();
-        });
+        MessageLoop.flush();
+        expect(bar.overflowMenu).to.equal(null);
+        expect(bar.overflowIndex).to.equal(-1);
+        bar.dispose();
       });
 
       it('should not use the overflow menu', () => {
@@ -948,11 +943,10 @@ describe('@lumino/widgets', () => {
         expect(bar.overflowMenu).to.equal(null);
         bar.node.style.maxWidth = '70px';
         MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
-        requestAnimationFrame(() => {
-          expect(bar.overflowIndex).to.equal(-1);
-          expect(bar.overflowMenu).to.equal(null);
-          bar.dispose();
-        });
+        MessageLoop.flush();
+        expect(bar.overflowIndex).to.equal(-1);
+        expect(bar.overflowMenu).to.equal(null);
+        bar.dispose();
       });
     });
 
