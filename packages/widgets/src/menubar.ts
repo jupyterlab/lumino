@@ -699,7 +699,8 @@ export class MenuBar extends Widget {
     }
 
     // Get position for the new menu >before< updating active index.
-    const position = this._positionForMenu(index);
+    const position =
+      index >= 0 && this._childMenu ? this._positionForMenu(index) : null;
 
     // Before any modification, update window data.
     Menu.saveWindowData();
@@ -710,7 +711,7 @@ export class MenuBar extends Widget {
     this.activeIndex = index;
 
     // Open the new menu if a menu is already open.
-    if (this._childMenu) {
+    if (position) {
       this._openChildMenu(position);
     }
   }
