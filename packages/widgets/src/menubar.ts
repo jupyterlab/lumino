@@ -1117,7 +1117,7 @@ export interface IOverflowMenuOptions {
    *
    * Defaults to `true`.
    */
-  overflowMenuVisible: boolean;
+  isVisible: boolean;
   /**
    * Determines the title of the overflow menu.
    *
