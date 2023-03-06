@@ -132,9 +132,9 @@ describe('@lumino/widgets', () => {
         bar.dispose();
       });
 
-      it('should accept only overflowMenuVisible option', () => {
+      it('should accept only isVisible option', () => {
         const bar = new MenuBar({
-          overflowMenuOptions: { overflowMenuVisible: false }
+          overflowMenuOptions: { isVisible: false }
         });
 
         expect(bar).to.be.an.instanceOf(MenuBar);
@@ -937,7 +937,7 @@ describe('@lumino/widgets', () => {
 
       it('should not use the overflow menu', () => {
         let bar = createMenuBar({
-          overflowMenuOptions: { overflowMenuVisible: false }
+          overflowMenuOptions: { isVisible: false }
         });
         expect(bar.overflowIndex).to.equal(-1);
         expect(bar.overflowMenu).to.equal(null);

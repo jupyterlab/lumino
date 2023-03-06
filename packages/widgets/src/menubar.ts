@@ -50,7 +50,7 @@ export class MenuBar extends Widget {
       forceY: true
     };
     this._overflowMenuOptions = options.overflowMenuOptions || {
-      overflowMenuVisible: true
+      isVisible: true
     };
   }
 
@@ -433,7 +433,7 @@ export class MenuBar extends Widget {
         : 0;
     let length = this._overflowIndex > -1 ? this._overflowIndex : menus.length;
     let totalMenuSize = 0;
-    let overflowMenuVisible = false;
+    let isVisible = false;
 
     // Check that the overflow menu doesn't count
     length = this._overflowMenu !== null ? length - 1 : length;
@@ -453,13 +453,13 @@ export class MenuBar extends Widget {
       totalMenuSize += this._menuItemSizes[i];
       // Check if overflow menu is already rendered
       if (menus[i].title.label === this._overflowMenuOptions.title) {
-        overflowMenuVisible = true;
+        isVisible = true;
         length--;
       }
     }
     // Render overflow menu if needed and active
-    if (this._overflowMenuOptions.overflowMenuVisible) {
-      if (this._overflowIndex > -1 && !overflowMenuVisible) {
+    if (this._overflowMenuOptions.isVisible) {
+      if (this._overflowIndex > -1 && !isVisible) {
         // Create overflow menu
         if (this._overflowMenu === null) {
           const overflowMenuTitle = this._overflowMenuOptions.title ?? '...';
@@ -525,7 +525,7 @@ export class MenuBar extends Widget {
    * Calculate and update the current overflow index.
    */
   private _updateOverflowIndex(): void {
-    if (!this._overflowMenuOptions.overflowMenuVisible) {
+    if (!this._overflowMenuOptions.isVisible) {
       return;
     }
 
