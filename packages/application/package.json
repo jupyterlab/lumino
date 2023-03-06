@@ -1,6 +1,6 @@
 {
   "name": "@lumino/application",
-  "version": "2.0.0-rc.0",
+  "version": "2.0.0-rc.1",
   "description": "Lumino Pluggable Application",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -44,12 +44,12 @@
     "displayName": "application"
   },
   "dependencies": {
-    "@lumino/commands": "^2.0.0-rc.0",
-    "@lumino/coreutils": "^2.0.0-rc.0",
-    "@lumino/widgets": "^2.0.0-rc.0"
+    "@lumino/commands": "^2.0.0-rc.1",
+    "@lumino/coreutils": "^2.0.0-rc.1",
+    "@lumino/widgets": "^2.0.0-rc.1"
   },
   "devDependencies": {
-    "@lumino/buildutils": "^2.0.0-rc.0",
+    "@lumino/buildutils": "^2.0.0-rc.1",
     "@microsoft/api-extractor": "^7.6.0",
     "@rollup/plugin-commonjs": "^24.0.0",
     "@rollup/plugin-node-resolve": "^15.0.1",
