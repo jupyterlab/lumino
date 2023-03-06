@@ -585,7 +585,7 @@ export namespace GridLayout {
 // @public
 export interface IOverflowMenuOptions {
     overflowMenuVisible: boolean;
-    title: string;
+    title?: string;
 }
 
 // @public
