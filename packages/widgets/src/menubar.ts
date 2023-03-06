@@ -50,8 +50,7 @@ export class MenuBar extends Widget {
       forceY: true
     };
     this._overflowMenuOptions = options.overflowMenuOptions || {
-      overflowMenuVisible: true,
-      title: '...'
+      isVisible: true
     };
   }
 
@@ -434,7 +433,7 @@ export class MenuBar extends Widget {
         : 0;
     let length = this._overflowIndex > -1 ? this._overflowIndex : menus.length;
     let totalMenuSize = 0;
-    let overflowMenuVisible = false;
+    let isVisible = false;
 
     // Check that the overflow menu doesn't count
     length = this._overflowMenu !== null ? length - 1 : length;
@@ -454,17 +453,18 @@ export class MenuBar extends Widget {
       totalMenuSize += this._menuItemSizes[i];
       // Check if overflow menu is already rendered
       if (menus[i].title.label === this._overflowMenuOptions.title) {
-        overflowMenuVisible = true;
+        isVisible = true;
         length--;
       }
     }
     // Render overflow menu if needed and active
-    if (this._overflowMenuOptions.overflowMenuVisible) {
-      if (this._overflowIndex > -1 && !overflowMenuVisible) {
+    if (this._overflowMenuOptions.isVisible) {
+      if (this._overflowIndex > -1 && !isVisible) {
         // Create overflow menu
         if (this._overflowMenu === null) {
+          const overflowMenuTitle = this._overflowMenuOptions.title ?? '...';
           this._overflowMenu = new Menu({ commands: new CommandRegistry() });
-          this._overflowMenu.title.label = this._overflowMenuOptions.title;
+          this._overflowMenu.title.label = overflowMenuTitle;
           this._overflowMenu.title.mnemonic = 0;
           this.addMenu(this._overflowMenu, false);
         }
@@ -525,6 +525,10 @@ export class MenuBar extends Widget {
    * Calculate and update the current overflow index.
    */
   private _updateOverflowIndex(): void {
+    if (!this._overflowMenuOptions.isVisible) {
+      return;
+    }
+
     // Get elements visible in the main menu bar
     const itemMenus = this.contentNode.childNodes;
     let screenSize = this.node.offsetWidth;
@@ -1111,14 +1115,16 @@ export namespace MenuBar {
 export interface IOverflowMenuOptions {
   /**
    * Determines if a overflow menu appears when the menu items overflow.
+   *
+   * Defaults to `true`.
    */
-  overflowMenuVisible: boolean;
+  isVisible: boolean;
   /**
    * Determines the title of the overflow menu.
    *
    * Default: `...`.
    */
-  title: string;
+  title?: string;
 }
 
 /**
