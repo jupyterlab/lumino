@@ -50,7 +50,7 @@ export class MenuBar extends Widget {
       forceY: true
     };
     this._overflowMenuOptions = options.overflowMenuOptions || {
-      overflowMenuVisible: true,
+      overflowMenuVisible: true
     };
   }
 
@@ -1110,7 +1110,7 @@ export namespace MenuBar {
 export interface IOverflowMenuOptions {
   /**
    * Determines if a overflow menu appears when the menu items overflow.
-   * 
+   *
    * Defaults to `true`.
    */
   overflowMenuVisible: boolean;

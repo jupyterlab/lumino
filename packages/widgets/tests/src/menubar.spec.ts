@@ -57,8 +57,8 @@ describe('@lumino/widgets', () => {
 
   let commands: CommandRegistry;
 
-  function createMenuBar(): MenuBar {
-    let bar = new MenuBar();
+  function createMenuBar(options?: MenuBar.IOptions): MenuBar {
+    let bar = new MenuBar(options);
     for (let i = 0; i < 3; i++) {
       let menu = new Menu({ commands });
       let item = menu.addItem({ command: DEFAULT_CMD });
@@ -129,6 +129,16 @@ describe('@lumino/widgets', () => {
         let renderer = new MenuBar.Renderer();
         let bar = new MenuBar({ renderer });
         expect(bar).to.be.an.instanceof(MenuBar);
+        bar.dispose();
+      });
+
+      it('should accept only overflowMenuVisible option', () => {
+        const bar = new MenuBar({
+          overflowMenuOptions: { overflowMenuVisible: false }
+        });
+
+        expect(bar).to.be.an.instanceOf(MenuBar);
+
         bar.dispose();
       });
 
@@ -926,6 +936,21 @@ describe('@lumino/widgets', () => {
         requestAnimationFrame(() => {
           expect(bar.overflowMenu).to.equal(null);
           expect(bar.overflowIndex).to.equal(-1);
+          bar.dispose();
+        });
+      });
+
+      it('should not use the overflow menu', () => {
+        let bar = createMenuBar({
+          overflowMenuOptions: { overflowMenuVisible: false }
+        });
+        expect(bar.overflowIndex).to.equal(-1);
+        expect(bar.overflowMenu).to.equal(null);
+        bar.node.style.maxWidth = '70px';
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        requestAnimationFrame(() => {
+          expect(bar.overflowIndex).to.equal(-1);
+          expect(bar.overflowMenu).to.equal(null);
           bar.dispose();
         });
       });
