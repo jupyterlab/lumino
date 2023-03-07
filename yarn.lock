@@ -999,11 +999,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lumino/algorithm@^2.0.0-rc.0, @lumino/algorithm@workspace:packages/algorithm":
+"@lumino/algorithm@^2.0.0-rc.1, @lumino/algorithm@workspace:packages/algorithm":
   version: 0.0.0-use.local
   resolution: "@lumino/algorithm@workspace:packages/algorithm"
   dependencies:
-    "@lumino/buildutils": ^2.0.0-rc.0
+    "@lumino/buildutils": ^2.0.0-rc.1
     "@microsoft/api-extractor": ^7.6.0
     "@rollup/plugin-commonjs": ^24.0.0
     "@rollup/plugin-node-resolve": ^15.0.1
@@ -1034,10 +1034,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@lumino/application@workspace:packages/application"
   dependencies:
-    "@lumino/buildutils": ^2.0.0-rc.0
-    "@lumino/commands": ^2.0.0-rc.0
-    "@lumino/coreutils": ^2.0.0-rc.0
-    "@lumino/widgets": ^2.0.0-rc.0
+    "@lumino/buildutils": ^2.0.0-rc.1
+    "@lumino/commands": ^2.0.0-rc.1
+    "@lumino/coreutils": ^2.0.0-rc.1
+    "@lumino/widgets": ^2.0.0-rc.1
     "@microsoft/api-extractor": ^7.6.0
     "@rollup/plugin-commonjs": ^24.0.0
     "@rollup/plugin-node-resolve": ^15.0.1
@@ -1064,7 +1064,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lumino/buildutils@^2.0.0-rc.0, @lumino/buildutils@workspace:buildutils":
+"@lumino/buildutils@^2.0.0-rc.1, @lumino/buildutils@workspace:buildutils":
   version: 0.0.0-use.local
   resolution: "@lumino/buildutils@workspace:buildutils"
   dependencies:
@@ -1078,12 +1078,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lumino/collections@^2.0.0-rc.0, @lumino/collections@workspace:packages/collections":
+"@lumino/collections@^2.0.0-rc.1, @lumino/collections@workspace:packages/collections":
   version: 0.0.0-use.local
   resolution: "@lumino/collections@workspace:packages/collections"
   dependencies:
-    "@lumino/algorithm": ^2.0.0-rc.0
-    "@lumino/buildutils": ^2.0.0-rc.0
+    "@lumino/algorithm": ^2.0.0-rc.1
+    "@lumino/buildutils": ^2.0.0-rc.1
     "@microsoft/api-extractor": ^7.6.0
     "@rollup/plugin-commonjs": ^24.0.0
     "@rollup/plugin-node-resolve": ^15.0.1
@@ -1110,18 +1110,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lumino/commands@^2.0.0-rc.0, @lumino/commands@workspace:packages/commands":
+"@lumino/commands@^2.0.0-rc.1, @lumino/commands@workspace:packages/commands":
   version: 0.0.0-use.local
   resolution: "@lumino/commands@workspace:packages/commands"
   dependencies:
-    "@lumino/algorithm": ^2.0.0-rc.0
-    "@lumino/buildutils": ^2.0.0-rc.0
-    "@lumino/coreutils": ^2.0.0-rc.0
-    "@lumino/disposable": ^2.0.0-rc.0
-    "@lumino/domutils": ^2.0.0-rc.0
-    "@lumino/keyboard": ^2.0.0-rc.0
-    "@lumino/signaling": ^2.0.0-rc.0
-    "@lumino/virtualdom": ^2.0.0-rc.0
+    "@lumino/algorithm": ^2.0.0-rc.1
+    "@lumino/buildutils": ^2.0.0-rc.1
+    "@lumino/coreutils": ^2.0.0-rc.1
+    "@lumino/disposable": ^2.0.0-rc.1
+    "@lumino/domutils": ^2.0.0-rc.1
+    "@lumino/keyboard": ^2.0.0-rc.1
+    "@lumino/signaling": ^2.0.0-rc.1
+    "@lumino/virtualdom": ^2.0.0-rc.1
     "@microsoft/api-extractor": ^7.6.0
     "@rollup/plugin-commonjs": ^24.0.0
     "@rollup/plugin-node-resolve": ^15.0.1
@@ -1148,11 +1148,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lumino/coreutils@^2.0.0-rc.0, @lumino/coreutils@workspace:packages/coreutils":
+"@lumino/coreutils@^2.0.0-rc.1, @lumino/coreutils@workspace:packages/coreutils":
   version: 0.0.0-use.local
   resolution: "@lumino/coreutils@workspace:packages/coreutils"
   dependencies:
-    "@lumino/buildutils": ^2.0.0-rc.0
+    "@lumino/buildutils": ^2.0.0-rc.1
     "@microsoft/api-extractor": ^7.6.0
     "@rollup/plugin-commonjs": ^24.0.0
     "@rollup/plugin-node-resolve": ^15.0.1
@@ -1188,20 +1188,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lumino/datagrid@^2.0.0-rc.0, @lumino/datagrid@workspace:packages/datagrid":
+"@lumino/datagrid@^2.0.0-rc.1, @lumino/datagrid@workspace:packages/datagrid":
   version: 0.0.0-use.local
   resolution: "@lumino/datagrid@workspace:packages/datagrid"
   dependencies:
-    "@lumino/algorithm": ^2.0.0-rc.0
-    "@lumino/buildutils": ^2.0.0-rc.0
-    "@lumino/coreutils": ^2.0.0-rc.0
-    "@lumino/disposable": ^2.0.0-rc.0
-    "@lumino/domutils": ^2.0.0-rc.0
-    "@lumino/dragdrop": ^2.0.0-rc.0
-    "@lumino/keyboard": ^2.0.0-rc.0
-    "@lumino/messaging": ^2.0.0-rc.0
-    "@lumino/signaling": ^2.0.0-rc.0
-    "@lumino/widgets": ^2.0.0-rc.0
+    "@lumino/algorithm": ^2.0.0-rc.1
+    "@lumino/buildutils": ^2.0.0-rc.1
+    "@lumino/coreutils": ^2.0.0-rc.1
+    "@lumino/disposable": ^2.0.0-rc.1
+    "@lumino/domutils": ^2.0.0-rc.1
+    "@lumino/dragdrop": ^2.0.0-rc.1
+    "@lumino/keyboard": ^2.0.0-rc.1
+    "@lumino/messaging": ^2.0.0-rc.1
+    "@lumino/signaling": ^2.0.0-rc.1
+    "@lumino/widgets": ^2.0.0-rc.1
     "@microsoft/api-extractor": ^7.6.0
     "@rollup/plugin-commonjs": ^24.0.0
     "@rollup/plugin-node-resolve": ^15.0.1
@@ -1217,21 +1217,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lumino/default-theme@^2.0.0-rc.0, @lumino/default-theme@workspace:packages/default-theme":
+"@lumino/default-theme@^2.0.0-rc.1, @lumino/default-theme@workspace:packages/default-theme":
   version: 0.0.0-use.local
   resolution: "@lumino/default-theme@workspace:packages/default-theme"
   dependencies:
-    "@lumino/dragdrop": ^2.0.0-rc.0
-    "@lumino/widgets": ^2.0.0-rc.0
+    "@lumino/dragdrop": ^2.0.0-rc.1
+    "@lumino/widgets": ^2.0.0-rc.1
   languageName: unknown
   linkType: soft
 
-"@lumino/disposable@^2.0.0-rc.0, @lumino/disposable@workspace:packages/disposable":
+"@lumino/disposable@^2.0.0-rc.1, @lumino/disposable@workspace:packages/disposable":
   version: 0.0.0-use.local
   resolution: "@lumino/disposable@workspace:packages/disposable"
   dependencies:
-    "@lumino/buildutils": ^2.0.0-rc.0
-    "@lumino/signaling": ^2.0.0-rc.0
+    "@lumino/buildutils": ^2.0.0-rc.1
+    "@lumino/signaling": ^2.0.0-rc.1
     "@microsoft/api-extractor": ^7.6.0
     "@rollup/plugin-commonjs": ^24.0.0
     "@rollup/plugin-node-resolve": ^15.0.1
@@ -1258,11 +1258,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lumino/domutils@^2.0.0-rc.0, @lumino/domutils@workspace:packages/domutils":
+"@lumino/domutils@^2.0.0-rc.1, @lumino/domutils@workspace:packages/domutils":
   version: 0.0.0-use.local
   resolution: "@lumino/domutils@workspace:packages/domutils"
   dependencies:
-    "@lumino/buildutils": ^2.0.0-rc.0
+    "@lumino/buildutils": ^2.0.0-rc.1
     "@microsoft/api-extractor": ^7.6.0
     "@rollup/plugin-commonjs": ^24.0.0
     "@rollup/plugin-node-resolve": ^15.0.1
@@ -1289,13 +1289,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lumino/dragdrop@^2.0.0-rc.0, @lumino/dragdrop@workspace:packages/dragdrop":
+"@lumino/dragdrop@^2.0.0-rc.1, @lumino/dragdrop@workspace:packages/dragdrop":
   version: 0.0.0-use.local
   resolution: "@lumino/dragdrop@workspace:packages/dragdrop"
   dependencies:
-    "@lumino/buildutils": ^2.0.0-rc.0
-    "@lumino/coreutils": ^2.0.0-rc.0
-    "@lumino/disposable": ^2.0.0-rc.0
+    "@lumino/buildutils": ^2.0.0-rc.1
+    "@lumino/coreutils": ^2.0.0-rc.1
+    "@lumino/disposable": ^2.0.0-rc.1
     "@microsoft/api-extractor": ^7.6.0
     "@rollup/plugin-commonjs": ^24.0.0
     "@rollup/plugin-node-resolve": ^15.0.1
@@ -1328,9 +1328,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@lumino/example-accordionpanel@workspace:examples/example-accordionpanel"
   dependencies:
-    "@lumino/default-theme": ^2.0.0-rc.0
-    "@lumino/messaging": ^2.0.0-rc.0
-    "@lumino/widgets": ^2.0.0-rc.0
+    "@lumino/default-theme": ^2.0.0-rc.1
+    "@lumino/messaging": ^2.0.0-rc.1
+    "@lumino/widgets": ^2.0.0-rc.1
     "@rollup/plugin-node-resolve": ^15.0.1
     rimraf: ^3.0.2
     rollup: ^3.9.1
@@ -1343,10 +1343,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@lumino/example-datagrid@workspace:examples/example-datagrid"
   dependencies:
-    "@lumino/datagrid": ^2.0.0-rc.0
-    "@lumino/default-theme": ^2.0.0-rc.0
-    "@lumino/dragdrop": ^2.0.0-rc.0
-    "@lumino/widgets": ^2.0.0-rc.0
+    "@lumino/datagrid": ^2.0.0-rc.1
+    "@lumino/default-theme": ^2.0.0-rc.1
+    "@lumino/dragdrop": ^2.0.0-rc.1
+    "@lumino/widgets": ^2.0.0-rc.1
     "@rollup/plugin-node-resolve": ^15.0.1
     rimraf: ^3.0.2
     rollup: ^3.9.1
@@ -1375,11 +1375,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@lumino/example-dockpanel@workspace:examples/example-dockpanel"
   dependencies:
-    "@lumino/commands": ^2.0.0-rc.0
-    "@lumino/default-theme": ^2.0.0-rc.0
-    "@lumino/dragdrop": ^2.0.0-rc.0
-    "@lumino/messaging": ^2.0.0-rc.0
-    "@lumino/widgets": ^2.0.0-rc.0
+    "@lumino/commands": ^2.0.0-rc.1
+    "@lumino/default-theme": ^2.0.0-rc.1
+    "@lumino/dragdrop": ^2.0.0-rc.1
+    "@lumino/messaging": ^2.0.0-rc.1
+    "@lumino/widgets": ^2.0.0-rc.1
     "@rollup/plugin-node-resolve": ^15.0.1
     rimraf: ^3.0.2
     rollup: ^3.9.1
@@ -1392,9 +1392,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@lumino/example-menubar@workspace:examples/example-menubar"
   dependencies:
-    "@lumino/default-theme": ^2.0.0-rc.0
-    "@lumino/messaging": ^2.0.0-rc.0
-    "@lumino/widgets": ^2.0.0-rc.0
+    "@lumino/default-theme": ^2.0.0-rc.1
+    "@lumino/messaging": ^2.0.0-rc.1
+    "@lumino/widgets": ^2.0.0-rc.1
     "@rollup/plugin-node-resolve": ^15.0.1
     rimraf: ^3.0.2
     rollup: ^3.9.1
@@ -1411,11 +1411,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lumino/keyboard@^2.0.0-rc.0, @lumino/keyboard@workspace:packages/keyboard":
+"@lumino/keyboard@^2.0.0-rc.1, @lumino/keyboard@workspace:packages/keyboard":
   version: 0.0.0-use.local
   resolution: "@lumino/keyboard@workspace:packages/keyboard"
   dependencies:
-    "@lumino/buildutils": ^2.0.0-rc.0
+    "@lumino/buildutils": ^2.0.0-rc.1
     "@microsoft/api-extractor": ^7.6.0
     "@rollup/plugin-commonjs": ^24.0.0
     "@rollup/plugin-node-resolve": ^15.0.1
@@ -1442,13 +1442,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lumino/messaging@^2.0.0-rc.0, @lumino/messaging@workspace:packages/messaging":
+"@lumino/messaging@^2.0.0-rc.1, @lumino/messaging@workspace:packages/messaging":
   version: 0.0.0-use.local
   resolution: "@lumino/messaging@workspace:packages/messaging"
   dependencies:
-    "@lumino/algorithm": ^2.0.0-rc.0
-    "@lumino/buildutils": ^2.0.0-rc.0
-    "@lumino/collections": ^2.0.0-rc.0
+    "@lumino/algorithm": ^2.0.0-rc.1
+    "@lumino/buildutils": ^2.0.0-rc.1
+    "@lumino/collections": ^2.0.0-rc.1
     "@microsoft/api-extractor": ^7.6.0
     "@rollup/plugin-commonjs": ^24.0.0
     "@rollup/plugin-node-resolve": ^15.0.1
@@ -1480,10 +1480,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@lumino/polling@workspace:packages/polling"
   dependencies:
-    "@lumino/buildutils": ^2.0.0-rc.0
-    "@lumino/coreutils": ^2.0.0-rc.0
-    "@lumino/disposable": ^2.0.0-rc.0
-    "@lumino/signaling": ^2.0.0-rc.0
+    "@lumino/buildutils": ^2.0.0-rc.1
+    "@lumino/coreutils": ^2.0.0-rc.1
+    "@lumino/disposable": ^2.0.0-rc.1
+    "@lumino/signaling": ^2.0.0-rc.1
     "@microsoft/api-extractor": ^7.6.0
     "@rollup/plugin-commonjs": ^24.0.0
     "@rollup/plugin-node-resolve": ^15.0.1
@@ -1510,11 +1510,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lumino/properties@^2.0.0-rc.0, @lumino/properties@workspace:packages/properties":
+"@lumino/properties@^2.0.0-rc.1, @lumino/properties@workspace:packages/properties":
   version: 0.0.0-use.local
   resolution: "@lumino/properties@workspace:packages/properties"
   dependencies:
-    "@lumino/buildutils": ^2.0.0-rc.0
+    "@lumino/buildutils": ^2.0.0-rc.1
     "@microsoft/api-extractor": ^7.6.0
     "@rollup/plugin-commonjs": ^24.0.0
     "@rollup/plugin-node-resolve": ^15.0.1
@@ -1541,13 +1541,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lumino/signaling@^2.0.0-rc.0, @lumino/signaling@workspace:packages/signaling":
+"@lumino/signaling@^2.0.0-rc.1, @lumino/signaling@workspace:packages/signaling":
   version: 0.0.0-use.local
   resolution: "@lumino/signaling@workspace:packages/signaling"
   dependencies:
-    "@lumino/algorithm": ^2.0.0-rc.0
-    "@lumino/buildutils": ^2.0.0-rc.0
-    "@lumino/coreutils": ^2.0.0-rc.0
+    "@lumino/algorithm": ^2.0.0-rc.1
+    "@lumino/buildutils": ^2.0.0-rc.1
+    "@lumino/coreutils": ^2.0.0-rc.1
     "@microsoft/api-extractor": ^7.6.0
     "@rollup/plugin-commonjs": ^24.0.0
     "@rollup/plugin-node-resolve": ^15.0.1
@@ -1575,12 +1575,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lumino/virtualdom@^2.0.0-rc.0, @lumino/virtualdom@workspace:packages/virtualdom":
+"@lumino/virtualdom@^2.0.0-rc.1, @lumino/virtualdom@workspace:packages/virtualdom":
   version: 0.0.0-use.local
   resolution: "@lumino/virtualdom@workspace:packages/virtualdom"
   dependencies:
-    "@lumino/algorithm": ^2.0.0-rc.0
-    "@lumino/buildutils": ^2.0.0-rc.0
+    "@lumino/algorithm": ^2.0.0-rc.1
+    "@lumino/buildutils": ^2.0.0-rc.1
     "@microsoft/api-extractor": ^7.6.0
     "@rollup/plugin-commonjs": ^24.0.0
     "@rollup/plugin-node-resolve": ^15.0.1
@@ -1607,22 +1607,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lumino/widgets@^2.0.0-rc.0, @lumino/widgets@workspace:packages/widgets":
+"@lumino/widgets@^2.0.0-rc.1, @lumino/widgets@workspace:packages/widgets":
   version: 0.0.0-use.local
   resolution: "@lumino/widgets@workspace:packages/widgets"
   dependencies:
-    "@lumino/algorithm": ^2.0.0-rc.0
-    "@lumino/buildutils": ^2.0.0-rc.0
-    "@lumino/commands": ^2.0.0-rc.0
-    "@lumino/coreutils": ^2.0.0-rc.0
-    "@lumino/disposable": ^2.0.0-rc.0
-    "@lumino/domutils": ^2.0.0-rc.0
-    "@lumino/dragdrop": ^2.0.0-rc.0
-    "@lumino/keyboard": ^2.0.0-rc.0
-    "@lumino/messaging": ^2.0.0-rc.0
-    "@lumino/properties": ^2.0.0-rc.0
-    "@lumino/signaling": ^2.0.0-rc.0
-    "@lumino/virtualdom": ^2.0.0-rc.0
+    "@lumino/algorithm": ^2.0.0-rc.1
+    "@lumino/buildutils": ^2.0.0-rc.1
+    "@lumino/commands": ^2.0.0-rc.1
+    "@lumino/coreutils": ^2.0.0-rc.1
+    "@lumino/disposable": ^2.0.0-rc.1
+    "@lumino/domutils": ^2.0.0-rc.1
+    "@lumino/dragdrop": ^2.0.0-rc.1
+    "@lumino/keyboard": ^2.0.0-rc.1
+    "@lumino/messaging": ^2.0.0-rc.1
+    "@lumino/properties": ^2.0.0-rc.1
+    "@lumino/signaling": ^2.0.0-rc.1
+    "@lumino/virtualdom": ^2.0.0-rc.1
     "@microsoft/api-extractor": ^7.6.0
     "@rollup/plugin-commonjs": ^24.0.0
     "@rollup/plugin-node-resolve": ^15.0.1

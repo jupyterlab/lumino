@@ -1,6 +1,6 @@
 {
   "name": "@lumino/widgets",
-  "version": "2.0.0-rc.0",
+  "version": "2.0.0-rc.1",
   "description": "Lumino Widgets",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -54,20 +54,20 @@
     "displayName": "widgets"
   },
   "dependencies": {
-    "@lumino/algorithm": "^2.0.0-rc.0",
-    "@lumino/commands": "^2.0.0-rc.0",
-    "@lumino/coreutils": "^2.0.0-rc.0",
-    "@lumino/disposable": "^2.0.0-rc.0",
-    "@lumino/domutils": "^2.0.0-rc.0",
-    "@lumino/dragdrop": "^2.0.0-rc.0",
-    "@lumino/keyboard": "^2.0.0-rc.0",
-    "@lumino/messaging": "^2.0.0-rc.0",
-    "@lumino/properties": "^2.0.0-rc.0",
-    "@lumino/signaling": "^2.0.0-rc.0",
-    "@lumino/virtualdom": "^2.0.0-rc.0"
+    "@lumino/algorithm": "^2.0.0-rc.1",
+    "@lumino/commands": "^2.0.0-rc.1",
+    "@lumino/coreutils": "^2.0.0-rc.1",
+    "@lumino/disposable": "^2.0.0-rc.1",
+    "@lumino/domutils": "^2.0.0-rc.1",
+    "@lumino/dragdrop": "^2.0.0-rc.1",
+    "@lumino/keyboard": "^2.0.0-rc.1",
+    "@lumino/messaging": "^2.0.0-rc.1",
+    "@lumino/properties": "^2.0.0-rc.1",
+    "@lumino/signaling": "^2.0.0-rc.1",
+    "@lumino/virtualdom": "^2.0.0-rc.1"
   },
   "devDependencies": {
-    "@lumino/buildutils": "^2.0.0-rc.0",
+    "@lumino/buildutils": "^2.0.0-rc.1",
     "@microsoft/api-extractor": "^7.6.0",
     "@rollup/plugin-commonjs": "^24.0.0",
     "@rollup/plugin-node-resolve": "^15.0.1",
