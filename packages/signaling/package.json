@@ -1,6 +1,6 @@
 {
   "name": "@lumino/signaling",
-  "version": "2.0.0-rc.1",
+  "version": "2.0.0",
   "description": "Lumino Signals and Slots",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -44,11 +44,11 @@
     "displayName": "signaling"
   },
   "dependencies": {
-    "@lumino/algorithm": "^2.0.0-rc.1",
-    "@lumino/coreutils": "^2.0.0-rc.1"
+    "@lumino/algorithm": "^2.0.0",
+    "@lumino/coreutils": "^2.0.0"
   },
   "devDependencies": {
-    "@lumino/buildutils": "^2.0.0-rc.1",
+    "@lumino/buildutils": "^2.0.0",
     "@microsoft/api-extractor": "^7.6.0",
     "@rollup/plugin-commonjs": "^24.0.0",
     "@rollup/plugin-node-resolve": "^15.0.1",
