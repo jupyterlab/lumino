@@ -30,6 +30,15 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 @lumino/widgets: 1.37.1 => 2.0.0
 ```
 
+### Highlights :sparkles:
+
+- Drop custom iterator in favor of standard [Iterators and generators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators)
+- Add asynchronous iterable `Stream` class inheriting from `Signal`
+- Various performance enhancements on the [datagrid](https://github.com/jupyterlab/lumino/pull/394)
+- Assets target is now _ES2018_
+
+See [migration guide](https://lumino.readthedocs.io/en/latest/migration.html) for more details on API changes when migrating from version 1 to version 2.
+
 ### Enhancements made
 
 - Make `IOverflowMenuOptions.title` optional [#550](https://github.com/jupyterlab/lumino/pull/550) ([@jtpio](https://github.com/jtpio))
@@ -40,7 +49,6 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 - Improve the menubar accessibility [#465](https://github.com/jupyterlab/lumino/pull/465) ([@scmmmh](https://github.com/scmmmh))
 - Add async iterable `Stream` class that inherits from `Signal` [#462](https://github.com/jupyterlab/lumino/pull/462) ([@afshin](https://github.com/afshin))
 - Disable text eliding by default [#451](https://github.com/jupyterlab/lumino/pull/451) ([@ibdafna](https://github.com/ibdafna))
-- Add blocking signal feature [#443](https://github.com/jupyterlab/lumino/pull/443) ([@fcollonval](https://github.com/fcollonval))
 - Add support for list of keystrokes [#433](https://github.com/jupyterlab/lumino/pull/433) ([@fcollonval](https://github.com/fcollonval))
 - Add plugin description [#419](https://github.com/jupyterlab/lumino/pull/419) ([@fcollonval](https://github.com/fcollonval))
 - Improve title on accordion label [#406](https://github.com/jupyterlab/lumino/pull/406) ([@fcollonval](https://github.com/fcollonval))
@@ -73,31 +81,17 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 
 ### Maintenance and upkeep improvements
 
-- Update version to 2.0.0 final [#556](https://github.com/jupyterlab/lumino/pull/556) ([@fcollonval](https://github.com/fcollonval))
-- Bump tj-actions/changed-files from 35.6.1 to 35.6.4 [#555](https://github.com/jupyterlab/lumino/pull/555) ([@dependabot](https://github.com/dependabot))
-- Bump tj-actions/changed-files from 35.6.0 to 35.6.1 [#552](https://github.com/jupyterlab/lumino/pull/552) ([@dependabot](https://github.com/dependabot))
-- Bump to 2.0.0-rc.1 [#551](https://github.com/jupyterlab/lumino/pull/551) ([@fcollonval](https://github.com/fcollonval))
-- Bump tj-actions/changed-files from 35.5.5 to 35.6.0 [#548](https://github.com/jupyterlab/lumino/pull/548) ([@dependabot](https://github.com/dependabot))
+- Target ES2018 [#388](https://github.com/jupyterlab/lumino/pull/388) ([@afshin](https://github.com/afshin))
+- Audit `DataGrid` public API in preparation for 0.x => 2.0 [#458](https://github.com/jupyterlab/lumino/pull/458) ([@afshin](https://github.com/afshin))
 - Set publication to public [#545](https://github.com/jupyterlab/lumino/pull/545) ([@fcollonval](https://github.com/fcollonval))
-- Bump verdaccio [#544](https://github.com/jupyterlab/lumino/pull/544) ([@fcollonval](https://github.com/fcollonval))
-- Bump tj-actions/changed-files from 35.5.2 to 35.5.5 [#543](https://github.com/jupyterlab/lumino/pull/543) ([@dependabot](https://github.com/dependabot))
-- Bump tj-actions/changed-files from 35.5.0 to 35.5.2 [#538](https://github.com/jupyterlab/lumino/pull/538) ([@dependabot](https://github.com/dependabot))
 - Update to yarn 3 [#536](https://github.com/jupyterlab/lumino/pull/536) ([@fcollonval](https://github.com/fcollonval))
-- Bump tj-actions/changed-files from 35.4.4 to 35.5.0 [#532](https://github.com/jupyterlab/lumino/pull/532) ([@dependabot](https://github.com/dependabot))
+- Bump tj-actions/changed-files from 24 to 35.6.4 [#555](https://github.com/jupyterlab/lumino/pull/555) [#552](https://github.com/jupyterlab/lumino/pull/552) [#548](https://github.com/jupyterlab/lumino/pull/548) [#543](https://github.com/jupyterlab/lumino/pull/543) [#538](https://github.com/jupyterlab/lumino/pull/538) [#532](https://github.com/jupyterlab/lumino/pull/532) [#525](https://github.com/jupyterlab/lumino/pull/525) [#518](https://github.com/jupyterlab/lumino/pull/518) [#514](https://github.com/jupyterlab/lumino/pull/514) [#508](https://github.com/jupyterlab/lumino/pull/508) [#503](https://github.com/jupyterlab/lumino/pull/503) [#493](https://github.com/jupyterlab/lumino/pull/493) [#466](https://github.com/jupyterlab/lumino/pull/466) [#461](https://github.com/jupyterlab/lumino/pull/461) [#454](https://github.com/jupyterlab/lumino/pull/454) [#445](https://github.com/jupyterlab/lumino/pull/445) [#435](https://github.com/jupyterlab/lumino/pull/435) [#424](https://github.com/jupyterlab/lumino/pull/424) [#423](https://github.com/jupyterlab/lumino/pull/423) [#417](https://github.com/jupyterlab/lumino/pull/417) [#404](https://github.com/jupyterlab/lumino/pull/404) [#389](https://github.com/jupyterlab/lumino/pull/389) [#379](https://github.com/jupyterlab/lumino/pull/379) [#372](https://github.com/jupyterlab/lumino/pull/372) [#352](https://github.com/jupyterlab/lumino/pull/352) ([@dependabot](https://github.com/dependabot))
+- Bump verdaccio [#544](https://github.com/jupyterlab/lumino/pull/544) ([@fcollonval](https://github.com/fcollonval))
 - Bump http-cache-semantics from 4.1.0 to 4.1.1 [#530](https://github.com/jupyterlab/lumino/pull/530) ([@dependabot](https://github.com/dependabot))
 - Bump ua-parser-js from 0.7.32 to 0.7.33 [#529](https://github.com/jupyterlab/lumino/pull/529) ([@dependabot](https://github.com/dependabot))
-- Bump to 2.0.0-beta.1 [#526](https://github.com/jupyterlab/lumino/pull/526) ([@fcollonval](https://github.com/fcollonval))
-- Bump tj-actions/changed-files from 35.4.1 to 35.4.4 [#525](https://github.com/jupyterlab/lumino/pull/525) ([@dependabot](https://github.com/dependabot))
-- Bump tj-actions/changed-files from 35.4.0 to 35.4.1 [#518](https://github.com/jupyterlab/lumino/pull/518) ([@dependabot](https://github.com/dependabot))
-- Update versions to 2.0.0-beta.0 [#515](https://github.com/jupyterlab/lumino/pull/515) ([@fcollonval](https://github.com/fcollonval))
-- Bump tj-actions/changed-files from 35.2.1 to 35.4.0 [#514](https://github.com/jupyterlab/lumino/pull/514) ([@dependabot](https://github.com/dependabot))
 - Bump toshimaru/auto-author-assign from 1.6.1 to 1.6.2 [#513](https://github.com/jupyterlab/lumino/pull/513) ([@dependabot](https://github.com/dependabot))
 - Upgrade dev tools [#512](https://github.com/jupyterlab/lumino/pull/512) ([@fcollonval](https://github.com/fcollonval))
 - Bump json5 from 1.0.1 to 1.0.2 [#510](https://github.com/jupyterlab/lumino/pull/510) ([@dependabot](https://github.com/dependabot))
-- Bump to 2.0.0-alpha.7 [#509](https://github.com/jupyterlab/lumino/pull/509) ([@fcollonval](https://github.com/fcollonval))
-- Bump tj-actions/changed-files from 35.1.1 to 35.2.1 [#508](https://github.com/jupyterlab/lumino/pull/508) ([@dependabot](https://github.com/dependabot))
-- Bump tj-actions/changed-files from 34.5.3 to 35.1.1 [#503](https://github.com/jupyterlab/lumino/pull/503) ([@dependabot](https://github.com/dependabot))
-- Bump tj-actions/changed-files from 34.4.0 to 34.5.3 [#493](https://github.com/jupyterlab/lumino/pull/493) ([@dependabot](https://github.com/dependabot))
 - Bump dessant/lock-threads from 3 to 4 [#492](https://github.com/jupyterlab/lumino/pull/492) ([@dependabot](https://github.com/dependabot))
 - Bump decode-uri-component from 0.2.0 to 0.2.2 [#483](https://github.com/jupyterlab/lumino/pull/483) ([@dependabot](https://github.com/dependabot))
 - Use Firefox from playwright [#481](https://github.com/jupyterlab/lumino/pull/481) ([@fcollonval](https://github.com/fcollonval))
@@ -105,45 +99,23 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 - Bump engine.io from 6.2.0 to 6.2.1 [#469](https://github.com/jupyterlab/lumino/pull/469) ([@dependabot](https://github.com/dependabot))
 - Fix license header CI [#468](https://github.com/jupyterlab/lumino/pull/468) ([@fcollonval](https://github.com/fcollonval))
 - Bump loader-utils from 3.2.0 to 3.2.1 [#467](https://github.com/jupyterlab/lumino/pull/467) ([@dependabot](https://github.com/dependabot))
-- Bump tj-actions/changed-files from 34.3.2 to 34.4.0 [#466](https://github.com/jupyterlab/lumino/pull/466) ([@dependabot](https://github.com/dependabot))
-- Bump tj-actions/changed-files from 34.0.2 to 34.3.2 [#461](https://github.com/jupyterlab/lumino/pull/461) ([@dependabot](https://github.com/dependabot))
 - Bump actions/checkout from 2 to 3 [#460](https://github.com/jupyterlab/lumino/pull/460) ([@dependabot](https://github.com/dependabot))
 - Fix check release step [#459](https://github.com/jupyterlab/lumino/pull/459) ([@fcollonval](https://github.com/fcollonval))
-- Audit `DataGrid` public API in preparation for 0.x => 2.0 [#458](https://github.com/jupyterlab/lumino/pull/458) ([@afshin](https://github.com/afshin))
-- Bump tj-actions/changed-files from 32.1.2 to 34.0.2 [#454](https://github.com/jupyterlab/lumino/pull/454) ([@dependabot](https://github.com/dependabot))
-- Bump tj-actions/changed-files from 32.0.0 to 32.1.2 [#445](https://github.com/jupyterlab/lumino/pull/445) ([@dependabot](https://github.com/dependabot))
 - Clean up test workflow [#437](https://github.com/jupyterlab/lumino/pull/437) ([@blink1073](https://github.com/blink1073))
-- Bump tj-actions/changed-files from 31.0.3 to 32.0.0 [#435](https://github.com/jupyterlab/lumino/pull/435) ([@dependabot](https://github.com/dependabot))
 - Fix minor code scan warnings [#431](https://github.com/jupyterlab/lumino/pull/431) ([@fcollonval](https://github.com/fcollonval))
 - Bump lerna [#429](https://github.com/jupyterlab/lumino/pull/429) ([@fcollonval](https://github.com/fcollonval))
-- Bump tj-actions/changed-files from 31.0.1 to 31.0.3 [#424](https://github.com/jupyterlab/lumino/pull/424) ([@dependabot](https://github.com/dependabot))
-- Bump tj-actions/changed-files from 29.0.7 to 31.0.1 [#423](https://github.com/jupyterlab/lumino/pull/423) ([@dependabot](https://github.com/dependabot))
 - Add DockLayout tests [#421](https://github.com/jupyterlab/lumino/pull/421) ([@3coins](https://github.com/3coins))
-- Bump tj-actions/changed-files from 29.0.4 to 29.0.7 [#417](https://github.com/jupyterlab/lumino/pull/417) ([@dependabot](https://github.com/dependabot))
 - Remove Internet Explorer from tests, add Webkit [#416](https://github.com/jupyterlab/lumino/pull/416) ([@gabalafou](https://github.com/gabalafou))
 - Follow on to #411 addressing `yield*` [#415](https://github.com/jupyterlab/lumino/pull/415) ([@afshin](https://github.com/afshin))
-- Bump packages to v2 alpha 6 [#413](https://github.com/jupyterlab/lumino/pull/413) ([@fcollonval](https://github.com/fcollonval))
 - Bump actions/setup-node from 1 to 3 [#405](https://github.com/jupyterlab/lumino/pull/405) ([@dependabot](https://github.com/dependabot))
-- Bump tj-actions/changed-files from 29.0.3 to 29.0.4 [#404](https://github.com/jupyterlab/lumino/pull/404) ([@dependabot](https://github.com/dependabot))
 - Bump actions/cache from 2 to 3 [#403](https://github.com/jupyterlab/lumino/pull/403) ([@dependabot](https://github.com/dependabot))
-- Update versions to v2 alpha.5 [#398](https://github.com/jupyterlab/lumino/pull/398) ([@fcollonval](https://github.com/fcollonval))
 - Remove some webpack artifacts from `devDependencies` [#396](https://github.com/jupyterlab/lumino/pull/396) ([@afshin](https://github.com/afshin))
 - Use `pull_request_target` to have write access on fork [#390](https://github.com/jupyterlab/lumino/pull/390) ([@fcollonval](https://github.com/fcollonval))
-- Bump tj-actions/changed-files from 29.0.2 to 29.0.3 [#389](https://github.com/jupyterlab/lumino/pull/389) ([@dependabot](https://github.com/dependabot))
-- Target ES2018 [#388](https://github.com/jupyterlab/lumino/pull/388) ([@afshin](https://github.com/afshin))
-- Bump packages to v2-alpha.3 [#383](https://github.com/jupyterlab/lumino/pull/383) ([@fcollonval](https://github.com/fcollonval))
-- Bump alpha versions [#380](https://github.com/jupyterlab/lumino/pull/380) ([@blink1073](https://github.com/blink1073))
-- Bump tj-actions/changed-files from 28 to 29.0.2 [#379](https://github.com/jupyterlab/lumino/pull/379) ([@dependabot](https://github.com/dependabot))
 - Iterate on iterators [#378](https://github.com/jupyterlab/lumino/pull/378) ([@afshin](https://github.com/afshin))
 - Deprecate `each<T>(...)` [#376](https://github.com/jupyterlab/lumino/pull/376) ([@afshin](https://github.com/afshin))
-- Bump tj-actions/changed-files from 26.1 to 28 [#372](https://github.com/jupyterlab/lumino/pull/372) ([@dependabot](https://github.com/dependabot))
-- Bump to v2 alpha 1 [#370](https://github.com/jupyterlab/lumino/pull/370) ([@fcollonval](https://github.com/fcollonval))
-- Set npm tag to next for prerelease [#369](https://github.com/jupyterlab/lumino/pull/369) ([@fcollonval](https://github.com/fcollonval))
-- Fix license header following 231f01c [#365](https://github.com/jupyterlab/lumino/pull/365) ([@fcollonval](https://github.com/fcollonval))
+- Fix license header [#365](https://github.com/jupyterlab/lumino/pull/365) ([@fcollonval](https://github.com/fcollonval))
 - Refactor `retro()`, clean up iterators [#361](https://github.com/jupyterlab/lumino/pull/361) ([@afshin](https://github.com/afshin))
-- First Lumino 2 pre-release [#359](https://github.com/jupyterlab/lumino/pull/359) ([@fcollonval](https://github.com/fcollonval))
 - Update `dragdrop` to use `PointerEvent` and `DragEvent` [#355](https://github.com/jupyterlab/lumino/pull/355) ([@afshin](https://github.com/afshin))
-- Bump tj-actions/changed-files from 24 to 26.1 [#352](https://github.com/jupyterlab/lumino/pull/352) ([@dependabot](https://github.com/dependabot))
 - Bump actions/setup-python from 2 to 4 [#351](https://github.com/jupyterlab/lumino/pull/351) ([@dependabot](https://github.com/dependabot))
 - Add more safety workflows [#350](https://github.com/jupyterlab/lumino/pull/350) ([@fcollonval](https://github.com/fcollonval))
 - Use Rollup for tests and examples [#348](https://github.com/jupyterlab/lumino/pull/348) ([@gabalafou](https://github.com/gabalafou))
@@ -164,10 +136,6 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 - Update license copyright date [#363](https://github.com/jupyterlab/lumino/pull/363) ([@fcollonval](https://github.com/fcollonval))
 - Update and fix docs [#354](https://github.com/jupyterlab/lumino/pull/354) ([@gabalafou](https://github.com/gabalafou))
 - Update NPM package author to Project Jupyter [#342](https://github.com/jupyterlab/lumino/pull/342) ([@afshin](https://github.com/afshin))
-
-### API and Breaking Changes
-
-- Revert "Add blocking signal feature (#443)" [#522](https://github.com/jupyterlab/lumino/pull/522) ([@fcollonval](https://github.com/fcollonval))
 
 ### Contributors to this release
 
