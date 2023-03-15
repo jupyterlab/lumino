@@ -10,6 +10,8 @@ done manually as follows:
 ```bash
 yarn
 yarn run update:versions
+# Update yarn.lock
+yarn
 git commit -a -m "Update versions"
 git push origin main
 ```

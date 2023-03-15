@@ -61,7 +61,7 @@
   },
   "jupyter-releaser": {
     "options": {
-      "npm-cmd": "npm publish --tag next"
+      "npm-cmd": "npm publish --tag latest"
     },
     "hooks": {
       "after-build-changelog": [

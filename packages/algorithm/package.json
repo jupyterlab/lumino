@@ -1,6 +1,6 @@
 {
   "name": "@lumino/algorithm",
-  "version": "2.0.0-rc.1",
+  "version": "2.0.0",
   "description": "Lumino Algorithms and Iterators",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -44,7 +44,7 @@
     "displayName": "algorithm"
   },
   "devDependencies": {
-    "@lumino/buildutils": "^2.0.0-rc.1",
+    "@lumino/buildutils": "^2.0.0",
     "@microsoft/api-extractor": "^7.6.0",
     "@rollup/plugin-commonjs": "^24.0.0",
     "@rollup/plugin-node-resolve": "^15.0.1",
