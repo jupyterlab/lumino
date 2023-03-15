@@ -29,6 +29,7 @@ from pathlib import Path
 import os
 import os.path as osp
 import shutil
+import time
 from subprocess import check_call
 
 
@@ -70,7 +71,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Lumino'
-copyright = '2021, Project Jupyter'
+copyright = f'2019-{time.localtime().tm_year}, Project Jupyter'
 author = 'Project Jupyter'
 
 
@@ -159,12 +160,25 @@ def build_examples(out_dir):
 # a list of builtin themes.
 #
 html_theme ="pydata_sphinx_theme"
+html_logo = "_static/jupyter_logo.svg"
+html_favicon = "_static/jupyter_logo.svg"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-#
-# html_theme_options = {}
+
+html_theme_options = {
+    "github_url": "https://github.com/jupyterlab/lumino",
+    "logo": {
+        "text": "Lumino",
+        "alt_text": "Lumino",
+    },
+    "navbar_start": ["navbar-logo", "version-switcher"],
+    "switcher": {
+        "json_url": "https://lumino.readthedocs.io/en/latest/_static/switcher.json",
+        "version_match": os.environ.get("READTHEDOCS_VERSION", "latest")
+    }
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

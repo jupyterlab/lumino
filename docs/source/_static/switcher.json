@@ -1,0 +1,17 @@
+[
+    {
+      "name": "latest",
+      "version": "latest",
+      "url": "https://lumino.readthedocs.io/en/latest/"
+    },
+    {
+      "name": "2.0.0 (2023.3.15)",
+      "version": "stable",
+      "url": "https://lumino.readthedocs.io/en/stable/"
+    },
+    {
+      "name": "1.x",
+      "version": "1.x",
+      "url": "https://lumino.readthedocs.io/en/1.x/"
+    }
+  ]
