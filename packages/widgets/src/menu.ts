@@ -29,6 +29,7 @@ import {
   VirtualDOM,
   VirtualElement
 } from '@lumino/virtualdom';
+import { MenuBar } from './menubar';
 
 import { Widget } from './widget';
 
@@ -235,6 +236,30 @@ export class Menu extends Widget {
   }
 
   /**
+   * Activate the first selectable item in the menu.
+   */
+  activateFirstItem(): void {
+    this.activeIndex = ArrayExt.findFirstIndex(
+      this._items,
+      Private.canActivate,
+      0,
+      this._items.length
+    );
+  }
+
+  /**
+   * Activate the first selectable item in the menu.
+   */
+  activateLastItem(): void {
+    this.activeIndex = ArrayExt.findFirstIndex(
+      this._items,
+      Private.canActivate,
+      this._items.length,
+      0
+    );
+  }
+
+  /**
    * Activate the next selectable item in the menu.
    *
    * #### Notes
@@ -317,6 +342,23 @@ export class Menu extends Widget {
     } else {
       console.log(`Command '${command}' is disabled.`);
     }
+  }
+
+  /**
+   * Close the menu completely.
+   */
+  closeMenu(): void {
+    // Bail if the menu is not attached.
+    if (!this.isAttached) {
+      return;
+    }
+
+    // Cancel the pending timers.
+    this._cancelOpenTimer();
+    this._cancelCloseTimer();
+
+    // Close the root menu before executing the command.
+    this.rootMenu.close();
   }
 
   /**
@@ -503,6 +545,13 @@ export class Menu extends Widget {
   }
 
   /**
+   * Set the parent MenuBar, if the Menu is contained within one.
+   */
+  set parentMenuBar(value: MenuBar) {
+    this._parentMenuBar = value;
+  }
+
+  /**
    * A message handler invoked on a `'before-attach'` message.
    */
   protected onBeforeAttach(msg: Message): void {
@@ -607,15 +656,20 @@ export class Menu extends Widget {
    * This listener is attached to the menu node.
    */
   private _evtKeyDown(event: KeyboardEvent): void {
-    // A menu handles all keydown events.
-    event.preventDefault();
-    event.stopPropagation();
-
     // Fetch the key code for the event.
     let kc = event.keyCode;
 
-    // Enter
-    if (kc === 13) {
+    // A menu handles all keydown events, except for tab, which we let propagate.
+    if (kc === 9) {
+      this.closeMenu();
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    // Enter or Space
+    if (kc === 13 || kc === 32) {
       this.triggerActiveItem();
       return;
     }
@@ -623,7 +677,21 @@ export class Menu extends Widget {
     // Escape
     if (kc === 27) {
       this.close();
+      // If this menu is in a menubar, refocus the menubar.
+      if (this._parentMenuBar) {
+        this._parentMenuBar.activate();
+      }
       return;
+    }
+
+    // Home
+    if (kc === 36) {
+      this.activateFirstItem();
+    }
+
+    // End
+    if (kc === 35) {
+      this.activateLastItem();
     }
 
     // Left Arrow
@@ -938,6 +1006,7 @@ export class Menu extends Widget {
   private _items: Menu.IItem[] = [];
   private _childMenu: Menu | null = null;
   private _parentMenu: Menu | null = null;
+  private _parentMenuBar: MenuBar | null = null;
   private _aboutToClose = new Signal<this, void>(this);
   private _menuRequested = new Signal<this, 'next' | 'previous'>(this);
 }
@@ -1175,7 +1244,7 @@ export namespace Menu {
         {
           className,
           dataset,
-          tabindex: '0',
+          tabindex: '-1',
           onfocus: data.onfocus,
           ...aria
         },

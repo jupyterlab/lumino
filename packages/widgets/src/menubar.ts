@@ -408,7 +408,7 @@ export class MenuBar extends Widget {
    */
   protected onActivateRequest(msg: Message): void {
     if (this.isAttached) {
-      this.activeIndex = 0;
+      this.activeIndex = this._tabFocusIndex;
     }
   }
 
@@ -589,8 +589,18 @@ export class MenuBar extends Widget {
     // Escape
     if (kc === 27) {
       this._closeChildMenu();
-      this.activeIndex = -1;
-      this.node.blur();
+      return;
+    }
+
+    // Home
+    if (kc === 36) {
+      this.activeIndex = 0;
+      return;
+    }
+
+    // End
+    if (kc === 35) {
+      this.activeIndex = this._menus.length - 1;
       return;
     }
 
@@ -768,6 +778,9 @@ export class MenuBar extends Widget {
 
     // Swap the internal menu reference.
     this._childMenu = newMenu;
+
+    // Set the reference to this MenuBar that contains the menu.
+    this._childMenu.parentMenuBar = this;
 
     // Close the current menu, or setup for the new menu.
     if (oldMenu) {
