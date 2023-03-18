@@ -18,6 +18,8 @@
 
 .lm-SplitPanel-handle {
   z-index: 1;
+  /* disable size containment as the handle overhangs another div */
+  contain: style!important;
 }
 
 .lm-SplitPanel-handle.lm-mod-hidden {
