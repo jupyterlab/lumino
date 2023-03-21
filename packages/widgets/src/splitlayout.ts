@@ -829,7 +829,8 @@ namespace Private {
   ): HTMLDivElement {
     let handle = renderer.createHandle();
     handle.style.position = 'absolute';
-    handle.style.contain = 'strict';
+    // Do not use size containment to allow the handle to fill the available space
+    handle.style.contain = 'style';
     return handle;
   }
 
