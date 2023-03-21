@@ -68,7 +68,8 @@ function addMenuItem(
   menu: Menu,
   command: string,
   label: string,
-  log: string
+  log: string,
+  shortcut?: string
 ): void {
   commands.addCommand(command, {
     label: label,
@@ -80,6 +81,14 @@ function addMenuItem(
     type: 'command',
     command: command
   });
+
+  if (shortcut) {
+    commands.addKeyBinding({
+      command,
+      keys: [shortcut],
+      selector: 'body'
+    });
+  }
 }
 
 /**
@@ -97,9 +106,9 @@ function main(): void {
 
   const fileMenu = new Menu({ commands: commands });
   fileMenu.title.label = 'File';
-  addMenuItem(commands, fileMenu, 'new', 'New', 'File > New');
-  addMenuItem(commands, fileMenu, 'open', 'Open', 'File > Open');
-  addMenuItem(commands, fileMenu, 'save', 'Save', 'File > Save');
+  addMenuItem(commands, fileMenu, 'new', 'New', 'File > New', 'Accel N');
+  addMenuItem(commands, fileMenu, 'open', 'Open', 'File > Open', 'Accel O');
+  addMenuItem(commands, fileMenu, 'save', 'Save', 'File > Save', 'Accel S');
   menubar.addMenu(fileMenu);
 
   const editMenu = new Menu({ commands: commands });
@@ -108,6 +117,26 @@ function main(): void {
   addMenuItem(commands, editMenu, 'copy', 'Copy', 'Edit > Copy');
   addMenuItem(commands, editMenu, 'paste', 'Paste', 'Edit > Paste');
   menubar.addMenu(editMenu);
+
+  const runMenu = new Menu({ commands: commands });
+  runMenu.title.label = 'Run';
+  addMenuItem(
+    commands,
+    runMenu,
+    'runThis',
+    'Run this cell',
+    'Run > Run this cell',
+    'Shift Enter'
+  );
+  addMenuItem(
+    commands,
+    runMenu,
+    'runAll',
+    'Run all cells',
+    'Run > Run all cells',
+    'Accel Shift Enter'
+  );
+  menubar.addMenu(runMenu);
 
   const article = new Article();
 
