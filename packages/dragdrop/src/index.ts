@@ -38,8 +38,8 @@ export type SupportedActions =
  * events, a drop target must cancel the `'lm-dragenter'` event by
  * calling the event's `preventDefault()` method.
  *
- * @deprecated This interface will be deprecated in @lumino/dragdrop@^2.0.0 in favor
- * of ``Drag.Event``.
+ * This interface will be deprecated in @lumino/dragdrop@^2.0.0 in favor of
+ * `Drag.Event`.
  */
 export interface IDragEvent extends MouseEvent {
   /**
