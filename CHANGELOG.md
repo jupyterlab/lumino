@@ -6,6 +6,42 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2023.3.27
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2023.3.15...0a73581874b5cee395282ee16875963cf4440bc7))
+
+```
+@lumino/application: 1.31.4 => 2.0.1
+@lumino/commands: 2.0.0 => 2.0.1
+@lumino/datagrid: 0.36.9 => 2.0.1
+@lumino/default-theme: 0.22.9 => 2.0.1
+@lumino/dragdrop: 1.14.5 => 2.0.0
+@lumino/widgets: 1.37.2 => 2.0.1
+```
+
+### Bugs fixed
+
+- Prevents enter from being interpreted as emoji [#563](https://github.com/jupyterlab/lumino/pull/563) ([@JasonWeill](https://github.com/JasonWeill))
+- Disable size containment for split handle [#560](https://github.com/jupyterlab/lumino/pull/560) ([@krassowski](https://github.com/krassowski))
+
+### Maintenance and upkeep improvements
+
+- Update versions [#566](https://github.com/jupyterlab/lumino/pull/566) ([@fcollonval](https://github.com/fcollonval))
+- Bump tj-actions/changed-files from 35.6.4 to 35.7.2 [#562](https://github.com/jupyterlab/lumino/pull/562) ([@dependabot](https://github.com/dependabot))
+
+### Documentation improvements
+
+- Backport changelog from 1.x [#558](https://github.com/jupyterlab/lumino/pull/558) ([@fcollonval](https://github.com/fcollonval))
+- Improve documentation [#557](https://github.com/jupyterlab/lumino/pull/557) ([@fcollonval](https://github.com/fcollonval))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2023-03-15&to=2023-03-27&type=c))
+
+[@andrii-i](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aandrii-i+updated%3A2023-03-15..2023-03-27&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2023-03-15..2023-03-27&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2023-03-15..2023-03-27&type=Issues) | [@JasonWeill](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3AJasonWeill+updated%3A2023-03-15..2023-03-27&type=Issues) | [@krassowski](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2023-03-15..2023-03-27&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Awelcome+updated%3A2023-03-15..2023-03-27&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2023.3.15
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2022.8.8...5a1a05a1642f8262d607e3e30f61ab39f912d2c8))
@@ -142,8 +178,6 @@ See [migration guide](https://lumino.readthedocs.io/en/latest/migration.html) fo
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2022-08-08&to=2023-03-15&type=c))
 
 [@3coins](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3A3coins+updated%3A2022-08-08..2023-03-15&type=Issues) | [@afshin](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aafshin+updated%3A2022-08-08..2023-03-15&type=Issues) | [@alec-kr](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aalec-kr+updated%3A2022-08-08..2023-03-15&type=Issues) | [@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2022-08-08..2023-03-15&type=Issues) | [@brichet](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Abrichet+updated%3A2022-08-08..2023-03-15&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2022-08-08..2023-03-15&type=Issues) | [@drcd1](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adrcd1+updated%3A2022-08-08..2023-03-15&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2022-08-08..2023-03-15&type=Issues) | [@gabalafou](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Agabalafou+updated%3A2022-08-08..2023-03-15&type=Issues) | [@ibdafna](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aibdafna+updated%3A2022-08-08..2023-03-15&type=Issues) | [@jasongrout](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajasongrout+updated%3A2022-08-08..2023-03-15&type=Issues) | [@jtpio](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajtpio+updated%3A2022-08-08..2023-03-15&type=Issues) | [@krassowski](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2022-08-08..2023-03-15&type=Issues) | [@martinRenou](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3AmartinRenou+updated%3A2022-08-08..2023-03-15&type=Issues) | [@meeseeksdev](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ameeseeksdev+updated%3A2022-08-08..2023-03-15&type=Issues) | [@scmmmh](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ascmmmh+updated%3A2022-08-08..2023-03-15&type=Issues) | [@steff456](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Asteff456+updated%3A2022-08-08..2023-03-15&type=Issues) | [@thetorpedodog](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Athetorpedodog+updated%3A2022-08-08..2023-03-15&type=Issues) | [@vidartf](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Avidartf+updated%3A2022-08-08..2023-03-15&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Awelcome+updated%3A2022-08-08..2023-03-15&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2023.3.27 (1.x)
 
