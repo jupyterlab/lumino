@@ -2,6 +2,30 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2023.3.27-0
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/application@1.31.3...45339b9ad932f305d58cbe3c60a57afcd88aa006))
+
+### Bugs fixed
+
+- Remove `IDragEvent` deprecated tag [#561](https://github.com/jupyterlab/lumino/pull/561) ([@afshin](https://github.com/afshin))
+
+### Maintenance and upkeep improvements
+
+- Update versions [#565](https://github.com/jupyterlab/lumino/pull/565) ([@fcollonval](https://github.com/fcollonval))
+
+### Documentation improvements
+
+- Remove `IDragEvent` deprecated tag [#561](https://github.com/jupyterlab/lumino/pull/561) ([@afshin](https://github.com/afshin))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2023-01-23&to=2023-03-27&type=c))
+
+[@afshin](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aafshin+updated%3A2023-01-23..2023-03-27&type=Issues) | [@andrii-i](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aandrii-i+updated%3A2023-01-23..2023-03-27&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2023-01-23..2023-03-27&type=Issues) | [@krassowski](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2023-01-23..2023-03-27&type=Issues) | [@steff456](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Asteff456+updated%3A2023-01-23..2023-03-27&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Awelcome+updated%3A2023-01-23..2023-03-27&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2023.1.23
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/application@1.31.2...58081c0313e536ac9dbb86ee0a602a1fa8445130))
@@ -19,8 +43,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2023-01-19&to=2023-01-23&type=c))
 
 [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2023-01-19..2023-01-23&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2023.1.19
 
