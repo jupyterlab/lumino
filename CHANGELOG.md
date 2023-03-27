@@ -11,12 +11,11 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2023.3.15...0a73581874b5cee395282ee16875963cf4440bc7))
 
 ```
-@lumino/application: 1.31.4 => 2.0.1
+@lumino/application: 2.0.0 => 2.0.1
 @lumino/commands: 2.0.0 => 2.0.1
-@lumino/datagrid: 0.36.9 => 2.0.1
-@lumino/default-theme: 0.22.9 => 2.0.1
-@lumino/dragdrop: 1.14.5 => 2.0.0
-@lumino/widgets: 1.37.2 => 2.0.1
+@lumino/datagrid: 2.0.0 => 2.0.1
+@lumino/default-theme: 2.0.0 => 2.0.1
+@lumino/widgets: 2.0.0 => 2.0.1
 ```
 
 ### Bugs fixed
