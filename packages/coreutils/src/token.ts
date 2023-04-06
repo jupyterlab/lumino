@@ -20,11 +20,18 @@ export class Token<T> {
    * Construct a new token.
    *
    * @param name - A human readable name for the token.
+   * @param description - Token purpose description for documentation.
    */
-  constructor(name: string) {
+  constructor(name: string, description?: string) {
     this.name = name;
+    this.description = description ?? '';
     this._tokenStructuralPropertyT = null!;
   }
+
+  /**
+   * Token purpose description.
+   */
+  readonly description: string;
 
   /**
    * The human readable name for the token.
