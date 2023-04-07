@@ -4,8 +4,7 @@
     "declarationDir": "types",
     "lib": ["DOM", "ES2018"],
     "outDir": "lib",
-    "rootDir": "src",
-    "types": ["@types/node"]
+    "rootDir": "src"
   },
   "include": ["src/*"],
   "references": [
