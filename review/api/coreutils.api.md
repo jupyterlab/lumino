@@ -76,7 +76,8 @@ export class PromiseDelegate<T> {
 
 // @public
 export namespace Random {
-    const getRandomValues: (buffer: Uint8Array) => void;
+    const // Warning: (ae-forgotten-export) The symbol "fallbackRandomValues" needs to be exported by the entry point index.d.ts
+    getRandomValues: typeof fallbackRandomValues;
 }
 
 // @public
@@ -108,7 +109,7 @@ export type ReadonlyPartialJSONValue = JSONPrimitive | ReadonlyPartialJSONObject
 // @public
 export class Token<T> {
     constructor(name: string, description?: string);
-    readonly description: string;
+    readonly description?: string;
     readonly name: string;
 }
 
