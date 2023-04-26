@@ -31,7 +31,7 @@ export class Token<T> {
   /**
    * Token purpose description.
    */
-  readonly description: string;
+  readonly description?: string; // FIXME remove `?` for the next major version
 
   /**
    * The human readable name for the token.
