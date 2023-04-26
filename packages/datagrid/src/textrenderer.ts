@@ -302,38 +302,33 @@ export class TextRenderer extends CellRenderer {
     }
 
     // Elide text that is too long
-    let elide = '\u2026';
+    const elide = '\u2026';
 
-    // Compute elided text
-    if (elideDirection === 'right') {
-      while (textWidth > boxWidth && [...text].length > 1) {
-        // Create array to deal with astral symbols 
-        let textArr = [...text]
+    // Loop until text width fits box or only one character remains
+    while (textWidth > boxWidth && text.length > 1) {
+      // Convert text string to array for dealing with astral symbols
+      const textArr = [...text];
 
+      if (elideDirection === 'right') {
+        // If text width is substantially bigger, take half the string
         if (textArr.length > 4 && textWidth >= 2 * boxWidth) {
-          // If text width is substantially bigger, take half the string
           text = textArr.slice(0, Math.floor(textArr.length / 2 + 1)).join('') + elide;
         } else {
           // Otherwise incrementally remove the last character
           text = textArr.slice(0, textArr.length - 2).join('') + elide;
         }
-        textWidth = gc.measureText(text).width;
-      }
-    } else {
-      while (textWidth > boxWidth && [...text].length > 1) {
-        // Create array to deal with astral symbols 
-        let textArr = [...text]
-
+      } else {
+        // If text width is substantially bigger, take half the string
         if (textArr.length > 4 && textWidth >= 2 * boxWidth) {
-          // If text width is substantially bigger, take half the string
           text = elide + textArr.slice(Math.floor(textArr.length / 2)).join('');
         } else {
           // Otherwise incrementally remove the last character
           text = elide + textArr.slice(2).join('');
         }
-
-        textWidth = gc.measureText(text).width;
       }
+
+      // Measure new text width
+      textWidth = gc.measureText(text).width;
     }
 
     // Draw the text for the cell.
