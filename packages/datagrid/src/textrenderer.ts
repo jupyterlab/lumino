@@ -325,6 +325,10 @@ export class TextRenderer extends CellRenderer {
           // Otherwise incrementally remove the last character
           text = elide + text.substring(2);
         }
+
+        // Remove invalid unicode characters if any
+        text = text.replace(/[\u{D800}-\u{DFFF}]/gu, "");
+
         textWidth = gc.measureText(text).width;
       }
     }
