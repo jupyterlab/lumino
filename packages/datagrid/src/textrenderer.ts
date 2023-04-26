@@ -306,28 +306,31 @@ export class TextRenderer extends CellRenderer {
 
     // Compute elided text
     if (elideDirection === 'right') {
-      while (textWidth > boxWidth && text.length > 1) {
-        if (text.length > 4 && textWidth >= 2 * boxWidth) {
+      while (textWidth > boxWidth && [...text].length > 1) {
+        // Create array to deal with astral symbols 
+        let textArr = [...text]
+
+        if (textArr.length > 4 && textWidth >= 2 * boxWidth) {
           // If text width is substantially bigger, take half the string
-          text = text.substring(0, text.length / 2 + 1) + elide;
+          text = textArr.slice(0, Math.floor(textArr.length / 2 + 1)).join('') + elide;
         } else {
           // Otherwise incrementally remove the last character
-          text = text.substring(0, text.length - 2) + elide;
+          text = textArr.slice(0, textArr.length - 2).join('') + elide;
         }
         textWidth = gc.measureText(text).width;
       }
     } else {
-      while (textWidth > boxWidth && text.length > 1) {
-        if (text.length > 4 && textWidth >= 2 * boxWidth) {
+      while (textWidth > boxWidth && [...text].length > 1) {
+        // Create array to deal with astral symbols 
+        let textArr = [...text]
+
+        if (textArr.length > 4 && textWidth >= 2 * boxWidth) {
           // If text width is substantially bigger, take half the string
-          text = elide + text.substring(text.length / 2);
+          text = elide + textArr.slice(Math.floor(textArr.length / 2)).join('');
         } else {
           // Otherwise incrementally remove the last character
-          text = elide + text.substring(2);
+          text = elide + textArr.slice(2).join('');
         }
-
-        // Remove invalid unicode characters if any
-        text = text.replace(/[\u{D800}-\u{DFFF}]/gu, "");
 
         textWidth = gc.measureText(text).width;
       }
