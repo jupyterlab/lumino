@@ -312,7 +312,9 @@ export class TextRenderer extends CellRenderer {
       if (elideDirection === 'right') {
         // If text width is substantially bigger, take half the string
         if (textArr.length > 4 && textWidth >= 2 * boxWidth) {
-          text = textArr.slice(0, Math.floor(textArr.length / 2 + 1)).join('') + elide;
+          text =
+            textArr.slice(0, Math.floor(textArr.length / 2 + 1)).join('') +
+            elide;
         } else {
           // Otherwise incrementally remove the last character
           text = textArr.slice(0, textArr.length - 2).join('') + elide;
