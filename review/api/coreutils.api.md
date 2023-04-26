@@ -109,7 +109,7 @@ export type ReadonlyPartialJSONValue = JSONPrimitive | ReadonlyPartialJSONObject
 // @public
 export class Token<T> {
     constructor(name: string, description?: string);
-    readonly description: string;
+    readonly description?: string;
     readonly name: string;
 }
 
