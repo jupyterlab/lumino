@@ -6,6 +6,39 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2023.4.27
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2023.4.7...2781964ce32d672fe37b815ec8cd690f99fd20aa))
+
+```
+@lumino/application: 2.1.0 => 2.1.1
+@lumino/commands: 2.1.0 => 2.1.1
+@lumino/coreutils: 2.1.0 => 2.1.1
+@lumino/datagrid: 2.1.0 => 2.1.1
+@lumino/default-theme: 2.1.0 => 2.1.1
+@lumino/disposable: 2.1.0 => 2.1.1
+@lumino/dragdrop: 2.1.0 => 2.1.1
+@lumino/polling: 2.1.0 => 2.1.1
+@lumino/signaling: 2.1.0 => 2.1.1
+@lumino/widgets: 2.1.0 => 2.1.1
+```
+
+### Maintenance and upkeep improvements
+
+- Bump patch version [#579](https://github.com/jupyterlab/lumino/pull/579) ([@fcollonval](https://github.com/fcollonval))
+- Make `Token.description` optional for backward compatibility [#577](https://github.com/jupyterlab/lumino/pull/577) ([@fcollonval](https://github.com/fcollonval))
+- Bump tj-actions/changed-files from 35.8.0 to 35.9.0 [#576](https://github.com/jupyterlab/lumino/pull/576) ([@dependabot](https://github.com/dependabot))
+- Bump tj-actions/changed-files from 35.7.12 to 35.8.0 [#575](https://github.com/jupyterlab/lumino/pull/575) ([@dependabot](https://github.com/dependabot))
+- Bump tj-actions/changed-files from 35.7.8 to 35.7.12 [#574](https://github.com/jupyterlab/lumino/pull/574) ([@dependabot](https://github.com/dependabot))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2023-04-07&to=2023-04-27&type=c))
+
+[@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2023-04-07..2023-04-27&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2023-04-07..2023-04-27&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2023.4.7
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2023.3.27-1...df643f9474f036eafbbb1249384a7cd247c2a2e1))
@@ -38,8 +71,6 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2023-03-28&to=2023-04-07&type=c))
 
 [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2023-03-28..2023-04-07&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2023-03-28..2023-04-07&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2023.3.27
 
