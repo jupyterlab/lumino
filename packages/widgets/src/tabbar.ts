@@ -1830,7 +1830,8 @@ namespace Private {
     let node = document.createElement('div');
     let content = document.createElement('ul');
     content.setAttribute('role', 'tablist');
-    content.className = 'lm-TabBar-content';
+    content.setAttribute('tabindex', '0');
+    content.className = 'lm-TabBar-content-test';
     node.appendChild(content);
 
     let add = document.createElement('div');
