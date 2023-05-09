@@ -1667,7 +1667,11 @@ export namespace TabBar {
      * @returns The ARIA attributes for the tab.
      */
     createTabARIA(data: IRenderData<any>): ElementARIAAttrs {
-      return { role: 'tab', 'aria-selected': data.current.toString() };
+      return {
+        role: 'tab',
+        'aria-selected': data.current.toString(),
+        tabIndex: '0'
+      };
     }
 
     /**
