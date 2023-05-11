@@ -7,10 +7,10 @@ import { CellRenderer, GraphicsContext, TextRenderer } from '@lumino/datagrid';
 class LoggingGraphicsContext extends GraphicsContext {
   fillText(text: string, x: number, y: number, maxWidth?: number): void {
     super.fillText(text, x, y, maxWidth);
-    this.lastText = text;
+    this.texts.push(text);
   }
 
-  lastText: string | null = null;
+  texts: string[] = [];
 }
 
 describe('@lumino/datagrid', () => {
@@ -43,7 +43,7 @@ describe('@lumino/datagrid', () => {
           width: 100,
           value: 'this text exceeds 100px'
         });
-        expect(gc.lastText).to.eq('this text exce…');
+        expect(gc.texts.pop()).to.eq('this text exce…');
       });
 
       it('should left-elide long strings', () => {
@@ -56,7 +56,8 @@ describe('@lumino/datagrid', () => {
           width: 100,
           value: 'this text exceeds 100px'
         });
-        expect(gc.lastText).to.eq('…xceeds 100px');
+        // Pixel calculations differ between Firefox and Chrome, either is good.
+        expect(gc.texts.pop()).to.be.oneOf(['…xceeds 100px', '…ceeds 100px']);
       });
 
       it('should not elide if eliding is disabled', () => {
@@ -69,7 +70,22 @@ describe('@lumino/datagrid', () => {
           width: 100,
           value: 'this text exceeds 100px'
         });
-        expect(gc.lastText).to.eq('this text exceeds 100px');
+        expect(gc.texts.pop()).to.eq('this text exceeds 100px');
+      });
+
+      it('should wrap text', () => {
+        const renderer = new TextRenderer({
+          elideDirection: 'none',
+          wrapText: true,
+          font: '12px Arial'
+        });
+        renderer.drawText(gc, {
+          ...defaultCellConfig,
+          width: 100,
+          value: 'this text exceeds 100px'
+        });
+        expect(gc.texts.pop()).to.eq('exceeds 100px');
+        expect(gc.texts.pop()).to.eq('this text');
       });
 
       it('should not break up Unicode surrogate characters (left)', () => {
@@ -82,7 +98,7 @@ describe('@lumino/datagrid', () => {
           width: 45,
           value: '📦📦📦'
         });
-        expect(gc.lastText).to.eq('…📦');
+        expect(gc.texts.pop()).to.eq('…📦');
       });
       it('should not break up Unicode surrogate characters (right)', () => {
         const renderer = new TextRenderer({
@@ -94,7 +110,7 @@ describe('@lumino/datagrid', () => {
           width: 45,
           value: '📦📦📦'
         });
-        expect(gc.lastText).to.eq('📦…');
+        expect(gc.texts.pop()).to.eq('📦…');
       });
     });
   });
