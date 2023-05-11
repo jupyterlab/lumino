@@ -35,7 +35,8 @@ describe('@lumino/datagrid', () => {
     describe('drawText()', () => {
       it('should right-elide long strings', () => {
         const renderer = new TextRenderer({
-          elideDirection: 'right'
+          elideDirection: 'right',
+          font: '12px Arial'
         });
         renderer.drawText(gc, {
           ...defaultCellConfig,
@@ -47,7 +48,8 @@ describe('@lumino/datagrid', () => {
 
       it('should left-elide long strings', () => {
         const renderer = new TextRenderer({
-          elideDirection: 'left'
+          elideDirection: 'left',
+          font: '12px Arial'
         });
         renderer.drawText(gc, {
           ...defaultCellConfig,
@@ -59,7 +61,8 @@ describe('@lumino/datagrid', () => {
 
       it('should not elide if eliding is disabled', () => {
         const renderer = new TextRenderer({
-          elideDirection: 'none'
+          elideDirection: 'none',
+          font: '12px Arial'
         });
         renderer.drawText(gc, {
           ...defaultCellConfig,
@@ -71,7 +74,8 @@ describe('@lumino/datagrid', () => {
 
       it('should not break up Unicode surrogate characters (left)', () => {
         const renderer = new TextRenderer({
-          elideDirection: 'left'
+          elideDirection: 'left',
+          font: '12px Arial'
         });
         renderer.drawText(gc, {
           ...defaultCellConfig,
@@ -82,7 +86,8 @@ describe('@lumino/datagrid', () => {
       });
       it('should not break up Unicode surrogate characters (right)', () => {
         const renderer = new TextRenderer({
-          elideDirection: 'right'
+          elideDirection: 'right',
+          font: '12px Arial'
         });
         renderer.drawText(gc, {
           ...defaultCellConfig,
