@@ -175,8 +175,7 @@ export type ARIAAttrNames =
   | 'aria-valuemin'
   | 'aria-valuenow'
   | 'aria-valuetext'
-  | 'role'
-  | 'tabIndex';
+  | 'role';
 
 /**
  * The names of the supported HTML5 CSS property names.
