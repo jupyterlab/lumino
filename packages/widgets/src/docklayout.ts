@@ -1277,26 +1277,26 @@ export namespace DockLayout {
     | 'split-bottom'
 
     /**
-     * Like `tab-after` if there is a tab layout above the reference widget,
-     * and like `split-top` otherwise.
+     * Like `split-top` but if a tab layout exists above the reference widget,
+     * it behaves like `tab-after` with reference to that instead.
      */
     | 'merge-top'
 
     /**
-     * Like `tab-after` if there is a tab layout left of the reference widget,
-     * and like `split-left` otherwise.
+     * Like `split-left` but if a tab layout exists left of the reference widget,
+     * it behaves like `tab-after` with reference to that instead.
      */
     | 'merge-left'
 
     /**
-     * Like `tab-after` if there is a tab layout right of the reference widget,
-     * and like `split-right` otherwise.
+     * Like `split-right` but if a tab layout exists right of the reference widget,
+     * it behaves like `tab-after` with reference to that instead.
      */
     | 'merge-right'
 
     /**
-     * Like `tab-after` if there is a tab layout below the reference widget,
-     * and like `split-bottom` otherwise.
+     * Like `split-bottom` but if a tab layout exists below the reference widget,
+     * it behaves like `tab-after` with reference to that instead.
      */
     | 'merge-bottom'
 
