@@ -21,6 +21,7 @@ import { ISignal, Signal } from '@lumino/signaling';
 
 import {
   ElementARIAAttrs,
+  ElementBaseAttrs,
   ElementDataset,
   ElementInlineStyle,
   h,
@@ -1666,8 +1667,12 @@ export namespace TabBar {
      *
      * @returns The ARIA attributes for the tab.
      */
-    createTabARIA(data: IRenderData<any>): ElementARIAAttrs {
-      return { role: 'tab', 'aria-selected': data.current.toString() };
+    createTabARIA(data: IRenderData<any>): ElementARIAAttrs | ElementBaseAttrs {
+      return {
+        role: 'tab',
+        'aria-selected': data.current.toString(),
+        tabindex: '0'
+      };
     }
 
     /**

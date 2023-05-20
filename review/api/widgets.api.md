@@ -7,6 +7,7 @@
 import { CommandRegistry } from '@lumino/commands';
 import { ConflatableMessage } from '@lumino/messaging';
 import { ElementARIAAttrs } from '@lumino/virtualdom';
+import { ElementBaseAttrs } from '@lumino/virtualdom';
 import { ElementDataset } from '@lumino/virtualdom';
 import { ElementInlineStyle } from '@lumino/virtualdom';
 import { h } from '@lumino/virtualdom';
@@ -1151,7 +1152,7 @@ export namespace TabBar {
         constructor();
         readonly closeIconSelector = ".lm-TabBar-tabCloseIcon";
         createIconClass(data: IRenderData<any>): string;
-        createTabARIA(data: IRenderData<any>): ElementARIAAttrs;
+        createTabARIA(data: IRenderData<any>): ElementARIAAttrs | ElementBaseAttrs;
         createTabClass(data: IRenderData<any>): string;
         createTabDataset(data: IRenderData<any>): ElementDataset;
         createTabKey(data: IRenderData<any>): string;
