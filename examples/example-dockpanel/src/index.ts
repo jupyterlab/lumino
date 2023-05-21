@@ -64,7 +64,6 @@ function createMenu(): Menu {
 }
 
 class ContentWidget extends Widget {
-
   static menuFocus: ContentWidget | null;
 
   static createNode(): HTMLElement {
@@ -485,7 +484,11 @@ function main(): void {
   contextSub1.addItem({ command: 'example:merge-right' });
   contextSub1.addItem({ command: 'example:merge-top' });
   contextSub1.addItem({ command: 'example:merge-bottom' });
-  contextMenu.addItem({ type: 'submenu', submenu: contextSub1, selector: '.content' });
+  contextMenu.addItem({
+    type: 'submenu',
+    submenu: contextSub1,
+    selector: '.content'
+  });
 
   commands.addCommand('save-dock-layout', {
     label: 'Save Layout',
