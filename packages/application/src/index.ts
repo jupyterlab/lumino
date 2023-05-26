@@ -60,6 +60,14 @@ export interface IPlugin<T extends Application, U> {
   autoStart?: boolean;
 
   /**
+   * Whether the plugin should be activated after the application start.
+   *
+   * #### Notes
+   * The default is `false`.
+   */
+  deferred?: boolean;
+
+  /**
    * The types of required services for the plugin, if any.
    *
    * #### Notes
@@ -526,6 +534,31 @@ export class Application<T extends Widget = Widget> {
   }
 
   /**
+   * Collect the deferred plugins.
+   *
+   * @returns The list of all the deferred plugins.
+   */
+  deferredPlugins(): string[] {
+    return Array.from(this._plugins.keys()).filter(
+      id => this._plugins.get(id)!.deferred
+    );
+  }
+
+  /**
+   * Activate all the deferred plugins.
+   *
+   * @returns A list of promises which will each resolve when the related
+   * plugin is activated or rejects with an error if it cannot be activated.
+   */
+  activateDeferredPlugins(): Promise<void>[] {
+    return this.deferredPlugins()
+      .filter(pluginId => this._plugins.get(pluginId)!.autoStart)
+      .map(pluginId => {
+        return this.activatePlugin(pluginId);
+      });
+  }
+
+  /**
    * Handle the DOM events for the application.
    *
    * @param event - The DOM event sent to the application.
@@ -707,9 +740,14 @@ namespace Private {
     readonly description: string;
 
     /**
-     * Whether the plugin should be activated on application start.
+     * Whether the plugin should be activated on application start or waiting for being required.
      */
     readonly autoStart: boolean;
+
+    /**
+     * Whether the plugin should be activated only after the application is started.
+     */
+    readonly deferred: boolean;
 
     /**
      * The types of required services for the plugin, or `[]`.
@@ -768,6 +806,7 @@ namespace Private {
       deactivate: plugin.deactivate ?? null,
       provides: plugin.provides ?? null,
       autoStart: plugin.autoStart ?? false,
+      deferred: plugin.deferred ?? false,
       requires: plugin.requires ? plugin.requires.slice() : [],
       optional: plugin.optional ? plugin.optional.slice() : []
     };
@@ -901,9 +940,9 @@ namespace Private {
     // Create a map to hold the plugin IDs.
     const collection = new Map<string, boolean>();
 
-    // Collect the auto-start plugins.
+    // Collect the auto-start (non deferred) plugins.
     for (const id of plugins.keys()) {
-      if (plugins.get(id)!.autoStart) {
+      if (plugins.get(id)!.autoStart && !plugins.get(id)!.deferred) {
         collection.set(id, true);
       }
     }
