@@ -616,6 +616,7 @@ export class TabBar<T> extends Widget {
   protected onBeforeAttach(msg: Message): void {
     this.node.addEventListener('pointerdown', this);
     this.node.addEventListener('dblclick', this);
+    this.node.addEventListener('keydown', this);
   }
 
   /**
@@ -711,6 +712,40 @@ export class TabBar<T> extends Widget {
    * Handle the `'keydown'` event for the tab bar.
    */
   private _evtKeyDown(event: KeyboardEvent): void {
+    // Allow for navigation using tab key
+    if (event.key === 'Tab') {
+      return;
+    }
+
+    // Check if Enter or Spacebar key has been pressed and open that tab
+    if (
+      event.key === 'Enter' ||
+      event.key === 'Spacebar' ||
+      event.key === ' '
+    ) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      // Get focus element that is in focus by the tab key
+      let focusedElement = document.activeElement;
+
+      if (focusedElement) {
+        // Genatate the coordinates for the tab in focus.
+        let tab = focusedElement.getBoundingClientRect();
+        let clientX = tab.left + tab.width / 2;
+        let clientY = tab.top + tab.height / 2;
+
+        // send simulated request with genatated coordinates.
+        let simPointerClick = new PointerEvent('', {
+          button: 0,
+          clientX: clientX,
+          clientY: clientY
+        });
+
+        this._evtPointerDown(simPointerClick);
+        this._evtPointerUp(simPointerClick);
+      }
+    }
     // Stop all input events during drag.
     event.preventDefault();
     event.stopPropagation();
