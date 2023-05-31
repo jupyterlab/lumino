@@ -730,20 +730,24 @@ export class TabBar<T> extends Widget {
       let focusedElement = document.activeElement;
 
       if (focusedElement) {
-        // Genatate the coordinates for the tab in focus.
-        let tab = focusedElement.getBoundingClientRect();
-        let clientX = tab.left + tab.width / 2;
-        let clientY = tab.top + tab.height / 2;
+        if (focusedElement.className === 'lm-TabBar-addButton') {
+          this._addRequested.emit();
+        } else {
+          // Genatate the coordinates for the tab in focus.
+          let tab = focusedElement.getBoundingClientRect();
+          let clientX = tab.left + tab.width / 2;
+          let clientY = tab.top + tab.height / 2;
 
-        // send simulated request with genatated coordinates.
-        let simPointerClick = new PointerEvent('', {
-          button: 0,
-          clientX: clientX,
-          clientY: clientY
-        });
+          // send simulated request with genatated coordinates.
+          let simPointerClick = new PointerEvent('', {
+            button: 0,
+            clientX: clientX,
+            clientY: clientY
+          });
 
-        this._evtPointerDown(simPointerClick);
-        this._evtPointerUp(simPointerClick);
+          this._evtPointerDown(simPointerClick);
+          this._evtPointerUp(simPointerClick);
+        }
       }
     }
     // Stop all input events during drag.
@@ -1875,6 +1879,7 @@ namespace Private {
 
     let add = document.createElement('div');
     add.className = 'lm-TabBar-addButton lm-mod-hidden';
+    add.setAttribute('tabindex', '0');
     node.appendChild(add);
     return node;
   }
