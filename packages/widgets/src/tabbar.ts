@@ -730,7 +730,7 @@ export class TabBar<T> extends Widget {
       let focusedElement = document.activeElement;
 
       if (focusedElement) {
-        if (focusedElement.className === 'lm-TabBar-addButton') {
+        if (focusedElement.classList.contains('lm-TabBar-addButton')) {
           this._addRequested.emit();
         } else {
           // Genatate the coordinates for the tab in focus.
