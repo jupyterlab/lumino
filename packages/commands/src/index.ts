@@ -1461,8 +1461,7 @@ namespace Private {
   const MAC_DISPLAY: { [key: string]: string } = {
     Backspace: '⌫',
     Tab: '⇥',
-    // U+FE0E prevents the "enter" character from rendering in color as an emoji
-    Enter: '↩\uFE0E',
+    Enter: '⏎',
     Shift: '⇧',
     Ctrl: '⌃',
     Alt: '⌥',
