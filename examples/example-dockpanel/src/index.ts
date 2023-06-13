@@ -64,6 +64,8 @@ function createMenu(): Menu {
 }
 
 class ContentWidget extends Widget {
+  static menuFocus: ContentWidget | null;
+
   static createNode(): HTMLElement {
     let node = document.createElement('div');
     let content = document.createElement('div');
@@ -82,6 +84,10 @@ class ContentWidget extends Widget {
     this.title.label = name;
     this.title.closable = true;
     this.title.caption = `Long description for: ${name}`;
+    let widget = this;
+    this.node.addEventListener('contextmenu', (event: MouseEvent) => {
+      ContentWidget.menuFocus = widget;
+    });
   }
 
   get inputNode(): HTMLInputElement {
@@ -91,6 +97,12 @@ class ContentWidget extends Widget {
   protected onActivateRequest(msg: Message): void {
     if (this.isAttached) {
       this.inputNode.focus();
+    }
+  }
+
+  protected onBeforeDetach(msg: Message): void {
+    if (ContentWidget.menuFocus === this) {
+      ContentWidget.menuFocus = null;
     }
   }
 }
@@ -322,6 +334,7 @@ function main(): void {
   let contextMenu = new ContextMenu({ commands });
 
   document.addEventListener('contextmenu', (event: MouseEvent) => {
+    if (event.shiftKey) return;
     if (contextMenu.open(event)) {
       event.preventDefault();
     }
@@ -397,6 +410,56 @@ function main(): void {
     sender.addWidget(w, { ref: arg.titles[0].owner });
   });
 
+  let doSplit = (mode: DockPanel.InsertMode) => {
+    let ref = ContentWidget.menuFocus;
+    if (ref) {
+      let name = ref.title.label;
+      let widget = new ContentWidget(name);
+      widget.inputNode.value = `${name} ${mode}`;
+      dock.addWidget(widget, { mode: mode, ref: ref });
+    }
+  };
+
+  commands.addCommand('example:split-left', {
+    label: 'Split left',
+    execute: () => doSplit('split-left')
+  });
+
+  commands.addCommand('example:split-right', {
+    label: 'Split right',
+    execute: () => doSplit('split-right')
+  });
+
+  commands.addCommand('example:split-top', {
+    label: 'Split top',
+    execute: () => doSplit('split-top')
+  });
+
+  commands.addCommand('example:split-bottom', {
+    label: 'Split bottom',
+    execute: () => doSplit('split-bottom')
+  });
+
+  commands.addCommand('example:merge-left', {
+    label: 'Merge left',
+    execute: () => doSplit('merge-left')
+  });
+
+  commands.addCommand('example:merge-right', {
+    label: 'Merge right',
+    execute: () => doSplit('merge-right')
+  });
+
+  commands.addCommand('example:merge-top', {
+    label: 'Merge top',
+    execute: () => doSplit('merge-top')
+  });
+
+  commands.addCommand('example:merge-bottom', {
+    label: 'Merge bottom',
+    execute: () => doSplit('merge-bottom')
+  });
+
   let savedLayouts: DockPanel.ILayoutConfig[] = [];
 
   commands.addCommand('example:add-button', {
@@ -408,7 +471,24 @@ function main(): void {
       console.log('Toggle add button');
     }
   });
+
   contextMenu.addItem({ command: 'example:add-button', selector: '.content' });
+  let contextSub1 = new Menu({ commands });
+  contextSub1.title.label = 'Splitting';
+  contextSub1.addItem({ command: 'example:split-left' });
+  contextSub1.addItem({ command: 'example:split-right' });
+  contextSub1.addItem({ command: 'example:split-top' });
+  contextSub1.addItem({ command: 'example:split-bottom' });
+  contextSub1.addItem({ type: 'separator' });
+  contextSub1.addItem({ command: 'example:merge-left' });
+  contextSub1.addItem({ command: 'example:merge-right' });
+  contextSub1.addItem({ command: 'example:merge-top' });
+  contextSub1.addItem({ command: 'example:merge-bottom' });
+  contextMenu.addItem({
+    type: 'submenu',
+    submenu: contextSub1,
+    selector: '.content'
+  });
 
   commands.addCommand('save-dock-layout', {
     label: 'Save Layout',

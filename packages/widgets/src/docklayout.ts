@@ -409,6 +409,18 @@ export class DockLayout extends Layout {
       case 'split-bottom':
         this._insertSplit(widget, ref, refNode, 'vertical', true);
         break;
+      case 'merge-top':
+        this._insertSplit(widget, ref, refNode, 'vertical', false, true);
+        break;
+      case 'merge-left':
+        this._insertSplit(widget, ref, refNode, 'horizontal', false, true);
+        break;
+      case 'merge-right':
+        this._insertSplit(widget, ref, refNode, 'horizontal', true, true);
+        break;
+      case 'merge-bottom':
+        this._insertSplit(widget, ref, refNode, 'vertical', true, true);
+        break;
     }
 
     // Do nothing else if there is no parent widget.
@@ -792,6 +804,16 @@ export class DockLayout extends Layout {
   }
 
   /**
+   * Create the tab layout node to hold the widget.
+   */
+  private _createTabNode(widget: Widget): Private.TabLayoutNode {
+    let tabNode = new Private.TabLayoutNode(this._createTabBar());
+    tabNode.tabBar.addTab(widget.title);
+    Private.addAria(widget, tabNode.tabBar);
+    return tabNode;
+  }
+
+  /**
    * Insert a widget next to an existing tab.
    *
    * #### Notes
@@ -872,7 +894,8 @@ export class DockLayout extends Layout {
     ref: Widget | null,
     refNode: Private.TabLayoutNode | null,
     orientation: Private.Orientation,
-    after: boolean
+    after: boolean,
+    merge: boolean = false
   ): void {
     // Do nothing if there is no effective split.
     if (widget === ref && refNode && refNode.tabBar.titles.length === 1) {
@@ -882,14 +905,9 @@ export class DockLayout extends Layout {
     // Ensure the widget is removed from the current layout.
     this._removeWidget(widget);
 
-    // Create the tab layout node to hold the widget.
-    let tabNode = new Private.TabLayoutNode(this._createTabBar());
-    tabNode.tabBar.addTab(widget.title);
-    Private.addAria(widget, tabNode.tabBar);
-
     // Set the root if it does not exist.
     if (!this._root) {
-      this._root = tabNode;
+      this._root = this._createTabNode(widget);
       return;
     }
 
@@ -908,6 +926,7 @@ export class DockLayout extends Layout {
       let sizer = Private.createSizer(refNode ? 1 : Private.GOLDEN_RATIO);
 
       // Insert the tab node sized to the golden ratio.
+      let tabNode = this._createTabNode(widget);
       ArrayExt.insert(root.children, i, tabNode);
       ArrayExt.insert(root.sizers, i, sizer);
       ArrayExt.insert(root.handles, i, this._createHandle());
@@ -930,6 +949,17 @@ export class DockLayout extends Layout {
       // Find the index of the ref node.
       let i = splitNode.children.indexOf(refNode);
 
+      // Conditionally reuse a tab layout found in the wanted position.
+      if (merge) {
+        let j = i + (after ? 1 : -1);
+        let sibling = splitNode.children[j];
+        if (sibling instanceof Private.TabLayoutNode) {
+          this._insertTab(widget, null, sibling, true);
+          ++sibling.tabBar.currentIndex;
+          return;
+        }
+      }
+
       // Normalize the split node.
       splitNode.normalizeSizes();
 
@@ -938,6 +968,7 @@ export class DockLayout extends Layout {
 
       // Insert the tab node sized to the other half.
       let j = i + (after ? 1 : 0);
+      let tabNode = this._createTabNode(widget);
       ArrayExt.insert(splitNode.children, j, tabNode);
       ArrayExt.insert(splitNode.sizers, j, Private.createSizer(s));
       ArrayExt.insert(splitNode.handles, j, this._createHandle());
@@ -963,6 +994,7 @@ export class DockLayout extends Layout {
 
     // Add the tab node sized to the other half.
     let j = after ? 1 : 0;
+    let tabNode = this._createTabNode(widget);
     ArrayExt.insert(childNode.children, j, tabNode);
     ArrayExt.insert(childNode.sizers, j, Private.createSizer(0.5));
     ArrayExt.insert(childNode.handles, j, this._createHandle());
@@ -1243,6 +1275,30 @@ export namespace DockLayout {
      * inserted at the bottom edge of the dock layout.
      */
     | 'split-bottom'
+
+    /**
+     * Like `split-top` but if a tab layout exists above the reference widget,
+     * it behaves like `tab-after` with reference to that instead.
+     */
+    | 'merge-top'
+
+    /**
+     * Like `split-left` but if a tab layout exists left of the reference widget,
+     * it behaves like `tab-after` with reference to that instead.
+     */
+    | 'merge-left'
+
+    /**
+     * Like `split-right` but if a tab layout exists right of the reference widget,
+     * it behaves like `tab-after` with reference to that instead.
+     */
+    | 'merge-right'
+
+    /**
+     * Like `split-bottom` but if a tab layout exists below the reference widget,
+     * it behaves like `tab-after` with reference to that instead.
+     */
+    | 'merge-bottom'
 
     /**
      * The tab position before the reference widget.
