@@ -539,16 +539,16 @@ export class Application<T extends Widget = Widget> {
   /**
    * Activate all the deferred plugins.
    *
-   * @returns A promises which will  resolve when each plugin is activated
-   * or rejects with an error one cannot be activated.
+   * @returns A promise which will resolve when each plugin is activated
+   * or rejects with an error if one cannot be activated.
    */
-  activateDeferredPlugins(): Promise<void[]> {
+  async activateDeferredPlugins(): Promise<void> {
     const promises = this.deferredPlugins
       .filter(pluginId => this._plugins.get(pluginId)!.autoStart)
       .map(pluginId => {
         return this.activatePlugin(pluginId);
       });
-    return Promise.all(promises);
+    await Promise.all(promises);
   }
 
   /**
@@ -926,20 +926,20 @@ namespace Private {
     plugins: Map<string, IPluginData>,
     options: Application.IStartOptions
   ): string[] {
-    // Create a map to hold the plugin IDs.
-    const collection = new Map<string, boolean>();
+    // Create a set to hold the plugin IDs.
+    const collection = new Set<string>();
 
     // Collect the auto-start (non deferred) plugins.
     for (const id of plugins.keys()) {
       if (plugins.get(id)!.autoStart === true) {
-        collection.set(id, true);
+        collection.add(id);
       }
     }
 
     // Add the startup plugins.
     if (options.startPlugins) {
       for (const id of options.startPlugins) {
-        collection.set(id, true);
+        collection.add(id);
       }
     }
 
@@ -951,6 +951,6 @@ namespace Private {
     }
 
     // Return the collected startup plugins.
-    return Array.from(collection.keys());
+    return Array.from(collection);
   }
 }
