@@ -52,20 +52,14 @@ export interface IPlugin<T extends Application, U> {
   description?: string;
 
   /**
-   * Whether the plugin should be activated on application start.
+   * Whether the plugin should be activated on application start or waiting for being
+   * required. If the value is 'defer' then the plugin should be activated only after
+   * the application is started.
    *
    * #### Notes
    * The default is `false`.
    */
-  autoStart?: boolean;
-
-  /**
-   * Whether the plugin should be activated after the application start.
-   *
-   * #### Notes
-   * The default is `false`.
-   */
-  deferred?: boolean;
+  autoStart?: boolean | 'defer';
 
   /**
    * The types of required services for the plugin, if any.
@@ -537,23 +531,24 @@ export class Application<T extends Widget = Widget> {
    * The list of all the deferred plugins.
    */
   get deferredPlugins(): string[] {
-    return Array.from(this._plugins).filter(
-      ([id, plugin]) => plugin.deferred
-    ).map(([id, plugin]) => id);
+    return Array.from(this._plugins)
+      .filter(([id, plugin]) => plugin.autoStart === 'defer')
+      .map(([id, plugin]) => id);
   }
 
   /**
    * Activate all the deferred plugins.
    *
-   * @returns A list of promises which will each resolve when the related
-   * plugin is activated or rejects with an error if it cannot be activated.
+   * @returns A promises which will  resolve when each plugin is activated
+   * or rejects with an error one cannot be activated.
    */
-  activateDeferredPlugins(): Promise<void>[] {
-    return this.deferredPlugins()
+  activateDeferredPlugins(): Promise<void[]> {
+    const promises = this.deferredPlugins
       .filter(pluginId => this._plugins.get(pluginId)!.autoStart)
       .map(pluginId => {
         return this.activatePlugin(pluginId);
       });
+    return Promise.all(promises);
   }
 
   /**
@@ -738,14 +733,11 @@ namespace Private {
     readonly description: string;
 
     /**
-     * Whether the plugin should be activated on application start or waiting for being required.
+     * Whether the plugin should be activated on application start or waiting for being
+     * required. If the value is 'defer' then the plugin should be activated only after
+     * the application is started.
      */
-    readonly autoStart: boolean;
-
-    /**
-     * Whether the plugin should be activated only after the application is started.
-     */
-    readonly deferred: boolean;
+    readonly autoStart: boolean | 'defer';
 
     /**
      * The types of required services for the plugin, or `[]`.
@@ -804,7 +796,6 @@ namespace Private {
       deactivate: plugin.deactivate ?? null,
       provides: plugin.provides ?? null,
       autoStart: plugin.autoStart ?? false,
-      deferred: plugin.deferred ?? false,
       requires: plugin.requires ? plugin.requires.slice() : [],
       optional: plugin.optional ? plugin.optional.slice() : []
     };
@@ -940,7 +931,7 @@ namespace Private {
 
     // Collect the auto-start (non deferred) plugins.
     for (const id of plugins.keys()) {
-      if (plugins.get(id)!.autoStart && !plugins.get(id)!.deferred) {
+      if (plugins.get(id)!.autoStart === true) {
         collection.set(id, true);
       }
     }
