@@ -537,9 +537,9 @@ export class Application<T extends Widget = Widget> {
    * The list of all the deferred plugins.
    */
   get deferredPlugins(): string[] {
-    return Array.from(this._plugins.keys()).filter(
-      id => this._plugins.get(id)!.deferred
-    );
+    return Array.from(this._plugins).filter(
+      ([id, plugin]) => plugin.deferred
+    ).map(([id, plugin]) => id);
   }
 
   /**
