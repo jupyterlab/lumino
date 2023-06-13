@@ -135,7 +135,7 @@ describe('@lumino/application', () => {
         expect(app.isPluginActivated(id)).to.be.false;
       });
 
-      it('should be false for deferred plugin', async () => {
+      it('should be false for deferred plugin when application start', async () => {
         const app = new Application({ shell: new Widget() });
         const id = 'plugin1';
         app.registerPlugin({
@@ -143,43 +143,12 @@ describe('@lumino/application', () => {
           activate: () => {
             // no-op
           },
-          autoStart: true,
-          deferred: true
+          autoStart: 'defer'
         });
         await app.start();
         expect(app.isPluginActivated(id)).to.be.false;
-      });
-
-      it('should be true for deferred and autoStart plugins only', async () => {
-        const app = new Application({ shell: new Widget() });
-        const id1 = 'plugin1';
-        app.registerPlugin({
-          id: id1,
-          activate: () => {
-            // no-op
-          },
-          autoStart: true,
-          deferred: true
-        });
-        const id2 = 'plugin2';
-        app.registerPlugin({
-          id: id2,
-          activate: () => {
-            // no-op
-          }
-        });
-        const id3 = 'plugin3';
-        app.registerPlugin({
-          id: id3,
-          activate: () => {
-            // no-op
-          },
-          deferred: true
-        });
-        await Promise.all(app.activateDeferredPlugins());
-        expect(app.isPluginActivated(id1)).to.be.true;
-        expect(app.isPluginActivated(id2)).to.be.false;
-        expect(app.isPluginActivated(id3)).to.be.false;
+        await app.activateDeferredPlugins();
+        expect(app.isPluginActivated(id)).to.be.true;
       });
 
       it('should be false for unregistered plugin', async () => {
