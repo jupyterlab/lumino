@@ -135,6 +135,22 @@ describe('@lumino/application', () => {
         expect(app.isPluginActivated(id)).to.be.false;
       });
 
+      it('should be false for deferred plugin when application start', async () => {
+        const app = new Application({ shell: new Widget() });
+        const id = 'plugin1';
+        app.registerPlugin({
+          id,
+          activate: () => {
+            // no-op
+          },
+          autoStart: 'defer'
+        });
+        await app.start();
+        expect(app.isPluginActivated(id)).to.be.false;
+        await app.activateDeferredPlugins();
+        expect(app.isPluginActivated(id)).to.be.true;
+      });
+
       it('should be false for unregistered plugin', async () => {
         const app = new Application({ shell: new Widget() });
         const id = 'plugin1';
