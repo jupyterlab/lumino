@@ -1134,6 +1134,10 @@ export namespace TabBar {
         readonly clientX: number;
         readonly clientY: number;
         readonly index: number;
+        readonly offset?: {
+            x: number;
+            y: number;
+        };
         readonly tab: HTMLElement;
         readonly title: Title<T>;
     }

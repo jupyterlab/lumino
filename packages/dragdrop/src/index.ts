@@ -420,9 +420,6 @@ export class Drag implements IDisposable {
         ? this.document.body
         : (this.document.firstElementChild as HTMLElement);
     body.appendChild(this.dragImage);
-    // Ensure center of drag image will be at cursor:
-    style.top = `-${this.dragImage.clientHeight / 2}px`;
-    style.left = `-${this.dragImage.clientWidth / 2}px`;
   }
 
   /**
