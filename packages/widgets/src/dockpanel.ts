@@ -1024,7 +1024,7 @@ export class DockPanel extends Widget {
     sender.releaseMouse();
 
     // Extract the data from the args.
-    let { title, tab, clientX, clientY } = args;
+    let { title, tab, clientX, clientY, offset } = args;
 
     // Setup the mime data for the drag operation.
     let mimeData = new MimeData();
@@ -1033,6 +1033,10 @@ export class DockPanel extends Widget {
 
     // Create the drag image for the drag operation.
     let dragImage = tab.cloneNode(true) as HTMLElement;
+    if (offset) {
+      dragImage.style.top = `-${offset.y}px`;
+      dragImage.style.left = `-${offset.x}px`;
+    }
 
     // Create the drag object to manage the drag-drop operation.
     this._drag = new Drag({
