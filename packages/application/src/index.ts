@@ -7,6 +7,10 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
+/**
+ * @packageDocumentation
+ * @module application
+ */
 import { topologicSort } from '@lumino/algorithm';
 
 import { CommandRegistry } from '@lumino/commands';

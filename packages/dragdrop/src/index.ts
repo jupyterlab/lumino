@@ -7,6 +7,10 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
+/**
+ * @packageDocumentation
+ * @module dragdrop
+ */
 import { MimeData } from '@lumino/coreutils';
 
 import { DisposableDelegate, IDisposable } from '@lumino/disposable';

@@ -1012,6 +1012,4 @@ export namespace TextRenderer {
     export type VerticalAlignment = 'top' | 'center' | 'bottom';
 }
 
-// (No @packageDocumentation comment for this package)
-
 ```

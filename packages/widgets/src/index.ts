@@ -7,6 +7,10 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
+/**
+ * @packageDocumentation
+ * @module widgets
+ */
 export * from './accordionlayout';
 export * from './accordionpanel';
 export * from './boxengine';

@@ -7,6 +7,10 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
+/**
+ * @packageDocumentation
+ * @module messaging
+ */
 import { ArrayExt, every, retro, some } from '@lumino/algorithm';
 
 import { LinkedList } from '@lumino/collections';

@@ -51,7 +51,4 @@ export namespace Selector {
     export function matches(element: Element, selector: string): boolean;
 }
 
-
-// (No @packageDocumentation comment for this package)
-
 ```

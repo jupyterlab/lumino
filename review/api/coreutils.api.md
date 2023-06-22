@@ -118,6 +118,4 @@ export namespace UUID {
     const uuid4: () => string;
 }
 
-// (No @packageDocumentation comment for this package)
-
 ```

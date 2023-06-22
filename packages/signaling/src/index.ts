@@ -7,6 +7,10 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
+/**
+ * @packageDocumentation
+ * @module signaling
+ */
 import { ArrayExt, find } from '@lumino/algorithm';
 import { PromiseDelegate } from '@lumino/coreutils';
 

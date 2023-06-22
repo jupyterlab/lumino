@@ -44,6 +44,4 @@ export namespace KeycodeLayout {
 // @public
 export function setKeyboardLayout(layout: IKeyboardLayout): void;
 
-// (No @packageDocumentation comment for this package)
-
 ```

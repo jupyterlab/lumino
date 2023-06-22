@@ -9,6 +9,11 @@
 |----------------------------------------------------------------------------*/
 
 /**
+ * @packageDocumentation
+ * @module properties
+ */
+
+/**
  * A class which attaches a value to an external object.
  *
  * #### Notes

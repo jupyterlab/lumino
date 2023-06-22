@@ -7,6 +7,10 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
+/**
+ * @packageDocumentation
+ * @module coreutils
+ */
 export * from './index.common';
 export * from './random.browser';
 export * from './uuid.browser';

@@ -7,6 +7,10 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
+/**
+ * @packageDocumentation
+ * @module datagrid
+ */
 export * from './basickeyhandler';
 export * from './basicmousehandler';
 export * from './basicselectionmodel';
