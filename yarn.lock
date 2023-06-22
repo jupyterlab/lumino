@@ -1035,9 +1035,9 @@ __metadata:
   resolution: "@lumino/application@workspace:packages/application"
   dependencies:
     "@lumino/buildutils": ^2.0.0
-    "@lumino/commands": ^2.1.1
+    "@lumino/commands": ^2.1.2
     "@lumino/coreutils": ^2.1.1
-    "@lumino/widgets": ^2.1.1
+    "@lumino/widgets": ^2.2.0
     "@microsoft/api-extractor": ^7.6.0
     "@rollup/plugin-commonjs": ^24.0.0
     "@rollup/plugin-node-resolve": ^15.0.1
@@ -1110,7 +1110,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lumino/commands@^2.1.1, @lumino/commands@workspace:packages/commands":
+"@lumino/commands@^2.1.2, @lumino/commands@workspace:packages/commands":
   version: 0.0.0-use.local
   resolution: "@lumino/commands@workspace:packages/commands"
   dependencies:
@@ -1188,7 +1188,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lumino/datagrid@^2.1.1, @lumino/datagrid@workspace:packages/datagrid":
+"@lumino/datagrid@^2.1.2, @lumino/datagrid@workspace:packages/datagrid":
   version: 0.0.0-use.local
   resolution: "@lumino/datagrid@workspace:packages/datagrid"
   dependencies:
@@ -1197,11 +1197,11 @@ __metadata:
     "@lumino/coreutils": ^2.1.1
     "@lumino/disposable": ^2.1.1
     "@lumino/domutils": ^2.0.0
-    "@lumino/dragdrop": ^2.1.1
+    "@lumino/dragdrop": ^2.1.2
     "@lumino/keyboard": ^2.0.0
     "@lumino/messaging": ^2.0.0
     "@lumino/signaling": ^2.1.1
-    "@lumino/widgets": ^2.1.1
+    "@lumino/widgets": ^2.2.0
     "@microsoft/api-extractor": ^7.6.0
     "@rollup/plugin-commonjs": ^24.0.0
     "@rollup/plugin-node-resolve": ^15.0.1
@@ -1228,12 +1228,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lumino/default-theme@^2.1.1, @lumino/default-theme@workspace:packages/default-theme":
+"@lumino/default-theme@^2.1.2, @lumino/default-theme@workspace:packages/default-theme":
   version: 0.0.0-use.local
   resolution: "@lumino/default-theme@workspace:packages/default-theme"
   dependencies:
-    "@lumino/dragdrop": ^2.1.1
-    "@lumino/widgets": ^2.1.1
+    "@lumino/dragdrop": ^2.1.2
+    "@lumino/widgets": ^2.2.0
   languageName: unknown
   linkType: soft
 
@@ -1300,7 +1300,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lumino/dragdrop@^2.1.1, @lumino/dragdrop@workspace:packages/dragdrop":
+"@lumino/dragdrop@^2.1.2, @lumino/dragdrop@workspace:packages/dragdrop":
   version: 0.0.0-use.local
   resolution: "@lumino/dragdrop@workspace:packages/dragdrop"
   dependencies:
@@ -1339,9 +1339,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@lumino/example-accordionpanel@workspace:examples/example-accordionpanel"
   dependencies:
-    "@lumino/default-theme": ^2.1.1
+    "@lumino/default-theme": ^2.1.2
     "@lumino/messaging": ^2.0.0
-    "@lumino/widgets": ^2.1.1
+    "@lumino/widgets": ^2.2.0
     "@rollup/plugin-node-resolve": ^15.0.1
     rimraf: ^3.0.2
     rollup: ^3.9.1
@@ -1354,10 +1354,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@lumino/example-datagrid@workspace:examples/example-datagrid"
   dependencies:
-    "@lumino/datagrid": ^2.1.1
-    "@lumino/default-theme": ^2.1.1
-    "@lumino/dragdrop": ^2.1.1
-    "@lumino/widgets": ^2.1.1
+    "@lumino/datagrid": ^2.1.2
+    "@lumino/default-theme": ^2.1.2
+    "@lumino/dragdrop": ^2.1.2
+    "@lumino/widgets": ^2.2.0
     "@rollup/plugin-node-resolve": ^15.0.1
     rimraf: ^3.0.2
     rollup: ^3.9.1
@@ -1386,11 +1386,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@lumino/example-dockpanel@workspace:examples/example-dockpanel"
   dependencies:
-    "@lumino/commands": ^2.1.1
-    "@lumino/default-theme": ^2.1.1
-    "@lumino/dragdrop": ^2.1.1
+    "@lumino/commands": ^2.1.2
+    "@lumino/default-theme": ^2.1.2
+    "@lumino/dragdrop": ^2.1.2
     "@lumino/messaging": ^2.0.0
-    "@lumino/widgets": ^2.1.1
+    "@lumino/widgets": ^2.2.0
     "@rollup/plugin-node-resolve": ^15.0.1
     rimraf: ^3.0.2
     rollup: ^3.9.1
@@ -1403,9 +1403,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@lumino/example-menubar@workspace:examples/example-menubar"
   dependencies:
-    "@lumino/default-theme": ^2.1.1
+    "@lumino/default-theme": ^2.1.2
     "@lumino/messaging": ^2.0.0
-    "@lumino/widgets": ^2.1.1
+    "@lumino/widgets": ^2.2.0
     "@rollup/plugin-node-resolve": ^15.0.1
     rimraf: ^3.0.2
     rollup: ^3.9.1
@@ -1618,17 +1618,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lumino/widgets@^2.1.1, @lumino/widgets@workspace:packages/widgets":
+"@lumino/widgets@^2.2.0, @lumino/widgets@workspace:packages/widgets":
   version: 0.0.0-use.local
   resolution: "@lumino/widgets@workspace:packages/widgets"
   dependencies:
     "@lumino/algorithm": ^2.0.0
     "@lumino/buildutils": ^2.0.0
-    "@lumino/commands": ^2.1.1
+    "@lumino/commands": ^2.1.2
     "@lumino/coreutils": ^2.1.1
     "@lumino/disposable": ^2.1.1
     "@lumino/domutils": ^2.0.0
-    "@lumino/dragdrop": ^2.1.1
+    "@lumino/dragdrop": ^2.1.2
     "@lumino/keyboard": ^2.0.0
     "@lumino/messaging": ^2.0.0
     "@lumino/properties": ^2.0.0

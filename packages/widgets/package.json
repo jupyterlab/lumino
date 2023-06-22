@@ -1,6 +1,6 @@
 {
   "name": "@lumino/widgets",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "Lumino Widgets",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -55,11 +55,11 @@
   },
   "dependencies": {
     "@lumino/algorithm": "^2.0.0",
-    "@lumino/commands": "^2.1.1",
+    "@lumino/commands": "^2.1.2",
     "@lumino/coreutils": "^2.1.1",
     "@lumino/disposable": "^2.1.1",
     "@lumino/domutils": "^2.0.0",
-    "@lumino/dragdrop": "^2.1.1",
+    "@lumino/dragdrop": "^2.1.2",
     "@lumino/keyboard": "^2.0.0",
     "@lumino/messaging": "^2.0.0",
     "@lumino/properties": "^2.0.0",
