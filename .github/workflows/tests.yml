@@ -121,7 +121,7 @@ jobs:
             data = json.load(f)
 
           data["version"] = datetime.now().strftime("%Y.%m.%d")
-          data["jupyter-releaser"]["options"]["version-cmd"] = "npm run update:versions -- --yes"
+          data["jupyter-releaser"] = { "options": { "version-cmd": "npm run update:versions -- --yes" } }
 
           with open("package.json", "w") as f:
             data = json.dump(data, f)
