@@ -60,9 +60,6 @@
     "typescript": "~4.9.4"
   },
   "jupyter-releaser": {
-    "options": {
-      "npm-cmd": "npm publish --tag latest"
-    },
     "hooks": {
       "after-build-changelog": [
         "yarn",
