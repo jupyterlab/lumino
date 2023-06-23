@@ -6,6 +6,52 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2023.6.22
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2023.4.27...521819af3fd92f8fbcaf5088b9ea89dc7e21d8a2))
+
+```
+@lumino/application: 2.1.1 => 2.2.0
+@lumino/commands: 2.1.1 => 2.1.2
+@lumino/datagrid: 2.1.1 => 2.1.2
+@lumino/default-theme: 2.1.1 => 2.1.2
+@lumino/dragdrop: 2.1.1 => 2.1.2
+@lumino/widgets: 2.1.1 => 2.2.0
+```
+
+### Enhancements made
+
+- Use Actual Return character for Mac shortcuts. [#592](https://github.com/jupyterlab/lumino/pull/592) ([@Carreau](https://github.com/Carreau))
+- Add a 'defer' option to the autoStart argument [#588](https://github.com/jupyterlab/lumino/pull/588) ([@brichet](https://github.com/brichet))
+- Added "tabindex=0" for sidebar accessibility [#583](https://github.com/jupyterlab/lumino/pull/583) ([@j264415](https://github.com/j264415))
+- Splits with merge option for dock panels [#582](https://github.com/jupyterlab/lumino/pull/582) ([@tavin](https://github.com/tavin))
+
+### Bugs fixed
+
+- Fix position of drag image [#595](https://github.com/jupyterlab/lumino/pull/595) ([@MetRonnie](https://github.com/MetRonnie))
+- Invalid unicode characters removed from datagrid [#578](https://github.com/jupyterlab/lumino/pull/578) ([@nicojapas](https://github.com/nicojapas))
+- Fix dblclick events with Drag.overrideCursor active (#547) [#564](https://github.com/jupyterlab/lumino/pull/564) ([@jjrv](https://github.com/jjrv))
+
+### Maintenance and upkeep improvements
+
+- Bump versions [#600](https://github.com/jupyterlab/lumino/pull/600) ([@fcollonval](https://github.com/fcollonval))
+- Upgrade releaser workflows [#598](https://github.com/jupyterlab/lumino/pull/598) ([@fcollonval](https://github.com/fcollonval))
+- Bump tj-actions/changed-files from 36.1.0 to 36.4.0 [#597](https://github.com/jupyterlab/lumino/pull/597) ([@dependabot](https://github.com/dependabot))
+- Bump tj-actions/changed-files from 36.0.17 to 36.1.0 [#594](https://github.com/jupyterlab/lumino/pull/594) ([@dependabot](https://github.com/dependabot))
+- Bump tj-actions/changed-files from 36.0.9 to 36.0.17 [#591](https://github.com/jupyterlab/lumino/pull/591) ([@dependabot](https://github.com/dependabot))
+- Bump tj-actions/changed-files from 35.9.2 to 36.0.9 [#589](https://github.com/jupyterlab/lumino/pull/589) ([@dependabot](https://github.com/dependabot))
+- Bump socket.io-parser from 4.2.1 to 4.2.3 [#587](https://github.com/jupyterlab/lumino/pull/587) ([@dependabot](https://github.com/dependabot))
+- Seed tests for datagrid, test `TextRenderer/drawText` [#585](https://github.com/jupyterlab/lumino/pull/585) ([@krassowski](https://github.com/krassowski))
+- Bump tj-actions/changed-files from 35.9.0 to 35.9.2 [#580](https://github.com/jupyterlab/lumino/pull/580) ([@dependabot](https://github.com/dependabot))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2023-04-27&to=2023-06-22&type=c))
+
+[@brichet](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Abrichet+updated%3A2023-04-27..2023-06-22&type=Issues) | [@Carreau](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3ACarreau+updated%3A2023-04-27..2023-06-22&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2023-04-27..2023-06-22&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2023-04-27..2023-06-22&type=Issues) | [@j264415](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aj264415+updated%3A2023-04-27..2023-06-22&type=Issues) | [@jjrv](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajjrv+updated%3A2023-04-27..2023-06-22&type=Issues) | [@krassowski](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2023-04-27..2023-06-22&type=Issues) | [@MetRonnie](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3AMetRonnie+updated%3A2023-04-27..2023-06-22&type=Issues) | [@nicojapas](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Anicojapas+updated%3A2023-04-27..2023-06-22&type=Issues) | [@tavin](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Atavin+updated%3A2023-04-27..2023-06-22&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Awelcome+updated%3A2023-04-27..2023-06-22&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2023.4.27
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2023.4.7...2781964ce32d672fe37b815ec8cd690f99fd20aa))
@@ -36,8 +82,6 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2023-04-07&to=2023-04-27&type=c))
 
 [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2023-04-07..2023-04-27&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2023-04-07..2023-04-27&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2023.4.7
 
