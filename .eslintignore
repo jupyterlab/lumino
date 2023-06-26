@@ -21,3 +21,6 @@ docs/source/api
 # ms IDE stuff
 .history/
 .vscode/
+
+# CI stuff
+pw-browsers/

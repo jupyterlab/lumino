@@ -39,3 +39,6 @@ docs/source/examples
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# CI stuff
+pw-browsers/
