@@ -42,9 +42,20 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+
+    env:
+      PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/pw-browsers
+
     steps:
       - uses: actions/checkout@v3
       - uses: jupyterlab/maintainer-tools/.github/actions/base-setup@v1
+
+      - name: Set up browser cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ${{ github.workspace }}/pw-browsers
+          key: ubuntu-latest-${{ hashFiles('./yarn.lock') }}
 
       - name: Install dependencies
         shell: bash
@@ -72,6 +83,8 @@ jobs:
           set -eux
           yarn minimize
           yarn build:examples
+          # Install playwright for example tests
+          npx playwright install chromium
           yarn test:examples
 
       - name: Build Docs
