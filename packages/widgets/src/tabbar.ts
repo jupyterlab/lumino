@@ -575,6 +575,56 @@ export class TabBar<T> extends Widget {
     this._releaseMouse();
   }
 
+    /**
+   * Get all adjecent child nodes from the parent of the focused Element by Id
+   *
+   * #### Notes
+   * This currently only get the id of all children
+   * but can be extended to get other element data
+   * 
+   * findIndex method item array will need to be updated 
+   */
+    getElementData(element: { children: any }) {
+      let elementData = [];
+      if (element.children) {
+        for (let child of element.children) {
+          if (
+            child.classList.contains('lm-TabBar-tab') ||
+            child.classList('lm-TabBar-tab lm-mod-current')
+          ) {
+            elementData.push({
+              id: child.id
+            });
+          }
+        }
+      } else {
+      }
+  
+      return elementData;
+    }
+  
+    /**
+     * Get the index of a child element within its parent using its id 
+     * 
+     * #### Notes
+     * will return index = -1 if an index is not found 
+     */
+    findIndex(
+      items: Array<{
+        id: string;
+      }>,
+      id: string
+    ): number {
+      let index = -1;
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].id === id) {
+          index = i;
+          break;
+        }
+      }
+      return index;
+    }
+
   /**
    * Handle the DOM events for the tab bar.
    *
@@ -730,24 +780,19 @@ export class TabBar<T> extends Widget {
       let focusedElement = document.activeElement;
 
       if (focusedElement) {
+        // Check if the focus element was the add button
         if (focusedElement.classList.contains('lm-TabBar-addButton')) {
           this._addRequested.emit();
         } else {
-          // Genatate the coordinates for the tab in focus.
-          let tab = focusedElement.getBoundingClientRect();
-          let clientX = tab.left + tab.width / 2;
-          let clientY = tab.top + tab.height / 2;
+          // Find the index of the focusedElement among tab nodes
+          let parentElement = focusedElement.parentElement;
+          if (parentElement) {
+            const nodeData = this.getElementData(parentElement);
 
-          // send simulated request with genatated coordinates.
-          let simPointerClick = new PointerEvent('', {
-            button: 0,
-            clientX: clientX,
-            clientY: clientY
-          });
-
-          this._evtPointerDown(simPointerClick);
-          this._evtPointerUp(simPointerClick);
-        }
+            // Activate the index of the pressed tab.
+            let index = this.findIndex(nodeData, focusedElement.id);
+            this.currentIndex = index;
+          } }
       }
     }
     // Stop all input events during drag.
