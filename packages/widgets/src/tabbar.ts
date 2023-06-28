@@ -928,6 +928,10 @@ export class TabBar<T> extends Widget {
         data.tabSize = tabRect.height;
         data.tabPressPos = data.pressY - tabRect.top;
       }
+      data.tabPressOffset = {
+        x: data.pressX - tabRect.left,
+        y: data.pressY - tabRect.top
+      };
       data.tabLayout = Private.snapTabLayout(tabs, this._orientation);
       data.contentRect = this.contentNode.getBoundingClientRect();
       data.override = Drag.overrideCursor('default');
@@ -953,7 +957,14 @@ export class TabBar<T> extends Widget {
       let title = this._titles[index];
 
       // Emit the tab detach requested signal.
-      this._tabDetachRequested.emit({ index, title, tab, clientX, clientY });
+      this._tabDetachRequested.emit({
+        index,
+        title,
+        tab,
+        clientX,
+        clientY,
+        offset: data.tabPressOffset
+      });
 
       // Bail if the signal handler aborted the drag.
       if (data.dragAborted) {
@@ -1550,6 +1561,11 @@ export namespace TabBar {
      * The current client Y position of the mouse.
      */
     readonly clientY: number;
+
+    /**
+     * The mouse position in the tab coordinate.
+     */
+    readonly offset?: { x: number; y: number };
   }
 
   /**
@@ -1841,6 +1857,13 @@ namespace Private {
      * This will be `-1` if the drag is not active.
      */
     tabPressPos: number;
+
+    /**
+     * The original mouse position in tab coordinates.
+     *
+     * This is undefined if the drag is not active.
+     */
+    tabPressOffset?: { x: number; y: number };
 
     /**
      * The tab target index upon mouse release.

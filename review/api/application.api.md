@@ -13,12 +13,14 @@ import { Widget } from '@lumino/widgets';
 // @public
 export class Application<T extends Widget = Widget> {
     constructor(options: Application.IOptions<T>);
+    activateDeferredPlugins(): Promise<void>;
     activatePlugin(id: string): Promise<void>;
     protected addEventListeners(): void;
     protected attachShell(id: string): void;
     readonly commands: CommandRegistry;
     readonly contextMenu: ContextMenu;
     deactivatePlugin(id: string): Promise<string[]>;
+    get deferredPlugins(): string[];
     deregisterPlugin(id: string, force?: boolean): void;
     protected evtContextMenu(event: PointerEvent): void;
     protected evtKeydown(event: KeyboardEvent): void;
@@ -53,7 +55,7 @@ export namespace Application {
 // @public
 export interface IPlugin<T extends Application, U> {
     activate: (app: T, ...args: any[]) => U | Promise<U>;
-    autoStart?: boolean;
+    autoStart?: boolean | 'defer';
     deactivate?: ((app: T, ...args: any[]) => void | Promise<void>) | null;
     description?: string;
     id: string;

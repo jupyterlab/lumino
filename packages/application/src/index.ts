@@ -52,12 +52,14 @@ export interface IPlugin<T extends Application, U> {
   description?: string;
 
   /**
-   * Whether the plugin should be activated on application start.
+   * Whether the plugin should be activated on application start or waiting for being
+   * required. If the value is 'defer' then the plugin should be activated only after
+   * the application is started.
    *
    * #### Notes
    * The default is `false`.
    */
-  autoStart?: boolean;
+  autoStart?: boolean | 'defer';
 
   /**
    * The types of required services for the plugin, if any.
@@ -526,6 +528,30 @@ export class Application<T extends Widget = Widget> {
   }
 
   /**
+   * The list of all the deferred plugins.
+   */
+  get deferredPlugins(): string[] {
+    return Array.from(this._plugins)
+      .filter(([id, plugin]) => plugin.autoStart === 'defer')
+      .map(([id, plugin]) => id);
+  }
+
+  /**
+   * Activate all the deferred plugins.
+   *
+   * @returns A promise which will resolve when each plugin is activated
+   * or rejects with an error if one cannot be activated.
+   */
+  async activateDeferredPlugins(): Promise<void> {
+    const promises = this.deferredPlugins
+      .filter(pluginId => this._plugins.get(pluginId)!.autoStart)
+      .map(pluginId => {
+        return this.activatePlugin(pluginId);
+      });
+    await Promise.all(promises);
+  }
+
+  /**
    * Handle the DOM events for the application.
    *
    * @param event - The DOM event sent to the application.
@@ -707,9 +733,11 @@ namespace Private {
     readonly description: string;
 
     /**
-     * Whether the plugin should be activated on application start.
+     * Whether the plugin should be activated on application start or waiting for being
+     * required. If the value is 'defer' then the plugin should be activated only after
+     * the application is started.
      */
-    readonly autoStart: boolean;
+    readonly autoStart: boolean | 'defer';
 
     /**
      * The types of required services for the plugin, or `[]`.
@@ -898,20 +926,20 @@ namespace Private {
     plugins: Map<string, IPluginData>,
     options: Application.IStartOptions
   ): string[] {
-    // Create a map to hold the plugin IDs.
-    const collection = new Map<string, boolean>();
+    // Create a set to hold the plugin IDs.
+    const collection = new Set<string>();
 
-    // Collect the auto-start plugins.
+    // Collect the auto-start (non deferred) plugins.
     for (const id of plugins.keys()) {
-      if (plugins.get(id)!.autoStart) {
-        collection.set(id, true);
+      if (plugins.get(id)!.autoStart === true) {
+        collection.add(id);
       }
     }
 
     // Add the startup plugins.
     if (options.startPlugins) {
       for (const id of options.startPlugins) {
-        collection.set(id, true);
+        collection.add(id);
       }
     }
 
@@ -923,6 +951,6 @@ namespace Private {
     }
 
     // Return the collected startup plugins.
-    return Array.from(collection.keys());
+    return Array.from(collection);
   }
 }

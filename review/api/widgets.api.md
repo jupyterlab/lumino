@@ -360,6 +360,26 @@ export namespace DockLayout {
     */
     | 'split-bottom'
     /**
+    * Like `split-top` but if a tab layout exists above the reference widget,
+    * it behaves like `tab-after` with reference to that instead.
+    */
+    | 'merge-top'
+    /**
+    * Like `split-left` but if a tab layout exists left of the reference widget,
+    * it behaves like `tab-after` with reference to that instead.
+    */
+    | 'merge-left'
+    /**
+    * Like `split-right` but if a tab layout exists right of the reference widget,
+    * it behaves like `tab-after` with reference to that instead.
+    */
+    | 'merge-right'
+    /**
+    * Like `split-bottom` but if a tab layout exists below the reference widget,
+    * it behaves like `tab-after` with reference to that instead.
+    */
+    | 'merge-bottom'
+    /**
     * The tab position before the reference widget.
     *
     * The widget will be added as a tab before the reference widget.
@@ -1116,6 +1136,10 @@ export namespace TabBar {
         readonly clientX: number;
         readonly clientY: number;
         readonly index: number;
+        readonly offset?: {
+            x: number;
+            y: number;
+        };
         readonly tab: HTMLElement;
         readonly title: Title<T>;
     }

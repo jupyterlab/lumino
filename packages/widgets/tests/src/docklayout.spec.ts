@@ -244,7 +244,53 @@ describe('@lumino/widgets', () => {
       it.skip('should have some tests');
     });
     describe('#addWidget()', () => {
-      it.skip('should have some tests');
+      type Mode = DockLayout.InsertMode;
+      it('should add widgets', () => {
+        const layout = new DockLayout({ renderer });
+        const widget = new Widget();
+        layout.addWidget(widget);
+        expect(layout['_root'].tabBar).to.exist;
+        expect(layout['_root'].tabBar.titles[0].owner).to.equal(widget);
+      });
+      it('should add splits', () => {
+        for (let i = 0, d = ['right', 'left', 'bottom', 'top']; i < 4; ++i) {
+          const layout = new DockLayout({ renderer });
+          const w1 = new Widget();
+          const w2 = new Widget();
+          layout.addWidget(w1);
+          layout.addWidget(w2, { ref: w1, mode: <Mode>`split-${d[i]}` });
+          expect(layout['_root'].children).to.exist;
+          expect(layout['_root'].children.length).to.equal(2);
+          expect(
+            layout['_root'].children[0 + (i % 2)].tabBar.titles[0].owner
+          ).to.equal(w1);
+          expect(
+            layout['_root'].children[1 - (i % 2)].tabBar.titles[0].owner
+          ).to.equal(w2);
+        }
+      });
+      it('should merge splits', () => {
+        for (let i = 0, d = ['right', 'left', 'bottom', 'top']; i < 4; ++i) {
+          const layout = new DockLayout({ renderer });
+          const w1 = new Widget();
+          const w2 = new Widget();
+          const w3 = new Widget();
+          layout.addWidget(w1);
+          layout.addWidget(w2, { ref: w1, mode: <Mode>`merge-${d[i]}` });
+          layout.addWidget(w3, { ref: w1, mode: <Mode>`merge-${d[i]}` });
+          expect(layout['_root'].children).to.exist;
+          expect(layout['_root'].children.length).to.equal(2);
+          expect(
+            layout['_root'].children[0 + (i % 2)].tabBar.titles[0].owner
+          ).to.equal(w1);
+          expect(
+            layout['_root'].children[1 - (i % 2)].tabBar.titles[0].owner
+          ).to.equal(w2);
+          expect(
+            layout['_root'].children[1 - (i % 2)].tabBar.titles[1].owner
+          ).to.equal(w3);
+        }
+      });
     });
     describe('#removeWidget()', () => {
       it.skip('should have some tests');
