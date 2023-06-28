@@ -1057,8 +1057,6 @@ export class TabBar<T> extends Widget {
     set currentTitle(value: Title<T> | null);
     dispose(): void;
     get document(): Document | ShadowRoot;
-    getElementData(element: { children: any })
-    findIndex(items: Array<{ id: string }>, id: string): number
     handleEvent(event: Event): void;
     insertBehavior: TabBar.InsertBehavior;
     insertTab(index: number, value: Title<T> | Title.IOptions<T>): Title<T>;
