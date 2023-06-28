@@ -575,55 +575,48 @@ export class TabBar<T> extends Widget {
     this._releaseMouse();
   }
 
-    /**
+  /**
    * Get all adjecent child nodes from the parent of the focused Element by Id
    *
    * #### Notes
    * This currently only get the id of all children
    * but can be extended to get other element data
-   * 
-   * findIndex method item array will need to be updated 
+   * findIndex method item array will need to be updated
    */
-    getElementData(element: { children: any }) {
-      let elementData = [];
-      if (element.children) {
-        for (let child of element.children) {
-          if (
-            child.classList.contains('lm-TabBar-tab') ||
-            child.classList('lm-TabBar-tab lm-mod-current')
-          ) {
-            elementData.push({
-              id: child.id
-            });
-          }
-        }
-      } else {
-      }
-  
-      return elementData;
-    }
-  
-    /**
-     * Get the index of a child element within its parent using its id 
-     * 
-     * #### Notes
-     * will return index = -1 if an index is not found 
-     */
-    findIndex(
-      items: Array<{
-        id: string;
-      }>,
-      id: string
-    ): number {
-      let index = -1;
-      for (let i = 0; i < items.length; i++) {
-        if (items[i].id === id) {
-          index = i;
-          break;
+  getElementData(element: { children: any }) {
+    let elementData = [];
+    if (element.children) {
+      for (let child of element.children) {
+        if (
+          child.classList.contains('lm-TabBar-tab') ||
+          child.classList('lm-TabBar-tab lm-mod-current')
+        ) {
+          elementData.push({
+            id: child.id
+          });
         }
       }
-      return index;
     }
+
+    return elementData;
+  }
+
+  /**
+   * Get the index of a child element within its parent using its id
+   *
+   * #### Notes
+   * will return index = -1 if an index is not found
+   */
+  findIndex(items: Array<{ id: string }>, id: string): number {
+    let index = -1;
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].id === id) {
+        index = i;
+        break;
+      }
+    }
+    return index;
+  }
 
   /**
    * Handle the DOM events for the tab bar.
@@ -792,7 +785,8 @@ export class TabBar<T> extends Widget {
             // Activate the index of the pressed tab.
             let index = this.findIndex(nodeData, focusedElement.id);
             this.currentIndex = index;
-          } }
+          }
+        }
       }
     }
     // Stop all input events during drag.
