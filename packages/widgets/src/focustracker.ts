@@ -159,8 +159,8 @@ export class FocusTracker<T extends Widget> implements IDisposable {
    * If the widget is already tracked, this is a no-op.
    */
   add(widget: T): void {
-    // Do nothing if the widget is already tracked.
-    if (this._numbers.has(widget)) {
+    // Do nothing if the widget is already tracked or is not trackable.
+    if (this._numbers.has(widget) || !widget.focusTrackable) {
       return;
     }
 
