@@ -54,6 +54,9 @@ export class DockPanel extends Widget {
     if (options.addButtonEnabled !== undefined) {
       this._addButtonEnabled = options.addButtonEnabled;
     }
+    if (options.tabScrollingEnabled !== undefined) {
+      this._tabScrollingEnabled = options.tabScrollingEnabled;
+    }
 
     // Toggle the CSS mode attribute.
     this.dataset['mode'] = this._mode;
@@ -253,6 +256,23 @@ export class DockPanel extends Widget {
     for (const tabBar of this.tabBars()) {
       tabBar.addButtonEnabled = value;
     }
+  }
+
+  /**
+   * Whether scrolling of tabs in tab bars is enabled.
+   */
+  get tabScrollingEnabled(): boolean {
+    return this._tabScrollingEnabled;
+  }
+
+  /**
+   * Set whether the add buttons for each tab bar are enabled.
+   */
+  set tabScrollingEnabled(value: boolean) {
+    this._tabScrollingEnabled = value;
+    each(this.tabBars(), tabbar => {
+      tabbar.scrollingEnabled = value;
+    });
   }
 
   /**
@@ -923,6 +943,7 @@ export class DockPanel extends Widget {
     tabBar.tabsMovable = this._tabsMovable;
     tabBar.allowDeselect = false;
     tabBar.addButtonEnabled = this._addButtonEnabled;
+    tabBar.scrollingEnabled = this._tabScrollingEnabled;
     tabBar.removeBehavior = 'select-previous-tab';
     tabBar.insertBehavior = 'select-tab-if-needed';
 
@@ -1067,6 +1088,7 @@ export class DockPanel extends Widget {
   private _tabsMovable: boolean = true;
   private _tabsConstrained: boolean = false;
   private _addButtonEnabled: boolean = false;
+  private _tabScrollingEnabled: boolean = false;
   private _pressData: Private.IPressData | null = null;
   private _layoutModified = new Signal<this, void>(this);
 
@@ -1149,6 +1171,13 @@ export namespace DockPanel {
      * The default is `'false'`.
      */
     addButtonEnabled?: boolean;
+
+    /**
+     * Enable scrolling in each of the dock panel's tab bars.
+     *
+     * The default is `'false'`.
+     */
+    tabScrollingEnabled?: boolean;
   }
 
   /**

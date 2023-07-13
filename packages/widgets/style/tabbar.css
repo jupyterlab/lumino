@@ -38,11 +38,15 @@
   list-style-type: none;
 }
 
-.lm-TabBar[data-orientation='horizontal'] > .lm-TabBar-content {
+.lm-TabBar[data-orientation='horizontal']
+  > .lm-TabBar-wrapper
+  > .lm-TabBar-content {
   flex-direction: row;
 }
 
-.lm-TabBar[data-orientation='vertical'] > .lm-TabBar-content {
+.lm-TabBar[data-orientation='vertical']
+  > .lm-TabBar-wrapper
+  > .lm-TabBar-content {
   flex-direction: column;
 }
 
@@ -75,7 +79,7 @@
   display: none !important;
 }
 
-.lm-TabBar-addButton.lm-mod-hidden {
+.lm-TabBar-button.lm-mod-hidden {
   display: none !important;
 }
 
@@ -102,4 +106,128 @@
   width: 100%;
   box-sizing: border-box;
   background: inherit;
+}
+
+.lm-TabBar-wrapper {
+  /* Remove wrapper from DOM when scrolling is not enabled */
+  display: contents;
+  --lm-tabbar-scrollshadow-end: rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.lm-TabBar.lm-mod-scrollable .lm-TabBar-wrapper {
+  /* Keep wrapper in DOM when scrolling is enabled */
+  display: block;
+}
+
+.lm-TabBar-content {
+  scrollbar-width: none;
+}
+
+.lm-TabBar-content::-webkit-scrollbar {
+  display: none;
+}
+
+.lm-TabBar[data-orientation='horizontal'].lm-mod-scrollable
+  > .lm-TabBar-wrapper {
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+.lm-TabBar[data-orientation='vertical'].lm-mod-scrollable > .lm-TabBar-wrapper {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.lm-TabBar > .lm-TabBar-wrapper > .lm-TabBar-content {
+  width: 100%;
+}
+
+.lm-TabBar[data-orientation='horizontal'].lm-mod-scrollable
+  > .lm-TabBar-wrapper
+  > .lm-TabBar-content {
+  overflow-x: scroll;
+  overflow-y: hidden;
+}
+
+.lm-TabBar[data-orientation='vertical'].lm-mod-scrollable
+  > .lm-TabBar-wrapper
+  > .lm-TabBar-content {
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+.lm-TabBar-wrapper::before,
+.lm-TabBar-wrapper::after {
+  content: '';
+  z-index: 10000;
+  display: none;
+  position: absolute;
+}
+
+.lm-TabBar-wrapper[data-can-scroll='before']::before {
+  display: block;
+}
+
+.lm-TabBar-wrapper[data-can-scroll='after']::after {
+  display: block;
+}
+
+.lm-TabBar-wrapper[data-can-scroll='both']::before,
+.lm-TabBar-wrapper[data-can-scroll='both']::after {
+  display: block;
+}
+
+.lm-TabBar[data-orientation='horizontal'] > .lm-TabBar-wrapper::before,
+.lm-TabBar[data-orientation='horizontal'] > .lm-TabBar-wrapper::after {
+  width: 5px;
+  height: 100%;
+  top: 0;
+}
+
+.lm-TabBar[data-orientation='horizontal'] > .lm-TabBar-wrapper::before {
+  background: linear-gradient(
+    to left,
+    rgba(0, 0, 0, 0),
+    var(--lm-tabbar-scrollshadow-end)
+  );
+  left: 0;
+}
+
+.lm-TabBar[data-orientation='horizontal'] > .lm-TabBar-wrapper::after {
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0),
+    var(--lm-tabbar-scrollshadow-end)
+  );
+  right: 0;
+}
+
+.lm-TabBar[data-orientation='vertical'] > .lm-TabBar-wrapper::before,
+.lm-TabBar[data-orientation='vertical'] > .lm-TabBar-wrapper::after {
+  height: 5px;
+  width: 100%;
+  left: 0;
+}
+
+.lm-TabBar[data-orientation='vertical'] > .lm-TabBar-wrapper::before {
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0),
+    var(--lm-tabbar-scrollshadow-end)
+  );
+  top: 0;
+}
+
+.lm-TabBar[data-orientation='vertical'] > .lm-TabBar-wrapper::after {
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0),
+    var(--lm-tabbar-scrollshadow-end)
+  );
+  bottom: 0;
+}
+
+.lm-TabBar[data-orientation='vertical'] > .lm-TabBar-scrollButton {
+  transform: rotate(90deg);
 }
