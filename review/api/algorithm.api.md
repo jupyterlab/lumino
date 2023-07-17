@@ -142,6 +142,4 @@ export function topologicSort<T>(edges: Iterable<[T, T]>): T[];
 // @public
 export function zip<T>(...objects: Iterable<T>[]): IterableIterator<T[]>;
 
-// (No @packageDocumentation comment for this package)
-
 ```

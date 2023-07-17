@@ -57,6 +57,4 @@ export namespace Drag {
 export interface IDragEvent extends Drag.Event {
 }
 
-// (No @packageDocumentation comment for this package)
-
 ```

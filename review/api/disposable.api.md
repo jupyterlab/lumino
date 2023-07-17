@@ -56,6 +56,4 @@ export namespace ObservableDisposableSet {
     export function from(items: Iterable<IDisposable>): ObservableDisposableSet;
 }
 
-// (No @packageDocumentation comment for this package)
-
 ```

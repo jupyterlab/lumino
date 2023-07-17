@@ -9,7 +9,10 @@
   background: #e5e5e5;
   border: 1px solid #c0c0c0;
   border-bottom: none;
-  font: 12px Helvetica, Arial, sans-serif;
+  font:
+    12px Helvetica,
+    Arial,
+    sans-serif;
   min-height: 22px;
   max-height: 22px;
   min-width: 35px;

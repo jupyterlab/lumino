@@ -25,6 +25,4 @@ export namespace AttachedProperty {
     }
 }
 
-// (No @packageDocumentation comment for this package)
-
 ```

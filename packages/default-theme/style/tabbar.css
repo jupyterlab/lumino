@@ -29,7 +29,10 @@
   background: #e5e5e5;
   border: 1px solid #c0c0c0;
   border-bottom: none;
-  font: 12px Helvetica, Arial, sans-serif;
+  font:
+    12px Helvetica,
+    Arial,
+    sans-serif;
   flex: 0 1 125px;
   min-height: 20px;
   max-height: 20px;
@@ -41,7 +44,10 @@
 .lm-TabBar-tabLabel .lm-TabBar-tabInput {
   padding: 0px;
   border: 0px;
-  font: 12px Helvetica, Arial, sans-serif;
+  font:
+    12px Helvetica,
+    Arial,
+    sans-serif;
 }
 
 .lm-TabBar-tab.lm-mod-current {

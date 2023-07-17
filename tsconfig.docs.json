@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfigbase.json",
+  "exclude": ["**/tests/**"],
+  "compilerOptions": {
+    "lib": ["DOM", "DOM.Iterable", "ES2018"],
+    "paths": {
+      "@lumino/*": ["./packages/*/src"]
+    },
+    "types": ["node"]
+  }
+}

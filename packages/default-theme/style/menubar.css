@@ -17,7 +17,10 @@
   background: #fafafa;
   color: rgba(0, 0, 0, 0.87);
   border-bottom: 1px solid #dddddd;
-  font: 13px Helvetica, Arial, sans-serif;
+  font:
+    13px Helvetica,
+    Arial,
+    sans-serif;
 }
 
 .lm-MenuBar-menu {

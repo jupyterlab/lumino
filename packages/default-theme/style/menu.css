@@ -17,7 +17,10 @@
   background: white;
   color: rgba(0, 0, 0, 0.87);
   border: 1px solid #c0c0c0;
-  font: 12px Helvetica, Arial, sans-serif;
+  font:
+    12px Helvetica,
+    Arial,
+    sans-serif;
   box-shadow: 0px 1px 6px rgba(0, 0, 0, 0.2);
 }
 

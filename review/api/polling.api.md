@@ -116,6 +116,4 @@ export namespace Throttler {
     }
 }
 
-// (No @packageDocumentation comment for this package)
-
 ```

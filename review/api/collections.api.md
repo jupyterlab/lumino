@@ -45,6 +45,4 @@ export namespace LinkedList {
     }
 }
 
-// (No @packageDocumentation comment for this package)
-
 ```

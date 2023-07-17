@@ -1394,6 +1394,4 @@ export namespace Widget {
     }
 }
 
-// (No @packageDocumentation comment for this package)
-
 ```

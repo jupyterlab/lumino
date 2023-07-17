@@ -7,6 +7,10 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
+/**
+ * @packageDocumentation
+ * @module domutils
+ */
 export * from './clipboard';
 export * from './element';
 export * from './platform';

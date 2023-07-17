@@ -7,6 +7,10 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
+/**
+ * @packageDocumentation
+ * @module keyboard
+ */
 
 /**
  * An object which represents an abstract keyboard layout.
