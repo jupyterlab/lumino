@@ -62,7 +62,6 @@ export class TabBar<T> extends Widget {
     this.orientation = options.orientation || 'horizontal';
     this.removeBehavior = options.removeBehavior || 'select-tab-after';
     this.renderer = options.renderer || TabBar.defaultRenderer;
-    this.focusTrackable = false;
   }
 
   /**

@@ -271,19 +271,6 @@ export class Widget implements IMessageHandler, IObservableDisposable {
   }
 
   /**
-   * The 'focusTrackable' attribute allows the FocusTracker to track the widget focus.
-   * Its default value is true.
-   *
-   * If false, the FocusTracker will never set this widget as current or active.
-   */
-  get focusTrackable(): boolean {
-    return this._focusTrackable;
-  }
-  set focusTrackable(value: boolean) {
-    this._focusTrackable = value;
-  }
-
-  /**
    * Create an iterator over the widget's children.
    *
    * @returns A new iterator over the children of the widget.
@@ -785,7 +772,6 @@ export class Widget implements IMessageHandler, IObservableDisposable {
   private _parent: Widget | null = null;
   private _disposed = new Signal<this, void>(this);
   private _hiddenMode: Widget.HiddenMode = Widget.HiddenMode.Display;
-  private _focusTrackable = true;
 }
 
 /**
