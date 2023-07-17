@@ -601,7 +601,9 @@ export class TabBar<T> extends Widget {
         this._evtDblClick(event as MouseEvent);
         break;
       case 'keydown':
-        this._evtKeyDown(event as KeyboardEvent);
+        event.eventPhase === Event.CAPTURING_PHASE
+          ? this._evtKeyDownCapturing(event as KeyboardEvent)
+          : this._evtKeyDown(event as KeyboardEvent);
         break;
       case 'contextmenu':
         event.preventDefault();
@@ -710,51 +712,57 @@ export class TabBar<T> extends Widget {
   }
 
   /**
-   * Handle the `'keydown'` event for the tab bar.
+   * Handle the `'keydown'` event for the tab bar at capturing phase.
+   */
+  private _evtKeyDownCapturing(event: KeyboardEvent): void {
+    if (event.eventPhase !== Event.CAPTURING_PHASE) {
+      return;
+    }
+
+    // Stop all input events during drag.
+    event.preventDefault();
+    event.stopPropagation();
+
+    // Release the mouse if `Escape` is pressed.
+    if (event.keyCode === 27) {
+      this._releaseMouse();
+    }
+  }
+
+  /**
+   * Handle the `'keydown'` event for the tab bar at target phase.
    */
   private _evtKeyDown(event: KeyboardEvent): void {
-    if (this._dragData) {
-      // Stop all input events during drag.
-      event.preventDefault();
-      event.stopPropagation();
+    // Allow for navigation using tab key
+    if (event.key === 'Tab' || event.eventPhase === Event.CAPTURING_PHASE) {
+      return;
+    }
 
-      // Release the mouse if `Escape` is pressed.
-      if (event.keyCode === 27) {
-        this._releaseMouse();
-      }
-    } else {
-      // Allow for navigation using tab key
-      if (event.key === 'Tab') {
-        return;
-      }
+    // Check if Enter or Spacebar key has been pressed and open that tab
+    if (
+      event.key === 'Enter' ||
+      event.key === 'Spacebar' ||
+      event.key === ' '
+    ) {
+      // Get focus element that is in focus by the tab key
+      const focusedElement = document.activeElement;
 
-      // Check if Enter or Spacebar key has been pressed and open that tab
+      // Test first if the focus is on the add button node
       if (
-        event.key === 'Enter' ||
-        event.key === 'Spacebar' ||
-        event.key === ' '
+        this.addButtonEnabled &&
+        this.addButtonNode.contains(focusedElement)
       ) {
-        // Get focus element that is in focus by the tab key
-        const focusedElement = document.activeElement;
-
-        // Test first if the focus is on the add button node
-        if (
-          this.addButtonEnabled &&
-          this.addButtonNode.contains(focusedElement)
-        ) {
+        event.preventDefault();
+        event.stopPropagation();
+        this._addRequested.emit();
+      } else {
+        const index = ArrayExt.findFirstIndex(this.contentNode.children, tab =>
+          tab.contains(focusedElement)
+        );
+        if (index >= 0) {
           event.preventDefault();
           event.stopPropagation();
-          this._addRequested.emit();
-        } else {
-          const index = ArrayExt.findFirstIndex(
-            this.contentNode.children,
-            tab => tab.contains(focusedElement)
-          );
-          if (index >= 0) {
-            event.preventDefault();
-            event.stopPropagation();
-            this.currentIndex = index;
-          }
+          this.currentIndex = index;
         }
       }
     }
@@ -831,6 +839,7 @@ export class TabBar<T> extends Widget {
     // Add the extra listeners if the tabs are movable.
     if (this.tabsMovable) {
       this.document.addEventListener('pointermove', this, true);
+      this.document.addEventListener('keydown', this, true);
       this.document.addEventListener('contextmenu', this, true);
     }
 
@@ -958,6 +967,7 @@ export class TabBar<T> extends Widget {
     // Remove the extra mouse event listeners.
     this.document.removeEventListener('pointermove', this, true);
     this.document.removeEventListener('pointerup', this, true);
+    this.document.removeEventListener('keydown', this, true);
     this.document.removeEventListener('contextmenu', this, true);
 
     // Handle a release when the drag is not active.
@@ -1084,6 +1094,7 @@ export class TabBar<T> extends Widget {
     // Remove the extra document event listeners.
     this.document.removeEventListener('pointermove', this, true);
     this.document.removeEventListener('pointerup', this, true);
+    this.document.removeEventListener('keydown', this, true);
     this.document.removeEventListener('contextmenu', this, true);
 
     // Indicate the drag has been aborted. This allows the mouse

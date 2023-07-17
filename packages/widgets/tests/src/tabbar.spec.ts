@@ -1522,6 +1522,76 @@ describe('@lumino/widgets', () => {
           simulateOnNode(tab, 'pointerdown');
           expect(bar.events.indexOf('pointermove')).to.equal(-1);
         });
+
+        it('should activate the focused title on Enter', () => {
+          // Focus 3rd tab
+          (bar.contentNode.children[2] as HTMLElement).focus();
+
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              key: 'Enter',
+              cancelable: true,
+              bubbles: true
+            })
+          );
+
+          expect(bar.currentIndex).to.equal(2);
+        });
+
+        it('should activate the focused title on Space', () => {
+          // Focus 2nd tab
+          (bar.contentNode.children[1] as HTMLElement).focus();
+
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              key: ' ',
+              cancelable: true,
+              bubbles: true
+            })
+          );
+
+          expect(bar.currentIndex).to.equal(1);
+        });
+
+        it('should add a tab when Enter is pressed with focus on add button', () => {
+          let addRequested = false;
+          bar.addButtonEnabled = true;
+          bar.addButtonNode.focus();
+
+          bar.addRequested.connect(() => {
+            addRequested = true;
+          });
+
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              key: 'Enter',
+              cancelable: true,
+              bubbles: true
+            })
+          );
+
+          expect(addRequested).to.be.true;
+        });
+
+        it('should add a tab when Space is pressed with focus on add button', () => {
+          let addRequested = false;
+          bar.addButtonEnabled = true;
+          bar.addButtonNode.focus();
+
+          bar.addRequested.connect(() => {
+            addRequested = true;
+          });
+
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              key: ' ',
+              cancelable: true,
+              bubbles: true
+            })
+          );
+
+          expect(addRequested).to.be.true;
+        });
       });
 
       context('contextmenu', () => {
