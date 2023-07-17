@@ -44,6 +44,15 @@ describe('@lumino/widgets', () => {
         let panel = new DockPanel();
         expect(panel.hasClass('lm-DockPanel')).to.equal(true);
       });
+
+      it('should not have tabbar as child', () => {
+        let panel = new DockPanel();
+        let w1 = new Widget();
+        panel.addWidget(w1);
+        for (const tabBar of panel.tabBars()) {
+          expect(panel.contains(tabBar)).to.be.false;
+        }
+      });
     });
 
     describe('#dispose()', () => {
