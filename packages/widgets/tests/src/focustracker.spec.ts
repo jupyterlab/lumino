@@ -109,22 +109,6 @@ describe('@lumino/widgets', () => {
         focusWidget(widget);
         expect(emitArgs).to.equal(null);
       });
-
-      it('should not be emitted when the focus widget is not tracked', () => {
-        let tracker = createTracker();
-        let widget0 = createWidget();
-        let widget1 = createWidget();
-        widget1.focusTrackable = false;
-        tracker.add(widget0);
-        tracker.add(widget1);
-        focusWidget(widget0);
-        let emitArgs: FocusTracker.IChangedArgs<Widget> | null = null;
-        tracker.currentChanged.connect((sender, args) => {
-          emitArgs = args;
-        });
-        focusWidget(widget1);
-        expect(emitArgs).to.equal(null);
-      });
     });
 
     describe('#activeChanged', () => {
@@ -157,24 +141,6 @@ describe('@lumino/widgets', () => {
         blurWidget(widget);
         expect(emitArgs).to.not.equal(null);
         expect(emitArgs!.oldValue).to.equal(widget);
-        expect(emitArgs!.newValue).to.equal(null);
-      });
-
-      it('should be emitted even if the focus widget is not tracked', () => {
-        let tracker = createTracker();
-        let widget0 = createWidget();
-        let widget1 = createWidget();
-        widget1.focusTrackable = false;
-        tracker.add(widget0);
-        tracker.add(widget1);
-        focusWidget(widget0);
-        let emitArgs: FocusTracker.IChangedArgs<Widget> | null = null;
-        tracker.activeChanged.connect((sender, args) => {
-          emitArgs = args;
-        });
-        focusWidget(widget1);
-        expect(emitArgs).to.not.equal(null);
-        expect(emitArgs!.oldValue).to.equal(widget0);
         expect(emitArgs!.newValue).to.equal(null);
       });
     });
@@ -219,19 +185,6 @@ describe('@lumino/widgets', () => {
         expect(tracker.currentWidget).to.equal(widget1);
       });
 
-      it('should not be set to the non-trackable widget that gained focus', () => {
-        let tracker = createTracker();
-        let widget0 = createWidget();
-        let widget1 = createWidget();
-        widget1.focusTrackable = false;
-        focusWidget(widget0);
-        tracker.add(widget0);
-        tracker.add(widget1);
-        expect(tracker.currentWidget).to.equal(widget0);
-        focusWidget(widget1);
-        expect(tracker.currentWidget).to.equal(widget0);
-      });
-
       it('should revert to the previous widget if the current widget is removed', () => {
         let tracker = createTracker();
         let widget0 = createWidget();
@@ -255,20 +208,6 @@ describe('@lumino/widgets', () => {
         widget.dispose();
         expect(tracker.currentWidget).to.equal(null);
       });
-
-      it('should be `null` if the current widget is disposed', () => {
-        let tracker = createTracker();
-        expect(tracker.currentWidget).to.equal(null);
-        let widget0 = createWidget();
-        let widget1 = createWidget();
-        widget1.focusTrackable = false;
-        focusWidget(widget0);
-        tracker.add(widget0);
-        tracker.add(widget1);
-        expect(tracker.currentWidget).to.equal(widget0);
-        widget0.dispose();
-        expect(tracker.currentWidget).to.equal(null);
-      });
     });
 
     describe('#activeWidget', () => {
@@ -287,18 +226,6 @@ describe('@lumino/widgets', () => {
         tracker.add(widget);
         expect(tracker.activeWidget).to.equal(widget);
         blurWidget(widget);
-        expect(tracker.activeWidget).to.equal(null);
-      });
-
-      it('should be set to `null` when an non-trackable widget gain focus', () => {
-        let tracker = createTracker();
-        let widget0 = createWidget();
-        let widget1 = createWidget();
-        widget1.focusTrackable = false;
-        focusWidget(widget0);
-        tracker.add(widget0);
-        expect(tracker.activeWidget).to.equal(widget0);
-        focusWidget(widget1);
         expect(tracker.activeWidget).to.equal(null);
       });
 
@@ -322,20 +249,6 @@ describe('@lumino/widgets', () => {
         tracker.add(widget);
         expect(tracker.activeWidget).to.equal(widget);
         widget.dispose();
-        expect(tracker.activeWidget).to.equal(null);
-      });
-
-      it('should be `null` if the active widget is disposed', () => {
-        let tracker = createTracker();
-        expect(tracker.currentWidget).to.equal(null);
-        let widget0 = createWidget();
-        let widget1 = createWidget();
-        widget1.focusTrackable = false;
-        focusWidget(widget0);
-        tracker.add(widget0);
-        tracker.add(widget1);
-        expect(tracker.activeWidget).to.equal(widget0);
-        widget0.dispose();
         expect(tracker.activeWidget).to.equal(null);
       });
     });
@@ -435,14 +348,6 @@ describe('@lumino/widgets', () => {
         tracker.add(widget);
         tracker.add(widget);
         expect(tracker.has(widget)).to.equal(true);
-      });
-
-      it('should be a no-op if the widget is not trackable', () => {
-        let tracker = createTracker();
-        let widget = createWidget();
-        widget.focusTrackable = false;
-        tracker.add(widget);
-        expect(tracker.has(widget)).to.equal(false);
       });
     });
 
