@@ -576,49 +576,6 @@ export class TabBar<T> extends Widget {
   }
 
   /**
-   * Get all adjecent child nodes from the parent of the focused Element by Id
-   *
-   * #### Notes
-   * This currently only get the id of all children
-   * but can be extended to get other element data
-   * findIndex method item array will need to be updated
-   */
-  getElementData(element: { children: any }) {
-    let elementData = [];
-    if (element.children) {
-      for (let child of element.children) {
-        if (
-          child.classList.contains('lm-TabBar-tab') ||
-          child.classList('lm-TabBar-tab lm-mod-current')
-        ) {
-          elementData.push({
-            id: child.id
-          });
-        }
-      }
-    }
-
-    return elementData;
-  }
-
-  /**
-   * Get the index of a child element within its parent using its id
-   *
-   * #### Notes
-   * will return index = -1 if an index is not found
-   */
-  findIndex(items: Array<{ id: string }>, id: string): number {
-    let index = -1;
-    for (let i = 0; i < items.length; i++) {
-      if (items[i].id === id) {
-        index = i;
-        break;
-      }
-    }
-    return index;
-  }
-
-  /**
    * Handle the DOM events for the tab bar.
    *
    * @param event - The DOM event sent to the tab bar.
@@ -668,6 +625,7 @@ export class TabBar<T> extends Widget {
   protected onAfterDetach(msg: Message): void {
     this.node.removeEventListener('pointerdown', this);
     this.node.removeEventListener('dblclick', this);
+    this.node.removeEventListener('keydown', this);
     this._releaseMouse();
   }
 
@@ -755,47 +713,50 @@ export class TabBar<T> extends Widget {
    * Handle the `'keydown'` event for the tab bar.
    */
   private _evtKeyDown(event: KeyboardEvent): void {
-    // Allow for navigation using tab key
-    if (event.key === 'Tab') {
-      return;
-    }
-
-    // Check if Enter or Spacebar key has been pressed and open that tab
-    if (
-      event.key === 'Enter' ||
-      event.key === 'Spacebar' ||
-      event.key === ' '
-    ) {
+    if (this._dragData) {
+      // Stop all input events during drag.
       event.preventDefault();
       event.stopPropagation();
 
-      // Get focus element that is in focus by the tab key
-      let focusedElement = document.activeElement;
+      // Release the mouse if `Escape` is pressed.
+      if (event.keyCode === 27) {
+        this._releaseMouse();
+      }
+    } else {
+      // Allow for navigation using tab key
+      if (event.key === 'Tab') {
+        return;
+      }
 
-      if (focusedElement) {
-        // Check if the focus element was the add button
-        if (focusedElement.classList.contains('lm-TabBar-addButton')) {
+      // Check if Enter or Spacebar key has been pressed and open that tab
+      if (
+        event.key === 'Enter' ||
+        event.key === 'Spacebar' ||
+        event.key === ' '
+      ) {
+        // Get focus element that is in focus by the tab key
+        const focusedElement = document.activeElement;
+
+        // Test first if the focus is on the add button node
+        if (
+          this.addButtonEnabled &&
+          this.addButtonNode.contains(focusedElement)
+        ) {
+          event.preventDefault();
+          event.stopPropagation();
           this._addRequested.emit();
         } else {
-          // Find the index of the focusedElement among tab nodes
-          let parentElement = focusedElement.parentElement;
-          if (parentElement) {
-            const nodeData = this.getElementData(parentElement);
-
-            // Activate the index of the pressed tab.
-            let index = this.findIndex(nodeData, focusedElement.id);
+          const index = ArrayExt.findFirstIndex(
+            this.contentNode.children,
+            tab => tab.contains(focusedElement)
+          );
+          if (index >= 0) {
+            event.preventDefault();
+            event.stopPropagation();
             this.currentIndex = index;
           }
         }
       }
-    }
-    // Stop all input events during drag.
-    event.preventDefault();
-    event.stopPropagation();
-
-    // Release the mouse if `Escape` is pressed.
-    if (event.keyCode === 27) {
-      this._releaseMouse();
     }
   }
 
@@ -870,7 +831,6 @@ export class TabBar<T> extends Widget {
     // Add the extra listeners if the tabs are movable.
     if (this.tabsMovable) {
       this.document.addEventListener('pointermove', this, true);
-      this.document.addEventListener('keydown', this, true);
       this.document.addEventListener('contextmenu', this, true);
     }
 
@@ -998,7 +958,6 @@ export class TabBar<T> extends Widget {
     // Remove the extra mouse event listeners.
     this.document.removeEventListener('pointermove', this, true);
     this.document.removeEventListener('pointerup', this, true);
-    this.document.removeEventListener('keydown', this, true);
     this.document.removeEventListener('contextmenu', this, true);
 
     // Handle a release when the drag is not active.
@@ -1125,7 +1084,6 @@ export class TabBar<T> extends Widget {
     // Remove the extra document event listeners.
     this.document.removeEventListener('pointermove', this, true);
     this.document.removeEventListener('pointerup', this, true);
-    this.document.removeEventListener('keydown', this, true);
     this.document.removeEventListener('contextmenu', this, true);
 
     // Indicate the drag has been aborted. This allows the mouse
