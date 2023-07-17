@@ -108,11 +108,11 @@ class MergedCellModel extends DataModel {
 
 class LargeDataModel extends DataModel {
   rowCount(region: DataModel.RowRegion): number {
-    return region === 'body' ? 1000000000000 : 2;
+    return region === 'body' ? 1_000_000_000_000 : 2;
   }
 
   columnCount(region: DataModel.ColumnRegion): number {
-    return region === 'body' ? 1000000000000 : 3;
+    return region === 'body' ? 1_000_000_000_000 : 3;
   }
 
   data(region: DataModel.CellRegion, row: number, column: number): any {

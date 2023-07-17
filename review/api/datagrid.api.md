@@ -258,7 +258,7 @@ export class DataGrid extends Widget {
     protected repaintRegion(region: DataModel.CellRegion, r1: number, c1: number, r2: number, c2: number): void;
     resetColumns(region: DataModel.ColumnRegion | 'all'): void;
     resetRows(region: DataModel.RowRegion | 'all'): void;
-    resizeColumn(region: DataModel.ColumnRegion, index: number, size: number): void;
+    resizeColumn(region: DataModel.ColumnRegion, index: number, size: number | null): void;
     resizeRow(region: DataModel.RowRegion, index: number, size: number): void;
     rowAt(region: DataModel.RowRegion, offset: number): number;
     rowCount(region: DataModel.RowRegion): number;
@@ -613,6 +613,7 @@ export class GraphicsContext implements IDisposable {
 export class HyperlinkRenderer extends TextRenderer {
     constructor(options?: HyperlinkRenderer.IOptions);
     drawText(gc: GraphicsContext, config: CellRenderer.CellConfig): void;
+    getText(config: CellRenderer.CellConfig): string;
     readonly url: CellRenderer.ConfigOption<string> | undefined;
     readonly urlName: CellRenderer.ConfigOption<string> | undefined;
 }
@@ -919,7 +920,9 @@ export class TextRenderer extends CellRenderer {
     readonly elideDirection: CellRenderer.ConfigOption<TextRenderer.ElideDirection>;
     readonly font: CellRenderer.ConfigOption<string>;
     readonly format: TextRenderer.FormatFunc;
+    getText(config: CellRenderer.CellConfig): string;
     readonly horizontalAlignment: CellRenderer.ConfigOption<TextRenderer.HorizontalAlignment>;
+    readonly horizontalPadding: number;
     paint(gc: GraphicsContext, config: CellRenderer.CellConfig): void;
     readonly textColor: CellRenderer.ConfigOption<string>;
     readonly verticalAlignment: CellRenderer.ConfigOption<TextRenderer.VerticalAlignment>;
@@ -1004,6 +1007,7 @@ export namespace TextRenderer {
         font?: CellRenderer.ConfigOption<string>;
         format?: FormatFunc;
         horizontalAlignment?: CellRenderer.ConfigOption<HorizontalAlignment>;
+        horizontalPadding?: number;
         textColor?: CellRenderer.ConfigOption<string>;
         verticalAlignment?: CellRenderer.ConfigOption<VerticalAlignment>;
         wrapText?: CellRenderer.ConfigOption<boolean>;

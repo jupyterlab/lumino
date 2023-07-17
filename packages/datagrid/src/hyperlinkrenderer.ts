@@ -42,6 +42,24 @@ export class HyperlinkRenderer extends TextRenderer {
   readonly urlName: CellRenderer.ConfigOption<string> | undefined;
 
   /**
+   * Get the full text to be rendered by the cell.
+   */
+  getText(config: CellRenderer.CellConfig): string {
+    let urlName = CellRenderer.resolveOption(this.urlName, config);
+
+    // If we have a friendly URL name, use that.
+    if (urlName) {
+      return this.format({
+        ...config,
+        value: urlName
+      } as CellRenderer.CellConfig);
+    }
+
+    // Otherwise use the raw value attribute.
+    return this.format(config);
+  }
+
+  /**
    * Draw the text for the cell.
    *
    * @param gc - The graphics context to use for drawing.
@@ -57,9 +75,6 @@ export class HyperlinkRenderer extends TextRenderer {
       return;
     }
 
-    // Resolve for the friendly URL name.
-    let urlName = CellRenderer.resolveOption(this.urlName, config);
-
     // Resolve the text color for the cell.
     let color = CellRenderer.resolveOption(this.textColor, config);
 
@@ -68,19 +83,7 @@ export class HyperlinkRenderer extends TextRenderer {
       return;
     }
 
-    const format = this.format;
-    let text;
-
-    // If we have a friendly URL name, use that.
-    if (urlName) {
-      text = format({
-        ...config,
-        value: urlName
-      } as CellRenderer.CellConfig);
-    } else {
-      // Otherwise use the raw value attribute.
-      text = format(config);
-    }
+    let text = this.getText(config);
 
     // Bail if there is no text to draw.
     if (!text) {

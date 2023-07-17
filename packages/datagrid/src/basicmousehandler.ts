@@ -621,6 +621,31 @@ export class BasicMouseHandler implements DataGrid.IMouseHandler {
       return;
     }
 
+    if (region === 'column-header' || region === 'corner-header') {
+      // Convert the hit test into a part.
+      const handle = Private.resizeHandleForHitTest(hit);
+
+      if (handle === 'left' || handle === 'right') {
+        let colIndex = handle === 'left' ? column - 1 : column;
+
+        let colRegion: DataModel.ColumnRegion =
+          region === 'column-header' ? 'body' : 'row-header';
+
+        if (colIndex < 0) {
+          if (region === 'column-header') {
+            // If the column is -1, it means we are in the corner header
+            colIndex = grid.dataModel.columnCount('row-header') - 1;
+            colRegion = 'row-header';
+          } else {
+            // If we are on the left edge of the row header, do nothing
+            return;
+          }
+        }
+
+        grid.resizeColumn(colRegion, colIndex, null);
+      }
+    }
+
     if (region === 'body') {
       if (grid.editable) {
         const cell: CellEditor.CellConfig = {
