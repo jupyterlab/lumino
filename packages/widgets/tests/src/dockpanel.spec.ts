@@ -44,6 +44,16 @@ describe('@lumino/widgets', () => {
         let panel = new DockPanel();
         expect(panel.hasClass('lm-DockPanel')).to.equal(true);
       });
+
+      it('should not have tabbar as child', () => {
+        let panel = new DockPanel();
+        // Adding a widget in the dock panel adds the DOM of a TabBar, but the TabBar
+        // widget should not be a in the children list of the DockPanel widget.
+        panel.addWidget(new Widget());
+        for (const tabBar of panel.tabBars()) {
+          expect(panel.contains(tabBar)).to.be.false;
+        }
+      });
     });
 
     describe('#dispose()', () => {

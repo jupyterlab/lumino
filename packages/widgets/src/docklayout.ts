@@ -1128,9 +1128,8 @@ export class DockLayout extends Layout {
     // Enforce necessary tab bar behavior.
     tabBar.orientation = 'horizontal';
 
-    // Reparent and attach the tab bar to the parent if possible.
+    // Attach the tab bar to the parent if possible.
     if (this.parent) {
-      tabBar.parent = this.parent;
       this.attachWidget(tabBar);
     }
 
