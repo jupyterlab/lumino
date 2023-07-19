@@ -601,7 +601,9 @@ export class TabBar<T> extends Widget {
         this._evtDblClick(event as MouseEvent);
         break;
       case 'keydown':
-        this._evtKeyDown(event as KeyboardEvent);
+        event.eventPhase === Event.CAPTURING_PHASE
+          ? this._evtKeyDownCapturing(event as KeyboardEvent)
+          : this._evtKeyDown(event as KeyboardEvent);
         break;
       case 'contextmenu':
         event.preventDefault();
@@ -616,6 +618,7 @@ export class TabBar<T> extends Widget {
   protected onBeforeAttach(msg: Message): void {
     this.node.addEventListener('pointerdown', this);
     this.node.addEventListener('dblclick', this);
+    this.node.addEventListener('keydown', this);
   }
 
   /**
@@ -624,6 +627,7 @@ export class TabBar<T> extends Widget {
   protected onAfterDetach(msg: Message): void {
     this.node.removeEventListener('pointerdown', this);
     this.node.removeEventListener('dblclick', this);
+    this.node.removeEventListener('keydown', this);
     this._releaseMouse();
   }
 
@@ -708,9 +712,13 @@ export class TabBar<T> extends Widget {
   }
 
   /**
-   * Handle the `'keydown'` event for the tab bar.
+   * Handle the `'keydown'` event for the tab bar at capturing phase.
    */
-  private _evtKeyDown(event: KeyboardEvent): void {
+  private _evtKeyDownCapturing(event: KeyboardEvent): void {
+    if (event.eventPhase !== Event.CAPTURING_PHASE) {
+      return;
+    }
+
     // Stop all input events during drag.
     event.preventDefault();
     event.stopPropagation();
@@ -718,6 +726,45 @@ export class TabBar<T> extends Widget {
     // Release the mouse if `Escape` is pressed.
     if (event.keyCode === 27) {
       this._releaseMouse();
+    }
+  }
+
+  /**
+   * Handle the `'keydown'` event for the tab bar at target phase.
+   */
+  private _evtKeyDown(event: KeyboardEvent): void {
+    // Allow for navigation using tab key
+    if (event.key === 'Tab' || event.eventPhase === Event.CAPTURING_PHASE) {
+      return;
+    }
+
+    // Check if Enter or Spacebar key has been pressed and open that tab
+    if (
+      event.key === 'Enter' ||
+      event.key === 'Spacebar' ||
+      event.key === ' '
+    ) {
+      // Get focus element that is in focus by the tab key
+      const focusedElement = document.activeElement;
+
+      // Test first if the focus is on the add button node
+      if (
+        this.addButtonEnabled &&
+        this.addButtonNode.contains(focusedElement)
+      ) {
+        event.preventDefault();
+        event.stopPropagation();
+        this._addRequested.emit();
+      } else {
+        const index = ArrayExt.findFirstIndex(this.contentNode.children, tab =>
+          tab.contains(focusedElement)
+        );
+        if (index >= 0) {
+          event.preventDefault();
+          event.stopPropagation();
+          this.currentIndex = index;
+        }
+      }
     }
   }
 
@@ -1863,6 +1910,7 @@ namespace Private {
 
     let add = document.createElement('div');
     add.className = 'lm-TabBar-addButton lm-mod-hidden';
+    add.setAttribute('tabindex', '0');
     node.appendChild(add);
     return node;
   }
