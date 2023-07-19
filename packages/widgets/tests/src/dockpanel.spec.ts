@@ -47,8 +47,9 @@ describe('@lumino/widgets', () => {
 
       it('should not have tabbar as child', () => {
         let panel = new DockPanel();
-        let w1 = new Widget();
-        panel.addWidget(w1);
+        // Adding a widget in the dock panel adds the DOM of a TabBar, but the TabBar
+        // widget should not be a in the children list of the DockPanel widget.
+        panel.addWidget(new Widget());
         for (const tabBar of panel.tabBars()) {
           expect(panel.contains(tabBar)).to.be.false;
         }
