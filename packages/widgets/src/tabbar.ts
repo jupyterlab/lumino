@@ -827,7 +827,7 @@ export class TabBar<T> extends Widget {
         (event.key === 'ArrowUp' && this._orientation === 'vertical')
       ) {
         nextFocused =
-          focusable[focusedIndex - 1] || focusable[focusable.length - 1];
+          focusable[focusedIndex - 1] ?? focusable[focusable.length - 1];
       }
 
       // Change the focused element and the tabindex value.
