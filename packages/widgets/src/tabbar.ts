@@ -821,7 +821,7 @@ export class TabBar<T> extends Widget {
         (event.key === 'ArrowRight' && this._orientation === 'horizontal') ||
         (event.key === 'ArrowDown' && this._orientation === 'vertical')
       ) {
-        nextFocused = focusable[focusedIndex + 1] || focusable[0];
+        nextFocused = focusable[focusedIndex + 1] ?? focusable[0];
       } else if (
         (event.key === 'ArrowLeft' && this._orientation === 'horizontal') ||
         (event.key === 'ArrowUp' && this._orientation === 'vertical')
