@@ -1807,7 +1807,7 @@ export namespace TabBar {
      * @returns The ARIA attributes for the tab.
      */
     createTabARIA(data: IRenderData<any>): ElementARIAAttrs | ElementBaseAttrs {
-      const ariaAttributes: { [k: string]: string } = {
+      const ariaAttributes: Record<string, string> = {
         role: 'tab',
         'aria-selected': data.current.toString()
       };
