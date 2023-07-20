@@ -832,7 +832,7 @@ export class TabBar<T> extends Widget {
 
       // Change the focused element and the tabindex value.
       if (nextFocused) {
-        focusable.forEach(element => element.setAttribute('tabindex', '-1'));
+        focusable[focusedIndex]?.setAttribute('tabindex', '-1');
         nextFocused?.setAttribute('tabindex', '0');
         (nextFocused as HTMLElement).focus();
       }
@@ -1807,14 +1807,11 @@ export namespace TabBar {
      * @returns The ARIA attributes for the tab.
      */
     createTabARIA(data: IRenderData<any>): ElementARIAAttrs | ElementBaseAttrs {
-      const ariaAttributes: Record<string, string> = {
+      return {
         role: 'tab',
-        'aria-selected': data.current.toString()
+        'aria-selected': data.current.toString(),
+        tabindex: `${data.tabIndex ?? '-1'}`
       };
-      if (data.tabIndex !== undefined) {
-        ariaAttributes.tabindex = `${data.tabIndex}`;
-      }
-      return ariaAttributes;
     }
 
     /**
