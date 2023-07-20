@@ -1592,6 +1592,125 @@ describe('@lumino/widgets', () => {
 
           expect(addRequested).to.be.true;
         });
+
+        it('should have the tabindex="0" on the first tab by default', () => {
+          populateBar(bar);
+          const firstTab = bar.contentNode.firstChild as HTMLElement;
+          expect(firstTab.getAttribute('tabindex')).to.equal('0');
+          for (let i = 1; i < bar.titles.length; i++) {
+            let tab = bar.contentNode.children[i] as HTMLElement;
+            expect(tab.getAttribute('tabindex')).to.equal('-1');
+          }
+          expect(bar.addButtonNode.getAttribute('tabindex')).to.equal('-1');
+        });
+
+        it('should switch the focus on the second tab on right click', () => {
+          populateBar(bar);
+          const firstTab = bar.contentNode.firstChild as HTMLElement;
+          firstTab.focus();
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              key: 'ArrowRight',
+              cancelable: true,
+              bubbles: true
+            })
+          );
+          expect(firstTab.getAttribute('tabindex')).to.equal('-1');
+          const secondTab = bar.contentNode.children[1] as HTMLElement;
+          expect(secondTab.getAttribute('tabindex')).to.equal('0');
+          expect(document.activeElement).to.equal(secondTab);
+        });
+
+        it('should switch the focus on the last tab on left click', () => {
+          populateBar(bar);
+          const firstTab = bar.contentNode.firstChild as HTMLElement;
+          firstTab.focus();
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              key: 'ArrowLeft',
+              cancelable: true,
+              bubbles: true
+            })
+          );
+          expect(firstTab.getAttribute('tabindex')).to.equal('-1');
+          const lastTab = bar.contentNode.lastChild as HTMLElement;
+          expect(lastTab.getAttribute('tabindex')).to.equal('0');
+          expect(document.activeElement).to.equal(lastTab);
+        });
+
+        it('should switch the focus on the add button on left click', () => {
+          bar.addButtonEnabled = true;
+          populateBar(bar);
+          const firstTab = bar.contentNode.firstChild as HTMLElement;
+          firstTab.focus();
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              key: 'ArrowLeft',
+              cancelable: true,
+              bubbles: true
+            })
+          );
+          expect(firstTab.getAttribute('tabindex')).to.equal('-1');
+          expect(bar.addButtonNode.getAttribute('tabindex')).to.equal('0');
+          expect(document.activeElement).to.equal(bar.addButtonNode);
+        });
+
+        it('should not change the tabindex values on focusing another element', () => {
+          const node = document.createElement('div');
+          node.setAttribute('tabindex', '0');
+          document.body.append(node);
+          populateBar(bar);
+          const firstTab = bar.contentNode.firstChild as HTMLElement;
+          firstTab.focus();
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              key: 'ArrowRight',
+              cancelable: true,
+              bubbles: true
+            })
+          );
+          node.focus();
+          const secondTab = bar.contentNode.children[1] as HTMLElement;
+          expect(document.activeElement).not.to.equal(secondTab);
+          expect(secondTab.getAttribute('tabindex')).to.equal('0');
+        });
+
+        /**
+         * This test is skipped as it seems there is no way to trigger a change of focus
+         * when simulating tabulation keydown.
+         *
+         * TODO:
+         * Find a way to trigger the change of focus.
+         */
+        it.skip('should keep focus on the second tab on tabulation', () => {
+          const node = document.createElement('div');
+          node.setAttribute('tabindex', '0');
+          document.body.append(node);
+          populateBar(bar);
+          const firstTab = bar.contentNode.firstChild as HTMLElement;
+          firstTab.focus();
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              key: 'ArrowRight',
+              cancelable: true,
+              bubbles: true
+            })
+          );
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              key: 'Tab'
+            })
+          );
+          const secondTab = bar.contentNode.children[1] as HTMLElement;
+          expect(document.activeElement).not.to.equal(secondTab);
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              key: 'Tab',
+              shiftKey: true
+            })
+          );
+          expect(document.activeElement).to.equal(secondTab);
+        });
       });
 
       context('contextmenu', () => {
