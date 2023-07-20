@@ -802,7 +802,7 @@ export class TabBar<T> extends Widget {
       if (this.addButtonEnabled) {
         focusable.push(this.addButtonNode);
       }
-      // If the tab bac contains only one element, nothing to do.
+      // If the tab bar contains only one element, nothing to do.
       if (focusable.length <= 1) {
         return;
       }
