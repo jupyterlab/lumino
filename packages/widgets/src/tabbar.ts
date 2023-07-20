@@ -716,6 +716,7 @@ export class TabBar<T> extends Widget {
       let onblur = () => {
         input.removeEventListener('blur', onblur);
         label.innerHTML = oldValue;
+        this.node.addEventListener('keydown', this);
       };
 
       input.addEventListener('dblclick', (event: Event) =>
@@ -732,6 +733,7 @@ export class TabBar<T> extends Widget {
           onblur();
         }
       });
+      this.node.removeEventListener('keydown', this);
       input.select();
       input.focus();
 
@@ -850,6 +852,13 @@ export class TabBar<T> extends Widget {
 
     // Do nothing if a drag is in progress.
     if (this._dragData) {
+      return;
+    }
+
+    // Do nothing if a title editable input was clicked.
+    if (
+      (event.target as HTMLElement).classList.contains('lm-TabBar-tabInput')
+    ) {
       return;
     }
 
