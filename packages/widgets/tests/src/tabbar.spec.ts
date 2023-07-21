@@ -1604,7 +1604,7 @@ describe('@lumino/widgets', () => {
           expect(bar.addButtonNode.getAttribute('tabindex')).to.equal('-1');
         });
 
-        it('should switch the focus on the second tab on right arrow keydown', () => {
+        it('should focus the second tab on right arrow keydown', () => {
           populateBar(bar);
           const firstTab = bar.contentNode.firstChild as HTMLElement;
           firstTab.focus();
@@ -1621,7 +1621,7 @@ describe('@lumino/widgets', () => {
           expect(document.activeElement).to.equal(secondTab);
         });
 
-        it('should switch the focus on the last tab on left arrow keydown', () => {
+        it('should focus the last tab on left arrow keydown', () => {
           populateBar(bar);
           const firstTab = bar.contentNode.firstChild as HTMLElement;
           firstTab.focus();
@@ -1638,7 +1638,7 @@ describe('@lumino/widgets', () => {
           expect(document.activeElement).to.equal(lastTab);
         });
 
-        it('should switch the focus on the add button on left arrow keydown', () => {
+        it('should focus the add button on left arrow keydown', () => {
           bar.addButtonEnabled = true;
           populateBar(bar);
           const firstTab = bar.contentNode.firstChild as HTMLElement;
@@ -1679,7 +1679,7 @@ describe('@lumino/widgets', () => {
           expect(document.activeElement).to.equal(firstTab);
         });
 
-        it('should switch the focus on the second tab on down arrow keydown', () => {
+        it('should focus the second tab on down arrow keydown', () => {
           bar.orientation = 'vertical';
           populateBar(bar);
           const firstTab = bar.contentNode.firstChild as HTMLElement;
@@ -1697,7 +1697,7 @@ describe('@lumino/widgets', () => {
           expect(document.activeElement).to.equal(secondTab);
         });
 
-        it('should switch the focus on the last tab on up arrow keydown', () => {
+        it('should focus the last tab on up arrow keydown', () => {
           bar.orientation = 'vertical';
           populateBar(bar);
           const firstTab = bar.contentNode.firstChild as HTMLElement;
@@ -1738,6 +1738,38 @@ describe('@lumino/widgets', () => {
           );
           expect(firstTab.getAttribute('tabindex')).to.equal('0');
           expect(document.activeElement).to.equal(firstTab);
+        });
+
+        it('should focus the first tab on "Home" keydown', () => {
+          populateBar(bar);
+          const firstTab = bar.contentNode.firstChild as HTMLElement;
+          const lastTab = bar.contentNode.lastChild as HTMLElement;
+          firstTab.setAttribute('tabindex', '-1');
+          lastTab.setAttribute('tabindex', '0');
+          lastTab.focus();
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              key: 'Home',
+              cancelable: true,
+              bubbles: true
+            })
+          );
+          expect(firstTab.getAttribute('tabindex')).to.equal('0');
+          expect(document.activeElement).to.equal(firstTab);
+        });
+
+        it('should focus the last tab on "End" keydown', () => {
+          populateBar(bar);
+          const lastTab = bar.contentNode.lastChild as HTMLElement;
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              key: 'End',
+              cancelable: true,
+              bubbles: true
+            })
+          );
+          expect(lastTab.getAttribute('tabindex')).to.equal('0');
+          expect(document.activeElement).to.equal(lastTab);
         });
 
         it('should not change the tabindex values on focusing another element', () => {

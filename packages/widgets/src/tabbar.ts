@@ -33,7 +33,14 @@ import { Title } from './title';
 
 import { Widget } from './widget';
 
-const ARROW_KEYS = ['ArrowLeft', 'ArrowUp', 'ArrowRight', 'ArrowDown'];
+const ARROW_KEYS = [
+  'ArrowLeft',
+  'ArrowUp',
+  'ArrowRight',
+  'ArrowDown',
+  'Home',
+  'End'
+];
 
 /**
  * A widget which displays titles as a single row or column of tabs.
@@ -830,6 +837,10 @@ export class TabBar<T> extends Widget {
       ) {
         nextFocused =
           focusable[focusedIndex - 1] ?? focusable[focusable.length - 1];
+      } else if (event.key === 'Home') {
+        nextFocused = focusable[0];
+      } else if (event.key === 'End') {
+        nextFocused = focusable[focusable.length - 1];
       }
 
       // Change the focused element and the tabindex value.
