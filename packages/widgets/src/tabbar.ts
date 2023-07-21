@@ -696,7 +696,7 @@ export class TabBar<T> extends Widget {
 
     let tabs = this.contentNode.children;
 
-    // Find the index of the released tab.
+    // Find the index of the targeted tab.
     let index = ArrayExt.findFirstIndex(tabs, tab => {
       return ElementExt.hitTest(tab, event.clientX, event.clientY);
     });

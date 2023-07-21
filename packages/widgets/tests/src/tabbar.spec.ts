@@ -61,7 +61,7 @@ function populateBar(bar: TabBar<Widget>): void {
   }
 }
 
-type Action = 'pointerdown' | 'pointermove' | 'pointerup';
+type Action = 'pointerdown' | 'pointermove' | 'pointerup' | 'dblclick';
 
 type Direction = 'left' | 'right' | 'up' | 'down';
 
@@ -678,6 +678,17 @@ describe('@lumino/widgets', () => {
         bar.allowDeselect = false;
         bar.currentIndex = -1;
         expect(bar.currentIndex).to.equal(-1);
+      });
+
+      it('focus should work if there is no current tab', () => {
+        populateBar(bar);
+        bar.allowDeselect = true;
+        const tab = bar.contentNode.firstChild as HTMLElement;
+        expect(bar.currentIndex).to.equal(0);
+        expect(tab.getAttribute('tabindex')).to.equal('0');
+        simulateOnNode(tab, 'pointerdown');
+        expect(bar.currentIndex).to.equal(-1);
+        expect(tab.getAttribute('tabindex')).to.equal('0');
       });
     });
 
@@ -1772,7 +1783,7 @@ describe('@lumino/widgets', () => {
           expect(document.activeElement).to.equal(lastTab);
         });
 
-        it('should not change the tabindex values on focusing another element', () => {
+        it('should not change the tabindex values when focusing another element', () => {
           const node = document.createElement('div');
           node.setAttribute('tabindex', '0');
           document.body.append(node);
@@ -1837,6 +1848,96 @@ describe('@lumino/widgets', () => {
           let cancelled = !document.body.dispatchEvent(event);
           expect(cancelled).to.equal(true);
         });
+      });
+    });
+
+    describe('editable title', () => {
+      let title: Title<Widget>;
+
+      const triggerDblClick = (tab: HTMLElement) => {
+        const tabLabel = tab.querySelector(
+          '.lm-TabBar-tabLabel'
+        ) as HTMLElement;
+        expect(tab.querySelector('input')).to.be.null;
+        simulateOnNode(tabLabel, 'dblclick');
+      };
+
+      beforeEach(() => {
+        bar.titlesEditable = true;
+        let owner = new Widget();
+        title = new Title({ owner, label: 'foo', closable: true });
+        bar.addTab(title);
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+      });
+
+      it('titles should be editable', () => {
+        const tab = bar.contentNode.firstChild as HTMLElement;
+        triggerDblClick(tab);
+        const input = tab.querySelector(
+          'input.lm-TabBar-tabInput'
+        ) as HTMLInputElement;
+        expect(input).not.to.be.null;
+        expect(input.value).to.equal(title.label);
+        expect(document.activeElement).to.equal(input);
+      });
+
+      it('title should be edited', () => {
+        const tab = bar.contentNode.firstChild as HTMLElement;
+        triggerDblClick(tab);
+        let input = tab.querySelector(
+          'input.lm-TabBar-tabInput'
+        ) as HTMLInputElement;
+        input.value = 'bar';
+        input.dispatchEvent(
+          new KeyboardEvent('keydown', {
+            key: 'Enter',
+            cancelable: true,
+            bubbles: true
+          })
+        );
+        input = tab.querySelector(
+          'input.lm-TabBar-tabInput'
+        ) as HTMLInputElement;
+        expect(input).to.be.null;
+        expect(title.label).to.equal('bar');
+      });
+
+      it('title edition should be canceled', () => {
+        const tab = bar.contentNode.firstChild as HTMLElement;
+        triggerDblClick(tab);
+        let input = tab.querySelector(
+          'input.lm-TabBar-tabInput'
+        ) as HTMLInputElement;
+        input.value = 'bar';
+        input.dispatchEvent(
+          new KeyboardEvent('keydown', {
+            key: 'Escape',
+            cancelable: true,
+            bubbles: true
+          })
+        );
+        input = tab.querySelector(
+          'input.lm-TabBar-tabInput'
+        ) as HTMLInputElement;
+        expect(input).to.be.null;
+        expect(title.label).to.equal('foo');
+      });
+
+      it('Arrow keys should have no effect on focus during edition', () => {
+        populateBar(bar);
+        const tab = bar.contentNode.firstChild as HTMLElement;
+        triggerDblClick(tab);
+        const input = tab.querySelector(
+          'input.lm-TabBar-tabInput'
+        ) as HTMLInputElement;
+        bar.node.dispatchEvent(
+          new KeyboardEvent('keydown', {
+            key: 'ArrowRight',
+            cancelable: true,
+            bubbles: true
+          })
+        );
+        expect(document.activeElement).to.equal(input);
       });
     });
 
