@@ -153,19 +153,6 @@ export class MenuBar extends Widget {
     // Update the active index.
     this._activeIndex = value;
 
-    // Update the focus index.
-    if (value !== -1) {
-      this._tabFocusIndex = value;
-    }
-
-    // Update focus to new active index
-    if (
-      this._activeIndex >= 0 &&
-      this.contentNode.childNodes[this._activeIndex]
-    ) {
-      (this.contentNode.childNodes[this._activeIndex] as HTMLElement).focus();
-    }
-
     // Schedule an update of the items.
     this.update();
   }
@@ -370,8 +357,8 @@ export class MenuBar extends Widget {
       case 'mousemove':
         this._evtMouseMove(event as MouseEvent);
         break;
-      case 'mouseleave':
-        this._evtMouseLeave(event as MouseEvent);
+      case 'focusout':
+        this._evtFocusOut(event as FocusEvent);
         break;
       case 'contextmenu':
         event.preventDefault();
@@ -387,7 +374,7 @@ export class MenuBar extends Widget {
     this.node.addEventListener('keydown', this);
     this.node.addEventListener('mousedown', this);
     this.node.addEventListener('mousemove', this);
-    this.node.addEventListener('mouseleave', this);
+    this.node.addEventListener('focusout', this);
     this.node.addEventListener('contextmenu', this);
   }
 
@@ -398,7 +385,7 @@ export class MenuBar extends Widget {
     this.node.removeEventListener('keydown', this);
     this.node.removeEventListener('mousedown', this);
     this.node.removeEventListener('mousemove', this);
-    this.node.removeEventListener('mouseleave', this);
+    this.node.removeEventListener('focusout', this);
     this.node.removeEventListener('contextmenu', this);
     this._closeChildMenu();
   }
@@ -408,7 +395,7 @@ export class MenuBar extends Widget {
    */
   protected onActivateRequest(msg: Message): void {
     if (this.isAttached) {
-      this.activeIndex = 0;
+      this._focusItemAt(0);
     }
   }
 
@@ -446,6 +433,7 @@ export class MenuBar extends Widget {
         active: i === activeIndex && menus[i].items.length !== 0,
         tabbable: i === tabFocusIndex,
         onfocus: () => {
+          this._tabFocusIndex = i;
           this.activeIndex = i;
         }
       });
@@ -483,6 +471,7 @@ export class MenuBar extends Widget {
           active: length === activeIndex && menus[length].items.length !== 0,
           tabbable: length === tabFocusIndex,
           onfocus: () => {
+            this._tabFocusIndex = length;
             this.activeIndex = length;
           }
         });
@@ -503,6 +492,7 @@ export class MenuBar extends Widget {
               active: false,
               tabbable: length === tabFocusIndex,
               onfocus: () => {
+                this._tabFocusIndex = length;
                 this.activeIndex = length;
               }
             });
@@ -582,6 +572,9 @@ export class MenuBar extends Widget {
 
     // Enter, Space, Up Arrow, Down Arrow
     if (kc === 13 || kc === 32 || kc === 38 || kc === 40) {
+      // The active index may have changed (for example, user hovers over an
+      // item with the mouse), so be sure to use the focus index.
+      this.activeIndex = this._tabFocusIndex;
       this.openActiveMenu();
       return;
     }
@@ -589,8 +582,7 @@ export class MenuBar extends Widget {
     // Escape
     if (kc === 27) {
       this._closeChildMenu();
-      this.activeIndex = -1;
-      this.node.blur();
+      this._focusItemAt(this.activeIndex);
       return;
     }
 
@@ -598,7 +590,7 @@ export class MenuBar extends Widget {
     if (kc === 37) {
       let i = this._activeIndex;
       let n = this._menus.length;
-      this.activeIndex = i === 0 ? n - 1 : i - 1;
+      this._focusItemAt(i === 0 ? n - 1 : i - 1);
       return;
     }
 
@@ -606,7 +598,7 @@ export class MenuBar extends Widget {
     if (kc === 39) {
       let i = this._activeIndex;
       let n = this._menus.length;
-      this.activeIndex = i === n - 1 ? 0 : i + 1;
+      this._focusItemAt(i === n - 1 ? 0 : i + 1);
       return;
     }
 
@@ -631,8 +623,10 @@ export class MenuBar extends Widget {
       this.openActiveMenu();
     } else if (result.index !== -1) {
       this.activeIndex = result.index;
+      this._focusItemAt(this.activeIndex);
     } else if (result.auto !== -1) {
       this.activeIndex = result.auto;
+      this._focusItemAt(this.activeIndex);
     }
   }
 
@@ -648,7 +642,6 @@ export class MenuBar extends Widget {
 
     // Stop the propagation of the event. Immediate propagation is
     // also stopped so that an open menu does not handle the event.
-    event.preventDefault();
     event.stopPropagation();
     event.stopImmediatePropagation();
 
@@ -673,6 +666,9 @@ export class MenuBar extends Widget {
       this._closeChildMenu();
       this.activeIndex = index;
     } else {
+      // If we don't call preventDefault() here, then the item in the menu
+      // bar will take focus over the menu that is being opened.
+      // event.preventDefault();
       const position = this._positionForMenu(index);
       Menu.saveWindowData();
       // Begin DOM modifications.
@@ -737,12 +733,25 @@ export class MenuBar extends Widget {
   }
 
   /**
-   * Handle the `'mouseleave'` event for the menu bar.
+   * Handle the `'focusout'` event for the menu bar.
    */
-  private _evtMouseLeave(event: MouseEvent): void {
-    // Reset the active index if there is no open menu.
-    if (!this._childMenu) {
+  private _evtFocusOut(event: FocusEvent): void {
+    // Reset the active index if there is no open menu and the menubar is losing focus.
+    if (!this._childMenu && !this.node.contains(event.relatedTarget as Node)) {
       this.activeIndex = -1;
+    }
+  }
+
+  /**
+   * Focus an item in the menu bar.
+   *
+   * #### Notes
+   * Does not open the associated menu.
+   */
+  private _focusItemAt(index: number): void {
+    const itemNode = this.contentNode.childNodes[index] as HTMLElement | void;
+    if (itemNode) {
+      itemNode.focus();
     }
   }
 
@@ -775,6 +784,11 @@ export class MenuBar extends Widget {
     } else {
       document.addEventListener('mousedown', this, true);
     }
+
+    // Update the tab focus index. Note: it's important to follow this with an
+    // update message so that the tabIndex value on each menubar item gets
+    // properly updated.
+    this._tabFocusIndex = this.activeIndex;
 
     // Ensure the menu bar is updated and look up the item node.
     MessageLoop.sendMessage(this, Widget.Msg.UpdateRequest);
@@ -880,7 +894,7 @@ export class MenuBar extends Widget {
     this.update();
   }
 
-  // Track the index of the item that is currently focused. -1 means nothing focused.
+  // Track the index of the item that is currently focused or hovered. -1 means nothing focused or hovered.
   private _activeIndex = -1;
   // Track which item can be focused using the TAB key. Unlike _activeIndex will always point to a menuitem.
   private _tabFocusIndex = 0;

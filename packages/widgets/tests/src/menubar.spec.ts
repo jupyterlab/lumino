@@ -768,16 +768,16 @@ describe('@lumino/widgets', () => {
         });
       });
 
-      context('mouseleave', () => {
+      context('focusout', () => {
         it('should reset the active index if there is no open menu', () => {
-          bar.node.dispatchEvent(new MouseEvent('mouseleave', { bubbles }));
+          bar.node.dispatchEvent(new FocusEvent('focusout', { bubbles }));
           expect(bar.activeIndex).to.equal(-1);
         });
 
         it('should be a no-op if there is an open menu', () => {
           bar.openActiveMenu();
           let menu = bar.activeMenu!;
-          bar.node.dispatchEvent(new MouseEvent('mouseleave', { bubbles }));
+          bar.node.dispatchEvent(new FocusEvent('focusous', { bubbles }));
           expect(bar.activeIndex).to.equal(0);
           expect(menu.isAttached).to.equal(true);
         });
@@ -794,7 +794,8 @@ describe('@lumino/widgets', () => {
       context('focus', () => {
         it('should lose focus on tab key', () => {
           let bar = createUnfocusedMenuBar();
-          bar.activeIndex = 0;
+          bar.activate();
+          MessageLoop.flush();
           expect(bar.contentNode.contains(document.activeElement)).to.equal(
             true
           );
@@ -806,7 +807,8 @@ describe('@lumino/widgets', () => {
 
         it('should lose focus on shift-tab key', () => {
           let bar = createUnfocusedMenuBar();
-          bar.activeIndex = 0;
+          bar.activate();
+          MessageLoop.flush();
           expect(bar.contentNode.contains(document.activeElement)).to.equal(
             true
           );
@@ -834,8 +836,8 @@ describe('@lumino/widgets', () => {
         expect(bar.events.indexOf('mousedown')).to.not.equal(-1);
         node.dispatchEvent(new MouseEvent('mousemove', { bubbles }));
         expect(bar.events.indexOf('mousemove')).to.not.equal(-1);
-        node.dispatchEvent(new MouseEvent('mouseleave', { bubbles }));
-        expect(bar.events.indexOf('mouseleave')).to.not.equal(-1);
+        node.dispatchEvent(new FocusEvent('focusout', { bubbles }));
+        expect(bar.events.indexOf('focusout')).to.not.equal(-1);
         node.dispatchEvent(new MouseEvent('contextmenu', { bubbles }));
         expect(bar.events.indexOf('contextmenu')).to.not.equal(-1);
         bar.dispose();
@@ -855,8 +857,8 @@ describe('@lumino/widgets', () => {
         expect(bar.events.indexOf('mousedown')).to.equal(-1);
         node.dispatchEvent(new MouseEvent('mousemove', { bubbles }));
         expect(bar.events.indexOf('mousemove')).to.equal(-1);
-        node.dispatchEvent(new MouseEvent('mouseleave', { bubbles }));
-        expect(bar.events.indexOf('mouseleave')).to.equal(-1);
+        node.dispatchEvent(new FocusEvent('focusout', { bubbles }));
+        expect(bar.events.indexOf('focusout')).to.equal(-1);
         node.dispatchEvent(new MouseEvent('contextmenu', { bubbles }));
         expect(bar.events.indexOf('contextmenu')).to.equal(-1);
         bar.dispose();
