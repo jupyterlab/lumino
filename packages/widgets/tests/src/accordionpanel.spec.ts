@@ -250,21 +250,21 @@ describe('@lumino/widgets', () => {
         panel.dispose();
       });
 
-      it('should be emitted when the expansion status of an element is changed by the user', done => {
+      it('should be emitted when the a widget is collapsed', done => {
         panel.expansionToggled.connect((sender, _) => {
           expect(sender).to.equal(panel);
           done();
         });
-        if (!layout.widgets[0].isHidden) {
-          panel.collapse(0);
-        }
+        panel.collapse(0);
+    it('should be emitted when the a widget is expanded', done => {
+        // first collapse a widget
+        panel.collapse(0);
+
         panel.expansionToggled.connect((sender, _) => {
           expect(sender).to.equal(panel);
           done();
         });
-        if (layout.widgets[0].isHidden) {
-          panel.expand(0);
-        }
+        panel.expand(0);
       });
     });
 

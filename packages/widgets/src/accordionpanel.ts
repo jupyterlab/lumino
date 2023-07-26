@@ -55,9 +55,9 @@ export class AccordionPanel extends SplitPanel {
   }
 
   /**
-   * A signal emitted when an element of the AccordionPanel is collapsed or expanded.
+   * A signal emitted when a widget of the AccordionPanel is collapsed or expanded.
    */
-  get expansionToggled(): ISignal<this, void> {
+  get expansionToggled(): ISignal<this, number> {
     return this._expansionToggled;
   }
 
@@ -330,7 +330,7 @@ export class AccordionPanel extends SplitPanel {
     }
 
     // Emit the expansion state signal.
-    this._expansionToggled.emit();
+    this._expansionToggled.emit(index);
 
     if (widget.isHidden) {
       title.classList.add('lm-mod-expanded');
@@ -344,7 +344,7 @@ export class AccordionPanel extends SplitPanel {
   }
 
   private _widgetSizesCache: WeakMap<Widget, number> = new WeakMap();
-  private _expansionToggled = new Signal<any, void>(this);
+  private _expansionToggled = new Signal<this, number>(this);
 }
 
 /**
