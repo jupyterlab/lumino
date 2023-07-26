@@ -8,6 +8,7 @@ import { SplitLayout } from './splitlayout';
 import { SplitPanel } from './splitpanel';
 import { Title } from './title';
 import { Widget } from './widget';
+import { ISignal, Signal } from '@lumino/signaling';
 
 /**
  * A panel which arranges its widgets into resizable sections separated by a title widget.
@@ -51,6 +52,13 @@ export class AccordionPanel extends SplitPanel {
    */
   get titles(): ReadonlyArray<HTMLElement> {
     return (this.layout as AccordionLayout).titles;
+  }
+
+  /**
+   * A signal emitted when an element of the AccordionPanel is collapsed or expanded.
+   */
+  get expansionToggled(): ISignal<this, void> {
+    return this._expansionToggled;
   }
 
   /**
@@ -321,6 +329,9 @@ export class AccordionPanel extends SplitPanel {
       this.setRelativeSizes(newSize, false);
     }
 
+    // Emit the expansion state signal.
+    this._expansionToggled.emit();
+
     if (widget.isHidden) {
       title.classList.add('lm-mod-expanded');
       title.setAttribute('aria-expanded', 'true');
@@ -333,6 +344,7 @@ export class AccordionPanel extends SplitPanel {
   }
 
   private _widgetSizesCache: WeakMap<Widget, number> = new WeakMap();
+  private _expansionToggled = new Signal<any, void>(this);
 }
 
 /**

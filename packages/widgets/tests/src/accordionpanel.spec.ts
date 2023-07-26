@@ -230,6 +230,44 @@ describe('@lumino/widgets', () => {
       });
     });
 
+    describe('#expansionToggled', () => {
+      let panel: AccordionPanel;
+      let layout: AccordionLayout;
+
+      beforeEach(() => {
+        panel = new AccordionPanel();
+        layout = panel.layout as AccordionLayout;
+        let widgets = [new Widget(), new Widget(), new Widget()];
+        widgets.forEach(w => {
+          panel.addWidget(w);
+        });
+        panel.setRelativeSizes([10, 10, 10, 20]);
+        Widget.attach(panel, document.body);
+        MessageLoop.flush();
+      });
+
+      afterEach(() => {
+        panel.dispose();
+      });
+
+      it('should be emitted when the expansion status of an element is changed by the user', done => {
+        panel.expansionToggled.connect((sender, _) => {
+          expect(sender).to.equal(panel);
+          done();
+        });
+        if (!layout.widgets[0].isHidden) {
+          panel.collapse(0);
+        }
+        panel.expansionToggled.connect((sender, _) => {
+          expect(sender).to.equal(panel);
+          done();
+        });
+        if (layout.widgets[0].isHidden) {
+          panel.expand(0);
+        }
+      });
+    });
+
     describe('#handleEvent()', () => {
       let panel: LogAccordionPanel;
       let layout: AccordionLayout;
