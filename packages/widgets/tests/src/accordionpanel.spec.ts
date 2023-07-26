@@ -232,11 +232,9 @@ describe('@lumino/widgets', () => {
 
     describe('#expansionToggled', () => {
       let panel: AccordionPanel;
-      let layout: AccordionLayout;
 
       beforeEach(() => {
         panel = new AccordionPanel();
-        layout = panel.layout as AccordionLayout;
         let widgets = [new Widget(), new Widget(), new Widget()];
         widgets.forEach(w => {
           panel.addWidget(w);
