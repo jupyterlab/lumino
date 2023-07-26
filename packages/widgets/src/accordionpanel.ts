@@ -3,12 +3,12 @@
 
 import { ArrayExt } from '@lumino/algorithm';
 import { Message } from '@lumino/messaging';
+import { ISignal, Signal } from '@lumino/signaling';
 import { AccordionLayout } from './accordionlayout';
 import { SplitLayout } from './splitlayout';
 import { SplitPanel } from './splitpanel';
 import { Title } from './title';
 import { Widget } from './widget';
-import { ISignal, Signal } from '@lumino/signaling';
 
 /**
  * A panel which arranges its widgets into resizable sections separated by a title widget.
@@ -329,9 +329,6 @@ export class AccordionPanel extends SplitPanel {
       this.setRelativeSizes(newSize, false);
     }
 
-    // Emit the expansion state signal.
-    this._expansionToggled.emit(index);
-
     if (widget.isHidden) {
       title.classList.add('lm-mod-expanded');
       title.setAttribute('aria-expanded', 'true');
@@ -341,6 +338,9 @@ export class AccordionPanel extends SplitPanel {
       title.setAttribute('aria-expanded', 'false');
       widget.hide();
     }
+
+    // Emit the expansion state signal.
+    this._expansionToggled.emit(index);
   }
 
   private _widgetSizesCache: WeakMap<Widget, number> = new WeakMap();
