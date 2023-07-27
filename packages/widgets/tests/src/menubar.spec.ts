@@ -57,12 +57,17 @@ describe('@lumino/widgets', () => {
 
   let commands: CommandRegistry;
 
+  function createMenu() {
+    let menu = new Menu({ commands });
+    // Several tests rely on this function returning a non-empty menu
+    menu.addItem({ command: DEFAULT_CMD });
+    return menu;
+  }
+
   function createMenuBar(options?: MenuBar.IOptions): MenuBar {
     let bar = new MenuBar(options);
     for (let i = 0; i < 3; i++) {
-      let menu = new Menu({ commands });
-      let item = menu.addItem({ command: DEFAULT_CMD });
-      menu.addItem(item);
+      let menu = createMenu();
       menu.title.label = `Menu${i}`;
       menu.title.mnemonic = 4;
       bar.addMenu(menu);
@@ -172,10 +177,7 @@ describe('@lumino/widgets', () => {
     describe('#childMenu', () => {
       it('should get the child menu of the menu bar', () => {
         let bar = new MenuBar();
-        let menu = new Menu({ commands });
-        // Add item to menu because MenuBar will not allow an empty menu to be
-        // active or opened.
-        menu.addItem({ command: DEFAULT_CMD });
+        let menu = createMenu();
         bar.addMenu(menu);
         bar.activeIndex = 0;
         bar.openActiveMenu();
@@ -205,9 +207,7 @@ describe('@lumino/widgets', () => {
     describe('#activeMenu', () => {
       it('should get the active menu of the menu bar', () => {
         let bar = new MenuBar();
-        let menu = new Menu({ commands });
-        // Add item to menu because MenuBar will not allow an empty menu to be
-        // active or opened.
+        let menu = createMenu();
         menu.addItem({ command: DEFAULT_CMD });
         bar.addMenu(menu);
         bar.activeIndex = 0;
@@ -225,10 +225,7 @@ describe('@lumino/widgets', () => {
 
       it('should set the currently active menu', () => {
         let bar = new MenuBar();
-        let menu = new Menu({ commands });
-        // Add item to menu because MenuBar will not allow an empty menu to be
-        // active or opened.
-        menu.addItem({ command: DEFAULT_CMD });
+        let menu = createMenu();
         bar.addMenu(menu);
         bar.activeMenu = menu;
         expect(bar.activeMenu).to.equal(menu);
@@ -247,10 +244,7 @@ describe('@lumino/widgets', () => {
     describe('#activeIndex', () => {
       it('should get the index of the currently active menu', () => {
         let bar = new MenuBar();
-        let menu = new Menu({ commands });
-        // Add item to menu because MenuBar will not allow an empty menu to be
-        // active or opened.
-        menu.addItem({ command: DEFAULT_CMD });
+        let menu = createMenu();
         bar.addMenu(menu);
         bar.activeMenu = menu;
         expect(bar.activeIndex).to.equal(0);
@@ -267,10 +261,7 @@ describe('@lumino/widgets', () => {
 
       it('should set the index of the currently active menu', () => {
         let bar = new MenuBar();
-        let menu = new Menu({ commands });
-        // Add item to menu because MenuBar will not allow an empty menu to be
-        // active or opened.
-        menu.addItem({ command: DEFAULT_CMD });
+        let menu = createMenu();
         bar.addMenu(menu);
         bar.activeIndex = 0;
         expect(bar.activeIndex).to.equal(0);
@@ -699,10 +690,7 @@ describe('@lumino/widgets', () => {
         });
 
         it('should select the only menu matching the first letter', () => {
-          let menu = new Menu({ commands });
-          // Add item to menu because MenuBar will not allow an empty menu to be
-          // active or opened.
-          menu.addItem({ command: DEFAULT_CMD });
+          let menu = createMenu();
           menu.title.label = 'Test1';
           bar.addMenu(menu);
           bar.addMenu(new Menu({ commands }));
