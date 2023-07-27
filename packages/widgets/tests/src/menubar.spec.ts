@@ -711,7 +711,7 @@ describe('@lumino/widgets', () => {
           );
           expect(bar.activeIndex).to.equal(3);
           expect(bar.activeMenu).to.equal(menu);
-          expect(bar.activeMenu!.isAttached).to.equal(false);
+          expect(menu.isAttached).to.equal(false);
         });
       });
 
