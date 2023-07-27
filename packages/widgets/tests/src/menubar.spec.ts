@@ -208,7 +208,6 @@ describe('@lumino/widgets', () => {
       it('should get the active menu of the menu bar', () => {
         let bar = new MenuBar();
         let menu = createMenu();
-        menu.addItem({ command: DEFAULT_CMD });
         bar.addMenu(menu);
         bar.activeIndex = 0;
         expect(bar.activeMenu).to.equal(menu);
