@@ -6,6 +6,68 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2023.7.27
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2023.6.22...c90d19e7a4706c37c31961052206aa2a0d5144b9))
+
+```
+@lumino/algorithm: 2.0.0 => 2.0.1
+@lumino/application: 2.2.0 => 2.2.1
+@lumino/collections: 2.0.0 => 2.0.1
+@lumino/commands: 2.1.2 => 2.1.3
+@lumino/coreutils: 2.1.1 => 2.1.2
+@lumino/datagrid: 2.1.2 => 2.2.0
+@lumino/default-theme: 2.1.2 => 2.1.3
+@lumino/disposable: 2.1.1 => 2.1.2
+@lumino/domutils: 2.0.0 => 2.0.1
+@lumino/dragdrop: 2.1.2 => 2.1.3
+@lumino/keyboard: 2.0.0 => 2.0.1
+@lumino/messaging: 2.0.0 => 2.0.1
+@lumino/polling: 2.1.1 => 2.1.2
+@lumino/properties: 2.0.0 => 2.0.1
+@lumino/signaling: 2.1.1 => 2.1.2
+@lumino/virtualdom: 2.0.0 => 2.0.1
+@lumino/widgets: 2.2.0 => 2.3.0
+```
+
+### New features added
+
+- Do not set the dockpanel as parent of the tabbar [#606](https://github.com/jupyterlab/lumino/pull/606) ([@brichet](https://github.com/brichet))
+
+### Enhancements made
+
+- Add expansion toggled signal of subpanels in an Accordion Panel [#614](https://github.com/jupyterlab/lumino/pull/614) ([@DenisaCG](https://github.com/DenisaCG))
+- \[accessibility\] Uses the arrow keys for tab bar navigation [#612](https://github.com/jupyterlab/lumino/pull/612) ([@brichet](https://github.com/brichet))
+- elements respond to enter or spacebar [#590](https://github.com/jupyterlab/lumino/pull/590) ([@g547315](https://github.com/g547315))
+- Resize column to fit text on double click [#546](https://github.com/jupyterlab/lumino/pull/546) ([@vthemelis](https://github.com/vthemelis))
+
+### Bugs fixed
+
+- Do not set the dockpanel as parent of the tabbar [#606](https://github.com/jupyterlab/lumino/pull/606) ([@brichet](https://github.com/brichet))
+
+### Maintenance and upkeep improvements
+
+- Update versions [#619](https://github.com/jupyterlab/lumino/pull/619) ([@fcollonval](https://github.com/fcollonval))
+- Bump tj-actions/changed-files from 37.1.2 to 37.4.0 [#613](https://github.com/jupyterlab/lumino/pull/613) ([@dependabot](https://github.com/dependabot))
+- Bump tj-actions/changed-files from 37.1.0 to 37.1.2 [#611](https://github.com/jupyterlab/lumino/pull/611) ([@dependabot](https://github.com/dependabot))
+- Bump semver from 5.7.1 to 5.7.2 [#609](https://github.com/jupyterlab/lumino/pull/609) ([@dependabot](https://github.com/dependabot))
+- Bump tj-actions/changed-files from 37.0.5 to 37.1.0 [#608](https://github.com/jupyterlab/lumino/pull/608) ([@dependabot](https://github.com/dependabot))
+- Bump tj-actions/changed-files from 37.0.3 to 37.0.5 [#605](https://github.com/jupyterlab/lumino/pull/605) ([@dependabot](https://github.com/dependabot))
+- Bump tj-actions/changed-files from 36.4.0 to 37.0.3 [#603](https://github.com/jupyterlab/lumino/pull/603) ([@dependabot](https://github.com/dependabot))
+- Upgrade dev dependencies [#599](https://github.com/jupyterlab/lumino/pull/599) ([@fcollonval](https://github.com/fcollonval))
+
+### Documentation improvements
+
+- Update releaser workflow names [#602](https://github.com/jupyterlab/lumino/pull/602) ([@fcollonval](https://github.com/fcollonval))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2023-06-23&to=2023-07-27&type=c))
+
+[@brichet](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Abrichet+updated%3A2023-06-23..2023-07-27&type=Issues) | [@DenisaCG](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3ADenisaCG+updated%3A2023-06-23..2023-07-27&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2023-06-23..2023-07-27&type=Issues) | [@echarles](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aecharles+updated%3A2023-06-23..2023-07-27&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2023-06-23..2023-07-27&type=Issues) | [@g547315](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ag547315+updated%3A2023-06-23..2023-07-27&type=Issues) | [@krassowski](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2023-06-23..2023-07-27&type=Issues) | [@tonyfast](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Atonyfast+updated%3A2023-06-23..2023-07-27&type=Issues) | [@vthemelis](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Avthemelis+updated%3A2023-06-23..2023-07-27&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Awelcome+updated%3A2023-06-23..2023-07-27&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2023.6.22
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2023.4.27...521819af3fd92f8fbcaf5088b9ea89dc7e21d8a2))
@@ -49,8 +111,6 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2023-04-27&to=2023-06-22&type=c))
 
 [@brichet](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Abrichet+updated%3A2023-04-27..2023-06-22&type=Issues) | [@Carreau](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3ACarreau+updated%3A2023-04-27..2023-06-22&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2023-04-27..2023-06-22&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2023-04-27..2023-06-22&type=Issues) | [@j264415](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aj264415+updated%3A2023-04-27..2023-06-22&type=Issues) | [@jjrv](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajjrv+updated%3A2023-04-27..2023-06-22&type=Issues) | [@krassowski](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2023-04-27..2023-06-22&type=Issues) | [@MetRonnie](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3AMetRonnie+updated%3A2023-04-27..2023-06-22&type=Issues) | [@nicojapas](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Anicojapas+updated%3A2023-04-27..2023-06-22&type=Issues) | [@tavin](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Atavin+updated%3A2023-04-27..2023-06-22&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Awelcome+updated%3A2023-04-27..2023-06-22&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2023.4.27
 
