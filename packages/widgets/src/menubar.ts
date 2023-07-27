@@ -798,12 +798,8 @@ export class MenuBar extends Widget {
       document.addEventListener('mousedown', this, true);
     }
 
-    // Update the tab focus index. Note: it's important to follow this with an
-    // "update-request" message so that the `tabindex` attribute on each menubar
-    // item gets properly updated.
+    // Update the tab focus index and ensure the menu bar is updated.
     this._tabFocusIndex = this.activeIndex;
-
-    // Ensure the menu bar is updated and look up the item node.
     MessageLoop.sendMessage(this, Widget.Msg.UpdateRequest);
 
     // Get the positioning data for the new menu.
@@ -909,7 +905,10 @@ export class MenuBar extends Widget {
 
   // Track the index of the item that is currently focused or hovered. -1 means nothing focused or hovered.
   private _activeIndex = -1;
-  // Track which item can be focused using the TAB key. Unlike _activeIndex will always point to a menuitem.
+  // Track which item can be focused using the TAB key. Unlike _activeIndex will
+  // always point to a menuitem. Whenever you update this value, it's important
+  // to follow it with an "update-request" message so that the `tabindex`
+  // attribute on each menubar item gets properly updated.
   private _tabFocusIndex = 0;
   private _forceItemsPosition: Menu.IOpenOptions;
   private _overflowMenuOptions: IOverflowMenuOptions;
