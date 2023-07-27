@@ -33,6 +33,15 @@ import { Title } from './title';
 
 import { Widget } from './widget';
 
+const ARROW_KEYS = [
+  'ArrowLeft',
+  'ArrowUp',
+  'ArrowRight',
+  'ArrowDown',
+  'Home',
+  'End'
+];
+
 /**
  * A widget which displays titles as a single row or column of tabs.
  *
@@ -639,13 +648,41 @@ export class TabBar<T> extends Widget {
     let renderer = this.renderer;
     let currentTitle = this.currentTitle;
     let content = new Array<VirtualElement>(titles.length);
+    // Keep the tabindex="0" attribute to the tab which handled it before the update.
+    // If the add button handles it, no need to do anything. If no element of the tab
+    // bar handles it, set it on the current or the first tab to ensure one element
+    // handles it after update.
+    const tabHandlingTabindex =
+      this._getCurrentTabindex() ??
+      (this._currentIndex > -1 ? this._currentIndex : 0);
+
     for (let i = 0, n = titles.length; i < n; ++i) {
       let title = titles[i];
       let current = title === currentTitle;
       let zIndex = current ? n : n - i - 1;
-      content[i] = renderer.renderTab({ title, current, zIndex });
+      let tabIndex = tabHandlingTabindex === i ? 0 : -1;
+      content[i] = renderer.renderTab({ title, current, zIndex, tabIndex });
     }
     VirtualDOM.render(content, this.contentNode);
+  }
+
+  /**
+   * Get the index of the tab which handles tabindex="0".
+   * If the add button handles tabindex="0", -1 is returned.
+   * If none of the previous handles tabindex="0", null is returned.
+   */
+  private _getCurrentTabindex(): number | null {
+    let index = null;
+    const elemTabindex = this.contentNode.querySelector('li[tabindex="0"]');
+    if (elemTabindex) {
+      index = [...this.contentNode.children].indexOf(elemTabindex);
+    } else if (
+      this._addButtonEnabled &&
+      this.addButtonNode.getAttribute('tabindex') === '0'
+    ) {
+      index = -1;
+    }
+    return index;
   }
 
   /**
@@ -659,7 +696,7 @@ export class TabBar<T> extends Widget {
 
     let tabs = this.contentNode.children;
 
-    // Find the index of the released tab.
+    // Find the index of the targeted tab.
     let index = ArrayExt.findFirstIndex(tabs, tab => {
       return ElementExt.hitTest(tab, event.clientX, event.clientY);
     });
@@ -686,6 +723,7 @@ export class TabBar<T> extends Widget {
       let onblur = () => {
         input.removeEventListener('blur', onblur);
         label.innerHTML = oldValue;
+        this.node.addEventListener('keydown', this);
       };
 
       input.addEventListener('dblclick', (event: Event) =>
@@ -702,6 +740,7 @@ export class TabBar<T> extends Widget {
           onblur();
         }
       });
+      this.node.removeEventListener('keydown', this);
       input.select();
       input.focus();
 
@@ -724,7 +763,7 @@ export class TabBar<T> extends Widget {
     event.stopPropagation();
 
     // Release the mouse if `Escape` is pressed.
-    if (event.keyCode === 27) {
+    if (event.key === 'Escape') {
       this._releaseMouse();
     }
   }
@@ -765,6 +804,51 @@ export class TabBar<T> extends Widget {
           this.currentIndex = index;
         }
       }
+      // Handle the arrow keys to switch tabs.
+    } else if (ARROW_KEYS.includes(event.key)) {
+      // Create a list of all focusable elements in the tab bar.
+      const focusable: Element[] = [...this.contentNode.children];
+      if (this.addButtonEnabled) {
+        focusable.push(this.addButtonNode);
+      }
+      // If the tab bar contains only one element, nothing to do.
+      if (focusable.length <= 1) {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+
+      // Get the current focused element.
+      let focusedIndex = focusable.indexOf(document.activeElement as Element);
+      if (focusedIndex === -1) {
+        focusedIndex = this._currentIndex;
+      }
+
+      // Find the next element to focus on.
+      let nextFocused: Element | null | undefined;
+      if (
+        (event.key === 'ArrowRight' && this._orientation === 'horizontal') ||
+        (event.key === 'ArrowDown' && this._orientation === 'vertical')
+      ) {
+        nextFocused = focusable[focusedIndex + 1] ?? focusable[0];
+      } else if (
+        (event.key === 'ArrowLeft' && this._orientation === 'horizontal') ||
+        (event.key === 'ArrowUp' && this._orientation === 'vertical')
+      ) {
+        nextFocused =
+          focusable[focusedIndex - 1] ?? focusable[focusable.length - 1];
+      } else if (event.key === 'Home') {
+        nextFocused = focusable[0];
+      } else if (event.key === 'End') {
+        nextFocused = focusable[focusable.length - 1];
+      }
+
+      // Change the focused element and the tabindex value.
+      if (nextFocused) {
+        focusable[focusedIndex]?.setAttribute('tabindex', '-1');
+        nextFocused?.setAttribute('tabindex', '0');
+        (nextFocused as HTMLElement).focus();
+      }
     }
   }
 
@@ -779,6 +863,13 @@ export class TabBar<T> extends Widget {
 
     // Do nothing if a drag is in progress.
     if (this._dragData) {
+      return;
+    }
+
+    // Do nothing if a title editable input was clicked.
+    if (
+      (event.target as HTMLElement).classList.contains('lm-TabBar-tabInput')
+    ) {
       return;
     }
 
@@ -1555,6 +1646,11 @@ export namespace TabBar {
      * The z-index for the tab.
      */
     readonly zIndex: number;
+
+    /**
+     * The tabindex value for the tab.
+     */
+    readonly tabIndex?: number;
   }
 
   /**
@@ -1734,7 +1830,7 @@ export namespace TabBar {
       return {
         role: 'tab',
         'aria-selected': data.current.toString(),
-        tabindex: '0'
+        tabindex: `${data.tabIndex ?? '-1'}`
       };
     }
 
@@ -1910,7 +2006,7 @@ namespace Private {
 
     let add = document.createElement('div');
     add.className = 'lm-TabBar-addButton lm-mod-hidden';
-    add.setAttribute('tabindex', '0');
+    add.setAttribute('tabindex', '-1');
     node.appendChild(add);
     return node;
   }

@@ -1115,6 +1115,7 @@ export namespace TabBar {
     }
     export interface IRenderData<T> {
         readonly current: boolean;
+        readonly tabIndex?: number;
         readonly title: Title<T>;
         readonly zIndex: number;
     }
