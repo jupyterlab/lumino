@@ -254,16 +254,17 @@ describe('@lumino/widgets', () => {
           done();
         });
         panel.collapse(0);
-        it('should be emitted when the a widget is expanded', done => {
-          // first collapse a widget
-          panel.collapse(0);
+      });
 
-          panel.expansionToggled.connect((sender, _) => {
-            expect(sender).to.equal(panel);
-            done();
-          });
-          panel.expand(0);
+      it('should be emitted when the a widget is expanded', done => {
+        // first collapse a widget
+        panel.collapse(0);
+
+        panel.expansionToggled.connect((sender, _) => {
+          expect(sender).to.equal(panel);
+          done();
         });
+        panel.expand(0);
       });
     });
 
