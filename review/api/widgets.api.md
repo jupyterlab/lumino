@@ -56,6 +56,7 @@ export class AccordionPanel extends SplitPanel {
     addWidget(widget: Widget): void;
     collapse(index: number): void;
     expand(index: number): void;
+    get expansionToggled(): ISignal<this, number>;
     handleEvent(event: Event): void;
     insertWidget(index: number, widget: Widget): void;
     protected onAfterDetach(msg: Message): void;
