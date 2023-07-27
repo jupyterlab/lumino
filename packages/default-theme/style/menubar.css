@@ -33,8 +33,7 @@
   border-right: 1px solid transparent;
 }
 
-.lm-MenuBar-item.lm-mod-active,
-.lm-MenuBar-item:hover {
+.lm-MenuBar-item.lm-mod-active {
   background: #e5e5e5;
 }
 
@@ -53,4 +52,8 @@
 .lm-MenuBar-item:focus-visible {
   outline: 2px solid #333;
   outline-offset: -2px;
+}
+
+.lm-MenuBar-item[aria-disabled="true"] {
+  color: rgba(0, 0, 0, 0.37);
 }

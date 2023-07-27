@@ -145,6 +145,11 @@ export class MenuBar extends Widget {
       value = -1;
     }
 
+    // An empty menu cannot be active
+    if (value > -1 && this._menus[value].items.length === 0) {
+      value = -1;
+    }
+
     // Bail early if the index will not change.
     if (this._activeIndex === value) {
       return;
@@ -430,8 +435,9 @@ export class MenuBar extends Widget {
     for (let i = 0; i < length; ++i) {
       content[i] = renderer.renderItem({
         title: menus[i].title,
-        active: i === activeIndex && menus[i].items.length !== 0,
+        active: i === activeIndex,
         tabbable: i === tabFocusIndex,
+        disabled: menus[i].items.length === 0,
         onfocus: () => {
           this._tabFocusIndex = i;
           this.activeIndex = i;
@@ -470,6 +476,7 @@ export class MenuBar extends Widget {
           title: this._overflowMenu.title,
           active: length === activeIndex && menus[length].items.length !== 0,
           tabbable: length === tabFocusIndex,
+          disabled: menus[length].items.length === 0,
           onfocus: () => {
             this._tabFocusIndex = length;
             this.activeIndex = length;
@@ -491,6 +498,7 @@ export class MenuBar extends Widget {
               title: menu.title,
               active: false,
               tabbable: length === tabFocusIndex,
+              disabled: menus[length].items.length === 0,
               onfocus: () => {
                 this._tabFocusIndex = length;
                 this.activeIndex = length;
@@ -575,6 +583,12 @@ export class MenuBar extends Widget {
       // The active index may have changed (for example, user hovers over an
       // item with the mouse), so be sure to use the focus index.
       this.activeIndex = this._tabFocusIndex;
+      if (this.activeIndex !== this._tabFocusIndex) {
+        // Bail if the setter refused to set activeIndex to tabFocusIndex
+        // because it means that the item at tabFocusIndex cannot be opened (for
+        // example, it has an empty menu)
+        return;
+      }
       this.openActiveMenu();
       return;
     }
@@ -586,19 +600,18 @@ export class MenuBar extends Widget {
       return;
     }
 
-    // Left Arrow
-    if (kc === 37) {
-      let i = this._activeIndex;
+    // Left or Right Arrow
+    if (kc === 37 || kc === 39) {
+      let direction = kc === 37 ? -1 : 1;
+      let start = this._tabFocusIndex + direction;
       let n = this._menus.length;
-      this._focusItemAt(i === 0 ? n - 1 : i - 1);
-      return;
-    }
-
-    // Right Arrow
-    if (kc === 39) {
-      let i = this._activeIndex;
-      let n = this._menus.length;
-      this._focusItemAt(i === n - 1 ? 0 : i + 1);
+      for (let i = 0; i < n; i++) {
+        let index = (n + start + direction * i) % n;
+        if (this._menus[index].items.length) {
+          this._focusItemAt(index);
+          return;
+        }
+      }
       return;
     }
 
@@ -668,7 +681,7 @@ export class MenuBar extends Widget {
     } else {
       // If we don't call preventDefault() here, then the item in the menu
       // bar will take focus over the menu that is being opened.
-      // event.preventDefault();
+      event.preventDefault();
       const position = this._positionForMenu(index);
       Menu.saveWindowData();
       // Begin DOM modifications.
@@ -786,8 +799,8 @@ export class MenuBar extends Widget {
     }
 
     // Update the tab focus index. Note: it's important to follow this with an
-    // update message so that the tabIndex value on each menubar item gets
-    // properly updated.
+    // "update-request" message so that the `tabindex` attribute on each menubar
+    // item gets properly updated.
     this._tabFocusIndex = this.activeIndex;
 
     // Ensure the menu bar is updated and look up the item node.
@@ -961,6 +974,15 @@ export namespace MenuBar {
      */
     readonly tabbable: boolean;
 
+    /**
+     * Whether the item is disabled.
+     *
+     * #### Notes
+     * A disabled item cannot be active.
+     * A disabled item cannot be focussed.
+     */
+    readonly disabled: boolean;
+
     readonly onfocus?: (event: FocusEvent) => void;
   }
 
@@ -1000,7 +1022,7 @@ export namespace MenuBar {
         {
           className,
           dataset,
-          tabindex: data.tabbable ? '0' : '-1',
+          ...(data.disabled ? {} : { tabindex: data.tabbable ? '0' : '-1' }),
           onfocus: data.onfocus,
           ...aria
         },
@@ -1047,7 +1069,7 @@ export namespace MenuBar {
       if (data.title.className) {
         name += ` ${data.title.className}`;
       }
-      if (data.active) {
+      if (data.active && !data.disabled) {
         name += ' lm-mod-active';
       }
       return name;
@@ -1072,7 +1094,11 @@ export namespace MenuBar {
      * @returns The aria attributes object for the item.
      */
     createItemARIA(data: IRenderData): ElementARIAAttrs {
-      return { role: 'menuitem', 'aria-haspopup': 'true' };
+      return {
+        role: 'menuitem',
+        'aria-haspopup': 'true',
+        'aria-disabled': data.disabled ? 'true' : 'false'
+      };
     }
 
     /**

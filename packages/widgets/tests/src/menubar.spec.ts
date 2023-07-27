@@ -173,6 +173,9 @@ describe('@lumino/widgets', () => {
       it('should get the child menu of the menu bar', () => {
         let bar = new MenuBar();
         let menu = new Menu({ commands });
+        // Add item to menu because MenuBar will not allow an empty menu to be
+        // active or opened.
+        menu.addItem({ command: DEFAULT_CMD });
         bar.addMenu(menu);
         bar.activeIndex = 0;
         bar.openActiveMenu();
@@ -203,6 +206,9 @@ describe('@lumino/widgets', () => {
       it('should get the active menu of the menu bar', () => {
         let bar = new MenuBar();
         let menu = new Menu({ commands });
+        // Add item to menu because MenuBar will not allow an empty menu to be
+        // active or opened.
+        menu.addItem({ command: DEFAULT_CMD });
         bar.addMenu(menu);
         bar.activeIndex = 0;
         expect(bar.activeMenu).to.equal(menu);
@@ -220,6 +226,9 @@ describe('@lumino/widgets', () => {
       it('should set the currently active menu', () => {
         let bar = new MenuBar();
         let menu = new Menu({ commands });
+        // Add item to menu because MenuBar will not allow an empty menu to be
+        // active or opened.
+        menu.addItem({ command: DEFAULT_CMD });
         bar.addMenu(menu);
         bar.activeMenu = menu;
         expect(bar.activeMenu).to.equal(menu);
@@ -239,6 +248,9 @@ describe('@lumino/widgets', () => {
       it('should get the index of the currently active menu', () => {
         let bar = new MenuBar();
         let menu = new Menu({ commands });
+        // Add item to menu because MenuBar will not allow an empty menu to be
+        // active or opened.
+        menu.addItem({ command: DEFAULT_CMD });
         bar.addMenu(menu);
         bar.activeMenu = menu;
         expect(bar.activeIndex).to.equal(0);
@@ -256,6 +268,9 @@ describe('@lumino/widgets', () => {
       it('should set the index of the currently active menu', () => {
         let bar = new MenuBar();
         let menu = new Menu({ commands });
+        // Add item to menu because MenuBar will not allow an empty menu to be
+        // active or opened.
+        menu.addItem({ command: DEFAULT_CMD });
         bar.addMenu(menu);
         bar.activeIndex = 0;
         expect(bar.activeIndex).to.equal(0);
@@ -278,6 +293,15 @@ describe('@lumino/widgets', () => {
         let node = bar.contentNode.firstChild as HTMLElement;
         expect(node.classList.contains('lm-mod-active')).to.equal(true);
         expect(bar.activeIndex).to.equal(0);
+        bar.dispose();
+      });
+
+      it('should set to `-1` if menu at index is empty', () => {
+        let bar = createMenuBar();
+        let emptyMenu = new Menu({ commands });
+        bar.insertMenu(1, emptyMenu);
+        bar.activeIndex = 1;
+        expect(bar.activeIndex).to.equal(-1);
         bar.dispose();
       });
     });
@@ -569,6 +593,24 @@ describe('@lumino/widgets', () => {
           expect(bar.activeIndex!).to.equal(1);
         });
 
+        it('should skip past empty menu on Left Arrow', () => {
+          let emptyMenu = new Menu({ commands });
+          bar.insertMenu(0, emptyMenu);
+          // Update DOM so we can focus the item node.
+          MessageLoop.flush();
+          // Call .focus() because keyboard shortcuts work from the item that
+          // has focus which may not match `bar.activeIndex`. Focus the item
+          // just to the right of the item that matches the empty menu.
+          (bar.contentNode.children[1] as HTMLElement).focus();
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 37
+            })
+          );
+          expect(bar.activeIndex).to.equal(bar.menus.length - 1);
+        });
+
         it('should activate the next menu on Right Arrow', () => {
           bar.node.dispatchEvent(
             new KeyboardEvent('keydown', {
@@ -591,6 +633,25 @@ describe('@lumino/widgets', () => {
             })
           );
           expect(bar.activeIndex!).to.equal(0);
+        });
+
+        it('should skip past empty menu on Right Arrow', () => {
+          let emptyMenu = new Menu({ commands });
+          bar.addMenu(emptyMenu);
+          // Update DOM so we can focus the item node.
+          MessageLoop.flush();
+          let emptyIndex = bar.menus.indexOf(emptyMenu);
+          // Call .focus() because keyboard shortcuts work from the item that
+          // has focus which may not match `bar.activeIndex`. Focus the item
+          // just to the left of the item that matches the empty menu.
+          (bar.contentNode.children[emptyIndex - 1] as HTMLElement).focus();
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 39
+            })
+          );
+          expect(bar.activeIndex).to.equal(0);
         });
 
         it('should open the menu matching a mnemonic', () => {
@@ -636,6 +697,9 @@ describe('@lumino/widgets', () => {
 
         it('should select the only menu matching the first letter', () => {
           let menu = new Menu({ commands });
+          // Add item to menu because MenuBar will not allow an empty menu to be
+          // active or opened.
+          menu.addItem({ command: DEFAULT_CMD });
           menu.title.label = 'Test1';
           bar.addMenu(menu);
           bar.addMenu(new Menu({ commands }));
@@ -646,8 +710,8 @@ describe('@lumino/widgets', () => {
             })
           );
           expect(bar.activeIndex).to.equal(3);
-          menu = bar.activeMenu!;
-          expect(menu.isAttached).to.equal(false);
+          expect(bar.activeMenu).to.equal(menu);
+          expect(bar.activeMenu!.isAttached).to.equal(false);
         });
       });
 
@@ -669,19 +733,22 @@ describe('@lumino/widgets', () => {
         it('should close an active menu', () => {
           bar.openActiveMenu();
           let menu = bar.activeMenu!;
-          let node = bar.node.getElementsByClassName(
+          let firstItemNode = bar.node.getElementsByClassName(
             'lm-MenuBar-item'
           )[0] as HTMLElement;
-          let rect = node.getBoundingClientRect();
-          bar.node.dispatchEvent(
-            new MouseEvent('mousedown', {
-              bubbles,
-              clientX: rect.left,
-              clientY: rect.top
-            })
-          );
+          let rect = firstItemNode.getBoundingClientRect();
+          let mouseEvent = new MouseEvent('mousedown', {
+            bubbles,
+            clientX: rect.left,
+            clientY: rect.top
+          });
+          expect(bar.activeIndex).to.equal(0);
+          bar.node.dispatchEvent(mouseEvent);
           expect(bar.activeIndex).to.equal(0);
           expect(menu.isAttached).to.equal(false);
+          // Ensure that mousedown default is not prevented, to allow browser
+          // focus to go to an item that a user clicks in the menu bar.
+          expect(mouseEvent.defaultPrevented).to.equal(false);
         });
 
         it('should open an active menu', () => {
@@ -718,6 +785,28 @@ describe('@lumino/widgets', () => {
           );
           expect(bar.activeIndex).to.equal(0);
           expect(menu.isAttached).to.equal(true);
+        });
+
+        it('should not work on a menu bar item whose menu is empty', () => {
+          let emptyMenu = new Menu({ commands });
+          // Add title to empty menu, otherwise it will have zero width in the
+          // menu bar, which makes it impossible to test with mousedown.
+          emptyMenu.title.label = 'Empty Menu'
+          bar.insertMenu(0, emptyMenu);
+          let node = bar.node.getElementsByClassName(
+            'lm-MenuBar-item'
+          )[0] as HTMLElement;
+          let rect = node.getBoundingClientRect();
+          bar.node.dispatchEvent(
+            new MouseEvent('mousedown', {
+              bubbles,
+              button: 0,
+              clientX: rect.left,
+              clientY: rect.top
+            })
+          );
+          expect(bar.activeIndex).to.equal(-1);
+          expect(emptyMenu.isAttached).to.equal(false);
         });
       });
 
@@ -990,7 +1079,8 @@ describe('@lumino/widgets', () => {
         data = {
           title: widget.title,
           active: true,
-          tabbable: true
+          tabbable: true,
+          disabled: false
         };
       });
 
