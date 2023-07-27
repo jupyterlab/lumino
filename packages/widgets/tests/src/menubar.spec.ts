@@ -513,7 +513,10 @@ describe('@lumino/widgets', () => {
 
       context('keydown', () => {
         it('should bail on Tab', () => {
-          let event = new KeyboardEvent('keydown', { keyCode: 9 });
+          let event = new KeyboardEvent('keydown', {
+            cancelable: true,
+            keyCode: 9
+          });
           bar.node.dispatchEvent(event);
           expect(event.defaultPrevented).to.equal(false);
         });
@@ -717,7 +720,11 @@ describe('@lumino/widgets', () => {
 
       context('mousedown', () => {
         it('should bail if the mouse press was not on the menu bar', () => {
-          let event = new MouseEvent('mousedown', { bubbles, clientX: -10 });
+          let event = new MouseEvent('mousedown', {
+            bubbles,
+            cancelable: true,
+            clientX: -10
+          });
           bar.node.dispatchEvent(event);
           expect(event.defaultPrevented).to.equal(false);
         });
@@ -739,6 +746,7 @@ describe('@lumino/widgets', () => {
           let rect = firstItemNode.getBoundingClientRect();
           let mouseEvent = new MouseEvent('mousedown', {
             bubbles,
+            cancelable: true,
             clientX: rect.left,
             clientY: rect.top
           });
@@ -757,15 +765,20 @@ describe('@lumino/widgets', () => {
             'lm-MenuBar-item'
           )[0] as HTMLElement;
           let rect = node.getBoundingClientRect();
-          bar.node.dispatchEvent(
-            new MouseEvent('mousedown', {
-              bubbles,
-              clientX: rect.left,
-              clientY: rect.top
-            })
-          );
+          let mouseEvent = new MouseEvent('mousedown', {
+            bubbles,
+            cancelable: true,
+            clientX: rect.left,
+            clientY: rect.top
+          });
+          bar.node.dispatchEvent(mouseEvent);
           expect(bar.activeIndex).to.equal(0);
           expect(menu.isAttached).to.equal(true);
+          // When opening a menu, be sure to prevent default during the
+          // mousedown so that the item being clicked in the menu bar does not
+          // "steal" focus from the menu being opened.
+          mouseEvent.preventDefault();
+          expect(mouseEvent.defaultPrevented).to.equal(true);
         });
 
         it('should not close an active menu if not a left mouse press', () => {
@@ -791,7 +804,7 @@ describe('@lumino/widgets', () => {
           let emptyMenu = new Menu({ commands });
           // Add title to empty menu, otherwise it will have zero width in the
           // menu bar, which makes it impossible to test with mousedown.
-          emptyMenu.title.label = 'Empty Menu'
+          emptyMenu.title.label = 'Empty Menu';
           bar.insertMenu(0, emptyMenu);
           let node = bar.node.getElementsByClassName(
             'lm-MenuBar-item'
