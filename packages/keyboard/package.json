@@ -1,6 +1,6 @@
 {
   "name": "@lumino/keyboard",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Lumino Keyboard",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -44,7 +44,7 @@
     "displayName": "keyboard"
   },
   "devDependencies": {
-    "@lumino/buildutils": "^2.0.0",
+    "@lumino/buildutils": "^2.0.1",
     "@microsoft/api-extractor": "^7.36.0",
     "@rollup/plugin-commonjs": "^24.0.0",
     "@rollup/plugin-node-resolve": "^15.0.1",
