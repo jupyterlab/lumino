@@ -2007,6 +2007,7 @@ namespace Private {
     let add = document.createElement('div');
     add.className = 'lm-TabBar-addButton lm-mod-hidden';
     add.setAttribute('tabindex', '-1');
+    add.setAttribute('role', 'button');
     node.appendChild(add);
     return node;
   }
