@@ -3,6 +3,7 @@
 
 import { ArrayExt } from '@lumino/algorithm';
 import { Message } from '@lumino/messaging';
+import { ISignal, Signal } from '@lumino/signaling';
 import { AccordionLayout } from './accordionlayout';
 import { SplitLayout } from './splitlayout';
 import { SplitPanel } from './splitpanel';
@@ -51,6 +52,13 @@ export class AccordionPanel extends SplitPanel {
    */
   get titles(): ReadonlyArray<HTMLElement> {
     return (this.layout as AccordionLayout).titles;
+  }
+
+  /**
+   * A signal emitted when a widget of the AccordionPanel is collapsed or expanded.
+   */
+  get expansionToggled(): ISignal<this, number> {
+    return this._expansionToggled;
   }
 
   /**
@@ -330,9 +338,13 @@ export class AccordionPanel extends SplitPanel {
       title.setAttribute('aria-expanded', 'false');
       widget.hide();
     }
+
+    // Emit the expansion state signal.
+    this._expansionToggled.emit(index);
   }
 
   private _widgetSizesCache: WeakMap<Widget, number> = new WeakMap();
+  private _expansionToggled = new Signal<this, number>(this);
 }
 
 /**
