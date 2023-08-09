@@ -693,6 +693,11 @@ export type ElementSpecialAttrs = {
   readonly className?: string;
 
   /**
+   * The JS-safe name for the HTML `class` attribute.
+   */
+  readonly dialogText?: string;
+
+  /**
    * The JS-safe name for the HTML `for` attribute.
    */
   readonly htmlFor?: string;
@@ -1057,6 +1062,7 @@ export namespace h {
   export const del: IFactory = h.bind(undefined, 'del');
   export const dfn: IFactory = h.bind(undefined, 'dfn');
   export const div: IFactory = h.bind(undefined, 'div');
+  export const dialog: IFactory = h.bind(undefined, 'dialog');
   export const dl: IFactory = h.bind(undefined, 'dl');
   export const dt: IFactory = h.bind(undefined, 'dt');
   export const em: IFactory = h.bind(undefined, 'em');
@@ -1489,6 +1495,7 @@ namespace Private {
   const specialAttrs = {
     key: true,
     className: true,
+    dialogText: true,
     htmlFor: true,
     dataset: true,
     style: true
@@ -1513,6 +1520,11 @@ namespace Private {
     // Add the element `class` attribute.
     if (attrs.className !== undefined) {
       element.setAttribute('class', attrs.className);
+    }
+
+    if (attrs.dialogText !== undefined) {
+      element.setAttribute('aria-live', 'polite');
+      element.innerHTML = `<p>${attrs.dialogText}</p>`;
     }
 
     // Add the element `for` attribute.

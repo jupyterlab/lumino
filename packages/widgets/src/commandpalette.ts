@@ -597,6 +597,11 @@ export namespace CommandPalette {
     readonly command: string;
 
     /**
+     * The command to execute when the item is triggered.
+     */
+    readonly commandDialog: string;
+
+    /**
      * The arguments for the command.
      */
     readonly args: ReadonlyJSONObject;
@@ -786,17 +791,19 @@ export namespace CommandPalette {
             role: 'menuitemcheckbox',
             'aria-checked': `${data.item.isToggled}`
           },
+          this.renderItemAlert(data),
           this.renderItemIcon(data),
           this.renderItemContent(data),
-          this.renderItemShortcut(data)
+          this.renderItemShortcut(data),
         );
       }
       return h.li(
         {
           className,
           dataset,
-          role: 'menuitem'
+          role: 'menuitem',
         },
+        this.renderItemAlert(data),
         this.renderItemIcon(data),
         this.renderItemContent(data),
         this.renderItemShortcut(data)
@@ -840,7 +847,7 @@ export namespace CommandPalette {
       return h.div(
         { className: 'lm-CommandPalette-itemContent' },
         this.renderItemLabel(data),
-        this.renderItemCaption(data)
+        this.renderItemCaption(data),
       );
     }
 
@@ -866,6 +873,11 @@ export namespace CommandPalette {
     renderItemCaption(data: IItemRenderData): VirtualElement {
       let content = this.formatItemCaption(data);
       return h.div({ className: 'lm-CommandPalette-itemCaption' }, content);
+    }
+
+    renderItemAlert(data: IItemRenderData): VirtualElement {
+      let content = this.formatAlertDialog(data);
+      return  h.dialog({ dialogText: ` ${content} `})
     }
 
     /**
@@ -997,6 +1009,10 @@ export namespace CommandPalette {
     formatItemCaption(data: IItemRenderData): h.Child {
       return data.item.caption;
     }
+
+    formatAlertDialog(data: IItemRenderData): h.Child {
+      return data.item.commandDialog;
+    }
   }
 
   /**
@@ -1018,20 +1034,23 @@ namespace Private {
     let wrapper = document.createElement('div');
     let input = document.createElement('input');
     let content = document.createElement('ul');
+   // let dialog = document.createElement('dialog');
     let clear = document.createElement('button');
     search.className = 'lm-CommandPalette-search';
     wrapper.className = 'lm-CommandPalette-wrapper';
     input.className = 'lm-CommandPalette-input';
     clear.className = 'lm-close-icon';
-
     content.className = 'lm-CommandPalette-content';
+  //  content.ariaLive = 'polite';
     content.setAttribute('role', 'menu');
     input.spellcheck = false;
     wrapper.appendChild(input);
     wrapper.appendChild(clear);
     search.appendChild(wrapper);
+   // dialog.setAttribute('aria-live', 'polite');
     node.appendChild(search);
     node.appendChild(content);
+   // node.appendChild(dialog);
     return node;
   }
 
@@ -1461,6 +1480,13 @@ namespace Private {
      * The rank for the command item.
      */
     readonly rank: number;
+
+    /**
+     * The display label for the command item.
+     */
+    get commandDialog(): string {
+      return this._commands.commandDialog(this.command, this.args);
+    }
 
     /**
      * The display label for the command item.

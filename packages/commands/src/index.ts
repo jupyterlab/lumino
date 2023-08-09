@@ -574,6 +574,24 @@ export class CommandRegistry {
     this._startTimer();
   }
 
+    /**
+   * add a dialog to a command 
+   *
+   * @param id - The id of the command of interest.
+   *
+   * @param args - The arguments for the command.
+   *
+   * @returns A  private ICommand or undefined of the dialog string 
+   *   or `an empty sting` if the command does not a dialog.
+   */
+    commandDialog(
+      id: string,
+      args: ReadonlyPartialJSONObject = JSONExt.emptyObject
+    ): string {
+      let cmd = this._commands.get(id);
+      return cmd?.commandDialog.call(undefined, args) ?? '';
+    }
+
   /**
    * Start or restart the pending timeout.
    */
@@ -904,6 +922,12 @@ export namespace CommandRegistry {
      * The default value is `() => true`.
      */
     isVisible?: CommandFunc<boolean>;
+
+        /**
+     * Wip2
+     */
+   
+    commandDialog? : string | CommandFunc<string>
   }
 
   /**
@@ -1311,6 +1335,7 @@ namespace Private {
     readonly isToggled: CommandFunc<boolean>;
     readonly isToggleable: boolean;
     readonly isVisible: CommandFunc<boolean>;
+    readonly commandDialog : CommandFunc<string>;
   }
 
   /**
@@ -1345,7 +1370,8 @@ namespace Private {
       isEnabled: options.isEnabled || trueFunc,
       isToggled: options.isToggled || falseFunc,
       isToggleable: options.isToggleable || !!options.isToggled,
-      isVisible: options.isVisible || trueFunc
+      isVisible: options.isVisible || trueFunc,
+      commandDialog: asFunc(options.commandDialog, emptyStringFunc)
     };
   }
 
