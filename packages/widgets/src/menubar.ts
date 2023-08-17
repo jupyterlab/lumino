@@ -980,7 +980,7 @@ export namespace MenuBar {
      * A disabled item cannot be active.
      * A disabled item cannot be focussed.
      */
-    readonly disabled: boolean;
+    readonly disabled?: boolean;
 
     readonly onfocus?: (event: FocusEvent) => void;
   }
