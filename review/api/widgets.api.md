@@ -809,7 +809,7 @@ export namespace MenuBar {
     }
     export interface IRenderData {
         readonly active: boolean;
-        readonly disabled: boolean;
+        readonly disabled?: boolean;
         // (undocumented)
         readonly onfocus?: (event: FocusEvent) => void;
         readonly tabbable: boolean;
