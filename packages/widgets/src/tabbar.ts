@@ -2002,7 +2002,6 @@ namespace Private {
     let node = document.createElement('div');
     let content = document.createElement('ul');
     content.setAttribute('role', 'tablist');
-    content.setAttribute('tabindex', '-1');
     content.className = 'lm-TabBar-content';
     node.appendChild(content);
 
