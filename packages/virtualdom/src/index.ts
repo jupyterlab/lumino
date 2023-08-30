@@ -693,6 +693,11 @@ export type ElementSpecialAttrs = {
   readonly className?: string;
 
   /**
+   * The dialog text for the command dialog.
+   */
+  readonly dialogText?: string;
+
+  /**
    * The JS-safe name for the HTML `for` attribute.
    */
   readonly htmlFor?: string;
@@ -1058,6 +1063,7 @@ export namespace h {
   export const dfn: IFactory = h.bind(undefined, 'dfn');
   export const div: IFactory = h.bind(undefined, 'div');
   export const dl: IFactory = h.bind(undefined, 'dl');
+  export const dialog: IFactory = h.bind(undefined, 'dialog');
   export const dt: IFactory = h.bind(undefined, 'dt');
   export const em: IFactory = h.bind(undefined, 'em');
   export const embed: IFactory = h.bind(undefined, 'embed');
@@ -1490,6 +1496,7 @@ namespace Private {
     key: true,
     className: true,
     htmlFor: true,
+    dialogText: true,
     dataset: true,
     style: true
   };
@@ -1515,6 +1522,13 @@ namespace Private {
       element.setAttribute('class', attrs.className);
     }
 
+    // Set the aria live and ID for the command dialog
+    if (attrs.dialogText !== undefined) {
+      element.setAttribute('aria-live', 'assertive');
+      element.setAttribute('role', 'alert')
+      element.setAttribute("id", `${attrs.dialogText}`.trim())
+    }
+    
     // Add the element `for` attribute.
     if (attrs.htmlFor !== undefined) {
       element.setAttribute('for', attrs.htmlFor);
