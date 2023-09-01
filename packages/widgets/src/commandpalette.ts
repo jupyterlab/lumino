@@ -860,7 +860,7 @@ export namespace CommandPalette {
      */
     renderItemLabel(data: IItemRenderData): VirtualElement {
       let content = this.formatItemLabel(data);
-      return h.div({ className: 'lm-CommandPalette-itemLabel' }, content);
+      return h.div({ className: 'lm-CommandPalette-itemLabel', "aria-label": `${content}`, 'id': `${content}`.toLowerCase().replace(/ /g, '') }, content);
     }
 
     /**
