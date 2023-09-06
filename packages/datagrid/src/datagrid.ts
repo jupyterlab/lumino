@@ -20,6 +20,8 @@ import {
 
 import { GridLayout, ScrollBar, Widget } from '@lumino/widgets';
 
+import { AsyncCellRenderer } from './asynccellrenderer';
+
 import { CellRenderer } from './cellrenderer';
 
 import { DataModel, MutableDataModel } from './datamodel';
@@ -40,7 +42,6 @@ import {
 } from './celleditorcontroller';
 
 import { TextRenderer } from './textrenderer';
-import { ImageRenderer } from './imagerenderer';
 
 /**
  * A widget which implements a high-performance tabular data grid.
@@ -5062,7 +5063,7 @@ export class DataGrid extends Widget {
 
         // Paint the cell into the off-screen buffer.
         try {
-          if (renderer instanceof ImageRenderer) {
+          if (renderer instanceof AsyncCellRenderer) {
             if (renderer.isReady(config)) {
               renderer.paint(gc, config);
             } else {

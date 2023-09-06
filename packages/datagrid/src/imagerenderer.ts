@@ -1,13 +1,14 @@
 // Copyright (c) Jupyter Development Team.
 // Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
-| Copyright (c) 2014-2019, PhosphorJS Contributors
+| Copyright (c) 2014-2023, Lumino Contributors
 |
 | Distributed under the terms of the BSD 3-Clause License.
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 import { PromiseDelegate } from '@lumino/coreutils';
+import { AsyncCellRenderer } from './asynccellrenderer';
 import { CellRenderer } from './cellrenderer';
 
 import { GraphicsContext } from './graphicscontext';
@@ -15,12 +16,10 @@ import { GraphicsContext } from './graphicscontext';
 
 export type SizingMode = 'fit' | 'fill' | 'original';
 
-// TODO Inherit from AsyncCellRenderer?
-
 /**
  * A cell renderer which renders data values as images.
  */
-export class ImageRenderer extends CellRenderer {
+export class ImageRenderer extends AsyncCellRenderer {
   /**
    * Construct a new text renderer.
    *
