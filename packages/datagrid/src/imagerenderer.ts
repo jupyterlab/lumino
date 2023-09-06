@@ -44,7 +44,7 @@ export class ImageRenderer extends CellRenderer {
    * @returns Whether the renderer is ready for this config or not.
    */
   isReady(config: CellRenderer.CellConfig): boolean {
-    return !config.value || ImageRenderer.dataCache.has(config.value);
+    return !config.value || ImageRenderer.dataCache.get(config.value) !== undefined;
   }
 
   /**
@@ -58,16 +58,19 @@ export class ImageRenderer extends CellRenderer {
       return;
     }
 
+    const value = config.value;
     const loadedPromise = new PromiseDelegate<void>();
+
+    ImageRenderer.dataCache.set(value, undefined);
 
     const img = new Image();
     img.onload = () => {
       // Load image
-      ImageRenderer.dataCache.set(config.value, img);
+      ImageRenderer.dataCache.set(value, img);
 
       loadedPromise.resolve();
     };
-    img.src = config.value;
+    img.src = value;
 
     return loadedPromise.promise;
   }
@@ -157,7 +160,7 @@ export class ImageRenderer extends CellRenderer {
     gc.drawImage(img, config.x, config.y, config.width, config.height);
   }
 
-  static dataCache = new Map<string, HTMLImageElement>();
+  static dataCache = new Map<string, HTMLImageElement | undefined>();
 }
 
 /**
