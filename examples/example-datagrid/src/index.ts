@@ -577,7 +577,7 @@ function main(): void {
   let grid5 = new DataGrid({
     style: greenStripeStyle,
     defaultSizes: {
-      rowHeight: 32,
+      rowHeight: 75,
       columnWidth: 128,
       rowHeaderWidth: 64,
       columnHeaderHeight: 32
