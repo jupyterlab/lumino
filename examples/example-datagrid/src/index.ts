@@ -591,7 +591,9 @@ function main(): void {
     selectionMode: 'row'
   });
 
-  const imageRenderer = new ImageRenderer();
+  const imageRenderer = new ImageRenderer({
+    sizingMode: 'fit-width'
+  });
   grid5.cellRenderers.update({
     body: (config: CellRenderer.CellConfig) => {
       if (config.metadata.name === 'Image') {

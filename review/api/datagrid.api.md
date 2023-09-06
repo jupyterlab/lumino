@@ -688,14 +688,18 @@ export class ImageRenderer extends AsyncCellRenderer {
     load(config: CellRenderer.CellConfig): Promise<void>;
     paint(gc: GraphicsContext, config: CellRenderer.CellConfig): void;
     paintPlaceholder(gc: GraphicsContext, config: CellRenderer.CellConfig): void;
+    readonly placeholder: CellRenderer.ConfigOption<string>;
     readonly sizingMode: CellRenderer.ConfigOption<SizingMode>;
+    readonly textColor: CellRenderer.ConfigOption<string>;
 }
 
 // @public
 export namespace ImageRenderer {
     export interface IOptions {
         backgroundColor?: CellRenderer.ConfigOption<string>;
+        placeholder?: CellRenderer.ConfigOption<string>;
         sizingMode?: CellRenderer.ConfigOption<SizingMode>;
+        textColor?: CellRenderer.ConfigOption<string>;
     }
 }
 
@@ -927,7 +931,7 @@ export namespace SelectionModel {
     export type SelectionMode = 'row' | 'column' | 'cell';
 }
 
-// @public (undocumented)
+// @public
 export type SizingMode = 'fit-height' | 'fit-width' | 'fill' | 'original';
 
 // @public

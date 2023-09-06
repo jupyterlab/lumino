@@ -37,13 +37,25 @@ export class ImageRenderer extends AsyncCellRenderer {
     super();
 
     this.backgroundColor = options.backgroundColor || '';
+    this.textColor = options.textColor || '#000000';
+    this.placeholder = options.placeholder || '...';
     this.sizingMode = options.sizingMode || 'fit-height';
   }
+
+  /**
+   * The CSS color for drawing the placeholder text.
+   */
+  readonly textColor: CellRenderer.ConfigOption<string>;
 
   /**
    * The CSS color for the cell background.
    */
   readonly backgroundColor: CellRenderer.ConfigOption<string>;
+
+  /**
+   * The placeholder text.
+   */
+  readonly placeholder: CellRenderer.ConfigOption<string>;
 
   /**
    * Sizing mode. Can be 'original', 'fit', or 'fill'.
@@ -83,7 +95,6 @@ export class ImageRenderer extends AsyncCellRenderer {
 
     const img = new Image();
     img.onload = () => {
-      // Load image
       ImageRenderer.dataCache.set(value, img);
 
       loadedPromise.resolve();
@@ -126,7 +137,7 @@ export class ImageRenderer extends AsyncCellRenderer {
    */
   drawBackground(gc: GraphicsContext, config: CellRenderer.CellConfig): void {
     // Resolve the background color for the cell.
-    let color = CellRenderer.resolveOption(this.backgroundColor, config);
+    const color = CellRenderer.resolveOption(this.backgroundColor, config);
 
     // Bail if there is no background color to draw.
     if (!color) {
@@ -146,13 +157,15 @@ export class ImageRenderer extends AsyncCellRenderer {
    * @param config - The configuration data for the cell.
    */
   drawPlaceholder(gc: GraphicsContext, config: CellRenderer.CellConfig): void {
-    // TODO Consider inheriting from/using a TextRenderer for rendering the placeholder
+    const placeholder = CellRenderer.resolveOption(this.placeholder, config);
+    const color = CellRenderer.resolveOption(this.textColor, config);
+
     const textX = config.x + config.width / 2;
     const textY = config.y + config.height / 2;
 
     // Draw the placeholder.
-    gc.fillStyle = 'black'; // TODO Make this part of the cell config
-    gc.fillText('loading...', textX, textY); // TODO Make this "loading..." part of the cell config
+    gc.fillStyle = color;
+    gc.fillText(placeholder, textX, textY);
   }
 
   /**
@@ -210,6 +223,20 @@ export namespace ImageRenderer {
      * The default is `''`.
      */
     backgroundColor?: CellRenderer.ConfigOption<string>;
+
+    /**
+     * The placeholder text while the cell is loading.
+     *
+     * The default is `'...'`.
+     */
+    placeholder?: CellRenderer.ConfigOption<string>;
+
+    /**
+     * The color for the drawing the placeholder text.
+     *
+     * The default `'#000000'`.
+     */
+    textColor?: CellRenderer.ConfigOption<string>;
 
     /**
      * Sizing mode. Can be 'original', 'fit-height', 'fit-width', or 'fill'.
