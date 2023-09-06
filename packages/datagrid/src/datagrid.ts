@@ -40,6 +40,7 @@ import {
 } from './celleditorcontroller';
 
 import { TextRenderer } from './textrenderer';
+import { ImageRenderer } from './imagerenderer';
 
 /**
  * A widget which implements a high-performance tabular data grid.
@@ -5061,7 +5062,24 @@ export class DataGrid extends Widget {
 
         // Paint the cell into the off-screen buffer.
         try {
-          renderer.paint(gc, config);
+          if (renderer instanceof ImageRenderer) {
+            if (renderer.isReady(config)) {
+              renderer.paint(gc, config);
+            } else {
+              renderer.paintPlaceholder(gc, config);
+              renderer.load(config).then(() => {
+                const r1 = rgn.row;
+                const r2 = rgn.row + rgn.rowSizes.length;
+
+                const c1 = rgn.column;
+                const c2 = rgn.column + rgn.columnSizes.length;
+
+                this.repaintRegion(rgn.region, r1, c1, r2, c2);
+              });
+            }
+          } else {
+            renderer.paint(gc, config);
+          }
         } catch (err) {
           console.error(err);
         }
