@@ -13,6 +13,13 @@ import { Signal } from '@lumino/signaling';
 import { Widget } from '@lumino/widgets';
 
 // @public
+export abstract class AsyncCellRenderer extends CellRenderer {
+    abstract isReady(config: CellRenderer.CellConfig): boolean;
+    abstract load(config: CellRenderer.CellConfig): Promise<void>;
+    abstract paintPlaceholder(gc: GraphicsContext, config: CellRenderer.CellConfig): void;
+}
+
+// @public
 export class BasicKeyHandler implements DataGrid.IKeyHandler {
     dispose(): void;
     get isDisposed(): boolean;
@@ -669,6 +676,30 @@ export interface ICellInputValidatorResponse {
 }
 
 // @public
+export class ImageRenderer extends AsyncCellRenderer {
+    constructor(options?: ImageRenderer.IOptions);
+    readonly backgroundColor: CellRenderer.ConfigOption<string>;
+    // (undocumented)
+    static dataCache: Map<string, HTMLImageElement | undefined>;
+    drawBackground(gc: GraphicsContext, config: CellRenderer.CellConfig): void;
+    drawImage(gc: GraphicsContext, config: CellRenderer.CellConfig): void;
+    drawPlaceholder(gc: GraphicsContext, config: CellRenderer.CellConfig): void;
+    isReady(config: CellRenderer.CellConfig): boolean;
+    load(config: CellRenderer.CellConfig): Promise<void>;
+    paint(gc: GraphicsContext, config: CellRenderer.CellConfig): void;
+    paintPlaceholder(gc: GraphicsContext, config: CellRenderer.CellConfig): void;
+    readonly sizingMode: CellRenderer.ConfigOption<SizingMode>;
+}
+
+// @public
+export namespace ImageRenderer {
+    export interface IOptions {
+        backgroundColor?: CellRenderer.ConfigOption<string>;
+        sizingMode?: CellRenderer.ConfigOption<SizingMode>;
+    }
+}
+
+// @public
 export abstract class InputCellEditor extends CellEditor {
     // (undocumented)
     protected bindEvents(): void;
@@ -895,6 +926,9 @@ export namespace SelectionModel {
     };
     export type SelectionMode = 'row' | 'column' | 'cell';
 }
+
+// @public (undocumented)
+export type SizingMode = 'fit' | 'fill' | 'original';
 
 // @public
 export class TextCellEditor extends InputCellEditor {
