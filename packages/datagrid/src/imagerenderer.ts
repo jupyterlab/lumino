@@ -12,6 +12,9 @@ import { CellRenderer } from './cellrenderer';
 
 import { GraphicsContext } from './graphicscontext';
 
+
+export type SizingMode = 'fit' | 'fill' | 'original';
+
 // TODO Inherit from AsyncCellRenderer?
 
 /**
@@ -27,12 +30,18 @@ export class ImageRenderer extends CellRenderer {
     super();
 
     this.backgroundColor = options.backgroundColor || '';
+    this.sizingMode = options.sizingMode || 'fit';
   }
 
   /**
    * The CSS color for the cell background.
    */
   readonly backgroundColor: CellRenderer.ConfigOption<string>;
+
+  /**
+   * Sizing mode. Can be 'original', 'fit', or 'fill'.
+   */
+  readonly sizingMode: CellRenderer.ConfigOption<SizingMode>;
 
   /**
    * Whether the renderer is ready or not for that specific config.
@@ -157,7 +166,19 @@ export class ImageRenderer extends CellRenderer {
       return this.drawPlaceholder(gc, config);
     }
 
-    gc.drawImage(img, config.x, config.y, config.width, config.height);
+    switch (this.sizingMode) {
+      case 'fit':
+        const newHeight = (img.height / img.width) * config.width;
+
+        gc.drawImage(img, config.x, config.y, config.width, newHeight);
+        break;
+      case 'fill':
+        gc.drawImage(img, config.x, config.y, config.width, config.height);
+        break;
+      case 'original':
+        gc.drawImage(img, config.x, config.y);
+        break;
+    }
   }
 
   static dataCache = new Map<string, HTMLImageElement | undefined>();
@@ -177,5 +198,15 @@ export namespace ImageRenderer {
      * The default is `''`.
      */
     backgroundColor?: CellRenderer.ConfigOption<string>;
+
+    /**
+     * Sizing mode. Can be 'original', 'fit', or 'fill'.
+     * 'fit' will make the image fit the available width in the cell, respecting the image size ratio.
+     * 'fill' will make the image fill the available space in the cell, not respecting the image size ratio.
+     * 'original' will make respect the size of the original image.
+     *
+     * The default is 'fit'
+     */
+    sizingMode?: CellRenderer.ConfigOption<SizingMode>;
   }
 }
