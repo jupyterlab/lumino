@@ -13,7 +13,16 @@ import { CellRenderer } from './cellrenderer';
 
 import { GraphicsContext } from './graphicscontext';
 
-export type SizingMode = 'fit' | 'fill' | 'original';
+/**
+ * Sizing mode. Can be 'original', 'fit-height', 'fit-width', or 'fill'.
+ * 'fit-height' will make the image fit the available height in the cell, respecting the image size ratio.
+ * 'fit-width' will make the image fit the available width in the cell, respecting the image size ratio.
+ * 'fill' will make the image fill the available space in the cell, NOT respecting the image size ratio.
+ * 'original' will make respect the size of the original image.
+ *
+ * The default is 'fit-height'
+ */
+export type SizingMode = 'fit-height' | 'fit-width' | 'fill' | 'original';
 
 /**
  * A cell renderer which renders data values as images.
@@ -28,7 +37,7 @@ export class ImageRenderer extends AsyncCellRenderer {
     super();
 
     this.backgroundColor = options.backgroundColor || '';
-    this.sizingMode = options.sizingMode || 'fit';
+    this.sizingMode = options.sizingMode || 'fit-height';
   }
 
   /**
@@ -166,9 +175,13 @@ export class ImageRenderer extends AsyncCellRenderer {
       return this.drawPlaceholder(gc, config);
     }
 
+    const fitWidth = (img.width / img.height) * config.height;
     const fitHeight = (img.height / img.width) * config.width;
     switch (this.sizingMode) {
-      case 'fit':
+      case 'fit-height':
+        gc.drawImage(img, config.x, config.y, fitWidth, config.height);
+        break;
+      case 'fit-width':
         gc.drawImage(img, config.x, config.y, config.width, fitHeight);
         break;
       case 'fill':
@@ -199,12 +212,13 @@ export namespace ImageRenderer {
     backgroundColor?: CellRenderer.ConfigOption<string>;
 
     /**
-     * Sizing mode. Can be 'original', 'fit', or 'fill'.
-     * 'fit' will make the image fit the available width in the cell, respecting the image size ratio.
-     * 'fill' will make the image fill the available space in the cell, not respecting the image size ratio.
+     * Sizing mode. Can be 'original', 'fit-height', 'fit-width', or 'fill'.
+     * 'fit-height' will make the image fit the available height in the cell, respecting the image size ratio.
+     * 'fit-width' will make the image fit the available width in the cell, respecting the image size ratio.
+     * 'fill' will make the image fill the available space in the cell, NOT respecting the image size ratio.
      * 'original' will make respect the size of the original image.
      *
-     * The default is 'fit'
+     * The default is 'fit-height'
      */
     sizingMode?: CellRenderer.ConfigOption<SizingMode>;
   }

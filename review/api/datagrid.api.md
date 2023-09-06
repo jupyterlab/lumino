@@ -928,7 +928,7 @@ export namespace SelectionModel {
 }
 
 // @public (undocumented)
-export type SizingMode = 'fit' | 'fill' | 'original';
+export type SizingMode = 'fit-height' | 'fit-width' | 'fill' | 'original';
 
 // @public
 export class TextCellEditor extends InputCellEditor {
