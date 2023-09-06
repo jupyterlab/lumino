@@ -5069,11 +5069,11 @@ export class DataGrid extends Widget {
             } else {
               renderer.paintPlaceholder(gc, config);
               renderer.load(config).then(() => {
-                const r1 = rgn.row;
-                const r2 = rgn.row + rgn.rowSizes.length;
+                const r1 = row;
+                const r2 = row + 1;
 
-                const c1 = rgn.column;
-                const c2 = rgn.column + rgn.columnSizes.length;
+                const c1 = column;
+                const c2 = column + 1;
 
                 this.repaintRegion(rgn.region, r1, c1, r2, c2);
               });
