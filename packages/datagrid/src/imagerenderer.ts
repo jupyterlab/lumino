@@ -44,7 +44,7 @@ export class ImageRenderer extends CellRenderer {
    * @returns Whether the renderer is ready for this config or not.
    */
   isReady(config: CellRenderer.CellConfig): boolean {
-    return ImageRenderer.dataCache.has(config.value);
+    return !config.value || ImageRenderer.dataCache.has(config.value);
   }
 
   /**
@@ -62,6 +62,7 @@ export class ImageRenderer extends CellRenderer {
 
     const img = new Image();
     img.onload = () => {
+      // Load image
       ImageRenderer.dataCache.set(config.value, img);
 
       loadedPromise.resolve();
