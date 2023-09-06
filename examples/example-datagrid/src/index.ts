@@ -973,7 +973,8 @@ namespace Data {
         Origin: 'USA',
         Miles_per_Gallon: 18.0,
         Name: 'chevrolet chevelle malibu',
-        Image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/1966_Chevrolet_Chevelle_SS_%2832985111206%29.jpg/420px-1966_Chevrolet_Chevelle_SS_%2832985111206%29.jpg',
+        Image:
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/1966_Chevrolet_Chevelle_SS_%2832985111206%29.jpg/420px-1966_Chevrolet_Chevelle_SS_%2832985111206%29.jpg',
         index: 0,
         Acceleration: 12.0,
         Year: '1970-01-01',
@@ -986,7 +987,8 @@ namespace Data {
         Origin: 'USA',
         Miles_per_Gallon: 15.0,
         Name: 'buick skylark 320',
-        Image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/1972_Buick_Skylark_Front.jpg/420px-1972_Buick_Skylark_Front.jpg',
+        Image:
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/1972_Buick_Skylark_Front.jpg/420px-1972_Buick_Skylark_Front.jpg',
         index: 1,
         Acceleration: 11.5,
         Year: '1970-01-01',
@@ -999,7 +1001,8 @@ namespace Data {
         Origin: 'USA',
         Miles_per_Gallon: 18.0,
         Name: 'plymouth satellite',
-        Image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/66Sat.jpg/420px-66Sat.jpg',
+        Image:
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/66Sat.jpg/420px-66Sat.jpg',
         index: 2,
         Acceleration: 11.0,
         Year: '1970-01-01',
@@ -1012,7 +1015,8 @@ namespace Data {
         Origin: 'USA',
         Miles_per_Gallon: 16.0,
         Name: 'amc rebel sst',
-        Image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/1968_AMC_Rebel_Station_Wagon-GoldWhite.jpg/420px-1968_AMC_Rebel_Station_Wagon-GoldWhite.jpg',
+        Image:
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/1968_AMC_Rebel_Station_Wagon-GoldWhite.jpg/420px-1968_AMC_Rebel_Station_Wagon-GoldWhite.jpg',
         index: 3,
         Acceleration: 12.0,
         Year: '1970-01-01',
@@ -1025,7 +1029,8 @@ namespace Data {
         Origin: 'USA',
         Miles_per_Gallon: 17.0,
         Name: 'ford torino',
-        Image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/1970_ford_torino_cobra_sportsroof_chiolero.jpg/420px-1970_ford_torino_cobra_sportsroof_chiolero.jpg',
+        Image:
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/1970_ford_torino_cobra_sportsroof_chiolero.jpg/420px-1970_ford_torino_cobra_sportsroof_chiolero.jpg',
         index: 4,
         Acceleration: 10.5,
         Year: '1970-01-01',
@@ -1038,7 +1043,8 @@ namespace Data {
         Origin: 'USA',
         Miles_per_Gallon: 15.0,
         Name: 'ford galaxie 500',
-        Image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/1963_Ford_Galaxie_sedan_2_--_06-05-2010.jpg/420px-1963_Ford_Galaxie_sedan_2_--_06-05-2010.jpg',
+        Image:
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/1963_Ford_Galaxie_sedan_2_--_06-05-2010.jpg/420px-1963_Ford_Galaxie_sedan_2_--_06-05-2010.jpg',
         index: 5,
         Acceleration: 10.0,
         Year: '1970-01-01',
@@ -1051,7 +1057,8 @@ namespace Data {
         Origin: 'USA',
         Miles_per_Gallon: 14.0,
         Name: 'chevrolet impala',
-        Image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/1965_Chevrolet_Impala_300_hp_V8_big_Block_Engine.JPG/420px-1965_Chevrolet_Impala_300_hp_V8_big_Block_Engine.JPG',
+        Image:
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/1965_Chevrolet_Impala_300_hp_V8_big_Block_Engine.JPG/420px-1965_Chevrolet_Impala_300_hp_V8_big_Block_Engine.JPG',
         index: 6,
         Acceleration: 9.0,
         Year: '1970-01-01',
@@ -1064,7 +1071,8 @@ namespace Data {
         Origin: 'USA',
         Miles_per_Gallon: 14.0,
         Name: 'plymouth fury iii',
-        Image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/1959_Plymouth_Sport_Fury_photo-13.JPG/420px-1959_Plymouth_Sport_Fury_photo-13.JPG',
+        Image:
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/1959_Plymouth_Sport_Fury_photo-13.JPG/420px-1959_Plymouth_Sport_Fury_photo-13.JPG',
         index: 7,
         Acceleration: 8.5,
         Year: '1970-01-01',
@@ -1077,7 +1085,8 @@ namespace Data {
         Origin: 'USA',
         Miles_per_Gallon: 14.0,
         Name: 'pontiac catalina',
-        Image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Pontiac_Catalina_front.jpg/420px-Pontiac_Catalina_front.jpg',
+        Image:
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Pontiac_Catalina_front.jpg/420px-Pontiac_Catalina_front.jpg',
         index: 8,
         Acceleration: 10.0,
         Year: '1970-01-01',
@@ -1090,7 +1099,8 @@ namespace Data {
         Origin: 'USA',
         Miles_per_Gallon: 15.0,
         Name: 'amc ambassador dpl',
-        Image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/1964_Rambler_Ambassador_990_H_in_black_and_white_with_red_interior_at_2017_AMO_meet_01of16.jpg/420px-1964_Rambler_Ambassador_990_H_in_black_and_white_with_red_interior_at_2017_AMO_meet_01of16.jpg',
+        Image:
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/1964_Rambler_Ambassador_990_H_in_black_and_white_with_red_interior_at_2017_AMO_meet_01of16.jpg/420px-1964_Rambler_Ambassador_990_H_in_black_and_white_with_red_interior_at_2017_AMO_meet_01of16.jpg',
         index: 9,
         Acceleration: 8.5,
         Year: '1970-01-01',
@@ -1103,7 +1113,8 @@ namespace Data {
         Origin: 'Europe',
         Miles_per_Gallon: null,
         Name: 'citroen ds-21 pallas',
-        Image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Festival_automobile_international_2018_-_Citro%C3%ABn_DS_21_-_1965_-_002.jpg/300px-Festival_automobile_international_2018_-_Citro%C3%ABn_DS_21_-_1965_-_002.jpg',
+        Image:
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Festival_automobile_international_2018_-_Citro%C3%ABn_DS_21_-_1965_-_002.jpg/300px-Festival_automobile_international_2018_-_Citro%C3%ABn_DS_21_-_1965_-_002.jpg',
         index: 10,
         Acceleration: 17.5,
         Year: '1970-01-01',
@@ -1116,7 +1127,8 @@ namespace Data {
         Origin: 'USA',
         Miles_per_Gallon: null,
         Name: 'chevrolet chevelle concours (sw)',
-        Image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/1969_Chevrolet_Chevelle_SS396_2_door_Hardtop_%2825260012813%29.jpg/270px-1969_Chevrolet_Chevelle_SS396_2_door_Hardtop_%2825260012813%29.jpg',
+        Image:
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/1969_Chevrolet_Chevelle_SS396_2_door_Hardtop_%2825260012813%29.jpg/270px-1969_Chevrolet_Chevelle_SS396_2_door_Hardtop_%2825260012813%29.jpg',
         index: 11,
         Acceleration: 11.5,
         Year: '1970-01-01',
@@ -1129,7 +1141,8 @@ namespace Data {
         Origin: 'USA',
         Miles_per_Gallon: null,
         Name: 'ford torino (sw)',
-        Image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/1970_ford_torino_cobra_sportsroof_chiolero.jpg/420px-1970_ford_torino_cobra_sportsroof_chiolero.jpg',
+        Image:
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/1970_ford_torino_cobra_sportsroof_chiolero.jpg/420px-1970_ford_torino_cobra_sportsroof_chiolero.jpg',
         index: 12,
         Acceleration: 11.0,
         Year: '1970-01-01',
@@ -1142,7 +1155,8 @@ namespace Data {
         Origin: 'USA',
         Miles_per_Gallon: null,
         Name: 'plymouth satellite (sw)',
-        Image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/66Sat.jpg/420px-66Sat.jpg',
+        Image:
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/66Sat.jpg/420px-66Sat.jpg',
         index: 13,
         Acceleration: 10.5,
         Year: '1970-01-01',
@@ -1155,7 +1169,8 @@ namespace Data {
         Origin: 'USA',
         Miles_per_Gallon: null,
         Name: 'amc rebel sst (sw)',
-        Image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/1968_AMC_Rebel_Station_Wagon-GoldWhite.jpg/420px-1968_AMC_Rebel_Station_Wagon-GoldWhite.jpg',
+        Image:
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/1968_AMC_Rebel_Station_Wagon-GoldWhite.jpg/420px-1968_AMC_Rebel_Station_Wagon-GoldWhite.jpg',
         index: 14,
         Acceleration: 11.0,
         Year: '1970-01-01',
@@ -1168,7 +1183,8 @@ namespace Data {
         Origin: 'USA',
         Miles_per_Gallon: 15.0,
         Name: 'dodge challenger se',
-        Image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/1970_Dodge_Challenger_RT_440_Magnum_%2813440447413%29.jpg/420px-1970_Dodge_Challenger_RT_440_Magnum_%2813440447413%29.jpg',
+        Image:
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/1970_Dodge_Challenger_RT_440_Magnum_%2813440447413%29.jpg/420px-1970_Dodge_Challenger_RT_440_Magnum_%2813440447413%29.jpg',
         index: 15,
         Acceleration: 10.0,
         Year: '1970-01-01',
@@ -1181,7 +1197,8 @@ namespace Data {
         Origin: 'USA',
         Miles_per_Gallon: 14.0,
         Name: "plymouth 'cuda 340",
-        Image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/%2770_Plymouth_Barracuda_%28%2711_Auto_classique_VAQ_Mont_St-Hilaire%29.JPG/420px-%2770_Plymouth_Barracuda_%28%2711_Auto_classique_VAQ_Mont_St-Hilaire%29.JPG',
+        Image:
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/%2770_Plymouth_Barracuda_%28%2711_Auto_classique_VAQ_Mont_St-Hilaire%29.JPG/420px-%2770_Plymouth_Barracuda_%28%2711_Auto_classique_VAQ_Mont_St-Hilaire%29.JPG',
         index: 16,
         Acceleration: 8.0,
         Year: '1970-01-01',
@@ -1194,7 +1211,8 @@ namespace Data {
         Origin: 'USA',
         Miles_per_Gallon: null,
         Name: 'ford mustang boss 302',
-        Image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/1970_Ford_Mustang_Boss_302_%2815863840731%29.jpg/420px-1970_Ford_Mustang_Boss_302_%2815863840731%29.jpg',
+        Image:
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/1970_Ford_Mustang_Boss_302_%2815863840731%29.jpg/420px-1970_Ford_Mustang_Boss_302_%2815863840731%29.jpg',
         index: 17,
         Acceleration: 8.0,
         Year: '1970-01-01',
@@ -1207,7 +1225,8 @@ namespace Data {
         Origin: 'USA',
         Miles_per_Gallon: 15.0,
         Name: 'chevrolet monte carlo',
-        Image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Chevrolet_Monte_Carlo_1970_P6170033.jpg/420px-Chevrolet_Monte_Carlo_1970_P6170033.jpg',
+        Image:
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Chevrolet_Monte_Carlo_1970_P6170033.jpg/420px-Chevrolet_Monte_Carlo_1970_P6170033.jpg',
         index: 18,
         Acceleration: 9.5,
         Year: '1970-01-01',
@@ -1220,7 +1239,8 @@ namespace Data {
         Origin: 'USA',
         Miles_per_Gallon: 14.0,
         Name: 'buick estate wagon (sw)',
-        Image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/1987_Buick_Electra_Estate_a_station_wagon_at_2019_AACA_Hershey_meet_1of3.jpg/420px-1987_Buick_Electra_Estate_a_station_wagon_at_2019_AACA_Hershey_meet_1of3.jpg',
+        Image:
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/1987_Buick_Electra_Estate_a_station_wagon_at_2019_AACA_Hershey_meet_1of3.jpg/420px-1987_Buick_Electra_Estate_a_station_wagon_at_2019_AACA_Hershey_meet_1of3.jpg',
         index: 19,
         Acceleration: 10.0,
         Year: '1970-01-01',

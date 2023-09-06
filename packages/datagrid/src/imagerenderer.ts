@@ -13,7 +13,6 @@ import { CellRenderer } from './cellrenderer';
 
 import { GraphicsContext } from './graphicscontext';
 
-
 export type SizingMode = 'fit' | 'fill' | 'original';
 
 /**
@@ -52,7 +51,9 @@ export class ImageRenderer extends AsyncCellRenderer {
    * @returns Whether the renderer is ready for this config or not.
    */
   isReady(config: CellRenderer.CellConfig): boolean {
-    return !config.value || ImageRenderer.dataCache.get(config.value) !== undefined;
+    return (
+      !config.value || ImageRenderer.dataCache.get(config.value) !== undefined
+    );
   }
 
   /**
@@ -141,8 +142,8 @@ export class ImageRenderer extends AsyncCellRenderer {
     const textY = config.y + config.height / 2;
 
     // Draw the placeholder.
-    gc.fillStyle = "black";  // TODO Make this part of the cell config
-    gc.fillText("loading...", textX, textY);  // TODO Make this "loading..." part of the cell config
+    gc.fillStyle = 'black'; // TODO Make this part of the cell config
+    gc.fillText('loading...', textX, textY); // TODO Make this "loading..." part of the cell config
   }
 
   /**
@@ -165,11 +166,10 @@ export class ImageRenderer extends AsyncCellRenderer {
       return this.drawPlaceholder(gc, config);
     }
 
+    const fitHeight = (img.height / img.width) * config.width;
     switch (this.sizingMode) {
       case 'fit':
-        const newHeight = (img.height / img.width) * config.width;
-
-        gc.drawImage(img, config.x, config.y, config.width, newHeight);
+        gc.drawImage(img, config.x, config.y, config.width, fitHeight);
         break;
       case 'fill':
         gc.drawImage(img, config.x, config.y, config.width, config.height);

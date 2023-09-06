@@ -8,8 +8,8 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
-import { CellRenderer } from "./cellrenderer";
-import { GraphicsContext } from "./graphicscontext";
+import { CellRenderer } from './cellrenderer';
+import { GraphicsContext } from './graphicscontext';
 
 /**
  * An object which renders the cells of a data grid asynchronously.
@@ -21,7 +21,6 @@ import { GraphicsContext } from "./graphicscontext";
  * See `ImageRenderer` for an example of an asynchronous renderer.
  */
 export abstract class AsyncCellRenderer extends CellRenderer {
-
   /**
    * Whether the renderer is ready or not for that specific config.
    * If it's not ready, the datagrid will paint the placeholder using `paintPlaceholder`.
@@ -47,6 +46,8 @@ export abstract class AsyncCellRenderer extends CellRenderer {
    *
    * @param config - The configuration data for the cell.
    */
-  abstract paintPlaceholder(gc: GraphicsContext, config: CellRenderer.CellConfig): void;
-
+  abstract paintPlaceholder(
+    gc: GraphicsContext,
+    config: CellRenderer.CellConfig
+  ): void;
 }
