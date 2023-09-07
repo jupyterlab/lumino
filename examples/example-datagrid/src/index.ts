@@ -592,7 +592,18 @@ function main(): void {
   });
 
   const imageRenderer = new ImageRenderer({
-    sizingMode: 'fit-width'
+    width: '100%',
+    height: '' // Will be computed automatically
+    // Other options:
+    // width: '50px',
+    // height: '50px',
+    //
+    // width: '100%',
+    // height: '50px',
+    //
+    // For keeping the original size:
+    // width: '',
+    // height: '',
   });
   grid5.cellRenderers.update({
     body: (config: CellRenderer.CellConfig) => {
