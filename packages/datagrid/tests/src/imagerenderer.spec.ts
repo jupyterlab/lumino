@@ -5,7 +5,13 @@ import { expect } from 'chai';
 import { CellRenderer, GraphicsContext, ImageRenderer } from '@lumino/datagrid';
 
 class LoggingGraphicsContext extends GraphicsContext {
-  drawImage(img: HTMLImageElement, x: number, y: number, width?: number, height?: number): void {
+  drawImage(
+    img: HTMLImageElement,
+    x: number,
+    y: number,
+    width?: number,
+    height?: number
+  ): void {
     if (width && height) {
       super.drawImage(img, x, y, width, height);
     } else {
@@ -38,7 +44,7 @@ describe('@lumino/datagrid', () => {
     img = document.createElement('img');
     img.width = 12;
     img.height = 2;
-    ImageRenderer["dataCache"].set("test-image", img);
+    ImageRenderer['dataCache'].set('test-image', img);
   });
   describe('ImageRenderer', () => {
     describe('drawImage()', () => {
