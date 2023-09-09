@@ -20,6 +20,8 @@ import {
 
 import { GridLayout, ScrollBar, Widget } from '@lumino/widgets';
 
+import { AsyncCellRenderer } from './asynccellrenderer';
+
 import { CellRenderer } from './cellrenderer';
 
 import { DataModel, MutableDataModel } from './datamodel';
@@ -5061,7 +5063,24 @@ export class DataGrid extends Widget {
 
         // Paint the cell into the off-screen buffer.
         try {
-          renderer.paint(gc, config);
+          if (renderer instanceof AsyncCellRenderer) {
+            if (renderer.isReady(config)) {
+              renderer.paint(gc, config);
+            } else {
+              renderer.paintPlaceholder(gc, config);
+              renderer.load(config).then(() => {
+                const r1 = row;
+                const r2 = row + 1;
+
+                const c1 = column;
+                const c2 = column + 1;
+
+                this.repaintRegion(rgn.region, r1, c1, r2, c2);
+              });
+            }
+          } else {
+            renderer.paint(gc, config);
+          }
         } catch (err) {
           console.error(err);
         }
@@ -5285,7 +5304,25 @@ export class DataGrid extends Widget {
 
       // Paint the cell into the off-screen buffer.
       try {
-        renderer.paint(gc, config);
+        if (renderer instanceof AsyncCellRenderer) {
+          if (renderer.isReady(config)) {
+            renderer.paint(gc, config);
+          } else {
+            renderer.paintPlaceholder(gc, config);
+
+            const r1 = group.r1;
+            const r2 = group.r2;
+
+            const c1 = group.c1;
+            const c2 = group.c2;
+
+            renderer.load(config).then(() => {
+              this.repaintRegion(rgn.region, r1, c1, r2, c2);
+            });
+          }
+        } else {
+          renderer.paint(gc, config);
+        }
       } catch (err) {
         console.error(err);
       }
