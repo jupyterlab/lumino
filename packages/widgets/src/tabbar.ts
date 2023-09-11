@@ -71,6 +71,7 @@ export class TabBar<T> extends Widget {
     this.orientation = options.orientation || 'horizontal';
     this.removeBehavior = options.removeBehavior || 'select-tab-after';
     this.renderer = options.renderer || TabBar.defaultRenderer;
+    this.createOverlay();
   }
 
   /**
@@ -574,6 +575,15 @@ export class TabBar<T> extends Widget {
   }
 
   /**
+   * Create the ovelay UI element  for a tab..
+   * Displays an element containing a number
+   */
+  createOverlay(): any {
+    //const focusable: Element[] = [...this.contentNode.children];
+    return 1
+  }
+
+  /**
    * Release the mouse and restore the non-dragged tab positions.
    *
    * #### Notes
@@ -849,6 +859,9 @@ export class TabBar<T> extends Widget {
         nextFocused?.setAttribute('tabindex', '0');
         (nextFocused as HTMLElement).focus();
       }
+    } else if (event.key === 'Alt' && 'Shift') {
+      //this.createOverlay;
+      console.log("hi"); 
     }
   }
 
