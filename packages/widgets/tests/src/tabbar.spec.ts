@@ -1615,7 +1615,6 @@ describe('@lumino/widgets', () => {
           expect(bar.addButtonNode.getAttribute('tabindex')).to.equal('-1');
         });
 
-        
         it('should have a role attribute of button', () => {
           populateBar(bar);
           expect(bar.addButtonNode.getAttribute('role')).to.equal('button');
