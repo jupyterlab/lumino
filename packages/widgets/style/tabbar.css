@@ -103,3 +103,21 @@
   box-sizing: border-box;
   background: inherit;
 }
+
+.lm-TabBar-UI-Overlay {
+  position: absolute;
+  top: 67%;
+  left: 45%;
+  width: 47%;
+  height: 32%;
+  border-radius: 25%;
+  z-index: inherit;
+  text-align: center;
+  color: rgb(255, 255, 255);
+  background: rgb(51, 51, 51);
+  visibility: hidden;
+}
+
+.lm-TabBar-UI-Overlay.lm-mod-hidden {
+  display: none !important;
+}
