@@ -189,6 +189,20 @@ export class Application<T extends Widget = Widget> {
   }
 
   /**
+   * Getter and setter for the bubblingKeydown experimental flag.
+   *
+   * @experimental
+   */
+  get bubblingKeydown(): boolean {
+    return this._bubblingKeydown;
+  }
+  set bubblingKeydown(value: boolean) {
+    document.removeEventListener('keydown', this, !this._bubblingKeydown);
+    this._bubblingKeydown = value;
+    document.addEventListener('keydown', this, !this._bubblingKeydown);
+  }
+
+  /**
    * Get a plugin description.
    *
    * @param id - The ID of the plugin of interest.
@@ -723,10 +737,10 @@ export namespace Application {
     ignorePlugins?: string[];
 
     /**
-     * A flag to handle the keydown events at bubbling phase.
+     * Whether to capture keydown event at bubbling or capturing (default) phase for
+     * keyboard shortcuts.
      *
-     * #### Notes
-     * If not provides, the keydown events are handled at capture phase.
+     * @experimental
      */
     bubblingKeydown?: boolean;
   }
