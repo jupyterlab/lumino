@@ -506,6 +506,8 @@ export class Application<T extends Widget = Widget> {
     // Mark the application as started;
     this._started = true;
 
+    this._bubblingKeydown = options.bubblingKeydown || false;
+
     // Parse the host ID for attaching the shell.
     const hostID = options.hostID || '';
 
@@ -606,8 +608,11 @@ export class Application<T extends Widget = Widget> {
    * A subclass may reimplement this method as needed.
    */
   protected addEventListeners(): void {
+    if (this._bubblingKeydown) {
+      console.log('The keydown events are handled during bubbling phase');
+    }
     document.addEventListener('contextmenu', this);
-    document.addEventListener('keydown', this, true);
+    document.addEventListener('keydown', this, !this._bubblingKeydown);
     window.addEventListener('resize', this);
   }
 
@@ -663,6 +668,7 @@ export class Application<T extends Widget = Widget> {
   private _plugins = new Map<string, Private.IPluginData>();
   private _services = new Map<Token<any>, string>();
   private _started = false;
+  private _bubblingKeydown = false;
 }
 
 /**
@@ -715,6 +721,8 @@ export namespace Application {
      * This will override `startPlugins` and any `autoStart` plugins.
      */
     ignorePlugins?: string[];
+
+    bubblingKeydown?: boolean;
   }
 }
 
