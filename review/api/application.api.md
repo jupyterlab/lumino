@@ -17,6 +17,8 @@ export class Application<T extends Widget = Widget> {
     activatePlugin(id: string): Promise<void>;
     protected addEventListeners(): void;
     protected attachShell(id: string): void;
+    get bubblingKeydown(): boolean;
+    set bubblingKeydown(value: boolean);
     readonly commands: CommandRegistry;
     readonly contextMenu: ContextMenu;
     deactivatePlugin(id: string): Promise<string[]>;
@@ -46,7 +48,6 @@ export namespace Application {
         shell: T;
     }
     export interface IStartOptions {
-        // (undocumented)
         bubblingKeydown?: boolean;
         hostID?: string;
         ignorePlugins?: string[];
