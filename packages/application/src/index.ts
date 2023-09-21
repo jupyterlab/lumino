@@ -722,6 +722,12 @@ export namespace Application {
      */
     ignorePlugins?: string[];
 
+    /**
+     * A flag to handle the keydown events at bubbling phase.
+     *
+     * #### Notes
+     * If not provides, the keydown events are handled at capture phase.
+     */
     bubblingKeydown?: boolean;
   }
 }

@@ -46,6 +46,8 @@ export namespace Application {
         shell: T;
     }
     export interface IStartOptions {
+        // (undocumented)
+        bubblingKeydown?: boolean;
         hostID?: string;
         ignorePlugins?: string[];
         startPlugins?: string[];
