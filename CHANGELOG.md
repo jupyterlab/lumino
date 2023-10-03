@@ -6,6 +6,52 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2023.9.25-alpha.0
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2023.7.27...dbbaf769024b39a9558f1ef66bf99c08d4d0d70c))
+
+```
+@lumino/application: 2.2.1 => 2.3.0-alpha.0
+@lumino/datagrid: 2.2.0 => 2.3.0-alpha.0
+@lumino/default-theme: 2.1.3 => 2.1.4-alpha.0
+@lumino/widgets: 2.3.0 => 2.3.1-alpha.0
+```
+
+### New features added
+
+- Datagrid: Introduce AsyncCellRenderer and ImageRenderer [#630](https://github.com/jupyterlab/lumino/pull/630) ([@martinRenou](https://github.com/martinRenou))
+
+### Enhancements made
+
+- Keydown event at bubbling phase [#635](https://github.com/jupyterlab/lumino/pull/635) ([@brichet](https://github.com/brichet))
+- Datagrid: Introduce AsyncCellRenderer and ImageRenderer [#630](https://github.com/jupyterlab/lumino/pull/630) ([@martinRenou](https://github.com/martinRenou))
+
+### Bugs fixed
+
+- Added role of button to addButton to make itkeyboard accessible when using screenreader [#615](https://github.com/jupyterlab/lumino/pull/615) ([@s596757](https://github.com/s596757))
+- MenuBar: do not focus on hover [#607](https://github.com/jupyterlab/lumino/pull/607) ([@gabalafou](https://github.com/gabalafou))
+
+### Maintenance and upkeep improvements
+
+- Update versions [#636](https://github.com/jupyterlab/lumino/pull/636) ([@fcollonval](https://github.com/fcollonval))
+- Bump tj-actions/changed-files from 39.0.1 to 39.0.3 [#634](https://github.com/jupyterlab/lumino/pull/634) ([@dependabot](https://github.com/dependabot))
+- Bump tj-actions/changed-files from 38.2.1 to 39.0.1 [#632](https://github.com/jupyterlab/lumino/pull/632) ([@dependabot](https://github.com/dependabot))
+- Added a test to check the add tab button has a role of button [#631](https://github.com/jupyterlab/lumino/pull/631) ([@m158261](https://github.com/m158261))
+- Bump actions/checkout from 3 to 4 [#629](https://github.com/jupyterlab/lumino/pull/629) ([@dependabot](https://github.com/dependabot))
+- Bump tj-actions/changed-files from 37.6.1 to 38.2.1 [#628](https://github.com/jupyterlab/lumino/pull/628) ([@dependabot](https://github.com/dependabot))
+- Bump apache/skywalking-eyes from 0.4.0 to 0.5.0 [#625](https://github.com/jupyterlab/lumino/pull/625) ([@dependabot](https://github.com/dependabot))
+- Bump tj-actions/changed-files from 37.6.0 to 37.6.1 [#624](https://github.com/jupyterlab/lumino/pull/624) ([@dependabot](https://github.com/dependabot))
+- Bump tj-actions/changed-files from 37.5.1 to 37.6.0 [#621](https://github.com/jupyterlab/lumino/pull/621) ([@dependabot](https://github.com/dependabot))
+- Bump tj-actions/changed-files from 37.4.0 to 37.5.1 [#620](https://github.com/jupyterlab/lumino/pull/620) ([@dependabot](https://github.com/dependabot))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2023-07-27&to=2023-09-25&type=c))
+
+[@brichet](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Abrichet+updated%3A2023-07-27..2023-09-25&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2023-07-27..2023-09-25&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2023-07-27..2023-09-25&type=Issues) | [@gabalafou](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Agabalafou+updated%3A2023-07-27..2023-09-25&type=Issues) | [@krassowski](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2023-07-27..2023-09-25&type=Issues) | [@m158261](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Am158261+updated%3A2023-07-27..2023-09-25&type=Issues) | [@martinRenou](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3AmartinRenou+updated%3A2023-07-27..2023-09-25&type=Issues) | [@s596757](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3As596757+updated%3A2023-07-27..2023-09-25&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Awelcome+updated%3A2023-07-27..2023-09-25&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2023.7.27
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2023.6.22...c90d19e7a4706c37c31961052206aa2a0d5144b9))
@@ -65,8 +111,6 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2023-06-23&to=2023-07-27&type=c))
 
 [@brichet](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Abrichet+updated%3A2023-06-23..2023-07-27&type=Issues) | [@DenisaCG](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3ADenisaCG+updated%3A2023-06-23..2023-07-27&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2023-06-23..2023-07-27&type=Issues) | [@echarles](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aecharles+updated%3A2023-06-23..2023-07-27&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2023-06-23..2023-07-27&type=Issues) | [@g547315](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ag547315+updated%3A2023-06-23..2023-07-27&type=Issues) | [@krassowski](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2023-06-23..2023-07-27&type=Issues) | [@tonyfast](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Atonyfast+updated%3A2023-06-23..2023-07-27&type=Issues) | [@vthemelis](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Avthemelis+updated%3A2023-06-23..2023-07-27&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Awelcome+updated%3A2023-06-23..2023-07-27&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2023.6.22
 

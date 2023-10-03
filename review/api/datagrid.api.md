@@ -13,6 +13,13 @@ import { Signal } from '@lumino/signaling';
 import { Widget } from '@lumino/widgets';
 
 // @public
+export abstract class AsyncCellRenderer extends CellRenderer {
+    abstract isReady(config: CellRenderer.CellConfig): boolean;
+    abstract load(config: CellRenderer.CellConfig): Promise<void>;
+    abstract paintPlaceholder(gc: GraphicsContext, config: CellRenderer.CellConfig): void;
+}
+
+// @public
 export class BasicKeyHandler implements DataGrid.IKeyHandler {
     dispose(): void;
     get isDisposed(): boolean;
@@ -666,6 +673,34 @@ export interface ICellInputValidator {
 export interface ICellInputValidatorResponse {
     message?: string;
     valid: boolean;
+}
+
+// @public
+export class ImageRenderer extends AsyncCellRenderer {
+    constructor(options?: ImageRenderer.IOptions);
+    readonly backgroundColor: CellRenderer.ConfigOption<string>;
+    drawBackground(gc: GraphicsContext, config: CellRenderer.CellConfig): void;
+    drawImage(gc: GraphicsContext, config: CellRenderer.CellConfig): void;
+    drawPlaceholder(gc: GraphicsContext, config: CellRenderer.CellConfig): void;
+    readonly height: CellRenderer.ConfigOption<string>;
+    isReady(config: CellRenderer.CellConfig): boolean;
+    load(config: CellRenderer.CellConfig): Promise<void>;
+    paint(gc: GraphicsContext, config: CellRenderer.CellConfig): void;
+    paintPlaceholder(gc: GraphicsContext, config: CellRenderer.CellConfig): void;
+    readonly placeholder: CellRenderer.ConfigOption<string>;
+    readonly textColor: CellRenderer.ConfigOption<string>;
+    readonly width: CellRenderer.ConfigOption<string>;
+}
+
+// @public
+export namespace ImageRenderer {
+    export interface IOptions {
+        backgroundColor?: CellRenderer.ConfigOption<string>;
+        height?: CellRenderer.ConfigOption<string>;
+        placeholder?: CellRenderer.ConfigOption<string>;
+        textColor?: CellRenderer.ConfigOption<string>;
+        width?: CellRenderer.ConfigOption<string>;
+    }
 }
 
 // @public
