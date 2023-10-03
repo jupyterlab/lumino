@@ -14,6 +14,7 @@
 export * from './basickeyhandler';
 export * from './basicmousehandler';
 export * from './basicselectionmodel';
+export * from './asynccellrenderer';
 export * from './cellrenderer';
 export * from './celleditor';
 export * from './celleditorcontroller';
@@ -26,4 +27,5 @@ export * from './selectionmodel';
 export * from './sectionlist';
 export * from './textrenderer';
 export * from './hyperlinkrenderer';
+export * from './imagerenderer';
 export * from './cellgroup';

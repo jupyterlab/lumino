@@ -34,7 +34,7 @@ from subprocess import check_call
 
 
 HERE = osp.abspath(osp.dirname(__file__))
-EXAMPLES = ["accordionpanel", "datagrid", "dockpanel"]
+EXAMPLES = ["accordionpanel", "datagrid", "dockpanel", "menubar"]
 
 # -- General configuration ------------------------------------------------
 
@@ -50,7 +50,6 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.mathjax',
     'sphinx_copybutton',
-
 ]
 
 myst_enable_extensions = ["html_image"]

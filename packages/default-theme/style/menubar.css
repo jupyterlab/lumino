@@ -44,3 +44,12 @@
   border-right: 1px solid #c0c0c0;
   box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.2);
 }
+
+.lm-MenuBar-item:focus-visible {
+  outline: 2px solid #333;
+  outline-offset: -2px;
+}
+
+.lm-MenuBar-item[aria-disabled='true'] {
+  color: rgba(0, 0, 0, 0.37);
+}

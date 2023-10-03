@@ -13,3 +13,5 @@ Rendered static examples
 `DataGrid <examples/datagrid/index.html>`_
 
 `DockPanel <examples/dockpanel/index.html>`_
+
+`MenuBar <examples/menubar/index.html>`_
