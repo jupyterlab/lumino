@@ -29,6 +29,9 @@ import { ISignal, Signal } from '@lumino/signaling';
 
 import { VirtualElement } from '@lumino/virtualdom';
 
+
+
+
 /**
  * An object which manages a collection of commands.
  *
@@ -1264,7 +1267,7 @@ export namespace CommandRegistry {
     if (event.metaKey && Platform.IS_MAC) {
       mods.push('Cmd');
     }
-    if (!mods.includes(event.key)) {
+    if (!mods.includes(event.key) && !event.ctrlKey) {
       mods.push(key);
     }
     console.log(mods)
@@ -1278,8 +1281,8 @@ export namespace CommandRegistry {
     if (mods.length === 1 && mods[0] === 'Alt') {
       return "Alt" + ' '
       }
-
-    return mods.join(' ');
+    console.log(mods.join(' '))
+    return mods.join(' ') || mods[0].concat();
   }
 }
 
