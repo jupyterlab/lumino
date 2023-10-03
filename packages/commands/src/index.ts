@@ -1281,8 +1281,8 @@ export namespace CommandRegistry {
     if (mods.length === 1 && mods[0] === 'Alt') {
       return "Alt" + ' '
       }
-    console.log(mods.join(' '))
-    return mods.join(' ') || mods[0].concat();
+      
+    return mods.join(' ');
   }
 }
 
