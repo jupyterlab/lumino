@@ -1270,8 +1270,9 @@ export namespace CommandRegistry {
     if (!mods.includes(event.key) && !event.ctrlKey) {
       mods.push(key);
     }
-    console.log(mods)
+
     // Handle the edge cases
+    
     // Handle the edge case for triggering the Alt Shift key binding
     if (mods.length === 2 && (mods[0] === 'Alt' && mods[1] === 'Shift')) {
         return "Alt" + ' ' + "Shift" + ' '
