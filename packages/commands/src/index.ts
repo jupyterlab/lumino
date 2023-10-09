@@ -613,7 +613,7 @@ export class CommandRegistry {
    */
   private _executeKeyBinding(binding: CommandRegistry.IKeyBinding): void {
     let { command, args } = binding;
-    let newArgs = {...args, "isKeybinding": true}
+    let newArgs = { ...args, isKeybinding: true };
     if (!this.hasCommand(command) || !this.isEnabled(command, newArgs)) {
       let word = this.hasCommand(command) ? 'enabled' : 'registered';
       let keys = binding.keys.join(', ');
