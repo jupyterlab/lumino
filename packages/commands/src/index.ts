@@ -613,8 +613,8 @@ export class CommandRegistry {
    */
   private _executeKeyBinding(binding: CommandRegistry.IKeyBinding): void {
     let { command, args } = binding;
-    args.isKeybinding = true;
-    if (!this.hasCommand(command) || !this.isEnabled(command, args)) {
+    let newArgs = {...args, "isKeybinding": true}
+    if (!this.hasCommand(command) || !this.isEnabled(command, newArgs)) {
       let word = this.hasCommand(command) ? 'enabled' : 'registered';
       let keys = binding.keys.join(', ');
       let msg1 = `Cannot execute key binding '${keys}':`;
@@ -622,7 +622,7 @@ export class CommandRegistry {
       console.warn(`${msg1} ${msg2}`);
       return;
     }
-    this.execute(command, args);
+    this.execute(command, newArgs);
   }
 
   /**
