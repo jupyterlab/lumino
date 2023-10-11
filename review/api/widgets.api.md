@@ -1187,7 +1187,6 @@ export namespace TabBar {
         renderCloseIcon(data: IRenderData<any>): VirtualElement;
         renderIcon(data: IRenderData<any>): VirtualElement;
         renderLabel(data: IRenderData<any>): VirtualElement;
-        // (undocumented)
         renderOverlay(dataset: ElementDataset): VirtualElement;
         renderTab(data: IRenderData<any>): VirtualElement;
     }
