@@ -1188,6 +1188,7 @@ export namespace TabBar {
         renderIcon(data: IRenderData<any>): VirtualElement;
         renderLabel(data: IRenderData<any>): VirtualElement;
         renderTab(data: IRenderData<any>): VirtualElement;
+        renderOverlay(dataset: ElementDataset): VirtualElement;
     }
     const defaultRenderer: Renderer;
     const addButtonSelector = ".lm-TabBar-addButton";
