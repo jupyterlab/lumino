@@ -849,7 +849,7 @@ export class TabBar<T> extends Widget {
         nextFocused?.setAttribute('tabindex', '0');
         (nextFocused as HTMLElement).focus();
       }
-    } 
+    }
   }
 
   /**
