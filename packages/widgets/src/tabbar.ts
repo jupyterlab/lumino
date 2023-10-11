@@ -1714,7 +1714,7 @@ export namespace TabBar {
           { id, key, className, title, style, dataset, ...aria },
           this.renderIcon(data),
           this.renderLabel(data),
-          this.renderOverlay(data)
+          this.renderOverlay(dataset)
         );
       }
     }
@@ -1756,8 +1756,15 @@ export namespace TabBar {
       return h.div({ className: 'lm-TabBar-tabCloseIcon' });
     }
 
-    renderOverlay(data: IRenderData<any>): VirtualElement {
-      if (data.title.label == 'Launcher') {
+    /**
+     * Add a className to display/hide the ovleray on a tab.
+     *
+     * @param dataset - The data to identify a launcher.
+     *
+     * @returns A virtual element representing the tab overlay.
+     */
+    renderOverlay(dataset: ElementDataset): VirtualElement {
+      if (dataset.id?.toLowerCase().includes('launcher')) {
         return h.div({ className: 'lm-TabBar-UI-Overlay.lm-mod-hidden' });
       } else {
         return h.div({ className: 'lm-TabBar-UI-Overlay' });
