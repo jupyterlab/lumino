@@ -29,9 +29,6 @@ import { ISignal, Signal } from '@lumino/signaling';
 
 import { VirtualElement } from '@lumino/virtualdom';
 
-
-
-
 /**
  * An object which manages a collection of commands.
  *
@@ -1256,7 +1253,7 @@ export namespace CommandRegistry {
   export function keystrokeForKeydownEvent(event: KeyboardEvent): string {
     let layout = getKeyboardLayout();
     let key = layout.keyForKeydownEvent(event);
-    let mods = []
+    let mods = [];
 
     if (event.ctrlKey) {
       mods.push('Ctrl');
@@ -1275,17 +1272,17 @@ export namespace CommandRegistry {
     }
 
     // Handle the edge cases
-    
+
     // Handle the edge case for triggering the Alt Shift key binding
-    if (mods.length === 2 && (mods[0] === 'Alt' && mods[1] === 'Shift')) {
-        return "Alt" + ' ' + "Shift" + ' '
-    } 
+    if (mods.length === 2 && mods[0] === 'Alt' && mods[1] === 'Shift') {
+      return 'Alt' + ' ' + 'Shift' + ' ';
+    }
 
     // Handle the edge case for triggering the Alt key binding
     if (mods.length === 1 && mods[0] === 'Alt') {
-      return "Alt" + ' '
-      }
-      
+      return 'Alt' + ' ';
+    }
+
     return mods.join(' ');
   }
 }
