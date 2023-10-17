@@ -1167,7 +1167,7 @@ export namespace CommandRegistry {
     if (parts.cmd && Platform.IS_MAC) {
       mods += 'Cmd ';
     }
-    if (!parts.key) {
+    if (!parts.key && parts.key !== '') {
       return mods.trim();
     }
     return mods + parts.key;
