@@ -1167,7 +1167,7 @@ export namespace CommandRegistry {
     if (parts.cmd && Platform.IS_MAC) {
       mods += 'Cmd ';
     }
-    if (parts.key.trim() === '') {
+    if (!parts.key) {
       return mods.trim();
     }
     return mods + parts.key;
@@ -1267,7 +1267,7 @@ export namespace CommandRegistry {
     if (event.metaKey && Platform.IS_MAC) {
       mods.push('Cmd');
     }
-    if (!mods.includes(event.key) && !event.ctrlKey) {
+    if (!layout.isModifierKey(key)) {
       mods.push(key);
     }
 
