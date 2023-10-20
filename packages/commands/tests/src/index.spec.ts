@@ -1179,7 +1179,7 @@ describe('@lumino/commands', () => {
             ctrlKey: true
           })
         );
-        expect(count).to.equal(1);
+        expect(count).to.equal(0);
         elem.dispatchEvent(
           new KeyboardEvent('keydown', {
             keyCode: 76, // `L` key
@@ -1218,11 +1218,11 @@ describe('@lumino/commands', () => {
           ctrlKey: true
         });
         elem.dispatchEvent(eventShift);
-        expect(count).to.equal(1);
+        expect(count).to.equal(0);
         elem.dispatchEvent(eventK);
         expect(count).to.equal(1);
         elem.dispatchEvent(eventCtrl);
-        expect(count).to.equal(1);
+        expect(count).to.equal(0);
         elem.dispatchEvent(eventL);
         expect(count).to.equal(1);
       });
@@ -1339,7 +1339,7 @@ describe('@lumino/commands', () => {
         let keystroke = CommandRegistry.keystrokeForKeydownEvent(
           new KeyboardEvent('keydown', { keyCode: 17, ctrlKey: true })
         );
-        expect(keystroke).to.equal('Ctrl');
+        expect(keystroke).to.equal('Ctrl ');
       });
     });
   });
