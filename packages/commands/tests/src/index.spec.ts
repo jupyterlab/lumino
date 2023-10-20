@@ -1171,7 +1171,7 @@ describe('@lumino/commands', () => {
             ctrlKey: true
           })
         );
-        expect(count).to.equal(0);
+        expect(count).to.equal(1);
         // User presses `ctrl` again - this should not break the sequence.
         elem.dispatchEvent(
           new KeyboardEvent('keydown', {
@@ -1179,7 +1179,7 @@ describe('@lumino/commands', () => {
             ctrlKey: true
           })
         );
-        expect(count).to.equal(0);
+        expect(count).to.equal(1);
         elem.dispatchEvent(
           new KeyboardEvent('keydown', {
             keyCode: 76, // `L` key
@@ -1218,11 +1218,11 @@ describe('@lumino/commands', () => {
           ctrlKey: true
         });
         elem.dispatchEvent(eventShift);
-        expect(count).to.equal(0);
+        expect(count).to.equal(1);
         elem.dispatchEvent(eventK);
-        expect(count).to.equal(0);
+        expect(count).to.equal(1);
         elem.dispatchEvent(eventCtrl);
-        expect(count).to.equal(0);
+        expect(count).to.equal(1);
         elem.dispatchEvent(eventL);
         expect(count).to.equal(1);
       });
@@ -1335,11 +1335,11 @@ describe('@lumino/commands', () => {
         expect(keystroke).to.equal('');
       });
 
-      it('should return nothing for keys that are marked as modifier in keyboard layout', () => {
+      it('should return keys that are marked as modifier in keyboard layout', () => {
         let keystroke = CommandRegistry.keystrokeForKeydownEvent(
           new KeyboardEvent('keydown', { keyCode: 17, ctrlKey: true })
         );
-        expect(keystroke).to.equal('');
+        expect(keystroke).to.equal('Ctrl');
       });
     });
   });
