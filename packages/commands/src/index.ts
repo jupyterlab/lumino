@@ -1269,21 +1269,11 @@ export namespace CommandRegistry {
     }
     if (!layout.isModifierKey(key)) {
       mods.push(key);
+      return mods.join(' ');
+    } else {
+      // for purely modifier key strings add a space so they can be matched
+      return mods.join(' ') + ' ';
     }
-
-    // Handle the edge cases
-
-    // Handle the edge case for triggering the Alt Shift key binding
-    if (mods.length === 2 && mods[0] === 'Alt' && mods[1] === 'Shift') {
-      return 'Alt' + ' ' + 'Shift' + ' ';
-    }
-
-    // Handle the edge case for triggering the Alt key binding
-    if (mods.length === 1 && mods[0] === 'Alt') {
-      return 'Alt' + ' ';
-    }
-
-    return mods.join(' ');
   }
 }
 
