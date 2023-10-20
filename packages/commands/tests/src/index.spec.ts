@@ -1171,7 +1171,7 @@ describe('@lumino/commands', () => {
             ctrlKey: true
           })
         );
-        expect(count).to.equal(1);
+        expect(count).to.equal(0);
         // User presses `ctrl` again - this should not break the sequence.
         elem.dispatchEvent(
           new KeyboardEvent('keydown', {
@@ -1220,7 +1220,7 @@ describe('@lumino/commands', () => {
         elem.dispatchEvent(eventShift);
         expect(count).to.equal(0);
         elem.dispatchEvent(eventK);
-        expect(count).to.equal(1);
+        expect(count).to.equal(0);
         elem.dispatchEvent(eventCtrl);
         expect(count).to.equal(0);
         elem.dispatchEvent(eventL);
