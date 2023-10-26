@@ -23,5 +23,7 @@
 }
 
 .lm-mod-drag-image {
+  top: 0px;
+  left: 0px;
   will-change: transform;
 }
