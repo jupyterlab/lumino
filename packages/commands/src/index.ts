@@ -613,7 +613,7 @@ export class CommandRegistry {
    */
   private _executeKeyBinding(binding: CommandRegistry.IKeyBinding): void {
     let { command, args } = binding;
-    let newArgs = { ...args, isKeybinding: true };
+    let newArgs: ReadonlyPartialJSONObject = {_luminoEvent: { type: "keybinding", keys: binding.keys }, ...args};
     if (!this.hasCommand(command) || !this.isEnabled(command, newArgs)) {
       let word = this.hasCommand(command) ? 'enabled' : 'registered';
       let keys = binding.keys.join(', ');
