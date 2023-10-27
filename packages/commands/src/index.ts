@@ -711,6 +711,8 @@ export namespace CommandRegistry {
      * the command.
      *
      * This may be invoked even when `isEnabled` returns `false`.
+     * 
+     * If called via a keybinding the passed args will include a `_luminoEvent` that specify the event type and keys pressed for customization.
      */
     execute: CommandFunc<any | Promise<any>>;
 
@@ -866,6 +868,8 @@ export namespace CommandRegistry {
      * command as grayed-out or in some other non-interactive fashion.
      *
      * The default value is `() => true`.
+     * 
+     * If called via a keybinding the passed args will include a `_luminoEvent` that specify the event type and keys pressed for customization
      */
     isEnabled?: CommandFunc<boolean>;
 
@@ -991,7 +995,7 @@ export namespace CommandRegistry {
     /**
      * The arguments for the command, if necessary.
      *
-     * The default value is an empty object.
+     * The default value is an empty object. If a command is activated by _executeKeyBinding, `args = {_luminoEvent: {type: <string>, keys: <string[]>}}`
      */
     args?: ReadonlyPartialJSONObject;
 
