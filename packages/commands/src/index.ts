@@ -613,7 +613,10 @@ export class CommandRegistry {
    */
   private _executeKeyBinding(binding: CommandRegistry.IKeyBinding): void {
     let { command, args } = binding;
-    let newArgs: ReadonlyPartialJSONObject = {_luminoEvent: { type: "keybinding", keys: binding.keys }, ...args};
+    let newArgs: ReadonlyPartialJSONObject = {
+      _luminoEvent: { type: 'keybinding', keys: binding.keys },
+      ...args
+    };
     if (!this.hasCommand(command) || !this.isEnabled(command, newArgs)) {
       let word = this.hasCommand(command) ? 'enabled' : 'registered';
       let keys = binding.keys.join(', ');
@@ -711,7 +714,7 @@ export namespace CommandRegistry {
      * the command.
      *
      * This may be invoked even when `isEnabled` returns `false`.
-     * 
+     *
      * If called via a keybinding the passed args will include a `_luminoEvent` that specify the event type and keys pressed for customization.
      */
     execute: CommandFunc<any | Promise<any>>;
@@ -868,7 +871,7 @@ export namespace CommandRegistry {
      * command as grayed-out or in some other non-interactive fashion.
      *
      * The default value is `() => true`.
-     * 
+     *
      * If called via a keybinding the passed args will include a `_luminoEvent` that specify the event type and keys pressed for customization
      */
     isEnabled?: CommandFunc<boolean>;
