@@ -1260,8 +1260,8 @@ namespace Private {
       // Hide the backdrop until the pointer moves to avoid issues with
       // native double click detection, used in e.g. datagrid editing.
       cursorBackdrop.style.transform = 'scale(0)';
-      resetBackdropScroll();
       body.appendChild(cursorBackdrop);
+      resetBackdropScroll();
       document.addEventListener('pointermove', alignBackdrop, {
         capture: true,
         passive: true
