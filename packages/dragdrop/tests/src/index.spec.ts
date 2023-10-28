@@ -629,13 +629,17 @@ describe('@lumino/dragdrop', () => {
         wrapper.style.overflow = 'scroll';
         wrapper.style.height = '100px';
         wrapper.style.width = '100px';
-        content.style.height = '200px';
-        content.style.width = '200px';
+        content.style.height = '2000px';
+        content.style.width = '2000px';
 
-        backdrop.scrollTop += 10;
+        backdrop.scrollTop += 400;
         backdrop.dispatchEvent(new Event('scroll'));
+        expect(wrapper.scrollTop).to.equal(400);
 
-        expect(wrapper.scrollTop).to.equal(10);
+        backdrop.scrollTop += 400;
+        backdrop.dispatchEvent(new Event('scroll'));
+        expect(wrapper.scrollTop).to.equal(800);
+
         override.dispose();
         document.body.removeChild(wrapper);
       });

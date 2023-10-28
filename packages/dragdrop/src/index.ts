@@ -1315,38 +1315,25 @@ namespace Private {
       return;
     }
     // Apply the scroll delta to the correct target.
-    scrollTarget.scrollTop +=
-      cursorBackdrop.scrollTop - backdropScroll.scrollTop;
-    scrollTarget.scrollLeft +=
-      cursorBackdrop.scrollLeft - backdropScroll.scrollLeft;
+    scrollTarget.scrollTop += cursorBackdrop.scrollTop - backdropScrollOrigin;
+    scrollTarget.scrollLeft += cursorBackdrop.scrollLeft - backdropScrollOrigin;
 
-    // Update previous position for future delta calculation.
-    backdropScroll.scrollTop = cursorBackdrop.scrollTop;
-    backdropScroll.scrollLeft = cursorBackdrop.scrollLeft;
-
-    // Center the scroll position if needed.
+    // Center the scroll position.
     resetBackdropScroll();
   }
 
   /**
-   * If needed, reset the backdrop scroll to allow further scrolling.
+   * Reset the backdrop scroll to allow further scrolling.
    */
   function resetBackdropScroll() {
-    if (cursorBackdrop.scrollTop <= 0 || cursorBackdrop.scrollTop >= 1000) {
-      cursorBackdrop.scrollTop = backdropScroll.scrollTop = 500;
-    }
-    if (cursorBackdrop.scrollLeft <= 0 || cursorBackdrop.scrollLeft >= 1000) {
-      cursorBackdrop.scrollLeft = backdropScroll.scrollLeft = 500;
-    }
+    cursorBackdrop.scrollTop = backdropScrollOrigin;
+    cursorBackdrop.scrollLeft = backdropScrollOrigin;
   }
 
   /**
-   * Previous backdrop scroll position.
+   * The center of the backdrop node scroll area.
    */
-  let backdropScroll = {
-    scrollTop: 0,
-    scrollLeft: 0
-  };
+  const backdropScrollOrigin = 500;
 
   /**
    * Create cursor backdrop node.

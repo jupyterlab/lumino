@@ -29,8 +29,8 @@
 
 .lm-cursor-backdrop::after {
   content: '';
-  height: 1000px;
-  width: 1000px;
+  height: 1200px;
+  width: 1200px;
   display: block;
 }
 
