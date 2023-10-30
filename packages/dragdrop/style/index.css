@@ -13,6 +13,8 @@
 |----------------------------------------------------------------------------*/
 
 .lm-cursor-backdrop {
+  top: 0px;
+  left: 0px;
   position: fixed;
   width: 200px;
   height: 200px;
@@ -20,6 +22,20 @@
   margin-left: -100px;
   will-change: transform;
   z-index: 100;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  overflow: scroll;
+}
+
+.lm-cursor-backdrop::after {
+  content: '';
+  height: 1200px;
+  width: 1200px;
+  display: block;
+}
+
+.lm-cursor-backdrop::-webkit-scrollbar {
+  display: none;
 }
 
 .lm-mod-drag-image {

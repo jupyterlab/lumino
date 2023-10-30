@@ -374,7 +374,7 @@ export class Drag implements IDisposable {
     let prevElem = this._currentElement;
 
     // Find the current indicated element at the given position.
-    let currElem = Private.findElementBehidBackdrop(event, this.document);
+    let currElem = Private.findElementBehindBackdrop(event, this.document);
 
     // Update the current element reference.
     this._currentElement = currElem;
@@ -837,28 +837,49 @@ namespace Private {
   }
 
   /**
-   * Find the event target using pointer position.
+   * Find the event target using pointer position if given, or otherwise
+   * the central position of the backdrop.
    */
-  export function findElementBehidBackdrop(
-    event: PointerEvent,
+  export function findElementBehindBackdrop(
+    event?: PointerEvent,
     root: Document | ShadowRoot = document
   ) {
-    // Check if we already cached element for this event.
-    if (lastElementSearch && event == lastElementSearch.event) {
-      return lastElementSearch.element;
+    if (event) {
+      // Check if we already cached element for this event.
+      if (lastElementEventSearch && event == lastElementEventSearch.event) {
+        return lastElementEventSearch.element;
+      }
+      Private.cursorBackdrop.style.zIndex = '-1000';
+      const element: Element | null = root.elementFromPoint(
+        event.clientX,
+        event.clientY
+      );
+      Private.cursorBackdrop.style.zIndex = '';
+      lastElementEventSearch = { event, element };
+      return element;
+    } else {
+      const transform = cursorBackdrop.style.transform;
+      if (lastElementSearch && transform === lastElementSearch.transform) {
+        return lastElementSearch.element;
+      }
+      const bbox = Private.cursorBackdrop.getBoundingClientRect();
+      Private.cursorBackdrop.style.zIndex = '-1000';
+      const element = root.elementFromPoint(
+        bbox.left + bbox.width / 2,
+        bbox.top + bbox.height / 2
+      );
+      Private.cursorBackdrop.style.zIndex = '';
+      lastElementSearch = { transform, element };
+      return element;
     }
-    Private.cursorBackdrop.style.zIndex = '-1000';
-    const element: Element | null = root.elementFromPoint(
-      event.clientX,
-      event.clientY
-    );
-    Private.cursorBackdrop.style.zIndex = '';
-    lastElementSearch = { event, element };
-    return element;
   }
 
-  let lastElementSearch: {
+  let lastElementEventSearch: {
     event: PointerEvent;
+    element: Element | null;
+  } | null = null;
+  let lastElementSearch: {
+    transform: string;
     element: Element | null;
   } | null = null;
 
@@ -871,7 +892,7 @@ namespace Private {
     let y = event.clientY;
 
     // Get the element under the mouse.
-    let element: Element | null = findElementBehidBackdrop(event);
+    let element: Element | null = findElementBehindBackdrop(event);
 
     // Search for a scrollable target based on the mouse position.
     // The null assert in third clause of for-loop is required due to:
@@ -1240,7 +1261,12 @@ namespace Private {
       // native double click detection, used in e.g. datagrid editing.
       cursorBackdrop.style.transform = 'scale(0)';
       body.appendChild(cursorBackdrop);
+      resetBackdropScroll();
       document.addEventListener('pointermove', alignBackdrop, {
+        capture: true,
+        passive: true
+      });
+      cursorBackdrop.addEventListener('scroll', propagateBackdropScroll, {
         capture: true,
         passive: true
       });
@@ -1249,6 +1275,11 @@ namespace Private {
     return new DisposableDelegate(() => {
       if (id === overrideCursorID && cursorBackdrop.isConnected) {
         document.removeEventListener('pointermove', alignBackdrop, true);
+        cursorBackdrop.removeEventListener(
+          'scroll',
+          propagateBackdropScroll,
+          true
+        );
         body.removeChild(cursorBackdrop);
       }
     });
@@ -1263,6 +1294,46 @@ namespace Private {
     }
     cursorBackdrop.style.transform = `translate(${event.clientX}px, ${event.clientY}px)`;
   }
+
+  /**
+   * Propagate the scroll event from the backdrop element to the scroll target.
+   * The scroll target is defined by presence of `data-lm-dragscroll` attribute.
+   */
+  function propagateBackdropScroll(_event: Event) {
+    if (!cursorBackdrop) {
+      return;
+    }
+    // Get the element under behind the centre of the cursor backdrop
+    // (essentially behind the cursor, but possibly a few pixels off).
+    let element: Element | null = findElementBehindBackdrop();
+    if (!element) {
+      return;
+    }
+    // Find scroll target.
+    const scrollTarget = element.closest('[data-lm-dragscroll]');
+    if (!scrollTarget) {
+      return;
+    }
+    // Apply the scroll delta to the correct target.
+    scrollTarget.scrollTop += cursorBackdrop.scrollTop - backdropScrollOrigin;
+    scrollTarget.scrollLeft += cursorBackdrop.scrollLeft - backdropScrollOrigin;
+
+    // Center the scroll position.
+    resetBackdropScroll();
+  }
+
+  /**
+   * Reset the backdrop scroll to allow further scrolling.
+   */
+  function resetBackdropScroll() {
+    cursorBackdrop.scrollTop = backdropScrollOrigin;
+    cursorBackdrop.scrollLeft = backdropScrollOrigin;
+  }
+
+  /**
+   * The center of the backdrop node scroll area.
+   */
+  const backdropScrollOrigin = 500;
 
   /**
    * Create cursor backdrop node.
