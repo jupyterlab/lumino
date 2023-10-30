@@ -374,7 +374,7 @@ export class Drag implements IDisposable {
     let prevElem = this._currentElement;
 
     // Find the current indicated element at the given position.
-    let currElem = Private.findElementBehidBackdrop(event, this.document);
+    let currElem = Private.findElementBehindBackdrop(event, this.document);
 
     // Update the current element reference.
     this._currentElement = currElem;
@@ -840,7 +840,7 @@ namespace Private {
    * Find the event target using pointer position if given, or otherwise
    * the central position of the backdrop.
    */
-  export function findElementBehidBackdrop(
+  export function findElementBehindBackdrop(
     event?: PointerEvent,
     root: Document | ShadowRoot = document
   ) {
@@ -892,7 +892,7 @@ namespace Private {
     let y = event.clientY;
 
     // Get the element under the mouse.
-    let element: Element | null = findElementBehidBackdrop(event);
+    let element: Element | null = findElementBehindBackdrop(event);
 
     // Search for a scrollable target based on the mouse position.
     // The null assert in third clause of for-loop is required due to:
@@ -1305,7 +1305,7 @@ namespace Private {
     }
     // Get the element under behind the centre of the cursor backdrop
     // (essentially behind the cursor, but possibly a few pixels off).
-    let element: Element | null = findElementBehidBackdrop();
+    let element: Element | null = findElementBehindBackdrop();
     if (!element) {
       return;
     }
