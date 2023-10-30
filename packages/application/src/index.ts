@@ -608,9 +608,6 @@ export class Application<T extends Widget = Widget> {
    * A subclass may reimplement this method as needed.
    */
   protected addEventListeners(): void {
-    if (this._bubblingKeydown) {
-      console.debug('The keydown events are handled during bubbling phase');
-    }
     document.addEventListener('contextmenu', this);
     document.addEventListener('keydown', this, !this._bubblingKeydown);
     window.addEventListener('resize', this);
