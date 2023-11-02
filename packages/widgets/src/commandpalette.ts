@@ -853,15 +853,7 @@ export namespace CommandPalette {
      */
     renderItemLabel(data: IItemRenderData): VirtualElement {
       let content = this.formatItemLabel(data);
-      return h.div(
-        {
-          className: 'lm-CommandPalette-itemLabel',
-          'aria-live': 'assertive',
-          'aria-label': `${content}`,
-          id: `${content}`.toLowerCase().replace(/ /g, '')
-        },
-        content
-      );
+      return h.div({ className: 'lm-CommandPalette-itemLabel' }, content);
     }
 
     /**
@@ -1033,7 +1025,7 @@ namespace Private {
     input.className = 'lm-CommandPalette-input';
     clear.className = 'lm-close-icon';
 
-    ariaLiveRegion.setAttribute('aria-live', 'assertive');
+    ariaLiveRegion.setAttribute('aria-live', 'polite');
     ariaLiveRegion.setAttribute('role', 'region');
     ariaLiveRegion.setAttribute('id', 'command-palette-aria-live');
     content.className = 'lm-CommandPalette-content';
