@@ -189,20 +189,6 @@ export class Application<T extends Widget = Widget> {
   }
 
   /**
-   * Getter and setter for the bubblingKeydown experimental flag.
-   *
-   * @experimental
-   */
-  get bubblingKeydown(): boolean {
-    return this._bubblingKeydown;
-  }
-  set bubblingKeydown(value: boolean) {
-    document.removeEventListener('keydown', this, !this._bubblingKeydown);
-    this._bubblingKeydown = value;
-    document.addEventListener('keydown', this, !this._bubblingKeydown);
-  }
-
-  /**
    * Get a plugin description.
    *
    * @param id - The ID of the plugin of interest.
@@ -622,9 +608,6 @@ export class Application<T extends Widget = Widget> {
    * A subclass may reimplement this method as needed.
    */
   protected addEventListeners(): void {
-    if (this._bubblingKeydown) {
-      console.log('The keydown events are handled during bubbling phase');
-    }
     document.addEventListener('contextmenu', this);
     document.addEventListener('keydown', this, !this._bubblingKeydown);
     window.addEventListener('resize', this);
