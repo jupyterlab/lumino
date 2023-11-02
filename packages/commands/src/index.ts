@@ -575,24 +575,6 @@ export class CommandRegistry {
   }
 
   /**
-   * Add a dialog to a command 
-   *
-   * @param id - The id of the command of interest.
-   *
-   * @param args - The arguments for the command.
-   *
-   * @returns A  private ICommand or undefined of the dialog string 
-   *   or `an empty sting` if the command does not have a dialog.
-   */
-  commandDialog(
-    id: string,
-    args: ReadonlyPartialJSONObject = JSONExt.emptyObject
-    ): string {
-      let cmd = this._commands.get(id);
-      return cmd?.commandDialog.call(undefined, args) ?? '';
-  }
-
-  /**
    * Start or restart the pending timeout.
    */
   private _startTimer(): void {
@@ -930,17 +912,6 @@ export namespace CommandRegistry {
      * The default value is `() => true`.
      */
     isVisible?: CommandFunc<boolean>;
-
-    /**
-     * A function which sets the command dialog text.
-     *
-     * #### Notes
-     * This function sets a string which the screen reader will
-     * read aloud. This will be a description of the command executed.
-     *
-     * The default value is an empty string.
-     */
-    commandDialog? : string | CommandFunc<string>
   }
 
   /**
@@ -1348,7 +1319,6 @@ namespace Private {
     readonly isToggled: CommandFunc<boolean>;
     readonly isToggleable: boolean;
     readonly isVisible: CommandFunc<boolean>;
-    readonly commandDialog : CommandFunc<string>;
   }
 
   /**
@@ -1383,8 +1353,7 @@ namespace Private {
       isEnabled: options.isEnabled || trueFunc,
       isToggled: options.isToggled || falseFunc,
       isToggleable: options.isToggleable || !!options.isToggled,
-      isVisible: options.isVisible || trueFunc,
-      commandDialog: asFunc(options.commandDialog, emptyStringFunc)
+      isVisible: options.isVisible || trueFunc
     };
   }
 
