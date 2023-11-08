@@ -103,3 +103,8 @@
   box-sizing: border-box;
   background: inherit;
 }
+
+.lm-TabBar-ariaLive {
+  width: 0px;
+  overflow: hidden;
+}

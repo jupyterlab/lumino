@@ -2000,8 +2000,13 @@ namespace Private {
   export function createNode(): HTMLDivElement {
     let node = document.createElement('div');
     let content = document.createElement('ul');
+    let ariaLiveRegion = document.createElement('div');
     content.setAttribute('role', 'tablist');
     content.className = 'lm-TabBar-content';
+    ariaLiveRegion.setAttribute('aria-live', 'polite');
+    ariaLiveRegion.setAttribute('role', 'region');
+    ariaLiveRegion.setAttribute('id', 'tabbar-aria-live');
+    ariaLiveRegion.className = 'lm-TabBar-ariaLive';
     node.appendChild(content);
 
     let add = document.createElement('div');
@@ -2009,6 +2014,7 @@ namespace Private {
     add.setAttribute('tabindex', '-1');
     add.setAttribute('role', 'button');
     node.appendChild(add);
+    node.appendChild(ariaLiveRegion);
     return node;
   }
 

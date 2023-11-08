@@ -1019,15 +1019,11 @@ namespace Private {
     let input = document.createElement('input');
     let content = document.createElement('ul');
     let clear = document.createElement('button');
-    let ariaLiveRegion = document.createElement('div');
     search.className = 'lm-CommandPalette-search';
     wrapper.className = 'lm-CommandPalette-wrapper';
     input.className = 'lm-CommandPalette-input';
     clear.className = 'lm-close-icon';
 
-    ariaLiveRegion.setAttribute('aria-live', 'polite');
-    ariaLiveRegion.setAttribute('role', 'region');
-    ariaLiveRegion.setAttribute('id', 'command-palette-aria-live');
     content.className = 'lm-CommandPalette-content';
     content.setAttribute('role', 'menu');
     input.spellcheck = false;
@@ -1036,7 +1032,6 @@ namespace Private {
     search.appendChild(wrapper);
     node.appendChild(search);
     node.appendChild(content);
-    node.appendChild(ariaLiveRegion);
     return node;
   }
 
