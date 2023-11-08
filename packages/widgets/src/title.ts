@@ -7,11 +7,11 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import { IDisposable } from "@lumino/disposable";
+import { IDisposable } from '@lumino/disposable';
 
-import { ISignal, Signal } from "@lumino/signaling";
+import { ISignal, Signal } from '@lumino/signaling';
 
-import { VirtualElement } from "@lumino/virtualdom";
+import { VirtualElement } from '@lumino/virtualdom';
 
 /**
  * An object which holds data related to an object's title.
@@ -300,13 +300,13 @@ export class Title<T> implements IDisposable {
     Signal.clearData(this);
   }
 
-  private _label = "";
-  private _caption = "Launcher";
+  private _label = '';
+  private _caption = 'Launcher';
   private _mnemonic = -1;
   private _icon: VirtualElement.IRenderer | undefined = undefined;
-  private _iconClass = "";
-  private _iconLabel = "";
-  private _className = "";
+  private _iconClass = '';
+  private _iconLabel = '';
+  private _className = '';
   private _closable = false;
   private _dataset: Title.Dataset;
   private _changed = new Signal<this, void>(this);
