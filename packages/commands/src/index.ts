@@ -537,6 +537,14 @@ export class CommandRegistry {
       event
     );
 
+    // If there is no exact match and no partial match, replay
+    // any suppressed events and clear the pending state.
+    if (!exact && !partial) {
+      this._replayKeydownEvents();
+      this._clearPendingState();
+      return;
+    }
+
     // Remove modifier key only keystrokes from the current key sequence.
     // keystrokes that are modifier key(s) plus another key are not affected
     // intended functionality: Alt then Alt 1 should result to: ['Alt'] then ['Alt 1']
@@ -550,23 +558,6 @@ export class CommandRegistry {
       this._keystrokes.length = 0;
     }
 
-
-    // If there is an exact match that is not excluded and no partial match, the exact match
-    // can be dispatched immediately. The pending state is cleared so
-    // the next key press starts from the default state.
-    // add new modifier only key commands that should be excluded to the end of the if statement
-    if (
-      exact &&
-      !partial &&
-      !exact?.command.includes('application:activate-sidebar-overlays')
-    ) {
-      this._executeKeyBinding(exact);
-      this._clearPendingState();
-
-      return;
-    }
-
-
     // Stop propagation of the event. If there is only a partial match,
     // the event will be replayed if a final exact match never occurs.
     event.preventDefault();
@@ -575,7 +566,16 @@ export class CommandRegistry {
     // If there is an exact match but no partial match, the exact match
     // can be dispatched immediately. The pending state is cleared so
     // the next key press starts from the default state.
-    if (exact && !partial) {
+    if (
+      exact &&
+      !partial &&
+      !(
+        exact.keys.toString() === 'Alt' ||
+        exact.keys.toString() === 'Ctrl' ||
+        exact.keys.toString() === 'Shift' ||
+        exact.keys.toString() === 'Alt Shift'
+      )
+    ) {
       this._executeKeyBinding(exact);
       this._clearPendingState();
       return;
@@ -635,7 +635,11 @@ export class CommandRegistry {
    */
   private _executeKeyBinding(binding: CommandRegistry.IKeyBinding): void {
     let { command, args } = binding;
-    if (!this.hasCommand(command) || !this.isEnabled(command, args)) {
+    let newArgs: ReadonlyPartialJSONObject = {
+      _luminoEvent: { type: 'keybinding', keys: binding.keys },
+      ...args
+    };
+    if (!this.hasCommand(command) || !this.isEnabled(command, newArgs)) {
       let word = this.hasCommand(command) ? 'enabled' : 'registered';
       let keys = binding.keys.join(', ');
       let msg1 = `Cannot execute key binding '${keys}':`;
@@ -643,7 +647,7 @@ export class CommandRegistry {
       console.warn(`${msg1} ${msg2}`);
       return;
     }
-    this.execute(command, args);
+    this.execute(command, newArgs);
   }
 
   /**
@@ -732,6 +736,8 @@ export namespace CommandRegistry {
      * the command.
      *
      * This may be invoked even when `isEnabled` returns `false`.
+     *
+     * If called via a keybinding the passed args will include a `_luminoEvent` that specify the event type and keys pressed for customization.
      */
     execute: CommandFunc<any | Promise<any>>;
 
@@ -887,6 +893,8 @@ export namespace CommandRegistry {
      * command as grayed-out or in some other non-interactive fashion.
      *
      * The default value is `() => true`.
+     *
+     * If called via a keybinding the passed args will include a `_luminoEvent` that specify the event type and keys pressed for customization
      */
     isEnabled?: CommandFunc<boolean>;
 
@@ -1012,7 +1020,7 @@ export namespace CommandRegistry {
     /**
      * The arguments for the command, if necessary.
      *
-     * The default value is an empty object.
+     * The default value is an empty object. If a command is activated by _executeKeyBinding, `args = {_luminoEvent: {type: <string>, keys: <string[]>}}`
      */
     args?: ReadonlyPartialJSONObject;
 
@@ -1292,6 +1300,7 @@ export namespace CommandRegistry {
     if (!layout.isModifierKey(key)) {
       mods.push(key);
       // for  modifier and character key strings
+      return mods.join(' ');
     }
     // for purely modifier key strings
     return mods.join(' ');
