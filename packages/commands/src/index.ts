@@ -1299,7 +1299,6 @@ export namespace CommandRegistry {
     }
     if (!layout.isModifierKey(key)) {
       mods.push(key);
-
     }
     // for purely modifier key strings
     return mods.join(' ');
