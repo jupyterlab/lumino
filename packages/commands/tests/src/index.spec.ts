@@ -1153,7 +1153,7 @@ describe('@lumino/commands', () => {
         document.body.removeEventListener('keydown', keydown);
       });
 
-      it('should register a key sequence', () => {
+      it('should ignore modifier keys pressed in the middle of key sequence', () => {
         let count = 0;
         registry.addCommand('test', {
           execute: () => {
@@ -1168,6 +1168,14 @@ describe('@lumino/commands', () => {
         elem.dispatchEvent(
           new KeyboardEvent('keydown', {
             keyCode: 75, // `K` key
+            ctrlKey: true
+          })
+        );
+        expect(count).to.equal(0);
+        // User presses `ctrl` again - this should not break the sequence.
+        elem.dispatchEvent(
+          new KeyboardEvent('keydown', {
+            keyCode: 17,
             ctrlKey: true
           })
         );

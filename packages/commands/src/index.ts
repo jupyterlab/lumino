@@ -551,9 +551,7 @@ export class CommandRegistry {
     // Removing this code results in mod key duplication: ['Alt', 'Alt 1']
     if (
       // Check that only a mod key has been pressed
-      (event.altKey && event.key === 'Alt') ||
-      (event.ctrlKey && event.key === 'Ctrl') ||
-      (event.shiftKey && event.key === 'Shift')
+      CommandRegistry.isModifierKeyPressed(event)
     ) {
       this._keystrokes.length = 0;
     }
@@ -566,13 +564,15 @@ export class CommandRegistry {
     // If there is an exact match but no partial match, the exact match
     // can be dispatched immediately. The pending state is cleared so
     // the next key press starts from the default state.
+
     const layout = getKeyboardLayout();
     const exactKeys = exact?.keys.toString().split(' ');
-    if (
-      exact &&
-      !partial &&
-      !exactKeys.every(key => layout.isModifierKey(key))
-    ) {
+
+    if (exact && !partial && exactKeys) {
+      if (exactKeys.every(key => layout.isModifierKey(key))) {
+        // Do nothing as We want to delay modifier only KeyBindings
+      } else {
+      }
       this._executeKeyBinding(exact);
       this._clearPendingState();
       return;
