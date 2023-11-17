@@ -821,7 +821,6 @@ export class TabBar<T> extends Widget {
     } else if (ARROW_KEYS.includes(event.key)) {
       // Create a list of all focusable elements in the tab bar.
       const focusable: Element[] = [...this.contentNode.children];
-      console.log(focusable);
 
       if (this.addButtonEnabled) {
         focusable.push(this.addButtonNode);
