@@ -26,7 +26,7 @@ import {
   ElementInlineStyle,
   h,
   VirtualDOM,
-  VirtualElement,
+  VirtualElement
 } from '@lumino/virtualdom';
 
 import { Title } from './title';
@@ -39,7 +39,7 @@ const ARROW_KEYS = [
   'ArrowRight',
   'ArrowDown',
   'Home',
-  'End',
+  'End'
 ];
 
 /**
@@ -282,7 +282,7 @@ export class TabBar<T> extends Widget {
       previousIndex: pi,
       previousTitle: pt,
       currentIndex: ci,
-      currentTitle: ct,
+      currentTitle: ct
     });
   }
 
@@ -569,7 +569,7 @@ export class TabBar<T> extends Widget {
       previousIndex: pi,
       previousTitle: pt,
       currentIndex: -1,
-      currentTitle: null,
+      currentTitle: null
     });
   }
 
@@ -697,7 +697,7 @@ export class TabBar<T> extends Widget {
     let tabs = this.contentNode.children;
 
     // Find the index of the targeted tab.
-    let index = ArrayExt.findFirstIndex(tabs, (tab) => {
+    let index = ArrayExt.findFirstIndex(tabs, tab => {
       return ElementExt.hitTest(tab, event.clientX, event.clientY);
     });
 
@@ -781,7 +781,7 @@ export class TabBar<T> extends Widget {
     const focusedElement = document.activeElement;
     // Check if Delete key has been pressed and Delete that tab
     if (event.key === 'Delete') {
-      const index = ArrayExt.findFirstIndex(this.contentNode.children, (tab) =>
+      const index = ArrayExt.findFirstIndex(this.contentNode.children, tab =>
         tab.contains(focusedElement)
       );
       if (index >= 0) {
@@ -808,9 +808,8 @@ export class TabBar<T> extends Widget {
         event.stopPropagation();
         this._addRequested.emit();
       } else {
-        const index = ArrayExt.findFirstIndex(
-          this.contentNode.children,
-          (tab) => tab.contains(focusedElement)
+        const index = ArrayExt.findFirstIndex(this.contentNode.children, tab =>
+          tab.contains(focusedElement)
         );
         if (index >= 0) {
           event.preventDefault();
@@ -898,7 +897,7 @@ export class TabBar<T> extends Widget {
     let tabs = this.contentNode.children;
 
     // Find the index of the pressed tab.
-    let index = ArrayExt.findFirstIndex(tabs, (tab) => {
+    let index = ArrayExt.findFirstIndex(tabs, tab => {
       return ElementExt.hitTest(tab, event.clientX, event.clientY);
     });
 
@@ -926,7 +925,7 @@ export class TabBar<T> extends Widget {
       override: null,
       dragActive: false,
       dragAborted: false,
-      detachRequested: false,
+      detachRequested: false
     };
 
     // Add the document pointer up listener.
@@ -965,7 +964,7 @@ export class TabBar<T> extends Widget {
     // Emit the tab activate request signal.
     this._tabActivateRequested.emit({
       index: this.currentIndex,
-      title: this.currentTitle!,
+      title: this.currentTitle!
     });
   }
 
@@ -1006,7 +1005,7 @@ export class TabBar<T> extends Widget {
       }
       data.tabPressOffset = {
         x: data.pressX - tabRect.left,
-        y: data.pressY - tabRect.top,
+        y: data.pressY - tabRect.top
       };
       data.tabLayout = Private.snapTabLayout(tabs, this._orientation);
       data.contentRect = this.contentNode.getBoundingClientRect();
@@ -1039,7 +1038,7 @@ export class TabBar<T> extends Widget {
         tab,
         clientX,
         clientY,
-        offset: data.tabPressOffset,
+        offset: data.tabPressOffset
       });
 
       // Bail if the signal handler aborted the drag.
@@ -1095,7 +1094,7 @@ export class TabBar<T> extends Widget {
       let tabs = this.contentNode.children;
 
       // Find the index of the released tab.
-      let index = ArrayExt.findFirstIndex(tabs, (tab) => {
+      let index = ArrayExt.findFirstIndex(tabs, tab => {
         return ElementExt.hitTest(tab, event.clientX, event.clientY);
       });
 
@@ -1177,7 +1176,7 @@ export class TabBar<T> extends Widget {
       this._tabMoved.emit({
         fromIndex: i,
         toIndex: j,
-        title: this._titles[j],
+        title: this._titles[j]
       });
 
       // Update the tabs immediately to prevent flicker.
@@ -1247,7 +1246,7 @@ export class TabBar<T> extends Widget {
         previousIndex: ci,
         previousTitle: ct,
         currentIndex: i,
-        currentTitle: title,
+        currentTitle: title
       });
       return;
     }
@@ -1302,7 +1301,7 @@ export class TabBar<T> extends Widget {
         previousIndex: i,
         previousTitle: title,
         currentIndex: -1,
-        currentTitle: null,
+        currentTitle: null
       });
       return;
     }
@@ -1314,7 +1313,7 @@ export class TabBar<T> extends Widget {
         previousIndex: i,
         previousTitle: title,
         currentIndex: this._currentIndex,
-        currentTitle: this.currentTitle,
+        currentTitle: this.currentTitle
       });
       return;
     }
@@ -1326,7 +1325,7 @@ export class TabBar<T> extends Widget {
         previousIndex: i,
         previousTitle: title,
         currentIndex: this._currentIndex,
-        currentTitle: this.currentTitle,
+        currentTitle: this.currentTitle
       });
       return;
     }
@@ -1343,7 +1342,7 @@ export class TabBar<T> extends Widget {
         previousIndex: i,
         previousTitle: title,
         currentIndex: this._currentIndex,
-        currentTitle: this.currentTitle,
+        currentTitle: this.currentTitle
       });
       return;
     }
@@ -1354,7 +1353,7 @@ export class TabBar<T> extends Widget {
       previousIndex: i,
       previousTitle: title,
       currentIndex: -1,
-      currentTitle: null,
+      currentTitle: null
     });
   }
 
@@ -1765,7 +1764,7 @@ export namespace TabBar {
         {
           className: 'lm-TabBar-tabLabel',
           tabindex: '-1',
-          'aria-hidden': 'true',
+          'aria-hidden': 'true'
         },
         data.title.label
       );
@@ -1780,7 +1779,7 @@ export namespace TabBar {
      */
     renderCloseIcon(data: IRenderData<any>): VirtualElement {
       return h.div({
-        className: 'lm-TabBar-tabCloseIcon',
+        className: 'lm-TabBar-tabCloseIcon'
       });
     }
 
@@ -1860,7 +1859,7 @@ export namespace TabBar {
         role: 'tab',
         'aria-label': 'Launcher',
         'aria-selected': data.current.toString(),
-        tabindex: `${data.tabIndex ?? '-1'}`,
+        tabindex: `${data.tabIndex ?? '-1'}`
       };
     }
 
@@ -2072,13 +2071,13 @@ namespace Private {
         layout[i] = {
           pos: node.offsetLeft,
           size: node.offsetWidth,
-          margin: parseFloat(style.marginLeft!) || 0,
+          margin: parseFloat(style.marginLeft!) || 0
         };
       } else {
         layout[i] = {
           pos: node.offsetTop,
           size: node.offsetHeight,
-          margin: parseFloat(style.marginTop!) || 0,
+          margin: parseFloat(style.marginTop!) || 0
         };
       }
     }
