@@ -1856,7 +1856,6 @@ export namespace TabBar {
     createTabARIA(data: IRenderData<any>): ElementARIAAttrs | ElementBaseAttrs {
       return {
         role: 'tab',
-        'aria-label': 'Launcher',
         'aria-selected': data.current.toString(),
         tabindex: `${data.tabIndex ?? '-1'}`
       };

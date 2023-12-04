@@ -301,7 +301,7 @@ export class Title<T> implements IDisposable {
   }
 
   private _label = '';
-  private _caption = 'Launcher';
+  private _caption = '';
   private _mnemonic = -1;
   private _icon: VirtualElement.IRenderer | undefined = undefined;
   private _iconClass = '';
