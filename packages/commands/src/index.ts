@@ -556,23 +556,34 @@ export class CommandRegistry {
       this._keystrokes.length = 0;
     }
 
+    // Check if an exact match key contain only modifier key(s)
+    const layout = getKeyboardLayout();
+    const exactKeys = exact?.keys.toString().split(' ');
+    this._onlyModiferKeys = exactKeys?.every(
+      key => layout.isModifierKey(key) === true
+    )
+      ? true
+      : false;
+
     // Stop propagation of the event. If there is only a partial match,
     // the event will be replayed if a final exact match never occurs.
     event.preventDefault();
     event.stopPropagation();
 
+    // Trigger binding if only modifier key(s) are pressed and held for 500ms
+    if (this._onlyModiferKeys && exact) {
+      window.setTimeout(() => {
+        if (event.repeat === true && exact) {
+          this._executeKeyBinding(exact);
+          this._clearPendingState();
+        }
+      }, Private.CHORD_TIMEOUT / 2);
+    }
+
     // If there is an exact match but no partial match, the exact match
     // can be dispatched immediately. The pending state is cleared so
     // the next key press starts from the default state.
-
-    const layout = getKeyboardLayout();
-    const exactKeys = exact?.keys.toString().split(' ');
-
-    if (exact && !partial && exactKeys) {
-      if (exactKeys.every(key => layout.isModifierKey(key))) {
-        // Do nothing as We want to delay modifier only KeyBindings
-      } else {
-      }
+    if (exact && !partial && !this._onlyModiferKeys) {
       this._executeKeyBinding(exact);
       this._clearPendingState();
       return;
@@ -581,12 +592,14 @@ export class CommandRegistry {
     // If there is both an exact match and a partial match, the exact
     // match is stored for future dispatch in case the timer expires
     // before a more specific match is triggered.
-    if (exact) {
+    if (exact && !this._onlyModiferKeys) {
       this._exactKeyMatch = exact;
     }
 
-    // Store the event for possible playback in the future.
-    this._keydownEvents.push(event);
+    // Store the event of non modifier key(s) for possible playback in the future.
+    if (!this._onlyModiferKeys) {
+      this._keydownEvents.push(event);
+    }
 
     // (Re)start the timer to dispatch the most recent exact match
     // in case the partial match fails to result in an exact match.
@@ -655,6 +668,7 @@ export class CommandRegistry {
     this._exactKeyMatch = null;
     this._keystrokes.length = 0;
     this._keydownEvents.length = 0;
+    this._onlyModiferKeys = false;
   }
 
   /**
@@ -662,7 +676,7 @@ export class CommandRegistry {
    */
   private _onPendingTimeout(): void {
     this._timerID = 0;
-    if (this._exactKeyMatch) {
+    if (this._exactKeyMatch && !this._onlyModiferKeys) {
       this._executeKeyBinding(this._exactKeyMatch);
     } else {
       this._replayKeydownEvents();
@@ -672,6 +686,7 @@ export class CommandRegistry {
 
   private _timerID = 0;
   private _replaying = false;
+  private _onlyModiferKeys = false;
   private _keystrokes: string[] = [];
   private _keydownEvents: KeyboardEvent[] = [];
   private _keyBindings: CommandRegistry.IKeyBinding[] = [];
@@ -1296,6 +1311,8 @@ export namespace CommandRegistry {
     }
     if (!layout.isModifierKey(key)) {
       mods.push(key);
+      // for  modifier and character key strings
+      return mods.join(' ');
     }
     // for purely modifier key strings
     return mods.join(' ');
