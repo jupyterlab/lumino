@@ -611,6 +611,38 @@ describe('@lumino/dragdrop', () => {
         expect(backdrop.style.transform).to.equal('translate(100px, 500px)');
         override.dispose();
       });
+
+      it('should propagate scroll to underlying target', () => {
+        let override = Drag.overrideCursor('wait');
+        const backdrop = document.querySelector(
+          '.lm-cursor-backdrop'
+        ) as HTMLElement;
+
+        const wrapper = document.createElement('div');
+        const content = document.createElement('div');
+        document.elementFromPoint = (_x, _y) => {
+          return wrapper;
+        };
+        document.body.appendChild(wrapper);
+        wrapper.appendChild(content);
+        wrapper.setAttribute('data-lm-dragscroll', 'true');
+        wrapper.style.overflow = 'scroll';
+        wrapper.style.height = '100px';
+        wrapper.style.width = '100px';
+        content.style.height = '2000px';
+        content.style.width = '2000px';
+
+        backdrop.scrollTop += 400;
+        backdrop.dispatchEvent(new Event('scroll'));
+        expect(wrapper.scrollTop).to.equal(400);
+
+        backdrop.scrollTop += 400;
+        backdrop.dispatchEvent(new Event('scroll'));
+        expect(wrapper.scrollTop).to.equal(800);
+
+        override.dispose();
+        document.body.removeChild(wrapper);
+      });
     });
   });
 });
