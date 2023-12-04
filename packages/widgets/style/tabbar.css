@@ -57,9 +57,9 @@
 .lm-TabBar-tabIcon,
 .lm-TabBar-tabCloseIcon {
   flex: 0 0 auto;
-  padding: 0;
   border: none;
   background: none;
+  padding: 0;
 }
 
 .lm-TabBar-tabLabel {
