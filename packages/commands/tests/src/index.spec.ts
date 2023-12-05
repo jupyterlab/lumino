@@ -1207,15 +1207,27 @@ describe('@lumino/commands', () => {
           selector: `#${elem.id}`,
           command: 'test'
         });
+        let eventShift = new KeyboardEvent('keydown', {
+          keyCode: 16,
+          shiftKey: true
+        });
         let eventK = new KeyboardEvent('keydown', {
           keyCode: 75,
           shiftKey: true
+        });
+        let eventCtrl = new KeyboardEvent('keydown', {
+          keyCode: 17,
+          ctrlKey: true
         });
         let eventL = new KeyboardEvent('keydown', {
           keyCode: 76,
           ctrlKey: true
         });
+        elem.dispatchEvent(eventShift);
+        expect(count).to.equal(0);
         elem.dispatchEvent(eventK);
+        expect(count).to.equal(0);
+        elem.dispatchEvent(eventCtrl);
         expect(count).to.equal(0);
         elem.dispatchEvent(eventL);
         expect(count).to.equal(1);
@@ -1329,11 +1341,11 @@ describe('@lumino/commands', () => {
         expect(keystroke).to.equal('');
       });
 
-      it('should return keys that are marked as modifier in keyboard layout', () => {
+      it('should return nothing for keys that are marked as modifier in keyboard layout', () => {
         let keystroke = CommandRegistry.keystrokeForKeydownEvent(
           new KeyboardEvent('keydown', { keyCode: 17, ctrlKey: true })
         );
-        expect(keystroke).to.equal('Ctrl');
+        expect(keystroke).to.equal('');
       });
     });
   });
