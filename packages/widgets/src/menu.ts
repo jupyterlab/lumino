@@ -1221,7 +1221,13 @@ export namespace Menu {
      */
     renderShortcut(data: IRenderData): VirtualElement {
       let content = this.formatShortcut(data);
-      return h.div({ className: 'lm-Menu-itemShortcut' }, content);
+      return h.div(
+        {
+          className: 'lm-Menu-itemShortcut',
+          'aria-keyshortcuts': `${content}`
+        },
+        content
+      );
     }
 
     /**
