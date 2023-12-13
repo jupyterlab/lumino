@@ -512,7 +512,7 @@ export class CommandRegistry {
    */
   processKeydownEvent(event: KeyboardEvent): void {
     // Bail immediately if playing back keystrokes.
-    if (this._replaying) {
+    if (event.defaultPrevented || this._replaying) {
       return;
     }
 

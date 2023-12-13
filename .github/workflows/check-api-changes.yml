@@ -52,7 +52,7 @@ jobs:
 
       - name: Get API changes
         id: api-changed
-        uses: tj-actions/changed-files@v40.2.0
+        uses: tj-actions/changed-files@v40.2.1
         with:
           base_sha: 'HEAD~1'
           sha: 'HEAD'
