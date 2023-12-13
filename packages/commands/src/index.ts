@@ -527,6 +527,26 @@ export class CommandRegistry {
       return;
     }
 
+    // Check that only mod key(s) have been pressed.
+    if (CommandRegistry.isModifierKeyPressed(event)) {
+      // Find the exact match for the modifier keys.
+      let { exact } = Private.matchKeyBinding(
+        this._keyBindings,
+        [keystroke],
+        event
+      );
+      if (exact) {
+        // If the mod keys match an exact shortcut, start a dedicated timer.
+        event.preventDefault();
+        event.stopPropagation();
+        this._startModifierTimer(exact);
+      } else {
+        // Otherwise stop potential existing timer.
+        this._clearModifierTimer();
+      }
+      return;
+    }
+
     // Add the keystroke to the current key sequence.
     this._keystrokes.push(keystroke);
 
@@ -545,45 +565,15 @@ export class CommandRegistry {
       return;
     }
 
-    // Remove modifier key only keystrokes from the current key sequence.
-    // keystrokes that are modifier key(s) plus another key are not affected
-    // intended functionality: Alt then Alt 1 should result to: ['Alt'] then ['Alt 1']
-    // Removing this code results in mod key duplication: ['Alt', 'Alt 1']
-    if (
-      // Check that only a mod key has been pressed
-      CommandRegistry.isModifierKeyPressed(event)
-    ) {
-      this._keystrokes.length = 0;
-    }
-
-    // Check if an exact match key contain only modifier key(s)
-    const layout = getKeyboardLayout();
-    const exactKeys = exact?.keys.toString().split(' ');
-    this._onlyModiferKeys = exactKeys?.every(
-      key => layout.isModifierKey(key) === true
-    )
-      ? true
-      : false;
-
     // Stop propagation of the event. If there is only a partial match,
     // the event will be replayed if a final exact match never occurs.
     event.preventDefault();
     event.stopPropagation();
 
-    // Trigger binding if only modifier key(s) are pressed and held for 500ms
-    if (this._onlyModiferKeys && exact) {
-      window.setTimeout(() => {
-        if (event.repeat === true && exact) {
-          this._executeKeyBinding(exact);
-          this._clearPendingState();
-        }
-      }, Private.CHORD_TIMEOUT / 2);
-    }
-
     // If there is an exact match but no partial match, the exact match
     // can be dispatched immediately. The pending state is cleared so
     // the next key press starts from the default state.
-    if (exact && !partial && !this._onlyModiferKeys) {
+    if (exact && !partial) {
       this._executeKeyBinding(exact);
       this._clearPendingState();
       return;
@@ -592,20 +582,48 @@ export class CommandRegistry {
     // If there is both an exact match and a partial match, the exact
     // match is stored for future dispatch in case the timer expires
     // before a more specific match is triggered.
-    if (exact && !this._onlyModiferKeys) {
+    if (exact) {
       this._exactKeyMatch = exact;
     }
 
-    // Store the event of non modifier key(s) for possible playback in the future.
-    if (!this._onlyModiferKeys) {
-      this._keydownEvents.push(event);
-    }
+    // Store the event for possible playback in the future.
+    this._keydownEvents.push(event);
 
     // (Re)start the timer to dispatch the most recent exact match
     // in case the partial match fails to result in an exact match.
     this._startTimer();
   }
 
+  /**
+   * Process a ``keyup`` event to clear the timer on the modifier id exists.
+   *
+   * @param event - The event object for a `'keydown'` event.
+   */
+  processKeyupEvent(event: KeyboardEvent): void {
+    this._clearModifierTimer();
+  }
+
+  /**
+   * Start or restart the timeout on the modifier keys.
+   *
+   * This timeout will end only if the keys are hold.
+   */
+  private _startModifierTimer(exact: CommandRegistry.IKeyBinding): void {
+    this._clearModifierTimer();
+    this._timerModifierID = window.setTimeout(() => {
+      this._executeKeyBinding(exact);
+    }, Private.CHORD_TIMEOUT);
+  }
+
+  /**
+   * Clear the timeout on modifier keys.
+   */
+  private _clearModifierTimer(): void {
+    if (this._timerModifierID !== 0) {
+      clearTimeout(this._timerModifierID);
+      this._timerModifierID = 0;
+    }
+  }
   /**
    * Start or restart the pending timeout.
    */
@@ -668,7 +686,6 @@ export class CommandRegistry {
     this._exactKeyMatch = null;
     this._keystrokes.length = 0;
     this._keydownEvents.length = 0;
-    this._onlyModiferKeys = false;
   }
 
   /**
@@ -676,7 +693,7 @@ export class CommandRegistry {
    */
   private _onPendingTimeout(): void {
     this._timerID = 0;
-    if (this._exactKeyMatch && !this._onlyModiferKeys) {
+    if (this._exactKeyMatch) {
       this._executeKeyBinding(this._exactKeyMatch);
     } else {
       this._replayKeydownEvents();
@@ -685,8 +702,8 @@ export class CommandRegistry {
   }
 
   private _timerID = 0;
+  private _timerModifierID = 0;
   private _replaying = false;
-  private _onlyModiferKeys = false;
   private _keystrokes: string[] = [];
   private _keydownEvents: KeyboardEvent[] = [];
   private _keyBindings: CommandRegistry.IKeyBinding[] = [];
@@ -1296,7 +1313,6 @@ export namespace CommandRegistry {
     let layout = getKeyboardLayout();
     let key = layout.keyForKeydownEvent(event);
     let mods = [];
-
     if (event.ctrlKey) {
       mods.push('Ctrl');
     }
@@ -1311,8 +1327,6 @@ export namespace CommandRegistry {
     }
     if (!layout.isModifierKey(key)) {
       mods.push(key);
-      // for  modifier and character key strings
-      return mods.join(' ');
     }
     // for purely modifier key strings
     return mods.join(' ');

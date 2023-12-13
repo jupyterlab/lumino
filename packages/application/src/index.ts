@@ -575,6 +575,9 @@ export class Application<T extends Widget = Widget> {
       case 'keydown':
         this.evtKeydown(event as KeyboardEvent);
         break;
+      case 'keyup':
+        this.evtKeyup(event as KeyboardEvent);
+        break;
       case 'contextmenu':
         this.evtContextMenu(event as PointerEvent);
         break;
@@ -610,6 +613,7 @@ export class Application<T extends Widget = Widget> {
   protected addEventListeners(): void {
     document.addEventListener('contextmenu', this);
     document.addEventListener('keydown', this, !this._bubblingKeydown);
+    document.addEventListener('keyup', this, !this._bubblingKeydown);
     window.addEventListener('resize', this);
   }
 
@@ -624,6 +628,19 @@ export class Application<T extends Widget = Widget> {
    */
   protected evtKeydown(event: KeyboardEvent): void {
     this.commands.processKeydownEvent(event);
+  }
+
+  /**
+   * A method invoked on a document `'keyup'` event.
+   *
+   * #### Notes
+   * The default implementation of this method invokes the key up
+   * processing method of the application command registry.
+   *
+   * A subclass may reimplement this method as needed.
+   */
+  protected evtKeyup(event: KeyboardEvent): void {
+    this.commands.processKeyupEvent(event);
   }
 
   /**
