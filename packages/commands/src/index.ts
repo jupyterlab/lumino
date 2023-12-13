@@ -511,8 +511,13 @@ export class CommandRegistry {
    * events will not invoke commands.
    */
   processKeydownEvent(event: KeyboardEvent): void {
-    // Bail immediately if playing back keystrokes.
-    if (this._replaying || CommandRegistry.isModifierKeyPressed(event)) {
+    // Bail immediately if playing back keystrokes
+    // or if the event has been processed
+    if (
+      event.defaultPrevented ||
+      this._replaying ||
+      CommandRegistry.isModifierKeyPressed(event)
+    ) {
       return;
     }
 
