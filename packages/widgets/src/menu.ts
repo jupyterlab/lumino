@@ -27,7 +27,7 @@ import {
   ElementDataset,
   h,
   VirtualDOM,
-  VirtualElement
+  VirtualElement,
 } from '@lumino/virtualdom';
 
 import { Widget } from './widget';
@@ -556,7 +556,7 @@ export class Menu extends Widget {
         collapsed,
         onfocus: () => {
           this.activeIndex = i;
-        }
+        },
       });
     }
     VirtualDOM.render(content, this.contentNode);
@@ -708,7 +708,7 @@ export class Menu extends Widget {
    */
   private _evtMouseMove(event: MouseEvent): void {
     // Hit test the item nodes for the item under the mouse.
-    let index = ArrayExt.findFirstIndex(this.contentNode.children, node => {
+    let index = ArrayExt.findFirstIndex(this.contentNode.children, (node) => {
       return ElementExt.hitTest(node, event.clientX, event.clientY);
     });
 
@@ -1177,7 +1177,7 @@ export namespace Menu {
           dataset,
           tabindex: '0',
           onfocus: data.onfocus,
-          ...aria
+          ...aria,
         },
         this.renderIcon(data),
         this.renderLabel(data),
@@ -1221,10 +1221,11 @@ export namespace Menu {
      */
     renderShortcut(data: IRenderData): VirtualElement {
       let content = this.formatShortcut(data);
+      let ariaContent = this.formatShortcutText(data);
       return h.div(
         {
           className: 'lm-Menu-itemShortcut',
-          'aria-keyshortcuts': `${content}`
+          'aria-label': `${ariaContent}`,
         },
         content
       );
@@ -1376,6 +1377,38 @@ export namespace Menu {
     formatShortcut(data: IRenderData): h.Child {
       let kb = data.item.keyBinding;
       return kb ? CommandRegistry.formatKeystroke(kb.keys) : null;
+    }
+
+    formatShortcutText(data: IRenderData): h.Child {
+      const keyToText: { [key: string]: string } = {
+        ']': 'Closing bracket',
+        '[': 'Opening bracket',
+        ',': 'Comma',
+        '.': 'Full stop',
+        "'": 'Single quote',
+        '-': 'Hyphen-minus',
+      };
+
+      let kbText = data.item.keyBinding;
+      let result = kbText ? CommandRegistry.formatKeystroke(kbText.keys) : null;
+
+      let punctuationRegex = /\p{P}/u;
+      let punctuations = result?.match(punctuationRegex);
+      if (!punctuations) {
+        return [];
+      }
+      for (const punctuation of punctuations) {
+        if (result != null && Object.keys(keyToText).includes(punctuation)) {
+          const individualKeys = result.split('+');
+          let index = individualKeys.indexOf(punctuation);
+          if (index != -1) {
+            individualKeys[index] = keyToText[punctuation];
+          }
+          const textShortcut = individualKeys.join('+');
+          return textShortcut;
+        }
+      }
+      return kbText ? CommandRegistry.formatKeystroke(kbText.keys) : null;
     }
   }
 
@@ -1529,7 +1562,7 @@ namespace Private {
       pageXOffset: window.pageXOffset,
       pageYOffset: window.pageYOffset,
       clientWidth: document.documentElement.clientWidth,
-      clientHeight: document.documentElement.clientHeight
+      clientHeight: document.documentElement.clientHeight,
     };
   }
 
@@ -1915,7 +1948,7 @@ namespace Private {
       if (this.type === 'command') {
         let { command, args } = this;
         return (
-          ArrayExt.findLastValue(this._commands.keyBindings, kb => {
+          ArrayExt.findLastValue(this._commands.keyBindings, (kb) => {
             return kb.command === command && JSONExt.deepEqual(kb.args, args);
           }) || null
         );
