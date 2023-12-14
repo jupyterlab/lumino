@@ -595,7 +595,7 @@ export class CommandRegistry {
   }
 
   /**
-   * Process a ``keyup`` event to clear the timer on the modifier id exists.
+   * Process a ``keyup`` event to clear the timer on the modifier, if it exists.
    *
    * @param event - The event object for a `'keydown'` event.
    */
