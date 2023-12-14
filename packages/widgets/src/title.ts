@@ -258,16 +258,17 @@ export class Title<T> implements IDisposable {
     this._closable = value;
     this._changed.emit(undefined);
   }
- 
+
   /**
-     * Get the closeIcon renderer for the title.
-     *
-     * #### Notes
-     * The default value is undefined.
-     */
+   * Get the closeIcon renderer for the title.
+   *
+   * #### Notes
+   * The default value is undefined.
+   */
   get closeIcon() {
     return this._closeIcon;
   }
+
   /**
    * Set the closeIcon renderer for the title.
    *
@@ -281,15 +282,18 @@ export class Title<T> implements IDisposable {
     this._closeIcon = value;
     this._changed.emit(undefined);
   }
+
   /**
    * Get the closeIcon class name for the title.
    *
    * #### Notes
    * The default value is an empty string.
    */
+
   get closeIconClass() {
     return this._closeIconClass;
   }
+
   /**
    * Set the closeIcon class name for the title.
    *

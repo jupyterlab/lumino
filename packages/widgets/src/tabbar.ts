@@ -1850,13 +1850,13 @@ export namespace TabBar {
       let extra = data.title.iconClass;
       return extra ? `${name} ${extra}` : name;
     }
-    
+
     /**
-     * Create the class name for the tab closeicon.
+     * Create the class name for the tab closeIcon.
      *
      * @param data - The data to use for the tab.
      *
-     * @returns The full class name for the tab closeicon.
+     * @returns The full class name for the tab closeIcon.
      */
     createCloseIconClass(data: IRenderData<any>): string {
       let name = 'lm-TabBar-tabCloseIcon';
