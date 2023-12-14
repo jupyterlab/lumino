@@ -2067,6 +2067,11 @@ describe('@lumino/widgets', () => {
             'lm-TabBar-tabIcon'
           )[0] as HTMLElement;
           expect(icon.classList.contains(title.iconClass)).to.equal(true);
+
+          let closeIcon = node.getElementsByClassName(
+            'lm-TabBar-tabCloseIcon'
+          )[0] as HTMLElement;
+          expect(closeIcon.classList.contains(title.closeIconClass)).to.equal(true);
         });
       });
 
@@ -2077,6 +2082,16 @@ describe('@lumino/widgets', () => {
           let node = VirtualDOM.realize(vNode as VirtualElement);
           expect(node.className).to.contain('lm-TabBar-tabIcon');
           expect(node.classList.contains(title.iconClass)).to.equal(true);
+        });
+      });
+
+      describe('#renderCloseIcon()', () => {
+        it('should render the closeIcon element for a tab', () => {
+          let renderer = new TabBar.Renderer();
+          let vNode = renderer.renderCloseIcon({ title, current: true, zIndex: 1 });
+          let node = VirtualDOM.realize(vNode as VirtualElement);
+          expect(node.className).to.contain('lm-TabBar-tabCloseIcon');
+          expect(node.classList.contains(title.closeIconClass)).to.equal(true);
         });
       });
 
@@ -2152,6 +2167,19 @@ describe('@lumino/widgets', () => {
           });
           expect(className).to.contain('lm-TabBar-tabIcon');
           expect(className).to.contain(title.iconClass);
+        });
+      });
+
+      describe('#createCloseIconClass()', () => {
+        it('should create class name for the tab close icon', () => {
+          let renderer = new TabBar.Renderer();
+          let className = renderer.createCloseIconClass({
+            title,
+            current: true,
+            zIndex: 1
+          });
+          expect(className).to.contain('lm-TabBar-tabCloseIcon');
+          expect(className).to.contain(title.closeIconClass);
         });
       });
     });
