@@ -512,7 +512,7 @@ export class CommandRegistry {
    */
   processKeydownEvent(event: KeyboardEvent): void {
     // Bail immediately if playing back keystrokes.
-    if (this._replaying) {
+    if (event.defaultPrevented || this._replaying) {
       return;
     }
 
@@ -595,7 +595,7 @@ export class CommandRegistry {
   }
 
   /**
-   * Process a ``keyup`` event to clear the timer on the modifier id exists.
+   * Process a ``keyup`` event to clear the timer on the modifier, if it exists.
    *
    * @param event - The event object for a `'keydown'` event.
    */

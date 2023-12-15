@@ -797,6 +797,30 @@ describe('@lumino/commands', () => {
         expect(count).to.equal(0);
       });
 
+      it('should not dispatch on a prevented keydown event', () => {
+        let called = false;
+        registry.addCommand('test', {
+          execute: args => {
+            called = true;
+          }
+        });
+        registry.addKeyBinding({
+          keys: ['Ctrl ;'],
+          selector: `#${elem.id}`,
+          command: 'test'
+        });
+        const event = new KeyboardEvent('keydown', {
+          keyCode: 59,
+          ctrlKey: true,
+          cancelable: true
+        });
+
+        event.preventDefault();
+
+        elem.dispatchEvent(event);
+        expect(called).to.equal(false);
+      });
+
       it('should dispatch with multiple chords in a key sequence', () => {
         let count = 0;
         registry.addCommand('test', {
