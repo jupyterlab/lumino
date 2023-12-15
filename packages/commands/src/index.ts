@@ -1342,10 +1342,10 @@ namespace Private {
    */
   export const CHORD_TIMEOUT = 1000;
 
-    /**
+  /**
    * The timeout in ms for triggering a modifer key binding.
    */
-    export const ModifierKey_TIMEOUT = 500;
+  export const ModifierKey_TIMEOUT = 500;
 
   /**
    * A convenience type alias for a command func.
