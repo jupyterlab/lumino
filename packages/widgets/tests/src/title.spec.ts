@@ -187,6 +187,55 @@ describe('@lumino/widgets', () => {
       });
     });
 
+    describe('#closeIcon', () => {
+      const closeIconRenderer = {
+        render: (host: HTMLElement, options?: any) => {
+          const renderNode = document.createElement('div');
+          renderNode.className = 'foo';
+          host.appendChild(renderNode);
+        }
+      };
+
+      it('should default to undefined', () => {
+        let title = new Title({ owner });
+        expect(title.closeIcon).to.equal(undefined);
+      });
+
+      it('should initialize from the options', () => {
+        let title = new Title({ owner, closeIcon: closeIconRenderer });
+        expect(title.closeIcon).to.equal(closeIconRenderer);
+      });
+
+      it('should be writable', () => {
+        let title = new Title({ owner });
+        expect(title.closeIcon).to.equal(undefined);
+        title.closeIcon = closeIconRenderer;
+        expect(title.closeIcon).to.equal(closeIconRenderer);
+      });
+
+      it('should emit the changed signal when the value changes', () => {
+        let called = false;
+        let title = new Title({ owner });
+        title.changed.connect((sender, arg) => {
+          expect(sender).to.equal(title);
+          expect(arg).to.equal(undefined);
+          called = true;
+        });
+        title.closeIcon = closeIconRenderer;
+        expect(called).to.equal(true);
+      });
+
+      it('should not emit the changed signal when the value does not change', () => {
+        let called = false;
+        let title = new Title({ owner, closeIcon: closeIconRenderer });
+        title.changed.connect((sender, arg) => {
+          called = true;
+        });
+        title.closeIcon = closeIconRenderer;
+        expect(called).to.equal(false);
+      });
+    });
+
     describe('#caption', () => {
       it('should default to an empty string', () => {
         let title = new Title({ owner });

@@ -1179,6 +1179,7 @@ export namespace TabBar {
         constructor();
         readonly closeIconSelector = ".lm-TabBar-tabCloseIcon";
         createIconClass(data: IRenderData<any>): string;
+        createCloseIconClass(data: IRenderData<any>): string;
         createTabARIA(data: IRenderData<any>): ElementARIAAttrs | ElementBaseAttrs;
         createTabClass(data: IRenderData<any>): string;
         createTabDataset(data: IRenderData<any>): ElementDataset;
@@ -1257,6 +1258,10 @@ export class Title<T> implements IDisposable {
     set className(value: string);
     get closable(): boolean;
     set closable(value: boolean);
+    get closeIcon(): VirtualElement.IRenderer | undefined;
+    set closeIcon(value: VirtualElement.IRenderer | undefined);
+    get closeIconClass(): string;
+    set closeIconClass(value: string);
     get dataset(): Title.Dataset;
     set dataset(value: Title.Dataset);
     dispose(): void;
@@ -1286,6 +1291,8 @@ export namespace Title {
         dataset?: Dataset;
         icon?: VirtualElement.IRenderer;
         iconClass?: string;
+        closeIcon?: VirtualElement.IRenderer;
+        closeIconClass?: string;
         iconLabel?: string;
         label?: string;
         mnemonic?: number;

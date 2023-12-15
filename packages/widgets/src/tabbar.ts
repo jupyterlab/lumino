@@ -1752,7 +1752,11 @@ export namespace TabBar {
      * @returns A virtual element representing the tab close icon.
      */
     renderCloseIcon(data: IRenderData<any>): VirtualElement {
-      return h.div({ className: 'lm-TabBar-tabCloseIcon' });
+      const { title } = data;
+      let className = this.createCloseIconClass(data);
+
+      // If title.closeIcon is undefined, it will be ignored.
+      return h.div({ className }, title.closeIcon!);
     }
 
     /**
@@ -1844,6 +1848,19 @@ export namespace TabBar {
     createIconClass(data: IRenderData<any>): string {
       let name = 'lm-TabBar-tabIcon';
       let extra = data.title.iconClass;
+      return extra ? `${name} ${extra}` : name;
+    }
+
+    /**
+     * Create the class name for the tab closeIcon.
+     *
+     * @param data - The data to use for the tab.
+     *
+     * @returns The full class name for the tab closeIcon.
+     */
+    createCloseIconClass(data: IRenderData<any>): string {
+      let name = 'lm-TabBar-tabCloseIcon';
+      let extra = data.title.closeIconClass;
       return extra ? `${name} ${extra}` : name;
     }
 
