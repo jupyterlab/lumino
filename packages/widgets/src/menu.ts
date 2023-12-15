@@ -27,7 +27,7 @@ import {
   ElementDataset,
   h,
   VirtualDOM,
-  VirtualElement,
+  VirtualElement
 } from '@lumino/virtualdom';
 
 import { Widget } from './widget';
@@ -556,7 +556,7 @@ export class Menu extends Widget {
         collapsed,
         onfocus: () => {
           this.activeIndex = i;
-        },
+        }
       });
     }
     VirtualDOM.render(content, this.contentNode);
@@ -708,7 +708,7 @@ export class Menu extends Widget {
    */
   private _evtMouseMove(event: MouseEvent): void {
     // Hit test the item nodes for the item under the mouse.
-    let index = ArrayExt.findFirstIndex(this.contentNode.children, (node) => {
+    let index = ArrayExt.findFirstIndex(this.contentNode.children, node => {
       return ElementExt.hitTest(node, event.clientX, event.clientY);
     });
 
@@ -1177,7 +1177,7 @@ export namespace Menu {
           dataset,
           tabindex: '0',
           onfocus: data.onfocus,
-          ...aria,
+          ...aria
         },
         this.renderIcon(data),
         this.renderLabel(data),
@@ -1225,7 +1225,7 @@ export namespace Menu {
       return h.div(
         {
           className: 'lm-Menu-itemShortcut',
-          'aria-label': `${ariaContent}`,
+          'aria-label': `${ariaContent}`
         },
         content
       );
@@ -1389,7 +1389,7 @@ export namespace Menu {
         ',': 'Comma',
         '.': 'Full stop',
         "'": 'Single quote',
-        '-': 'Hyphen-minus',
+        '-': 'Hyphen-minus'
       };
 
       let kbText = data.item.keyBinding;
@@ -1565,7 +1565,7 @@ namespace Private {
       pageXOffset: window.pageXOffset,
       pageYOffset: window.pageYOffset,
       clientWidth: document.documentElement.clientWidth,
-      clientHeight: document.documentElement.clientHeight,
+      clientHeight: document.documentElement.clientHeight
     };
   }
 
@@ -1951,7 +1951,7 @@ namespace Private {
       if (this.type === 'command') {
         let { command, args } = this;
         return (
-          ArrayExt.findLastValue(this._commands.keyBindings, (kb) => {
+          ArrayExt.findLastValue(this._commands.keyBindings, kb => {
             return kb.command === command && JSONExt.deepEqual(kb.args, args);
           }) || null
         );
