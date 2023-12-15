@@ -1609,7 +1609,7 @@ describe('@lumino/widgets', () => {
         });
         describe('#formatShortcutText()', () => {
           it('should format the item aria-label', () => {
-            let item = menu.addItem({ command: 'test' });
+            let item = menu.addItem({ command: 'test-aria' });
             let child = renderer.formatShortcutText({
               item,
               active: false,

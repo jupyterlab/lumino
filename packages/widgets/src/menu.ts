@@ -1379,6 +1379,9 @@ export namespace Menu {
       return kb ? CommandRegistry.formatKeystroke(kb.keys) : null;
     }
 
+    /**
+     * @returns The aria label content to add to the shortcut node.
+     */
     formatShortcutText(data: IRenderData): h.Child {
       const keyToText: { [key: string]: string } = {
         ']': 'Closing bracket',
