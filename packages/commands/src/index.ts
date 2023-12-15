@@ -612,7 +612,7 @@ export class CommandRegistry {
     this._clearModifierTimer();
     this._timerModifierID = window.setTimeout(() => {
       this._executeKeyBinding(exact);
-    }, Private.CHORD_TIMEOUT);
+    }, Private.ModifierKey_TIMEOUT);
   }
 
   /**
@@ -1341,6 +1341,11 @@ namespace Private {
    * The timeout in ms for triggering a key binding chord.
    */
   export const CHORD_TIMEOUT = 1000;
+
+    /**
+   * The timeout in ms for triggering a modifer key binding.
+   */
+    export const ModifierKey_TIMEOUT = 500;
 
   /**
    * A convenience type alias for a command func.
