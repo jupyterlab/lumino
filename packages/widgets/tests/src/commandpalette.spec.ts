@@ -34,7 +34,7 @@ const defaultOptions: CommandPalette.IItemOptions = {
   command: 'test',
   category: 'Test Category',
   args: { foo: 'bar' },
-  rank: 42,
+  rank: 42
 };
 
 describe('@lumino/widgets', () => {
@@ -120,7 +120,7 @@ describe('@lumino/widgets', () => {
           command: 'test2',
           category: 'Test Category',
           args: { foo: 'bar' },
-          rank: 100,
+          rank: 100
         };
 
         expect(palette.items.length).to.equal(0);
@@ -213,7 +213,7 @@ describe('@lumino/widgets', () => {
               isEnabled: () => {
                 called = true;
                 return false;
-              },
+              }
             });
             let item = palette.addItem(defaultOptions);
             expect(called).to.equal(false);
@@ -230,7 +230,7 @@ describe('@lumino/widgets', () => {
               isToggled: () => {
                 called = true;
                 return true;
-              },
+              }
             });
             let item = palette.addItem(defaultOptions);
             expect(called).to.equal(false);
@@ -247,7 +247,7 @@ describe('@lumino/widgets', () => {
               isVisible: () => {
                 called = true;
                 return false;
-              },
+              }
             });
             let item = palette.addItem(defaultOptions);
             expect(called).to.equal(false);
@@ -262,7 +262,7 @@ describe('@lumino/widgets', () => {
               keys: ['Ctrl A'],
               selector: 'body',
               command: 'test',
-              args: defaultOptions.args,
+              args: defaultOptions.args
             });
             let item = palette.addItem(defaultOptions);
             expect(item.keyBinding!.keys).to.deep.equal(['Ctrl A']);
@@ -325,7 +325,7 @@ describe('@lumino/widgets', () => {
       it('should handle click, keydown, and input events', () => {
         let palette = new LogPalette({ commands });
         Widget.attach(palette, document.body);
-        ['click', 'keydown', 'input'].forEach((type) => {
+        ['click', 'keydown', 'input'].forEach(type => {
           palette.node.dispatchEvent(new Event(type, { bubbles }));
           expect(palette.events).to.contain(type);
         });
@@ -378,7 +378,7 @@ describe('@lumino/widgets', () => {
           palette.node.dispatchEvent(
             new KeyboardEvent('keydown', {
               bubbles,
-              keyCode: 40, // Down arrow
+              keyCode: 40 // Down arrow
             })
           );
           MessageLoop.flush();
@@ -399,7 +399,7 @@ describe('@lumino/widgets', () => {
           palette.node.dispatchEvent(
             new KeyboardEvent('keydown', {
               bubbles,
-              keyCode: 38, // Up arrow
+              keyCode: 38 // Up arrow
             })
           );
           MessageLoop.flush();
@@ -419,12 +419,12 @@ describe('@lumino/widgets', () => {
           let node = content.querySelector('.lm-mod-active');
 
           expect(node).to.equal(null);
-          ['altKey', 'ctrlKey', 'shiftKey', 'metaKey'].forEach((key) => {
+          ['altKey', 'ctrlKey', 'shiftKey', 'metaKey'].forEach(key => {
             palette.node.dispatchEvent(
               new KeyboardEvent('keydown', {
                 bubbles,
                 [key]: true,
-                keyCode: 38, // Up arrow
+                keyCode: 38 // Up arrow
               })
             );
             node = content.querySelector(
@@ -438,7 +438,7 @@ describe('@lumino/widgets', () => {
         it('should trigger active item if enter is pressed', () => {
           let called = false;
           commands.addCommand('test', {
-            execute: () => (called = true),
+            execute: () => (called = true)
           });
           let content = palette.contentNode;
 
@@ -450,13 +450,13 @@ describe('@lumino/widgets', () => {
           palette.node.dispatchEvent(
             new KeyboardEvent('keydown', {
               bubbles,
-              keyCode: 40, // Down arrow
+              keyCode: 40 // Down arrow
             })
           );
           palette.node.dispatchEvent(
             new KeyboardEvent('keydown', {
               bubbles,
-              keyCode: 13, // Enter
+              keyCode: 13 // Enter
             })
           );
           expect(called).to.equal(true);
@@ -465,7 +465,7 @@ describe('@lumino/widgets', () => {
 
       context('input', () => {
         it('should filter the list of visible items', () => {
-          ['A', 'B', 'C', 'D', 'E'].forEach((name) => {
+          ['A', 'B', 'C', 'D', 'E'].forEach(name => {
             commands.addCommand(name, { execute: () => {}, label: name });
             palette.addItem({ command: name, category: 'test' });
           });
@@ -488,14 +488,14 @@ describe('@lumino/widgets', () => {
           let categories = ['Z', 'Y'];
           let names = [
             ['A1', 'B2', 'C3', 'D4', 'E5'],
-            ['F1', 'G2', 'H3', 'I4', 'J5'],
+            ['F1', 'G2', 'H3', 'I4', 'J5']
           ];
           names.forEach((values, index) => {
-            values.forEach((command) => {
+            values.forEach(command => {
               palette.addItem({ command, category: categories[index] });
               commands.addCommand(command, {
                 execute: () => {},
-                label: command,
+                label: command
               });
             });
           });
@@ -545,12 +545,12 @@ describe('@lumino/widgets', () => {
           className: 'testClass',
           isEnabled: () => enabledFlag,
           isToggled: () => toggledFlag,
-          execute: () => {},
+          execute: () => {}
         });
         commands.addKeyBinding({
           command: 'test',
           keys: ['Ctrl A'],
-          selector: 'body',
+          selector: 'body'
         });
         commands.addCommand('test-aria', {
           label: 'Test Aria',
@@ -558,17 +558,17 @@ describe('@lumino/widgets', () => {
           className: 'testAriaClass',
           isEnabled: () => enabledFlag,
           isToggled: () => toggledFlag,
-          execute: () => {},
+          execute: () => {}
         });
         commands.addKeyBinding({
           command: 'test-aria',
           keys: ['Ctrl ,'],
-          selector: 'body',
+          selector: 'body'
         });
 
         item = palette.addItem({
           command: 'test',
-          category: 'Test Category',
+          category: 'Test Category'
         });
       });
 
@@ -576,7 +576,7 @@ describe('@lumino/widgets', () => {
         it('should render a header node for the palette', () => {
           let vNode = renderer.renderHeader({
             category: 'Test Category',
-            indices: null,
+            indices: null
           });
           let node = VirtualDOM.realize(vNode);
           expect(node.classList.contains('lm-CommandPalette-header')).to.equal(
@@ -588,7 +588,7 @@ describe('@lumino/widgets', () => {
         it('should mark the matching indices', () => {
           let vNode = renderer.renderHeader({
             category: 'Test Category',
-            indices: [1, 2, 6, 7, 8],
+            indices: [1, 2, 6, 7, 8]
           });
           let node = VirtualDOM.realize(vNode);
           expect(node.classList.contains('lm-CommandPalette-header')).to.equal(
@@ -605,7 +605,7 @@ describe('@lumino/widgets', () => {
           let vNode = renderer.renderItem({
             item,
             indices: null,
-            active: false,
+            active: false
           });
           let node = VirtualDOM.realize(vNode);
           expect(node.classList.contains('lm-CommandPalette-item')).to.equal(
@@ -632,7 +632,7 @@ describe('@lumino/widgets', () => {
           let vNode = renderer.renderItem({
             item,
             indices: null,
-            active: false,
+            active: false
           });
           let node = VirtualDOM.realize(vNode);
           expect(node.classList.contains('lm-mod-disabled')).to.equal(true);
@@ -643,7 +643,7 @@ describe('@lumino/widgets', () => {
           let vNode = renderer.renderItem({
             item,
             indices: null,
-            active: false,
+            active: false
           });
           let node = VirtualDOM.realize(vNode);
           expect(node.classList.contains('lm-mod-toggled')).to.equal(true);
@@ -653,7 +653,7 @@ describe('@lumino/widgets', () => {
           let vNode = renderer.renderItem({
             item,
             indices: null,
-            active: true,
+            active: true
           });
           let node = VirtualDOM.realize(vNode);
           expect(node.classList.contains('lm-mod-active')).to.equal(true);
@@ -676,7 +676,7 @@ describe('@lumino/widgets', () => {
           let vNode = renderer.renderItemShortcut({
             item,
             indices: null,
-            active: false,
+            active: false
           });
           let node = VirtualDOM.realize(vNode);
           expect(
@@ -695,7 +695,7 @@ describe('@lumino/widgets', () => {
           let vNode = renderer.renderItemLabel({
             item,
             indices: [1, 2, 3],
-            active: false,
+            active: false
           });
           let node = VirtualDOM.realize(vNode);
           expect(
@@ -710,7 +710,7 @@ describe('@lumino/widgets', () => {
           let vNode = renderer.renderItemCaption({
             item,
             indices: null,
-            active: false,
+            active: false
           });
           let node = VirtualDOM.realize(vNode);
           expect(
@@ -725,7 +725,7 @@ describe('@lumino/widgets', () => {
           let name = renderer.createItemClass({
             item,
             indices: null,
-            active: false,
+            active: false
           });
           let expected = 'lm-CommandPalette-item testClass';
           expect(name).to.equal(expected);
@@ -737,7 +737,7 @@ describe('@lumino/widgets', () => {
           let name = renderer.createItemClass({
             item,
             indices: null,
-            active: true,
+            active: true
           });
           let expected =
             'lm-CommandPalette-item lm-mod-disabled lm-mod-toggled lm-mod-active testClass';
@@ -750,7 +750,7 @@ describe('@lumino/widgets', () => {
           let dataset = renderer.createItemDataset({
             item,
             indices: null,
-            active: false,
+            active: false
           });
           expect(dataset).to.deep.equal({ command: 'test' });
         });
@@ -760,11 +760,11 @@ describe('@lumino/widgets', () => {
         it('should format unmatched header content', () => {
           let child1 = renderer.formatHeader({
             category: 'Test Category',
-            indices: null,
+            indices: null
           });
           let child2 = renderer.formatHeader({
             category: 'Test Category',
-            indices: [],
+            indices: []
           });
           expect(child1).to.equal('Test Category');
           expect(child2).to.equal('Test Category');
@@ -773,7 +773,7 @@ describe('@lumino/widgets', () => {
         it('should format matched header content', () => {
           let child = renderer.formatHeader({
             category: 'Test Category',
-            indices: [1, 2, 6, 7, 8],
+            indices: [1, 2, 6, 7, 8]
           });
           let node = VirtualDOM.realize(h.div(child));
           expect(node.innerHTML).to.equal(
@@ -794,7 +794,7 @@ describe('@lumino/widgets', () => {
           let child = renderer.formatItemShortcut({
             item,
             indices: null,
-            active: false,
+            active: false
           });
           if (Platform.IS_MAC) {
             expect(child).to.equal('\u2303 A');
@@ -809,12 +809,12 @@ describe('@lumino/widgets', () => {
           let child1 = renderer.formatItemLabel({
             item,
             indices: null,
-            active: false,
+            active: false
           });
           let child2 = renderer.formatItemLabel({
             item,
             indices: [],
-            active: false,
+            active: false
           });
           expect(child1).to.equal('Test Command');
           expect(child2).to.equal('Test Command');
@@ -824,7 +824,7 @@ describe('@lumino/widgets', () => {
           let child = renderer.formatItemLabel({
             item,
             indices: [1, 2, 3],
-            active: false,
+            active: false
           });
           let node = VirtualDOM.realize(h.div(child));
           expect(node.innerHTML).to.equal('T<mark>est</mark> Command');
@@ -836,7 +836,7 @@ describe('@lumino/widgets', () => {
           let child = renderer.formatItemCaption({
             item,
             indices: null,
-            active: false,
+            active: false
           });
           expect(child).to.equal('A simple test command');
         });
@@ -847,7 +847,7 @@ describe('@lumino/widgets', () => {
           let child = renderer.formatItemShortcut({
             item,
             indices: null,
-            active: false,
+            active: false
           });
           if (Platform.IS_MAC) {
             expect(child).to.equal('\u2303 A');
@@ -860,12 +860,12 @@ describe('@lumino/widgets', () => {
         it('should format the item aria-label', () => {
           let item = palette.addItem({
             command: 'test-aria',
-            category: 'Test Category',
+            category: 'Test Category'
           });
           let child = renderer.formatItemAria({
             item,
             indices: null,
-            active: false,
+            active: false
           });
           if (Platform.IS_MAC) {
             expect(child).to.equal('\u2303 ,');
