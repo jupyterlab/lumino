@@ -245,6 +245,8 @@ export namespace CommandPalette {
         createItemDataset(data: IItemRenderData): ElementDataset;
         formatEmptyMessage(data: IEmptyMessageRenderData): h.Child;
         formatHeader(data: IHeaderRenderData): h.Child;
+        // (undocumented)
+        formatItemAria(data: IItemRenderData): h.Child;
         formatItemCaption(data: IItemRenderData): h.Child;
         formatItemLabel(data: IItemRenderData): h.Child;
         formatItemShortcut(data: IItemRenderData): h.Child;
@@ -763,6 +765,8 @@ export namespace Menu {
         createItemDataset(data: IRenderData): ElementDataset;
         formatLabel(data: IRenderData): h.Child;
         formatShortcut(data: IRenderData): h.Child;
+        // (undocumented)
+        formatShortcutText(data: IRenderData): h.Child;
         renderIcon(data: IRenderData): VirtualElement;
         renderItem(data: IRenderData): VirtualElement;
         renderLabel(data: IRenderData): VirtualElement;
