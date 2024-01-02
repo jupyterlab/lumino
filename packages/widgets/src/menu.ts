@@ -708,7 +708,7 @@ export class Menu extends Widget {
    */
   private _evtMouseMove(event: MouseEvent): void {
     // Hit test the item nodes for the item under the mouse.
-    let index = ArrayExt.findFirstIndex(this.contentNode.children, (node) => {
+    let index = ArrayExt.findFirstIndex(this.contentNode.children, node => {
       return ElementExt.hitTest(node, event.clientX, event.clientY);
     });
 
@@ -1927,7 +1927,7 @@ namespace Private {
       if (this.type === 'command') {
         let { command, args } = this;
         return (
-          ArrayExt.findLastValue(this._commands.keyBindings, (kb) => {
+          ArrayExt.findLastValue(this._commands.keyBindings, kb => {
             return kb.command === command && JSONExt.deepEqual(kb.args, args);
           }) || null
         );

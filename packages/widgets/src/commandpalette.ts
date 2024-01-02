@@ -138,10 +138,8 @@ export class CommandPalette extends Widget {
    * @returns The command items added to the palette.
    */
   addItems(items: CommandPalette.IItemOptions[]): CommandPalette.IItem[] {
-    const newItems = items.map((item) =>
-      Private.createItem(this.commands, item)
-    );
-    newItems.forEach((item) => this._items.push(item));
+    const newItems = items.map(item => Private.createItem(this.commands, item));
+    newItems.forEach(item => this._items.push(item));
     this.refresh();
     return newItems;
   }
@@ -377,7 +375,7 @@ export class CommandPalette extends Widget {
     }
 
     // Find the index of the item which was clicked.
-    let index = ArrayExt.findFirstIndex(this.contentNode.children, (node) => {
+    let index = ArrayExt.findFirstIndex(this.contentNode.children, node => {
       return node.contains(event.target as HTMLElement);
     });
 
@@ -1565,7 +1563,7 @@ namespace Private {
     get keyBinding(): CommandRegistry.IKeyBinding | null {
       let { command, args } = this;
       return (
-        ArrayExt.findLastValue(this._commands.keyBindings, (kb) => {
+        ArrayExt.findLastValue(this._commands.keyBindings, kb => {
           return kb.command === command && JSONExt.deepEqual(kb.args, args);
         }) || null
       );
