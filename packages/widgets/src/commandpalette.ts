@@ -138,8 +138,10 @@ export class CommandPalette extends Widget {
    * @returns The command items added to the palette.
    */
   addItems(items: CommandPalette.IItemOptions[]): CommandPalette.IItem[] {
-    const newItems = items.map(item => Private.createItem(this.commands, item));
-    newItems.forEach(item => this._items.push(item));
+    const newItems = items.map((item) =>
+      Private.createItem(this.commands, item)
+    );
+    newItems.forEach((item) => this._items.push(item));
     this.refresh();
     return newItems;
   }
@@ -375,7 +377,7 @@ export class CommandPalette extends Widget {
     }
 
     // Find the index of the item which was clicked.
-    let index = ArrayExt.findFirstIndex(this.contentNode.children, node => {
+    let index = ArrayExt.findFirstIndex(this.contentNode.children, (node) => {
       return node.contains(event.target as HTMLElement);
     });
 
@@ -984,35 +986,11 @@ export namespace CommandPalette {
      * @returns The aria label content to add to the shortcut node.
      */
     formatItemAria(data: IItemRenderData): h.Child {
-      const keyToText: { [key: string]: string } = {
-        ']': 'Closing bracket',
-        '[': 'Opening bracket',
-        ',': 'Comma',
-        '.': 'Full stop',
-        "'": 'Single quote',
-        '-': 'Hyphen-minus'
-      };
-
       let kbText = data.item.keyBinding;
-      let result = kbText ? CommandRegistry.formatKeystroke(kbText.keys) : null;
 
-      let punctuationRegex = /\p{P}/u;
-      let punctuations = result?.match(punctuationRegex);
-      if (!punctuations) {
-        return [];
-      }
-      for (const punctuation of punctuations) {
-        if (result != null && Object.keys(keyToText).includes(punctuation)) {
-          const individualKeys = result.split('+');
-          let index = individualKeys.indexOf(punctuation);
-          if (index != -1) {
-            individualKeys[index] = keyToText[punctuation];
-          }
-          const textShortcut = individualKeys.join('+');
-          return textShortcut;
-        }
-      }
-      return kbText ? CommandRegistry.formatKeystroke(kbText.keys) : null;
+      return kbText
+        ? CommandRegistry.formatKeystrokeAriaLabel(kbText.keys)
+        : null;
     }
 
     /**
@@ -1587,7 +1565,7 @@ namespace Private {
     get keyBinding(): CommandRegistry.IKeyBinding | null {
       let { command, args } = this;
       return (
-        ArrayExt.findLastValue(this._commands.keyBindings, kb => {
+        ArrayExt.findLastValue(this._commands.keyBindings, (kb) => {
           return kb.command === command && JSONExt.deepEqual(kb.args, args);
         }) || null
       );

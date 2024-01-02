@@ -708,7 +708,7 @@ export class Menu extends Widget {
    */
   private _evtMouseMove(event: MouseEvent): void {
     // Hit test the item nodes for the item under the mouse.
-    let index = ArrayExt.findFirstIndex(this.contentNode.children, node => {
+    let index = ArrayExt.findFirstIndex(this.contentNode.children, (node) => {
       return ElementExt.hitTest(node, event.clientX, event.clientY);
     });
 
@@ -1383,35 +1383,11 @@ export namespace Menu {
      * @returns The aria label content to add to the shortcut node.
      */
     formatShortcutText(data: IRenderData): h.Child {
-      const keyToText: { [key: string]: string } = {
-        ']': 'Closing bracket',
-        '[': 'Opening bracket',
-        ',': 'Comma',
-        '.': 'Full stop',
-        "'": 'Single quote',
-        '-': 'Hyphen-minus'
-      };
-
       let kbText = data.item.keyBinding;
-      let result = kbText ? CommandRegistry.formatKeystroke(kbText.keys) : null;
 
-      let punctuationRegex = /\p{P}/u;
-      let punctuations = result?.match(punctuationRegex);
-      if (!punctuations) {
-        return [];
-      }
-      for (const punctuation of punctuations) {
-        if (result != null && Object.keys(keyToText).includes(punctuation)) {
-          const individualKeys = result.split('+');
-          let index = individualKeys.indexOf(punctuation);
-          if (index != -1) {
-            individualKeys[index] = keyToText[punctuation];
-          }
-          const textShortcut = individualKeys.join('+');
-          return textShortcut;
-        }
-      }
-      return kbText ? CommandRegistry.formatKeystroke(kbText.keys) : null;
+      return kbText
+        ? CommandRegistry.formatKeystrokeAriaLabel(kbText.keys)
+        : null;
     }
   }
 
@@ -1951,7 +1927,7 @@ namespace Private {
       if (this.type === 'command') {
         let { command, args } = this;
         return (
-          ArrayExt.findLastValue(this._commands.keyBindings, kb => {
+          ArrayExt.findLastValue(this._commands.keyBindings, (kb) => {
             return kb.command === command && JSONExt.deepEqual(kb.args, args);
           }) || null
         );
