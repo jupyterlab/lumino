@@ -180,6 +180,8 @@ export class CommandPalette extends Widget {
     handleEvent(event: Event): void;
     get inputNode(): HTMLInputElement;
     get items(): ReadonlyArray<CommandPalette.IItem>;
+    // (undocumented)
+    readonly keyToText: CommandPalette.IRenderer['keyToText'];
     protected onActivateRequest(msg: Message): void;
     protected onAfterDetach(msg: Message): void;
     protected onAfterShow(msg: Message): void;
@@ -235,6 +237,10 @@ export namespace CommandPalette {
         renderer?: IRenderer;
     }
     export interface IRenderer {
+        // (undocumented)
+        keyToText?: {
+            [key: string]: string;
+        };
         renderEmptyMessage(data: IEmptyMessageRenderData): VirtualElement;
         renderHeader(data: IHeaderRenderData): VirtualElement;
         renderItem(data: IItemRenderData): VirtualElement;
@@ -250,6 +256,10 @@ export namespace CommandPalette {
         formatItemCaption(data: IItemRenderData): h.Child;
         formatItemLabel(data: IItemRenderData): h.Child;
         formatItemShortcut(data: IItemRenderData): h.Child;
+        // (undocumented)
+        keyToText?: {
+            [key: string]: string;
+        };
         renderEmptyMessage(data: IEmptyMessageRenderData): VirtualElement;
         renderHeader(data: IHeaderRenderData): VirtualElement;
         renderItem(data: IItemRenderData): VirtualElement;

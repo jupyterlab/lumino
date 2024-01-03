@@ -49,7 +49,9 @@ export namespace CommandRegistry {
         args: ReadonlyJSONObject | null;
     };
     export function formatKeystroke(keystroke: string | readonly string[]): string;
-    export function formatKeystrokeAriaLabel(keystroke: readonly string[]): string;
+    export function formatKeystrokeAriaLabel(keystroke: readonly string[], keyToText?: {
+        [key: string]: string;
+    }): string;
     export interface ICommandChangedArgs {
         readonly id: string | undefined;
         readonly type: 'added' | 'removed' | 'changed' | 'many-changed';
