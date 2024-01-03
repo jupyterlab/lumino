@@ -39,6 +39,7 @@ export class CommandPalette extends Widget {
     super({ node: Private.createNode() });
     this.addClass('lm-CommandPalette');
     this.setFlag(Widget.Flag.DisallowLayout);
+    this.keyToText = options.renderer?.keyToText;
     this.commands = options.commands;
     this.renderer = options.renderer || CommandPalette.defaultRenderer;
     this.commands.commandChanged.connect(this._onGenericChange, this);
@@ -63,6 +64,8 @@ export class CommandPalette extends Widget {
    * The renderer used by the command palette.
    */
   readonly renderer: CommandPalette.IRenderer;
+
+  readonly keyToText: CommandPalette.IRenderer['keyToText'];
 
   /**
    * The command palette search node.
@@ -750,12 +753,15 @@ export namespace CommandPalette {
      * @returns A virtual element representing the message.
      */
     renderEmptyMessage(data: IEmptyMessageRenderData): VirtualElement;
+
+    keyToText?: { [key: string]: string };
   }
 
   /**
    * The default implementation of `IRenderer`.
    */
   export class Renderer implements IRenderer {
+    keyToText?: { [key: string]: string };
     /**
      * Render the virtual element for a command palette header.
      *
@@ -985,9 +991,8 @@ export namespace CommandPalette {
      */
     formatItemAria(data: IItemRenderData): h.Child {
       let kbText = data.item.keyBinding;
-
       return kbText
-        ? CommandRegistry.formatKeystrokeAriaLabel(kbText.keys)
+        ? CommandRegistry.formatKeystrokeAriaLabel(kbText.keys, this.keyToText)
         : null;
     }
 

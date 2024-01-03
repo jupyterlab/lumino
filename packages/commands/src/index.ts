@@ -1280,9 +1280,10 @@ export namespace CommandRegistry {
    * @returns The keystrokes representation
    */
   export function formatKeystrokeAriaLabel(
-    keystroke: readonly string[]
+    keystroke: readonly string[],
+    keyToText?: { [key: string]: string }
   ): string {
-    const keyToText: { [key: string]: string } = {
+    const internalKeyToText = keyToText ?? {
       ']': 'Closing bracket',
       '[': 'Opening bracket',
       ',': 'Comma',
@@ -1299,11 +1300,14 @@ export namespace CommandRegistry {
       return result;
     }
     for (const punctuation of punctuations) {
-      if (result != null && Object.keys(keyToText).includes(punctuation)) {
+      if (
+        result != null &&
+        Object.keys(internalKeyToText).includes(punctuation)
+      ) {
         const individualKeys = result.split('+');
         let index = individualKeys.indexOf(punctuation);
         if (index != -1) {
-          individualKeys[index] = keyToText[punctuation];
+          individualKeys[index] = internalKeyToText[punctuation];
         }
         const textShortcut = individualKeys.join('+');
         return textShortcut;

@@ -52,6 +52,7 @@ export class Menu extends Widget {
     super({ node: Private.createNode() });
     this.addClass('lm-Menu');
     this.setFlag(Widget.Flag.DisallowLayout);
+    this.keyToText = options.renderer?.keyToText;
     this.commands = options.commands;
     this.renderer = options.renderer || Menu.defaultRenderer;
   }
@@ -64,6 +65,8 @@ export class Menu extends Widget {
     this._items.length = 0;
     super.dispose();
   }
+
+  readonly keyToText: Menu.IRenderer['keyToText'];
 
   /**
    * A signal emitted just before the menu is closed.
@@ -1151,6 +1154,8 @@ export namespace Menu {
      * @returns A virtual element representing the item.
      */
     renderItem(data: IRenderData): VirtualElement;
+
+    keyToText?: { [key: string]: string };
   }
 
   /**
@@ -1160,6 +1165,7 @@ export namespace Menu {
    * Subclasses are free to reimplement rendering methods as needed.
    */
   export class Renderer implements IRenderer {
+    keyToText?: { [key: string]: string };
     /**
      * Render the virtual element for a menu item.
      *
@@ -1386,7 +1392,7 @@ export namespace Menu {
       let kbText = data.item.keyBinding;
 
       return kbText
-        ? CommandRegistry.formatKeystrokeAriaLabel(kbText.keys)
+        ? CommandRegistry.formatKeystrokeAriaLabel(kbText.keys, this.keyToText)
         : null;
     }
   }
