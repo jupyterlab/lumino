@@ -701,9 +701,13 @@ describe('@lumino/commands', () => {
     describe('#processKeydownEvent()', () => {
       it('should dispatch on a correct keyboard event', () => {
         let called = false;
+        let _luminoEventType;
+        let _luminoEventKeys;
         registry.addCommand('test', {
-          execute: () => {
+          execute: args => {
             called = true;
+            _luminoEventType = (args._luminoEvent as ReadonlyJSONObject).type;
+            _luminoEventKeys = (args._luminoEvent as ReadonlyJSONObject).keys;
           }
         });
         registry.addKeyBinding({
@@ -718,6 +722,8 @@ describe('@lumino/commands', () => {
           })
         );
         expect(called).to.equal(true);
+        expect(_luminoEventType).to.equal('keybinding');
+        expect(_luminoEventKeys).to.contain('Ctrl ;');
       });
 
       it('should not dispatch on a suppressed node', () => {
@@ -789,6 +795,30 @@ describe('@lumino/commands', () => {
           })
         );
         expect(count).to.equal(0);
+      });
+
+      it('should not dispatch on a prevented keydown event', () => {
+        let called = false;
+        registry.addCommand('test', {
+          execute: args => {
+            called = true;
+          }
+        });
+        registry.addKeyBinding({
+          keys: ['Ctrl ;'],
+          selector: `#${elem.id}`,
+          command: 'test'
+        });
+        const event = new KeyboardEvent('keydown', {
+          keyCode: 59,
+          ctrlKey: true,
+          cancelable: true
+        });
+
+        event.preventDefault();
+
+        elem.dispatchEvent(event);
+        expect(called).to.equal(false);
       });
 
       it('should dispatch with multiple chords in a key sequence', () => {
