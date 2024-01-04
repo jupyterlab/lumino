@@ -64,7 +64,9 @@ export class CommandPalette extends Widget {
    * The renderer used by the command palette.
    */
   readonly renderer: CommandPalette.IRenderer;
-
+  /**
+   * The optional object used for translation of aria label punctuation.
+   */
   readonly keyToText: CommandPalette.IRenderer['keyToText'];
 
   /**
@@ -754,6 +756,9 @@ export namespace CommandPalette {
      */
     renderEmptyMessage(data: IEmptyMessageRenderData): VirtualElement;
 
+    /**
+     * The optional object used for translation of aria label punctuation.
+     */
     keyToText?: { [key: string]: string };
   }
 
@@ -761,6 +766,9 @@ export namespace CommandPalette {
    * The default implementation of `IRenderer`.
    */
   export class Renderer implements IRenderer {
+    /**
+     * The optional object used for translation of aria label punctuation.
+     */
     keyToText?: { [key: string]: string };
     /**
      * Render the virtual element for a command palette header.
@@ -987,6 +995,8 @@ export namespace CommandPalette {
     }
 
     /**
+     * @param data - The data to use for the aria label content.
+     *
      * @returns The aria label content to add to the shortcut node.
      */
     formatItemAria(data: IItemRenderData): h.Child {

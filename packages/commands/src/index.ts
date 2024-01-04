@@ -1277,6 +1277,7 @@ export namespace CommandRegistry {
    * aria label and substitue symbol values to text.
    *
    * @param keystroke The keystrokes to format
+   * @param keyToText - Optional object for converting punctuation.
    * @returns The keystrokes representation
    */
   export function formatKeystrokeAriaLabel(

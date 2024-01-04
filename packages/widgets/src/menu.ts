@@ -65,7 +65,9 @@ export class Menu extends Widget {
     this._items.length = 0;
     super.dispose();
   }
-
+  /**
+   * The optional object used for translation of aria label punctuation.
+   */
   readonly keyToText: Menu.IRenderer['keyToText'];
 
   /**
@@ -1154,7 +1156,9 @@ export namespace Menu {
      * @returns A virtual element representing the item.
      */
     renderItem(data: IRenderData): VirtualElement;
-
+    /**
+     * The optional object used for translation of aria label punctuation.
+     */
     keyToText?: { [key: string]: string };
   }
 
@@ -1165,6 +1169,9 @@ export namespace Menu {
    * Subclasses are free to reimplement rendering methods as needed.
    */
   export class Renderer implements IRenderer {
+    /**
+     * The optional object used for translation of aria label punctuation.
+     */
     keyToText?: { [key: string]: string };
     /**
      * Render the virtual element for a menu item.
@@ -1386,6 +1393,8 @@ export namespace Menu {
     }
 
     /**
+     * @param data - The data to use for the aria label content.
+     *
      * @returns The aria label content to add to the shortcut node.
      */
     formatShortcutText(data: IRenderData): h.Child {
