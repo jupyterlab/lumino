@@ -81,9 +81,33 @@ export namespace Selector {
    * #### Notes
    * This function uses the builtin browser capabilities when possible,
    * falling back onto a document query otherwise.
+   * This function supports the non-standard shadow-piercing descendant combinator (`/deep/`).
    */
   export function matches(element: Element, selector: string): boolean {
-    return Private.protoMatchFunc.call(element, selector);
+    if (selector.includes('/deep/')) {
+      const parts = selector.split('/deep/');
+      if (parts.length > 2) {
+        throw Error(
+          'Nested shadow DOM selector not supported (only one `/deep/` allowed)'
+        );
+      }
+      const shallowSelector = parts.join(' ');
+      if (Private.protoMatchFunc.call(element, shallowSelector)) {
+        return true;
+      }
+      const shadowRoot = element.getRootNode();
+      if (!(shadowRoot instanceof ShadowRoot)) {
+        return false;
+      }
+      const outer = parts[0];
+      const inner = parts[1];
+      return (
+        Private.protoMatchFunc.call(shadowRoot.host, outer) &&
+        Private.protoMatchFunc.call(element, inner)
+      );
+    } else {
+      return Private.protoMatchFunc.call(element, selector);
+    }
   }
 }
 

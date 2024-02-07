@@ -143,12 +143,18 @@ describe('@lumino/domutils', () => {
             </div>
           </li>
         </ul>
+        <div class="parent">
+        </div>
       `;
       const list = div.firstElementChild!;
       const item = list.firstElementChild!;
       const content = item.firstElementChild!;
       const icon = content.firstElementChild!;
       const text = icon.nextElementSibling!;
+      const parent = div.children[1]!;
+      const shadowRoot = parent.attachShadow({ mode: 'open' });
+      shadowRoot.innerHTML = '<div class="shadow-child"></div>';
+      const shadowChild = shadowRoot.firstElementChild!;
 
       it('should return `true` if an element matches a selector', () => {
         expect(Selector.matches(div, 'div')).to.equal(true);
@@ -156,6 +162,13 @@ describe('@lumino/domutils', () => {
         expect(Selector.matches(item, '.list > .item')).to.equal(true);
         expect(Selector.matches(icon, '.content .icon')).to.equal(true);
         expect(Selector.matches(text, 'div span + .text')).to.equal(true);
+        expect(Selector.matches(shadowChild, '.shadow-child')).to.equal(true);
+        expect(
+          Selector.matches(shadowChild, '.parent /deep/ .shadow-child')
+        ).to.equal(true);
+        expect(Selector.matches(shadowChild, '/deep/ .shadow-child')).to.equal(
+          true
+        );
       });
 
       it('should return `false` if an element does not match a selector', () => {
@@ -164,6 +177,10 @@ describe('@lumino/domutils', () => {
         expect(Selector.matches(item, '.content > .item')).to.equal(false);
         expect(Selector.matches(icon, '.foo .icon')).to.equal(false);
         expect(Selector.matches(text, 'ol div + .text')).to.equal(false);
+        expect(Selector.matches(shadowChild, '.parent .shadow-child')).to.equal(
+          false
+        );
+        expect(Selector.matches(shadowChild, '.parent')).to.equal(false);
       });
     });
   });
