@@ -584,6 +584,21 @@ export class CommandRegistry {
   }
 
   /**
+   * Delay the execution of any command matched against the given 'keydown' event
+   * until the `permission` to execute is granted.
+   *
+   * @param event - The event object for a `'keydown'` event.
+   * @param permission - The promise with value indicating whether to proceed with the execution.
+   *
+   * ### Note
+   * This enables the caller of `processKeydownEvent` to asynchronously prevent the
+   * execution of the command based on external events.
+   */
+  holdKeyBindingExecution(event: KeyboardEvent, permission: Promise<boolean>) {
+    this._holdKeyBindingPromises.set(event, permission);
+  }
+
+  /**
    * Start or restart the pending timeout.
    */
   private _startTimer(): void {
@@ -619,8 +634,31 @@ export class CommandRegistry {
    * Execute the command for the given key binding.
    *
    * If the command is missing or disabled, a warning will be logged.
+   *
+   * The execution will not proceed if any of the events leading to
+   * the keybinding matching were held with the permission resolving to false.
    */
-  private _executeKeyBinding(binding: CommandRegistry.IKeyBinding): void {
+  private async _executeKeyBinding(
+    binding: CommandRegistry.IKeyBinding
+  ): Promise<void> {
+    if (this._holdKeyBindingPromises.size !== 0) {
+      // Wait until all hold requests on execution are lifted.
+      const executionAllowed = (
+        await Promise.all(
+          this._keydownEvents.map(
+            async event =>
+              this._holdKeyBindingPromises.get(event) ?? Promise.resolve(true)
+          )
+        )
+      ).every(Boolean);
+      // Clear the hold requests.
+      this._holdKeyBindingPromises.clear();
+      // Do not proceed with the execution if any of the hold requests did not get the permission to proceed.
+      if (!executionAllowed) {
+        return;
+      }
+    }
+
     let { command, args } = binding;
     let newArgs: ReadonlyPartialJSONObject = {
       _luminoEvent: { type: 'keybinding', keys: binding.keys },
@@ -634,7 +672,7 @@ export class CommandRegistry {
       console.warn(`${msg1} ${msg2}`);
       return;
     }
-    this.execute(command, newArgs);
+    await this.execute(command, newArgs);
   }
 
   /**
@@ -679,6 +717,7 @@ export class CommandRegistry {
     this,
     CommandRegistry.IKeyBindingChangedArgs
   >(this);
+  private _holdKeyBindingPromises = new Map<KeyboardEvent, Promise<boolean>>();
 }
 
 /**

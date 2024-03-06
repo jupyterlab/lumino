@@ -1322,6 +1322,50 @@ describe('@lumino/commands', () => {
       });
     });
 
+    describe('.holdKeyBindingExecution()', () => {
+      it('should proceed with command execution if permission of the event resolves to true', () => {
+        let called = false;
+        registry.addCommand('test', {
+          execute: () => {
+            called = true;
+          }
+        });
+        registry.addKeyBinding({
+          keys: ['Ctrl ;'],
+          selector: `#${elem.id}`,
+          command: 'test'
+        });
+        const event = new KeyboardEvent('keydown', {
+          keyCode: 59,
+          ctrlKey: true
+        });
+        registry.holdKeyBindingExecution(event, Promise.resolve(true));
+        elem.dispatchEvent(event);
+        expect(called).to.equal(false);
+      });
+
+      it('should prevent command execution if permission of the event resolves to false', () => {
+        let called = false;
+        registry.addCommand('test', {
+          execute: () => {
+            called = true;
+          }
+        });
+        registry.addKeyBinding({
+          keys: ['Ctrl ;'],
+          selector: `#${elem.id}`,
+          command: 'test'
+        });
+        const event = new KeyboardEvent('keydown', {
+          keyCode: 59,
+          ctrlKey: true
+        });
+        registry.holdKeyBindingExecution(event, Promise.resolve(false));
+        elem.dispatchEvent(event);
+        expect(called).to.equal(false);
+      });
+    });
+
     describe('.parseKeystroke()', () => {
       it('should parse a keystroke into its parts', () => {
         let parts = CommandRegistry.parseKeystroke('Ctrl Shift Alt S');
