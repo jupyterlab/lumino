@@ -821,6 +821,70 @@ describe('@lumino/commands', () => {
         expect(called).to.equal(false);
       });
 
+      it('should prevent default on dispatch', () => {
+        registry.addCommand('test', {
+          execute: () => void 0
+        });
+        registry.addKeyBinding({
+          keys: ['Ctrl ;'],
+          selector: `#${elem.id}`,
+          command: 'test'
+        });
+        const event = new KeyboardEvent('keydown', {
+          keyCode: 59,
+          ctrlKey: true
+        });
+        let defaultPrevented = false;
+        event.preventDefault = () => {
+          defaultPrevented = true;
+        };
+        elem.dispatchEvent(event);
+        expect(defaultPrevented).to.equal(true);
+      });
+
+      it('should not prevent default when sequence does not match', () => {
+        registry.addCommand('test', {
+          execute: () => void 0
+        });
+        registry.addKeyBinding({
+          keys: ['Ctrl ;'],
+          selector: `#${elem.id}`,
+          command: 'test'
+        });
+        const event = new KeyboardEvent('keydown', {
+          keyCode: 59,
+          ctrlKey: false
+        });
+        let defaultPrevented = false;
+        event.preventDefault = () => {
+          defaultPrevented = true;
+        };
+        elem.dispatchEvent(event);
+        expect(defaultPrevented).to.equal(false);
+      });
+
+      it('should not prevent default if keybinding opts out', () => {
+        registry.addCommand('test', {
+          execute: () => void 0
+        });
+        registry.addKeyBinding({
+          keys: ['Ctrl ;'],
+          selector: `#${elem.id}`,
+          command: 'test',
+          preventDefault: false
+        });
+        const event = new KeyboardEvent('keydown', {
+          keyCode: 59,
+          ctrlKey: true
+        });
+        let defaultPrevented = false;
+        event.preventDefault = () => {
+          defaultPrevented = true;
+        };
+        elem.dispatchEvent(event);
+        expect(defaultPrevented).to.equal(false);
+      });
+
       it('should dispatch with multiple chords in a key sequence', () => {
         let count = 0;
         registry.addCommand('test', {

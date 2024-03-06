@@ -522,7 +522,7 @@ export class CommandRegistry {
     }
 
     // Get the normalized keystroke for the event.
-    let keystroke = CommandRegistry.keystrokeForKeydownEvent(event);
+    const keystroke = CommandRegistry.keystrokeForKeydownEvent(event);
 
     // If the keystroke is not valid for the keyboard layout, replay
     // any suppressed events and clear the pending state.
@@ -536,15 +536,17 @@ export class CommandRegistry {
     this._keystrokes.push(keystroke);
 
     // Find the exact and partial matches for the key sequence.
-    let { exact, partial } = Private.matchKeyBinding(
+    const { exact, partial } = Private.matchKeyBinding(
       this._keyBindings,
       this._keystrokes,
       event
     );
+    // Whether there is any partial match.
+    const hasPartial = partial.length !== 0;
 
     // If there is no exact match and no partial match, replay
     // any suppressed events and clear the pending state.
-    if (!exact && !partial) {
+    if (!exact && !hasPartial) {
       this._replayKeydownEvents();
       this._clearPendingState();
       return;
@@ -552,13 +554,15 @@ export class CommandRegistry {
 
     // Stop propagation of the event. If there is only a partial match,
     // the event will be replayed if a final exact match never occurs.
-    event.preventDefault();
-    event.stopPropagation();
+    if (exact?.preventDefault || partial.some(match => match.preventDefault)) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
 
     // If there is an exact match but no partial match, the exact match
     // can be dispatched immediately. The pending state is cleared so
     // the next key press starts from the default state.
-    if (exact && !partial) {
+    if (exact && !hasPartial) {
       this._executeKeyBinding(exact);
       this._clearPendingState();
       return;
@@ -1027,6 +1031,13 @@ export namespace CommandRegistry {
      * If provided, this will override `keys` on Linux platforms.
      */
     linuxKeys?: string[];
+
+    /**
+     * Whether to prevent default action of the keyboard events during sequence matching.
+     *
+     * The default value is `true`.
+     */
+    preventDefault?: boolean;
   }
 
   /**
@@ -1055,6 +1066,13 @@ export namespace CommandRegistry {
      * The arguments for the command.
      */
     readonly args: ReadonlyPartialJSONObject;
+
+    /**
+     * Whether to prevent default action of the keyboard events during sequence matching.
+     *
+     * The default value is `true`.
+     */
+    readonly preventDefault?: boolean;
   }
 
   /**
@@ -1372,7 +1390,8 @@ namespace Private {
       keys: CommandRegistry.normalizeKeys(options),
       selector: validateSelector(options),
       command: options.command,
-      args: options.args || JSONExt.emptyObject
+      args: options.args || JSONExt.emptyObject,
+      preventDefault: options.preventDefault ?? true
     };
   }
 
@@ -1386,9 +1405,9 @@ namespace Private {
     exact: CommandRegistry.IKeyBinding | null;
 
     /**
-     * Whether there are bindings which partially match the sequence.
+     * The key bindings which partially match the sequence.
      */
-    partial: boolean;
+    partial: CommandRegistry.IKeyBinding[];
   }
 
   /**
@@ -1405,8 +1424,8 @@ namespace Private {
     // The current best exact match.
     let exact: CommandRegistry.IKeyBinding | null = null;
 
-    // Whether a partial match has been found.
-    let partial = false;
+    // Partial matches.
+    let partial = [];
 
     // The match distance for the exact match.
     let distance = Infinity;
@@ -1430,8 +1449,8 @@ namespace Private {
       // If it is a partial match and no other partial match has been
       // found, ensure the selector matches and set the partial flag.
       if (sqm === SequenceMatch.Partial) {
-        if (!partial && targetDistance(binding.selector, event) !== -1) {
-          partial = true;
+        if (targetDistance(binding.selector, event) !== -1) {
+          partial.push(binding);
         }
         continue;
       }
