@@ -22,6 +22,7 @@ export class CommandRegistry {
     describedBy(id: string, args?: ReadonlyPartialJSONObject): Promise<CommandRegistry.Description>;
     execute(id: string, args?: ReadonlyPartialJSONObject): Promise<any>;
     hasCommand(id: string): boolean;
+    holdKeyBindingExecution(event: KeyboardEvent, permission: Promise<boolean>): void;
     icon(id: string, args?: ReadonlyPartialJSONObject): VirtualElement.IRenderer | undefined;
     iconClass(id: string, args?: ReadonlyPartialJSONObject): string;
     iconLabel(id: string, args?: ReadonlyPartialJSONObject): string;
@@ -79,6 +80,7 @@ export namespace CommandRegistry {
         readonly args: ReadonlyPartialJSONObject;
         readonly command: string;
         readonly keys: ReadonlyArray<string>;
+        readonly preventDefault?: boolean;
         readonly selector: string;
     }
     export interface IKeyBindingChangedArgs {
@@ -91,6 +93,7 @@ export namespace CommandRegistry {
         keys: string[];
         linuxKeys?: string[];
         macKeys?: string[];
+        preventDefault?: boolean;
         selector: string;
         winKeys?: string[];
     }
