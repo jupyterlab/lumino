@@ -559,6 +559,10 @@ export class CommandRegistry {
       event.stopPropagation();
     }
 
+    // Store the event for possible playback in the future and for
+    // the use in execution hold check.
+    this._keydownEvents.push(event);
+
     // If there is an exact match but no partial match, the exact match
     // can be dispatched immediately. The pending state is cleared so
     // the next key press starts from the default state.
@@ -574,9 +578,6 @@ export class CommandRegistry {
     if (exact) {
       this._exactKeyMatch = exact;
     }
-
-    // Store the event for possible playback in the future.
-    this._keydownEvents.push(event);
 
     // (Re)start the timer to dispatch the most recent exact match
     // in case the partial match fails to result in an exact match.
@@ -642,11 +643,13 @@ export class CommandRegistry {
     binding: CommandRegistry.IKeyBinding
   ): Promise<void> {
     if (this._holdKeyBindingPromises.size !== 0) {
+      // Copy keydown events list to ensure it is available in async code.
+      const keydownEvents = [...this._keydownEvents];
       // Wait until all hold requests on execution are lifted.
       const executionAllowed = (
         await Promise.race([
           Promise.all(
-            this._keydownEvents.map(
+            keydownEvents.map(
               async event =>
                 this._holdKeyBindingPromises.get(event) ?? Promise.resolve(true)
             )
