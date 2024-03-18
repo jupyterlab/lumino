@@ -1323,12 +1323,23 @@ describe('@lumino/commands', () => {
     });
 
     describe('.holdKeyBindingExecution()', () => {
-      it('should proceed with command execution if permission of the event resolves to true', () => {
-        let called = false;
+      let calledPromise: Promise<boolean>;
+      let execute: () => void;
+
+      beforeEach(() => {
+        calledPromise = Promise.race([
+          new Promise<boolean>(_resolve => {
+            execute = () => _resolve(true);
+          }),
+          new Promise<boolean>(resolve =>
+            setTimeout(() => resolve(false), 1000)
+          )
+        ]);
+      });
+
+      it('should proceed with command execution if permission of the event resolves to true', async () => {
         registry.addCommand('test', {
-          execute: () => {
-            called = true;
-          }
+          execute
         });
         registry.addKeyBinding({
           keys: ['Ctrl ;'],
@@ -1341,15 +1352,13 @@ describe('@lumino/commands', () => {
         });
         registry.holdKeyBindingExecution(event, Promise.resolve(true));
         elem.dispatchEvent(event);
-        expect(called).to.equal(false);
+        const called = await calledPromise;
+        expect(called).to.equal(true);
       });
 
-      it('should prevent command execution if permission of the event resolves to false', () => {
-        let called = false;
+      it('should prevent command execution if permission of the event resolves to false', async () => {
         registry.addCommand('test', {
-          execute: () => {
-            called = true;
-          }
+          execute
         });
         registry.addKeyBinding({
           keys: ['Ctrl ;'],
@@ -1362,6 +1371,7 @@ describe('@lumino/commands', () => {
         });
         registry.holdKeyBindingExecution(event, Promise.resolve(false));
         elem.dispatchEvent(event);
+        const called = await calledPromise;
         expect(called).to.equal(false);
       });
     });
