@@ -1374,6 +1374,31 @@ describe('@lumino/commands', () => {
         const called = await calledPromise;
         expect(called).to.equal(false);
       });
+
+      it('should prevent command execution if permission for any of the events resolves to false', async () => {
+        registry.addCommand('test', {
+          execute
+        });
+        registry.addKeyBinding({
+          keys: ['Shift ['],
+          selector: `#${elem.id}`,
+          command: 'test'
+        });
+        const shiftEvent = new KeyboardEvent('keydown', {
+          keyCode: 16,
+          shiftKey: true
+        });
+        const bracketEvent = new KeyboardEvent('keydown', {
+          keyCode: 219,
+          shiftKey: true
+        });
+        registry.holdKeyBindingExecution(shiftEvent, Promise.resolve(true));
+        registry.holdKeyBindingExecution(bracketEvent, Promise.resolve(false));
+        elem.dispatchEvent(shiftEvent);
+        elem.dispatchEvent(bracketEvent);
+        const called = await calledPromise;
+        expect(called).to.equal(false);
+      });
     });
 
     describe('.parseKeystroke()', () => {
