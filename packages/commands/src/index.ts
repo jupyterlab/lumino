@@ -644,12 +644,17 @@ export class CommandRegistry {
     if (this._holdKeyBindingPromises.size !== 0) {
       // Wait until all hold requests on execution are lifted.
       const executionAllowed = (
-        await Promise.all(
-          this._keydownEvents.map(
-            async event =>
-              this._holdKeyBindingPromises.get(event) ?? Promise.resolve(true)
-          )
-        )
+        await Promise.race([
+          Promise.all(
+            this._keydownEvents.map(
+              async event =>
+                this._holdKeyBindingPromises.get(event) ?? Promise.resolve(true)
+            )
+          ),
+          new Promise<boolean[]>(resolve => {
+            setTimeout(() => resolve([false]), Private.KEYBINDING_HOLD_TIMEOUT);
+          })
+        ])
       ).every(Boolean);
       // Clear the hold requests.
       this._holdKeyBindingPromises.clear();
@@ -1349,6 +1354,11 @@ namespace Private {
    * The timeout in ms for triggering a key binding chord.
    */
   export const CHORD_TIMEOUT = 1000;
+
+  /**
+   * The timeout in ms for stopping the hold on keybinding execution.
+   */
+  export const KEYBINDING_HOLD_TIMEOUT = 1000;
 
   /**
    * A convenience type alias for a command func.
