@@ -40,7 +40,6 @@ export class Title<T> implements IDisposable {
     if (options.icon !== undefined) {
       this._icon = options.icon;
     }
-
     if (options.iconClass !== undefined) {
       this._iconClass = options.iconClass;
     }
@@ -55,6 +54,12 @@ export class Title<T> implements IDisposable {
     }
     if (options.closable !== undefined) {
       this._closable = options.closable;
+    }
+    if (options.closeIcon !== undefined) {
+      this._closeIcon = options.closeIcon;
+    }
+    if (options.closeIconClass !== undefined) {
+      this._closeIconClass = options.closeIconClass;
     }
     this._dataset = options.dataset || {};
   }
@@ -255,6 +260,55 @@ export class Title<T> implements IDisposable {
   }
 
   /**
+   * Get the closeIcon renderer for the title.
+   *
+   * #### Notes
+   * The default value is undefined.
+   */
+  get closeIcon() {
+    return this._closeIcon;
+  }
+
+  /**
+   * Set the closeIcon renderer for the title.
+   *
+   * #### Notes
+   * A renderer is an object that supplies a render and unrender function.
+   */
+  set closeIcon(value) {
+    if (this._closeIcon === value) {
+      return;
+    }
+    this._closeIcon = value;
+    this._changed.emit(undefined);
+  }
+
+  /**
+   * Get the closeIcon class name for the title.
+   *
+   * #### Notes
+   * The default value is an empty string.
+   */
+
+  get closeIconClass() {
+    return this._closeIconClass;
+  }
+
+  /**
+   * Set the closeIcon class name for the title.
+   *
+   * #### Notes
+   * Multiple class names can be separated with whitespace.
+   */
+  set closeIconClass(value) {
+    if (this._closeIconClass === value) {
+      return;
+    }
+    this._closeIconClass = value;
+    this._changed.emit(undefined);
+  }
+
+  /**
    * Get the dataset for the title.
    *
    * #### Notes
@@ -308,6 +362,8 @@ export class Title<T> implements IDisposable {
   private _iconLabel = '';
   private _className = '';
   private _closable = false;
+  private _closeIcon: VirtualElement.IRenderer | undefined = undefined;
+  private _closeIconClass = '';
   private _dataset: Title.Dataset;
   private _changed = new Signal<this, void>(this);
   private _isDisposed = false;
@@ -370,6 +426,16 @@ export namespace Title {
      * The closable state for the title.
      */
     closable?: boolean;
+
+    /**
+     * The closeIcon renderer for the title.
+     */
+    closeIcon?: VirtualElement.IRenderer;
+
+    /**
+     * The closeIcon class name for the title.
+     */
+    closeIconClass?: string;
 
     /**
      * The dataset for the title.
