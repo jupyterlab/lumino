@@ -27,7 +27,7 @@ jobs:
         shell: bash
         run: echo "::set-output name=dir::$(yarn cache dir)"
       - name: Cache yarn
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
@@ -52,7 +52,7 @@ jobs:
 
       - name: Get API changes
         id: api-changed
-        uses: tj-actions/changed-files@v40.2.1
+        uses: tj-actions/changed-files@v42.0.5
         with:
           base_sha: 'HEAD~1'
           sha: 'HEAD'

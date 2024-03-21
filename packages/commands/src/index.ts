@@ -517,7 +517,7 @@ export class CommandRegistry {
     }
 
     // Get the normalized keystroke for the event.
-    let keystroke = CommandRegistry.keystrokeForKeydownEvent(event);
+    const keystroke = CommandRegistry.keystrokeForKeydownEvent(event);
 
     // If the keystroke is not valid for the keyboard layout, replay
     // any suppressed events and clear the pending state.
@@ -551,15 +551,17 @@ export class CommandRegistry {
     this._keystrokes.push(keystroke);
 
     // Find the exact and partial matches for the key sequence.
-    let { exact, partial } = Private.matchKeyBinding(
+    const { exact, partial } = Private.matchKeyBinding(
       this._keyBindings,
       this._keystrokes,
       event
     );
+    // Whether there is any partial match.
+    const hasPartial = partial.length !== 0;
 
     // If there is no exact match and no partial match, replay
     // any suppressed events and clear the pending state.
-    if (!exact && !partial) {
+    if (!exact && !hasPartial) {
       this._replayKeydownEvents();
       this._clearPendingState();
       return;
@@ -567,13 +569,19 @@ export class CommandRegistry {
 
     // Stop propagation of the event. If there is only a partial match,
     // the event will be replayed if a final exact match never occurs.
-    event.preventDefault();
-    event.stopPropagation();
+    if (exact?.preventDefault || partial.some(match => match.preventDefault)) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    // Store the event for possible playback in the future and for
+    // the use in execution hold check.
+    this._keydownEvents.push(event);
 
     // If there is an exact match but no partial match, the exact match
     // can be dispatched immediately. The pending state is cleared so
     // the next key press starts from the default state.
-    if (exact && !partial) {
+    if (exact && !hasPartial) {
       this._executeKeyBinding(exact);
       this._clearPendingState();
       return;
@@ -586,12 +594,24 @@ export class CommandRegistry {
       this._exactKeyMatch = exact;
     }
 
-    // Store the event for possible playback in the future.
-    this._keydownEvents.push(event);
-
     // (Re)start the timer to dispatch the most recent exact match
     // in case the partial match fails to result in an exact match.
     this._startTimer();
+  }
+
+  /**
+   * Delay the execution of any command matched against the given 'keydown' event
+   * until the `permission` to execute is granted.
+   *
+   * @param event - The event object for a `'keydown'` event.
+   * @param permission - The promise with value indicating whether to proceed with the execution.
+   *
+   * ### Note
+   * This enables the caller of `processKeydownEvent` to asynchronously prevent the
+   * execution of the command based on external events.
+   */
+  holdKeyBindingExecution(event: KeyboardEvent, permission: Promise<boolean>) {
+    this._holdKeyBindingPromises.set(event, permission);
   }
 
   /**
@@ -660,8 +680,38 @@ export class CommandRegistry {
    * Execute the command for the given key binding.
    *
    * If the command is missing or disabled, a warning will be logged.
+   *
+   * The execution will not proceed if any of the events leading to
+   * the keybinding matching were held with the permission resolving to false.
    */
-  private _executeKeyBinding(binding: CommandRegistry.IKeyBinding): void {
+  private async _executeKeyBinding(
+    binding: CommandRegistry.IKeyBinding
+  ): Promise<void> {
+    if (this._holdKeyBindingPromises.size !== 0) {
+      // Copy keydown events list to ensure it is available in async code.
+      const keydownEvents = [...this._keydownEvents];
+      // Wait until all hold requests on execution are lifted.
+      const executionAllowed = (
+        await Promise.race([
+          Promise.all(
+            keydownEvents.map(
+              async event =>
+                this._holdKeyBindingPromises.get(event) ?? Promise.resolve(true)
+            )
+          ),
+          new Promise<boolean[]>(resolve => {
+            setTimeout(() => resolve([false]), Private.KEYBINDING_HOLD_TIMEOUT);
+          })
+        ])
+      ).every(Boolean);
+      // Clear the hold requests.
+      this._holdKeyBindingPromises.clear();
+      // Do not proceed with the execution if any of the hold requests did not get the permission to proceed.
+      if (!executionAllowed) {
+        return;
+      }
+    }
+
     let { command, args } = binding;
     let newArgs: ReadonlyPartialJSONObject = {
       _luminoEvent: { type: 'keybinding', keys: binding.keys },
@@ -675,7 +725,7 @@ export class CommandRegistry {
       console.warn(`${msg1} ${msg2}`);
       return;
     }
-    this.execute(command, newArgs);
+    await this.execute(command, newArgs);
   }
 
   /**
@@ -721,6 +771,7 @@ export class CommandRegistry {
     this,
     CommandRegistry.IKeyBindingChangedArgs
   >(this);
+  private _holdKeyBindingPromises = new Map<KeyboardEvent, Promise<boolean>>();
 }
 
 /**
@@ -1073,6 +1124,13 @@ export namespace CommandRegistry {
      * If provided, this will override `keys` on Linux platforms.
      */
     linuxKeys?: string[];
+
+    /**
+     * Whether to prevent default action of the keyboard events during sequence matching.
+     *
+     * The default value is `true`.
+     */
+    preventDefault?: boolean;
   }
 
   /**
@@ -1101,6 +1159,13 @@ export namespace CommandRegistry {
      * The arguments for the command.
      */
     readonly args: ReadonlyPartialJSONObject;
+
+    /**
+     * Whether to prevent default action of the keyboard events during sequence matching.
+     *
+     * The default value is `true`.
+     */
+    readonly preventDefault?: boolean;
   }
 
   /**
@@ -1343,6 +1408,11 @@ namespace Private {
   export const CHORD_TIMEOUT = 1000;
 
   /**
+   * The timeout in ms for stopping the hold on keybinding execution.
+   */
+  export const KEYBINDING_HOLD_TIMEOUT = 1000;
+
+  /**
    * The timeout in ms for triggering a modifer key binding.
    */
   export const modifierkeyTimeOut = 500;
@@ -1426,7 +1496,8 @@ namespace Private {
       keys: CommandRegistry.normalizeKeys(options),
       selector: validateSelector(options),
       command: options.command,
-      args: options.args || JSONExt.emptyObject
+      args: options.args || JSONExt.emptyObject,
+      preventDefault: options.preventDefault ?? true
     };
   }
 
@@ -1440,9 +1511,9 @@ namespace Private {
     exact: CommandRegistry.IKeyBinding | null;
 
     /**
-     * Whether there are bindings which partially match the sequence.
+     * The key bindings which partially match the sequence.
      */
-    partial: boolean;
+    partial: CommandRegistry.IKeyBinding[];
   }
 
   /**
@@ -1459,8 +1530,8 @@ namespace Private {
     // The current best exact match.
     let exact: CommandRegistry.IKeyBinding | null = null;
 
-    // Whether a partial match has been found.
-    let partial = false;
+    // Partial matches.
+    let partial = [];
 
     // The match distance for the exact match.
     let distance = Infinity;
@@ -1484,8 +1555,8 @@ namespace Private {
       // If it is a partial match and no other partial match has been
       // found, ensure the selector matches and set the partial flag.
       if (sqm === SequenceMatch.Partial) {
-        if (!partial && targetDistance(binding.selector, event) !== -1) {
-          partial = true;
+        if (targetDistance(binding.selector, event) !== -1) {
+          partial.push(binding);
         }
         continue;
       }
