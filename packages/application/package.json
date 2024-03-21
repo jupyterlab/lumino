@@ -1,6 +1,6 @@
 {
   "name": "@lumino/application",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "Lumino Pluggable Application",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -44,9 +44,9 @@
     "displayName": "application"
   },
   "dependencies": {
-    "@lumino/commands": "^2.2.0",
+    "@lumino/commands": "^2.3.0",
     "@lumino/coreutils": "^2.1.2",
-    "@lumino/widgets": "^2.3.1"
+    "@lumino/widgets": "^2.3.2"
   },
   "devDependencies": {
     "@lumino/buildutils": "^2.0.1",
