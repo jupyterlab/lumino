@@ -1347,6 +1347,53 @@ export namespace CommandRegistry {
     mods.push(key);
     return mods.join(' ');
   }
+
+  /**
+   * Format keystroke aria labels.
+   *
+   * If a list of keystrokes includes puntuation, it will create an
+   * aria label and substitue symbol values to text.
+   *
+   * @param keystroke The keystrokes to format
+   * @param keyToText - Optional object for converting punctuation.
+   * @returns The keystrokes representation
+   */
+  export function formatKeystrokeAriaLabel(
+    keystroke: readonly string[],
+    keyToText?: { [key: string]: string }
+  ): string {
+    const internalKeyToText = keyToText ?? {
+      ']': 'Closing bracket',
+      '[': 'Opening bracket',
+      ',': 'Comma',
+      '.': 'Full stop',
+      "'": 'Single quote',
+      '-': 'Hyphen-minus'
+    };
+
+    let result = CommandRegistry.formatKeystroke(keystroke);
+
+    let punctuationRegex = /\p{P}/u;
+    let punctuations = result?.match(punctuationRegex);
+    if (!punctuations) {
+      return result;
+    }
+    for (const punctuation of punctuations) {
+      if (
+        result != null &&
+        Object.keys(internalKeyToText).includes(punctuation)
+      ) {
+        const individualKeys = result.split('+');
+        let index = individualKeys.indexOf(punctuation);
+        if (index != -1) {
+          individualKeys[index] = internalKeyToText[punctuation];
+        }
+        const textShortcut = individualKeys.join('+');
+        return textShortcut;
+      }
+    }
+    return result;
+  }
 }
 
 /**
