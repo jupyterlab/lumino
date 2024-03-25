@@ -6,6 +6,60 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2024.3.25
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2023.11.5...64986395b3f232ec0d23d8e42f4cfddd38d89317))
+
+```
+@lumino/application: 2.3.0 => 2.3.1
+@lumino/commands: 2.2.0 => 2.3.0
+@lumino/datagrid: 2.3.0 => 2.3.1
+@lumino/default-theme: 2.1.4 => 2.1.5
+@lumino/widgets: 2.3.1 => 2.3.2
+```
+
+### Enhancements made
+
+- Optional prevent default and asynchronous hold for keybinding execution [#689](https://github.com/jupyterlab/lumino/pull/689) ([@krassowski](https://github.com/krassowski))
+
+### Bugs fixed
+
+- Skip processing prevented default key event [#662](https://github.com/jupyterlab/lumino/pull/662) ([@fcollonval](https://github.com/fcollonval))
+
+### Maintenance and upkeep improvements
+
+- Update versions for new release [#692](https://github.com/jupyterlab/lumino/pull/692) ([@krassowski](https://github.com/krassowski))
+- Bump follow-redirects from 1.15.4 to 1.15.6 [#691](https://github.com/jupyterlab/lumino/pull/691) ([@dependabot](https://github.com/dependabot))
+- Update Release Scripts [#690](https://github.com/jupyterlab/lumino/pull/690) ([@blink1073](https://github.com/blink1073))
+- Bump the actions group with 1 update [#687](https://github.com/jupyterlab/lumino/pull/687) ([@dependabot](https://github.com/dependabot))
+- Bump ip from 2.0.0 to 2.0.1 [#684](https://github.com/jupyterlab/lumino/pull/684) ([@dependabot](https://github.com/dependabot))
+- Bump the actions group with 1 update [#682](https://github.com/jupyterlab/lumino/pull/682) ([@dependabot](https://github.com/dependabot))
+- Update dependabot configuration [#681](https://github.com/jupyterlab/lumino/pull/681) ([@fcollonval](https://github.com/fcollonval))
+- Bump toshimaru/auto-author-assign from 2.0.1 to 2.1.0 [#680](https://github.com/jupyterlab/lumino/pull/680) ([@dependabot](https://github.com/dependabot))
+- Bump actions/cache from 3 to 4 [#679](https://github.com/jupyterlab/lumino/pull/679) ([@dependabot](https://github.com/dependabot))
+- Bump tj-actions/changed-files from 41.1.1 to 42.0.0 [#678](https://github.com/jupyterlab/lumino/pull/678) ([@dependabot](https://github.com/dependabot))
+- Bump tj-actions/changed-files from 41.0.1 to 41.1.1 [#676](https://github.com/jupyterlab/lumino/pull/676) ([@dependabot](https://github.com/dependabot))
+- Bump follow-redirects from 1.15.2 to 1.15.4 [#673](https://github.com/jupyterlab/lumino/pull/673) ([@dependabot](https://github.com/dependabot))
+- Bump tj-actions/changed-files from 40.2.1 to 41.0.1 [#671](https://github.com/jupyterlab/lumino/pull/671) ([@dependabot](https://github.com/dependabot))
+- Bump github/codeql-action from 2 to 3 [#670](https://github.com/jupyterlab/lumino/pull/670) ([@dependabot](https://github.com/dependabot))
+- Bump tj-actions/changed-files from 40.2.0 to 40.2.1 [#663](https://github.com/jupyterlab/lumino/pull/663) ([@dependabot](https://github.com/dependabot))
+- Bump tj-actions/changed-files from 40.1.0 to 40.2.0 [#661](https://github.com/jupyterlab/lumino/pull/661) ([@dependabot](https://github.com/dependabot))
+- Bump dessant/lock-threads from 4 to 5 [#660](https://github.com/jupyterlab/lumino/pull/660) ([@dependabot](https://github.com/dependabot))
+- Bump axios from 1.2.2 to 1.6.1 [#658](https://github.com/jupyterlab/lumino/pull/658) ([@dependabot](https://github.com/dependabot))
+- Bump tj-actions/changed-files from 40.0.0 to 40.1.0 [#657](https://github.com/jupyterlab/lumino/pull/657) ([@dependabot](https://github.com/dependabot))
+
+### Documentation improvements
+
+- Update README.md [#665](https://github.com/jupyterlab/lumino/pull/665) ([@novrain](https://github.com/novrain))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2023-11-05&to=2024-03-25&type=c))
+
+[@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2023-11-05..2024-03-25&type=Issues) | [@brichet](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Abrichet+updated%3A2023-11-05..2024-03-25&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2023-11-05..2024-03-25&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2023-11-05..2024-03-25&type=Issues) | [@krassowski](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2023-11-05..2024-03-25&type=Issues) | [@novrain](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Anovrain+updated%3A2023-11-05..2024-03-25&type=Issues) | [@tonyfast](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Atonyfast+updated%3A2023-11-05..2024-03-25&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Awelcome+updated%3A2023-11-05..2024-03-25&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2023.11.5
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/@lumino/algorithm@2.0.1...30c6064dbf6450fb19925ff697dff20e9dd1516e))
@@ -70,8 +124,6 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2023-07-27&to=2023-11-05&type=c))
 
 [@andrewfulton9](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aandrewfulton9+updated%3A2023-07-27..2023-11-05&type=Issues) | [@brichet](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Abrichet+updated%3A2023-07-27..2023-11-05&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2023-07-27..2023-11-05&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2023-07-27..2023-11-05&type=Issues) | [@gabalafou](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Agabalafou+updated%3A2023-07-27..2023-11-05&type=Issues) | [@krassowski](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2023-07-27..2023-11-05&type=Issues) | [@m158261](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Am158261+updated%3A2023-07-27..2023-11-05&type=Issues) | [@martinRenou](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3AmartinRenou+updated%3A2023-07-27..2023-11-05&type=Issues) | [@s596757](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3As596757+updated%3A2023-07-27..2023-11-05&type=Issues) | [@tonyfast](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Atonyfast+updated%3A2023-07-27..2023-11-05&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Awelcome+updated%3A2023-07-27..2023-11-05&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2023.9.25-alpha.0
 
