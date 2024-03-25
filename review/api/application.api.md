@@ -24,6 +24,7 @@ export class Application<T extends Widget = Widget> {
     deregisterPlugin(id: string, force?: boolean): void;
     protected evtContextMenu(event: PointerEvent): void;
     protected evtKeydown(event: KeyboardEvent): void;
+    protected evtKeyup(event: KeyboardEvent): void;
     protected evtResize(event: Event): void;
     getPluginDescription(id: string): string;
     handleEvent(event: Event): void;
