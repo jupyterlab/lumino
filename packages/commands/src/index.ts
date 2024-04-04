@@ -733,6 +733,7 @@ export class CommandRegistry {
    */
   private _clearPendingState(): void {
     this._clearTimer();
+    this._clearModifierTimer();
     this._exactKeyMatch = null;
     this._keystrokes.length = 0;
     this._keydownEvents.length = 0;
