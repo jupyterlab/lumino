@@ -37,6 +37,7 @@ export class CommandRegistry {
     mnemonic(id: string, args?: ReadonlyPartialJSONObject): number;
     notifyCommandChanged(id?: string): void;
     processKeydownEvent(event: KeyboardEvent): void;
+    processKeyupEvent(event: KeyboardEvent): void;
     usage(id: string, args?: ReadonlyPartialJSONObject): string;
 }
 

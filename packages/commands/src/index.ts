@@ -511,13 +511,8 @@ export class CommandRegistry {
    * events will not invoke commands.
    */
   processKeydownEvent(event: KeyboardEvent): void {
-    // Bail immediately if playing back keystrokes
-    // or if the event has been processed
-    if (
-      event.defaultPrevented ||
-      this._replaying ||
-      CommandRegistry.isModifierKeyPressed(event)
-    ) {
+    // Bail immediately if playing back keystrokes.
+    if (event.defaultPrevented || this._replaying) {
       return;
     }
 
@@ -529,6 +524,26 @@ export class CommandRegistry {
     if (!keystroke) {
       this._replayKeydownEvents();
       this._clearPendingState();
+      return;
+    }
+
+    // Check that only mod key(s) have been pressed.
+    if (CommandRegistry.isModifierKeyPressed(event)) {
+      // Find the exact match for the modifier keys.
+      let { exact } = Private.matchKeyBinding(
+        this._keyBindings,
+        [keystroke],
+        event
+      );
+      if (exact) {
+        // If the mod keys match an exact shortcut, start a dedicated timer.
+        event.preventDefault();
+        event.stopPropagation();
+        this._startModifierTimer(exact);
+      } else {
+        // Otherwise stop potential existing timer.
+        this._clearModifierTimer();
+      }
       return;
     }
 
@@ -599,6 +614,36 @@ export class CommandRegistry {
     this._holdKeyBindingPromises.set(event, permission);
   }
 
+  /**
+   * Process a ``keyup`` event to clear the timer on the modifier, if it exists.
+   *
+   * @param event - The event object for a `'keydown'` event.
+   */
+  processKeyupEvent(event: KeyboardEvent): void {
+    this._clearModifierTimer();
+  }
+
+  /**
+   * Start or restart the timeout on the modifier keys.
+   *
+   * This timeout will end only if the keys are hold.
+   */
+  private _startModifierTimer(exact: CommandRegistry.IKeyBinding): void {
+    this._clearModifierTimer();
+    this._timerModifierID = window.setTimeout(() => {
+      this._executeKeyBinding(exact);
+    }, Private.modifierkeyTimeOut);
+  }
+
+  /**
+   * Clear the timeout on modifier keys.
+   */
+  private _clearModifierTimer(): void {
+    if (this._timerModifierID !== 0) {
+      clearTimeout(this._timerModifierID);
+      this._timerModifierID = 0;
+    }
+  }
   /**
    * Start or restart the pending timeout.
    */
@@ -688,6 +733,7 @@ export class CommandRegistry {
    */
   private _clearPendingState(): void {
     this._clearTimer();
+    this._clearModifierTimer();
     this._exactKeyMatch = null;
     this._keystrokes.length = 0;
     this._keydownEvents.length = 0;
@@ -707,6 +753,7 @@ export class CommandRegistry {
   }
 
   private _timerID = 0;
+  private _timerModifierID = 0;
   private _replaying = false;
   private _keystrokes: string[] = [];
   private _keydownEvents: KeyboardEvent[] = [];
@@ -1245,6 +1292,9 @@ export namespace CommandRegistry {
     if (parts.cmd && Platform.IS_MAC) {
       mods += 'Cmd ';
     }
+    if (!parts.key) {
+      return mods.trim();
+    }
     return mods + parts.key;
   }
 
@@ -1328,9 +1378,6 @@ export namespace CommandRegistry {
   export function keystrokeForKeydownEvent(event: KeyboardEvent): string {
     let layout = getKeyboardLayout();
     let key = layout.keyForKeydownEvent(event);
-    if (!key || layout.isModifierKey(key)) {
-      return '';
-    }
     let mods = [];
     if (event.ctrlKey) {
       mods.push('Ctrl');
@@ -1344,7 +1391,10 @@ export namespace CommandRegistry {
     if (event.metaKey && Platform.IS_MAC) {
       mods.push('Cmd');
     }
-    mods.push(key);
+    if (!layout.isModifierKey(key)) {
+      mods.push(key);
+    }
+    // for purely modifier key strings
     return mods.join(' ');
   }
 }
@@ -1362,6 +1412,11 @@ namespace Private {
    * The timeout in ms for stopping the hold on keybinding execution.
    */
   export const KEYBINDING_HOLD_TIMEOUT = 1000;
+
+  /**
+   * The timeout in ms for triggering a modifer key binding.
+   */
+  export const modifierkeyTimeOut = 500;
 
   /**
    * A convenience type alias for a command func.

@@ -1508,11 +1508,11 @@ describe('@lumino/commands', () => {
         expect(keystroke).to.equal('');
       });
 
-      it('should return nothing for keys that are marked as modifier in keyboard layout', () => {
+      it('should return keys that are marked as modifier in keyboard layout', () => {
         let keystroke = CommandRegistry.keystrokeForKeydownEvent(
           new KeyboardEvent('keydown', { keyCode: 17, ctrlKey: true })
         );
-        expect(keystroke).to.equal('');
+        expect(keystroke).to.equal('Ctrl');
       });
     });
   });
