@@ -2013,6 +2013,47 @@ export class DataGrid extends Widget {
   }
 
   /**
+   * Get the current viewport.
+   *
+   * @returns The current viewport as row/column coordinates.
+   * Returns undefined if the grid is not visible.
+   */
+  get currentViewport(): DataGrid.IBodyRegion | undefined {
+    let width = this.viewport.node.offsetWidth;
+    let height = this.viewport.node.offsetHeight;
+
+    width = Math.round(width);
+    height = Math.round(height);
+
+    if (width <= 0 || height <= 0) {
+      return;
+    }
+
+    const contentW = this._columnSections.length - this.scrollX;
+    const contentH = this._rowSections.length - this.scrollY;
+
+    const contentX = this.headerWidth;
+    const contentY = this.headerHeight;
+
+    const x1 = contentX;
+    const y1 = contentY;
+    const x2 = Math.min(width - 1, contentX + contentW - 1);
+    const y2 = Math.min(height - 1, contentY + contentH - 1);
+
+    const r1 = this._rowSections.indexOf(y1 - contentY + this.scrollY);
+    const c1 = this._columnSections.indexOf(x1 - contentX + this.scrollX);
+    const r2 = this._rowSections.indexOf(y2 - contentY + this.scrollY);
+    const c2 = this._columnSections.indexOf(x2 - contentX + this.scrollX);
+
+    return {
+      r1,
+      r2,
+      c1,
+      c2
+    };
+  }
+
+  /**
    * A message handler invoked on an `'activate-request'` message.
    */
   protected onActivateRequest(msg: Message): void {
@@ -6721,6 +6762,31 @@ export namespace DataGrid {
     headers: 'none',
     warningThreshold: 1e6
   };
+
+  /**
+   *
+   */
+  export interface IBodyRegion {
+    /**
+     * First row of the region
+     */
+    r1: number;
+
+    /**
+     * Last row of the region
+     */
+    r2: number;
+
+    /**
+     * First column of the region
+     */
+    c1: number;
+
+    /**
+     * Last column of the region
+     */
+    c2: number;
+  }
 }
 
 /**
