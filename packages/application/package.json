@@ -39,10 +39,6 @@
     "test:webkit-headless": "cd tests && karma start --browsers=WebkitHeadless",
     "watch": "tsc --build --watch"
   },
-  "typedoc": {
-    "entryPoint": "./src/index.ts",
-    "displayName": "application"
-  },
   "dependencies": {
     "@lumino/commands": "^2.3.0",
     "@lumino/coreutils": "^2.1.2",

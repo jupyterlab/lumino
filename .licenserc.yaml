@@ -25,7 +25,6 @@ header:
     - 'binder/postBuild'
     - 'binder/start'
     - 'CNAME'
-    - 'typedoc-theme'
     - 'LICENSE'
     - 'yarn.lock'
 
