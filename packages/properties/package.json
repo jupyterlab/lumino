@@ -39,10 +39,6 @@
     "test:webkit-headless": "cd tests && karma start --browsers=WebkitHeadless",
     "watch": "tsc --build --watch"
   },
-  "typedoc": {
-    "entryPoint": "./src/index.ts",
-    "displayName": "properties"
-  },
   "devDependencies": {
     "@lumino/buildutils": "^2.0.1",
     "@microsoft/api-extractor": "^7.36.0",

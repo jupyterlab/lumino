@@ -49,10 +49,6 @@
     "test:nobrowser": "cd tests && karma start",
     "watch": "tsc --build --watch"
   },
-  "typedoc": {
-    "entryPoint": "./src/index.ts",
-    "displayName": "widgets"
-  },
   "dependencies": {
     "@lumino/algorithm": "^2.0.1",
     "@lumino/commands": "^2.3.0",

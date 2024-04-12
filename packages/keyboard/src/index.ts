@@ -85,7 +85,7 @@ export function getKeyboardLayout(): IKeyboardLayout {
 /**
  * Set the global application keyboard layout instance.
  *
- * @param - The keyboard layout for use by the application.
+ * @param layout The keyboard layout for use by the application.
  *
  * #### Notes
  * The keyboard layout should typically be set on application startup
@@ -197,7 +197,7 @@ export namespace KeycodeLayout {
   /**
    * Extract the set of keys from a code map.
    *
-   * @param code - The code map of interest.
+   * @param codes - The code map of interest.
    *
    * @returns A set of the keys in the code map.
    */

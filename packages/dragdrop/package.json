@@ -42,10 +42,6 @@
     "test:webkit-headless": "cd tests && karma start --browsers=WebkitHeadless",
     "watch": "tsc --build --watch"
   },
-  "typedoc": {
-    "entryPoint": "./src/index.ts",
-    "displayName": "dragdrop"
-  },
   "dependencies": {
     "@lumino/coreutils": "^2.1.2",
     "@lumino/disposable": "^2.1.2"

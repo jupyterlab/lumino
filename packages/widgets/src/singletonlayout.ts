@@ -126,8 +126,6 @@ export class SingletonLayout extends Layout {
   /**
    * Attach a widget to the parent's DOM node.
    *
-   * @param index - The current index of the widget in the layout.
-   *
    * @param widget - The widget to attach to the parent.
    *
    * #### Notes

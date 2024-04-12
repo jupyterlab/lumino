@@ -46,10 +46,6 @@
     "test:nobrowser": "cd tests && karma start",
     "watch": "tsc --build --watch"
   },
-  "typedoc": {
-    "entryPoint": "./src/index.ts",
-    "displayName": "datagrid"
-  },
   "dependencies": {
     "@lumino/algorithm": "^2.0.1",
     "@lumino/coreutils": "^2.1.2",

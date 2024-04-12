@@ -241,7 +241,7 @@ export namespace AccordionLayout {
     /**
      * Render the element for a section title.
      *
-     * @param data - The data to use for rendering the section title.
+     * @param title - The data to use for rendering the section title.
      *
      * @returns A element representing the section title.
      */
