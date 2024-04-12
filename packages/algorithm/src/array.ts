@@ -244,7 +244,7 @@ export namespace ArrayExt {
   /**
    * Find the index of the last value which matches a predicate.
    *
-   * @param object - The array-like object to search.
+   * @param array - The array-like object to search.
    *
    * @param fn - The predicate function to apply to the values.
    *
