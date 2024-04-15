@@ -2040,16 +2040,20 @@ export class DataGrid extends Widget {
     const x2 = Math.min(width - 1, contentX + contentW - 1);
     const y2 = Math.min(height - 1, contentY + contentH - 1);
 
-    const r1 = this._rowSections.indexOf(y1 - contentY + this.scrollY);
-    const c1 = this._columnSections.indexOf(x1 - contentX + this.scrollX);
-    const r2 = this._rowSections.indexOf(y2 - contentY + this.scrollY);
-    const c2 = this._columnSections.indexOf(x2 - contentX + this.scrollX);
+    const firstRow = this._rowSections.indexOf(y1 - contentY + this.scrollY);
+    const firstColumn = this._columnSections.indexOf(
+      x1 - contentX + this.scrollX
+    );
+    const lastRow = this._rowSections.indexOf(y2 - contentY + this.scrollY);
+    const lastColumn = this._columnSections.indexOf(
+      x2 - contentX + this.scrollX
+    );
 
     return {
-      r1,
-      r2,
-      c1,
-      c2
+      firstRow,
+      firstColumn,
+      lastRow,
+      lastColumn
     };
   }
 
@@ -6770,22 +6774,22 @@ export namespace DataGrid {
     /**
      * First row of the region
      */
-    r1: number;
+    firstRow: number;
 
     /**
      * Last row of the region
      */
-    r2: number;
+    lastRow: number;
 
     /**
      * First column of the region
      */
-    c1: number;
+    firstColumn: number;
 
     /**
      * Last column of the region
      */
-    c2: number;
+    lastColumn: number;
   }
 }
 
