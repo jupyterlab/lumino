@@ -3,3 +3,4 @@
 
 import './textrenderer.spec';
 import './imagerenderer.spec';
+import './datagrid.spec';
