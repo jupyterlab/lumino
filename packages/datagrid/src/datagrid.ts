@@ -6768,7 +6768,7 @@ export namespace DataGrid {
   };
 
   /**
-   * A body region defined by the cells boundaries using row/column coordinates
+   * A body region defined by the cells' boundaries using row/column coordinates.
    */
   export interface IBodyRegion {
     /**
