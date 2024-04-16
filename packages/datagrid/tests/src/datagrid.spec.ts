@@ -35,12 +35,24 @@ describe('@lumino/datagrid', () => {
     datagrid = new DataGrid();
     model = new LargeDataModel();
     datagrid.dataModel = model;
+    datagrid.viewport.node.style.height = '500px';
+    datagrid.viewport.node.style.width = '500px';
+    document.children[0].appendChild(datagrid.node);
   });
 
   describe('DataGrid', () => {
     describe('currentViewport()', () => {
       it('should return the viewport', () => {
-        expect(datagrid.currentViewport).to.be.undefined;
+        const viewport = datagrid.currentViewport;
+
+        if (viewport === undefined) {
+          throw new Error('viewport is undefined');
+        }
+
+        expect(viewport.firstRow).to.be.eq(0);
+        expect(viewport.firstColumn).to.be.eq(0);
+        expect(viewport.lastRow).to.be.eq(22);
+        expect(viewport.lastColumn).to.be.eq(4);
       });
     });
   });
