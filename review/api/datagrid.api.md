@@ -215,6 +215,7 @@ export class DataGrid extends Widget {
     get copyConfig(): DataGrid.CopyConfig;
     set copyConfig(value: DataGrid.CopyConfig);
     copyToClipboard(): void;
+    get currentViewport(): DataGrid.IBodyRegion | undefined;
     get dataModel(): DataModel | null;
     set dataModel(value: DataModel | null);
     get defaultSizes(): DataGrid.DefaultSizes;
@@ -332,6 +333,12 @@ export namespace DataGrid {
         readonly width: number;
         readonly height: number;
     };
+    export interface IBodyRegion {
+        firstColumn: number;
+        firstRow: number;
+        lastColumn: number;
+        lastRow: number;
+    }
     export interface IKeyHandler extends IDisposable {
         onKeyDown(grid: DataGrid, event: KeyboardEvent): void;
     }
@@ -363,6 +370,10 @@ export namespace DataGrid {
         readonly rowHeaderWidth: number;
         readonly columnHeaderHeight: number;
     };
+    const defaultStyle: Style;
+    const defaultSizes: DefaultSizes;
+    const minimumSizes: MinimumSizes;
+    const defaultCopyConfig: CopyConfig;
     export type Style = {
         readonly voidColor?: string;
         readonly backgroundColor?: string;
@@ -388,10 +399,6 @@ export namespace DataGrid {
             readonly color3: string;
         };
     };
-    const defaultStyle: Style;
-    const defaultSizes: DefaultSizes;
-    const minimumSizes: MinimumSizes;
-    const defaultCopyConfig: CopyConfig;
 }
 
 // @public

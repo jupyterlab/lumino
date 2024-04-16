@@ -2013,6 +2013,51 @@ export class DataGrid extends Widget {
   }
 
   /**
+   * Get the current viewport.
+   *
+   * @returns The current viewport as row/column coordinates.
+   * Returns undefined if the grid is not visible.
+   */
+  get currentViewport(): DataGrid.IBodyRegion | undefined {
+    let width = this.viewport.node.offsetWidth;
+    let height = this.viewport.node.offsetHeight;
+
+    width = Math.round(width);
+    height = Math.round(height);
+
+    if (width <= 0 || height <= 0) {
+      return;
+    }
+
+    const contentW = this._columnSections.length - this.scrollX;
+    const contentH = this._rowSections.length - this.scrollY;
+
+    const contentX = this.headerWidth;
+    const contentY = this.headerHeight;
+
+    const x1 = contentX;
+    const y1 = contentY;
+    const x2 = Math.min(width - 1, contentX + contentW - 1);
+    const y2 = Math.min(height - 1, contentY + contentH - 1);
+
+    const firstRow = this._rowSections.indexOf(y1 - contentY + this.scrollY);
+    const firstColumn = this._columnSections.indexOf(
+      x1 - contentX + this.scrollX
+    );
+    const lastRow = this._rowSections.indexOf(y2 - contentY + this.scrollY);
+    const lastColumn = this._columnSections.indexOf(
+      x2 - contentX + this.scrollX
+    );
+
+    return {
+      firstRow,
+      firstColumn,
+      lastRow,
+      lastColumn
+    };
+  }
+
+  /**
    * A message handler invoked on an `'activate-request'` message.
    */
   protected onActivateRequest(msg: Message): void {
@@ -6721,6 +6766,31 @@ export namespace DataGrid {
     headers: 'none',
     warningThreshold: 1e6
   };
+
+  /**
+   * A body region defined by the cells' boundaries using row/column coordinates.
+   */
+  export interface IBodyRegion {
+    /**
+     * First row of the region
+     */
+    firstRow: number;
+
+    /**
+     * Last row of the region
+     */
+    lastRow: number;
+
+    /**
+     * First column of the region
+     */
+    firstColumn: number;
+
+    /**
+     * Last column of the region
+     */
+    lastColumn: number;
+  }
 }
 
 /**
