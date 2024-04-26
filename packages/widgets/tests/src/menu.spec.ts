@@ -612,7 +612,7 @@ describe('@lumino/widgets', () => {
       });
 
       it('should insert as last child under document.body by default', () => {
-        const div = document.body.appendChild(document.createElement('div'))
+        const div = document.body.appendChild(document.createElement('div'));
         menu.addItem({ command: 'test' });
         menu.open(10, 10);
         expect(menu.node.parentElement).to.equal(document.body);
@@ -621,8 +621,8 @@ describe('@lumino/widgets', () => {
       });
 
       it('should insert as last child under specified host element', () => {
-        const div = document.body.appendChild(document.createElement('div'))
-        const child = div.appendChild(document.createElement('div'))
+        const div = document.body.appendChild(document.createElement('div'));
+        const child = div.appendChild(document.createElement('div'));
         menu.addItem({ command: 'test' });
         menu.open(10, 10, { host: div });
         expect(menu.node.parentElement).to.equal(div);
@@ -631,8 +631,8 @@ describe('@lumino/widgets', () => {
       });
 
       it('should insert before reference element under document.body', () => {
-        const div1 = document.body.appendChild(document.createElement('div'))
-        const div2 = document.body.appendChild(document.createElement('div'))
+        const div1 = document.body.appendChild(document.createElement('div'));
+        const div2 = document.body.appendChild(document.createElement('div'));
         menu.addItem({ command: 'test' });
         menu.open(10, 10, { ref: div2 });
         expect(menu.node.parentElement).to.equal(document.body);
@@ -641,7 +641,7 @@ describe('@lumino/widgets', () => {
       });
 
       it('should insert before reference element under specified host element', () => {
-        const div = document.body.appendChild(document.createElement('div'))
+        const div = document.body.appendChild(document.createElement('div'));
         const child1 = div.appendChild(document.createElement('div'));
         const child2 = div.appendChild(document.createElement('div'));
         menu.open(10, 10, { host: div, ref: child2 });

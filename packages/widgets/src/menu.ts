@@ -446,6 +446,12 @@ export class Menu extends Widget {
    * fully fit on the screen. If it will not fit, it will be adjusted
    * to fit naturally on the screen.
    *
+   * The menu will be attached under the `host` element in the DOM
+   * (or `document.body` if `host` is `null`) and before the `ref`
+   * element (or as the last child of `host` if `ref` is `null`).
+   * The menu may be displayed outside of the `host` element
+   * following the rules of CSS absolute positioning.
+   *
    * This is a no-op if the menu is already attached to the DOM.
    */
   open(x: number, y: number, options: Menu.IOpenOptions = {}): void {
@@ -457,8 +463,8 @@ export class Menu extends Widget {
     // Extract the menu options.
     let forceX = options.forceX || false;
     let forceY = options.forceY || false;
-    const host = options.host || null;
-    const ref = options.ref || null;
+    const host = options.host ?? null;
+    const ref = options.ref ?? null;
 
     // Open the menu as a root menu.
     Private.openRootMenu(this, x, y, forceX, forceY, host, ref);

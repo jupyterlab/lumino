@@ -741,6 +741,8 @@ export namespace Menu {
     export interface IOpenOptions {
         forceX?: boolean;
         forceY?: boolean;
+        host?: HTMLElement;
+        ref?: HTMLElement;
     }
     export interface IOptions {
         commands: CommandRegistry;
