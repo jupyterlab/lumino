@@ -610,6 +610,45 @@ describe('@lumino/widgets', () => {
         menu.open(100, 100);
         expect(menu.node.style.transform).to.equal('translate(10px, 10px)');
       });
+
+      it('should insert as last child under document.body by default', () => {
+        const div = document.body.appendChild(document.createElement('div'))
+        menu.addItem({ command: 'test' });
+        menu.open(10, 10);
+        expect(menu.node.parentElement).to.equal(document.body);
+        expect(menu.node.previousElementSibling).to.equal(div);
+        expect(menu.node.nextElementSibling).to.be.null;
+      });
+
+      it('should insert as last child under specified host element', () => {
+        const div = document.body.appendChild(document.createElement('div'))
+        const child = div.appendChild(document.createElement('div'))
+        menu.addItem({ command: 'test' });
+        menu.open(10, 10, { host: div });
+        expect(menu.node.parentElement).to.equal(div);
+        expect(menu.node.previousElementSibling).to.equal(child);
+        expect(menu.node.nextElementSibling).to.be.null;
+      });
+
+      it('should insert before reference element under document.body', () => {
+        const div1 = document.body.appendChild(document.createElement('div'))
+        const div2 = document.body.appendChild(document.createElement('div'))
+        menu.addItem({ command: 'test' });
+        menu.open(10, 10, { ref: div2 });
+        expect(menu.node.parentElement).to.equal(document.body);
+        expect(menu.node.previousElementSibling).to.equal(div1);
+        expect(menu.node.nextElementSibling).to.equal(div2);
+      });
+
+      it('should insert before reference element under specified host element', () => {
+        const div = document.body.appendChild(document.createElement('div'))
+        const child1 = div.appendChild(document.createElement('div'));
+        const child2 = div.appendChild(document.createElement('div'));
+        menu.open(10, 10, { host: div, ref: child2 });
+        expect(menu.node.parentElement).to.equal(div);
+        expect(menu.node.previousElementSibling).to.equal(child1);
+        expect(menu.node.nextElementSibling).to.equal(child2);
+      });
     });
 
     describe('#handleEvent()', () => {
