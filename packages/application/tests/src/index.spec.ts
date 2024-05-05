@@ -57,6 +57,18 @@ describe('@lumino/application', () => {
         expect(app.hasPlugin(id1)).to.be.true;
         expect(app.isPluginActivated(id2)).to.be.true;
       });
+
+      it('should instantiate an application with a HTMLElement as shell', () => {
+        const shell = document.createElement('div');
+        const app = new Application<HTMLDivElement>({
+          shell
+        });
+
+        expect(app).to.be.instanceOf(Application);
+        expect(app.commands).to.be.instanceOf(CommandRegistry);
+        expect(app.contextMenu).to.be.instanceOf(ContextMenu);
+        expect(app.shell).to.equal(shell);
+      });
     });
 
     describe('#getPluginDescription', () => {
@@ -624,5 +636,29 @@ describe('@lumino/application', () => {
         expect(app.isPluginActivated(id3)).to.be.false;
       });
     });
+
+    describe('#start', () => {
+      it('should attach the shell widget to the document body', async () => {
+        const shell = new Widget();
+        const app = new Application({
+          shell
+        });
+
+        await app.start();
+
+        expect(document.body.contains(shell.node)).to.be.true;
+      })
+
+      it('should attach the shell HTML element to the document body', async () => {
+        const shell = document.createElement('div');
+        const app = new Application<HTMLDivElement>({
+          shell
+        });
+
+        await app.start();
+
+        expect(document.body.contains(shell)).to.be.true;
+      })
+    })
   });
 });
