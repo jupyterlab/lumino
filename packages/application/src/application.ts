@@ -2,10 +2,11 @@
 // Distributed under the terms of the Modified BSD License.
 import { CommandRegistry } from '@lumino/commands';
 
-import { PromiseDelegate } from '@lumino/coreutils';
+import { PromiseDelegate, type Token } from '@lumino/coreutils';
 
 import { ContextMenu, Menu, Widget } from '@lumino/widgets';
-import { PluginRegistry } from './plugins';
+
+import { type IPlugin, PluginRegistry } from './plugins';
 
 /**
  * A class for creating pluggable applications.
@@ -17,14 +18,22 @@ import { PluginRegistry } from './plugins';
  * UI applications with the ability to be safely extended by third
  * party code via plugins.
  */
-export class Application<T extends Widget = Widget> extends PluginRegistry {
+export class Application<T extends Widget = Widget> {
+  /**
+   * Application plugin registry.
+   */
+  protected pluginRegistry: PluginRegistry;
+
   /**
    * Construct a new application.
    *
    * @param options - The options for creating the application.
    */
   constructor(options: Application.IOptions<T>) {
-    super();
+    this.pluginRegistry =
+      options.pluginRegistry ?? new PluginRegistry<this>(options);
+    this.pluginRegistry.application = this;
+
     // Initialize the application state.
     this.commands = new CommandRegistry();
     this.contextMenu = new ContextMenu({
@@ -55,6 +64,13 @@ export class Application<T extends Widget = Widget> extends PluginRegistry {
   readonly shell: T;
 
   /**
+   * The list of all the deferred plugins.
+   */
+  get deferredPlugins(): string[] {
+    return this.pluginRegistry.deferredPlugins;
+  }
+
+  /**
    * A promise which resolves after the application has started.
    *
    * #### Notes
@@ -65,6 +81,166 @@ export class Application<T extends Widget = Widget> extends PluginRegistry {
     return this._delegate.promise;
   }
 
+  /**
+   * Activate all the deferred plugins.
+   *
+   * @returns A promise which will resolve when each plugin is activated
+   * or rejects with an error if one cannot be activated.
+   */
+  async activateDeferredPlugins(): Promise<void> {
+    await this.pluginRegistry.activatePlugins('defer');
+  }
+
+  /**
+   * Activate the plugin with the given ID.
+   *
+   * @param id - The ID of the plugin of interest.
+   *
+   * @returns A promise which resolves when the plugin is activated
+   *   or rejects with an error if it cannot be activated.
+   */
+  async activatePlugin(id: string): Promise<void> {
+    return this.pluginRegistry.activatePlugin(id);
+  }
+
+  /**
+   * Deactivate the plugin and its downstream dependents if and only if the
+   * plugin and its dependents all support `deactivate`.
+   *
+   * @param id - The ID of the plugin of interest.
+   *
+   * @returns A list of IDs of downstream plugins deactivated with this one.
+   */
+  async deactivatePlugin(id: string): Promise<string[]> {
+    return this.pluginRegistry.deactivatePlugin(id);
+  }
+
+  /**
+   * Deregister a plugin with the application.
+   *
+   * @param id - The ID of the plugin of interest.
+   *
+   * @param force - Whether to deregister the plugin even if it is active.
+   */
+  deregisterPlugin(id: string, force?: boolean): void {
+    this.pluginRegistry.deregisterPlugin(id, force);
+  }
+
+  /**
+   * Get a plugin description.
+   *
+   * @param id - The ID of the plugin of interest.
+   *
+   * @returns The plugin description.
+   */
+  getPluginDescription(id: string): string {
+    return this.pluginRegistry.getPluginDescription(id);
+  }
+
+  /**
+   * Test whether a plugin is registered with the application.
+   *
+   * @param id - The ID of the plugin of interest.
+   *
+   * @returns `true` if the plugin is registered, `false` otherwise.
+   */
+  hasPlugin(id: string): boolean {
+    return this.pluginRegistry.hasPlugin(id);
+  }
+
+  /**
+   * Test whether a plugin is activated with the application.
+   *
+   * @param id - The ID of the plugin of interest.
+   *
+   * @returns `true` if the plugin is activated, `false` otherwise.
+   */
+  isPluginActivated(id: string): boolean {
+    return this.pluginRegistry.isPluginActivated(id);
+  }
+
+  /**
+   * List the IDs of the plugins registered with the application.
+   *
+   * @returns A new array of the registered plugin IDs.
+   */
+  listPlugins(): string[] {
+    return this.pluginRegistry.listPlugins();
+  }
+
+  /**
+   * Register a plugin with the application.
+   *
+   * @param plugin - The plugin to register.
+   *
+   * #### Notes
+   * An error will be thrown if a plugin with the same ID is already
+   * registered, or if the plugin has a circular dependency.
+   *
+   * If the plugin provides a service which has already been provided
+   * by another plugin, the new service will override the old service.
+   */
+  registerPlugin(plugin: IPlugin<this, any>): void {
+    this.pluginRegistry.registerPlugin(plugin);
+  }
+
+  /**
+   * Register multiple plugins with the application.
+   *
+   * @param plugins - The plugins to register.
+   *
+   * #### Notes
+   * This calls `registerPlugin()` for each of the given plugins.
+   */
+  registerPlugins(plugins: IPlugin<this, any>[]): void {
+    this.pluginRegistry.registerPlugins(plugins);
+  }
+
+  /**
+   * Resolve an optional service of a given type.
+   *
+   * @param token - The token for the service type of interest.
+   *
+   * @returns A promise which resolves to an instance of the requested
+   *   service, or `null` if it cannot be resolved.
+   *
+   * #### Notes
+   * Services are singletons. The same instance will be returned each
+   * time a given service token is resolved.
+   *
+   * If the plugin which provides the service has not been activated,
+   * resolving the service will automatically activate the plugin.
+   *
+   * User code will not typically call this method directly. Instead,
+   * the optional services for the user's plugins will be resolved
+   * automatically when the plugin is activated.
+   */
+  async resolveOptionalService<U>(token: Token<U>): Promise<U | null> {
+    return this.pluginRegistry.resolveOptionalService<U>(token);
+  }
+
+  /**
+   * Resolve a required service of a given type.
+   *
+   * @param token - The token for the service type of interest.
+   *
+   * @returns A promise which resolves to an instance of the requested
+   *   service, or rejects with an error if it cannot be resolved.
+   *
+   * #### Notes
+   * Services are singletons. The same instance will be returned each
+   * time a given service token is resolved.
+   *
+   * If the plugin which provides the service has not been activated,
+   * resolving the service will automatically activate the plugin.
+   *
+   * User code will not typically call this method directly. Instead,
+   * the required services for the user's plugins will be resolved
+   * automatically when the plugin is activated.
+   */
+  async resolveRequiredService<U>(token: Token<U>): Promise<U> {
+    return this.pluginRegistry.resolveRequiredService<U>(token);
+  }
   /**
    * Start the application.
    *
@@ -101,7 +277,7 @@ export class Application<T extends Widget = Widget> extends PluginRegistry {
     const hostID = options.hostID ?? '';
 
     // Wait for the plugins to activate, then finalize startup.
-    await this.activatePlugins('startUp', options);
+    await this.pluginRegistry.activatePlugins('startUp', options);
 
     this.attachShell(hostID);
     this.addEventListeners();
@@ -241,7 +417,7 @@ export namespace Application {
   /**
    * An options object for creating an application.
    */
-  export interface IOptions<T extends Widget> {
+  export interface IOptions<T extends Widget> extends PluginRegistry.IOptions {
     /**
      * The shell widget to use for the application.
      *
@@ -255,6 +431,14 @@ export namespace Application {
      * A custom renderer for the context menu.
      */
     contextMenuRenderer?: Menu.IRenderer;
+
+    /**
+     * Application plugin registry.
+     * 
+     * If defined the options related to the plugin registry will
+     * be ignored.
+     */
+    pluginRegistry?: PluginRegistry;
   }
 
   /**

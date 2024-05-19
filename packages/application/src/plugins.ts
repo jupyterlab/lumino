@@ -22,7 +22,7 @@ import { Token } from '@lumino/coreutils';
  * service producer from the service consumer, allowing an application
  * to be easily customized by third parties in a type-safe fashion.
  */
-export interface IPlugin<T extends PluginRegistry, U> {
+export interface IPlugin<T, U> {
   /**
    * The human readable ID of the plugin.
    *
@@ -90,7 +90,7 @@ export interface IPlugin<T extends PluginRegistry, U> {
   /**
    * A function invoked to activate the plugin.
    *
-   * @param app - The registry which owns the plugin.
+   * @param app - The object returned by the method {@link PluginRegistry.getPluginApp} .
    *
    * @param args - The services specified by the `requires` property.
    *
@@ -109,28 +109,47 @@ export interface IPlugin<T extends PluginRegistry, U> {
   /**
    * A function invoked to deactivate the plugin.
    *
-   * @param app - The registry which owns the plugin.
+   * @param app - The object returned by the method {@link PluginRegistry.getPluginApp} .
    *
    * @param args - The services specified by the `requires` property.
    */
   deactivate?: ((app: T, ...args: any[]) => void | Promise<void>) | null;
 }
 
-export class PluginRegistry {
-  private _isAllowed: (plugin: Private.IPluginData) => boolean = () => true;
-
+/**
+ * Abstract plugin registry.
+ */
+export class PluginRegistry<T = any> {
   constructor(options: PluginRegistry.IOptions = {}) {
     if ((options.allowedPlugins?.size ?? 0) > 0) {
       console.info('Only allowed plugins will be registered.');
-      this._isAllowed = (plugin: Private.IPluginData) =>
+      this._isAllowed = (plugin: Private.IPluginData<T>) =>
         options.allowedPlugins!.has(plugin.id);
+      if ((options.blockedPlugins?.size ?? 0) > 0) {
+        console.warn(
+          'Allowed and blocked plugins are defined simultaneously. The allowed list will take precedence.'
+        );
+      }
     } else {
       if ((options.blockedPlugins?.size ?? 0) > 0) {
         console.info('Some plugins are not allowed to be registered');
-        this._isAllowed = (plugin: Private.IPluginData) =>
+        this._isAllowed = (plugin: Private.IPluginData<T>) =>
           !options.blockedPlugins!.has(plugin.id);
       }
     }
+  }
+
+  get application(): T {
+    return this._application;
+  }
+  set application(v: any) {
+    if (this._application !== null) {
+      throw Error(
+        'PluginRegistry.application is already set. It cannot be overridden.'
+      );
+    }
+
+    this._application = v;
   }
 
   /**
@@ -196,7 +215,7 @@ export class PluginRegistry {
    * If the plugin provides a service which has already been provided
    * by another plugin, the new service will override the old service.
    */
-  registerPlugin(plugin: IPlugin<this, any>): void {
+  registerPlugin(plugin: IPlugin<T, any>): void {
     // Throw an error if the plugin ID is already registered.
     if (this._plugins.has(plugin.id)) {
       throw new TypeError(`Plugin '${plugin.id}' is already registered.`);
@@ -229,7 +248,7 @@ export class PluginRegistry {
    * #### Notes
    * This calls `registerPlugin()` for each of the given plugins.
    */
-  registerPlugins(plugins: IPlugin<this, any>[]): void {
+  registerPlugins(plugins: IPlugin<T, any>[]): void {
     for (const plugin of plugins) {
       this.registerPlugin(plugin);
     }
@@ -288,7 +307,9 @@ export class PluginRegistry {
 
     // Setup the resolver promise for the plugin.
     plugin.promise = Promise.all([...required, ...optional])
-      .then(services => plugin!.activate.apply(undefined, [this, ...services]))
+      .then(services =>
+        plugin!.activate.apply(undefined, [this.application, ...services])
+      )
       .then(service => {
         plugin!.service = service;
         plugin!.activated = true;
@@ -342,18 +363,6 @@ export class PluginRegistry {
   }
 
   /**
-   * Activate all the deferred plugins.
-   *
-   * @returns A promise which will resolve when each plugin is activated
-   * or rejects with an error if one cannot be activated.
-   *
-   * @deprecated Use {@link activatePlugins} with options `'defer'` instead.
-   */
-  async activateDeferredPlugins(): Promise<void> {
-    await this.activatePlugins('defer');
-  }
-
-  /**
    * Deactivate the plugin and its downstream dependents if and only if the
    * plugin and its dependents all support `deactivate`.
    *
@@ -399,7 +408,7 @@ export class PluginRegistry {
       });
 
       // Await deactivation so the next plugins only receive active services.
-      await plugin.deactivate!(this, ...services);
+      await plugin.deactivate!(this.application, ...services);
       plugin.service = null;
       plugin.activated = false;
     }
@@ -484,7 +493,9 @@ export class PluginRegistry {
     return plugin.service;
   }
 
-  private _plugins = new Map<string, Private.IPluginData>();
+  private _application: any = null;
+  private _isAllowed: (plugin: Private.IPluginData<T>) => boolean = () => true;
+  private _plugins = new Map<string, Private.IPluginData<T>>();
   private _services = new Map<Token<any>, string>();
 }
 
@@ -535,7 +546,7 @@ namespace Private {
   /**
    * An object which holds the full application state for a plugin.
    */
-  export interface IPluginData {
+  export interface IPluginData<T = any> {
     /**
      * The human readable ID of the plugin.
      */
@@ -571,13 +582,13 @@ namespace Private {
     /**
      * The function which activates the plugin.
      */
-    readonly activate: (app: PluginRegistry, ...args: any[]) => any;
+    readonly activate: (app: T, ...args: any[]) => any;
 
     /**
      * The optional function which deactivates the plugin.
      */
     readonly deactivate:
-      | ((app: PluginRegistry, ...args: any[]) => void | Promise<void>)
+      | ((app: T, ...args: any[]) => void | Promise<void>)
       | null;
 
     /**
@@ -596,23 +607,104 @@ namespace Private {
     promise: Promise<void> | null;
   }
 
+  class PluginData<T = any, U = any> implements IPluginData<T> {
+    private _activated = false;
+    private _promise: Promise<void> | null = null;
+    private _service: U | null = null;
+
+    constructor(plugin: IPlugin<T, U>) {
+      this.id = plugin.id;
+      this.description = plugin.description ?? '';
+      this.activate = plugin.activate;
+      this.deactivate = plugin.deactivate ?? null;
+      this.provides = plugin.provides ?? null;
+      this.autoStart = plugin.autoStart ?? false;
+      this.requires = plugin.requires ? plugin.requires.slice() : [];
+      this.optional = plugin.optional ? plugin.optional.slice() : [];
+    }
+
+    /**
+     * The human readable ID of the plugin.
+     */
+    readonly id: string;
+
+    /**
+     * The description of the plugin.
+     */
+    readonly description: string;
+
+    /**
+     * Whether the plugin should be activated on application start or waiting for being
+     * required. If the value is 'defer' then the plugin should be activated only after
+     * the application is started.
+     */
+    readonly autoStart: boolean | 'defer';
+
+    /**
+     * The types of required services for the plugin, or `[]`.
+     */
+    readonly requires: Token<any>[];
+
+    /**
+     * The types of optional services for the the plugin, or `[]`.
+     */
+    readonly optional: Token<any>[];
+
+    /**
+     * The type of service provided by the plugin, or `null`.
+     */
+    readonly provides: Token<any> | null;
+
+    /**
+     * The function which activates the plugin.
+     */
+    readonly activate: (app: T, ...args: any[]) => any;
+
+    /**
+     * The optional function which deactivates the plugin.
+     */
+    readonly deactivate:
+      | ((app: T, ...args: any[]) => void | Promise<void>)
+      | null;
+
+    /**
+     * Whether the plugin has been activated.
+     */
+    get activated(): boolean {
+      return this._activated;
+    }
+    set activated(a: boolean) {
+      this._activated = a;
+    }
+
+    /**
+     * The resolved service for the plugin, or `null`.
+     */
+    get service(): U | null {
+      return this._service;
+    }
+    set service(s: U | null) {
+      this._service = s;
+    }
+
+    /**
+     * The pending resolver promise, or `null`.
+     */
+    get promise(): Promise<void> | null {
+      return this._promise;
+    }
+    set promise(p: Promise<void> | null) {
+      this._promise = p;
+    }
+  }
+
   /**
    * Create a normalized plugin data object for the given plugin.
    */
-  export function createPluginData(plugin: IPlugin<any, any>): IPluginData {
-    return Object.freeze({
-      id: plugin.id,
-      description: plugin.description ?? '',
-      service: null,
-      promise: null,
-      activated: false,
-      activate: plugin.activate,
-      deactivate: plugin.deactivate ?? null,
-      provides: plugin.provides ?? null,
-      autoStart: plugin.autoStart ?? false,
-      requires: plugin.requires ? plugin.requires.slice() : [],
-      optional: plugin.optional ? plugin.optional.slice() : []
-    });
+  export function createPluginData<T>(
+    plugin: IPlugin<any, any>
+  ): IPluginData<T> {
+    return new PluginData(plugin);
   }
 
   /**
