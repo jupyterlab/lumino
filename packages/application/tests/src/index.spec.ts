@@ -660,6 +660,36 @@ describe('@lumino/application', () => {
       });
     });
 
+    describe('#application', () => {
+      it('should be null by default', () => {
+        const plugins = new PluginRegistry();
+
+        expect(plugins.application).to.be.null;
+      });
+
+      it('should accept any object', () => {
+        const plugins = new PluginRegistry();
+
+        const app = Object.freeze({});
+        plugins.application = app;
+
+        expect(plugins.application).to.be.equal(app);
+      });
+
+      it('cannot be overridden', () => {
+        const plugins = new PluginRegistry();
+
+        const app = Object.freeze({});
+        plugins.application = app;
+
+        expect(plugins.application).to.be.equal(app);
+
+        expect(function () {
+          plugins.application = Object.freeze({});
+        }).to.throw();
+      });
+    });
+
     describe('#getPluginDescription', () => {
       it('should return the plugin description', () => {
         const plugins = new PluginRegistry();
