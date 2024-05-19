@@ -446,6 +446,12 @@ export class Menu extends Widget {
    * fully fit on the screen. If it will not fit, it will be adjusted
    * to fit naturally on the screen.
    *
+   * The menu will be attached under the `host` element in the DOM
+   * (or `document.body` if `host` is `null`) and before the `ref`
+   * element (or as the last child of `host` if `ref` is `null`).
+   * The menu may be displayed outside of the `host` element
+   * following the rules of CSS absolute positioning.
+   *
    * This is a no-op if the menu is already attached to the DOM.
    */
   open(x: number, y: number, options: Menu.IOpenOptions = {}): void {
@@ -454,12 +460,14 @@ export class Menu extends Widget {
       return;
     }
 
-    // Extract the position options.
+    // Extract the menu options.
     let forceX = options.forceX || false;
     let forceY = options.forceY || false;
+    const host = options.host ?? null;
+    const ref = options.ref ?? null;
 
     // Open the menu as a root menu.
-    Private.openRootMenu(this, x, y, forceX, forceY);
+    Private.openRootMenu(this, x, y, forceX, forceY, host, ref);
 
     // Activate the menu to accept keyboard input.
     this.activate();
@@ -986,6 +994,21 @@ export namespace Menu {
      * The default is `false`.
      */
     forceY?: boolean;
+
+    /**
+     * The DOM node to use as the menu's host.
+     *
+     * If not specified then uses `document.body`.
+     */
+    host?: HTMLElement;
+
+    /**
+     * The child of `host` to use as the reference element.
+     * If this is provided, the menu will be inserted before this
+     * node in the host. The default is `null`, which will cause the
+     * menu to be added as the last child of the host.
+     */
+    ref?: HTMLElement;
   }
 
   /**
@@ -1535,7 +1558,9 @@ namespace Private {
     x: number,
     y: number,
     forceX: boolean,
-    forceY: boolean
+    forceY: boolean,
+    host: HTMLElement | null,
+    ref: HTMLElement | null
   ): void {
     // Get the current position and size of the main viewport.
     const windowData = getWindowData();
@@ -1559,7 +1584,7 @@ namespace Private {
     style.maxHeight = `${maxHeight}px`;
 
     // Attach the menu to the document.
-    Widget.attach(menu, document.body);
+    Widget.attach(menu, host || document.body, ref);
 
     // Measure the size of the menu.
     let { width, height } = node.getBoundingClientRect();
