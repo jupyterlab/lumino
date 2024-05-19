@@ -90,7 +90,7 @@ export interface IPlugin<T, U> {
   /**
    * A function invoked to activate the plugin.
    *
-   * @param app - The object returned by the method {@link PluginRegistry.getPluginApp} .
+   * @param app - The application provided by {@link PluginRegistry.application} .
    *
    * @param args - The services specified by the `requires` property.
    *
@@ -109,7 +109,7 @@ export interface IPlugin<T, U> {
   /**
    * A function invoked to deactivate the plugin.
    *
-   * @param app - The object returned by the method {@link PluginRegistry.getPluginApp} .
+   * @param app - The application {@link PluginRegistry.application} .
    *
    * @param args - The services specified by the `requires` property.
    */
@@ -139,6 +139,16 @@ export class PluginRegistry<T = any> {
     }
   }
 
+  /**
+   * The application object.
+   *
+   * It will be provided as first argument to the
+   * plugins activation and deactivation functions.
+   *
+   * It can only be set once.
+   *
+   * By default, it is `null`.
+   */
   get application(): T {
     return this._application;
   }
@@ -499,7 +509,14 @@ export class PluginRegistry<T = any> {
   private _services = new Map<Token<any>, string>();
 }
 
+/**
+ * PluginRegistry namespace
+ */
 export namespace PluginRegistry {
+
+  /**
+   * PluginRegistry constructor options.
+   */
   export interface IOptions {
     /**
      * List of allowed plugins

@@ -19,10 +19,6 @@ import { type IPlugin, PluginRegistry } from './plugins';
  * party code via plugins.
  */
 export class Application<T extends Widget = Widget> {
-  /**
-   * Application plugin registry.
-   */
-  protected pluginRegistry: PluginRegistry;
 
   /**
    * Construct a new application.
@@ -241,6 +237,7 @@ export class Application<T extends Widget = Widget> {
   async resolveRequiredService<U>(token: Token<U>): Promise<U> {
     return this.pluginRegistry.resolveRequiredService<U>(token);
   }
+
   /**
    * Start the application.
    *
@@ -405,6 +402,10 @@ export class Application<T extends Widget = Widget> {
     this.shell.update();
   }
 
+  /**
+   * Application plugin registry.
+   */
+  protected pluginRegistry: PluginRegistry;
   private _delegate = new PromiseDelegate<void>();
   private _started = false;
   private _bubblingKeydown = false;
