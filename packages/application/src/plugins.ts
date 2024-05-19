@@ -117,7 +117,7 @@ export interface IPlugin<T, U> {
 }
 
 /**
- * Abstract plugin registry.
+ * Plugin registry.
  */
 export class PluginRegistry<T = any> {
   constructor(options: PluginRegistry.IOptions = {}) {

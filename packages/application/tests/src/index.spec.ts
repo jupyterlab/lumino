@@ -28,6 +28,35 @@ describe('@lumino/application', () => {
         expect(app.contextMenu).to.be.instanceOf(ContextMenu);
         expect(app.shell).to.equal(shell);
       });
+
+      it('should accept an external plugin registry', async () => {
+        const shell = new Widget();
+        const pluginRegistry = new PluginRegistry();
+        const id1 = 'plugin1';
+        pluginRegistry.registerPlugin({
+          id: id1,
+          activate: () => {
+            // no-op
+          }
+        });
+        const id2 = 'plugin2';
+        pluginRegistry.registerPlugin({
+          id: id2,
+          activate: () => {
+            // no-op
+          }
+        });
+
+        const app = new Application({
+          shell,
+          pluginRegistry
+        });
+
+        await pluginRegistry.activatePlugin(id2);
+
+        expect(app.hasPlugin(id1)).to.be.true;
+        expect(app.isPluginActivated(id2)).to.be.true;
+      });
     });
 
     describe('#getPluginDescription', () => {
@@ -868,6 +897,67 @@ describe('@lumino/application', () => {
         plugins.registerPlugin(plugin);
 
         expect(plugins.hasPlugin(id)).to.be.true;
+      });
+
+      it('should refuse to register not allowed plugins', async () => {
+        const plugins = new PluginRegistry({
+          allowedPlugins: new Set(['id1'])
+        });
+        expect(function () {
+          plugins.registerPlugin({
+            id: 'id',
+            activate: () => {
+              /* no-op */
+            }
+          });
+        }).to.throw();
+        plugins.registerPlugin({
+          id: 'id1',
+          activate: () => {
+            /* no-op */
+          }
+        });
+      });
+
+      it('should refuse to register blocked plugins', async () => {
+        const plugins = new PluginRegistry({
+          blockedPlugins: new Set(['id1'])
+        });
+        expect(function () {
+          plugins.registerPlugin({
+            id: 'id1',
+            activate: () => {
+              /* no-op */
+            }
+          });
+        }).to.throw();
+        plugins.registerPlugin({
+          id: 'id2',
+          activate: () => {
+            /* no-op */
+          }
+        });
+      });
+
+      it('should use allowed list over blocked list of plugins', async () => {
+        const plugins = new PluginRegistry({
+          allowedPlugins: new Set(['id1', 'id2']),
+          blockedPlugins: new Set(['id2'])
+        });
+        expect(function () {
+          plugins.registerPlugin({
+            id: 'id',
+            activate: () => {
+              /* no-op */
+            }
+          });
+        }).to.throw();
+        plugins.registerPlugin({
+          id: 'id2',
+          activate: () => {
+            /* no-op */
+          }
+        });
       });
     });
 
