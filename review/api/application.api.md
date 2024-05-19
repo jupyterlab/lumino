@@ -31,6 +31,7 @@ export class Application<T extends Widget = Widget> {
     hasPlugin(id: string): boolean;
     isPluginActivated(id: string): boolean;
     listPlugins(): string[];
+    protected pluginRegistry: PluginRegistry;
     registerPlugin(plugin: IPlugin<this, any>): void;
     registerPlugins(plugins: IPlugin<this, any>[]): void;
     resolveOptionalService<U>(token: Token<U>): Promise<U | null>;
@@ -42,8 +43,9 @@ export class Application<T extends Widget = Widget> {
 
 // @public
 export namespace Application {
-    export interface IOptions<T extends Widget> {
+    export interface IOptions<T extends Widget> extends PluginRegistry.IOptions {
         contextMenuRenderer?: Menu.IRenderer;
+        pluginRegistry?: PluginRegistry;
         shell: T;
     }
     export interface IStartOptions {
@@ -55,7 +57,7 @@ export namespace Application {
 }
 
 // @public
-export interface IPlugin<T extends Application, U> {
+export interface IPlugin<T, U> {
     activate: (app: T, ...args: any[]) => U | Promise<U>;
     autoStart?: boolean | 'defer';
     deactivate?: ((app: T, ...args: any[]) => void | Promise<void>) | null;
@@ -66,6 +68,36 @@ export interface IPlugin<T extends Application, U> {
     requires?: Token<any>[];
 }
 
-// (No @packageDocumentation comment for this package)
+// @public
+export class PluginRegistry<T = any> {
+    constructor(options?: PluginRegistry.IOptions);
+    activatePlugin(id: string): Promise<void>;
+    activatePlugins(kind: 'startUp' | 'defer', options?: PluginRegistry.IStartOptions): Promise<void>;
+    get application(): T;
+    set application(v: any);
+    deactivatePlugin(id: string): Promise<string[]>;
+    get deferredPlugins(): string[];
+    deregisterPlugin(id: string, force?: boolean): void;
+    getPluginDescription(id: string): string;
+    hasPlugin(id: string): boolean;
+    isPluginActivated(id: string): boolean;
+    listPlugins(): string[];
+    registerPlugin(plugin: IPlugin<T, any>): void;
+    registerPlugins(plugins: IPlugin<T, any>[]): void;
+    resolveOptionalService<U>(token: Token<U>): Promise<U | null>;
+    resolveRequiredService<U>(token: Token<U>): Promise<U>;
+}
+
+// @public
+export namespace PluginRegistry {
+    export interface IOptions {
+        allowedPlugins?: Set<string>;
+        blockedPlugins?: Set<string>;
+    }
+    export interface IStartOptions {
+        ignorePlugins?: string[];
+        startPlugins?: string[];
+    }
+}
 
 ```

@@ -19,7 +19,6 @@ import { type IPlugin, PluginRegistry } from './plugins';
  * party code via plugins.
  */
 export class Application<T extends Widget = Widget> {
-
   /**
    * Construct a new application.
    *
@@ -435,7 +434,7 @@ export namespace Application {
 
     /**
      * Application plugin registry.
-     * 
+     *
      * If defined the options related to the plugin registry will
      * be ignored.
      */

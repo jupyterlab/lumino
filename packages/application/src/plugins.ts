@@ -513,7 +513,6 @@ export class PluginRegistry<T = any> {
  * PluginRegistry namespace
  */
 export namespace PluginRegistry {
-
   /**
    * PluginRegistry constructor options.
    */
