@@ -9,7 +9,7 @@
 |----------------------------------------------------------------------------*/
 import { expect } from 'chai';
 
-import { Application, PluginRegistry } from '@lumino/application';
+import { Application, PluginRegistry, type IPlugin } from '@lumino/application';
 import { ContextMenu, Widget } from '@lumino/widgets';
 import { CommandRegistry } from '@lumino/commands';
 import { Token } from '@lumino/coreutils';
@@ -634,26 +634,9 @@ describe('@lumino/application', () => {
         expect(plugins).to.be.instanceOf(PluginRegistry);
       });
 
-      it('should accept allowed plugins list', () => {
+      it('should accept validation function', () => {
         const plugins = new PluginRegistry({
-          allowedPlugins: new Set(['plugin1', 'plugin2'])
-        });
-
-        expect(plugins).to.be.instanceOf(PluginRegistry);
-      });
-
-      it('should accept blocked plugins list', () => {
-        const plugins = new PluginRegistry({
-          blockedPlugins: new Set(['plugin1', 'plugin2'])
-        });
-
-        expect(plugins).to.be.instanceOf(PluginRegistry);
-      });
-
-      it('should accept allowed and blocked plugins lists', () => {
-        const plugins = new PluginRegistry({
-          allowedPlugins: new Set(['plugin1', 'plugin2']),
-          blockedPlugins: new Set(['plugin3'])
+          validatePlugin: (plugin: IPlugin<any, any>) => !['plugin1', 'plugin2'].includes(plugin.id)
         });
 
         expect(plugins).to.be.instanceOf(PluginRegistry);
@@ -929,9 +912,9 @@ describe('@lumino/application', () => {
         expect(plugins.hasPlugin(id)).to.be.true;
       });
 
-      it('should refuse to register not allowed plugins', async () => {
+      it('should refuse to register invalid plugins', async () => {
         const plugins = new PluginRegistry({
-          allowedPlugins: new Set(['id1'])
+          validatePlugin: (plugin: IPlugin<any, any>) => ['id1'].includes(plugin.id)
         });
         expect(function () {
           plugins.registerPlugin({
@@ -943,47 +926,6 @@ describe('@lumino/application', () => {
         }).to.throw();
         plugins.registerPlugin({
           id: 'id1',
-          activate: () => {
-            /* no-op */
-          }
-        });
-      });
-
-      it('should refuse to register blocked plugins', async () => {
-        const plugins = new PluginRegistry({
-          blockedPlugins: new Set(['id1'])
-        });
-        expect(function () {
-          plugins.registerPlugin({
-            id: 'id1',
-            activate: () => {
-              /* no-op */
-            }
-          });
-        }).to.throw();
-        plugins.registerPlugin({
-          id: 'id2',
-          activate: () => {
-            /* no-op */
-          }
-        });
-      });
-
-      it('should use allowed list over blocked list of plugins', async () => {
-        const plugins = new PluginRegistry({
-          allowedPlugins: new Set(['id1', 'id2']),
-          blockedPlugins: new Set(['id2'])
-        });
-        expect(function () {
-          plugins.registerPlugin({
-            id: 'id',
-            activate: () => {
-              /* no-op */
-            }
-          });
-        }).to.throw();
-        plugins.registerPlugin({
-          id: 'id2',
           activate: () => {
             /* no-op */
           }

@@ -121,21 +121,9 @@ export interface IPlugin<T, U> {
  */
 export class PluginRegistry<T = any> {
   constructor(options: PluginRegistry.IOptions = {}) {
-    if ((options.allowedPlugins?.size ?? 0) > 0) {
-      console.info('Only allowed plugins will be registered.');
-      this._isAllowed = (plugin: Private.IPluginData<T>) =>
-        options.allowedPlugins!.has(plugin.id);
-      if ((options.blockedPlugins?.size ?? 0) > 0) {
-        console.warn(
-          'Allowed and blocked plugins are defined simultaneously. The allowed list will take precedence.'
-        );
-      }
-    } else {
-      if ((options.blockedPlugins?.size ?? 0) > 0) {
-        console.info('Some plugins are not allowed to be registered');
-        this._isAllowed = (plugin: Private.IPluginData<T>) =>
-          !options.blockedPlugins!.has(plugin.id);
-      }
+    if (options.validatePlugin) {
+      console.info('Plugins may be rejected by the custom validation plugin method.');
+      this._validatePlugin = options.validatePlugin;
     }
   }
 
@@ -231,12 +219,12 @@ export class PluginRegistry<T = any> {
       throw new TypeError(`Plugin '${plugin.id}' is already registered.`);
     }
 
+    if (!this._validatePlugin(plugin)) {
+      throw new Error(`Plugin '${plugin.id}' is not valid.`);
+    }
+
     // Create the normalized plugin data.
     const data = Private.createPluginData(plugin);
-
-    if (!this._isAllowed(data)) {
-      throw new Error(`Plugin '${plugin.id}' is not allowed.`);
-    }
 
     // Ensure the plugin does not cause a cyclic dependency.
     Private.ensureNoCycle(data, this._plugins, this._services);
@@ -504,7 +492,7 @@ export class PluginRegistry<T = any> {
   }
 
   private _application: any = null;
-  private _isAllowed: (plugin: Private.IPluginData<T>) => boolean = () => true;
+  private _validatePlugin: (plugin: IPlugin<any, any>) => boolean = () => true;
   private _plugins = new Map<string, Private.IPluginData<T>>();
   private _services = new Map<Token<any>, string>();
 }
@@ -518,19 +506,18 @@ export namespace PluginRegistry {
    */
   export interface IOptions {
     /**
-     * List of allowed plugins
+     * Validate that a plugin is allowed to be registered.
      *
-     * If defined, only allowed plugins will be able to be registered.
+     * Default is `() => true`.
      *
-     * This parameter takes precedence over {@link blockedPlugins}.
+     * @param plugin The plugin to validate
+     * @returns Whether the plugin can be registered or not.
+     * 
+     * #### Notes
+     * We recommend you print a console message with the reason
+     * a plugin is invalid.
      */
-    allowedPlugins?: Set<string>;
-    /**
-     * List of blocked plugins
-     *
-     * If defined, blocked plugins will not be able to be registered.
-     */
-    blockedPlugins?: Set<string>;
+    validatePlugin?: (plugin: IPlugin<any, any>) => boolean;
   }
 
   /**
