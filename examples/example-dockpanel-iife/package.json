@@ -6,6 +6,6 @@
     "test": "playwright test"
   },
   "devDependencies": {
-    "@playwright/test": "^1.29.0"
+    "@playwright/test": "^1.44.0"
   }
 }
