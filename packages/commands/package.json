@@ -32,7 +32,7 @@
     "minimize": "terser dist/index.js -c -m --source-map \"content='dist/index.js.map',url='index.min.js.map'\" -o dist/index.min.js",
     "test": "npm run build:test && web-test-runner tests/lib/bundle.test.js --node-resolve --playwright",
     "test:debug": "npm run test -- --manual --open",
-    "test:chromium": "npm run test -- --browsers chrome",
+    "test:chromium": "npm run test -- --browsers chromium",
     "test:firefox": "npm run test -- --browsers firefox",
     "test:webkit": "npm run test -- --browsers webkit",
     "watch": "tsc --build --watch"
