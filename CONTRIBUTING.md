@@ -25,7 +25,7 @@ To run the tests, run:
 
 ```bash
 yarn build:test
-yarn test  # optionally test:chrome, test:firefox, or test:webkit
+yarn test  # optionally test:chromium, test:firefox, or test:webkit
 ```
 
 You can run the tests manually to debug them by going inside one package (e.g. `packages/application`)

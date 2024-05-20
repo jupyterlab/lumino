@@ -32,7 +32,7 @@
     "publish": "npm run clean && npm run build:dist && node scripts/tag-versions.js && lerna publish --yes -m \"Publish\" from-package",
     "remove:dependency": "remove-dependency",
     "test": "lerna run test --concurrency 1 --scope \"@lumino/!(example-)*\"",
-    "test:chrome": "lerna run test:chrome --concurrency 1",
+    "test:chromium": "lerna run test:chromium --concurrency 1",
     "test:examples": "lerna run test --scope \"@lumino/example-*\"",
     "test:firefox": "lerna run test:firefox --concurrency 1",
     "test:webkit": "lerna run test:webkit --concurrency 1",
