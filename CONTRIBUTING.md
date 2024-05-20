@@ -18,7 +18,8 @@ yarn build:src
 
 ## Tests
 
-The tests are written using karma to simulate a browser environment.
+The tests are written using [web-test-runner](https://modern-web.dev/docs/test-runner/overview/)
+to test in browser environment (provided by [playwright](https://playwright.dev/)).
 
 To run the tests, run:
 
@@ -26,6 +27,18 @@ To run the tests, run:
 yarn build:test
 yarn test  # optionally test:chrome, test:firefox, or test:webkit
 ```
+
+You can run the tests manually to debug them by going inside one package (e.g. `packages/application`)
+and then executing `yarn test:debug`. This should open your browser
+in which you will be able to select the test file to execute.
+The outcome of the tests are displayed in the web browser console and you
+can use the web browser debug capability to debug the tests.
+
+> [!NOTE]
+> The test files are transpiled and bundled before execution. Therefore
+> when debugging in the browser, you must use the file `tests/lib/bundle.test.js`.
+> Then you will need to apply the fix to the Typescript test file and re-run
+> the test command (to trigger the bundling) to check the test is fixed.
 
 ## Examples
 

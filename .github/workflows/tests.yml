@@ -19,11 +19,11 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        browser: [chrome, firefox, webkit]
-        # exclude:
-        #   # Playwright webkit binary is not compatible with ubuntu
-        #   - os: ubuntu-latest
-        #     browser: webkit
+        browser: [chromium, firefox, webkit]
+        exclude:
+          # Playwright webkit binary is not compatible with ubuntu
+          - os: ubuntu-latest
+            browser: webkit
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
