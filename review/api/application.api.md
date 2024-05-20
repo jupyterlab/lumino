@@ -91,8 +91,7 @@ export class PluginRegistry<T = any> {
 // @public
 export namespace PluginRegistry {
     export interface IOptions {
-        allowedPlugins?: Set<string>;
-        blockedPlugins?: Set<string>;
+        validatePlugin?: (plugin: IPlugin<any, any>) => boolean;
     }
     export interface IStartOptions {
         ignorePlugins?: string[];

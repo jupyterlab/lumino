@@ -9,7 +9,7 @@
 |----------------------------------------------------------------------------*/
 import { expect } from 'chai';
 
-import { Application, PluginRegistry, type IPlugin } from '@lumino/application';
+import { Application, type IPlugin, PluginRegistry } from '@lumino/application';
 import { ContextMenu, Widget } from '@lumino/widgets';
 import { CommandRegistry } from '@lumino/commands';
 import { Token } from '@lumino/coreutils';
@@ -636,7 +636,8 @@ describe('@lumino/application', () => {
 
       it('should accept validation function', () => {
         const plugins = new PluginRegistry({
-          validatePlugin: (plugin: IPlugin<any, any>) => !['plugin1', 'plugin2'].includes(plugin.id)
+          validatePlugin: (plugin: IPlugin<any, any>) =>
+            !['plugin1', 'plugin2'].includes(plugin.id)
         });
 
         expect(plugins).to.be.instanceOf(PluginRegistry);
@@ -914,7 +915,8 @@ describe('@lumino/application', () => {
 
       it('should refuse to register invalid plugins', async () => {
         const plugins = new PluginRegistry({
-          validatePlugin: (plugin: IPlugin<any, any>) => ['id1'].includes(plugin.id)
+          validatePlugin: (plugin: IPlugin<any, any>) =>
+            ['id1'].includes(plugin.id)
         });
         expect(function () {
           plugins.registerPlugin({

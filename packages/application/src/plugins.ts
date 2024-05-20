@@ -122,7 +122,9 @@ export interface IPlugin<T, U> {
 export class PluginRegistry<T = any> {
   constructor(options: PluginRegistry.IOptions = {}) {
     if (options.validatePlugin) {
-      console.info('Plugins may be rejected by the custom validation plugin method.');
+      console.info(
+        'Plugins may be rejected by the custom validation plugin method.'
+      );
       this._validatePlugin = options.validatePlugin;
     }
   }
@@ -512,7 +514,7 @@ export namespace PluginRegistry {
      *
      * @param plugin The plugin to validate
      * @returns Whether the plugin can be registered or not.
-     * 
+     *
      * #### Notes
      * We recommend you print a console message with the reason
      * a plugin is invalid.
