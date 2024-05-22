@@ -10,5 +10,6 @@
 
 import './json.spec';
 import './mime.spec';
+import './plugins.spec';
 import './promise.spec';
 import './token.spec';

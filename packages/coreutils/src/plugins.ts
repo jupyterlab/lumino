@@ -2,7 +2,7 @@
 // Distributed under the terms of the Modified BSD License.
 import { topologicSort } from '@lumino/algorithm';
 
-import { Token } from '@lumino/coreutils';
+import { Token } from './token';
 
 /**
  * A user-defined application plugin.

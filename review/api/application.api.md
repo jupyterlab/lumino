@@ -6,7 +6,9 @@
 
 import { CommandRegistry } from '@lumino/commands';
 import { ContextMenu } from '@lumino/widgets';
+import { IPlugin } from '@lumino/coreutils';
 import { Menu } from '@lumino/widgets';
+import { PluginRegistry } from '@lumino/coreutils';
 import { Token } from '@lumino/coreutils';
 import { Widget } from '@lumino/widgets';
 
@@ -56,47 +58,6 @@ export namespace Application {
     }
 }
 
-// @public
-export interface IPlugin<T, U> {
-    activate: (app: T, ...args: any[]) => U | Promise<U>;
-    autoStart?: boolean | 'defer';
-    deactivate?: ((app: T, ...args: any[]) => void | Promise<void>) | null;
-    description?: string;
-    id: string;
-    optional?: Token<any>[];
-    provides?: Token<U> | null;
-    requires?: Token<any>[];
-}
-
-// @public
-export class PluginRegistry<T = any> {
-    constructor(options?: PluginRegistry.IOptions);
-    activatePlugin(id: string): Promise<void>;
-    activatePlugins(kind: 'startUp' | 'defer', options?: PluginRegistry.IStartOptions): Promise<void>;
-    get application(): T;
-    set application(v: any);
-    deactivatePlugin(id: string): Promise<string[]>;
-    get deferredPlugins(): string[];
-    deregisterPlugin(id: string, force?: boolean): void;
-    getPluginDescription(id: string): string;
-    hasPlugin(id: string): boolean;
-    isPluginActivated(id: string): boolean;
-    listPlugins(): string[];
-    registerPlugin(plugin: IPlugin<T, any>): void;
-    registerPlugins(plugins: IPlugin<T, any>[]): void;
-    resolveOptionalService<U>(token: Token<U>): Promise<U | null>;
-    resolveRequiredService<U>(token: Token<U>): Promise<U>;
-}
-
-// @public
-export namespace PluginRegistry {
-    export interface IOptions {
-        validatePlugin?: (plugin: IPlugin<any, any>) => boolean;
-    }
-    export interface IStartOptions {
-        ignorePlugins?: string[];
-        startPlugins?: string[];
-    }
-}
+export { IPlugin }
 
 ```
