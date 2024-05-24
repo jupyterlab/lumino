@@ -84,7 +84,7 @@ export class PluginRegistry<T = any> {
     activatePlugin(id: string): Promise<void>;
     activatePlugins(kind: 'startUp' | 'defer', options?: PluginRegistry.IStartOptions): Promise<void>;
     get application(): T;
-    set application(v: any);
+    set application(v: T);
     deactivatePlugin(id: string): Promise<string[]>;
     get deferredPlugins(): string[];
     deregisterPlugin(id: string, force?: boolean): void;
