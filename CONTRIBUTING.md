@@ -21,6 +21,12 @@ yarn build:src
 The tests are written using [web-test-runner](https://modern-web.dev/docs/test-runner/overview/)
 to test in browser environment (provided by [playwright](https://playwright.dev/)).
 
+If you have never installed playwright before or updated it, you need to install the browsers
+by executing:
+
+```bash
+yarn playwright install
+
 To run the tests, run:
 
 ```bash
