@@ -10,6 +10,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
+  # Use environment variable to tell Playwright where to install browser binaries so they can be cached for future workflow runs
   PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/pw-browsers
 
 jobs:
