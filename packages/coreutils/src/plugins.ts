@@ -142,7 +142,7 @@ export class PluginRegistry<T = any> {
   get application(): T {
     return this._application;
   }
-  set application(v: any) {
+  set application(v: T) {
     if (this._application !== null) {
       throw Error(
         'PluginRegistry.application is already set. It cannot be overridden.'
