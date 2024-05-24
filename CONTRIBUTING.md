@@ -24,7 +24,7 @@ to test in browser environment (provided by [playwright](https://playwright.dev/
 If you have never installed playwright before or updated it, you need to install the browsers
 by executing:
 
-```bash
+````bash
 yarn playwright install
 
 To run the tests, run:
@@ -32,7 +32,7 @@ To run the tests, run:
 ```bash
 yarn build:test
 yarn test  # optionally test:chromium, test:firefox, or test:webkit
-```
+````
 
 You can run the tests manually to debug them by going inside one package (e.g. `packages/application`)
 and then executing `yarn test:debug`. This should open your browser
