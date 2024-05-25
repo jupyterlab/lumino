@@ -25,7 +25,7 @@ If you have never installed playwright before or updated it, you need to install
 by executing:
 
 ```bash
-npx playwright install
+yarn playwright install
 ```
 
 To run the tests, run:

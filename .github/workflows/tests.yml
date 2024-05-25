@@ -49,7 +49,7 @@ jobs:
         run: |
             set -eux
             yarn build
-            npx playwright install ${{ matrix.browser }}
+            yarn playwright install ${{ matrix.browser }}
 
       - name: Run Tests
         run: |
