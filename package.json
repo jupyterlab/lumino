@@ -42,6 +42,7 @@
   },
   "devDependencies": {
     "@jupyterlab/buildutils": "^4.0.0",
+    "@playwright/test": "^1.44.0",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "eslint": "^8.45.0",
