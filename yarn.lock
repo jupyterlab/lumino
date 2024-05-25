@@ -423,6 +423,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@lumino/coreutils@workspace:packages/coreutils"
   dependencies:
+    "@lumino/algorithm": ^2.0.1
     "@lumino/buildutils": ^2.0.1
     "@microsoft/api-extractor": ^7.36.0
     "@rollup/plugin-commonjs": ^24.0.0

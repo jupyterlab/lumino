@@ -9,62 +9,63 @@
 |----------------------------------------------------------------------------*/
 import { expect } from 'chai';
 
-import { Application } from '@lumino/application';
-import { ContextMenu, Widget } from '@lumino/widgets';
-import { CommandRegistry } from '@lumino/commands';
-import { PluginRegistry, Token } from '@lumino/coreutils';
+import { type IPlugin, PluginRegistry, Token } from '@lumino/coreutils';
 
-describe('@lumino/application', () => {
-  describe('Application', () => {
+describe('@lumino/coreutils', () => {
+  describe('PluginRegistry', () => {
     describe('#constructor', () => {
-      it('should instantiate an application', () => {
-        const shell = new Widget();
-        const app = new Application({
-          shell
-        });
+      it('should instantiate an plugin registry without options', () => {
+        const plugins = new PluginRegistry();
 
-        expect(app).to.be.instanceOf(Application);
-        expect(app.commands).to.be.instanceOf(CommandRegistry);
-        expect(app.contextMenu).to.be.instanceOf(ContextMenu);
-        expect(app.shell).to.equal(shell);
+        expect(plugins).to.be.instanceOf(PluginRegistry);
       });
 
-      it('should accept an external plugin registry', async () => {
-        const shell = new Widget();
-        const pluginRegistry = new PluginRegistry();
-        const id1 = 'plugin1';
-        pluginRegistry.registerPlugin({
-          id: id1,
-          activate: () => {
-            // no-op
-          }
-        });
-        const id2 = 'plugin2';
-        pluginRegistry.registerPlugin({
-          id: id2,
-          activate: () => {
-            // no-op
-          }
+      it('should accept validation function', () => {
+        const plugins = new PluginRegistry({
+          validatePlugin: (plugin: IPlugin<any, any>) =>
+            !['plugin1', 'plugin2'].includes(plugin.id)
         });
 
-        const app = new Application({
-          shell,
-          pluginRegistry
-        });
+        expect(plugins).to.be.instanceOf(PluginRegistry);
+      });
+    });
 
-        await pluginRegistry.activatePlugin(id2);
+    describe('#application', () => {
+      it('should be null by default', () => {
+        const plugins = new PluginRegistry();
 
-        expect(app.hasPlugin(id1)).to.be.true;
-        expect(app.isPluginActivated(id2)).to.be.true;
+        expect(plugins.application).to.be.null;
+      });
+
+      it('should accept any object', () => {
+        const plugins = new PluginRegistry();
+
+        const app = Object.freeze({});
+        plugins.application = app;
+
+        expect(plugins.application).to.be.equal(app);
+      });
+
+      it('cannot be overridden', () => {
+        const plugins = new PluginRegistry();
+
+        const app = Object.freeze({});
+        plugins.application = app;
+
+        expect(plugins.application).to.be.equal(app);
+
+        expect(function () {
+          plugins.application = Object.freeze({});
+        }).to.throw();
       });
     });
 
     describe('#getPluginDescription', () => {
       it('should return the plugin description', () => {
-        const app = new Application({ shell: new Widget() });
+        const plugins = new PluginRegistry();
         const id = 'plugin1';
         const description = 'Plugin 1 description';
-        app.registerPlugin({
+        plugins.registerPlugin({
           id,
           description,
           activate: () => {
@@ -72,134 +73,134 @@ describe('@lumino/application', () => {
           }
         });
 
-        expect(app.getPluginDescription(id)).to.equal(description);
+        expect(plugins.getPluginDescription(id)).to.equal(description);
       });
 
       it('should return an empty string if plugin has no description', () => {
-        const app = new Application({ shell: new Widget() });
+        const plugins = new PluginRegistry();
         const id = 'plugin1';
-        app.registerPlugin({
+        plugins.registerPlugin({
           id,
           activate: () => {
             // no-op
           }
         });
 
-        expect(app.getPluginDescription(id)).to.equal('');
+        expect(plugins.getPluginDescription(id)).to.equal('');
       });
 
       it('should return an empty string if plugin does not exist', () => {
-        const app = new Application({ shell: new Widget() });
+        const plugins = new PluginRegistry();
         const id = 'plugin1';
 
-        expect(app.getPluginDescription(id)).to.equal('');
+        expect(plugins.getPluginDescription(id)).to.equal('');
       });
     });
 
     describe('#hasPlugin', () => {
       it('should be true for registered plugin', () => {
-        const app = new Application({ shell: new Widget() });
+        const pluginRegistry = new PluginRegistry();
         const id = 'plugin1';
-        app.registerPlugin({
+        pluginRegistry.registerPlugin({
           id,
           activate: () => {
             // no-op
           }
         });
 
-        expect(app.hasPlugin(id)).to.be.true;
+        expect(pluginRegistry.hasPlugin(id)).to.be.true;
       });
 
       it('should be false for unregistered plugin', () => {
-        const app = new Application({ shell: new Widget() });
+        const plugins = new PluginRegistry();
         const id = 'plugin1';
-        app.registerPlugin({
+        plugins.registerPlugin({
           id,
           activate: () => {
             // no-op
           }
         });
 
-        expect(app.hasPlugin('plugin2')).to.be.false;
+        expect(plugins.hasPlugin('plugin2')).to.be.false;
       });
     });
 
     describe('#isPluginActivated', () => {
       it('should be true for activated plugin', async () => {
-        const app = new Application({ shell: new Widget() });
+        const plugins = new PluginRegistry();
         const id = 'plugin1';
-        app.registerPlugin({
+        plugins.registerPlugin({
           id,
           activate: () => {
             // no-op
           }
         });
-        await app.activatePlugin(id);
-        expect(app.isPluginActivated(id)).to.be.true;
+        await plugins.activatePlugin(id);
+        expect(plugins.isPluginActivated(id)).to.be.true;
       });
 
       it('should be true for an autoStart plugin', async () => {
-        const app = new Application({ shell: new Widget() });
+        const plugins = new PluginRegistry();
         const id = 'plugin1';
-        app.registerPlugin({
+        plugins.registerPlugin({
           id,
           activate: () => {
             // no-op
           },
           autoStart: true
         });
-        await app.start();
-        expect(app.isPluginActivated(id)).to.be.true;
+        await plugins.activatePlugins('startUp');
+        expect(plugins.isPluginActivated(id)).to.be.true;
       });
 
       it('should be false for not activated plugin', async () => {
-        const app = new Application({ shell: new Widget() });
+        const plugins = new PluginRegistry();
         const id = 'plugin1';
-        app.registerPlugin({
+        plugins.registerPlugin({
           id,
           activate: () => {
             // no-op
           }
         });
-        expect(app.isPluginActivated(id)).to.be.false;
+        expect(plugins.isPluginActivated(id)).to.be.false;
       });
 
       it('should be false for deferred plugin when application start', async () => {
-        const app = new Application({ shell: new Widget() });
+        const plugins = new PluginRegistry();
         const id = 'plugin1';
-        app.registerPlugin({
+        plugins.registerPlugin({
           id,
           activate: () => {
             // no-op
           },
           autoStart: 'defer'
         });
-        await app.start();
-        expect(app.isPluginActivated(id)).to.be.false;
-        await app.activateDeferredPlugins();
-        expect(app.isPluginActivated(id)).to.be.true;
+        await plugins.activatePlugins('startUp');
+        expect(plugins.isPluginActivated(id)).to.be.false;
+        await plugins.activatePlugins('defer');
+        expect(plugins.isPluginActivated(id)).to.be.true;
       });
 
       it('should be false for unregistered plugin', async () => {
-        const app = new Application({ shell: new Widget() });
+        const plugins = new PluginRegistry();
         const id = 'plugin1';
-        app.registerPlugin({
+        plugins.registerPlugin({
           id,
           activate: () => {
             // no-op
           }
         });
-        await app.activatePlugin(id);
-        expect(app.isPluginActivated('no-registered')).to.be.false;
+        await plugins.activatePlugin(id);
+        expect(plugins.isPluginActivated('no-registered')).to.be.false;
       });
     });
 
     describe('#listPlugins', () => {
       it('should list the registered plugin', () => {
-        const app = new Application({ shell: new Widget() });
+        const plugins = new PluginRegistry();
         const ids = ['plugin1', 'plugin2'];
         ids.forEach(id => {
-          app.registerPlugin({
+          plugins.registerPlugin({
             id,
             activate: () => {
               // no-op
@@ -207,28 +208,28 @@ describe('@lumino/application', () => {
           });
         });
 
-        expect(app.listPlugins()).to.deep.equal(ids);
+        expect(plugins.listPlugins()).to.deep.equal(ids);
       });
     });
 
     describe('#registerPlugin', () => {
       it('should register a plugin', () => {
-        const app = new Application({ shell: new Widget() });
+        const plugins = new PluginRegistry();
         const id = 'plugin1';
-        app.registerPlugin({
+        plugins.registerPlugin({
           id,
           activate: () => {
             // no-op
           }
         });
 
-        expect(app.hasPlugin(id)).to.be.true;
+        expect(plugins.hasPlugin(id)).to.be.true;
       });
 
       it('should not register an already registered plugin', () => {
-        const app = new Application({ shell: new Widget() });
+        const plugins = new PluginRegistry();
         const id = 'plugin1';
-        app.registerPlugin({
+        plugins.registerPlugin({
           id,
           activate: () => {
             // no-op
@@ -236,7 +237,7 @@ describe('@lumino/application', () => {
         });
 
         expect(function () {
-          app.registerPlugin({
+          plugins.registerPlugin({
             id,
             activate: () => {
               // no-op
@@ -246,14 +247,14 @@ describe('@lumino/application', () => {
       });
 
       it('should not register a plugin introducing a cycle', () => {
-        const app = new Application({ shell: new Widget() });
+        const plugins = new PluginRegistry();
         const id1 = 'plugin1';
         const token1 = new Token<any>(id1);
         const id2 = 'plugin2';
         const token2 = new Token<any>(id2);
         const id3 = 'plugin3';
         const token3 = new Token<any>(id3);
-        app.registerPlugin({
+        plugins.registerPlugin({
           id: id1,
           activate: () => {
             // no-op
@@ -261,7 +262,7 @@ describe('@lumino/application', () => {
           requires: [token3],
           provides: token1
         });
-        app.registerPlugin({
+        plugins.registerPlugin({
           id: id2,
           activate: () => {
             // no-op
@@ -271,7 +272,7 @@ describe('@lumino/application', () => {
         });
 
         expect(function () {
-          app.registerPlugin({
+          plugins.registerPlugin({
             id: id3,
             activate: () => {
               // no-op
@@ -283,7 +284,7 @@ describe('@lumino/application', () => {
       });
 
       it('should register a plugin defined by a class', () => {
-        const app = new Application({ shell: new Widget() });
+        const plugins = new PluginRegistry();
         const id = 'plugin1';
         const plugin = new (class {
           readonly id = id;
@@ -293,81 +294,102 @@ describe('@lumino/application', () => {
             expect(this.id).to.equal(id);
           };
         })();
-        app.registerPlugin(plugin);
+        plugins.registerPlugin(plugin);
 
-        expect(app.hasPlugin(id)).to.be.true;
+        expect(plugins.hasPlugin(id)).to.be.true;
+      });
+
+      it('should refuse to register invalid plugins', async () => {
+        const plugins = new PluginRegistry({
+          validatePlugin: (plugin: IPlugin<any, any>) =>
+            ['id1'].includes(plugin.id)
+        });
+        expect(function () {
+          plugins.registerPlugin({
+            id: 'id',
+            activate: () => {
+              /* no-op */
+            }
+          });
+        }).to.throw();
+        plugins.registerPlugin({
+          id: 'id1',
+          activate: () => {
+            /* no-op */
+          }
+        });
       });
     });
 
     describe('#deregisterPlugin', () => {
       it('should deregister a deactivated registered plugin', () => {
-        const app = new Application({ shell: new Widget() });
+        const plugins = new PluginRegistry();
         const id = 'plugin1';
-        app.registerPlugin({
+        plugins.registerPlugin({
           id,
           activate: () => {
             // no-op
           }
         });
 
-        app.deregisterPlugin(id);
+        plugins.deregisterPlugin(id);
 
-        expect(app.hasPlugin(id)).to.be.false;
+        expect(plugins.hasPlugin(id)).to.be.false;
       });
 
       it('should not deregister an activated registered plugin', async () => {
-        const app = new Application({ shell: new Widget() });
+        const plugins = new PluginRegistry();
         const id = 'plugin1';
-        app.registerPlugin({
+        plugins.registerPlugin({
           id,
           activate: () => {
             // no-op
           }
         });
 
-        await app.activatePlugin(id);
+        await plugins.activatePlugin(id);
 
         expect(() => {
-          app.deregisterPlugin(id);
+          plugins.deregisterPlugin(id);
         }).to.throw();
-        expect(app.hasPlugin(id)).to.be.true;
+        expect(plugins.hasPlugin(id)).to.be.true;
       });
 
       it('should force deregister an activated registered plugin', async () => {
-        const app = new Application({ shell: new Widget() });
+        const plugins = new PluginRegistry();
         const id = 'plugin1';
-        app.registerPlugin({
+        plugins.registerPlugin({
           id,
           activate: () => {
             // no-op
           }
         });
 
-        await app.activatePlugin(id);
+        await plugins.activatePlugin(id);
 
-        app.deregisterPlugin(id, true);
-        expect(app.hasPlugin(id)).to.be.false;
+        plugins.deregisterPlugin(id, true);
+        expect(plugins.hasPlugin(id)).to.be.false;
       });
     });
 
     describe('#activatePlugin', () => {
       it('should activate a registered plugin', async () => {
-        const app = new Application({ shell: new Widget() });
+        const plugins = new PluginRegistry();
         const id = 'plugin1';
-        app.registerPlugin({
+        plugins.registerPlugin({
           id,
           activate: () => {
             // no-op
           }
         });
-        await app.activatePlugin(id);
-        expect(app.isPluginActivated(id)).to.be.true;
+        await plugins.activatePlugin(id);
+        expect(plugins.isPluginActivated(id)).to.be.true;
       });
 
       it('should throw an error when activating a unregistered plugin', async () => {
-        const app = new Application({ shell: new Widget() });
+        const plugins = new PluginRegistry();
         const id = 'plugin1';
-        app.registerPlugin({
+        plugins.registerPlugin({
           id,
           activate: () => {
             // no-op
@@ -375,7 +397,7 @@ describe('@lumino/application', () => {
         });
 
         try {
-          await app.activatePlugin('other-id');
+          await plugins.activatePlugin('other-id');
         } catch (reason) {
           return;
         }
@@ -384,37 +406,37 @@ describe('@lumino/application', () => {
       });
 
       it('should tolerate activating an activated plugin', async () => {
-        const app = new Application({ shell: new Widget() });
+        const plugins = new PluginRegistry();
         const id = 'plugin1';
-        app.registerPlugin({
+        plugins.registerPlugin({
           id,
           activate: () => {
             // no-op
           }
         });
-        await app.activatePlugin(id);
+        await plugins.activatePlugin(id);
 
-        await app.activatePlugin(id);
+        await plugins.activatePlugin(id);
 
-        expect(app.isPluginActivated(id)).to.be.true;
+        expect(plugins.isPluginActivated(id)).to.be.true;
       });
 
       it('should activate all required services', async () => {
-        const app = new Application({ shell: new Widget() });
+        const plugins = new PluginRegistry();
         const id1 = 'plugin1';
         const token1 = new Token<any>(id1);
         const id2 = 'plugin2';
         const token2 = new Token<any>(id2);
         const id3 = 'plugin3';
         const token3 = new Token<any>(id3);
-        app.registerPlugin({
+        plugins.registerPlugin({
           id: id1,
           activate: () => {
             // no-op
           },
           provides: token1
         });
-        app.registerPlugin({
+        plugins.registerPlugin({
           id: id2,
           activate: () => {
             // no-op
@@ -422,7 +444,7 @@ describe('@lumino/application', () => {
           requires: [token1],
           provides: token2
         });
-        app.registerPlugin({
+        plugins.registerPlugin({
           id: id3,
           activate: () => {
             // no-op
@@ -431,36 +453,36 @@ describe('@lumino/application', () => {
           provides: token3
         });
 
-        await app.activatePlugin(id3);
+        await plugins.activatePlugin(id3);
 
-        expect(app.isPluginActivated(id3)).to.be.true;
-        expect(app.isPluginActivated(id1)).to.be.true;
-        expect(app.isPluginActivated(id2)).to.be.true;
+        expect(plugins.isPluginActivated(id3)).to.be.true;
+        expect(plugins.isPluginActivated(id1)).to.be.true;
+        expect(plugins.isPluginActivated(id2)).to.be.true;
       });
 
       it('should try activating all optional services', async () => {
-        const app = new Application({ shell: new Widget() });
+        const plugins = new PluginRegistry();
         const id1 = 'plugin1';
         const token1 = new Token<any>(id1);
         const id2 = 'plugin2';
         const token2 = new Token<any>(id2);
         const id3 = 'plugin3';
         const token3 = new Token<any>(id3);
-        app.registerPlugin({
+        plugins.registerPlugin({
           id: id1,
           activate: () => {
             // no-op
           },
           provides: token1
         });
-        app.registerPlugin({
+        plugins.registerPlugin({
           id: id2,
           activate: () => {
             throw new Error(`Force failure during '${id2}' activation`);
           },
           provides: token2
         });
-        app.registerPlugin({
+        plugins.registerPlugin({
           id: id3,
           activate: () => {
             // no-op
@@ -469,20 +491,20 @@ describe('@lumino/application', () => {
           provides: token3
         });
 
-        await app.activatePlugin(id3);
+        await plugins.activatePlugin(id3);
 
-        expect(app.isPluginActivated(id3)).to.be.true;
-        expect(app.isPluginActivated(id1)).to.be.true;
-        expect(app.isPluginActivated(id2)).to.be.false;
+        expect(plugins.isPluginActivated(id3)).to.be.true;
+        expect(plugins.isPluginActivated(id1)).to.be.true;
+        expect(plugins.isPluginActivated(id2)).to.be.false;
       });
     });
 
     describe('#deactivatePlugin', () => {
       it('should call deactivate on the plugin', async () => {
-        const app = new Application({ shell: new Widget() });
+        const plugins = new PluginRegistry();
         const id = 'plugin1';
         let deactivated: boolean | null = null;
-        app.registerPlugin({
+        plugins.registerPlugin({
           id,
           activate: () => {
             deactivated = false;
@@ -492,30 +514,30 @@ describe('@lumino/application', () => {
           }
         });
 
-        await app.activatePlugin(id);
+        await plugins.activatePlugin(id);
 
         expect(deactivated).to.be.false;
 
-        const others = await app.deactivatePlugin(id);
+        const others = await plugins.deactivatePlugin(id);
 
         expect(deactivated).to.be.true;
         expect(others.length).to.equal(0);
       });
 
       it('should throw an error if the plugin does not support deactivation', async () => {
-        const app = new Application({ shell: new Widget() });
+        const plugins = new PluginRegistry();
         const id = 'plugin1';
-        app.registerPlugin({
+        plugins.registerPlugin({
           id,
           activate: () => {
             // no-op
           }
         });
 
-        await app.activatePlugin(id);
+        await plugins.activatePlugin(id);
 
         try {
-          await app.deactivatePlugin(id);
+          await plugins.deactivatePlugin(id);
         } catch (r) {
           return;
         }
@@ -524,14 +546,14 @@ describe('@lumino/application', () => {
       });
 
       it('should throw an error if the plugin has dependants not support deactivation', async () => {
-        const app = new Application({ shell: new Widget() });
+        const plugins = new PluginRegistry();
         const id1 = 'plugin1';
         const token1 = new Token<any>(id1);
         const id2 = 'plugin2';
         const token2 = new Token<any>(id2);
         const id3 = 'plugin3';
         const token3 = new Token<any>(id3);
-        app.registerPlugin({
+        plugins.registerPlugin({
           id: id1,
           activate: () => {
             // no-op
@@ -541,7 +563,7 @@ describe('@lumino/application', () => {
           },
           provides: token1
         });
-        app.registerPlugin({
+        plugins.registerPlugin({
           id: id2,
           activate: () => {
             // no-op
@@ -552,7 +574,7 @@ describe('@lumino/application', () => {
           requires: [token1],
           provides: token2
         });
-        app.registerPlugin({
+        plugins.registerPlugin({
           id: id3,
           activate: () => {
             // no-op
@@ -561,10 +583,10 @@ describe('@lumino/application', () => {
           provides: token3
         });
 
-        await app.activatePlugin(id3);
+        await plugins.activatePlugin(id3);
 
         try {
-          await app.deactivatePlugin(id1);
+          await plugins.deactivatePlugin(id1);
         } catch (r) {
           return;
         }
@@ -573,7 +595,7 @@ describe('@lumino/application', () => {
       });
 
       it('should deactivate all dependents (optional or not)', async () => {
-        const app = new Application({ shell: new Widget() });
+        const plugins = new PluginRegistry();
         let deactivated: boolean | null = null;
         const id1 = 'plugin1';
         const token1 = new Token<any>(id1);
@@ -581,7 +603,7 @@ describe('@lumino/application', () => {
         const token2 = new Token<any>(id2);
         const id3 = 'plugin3';
         const token3 = new Token<any>(id3);
-        app.registerPlugin({
+        plugins.registerPlugin({
           id: id1,
           activate: () => {
             deactivated = false;
@@ -591,7 +613,7 @@ describe('@lumino/application', () => {
           },
           provides: token1
         });
-        app.registerPlugin({
+        plugins.registerPlugin({
           id: id2,
           activate: () => {
             // no-op
@@ -602,7 +624,7 @@ describe('@lumino/application', () => {
           requires: [token1],
           provides: token2
         });
-        app.registerPlugin({
+        plugins.registerPlugin({
           id: id3,
           activate: () => {
             // no-op
@@ -614,14 +636,14 @@ describe('@lumino/application', () => {
           provides: token3
         });
 
-        await app.activatePlugin(id3);
+        await plugins.activatePlugin(id3);
 
-        const others = await app.deactivatePlugin(id1);
+        const others = await plugins.deactivatePlugin(id1);
 
         expect(deactivated).to.be.true;
         expect(others).to.deep.equal([id3, id2]);
-        expect(app.isPluginActivated(id2)).to.be.false;
-        expect(app.isPluginActivated(id3)).to.be.false;
+        expect(plugins.isPluginActivated(id2)).to.be.false;
+        expect(plugins.isPluginActivated(id3)).to.be.false;
       });
     });
   });

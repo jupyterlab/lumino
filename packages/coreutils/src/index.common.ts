@@ -9,5 +9,6 @@
 |----------------------------------------------------------------------------*/
 export * from './json';
 export * from './mime';
+export * from './plugins';
 export * from './promise';
 export * from './token';

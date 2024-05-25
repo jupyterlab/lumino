@@ -6,7 +6,9 @@
 
 import { CommandRegistry } from '@lumino/commands';
 import { ContextMenu } from '@lumino/widgets';
+import { IPlugin } from '@lumino/coreutils';
 import { Menu } from '@lumino/widgets';
+import { PluginRegistry } from '@lumino/coreutils';
 import { Token } from '@lumino/coreutils';
 import { Widget } from '@lumino/widgets';
 
@@ -31,6 +33,7 @@ export class Application<T extends Widget = Widget> {
     hasPlugin(id: string): boolean;
     isPluginActivated(id: string): boolean;
     listPlugins(): string[];
+    protected pluginRegistry: PluginRegistry;
     registerPlugin(plugin: IPlugin<this, any>): void;
     registerPlugins(plugins: IPlugin<this, any>[]): void;
     resolveOptionalService<U>(token: Token<U>): Promise<U | null>;
@@ -42,8 +45,9 @@ export class Application<T extends Widget = Widget> {
 
 // @public
 export namespace Application {
-    export interface IOptions<T extends Widget> {
+    export interface IOptions<T extends Widget> extends PluginRegistry.IOptions {
         contextMenuRenderer?: Menu.IRenderer;
+        pluginRegistry?: PluginRegistry;
         shell: T;
     }
     export interface IStartOptions {
@@ -54,18 +58,6 @@ export namespace Application {
     }
 }
 
-// @public
-export interface IPlugin<T extends Application, U> {
-    activate: (app: T, ...args: any[]) => U | Promise<U>;
-    autoStart?: boolean | 'defer';
-    deactivate?: ((app: T, ...args: any[]) => void | Promise<void>) | null;
-    description?: string;
-    id: string;
-    optional?: Token<any>[];
-    provides?: Token<U> | null;
-    requires?: Token<any>[];
-}
-
-// (No @packageDocumentation comment for this package)
+export { IPlugin }
 
 ```
