@@ -13,7 +13,7 @@ import { Token } from '@lumino/coreutils';
 import { Widget } from '@lumino/widgets';
 
 // @public
-export class Application<T extends Widget = Widget> {
+export class Application<T extends Widget | HTMLElement = Widget> {
     constructor(options: Application.IOptions<T>);
     activateDeferredPlugins(): Promise<void>;
     activatePlugin(id: string): Promise<void>;
@@ -34,8 +34,8 @@ export class Application<T extends Widget = Widget> {
     isPluginActivated(id: string): boolean;
     listPlugins(): string[];
     protected pluginRegistry: PluginRegistry;
-    registerPlugin(plugin: IPlugin<this, any>): void;
-    registerPlugins(plugins: IPlugin<this, any>[]): void;
+    registerPlugin(plugin: IPlugin<Application<Widget | HTMLElement>, any>): void;
+    registerPlugins(plugins: IPlugin<Application<Widget | HTMLElement>, any>[]): void;
     resolveOptionalService<U>(token: Token<U>): Promise<U | null>;
     resolveRequiredService<U>(token: Token<U>): Promise<U>;
     readonly shell: T;
@@ -45,7 +45,9 @@ export class Application<T extends Widget = Widget> {
 
 // @public
 export namespace Application {
-    export interface IOptions<T extends Widget> extends PluginRegistry.IOptions {
+    export interface IOptions<T extends Widget | HTMLElement> extends PluginRegistry.IOptions {
+        commands?: CommandRegistry;
+        contextMenuFactory?: (options: ContextMenu.IOptions) => ContextMenu;
         contextMenuRenderer?: Menu.IRenderer;
         pluginRegistry?: PluginRegistry;
         shell: T;
