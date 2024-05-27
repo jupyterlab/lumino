@@ -51,11 +51,14 @@ export class Application<T extends Widget | HTMLElement = Widget> {
     this.pluginRegistry.application = this;
 
     // Initialize the application state.
-    this.commands = new CommandRegistry();
-    this.contextMenu = new ContextMenu({
+    this.commands = options.commands ?? new CommandRegistry();
+    const contextMenuOptions = {
       commands: this.commands,
       renderer: options.contextMenuRenderer
-    });
+    };
+    this.contextMenu = options.contextMenuFactory
+      ? options.contextMenuFactory(contextMenuOptions)
+      : new ContextMenu(contextMenuOptions);
     this.shell = options.shell;
     this._hasShellWidget = this.shell instanceof Widget;
   }
@@ -197,7 +200,9 @@ export class Application<T extends Widget | HTMLElement = Widget> {
    * If the plugin provides a service which has already been provided
    * by another plugin, the new service will override the old service.
    */
-  registerPlugin(plugin: IPlugin<Application<Widget | HTMLElement>, any>): void {
+  registerPlugin(
+    plugin: IPlugin<Application<Widget | HTMLElement>, any>
+  ): void {
     this.pluginRegistry.registerPlugin(plugin);
   }
 
@@ -209,7 +214,9 @@ export class Application<T extends Widget | HTMLElement = Widget> {
    * #### Notes
    * This calls `registerPlugin()` for each of the given plugins.
    */
-  registerPlugins(plugins: IPlugin<Application<Widget | HTMLElement>, any>[]): void {
+  registerPlugins(
+    plugins: IPlugin<Application<Widget | HTMLElement>, any>[]
+  ): void {
     this.pluginRegistry.registerPlugins(plugins);
   }
 
@@ -340,14 +347,15 @@ export class Application<T extends Widget | HTMLElement = Widget> {
    * A subclass may reimplement this method as needed.
    */
   protected attachShell(id: string): void {
-    if (this._hasShellWidget){
-    Widget.attach(
-      this.shell as Widget,
-      (id && document.getElementById(id)) || document.body
-    );} else {
+    if (this._hasShellWidget) {
+      Widget.attach(
+        this.shell as Widget,
+        (id && document.getElementById(id)) || document.body
+      );
+    } else {
       const host = (id && document.getElementById(id)) || document.body;
-      if(!host.contains(this.shell as HTMLElement)) {
-        host.appendChild(this.shell as HTMLElement)
+      if (!host.contains(this.shell as HTMLElement)) {
+        host.appendChild(this.shell as HTMLElement);
       }
     }
   }
@@ -426,7 +434,9 @@ export class Application<T extends Widget | HTMLElement = Widget> {
    * A subclass may reimplement this method as needed.
    */
   protected evtResize(event: Event): void {
-    if(this._hasShellWidget){(this.shell as Widget).update()}
+    if (this._hasShellWidget) {
+      (this.shell as Widget).update();
+    }
   }
 
   /**
@@ -440,13 +450,14 @@ export class Application<T extends Widget | HTMLElement = Widget> {
 }
 
 /**
- * The namespace for the `Application` class statics.
+ * The namespace for the {@link Application} class statics.
  */
 export namespace Application {
   /**
    * An options object for creating an application.
    */
-  export interface IOptions<T extends Widget | HTMLElement> extends PluginRegistry.IOptions {
+  export interface IOptions<T extends Widget | HTMLElement>
+    extends PluginRegistry.IOptions {
     /**
      * The shell element to use for the application.
      *
@@ -454,6 +465,16 @@ export namespace Application {
      * and the application will attach the widget to the DOM.
      */
     shell: T;
+
+    /**
+     * A custom commands registry.
+     */
+    commands?: CommandRegistry;
+
+    /**
+     * A custom context menu factory.
+     */
+    contextMenuFactory?: (options: ContextMenu.IOptions) => ContextMenu;
 
     /**
      * A custom renderer for the context menu.

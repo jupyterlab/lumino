@@ -69,6 +69,27 @@ describe('@lumino/application', () => {
         expect(app.contextMenu).to.be.instanceOf(ContextMenu);
         expect(app.shell).to.equal(shell);
       });
+
+      it('should instantiate an application with a custom command registry', () => {
+        const commands = new (class extends CommandRegistry {})();
+
+        const app = new Application({ shell: new Widget(), commands });
+
+        expect(app.commands).to.be.equal(commands);
+      });
+
+      it('should instantiate an application with a custom context menu factory', () => {
+        const contextMenuFactory = (options: ContextMenu.IOptions) =>
+          new (class extends ContextMenu {})(options);
+
+        const app = new Application({
+          shell: new Widget(),
+          contextMenuFactory
+        });
+
+        expect(app.contextMenu).to.be.instanceOf(ContextMenu);
+        expect(app.contextMenu.menu.commands).to.be.equal(app.commands);
+      });
     });
 
     describe('#getPluginDescription', () => {
@@ -647,7 +668,7 @@ describe('@lumino/application', () => {
         await app.start();
 
         expect(document.body.contains(shell.node)).to.be.true;
-      })
+      });
 
       it('should attach the shell HTML element to the document body', async () => {
         const shell = document.createElement('div');
@@ -658,7 +679,7 @@ describe('@lumino/application', () => {
         await app.start();
 
         expect(document.body.contains(shell)).to.be.true;
-      })
-    })
+      });
+    });
   });
 });
