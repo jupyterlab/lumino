@@ -734,8 +734,8 @@ describe('@lumino/widgets', () => {
           let mouseEvent = new MouseEvent('mousedown', {
             bubbles,
             cancelable: true,
-            clientX: rect.left,
-            clientY: rect.top
+            clientX: rect.left + 1,
+            clientY: rect.top + 1
           });
           expect(bar.activeIndex).to.equal(0);
           bar.node.dispatchEvent(mouseEvent);
@@ -755,8 +755,8 @@ describe('@lumino/widgets', () => {
           let mouseEvent = new MouseEvent('mousedown', {
             bubbles,
             cancelable: true,
-            clientX: rect.left,
-            clientY: rect.top
+            clientX: rect.left + 1,
+            clientY: rect.top + 1
           });
           bar.node.dispatchEvent(mouseEvent);
           expect(bar.activeIndex).to.equal(0);
@@ -779,8 +779,8 @@ describe('@lumino/widgets', () => {
             new MouseEvent('mousedown', {
               bubbles,
               button: 1,
-              clientX: rect.left,
-              clientY: rect.top
+              clientX: rect.left + 1,
+              clientY: rect.top + 1
             })
           );
           expect(bar.activeIndex).to.equal(0);
@@ -801,8 +801,8 @@ describe('@lumino/widgets', () => {
             new MouseEvent('mousedown', {
               bubbles,
               button: 0,
-              clientX: rect.left,
-              clientY: rect.top
+              clientX: rect.left + 1,
+              clientY: rect.top + 1
             })
           );
           expect(bar.activeIndex).to.equal(-1);
@@ -822,7 +822,7 @@ describe('@lumino/widgets', () => {
             new MouseEvent('mousemove', {
               bubbles,
               clientX: rect.left + 1,
-              clientY: rect.top
+              clientY: rect.top + 1
             })
           );
           expect(bar.activeIndex).to.equal(1);
