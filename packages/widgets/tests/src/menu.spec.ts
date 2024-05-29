@@ -813,8 +813,8 @@ describe('@lumino/widgets', () => {
           menu.node.dispatchEvent(
             new MouseEvent('mousemove', {
               bubbles,
-              clientX: rect.left,
-              clientY: rect.top
+              clientX: rect.left + 1,
+              clientY: rect.top + 1
             })
           );
           expect(menu.activeIndex).to.equal(0);
@@ -831,8 +831,8 @@ describe('@lumino/widgets', () => {
           menu.node.dispatchEvent(
             new MouseEvent('mousemove', {
               bubbles,
-              clientX: rect.left,
-              clientY: rect.top
+              clientX: rect.left + 1,
+              clientY: rect.top + 1
             })
           );
           expect(menu.activeIndex).to.equal(0);
@@ -882,8 +882,8 @@ describe('@lumino/widgets', () => {
           menu.node.dispatchEvent(
             new MouseEvent('mousemove', {
               bubbles,
-              clientX: rect.left,
-              clientY: rect.top
+              clientX: rect.left + 1,
+              clientY: rect.top + 1
             })
           );
           expect(menu.activeIndex).to.equal(0);
@@ -908,8 +908,8 @@ describe('@lumino/widgets', () => {
           menu.node.dispatchEvent(
             new MouseEvent('mousedown', {
               bubbles,
-              clientX: rect.left,
-              clientY: rect.top
+              clientX: rect.left + 1,
+              clientY: rect.top + 1
             })
           );
           expect(menu.isAttached).to.equal(true);
