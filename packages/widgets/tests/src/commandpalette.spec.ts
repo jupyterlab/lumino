@@ -125,7 +125,7 @@ describe('@lumino/widgets', () => {
             console.log('Cut');
           }
         });
-      
+
         commands.addCommand('example:copy', {
           label: 'Copy File',
           mnemonic: 0,
@@ -134,7 +134,7 @@ describe('@lumino/widgets', () => {
             console.log('Copy');
           }
         });
-      
+
         commands.addCommand('example:paste', {
           label: 'Paste',
           mnemonic: 0,
@@ -143,7 +143,7 @@ describe('@lumino/widgets', () => {
             console.log('Paste');
           }
         });
-      
+
         commands.addCommand('example:new-tab', {
           label: 'New Tab',
           mnemonic: 0,
@@ -152,7 +152,7 @@ describe('@lumino/widgets', () => {
             console.log('New Tab');
           }
         });
-      
+
         commands.addCommand('example:close-tab', {
           label: 'Close Tab',
           mnemonic: 2,
@@ -161,7 +161,7 @@ describe('@lumino/widgets', () => {
             console.log('Close Tab');
           }
         });
-      
+
         commands.addCommand('example:save-on-exit', {
           label: 'Save on Exit',
           mnemonic: 0,
@@ -170,14 +170,14 @@ describe('@lumino/widgets', () => {
             console.log('Save on Exit');
           }
         });
-      
+
         commands.addCommand('example:open-task-manager', {
           label: 'Task Manager',
           mnemonic: 5,
           isEnabled: () => false,
           execute: () => {}
         });
-      
+
         commands.addCommand('example:close', {
           label: 'Close',
           mnemonic: 0,
@@ -186,107 +186,107 @@ describe('@lumino/widgets', () => {
             console.log('Close');
           }
         });
-      
+
         commands.addCommand('example:one', {
           label: 'One',
           execute: () => {
             console.log('One');
           }
         });
-      
+
         commands.addCommand('example:two', {
           label: 'Two',
           execute: () => {
             console.log('Two');
           }
         });
-      
+
         commands.addCommand('example:three', {
           label: 'Three',
           execute: () => {
             console.log('Three');
           }
         });
-      
+
         commands.addCommand('example:four', {
           label: 'Four',
           execute: () => {
             console.log('Four');
           }
         });
-      
+
         commands.addCommand('example:black', {
           label: 'Black',
           execute: () => {
             console.log('Black');
           }
         });
-      
+
         commands.addCommand('example:clear-cell', {
           label: 'Clear Cell',
           execute: () => {
             console.log('Clear Cell');
           }
         });
-      
+
         commands.addCommand('example:cut-cells', {
           label: 'Cut Cell(s)',
           execute: () => {
             console.log('Cut Cell(s)');
           }
         });
-      
+
         commands.addCommand('example:run-cell', {
           label: 'Run Cell',
           execute: () => {
             console.log('Run Cell');
           }
         });
-      
+
         commands.addCommand('example:cell-test', {
           label: 'Cell Test',
           execute: () => {
             console.log('Cell Test');
           }
         });
-      
+
         commands.addCommand('notebook:new', {
           label: 'New Notebook',
           execute: () => {
             console.log('New Notebook');
           }
         });
-      
+
         commands.addKeyBinding({
           keys: ['Accel X'],
           selector: 'body',
           command: 'example:cut'
         });
-      
+
         commands.addKeyBinding({
           keys: ['Accel C'],
           selector: 'body',
           command: 'example:copy'
         });
-      
+
         commands.addKeyBinding({
           keys: ['Accel V'],
           selector: 'body',
           command: 'example:paste'
         });
-      
+
         commands.addKeyBinding({
           keys: ['Accel J', 'Accel J'],
           selector: 'body',
           command: 'example:new-tab'
         });
-      
+
         commands.addKeyBinding({
           keys: ['Accel M'],
           selector: 'body',
           command: 'example:open-task-manager'
         });
-            
+
         let palette = new CommandPalette({ commands });
         palette.addItem({ command: 'example:cut', category: 'Edit' });
         palette.addItem({ command: 'example:copy', category: 'Edit' });
@@ -299,7 +299,10 @@ describe('@lumino/widgets', () => {
         palette.addItem({ command: 'example:new-tab', category: 'File' });
         palette.addItem({ command: 'example:close-tab', category: 'File' });
         palette.addItem({ command: 'example:save-on-exit', category: 'File' });
-        palette.addItem({ command: 'example:open-task-manager', category: 'File' });
+        palette.addItem({
+          command: 'example:open-task-manager',
+          category: 'File'
+        });
         palette.addItem({ command: 'example:close', category: 'File' });
         palette.addItem({
           command: 'example:clear-cell',
@@ -327,15 +330,23 @@ describe('@lumino/widgets', () => {
         const children = palette.contentNode.children;
         expect(children.length).to.equal(7);
         expect(children[0].textContent).to.equal('Notebook Cell Operations');
-        expect(children[1].getAttribute('data-command')).to.equal('example:clear-cell');
+        expect(children[1].getAttribute('data-command')).to.equal(
+          'example:clear-cell'
+        );
         // The next match should be from a different category
         expect(children[2].textContent).to.equal('File');
-        expect(children[3].getAttribute('data-command')).to.equal('example:close-tab');
+        expect(children[3].getAttribute('data-command')).to.equal(
+          'example:close-tab'
+        );
         // The next match should be the same as in a previous category
         expect(children[4].textContent).to.equal('Notebook Cell Operations');
-        expect(children[5].getAttribute('data-command')).to.equal('example:cut-cells');
+        expect(children[5].getAttribute('data-command')).to.equal(
+          'example:cut-cells'
+        );
         // The next match has the same category as the previous one did, so the header is not repeated
-        expect(children[6].getAttribute('data-command')).to.equal('example:run-cell');
+        expect(children[6].getAttribute('data-command')).to.equal(
+          'example:run-cell'
+        );
       });
     });
 
