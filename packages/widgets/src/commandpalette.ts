@@ -1386,7 +1386,7 @@ namespace Private {
       let category = item.category;
 
       // Is this the same category as the preceding result?
-      if (i === 0 || category !== scores[i-1].item.category) {
+      if (i === 0 || category !== scores[i - 1].item.category) {
         // Add the header result for the category.
         results.push({ type: 'header', category, indices: categoryIndices });
       }
