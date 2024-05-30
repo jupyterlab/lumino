@@ -114,6 +114,231 @@ describe('@lumino/widgets', () => {
       });
     });
 
+    describe('#search()', () => {
+      it('should search a list of commands', () => {
+        // Add several commands to the command registry and the palette
+        commands.addCommand('example:cut', {
+          label: 'Cut',
+          mnemonic: 1,
+          iconClass: 'fa fa-cut',
+          execute: () => {
+            console.log('Cut');
+          }
+        });
+      
+        commands.addCommand('example:copy', {
+          label: 'Copy File',
+          mnemonic: 0,
+          iconClass: 'fa fa-copy',
+          execute: () => {
+            console.log('Copy');
+          }
+        });
+      
+        commands.addCommand('example:paste', {
+          label: 'Paste',
+          mnemonic: 0,
+          iconClass: 'fa fa-paste',
+          execute: () => {
+            console.log('Paste');
+          }
+        });
+      
+        commands.addCommand('example:new-tab', {
+          label: 'New Tab',
+          mnemonic: 0,
+          caption: 'Open a new tab',
+          execute: () => {
+            console.log('New Tab');
+          }
+        });
+      
+        commands.addCommand('example:close-tab', {
+          label: 'Close Tab',
+          mnemonic: 2,
+          caption: 'Close the current tab',
+          execute: () => {
+            console.log('Close Tab');
+          }
+        });
+      
+        commands.addCommand('example:save-on-exit', {
+          label: 'Save on Exit',
+          mnemonic: 0,
+          caption: 'Toggle the save on exit flag',
+          execute: () => {
+            console.log('Save on Exit');
+          }
+        });
+      
+        commands.addCommand('example:open-task-manager', {
+          label: 'Task Manager',
+          mnemonic: 5,
+          isEnabled: () => false,
+          execute: () => {}
+        });
+      
+        commands.addCommand('example:close', {
+          label: 'Close',
+          mnemonic: 0,
+          iconClass: 'fa fa-close',
+          execute: () => {
+            console.log('Close');
+          }
+        });
+      
+        commands.addCommand('example:one', {
+          label: 'One',
+          execute: () => {
+            console.log('One');
+          }
+        });
+      
+        commands.addCommand('example:two', {
+          label: 'Two',
+          execute: () => {
+            console.log('Two');
+          }
+        });
+      
+        commands.addCommand('example:three', {
+          label: 'Three',
+          execute: () => {
+            console.log('Three');
+          }
+        });
+      
+        commands.addCommand('example:four', {
+          label: 'Four',
+          execute: () => {
+            console.log('Four');
+          }
+        });
+      
+        commands.addCommand('example:black', {
+          label: 'Black',
+          execute: () => {
+            console.log('Black');
+          }
+        });
+      
+        commands.addCommand('example:clear-cell', {
+          label: 'Clear Cell',
+          execute: () => {
+            console.log('Clear Cell');
+          }
+        });
+      
+        commands.addCommand('example:cut-cells', {
+          label: 'Cut Cell(s)',
+          execute: () => {
+            console.log('Cut Cell(s)');
+          }
+        });
+      
+        commands.addCommand('example:run-cell', {
+          label: 'Run Cell',
+          execute: () => {
+            console.log('Run Cell');
+          }
+        });
+      
+        commands.addCommand('example:cell-test', {
+          label: 'Cell Test',
+          execute: () => {
+            console.log('Cell Test');
+          }
+        });
+      
+        commands.addCommand('notebook:new', {
+          label: 'New Notebook',
+          execute: () => {
+            console.log('New Notebook');
+          }
+        });
+      
+        commands.addKeyBinding({
+          keys: ['Accel X'],
+          selector: 'body',
+          command: 'example:cut'
+        });
+      
+        commands.addKeyBinding({
+          keys: ['Accel C'],
+          selector: 'body',
+          command: 'example:copy'
+        });
+      
+        commands.addKeyBinding({
+          keys: ['Accel V'],
+          selector: 'body',
+          command: 'example:paste'
+        });
+      
+        commands.addKeyBinding({
+          keys: ['Accel J', 'Accel J'],
+          selector: 'body',
+          command: 'example:new-tab'
+        });
+      
+        commands.addKeyBinding({
+          keys: ['Accel M'],
+          selector: 'body',
+          command: 'example:open-task-manager'
+        });
+            
+        let palette = new CommandPalette({ commands });
+        palette.addItem({ command: 'example:cut', category: 'Edit' });
+        palette.addItem({ command: 'example:copy', category: 'Edit' });
+        palette.addItem({ command: 'example:paste', category: 'Edit' });
+        palette.addItem({ command: 'example:one', category: 'Number' });
+        palette.addItem({ command: 'example:two', category: 'Number' });
+        palette.addItem({ command: 'example:three', category: 'Number' });
+        palette.addItem({ command: 'example:four', category: 'Number' });
+        palette.addItem({ command: 'example:black', category: 'Number' });
+        palette.addItem({ command: 'example:new-tab', category: 'File' });
+        palette.addItem({ command: 'example:close-tab', category: 'File' });
+        palette.addItem({ command: 'example:save-on-exit', category: 'File' });
+        palette.addItem({ command: 'example:open-task-manager', category: 'File' });
+        palette.addItem({ command: 'example:close', category: 'File' });
+        palette.addItem({
+          command: 'example:clear-cell',
+          category: 'Notebook Cell Operations'
+        });
+        palette.addItem({
+          command: 'example:cut-cells',
+          category: 'Notebook Cell Operations'
+        });
+        palette.addItem({
+          command: 'example:run-cell',
+          category: 'Notebook Cell Operations'
+        });
+        palette.addItem({ command: 'example:cell-test', category: 'Console' });
+        palette.addItem({ command: 'notebook:new', category: 'Notebook' });
+        palette.id = 'palette';
+
+        // Search the command palette: update the inputNode, then force a refresh
+        palette.inputNode.value = 'clea';
+        palette.refresh();
+        MessageLoop.flush();
+
+        // Expect that headers and items appear in descending score order,
+        // even if the same header occurs multiple times.
+        const children = palette.contentNode.children;
+        expect(children.length).to.equal(7);
+        expect(children[0].textContent).to.equal('Notebook Cell Operations');
+        expect(children[1].getAttribute('data-command')).to.equal('example:clear-cell');
+        // The next match should be from a different category
+        expect(children[2].textContent).to.equal('File');
+        expect(children[3].getAttribute('data-command')).to.equal('example:close-tab');
+        // The next match should be the same as in a previous category
+        expect(children[4].textContent).to.equal('Notebook Cell Operations');
+        expect(children[5].getAttribute('data-command')).to.equal('example:cut-cells');
+        // The next match has the same category as the previous one did, so the header is not repeated
+        expect(children[6].getAttribute('data-command')).to.equal('example:run-cell');
+      });
+    });
+
     describe('#addItems()', () => {
       it('should add items to a command palette using options', () => {
         const item = {
