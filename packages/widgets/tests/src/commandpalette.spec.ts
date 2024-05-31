@@ -114,7 +114,212 @@ describe('@lumino/widgets', () => {
       });
     });
 
-    describe('#search()', () => {
+    describe('#addItems()', () => {
+      it('should add items to a command palette using options', () => {
+        const item = {
+          command: 'test2',
+          category: 'Test Category',
+          args: { foo: 'bar' },
+          rank: 100
+        };
+
+        expect(palette.items.length).to.equal(0);
+        palette.addItems([defaultOptions, item]);
+        expect(palette.items.length).to.equal(2);
+        expect(palette.items[0].command).to.equal('test');
+        expect(palette.items[1].command).to.equal('test2');
+      });
+    });
+
+    describe('#addItem()', () => {
+      it('should add an item to a command palette using options', () => {
+        expect(palette.items.length).to.equal(0);
+        palette.addItem(defaultOptions);
+        expect(palette.items.length).to.equal(1);
+        expect(palette.items[0].command).to.equal('test');
+      });
+
+      context('CommandPalette.IItem', () => {
+        describe('#command', () => {
+          it('should return the command name of a command item', () => {
+            let item = palette.addItem(defaultOptions);
+            expect(item.command).to.equal('test');
+          });
+        });
+
+        describe('#args', () => {
+          it('should return the args of a command item', () => {
+            let item = palette.addItem(defaultOptions);
+            expect(item.args).to.deep.equal(defaultOptions.args);
+          });
+
+          it('should default to an empty object', () => {
+            let item = palette.addItem({ command: 'test', category: 'test' });
+            expect(item.args).to.deep.equal({});
+          });
+        });
+
+        describe('#category', () => {
+          it('should return the category of a command item', () => {
+            let item = palette.addItem(defaultOptions);
+            expect(item.category).to.equal(defaultOptions.category);
+          });
+        });
+
+        describe('#rank', () => {
+          it('should return the rank of a command item', () => {
+            let item = palette.addItem(defaultOptions);
+            expect(item.rank).to.deep.equal(defaultOptions.rank);
+          });
+
+          it('should default to `Infinity`', () => {
+            let item = palette.addItem({ command: 'test', category: 'test' });
+            expect(item.rank).to.equal(Infinity);
+          });
+        });
+
+        describe('#label', () => {
+          it('should return the label of a command item', () => {
+            let label = 'test label';
+            commands.addCommand('test', { execute: () => {}, label });
+            let item = palette.addItem(defaultOptions);
+            expect(item.label).to.equal(label);
+          });
+        });
+
+        describe('#caption', () => {
+          it('should return the caption of a command item', () => {
+            let caption = 'test caption';
+            commands.addCommand('test', { execute: () => {}, caption });
+            let item = palette.addItem(defaultOptions);
+            expect(item.caption).to.equal(caption);
+          });
+        });
+
+        describe('#className', () => {
+          it('should return the class name of a command item', () => {
+            let className = 'testClass';
+            commands.addCommand('test', { execute: () => {}, className });
+            let item = palette.addItem(defaultOptions);
+            expect(item.className).to.equal(className);
+          });
+        });
+
+        describe('#isEnabled', () => {
+          it('should return whether a command item is enabled', () => {
+            let called = false;
+            commands.addCommand('test', {
+              execute: () => {},
+              isEnabled: () => {
+                called = true;
+                return false;
+              }
+            });
+            let item = palette.addItem(defaultOptions);
+            expect(called).to.equal(false);
+            expect(item.isEnabled).to.equal(false);
+            expect(called).to.equal(true);
+          });
+        });
+
+        describe('#isToggled', () => {
+          it('should return whether a command item is toggled', () => {
+            let called = false;
+            commands.addCommand('test', {
+              execute: () => {},
+              isToggled: () => {
+                called = true;
+                return true;
+              }
+            });
+            let item = palette.addItem(defaultOptions);
+            expect(called).to.equal(false);
+            expect(item.isToggled).to.equal(true);
+            expect(called).to.equal(true);
+          });
+        });
+
+        describe('#isVisible', () => {
+          it('should return whether a command item is visible', () => {
+            let called = false;
+            commands.addCommand('test', {
+              execute: () => {},
+              isVisible: () => {
+                called = true;
+                return false;
+              }
+            });
+            let item = palette.addItem(defaultOptions);
+            expect(called).to.equal(false);
+            expect(item.isVisible).to.equal(false);
+            expect(called).to.equal(true);
+          });
+        });
+
+        describe('#keyBinding', () => {
+          it('should return the key binding of a command item', () => {
+            commands.addKeyBinding({
+              keys: ['Ctrl A'],
+              selector: 'body',
+              command: 'test',
+              args: defaultOptions.args
+            });
+            let item = palette.addItem(defaultOptions);
+            expect(item.keyBinding!.keys).to.deep.equal(['Ctrl A']);
+          });
+        });
+      });
+    });
+
+    describe('#removeItem()', () => {
+      it('should remove an item from a command palette by item', () => {
+        expect(palette.items.length).to.equal(0);
+        let item = palette.addItem(defaultOptions);
+        expect(palette.items.length).to.equal(1);
+        palette.removeItem(item);
+        expect(palette.items.length).to.equal(0);
+      });
+    });
+
+    describe('#removeItemAt()', () => {
+      it('should remove an item from a command palette by index', () => {
+        expect(palette.items.length).to.equal(0);
+        palette.addItem(defaultOptions);
+        expect(palette.items.length).to.equal(1);
+        palette.removeItemAt(0);
+        expect(palette.items.length).to.equal(0);
+      });
+    });
+
+    describe('#clearItems()', () => {
+      it('should remove all items from a command palette', () => {
+        expect(palette.items.length).to.equal(0);
+        palette.addItem({ command: 'test', category: 'one' });
+        palette.addItem({ command: 'test', category: 'two' });
+        expect(palette.items.length).to.equal(2);
+        palette.clearItems();
+        expect(palette.items.length).to.equal(0);
+      });
+    });
+
+    describe('#refresh()', () => {
+      it('should schedule a refresh of the search items', () => {
+        commands.addCommand('test', { execute: () => {}, label: 'test' });
+        palette.addItem(defaultOptions);
+
+        MessageLoop.flush();
+
+        let content = palette.contentNode;
+        let itemClass = '.lm-CommandPalette-item';
+        let items = () => content.querySelectorAll(itemClass);
+
+        expect(items()).to.have.length(1);
+        palette.inputNode.value = 'x';
+        palette.refresh();
+        MessageLoop.flush();
+        expect(items()).to.have.length(0);
+      });
+
       it('should search a list of commands', () => {
         // Add several commands to the command registry and the palette
         commands.addCommand('example:cut', {
@@ -347,213 +552,6 @@ describe('@lumino/widgets', () => {
         expect(children[6].getAttribute('data-command')).to.equal(
           'example:run-cell'
         );
-      });
-    });
-
-    describe('#addItems()', () => {
-      it('should add items to a command palette using options', () => {
-        const item = {
-          command: 'test2',
-          category: 'Test Category',
-          args: { foo: 'bar' },
-          rank: 100
-        };
-
-        expect(palette.items.length).to.equal(0);
-        palette.addItems([defaultOptions, item]);
-        expect(palette.items.length).to.equal(2);
-        expect(palette.items[0].command).to.equal('test');
-        expect(palette.items[1].command).to.equal('test2');
-      });
-    });
-
-    describe('#addItem()', () => {
-      it('should add an item to a command palette using options', () => {
-        expect(palette.items.length).to.equal(0);
-        palette.addItem(defaultOptions);
-        expect(palette.items.length).to.equal(1);
-        expect(palette.items[0].command).to.equal('test');
-      });
-
-      context('CommandPalette.IItem', () => {
-        describe('#command', () => {
-          it('should return the command name of a command item', () => {
-            let item = palette.addItem(defaultOptions);
-            expect(item.command).to.equal('test');
-          });
-        });
-
-        describe('#args', () => {
-          it('should return the args of a command item', () => {
-            let item = palette.addItem(defaultOptions);
-            expect(item.args).to.deep.equal(defaultOptions.args);
-          });
-
-          it('should default to an empty object', () => {
-            let item = palette.addItem({ command: 'test', category: 'test' });
-            expect(item.args).to.deep.equal({});
-          });
-        });
-
-        describe('#category', () => {
-          it('should return the category of a command item', () => {
-            let item = palette.addItem(defaultOptions);
-            expect(item.category).to.equal(defaultOptions.category);
-          });
-        });
-
-        describe('#rank', () => {
-          it('should return the rank of a command item', () => {
-            let item = palette.addItem(defaultOptions);
-            expect(item.rank).to.deep.equal(defaultOptions.rank);
-          });
-
-          it('should default to `Infinity`', () => {
-            let item = palette.addItem({ command: 'test', category: 'test' });
-            expect(item.rank).to.equal(Infinity);
-          });
-        });
-
-        describe('#label', () => {
-          it('should return the label of a command item', () => {
-            let label = 'test label';
-            commands.addCommand('test', { execute: () => {}, label });
-            let item = palette.addItem(defaultOptions);
-            expect(item.label).to.equal(label);
-          });
-        });
-
-        describe('#caption', () => {
-          it('should return the caption of a command item', () => {
-            let caption = 'test caption';
-            commands.addCommand('test', { execute: () => {}, caption });
-            let item = palette.addItem(defaultOptions);
-            expect(item.caption).to.equal(caption);
-          });
-        });
-
-        describe('#className', () => {
-          it('should return the class name of a command item', () => {
-            let className = 'testClass';
-            commands.addCommand('test', { execute: () => {}, className });
-            let item = palette.addItem(defaultOptions);
-            expect(item.className).to.equal(className);
-          });
-        });
-
-        describe('#isEnabled', () => {
-          it('should return whether a command item is enabled', () => {
-            let called = false;
-            commands.addCommand('test', {
-              execute: () => {},
-              isEnabled: () => {
-                called = true;
-                return false;
-              }
-            });
-            let item = palette.addItem(defaultOptions);
-            expect(called).to.equal(false);
-            expect(item.isEnabled).to.equal(false);
-            expect(called).to.equal(true);
-          });
-        });
-
-        describe('#isToggled', () => {
-          it('should return whether a command item is toggled', () => {
-            let called = false;
-            commands.addCommand('test', {
-              execute: () => {},
-              isToggled: () => {
-                called = true;
-                return true;
-              }
-            });
-            let item = palette.addItem(defaultOptions);
-            expect(called).to.equal(false);
-            expect(item.isToggled).to.equal(true);
-            expect(called).to.equal(true);
-          });
-        });
-
-        describe('#isVisible', () => {
-          it('should return whether a command item is visible', () => {
-            let called = false;
-            commands.addCommand('test', {
-              execute: () => {},
-              isVisible: () => {
-                called = true;
-                return false;
-              }
-            });
-            let item = palette.addItem(defaultOptions);
-            expect(called).to.equal(false);
-            expect(item.isVisible).to.equal(false);
-            expect(called).to.equal(true);
-          });
-        });
-
-        describe('#keyBinding', () => {
-          it('should return the key binding of a command item', () => {
-            commands.addKeyBinding({
-              keys: ['Ctrl A'],
-              selector: 'body',
-              command: 'test',
-              args: defaultOptions.args
-            });
-            let item = palette.addItem(defaultOptions);
-            expect(item.keyBinding!.keys).to.deep.equal(['Ctrl A']);
-          });
-        });
-      });
-    });
-
-    describe('#removeItem()', () => {
-      it('should remove an item from a command palette by item', () => {
-        expect(palette.items.length).to.equal(0);
-        let item = palette.addItem(defaultOptions);
-        expect(palette.items.length).to.equal(1);
-        palette.removeItem(item);
-        expect(palette.items.length).to.equal(0);
-      });
-    });
-
-    describe('#removeItemAt()', () => {
-      it('should remove an item from a command palette by index', () => {
-        expect(palette.items.length).to.equal(0);
-        palette.addItem(defaultOptions);
-        expect(palette.items.length).to.equal(1);
-        palette.removeItemAt(0);
-        expect(palette.items.length).to.equal(0);
-      });
-    });
-
-    describe('#clearItems()', () => {
-      it('should remove all items from a command palette', () => {
-        expect(palette.items.length).to.equal(0);
-        palette.addItem({ command: 'test', category: 'one' });
-        palette.addItem({ command: 'test', category: 'two' });
-        expect(palette.items.length).to.equal(2);
-        palette.clearItems();
-        expect(palette.items.length).to.equal(0);
-      });
-    });
-
-    describe('#refresh()', () => {
-      it('should schedule a refresh of the search items', () => {
-        commands.addCommand('test', { execute: () => {}, label: 'test' });
-        palette.addItem(defaultOptions);
-
-        MessageLoop.flush();
-
-        let content = palette.contentNode;
-        let itemClass = '.lm-CommandPalette-item';
-        let items = () => content.querySelectorAll(itemClass);
-
-        expect(items()).to.have.length(1);
-        palette.inputNode.value = 'x';
-        palette.refresh();
-        MessageLoop.flush();
-        expect(items()).to.have.length(0);
       });
     });
 
