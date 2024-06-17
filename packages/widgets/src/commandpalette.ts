@@ -1374,50 +1374,25 @@ namespace Private {
    * Create the results from an array of sorted scores.
    */
   function createResults(scores: IScore[]): SearchResult[] {
-    // Set up an array to track which scores have been visited.
-    let visited = new Array(scores.length);
-    ArrayExt.fill(visited, false);
-
     // Set up the search results array.
     let results: SearchResult[] = [];
 
     // Iterate over each score in the array.
     for (let i = 0, n = scores.length; i < n; ++i) {
-      // Ignore a score which has already been processed.
-      if (visited[i]) {
-        continue;
-      }
-
       // Extract the current item and indices.
-      let { item, categoryIndices } = scores[i];
+      let { item, categoryIndices, labelIndices } = scores[i];
 
       // Extract the category for the current item.
       let category = item.category;
 
-      // Add the header result for the category.
-      results.push({ type: 'header', category, indices: categoryIndices });
-
-      // Find the rest of the scores with the same category.
-      for (let j = i; j < n; ++j) {
-        // Ignore a score which has already been processed.
-        if (visited[j]) {
-          continue;
-        }
-
-        // Extract the data for the current score.
-        let { item, labelIndices } = scores[j];
-
-        // Ignore an item with a different category.
-        if (item.category !== category) {
-          continue;
-        }
-
-        // Create the item result for the score.
-        results.push({ type: 'item', item, indices: labelIndices });
-
-        // Mark the score as processed.
-        visited[j] = true;
+      // Is this the same category as the preceding result?
+      if (i === 0 || category !== scores[i - 1].item.category) {
+        // Add the header result for the category.
+        results.push({ type: 'header', category, indices: categoryIndices });
       }
+
+      // Create the item result for the score.
+      results.push({ type: 'item', item, indices: labelIndices });
     }
 
     // Return the final results.
