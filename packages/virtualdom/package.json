@@ -1,6 +1,6 @@
 {
   "name": "@lumino/virtualdom",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Lumino Virtual DOM",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -38,7 +38,7 @@
     "watch": "tsc --build --watch"
   },
   "dependencies": {
-    "@lumino/algorithm": "^2.0.1"
+    "@lumino/algorithm": "^2.0.2"
   },
   "devDependencies": {
     "@lumino/buildutils": "^2.0.1",
