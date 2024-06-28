@@ -6,6 +6,65 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2024.6.28
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2024.3.25...51dd3b375eecc21ad3866a9497546681c4d5a07d))
+
+```
+@lumino/algorithm: 2.0.1 => 2.0.2
+@lumino/application: 2.3.1 => 2.4.0
+@lumino/collections: 2.0.1 => 2.0.2
+@lumino/commands: 2.3.0 => 2.3.1
+@lumino/coreutils: 2.1.2 => 2.2.0
+@lumino/datagrid: 2.3.1 => 2.4.0
+@lumino/default-theme: 2.1.5 => 2.1.6
+@lumino/disposable: 2.1.2 => 2.1.3
+@lumino/domutils: 2.0.1 => 2.0.2
+@lumino/dragdrop: 2.1.4 => 2.1.5
+@lumino/keyboard: 2.0.1 => 2.0.2
+@lumino/messaging: 2.0.1 => 2.0.2
+@lumino/polling: 2.1.2 => 2.1.3
+@lumino/properties: 2.0.1 => 2.0.2
+@lumino/signaling: 2.1.2 => 2.1.3
+@lumino/virtualdom: 2.0.1 => 2.0.2
+@lumino/widgets: 2.3.2 => 2.4.0
+```
+
+### Enhancements made
+
+- Interleaves search results across categories [#706](https://github.com/jupyterlab/lumino/pull/706) ([@JasonWeill](https://github.com/JasonWeill))
+- Extract plugin handling in a `PluginRegistry` class independent of the `Application` [#703](https://github.com/jupyterlab/lumino/pull/703) ([@fcollonval](https://github.com/fcollonval))
+- Support host and ref options in Menu.open [#700](https://github.com/jupyterlab/lumino/pull/700) ([@ianthomas23](https://github.com/ianthomas23))
+- Datagrid: Add a public API to get the current viewport [#695](https://github.com/jupyterlab/lumino/pull/695) ([@martinRenou](https://github.com/martinRenou))
+- Accept individual modifier keys as valid keybindings [#637](https://github.com/jupyterlab/lumino/pull/637) ([@g547315](https://github.com/g547315))
+
+### Maintenance and upkeep improvements
+
+- Bump versions and fix yarn installation in CI [#711](https://github.com/jupyterlab/lumino/pull/711) ([@fcollonval](https://github.com/fcollonval))
+- Bump braces from 3.0.2 to 3.0.3 [#710](https://github.com/jupyterlab/lumino/pull/710) ([@dependabot](https://github.com/dependabot))
+- Bump tj-actions/changed-files from 44.3.0 to 44.5.2 in the actions group [#708](https://github.com/jupyterlab/lumino/pull/708) ([@dependabot](https://github.com/dependabot))
+- Don't bail early when running all tests [#707](https://github.com/jupyterlab/lumino/pull/707) ([@fcollonval](https://github.com/fcollonval))
+- Switch from karma to web-test-runner [#704](https://github.com/jupyterlab/lumino/pull/704) ([@fcollonval](https://github.com/fcollonval))
+- Bump ejs from 3.1.8 to 3.1.10 [#702](https://github.com/jupyterlab/lumino/pull/702) ([@dependabot](https://github.com/dependabot))
+- Bump the actions group with 2 updates [#701](https://github.com/jupyterlab/lumino/pull/701) ([@dependabot](https://github.com/dependabot))
+- Bump the actions group with 1 update [#694](https://github.com/jupyterlab/lumino/pull/694) ([@dependabot](https://github.com/dependabot))
+
+### Documentation improvements
+
+- Align typedoc config with JupyterLab [#696](https://github.com/jupyterlab/lumino/pull/696) ([@fcollonval](https://github.com/fcollonval))
+
+### API and Breaking Changes
+
+- Datagrid: Add a public API to get the current viewport [#695](https://github.com/jupyterlab/lumino/pull/695) ([@martinRenou](https://github.com/martinRenou))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2024-03-25&to=2024-06-28&type=c))
+
+[@brichet](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Abrichet+updated%3A2024-03-25..2024-06-28&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2024-03-25..2024-06-28&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2024-03-25..2024-06-28&type=Issues) | [@g547315](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ag547315+updated%3A2024-03-25..2024-06-28&type=Issues) | [@ianthomas23](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aianthomas23+updated%3A2024-03-25..2024-06-28&type=Issues) | [@JasonWeill](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3AJasonWeill+updated%3A2024-03-25..2024-06-28&type=Issues) | [@krassowski](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2024-03-25..2024-06-28&type=Issues) | [@martinRenou](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3AmartinRenou+updated%3A2024-03-25..2024-06-28&type=Issues) | [@tonyfast](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Atonyfast+updated%3A2024-03-25..2024-06-28&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Awelcome+updated%3A2024-03-25..2024-06-28&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2024.3.25
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2023.11.5...64986395b3f232ec0d23d8e42f4cfddd38d89317))
@@ -57,8 +116,6 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2023-11-05&to=2024-03-25&type=c))
 
 [@blink1073](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ablink1073+updated%3A2023-11-05..2024-03-25&type=Issues) | [@brichet](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Abrichet+updated%3A2023-11-05..2024-03-25&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2023-11-05..2024-03-25&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2023-11-05..2024-03-25&type=Issues) | [@krassowski](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2023-11-05..2024-03-25&type=Issues) | [@novrain](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Anovrain+updated%3A2023-11-05..2024-03-25&type=Issues) | [@tonyfast](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Atonyfast+updated%3A2023-11-05..2024-03-25&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Awelcome+updated%3A2023-11-05..2024-03-25&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2023.11.5
 
