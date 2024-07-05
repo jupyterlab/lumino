@@ -41,6 +41,15 @@ export class Widget implements IMessageHandler, IObservableDisposable {
    */
   constructor(options: Widget.IOptions = {}) {
     this.node = Private.createNode(options);
+    if (options.shadowDOM) {
+      const attachmentNode = document.createElement('div');
+      const root = attachmentNode.attachShadow({ mode: 'open' });
+      root.appendChild(this.node);
+      attachmentNode.classList.add('lm-attachmentNode');
+      this.attachmentNode = attachmentNode;
+    } else {
+      this.attachmentNode = this.node;
+    }
     this.addClass('lm-Widget');
   }
 
@@ -95,6 +104,11 @@ export class Widget implements IMessageHandler, IObservableDisposable {
    * Get the DOM node owned by the widget.
    */
   readonly node: HTMLElement;
+
+  /**
+   * Get the node which should be attached to the parent in order to attach the widget.
+   */
+  readonly attachmentNode: HTMLElement;
 
   /**
    * Test whether the widget has been disposed.
@@ -365,6 +379,50 @@ export class Widget implements IMessageHandler, IObservableDisposable {
       return false;
     }
     return this.node.classList.toggle(name);
+  }
+
+  /**
+   * Adopt style sheet to shadow root if present.
+   *
+   * Provided sheet must be programmatically created using
+   * the `CSSStyleSheet()` constructor.
+   * Has no effect if the sheet was already adopted.
+   *
+   * Returns `true` if sheet was adopted and `false` otherwise.
+   */
+  adoptStyleSheet(sheet: CSSStyleSheet): boolean {
+    const root = this.attachmentNode.shadowRoot;
+    if (!root) {
+      throw new Error('Widget without shadowRoot cannot adopt sheets.');
+    }
+    const alreadyAdopted = root.adoptedStyleSheets;
+    if (alreadyAdopted.indexOf(sheet) === -1) {
+      // Note: in-place mutations like `push()` are not allowed according to MDN
+      root.adoptedStyleSheets = [...root.adoptedStyleSheets, sheet];
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Remove previously adopted style sheet from shadow root.
+   *
+   * Returns `true` if sheet was removed and `false` otherwise.
+   */
+  removeAdoptedStyleSheet(sheet: CSSStyleSheet): boolean {
+    const root = this.attachmentNode.shadowRoot;
+    if (!root) {
+      throw new Error('Cannot remove sheet from widget without shadowRoot.');
+    }
+    const alreadyAdopted = root.adoptedStyleSheets;
+    if (alreadyAdopted.indexOf(sheet) !== -1) {
+      // Note: in-place mutations like `slice()` are not allowed according to MDN
+      root.adoptedStyleSheets = root.adoptedStyleSheets.filter(
+        s => s !== sheet
+      );
+      return true;
+    }
+    return false;
   }
 
   /**
@@ -799,6 +857,13 @@ export namespace Widget {
      * value is ignored.
      */
     tag?: keyof HTMLElementTagNameMap;
+
+    /**
+     * Whether to embed the content node in shadow DOM.
+     *
+     * The default is `false`.
+     */
+    shadowDOM?: boolean;
   }
 
   /**
@@ -1086,14 +1151,15 @@ export namespace Widget {
     if (widget.parent) {
       throw new Error('Cannot attach a child widget.');
     }
-    if (widget.isAttached || widget.node.isConnected) {
+    if (widget.isAttached || widget.attachmentNode.isConnected) {
       throw new Error('Widget is already attached.');
     }
     if (!host.isConnected) {
       throw new Error('Host is not attached.');
     }
+
     MessageLoop.sendMessage(widget, Widget.Msg.BeforeAttach);
-    host.insertBefore(widget.node, ref);
+    host.insertBefore(widget.attachmentNode, ref);
     MessageLoop.sendMessage(widget, Widget.Msg.AfterAttach);
   }
 
@@ -1110,11 +1176,11 @@ export namespace Widget {
     if (widget.parent) {
       throw new Error('Cannot detach a child widget.');
     }
-    if (!widget.isAttached || !widget.node.isConnected) {
+    if (!widget.isAttached || !widget.attachmentNode.isConnected) {
       throw new Error('Widget is not attached.');
     }
     MessageLoop.sendMessage(widget, Widget.Msg.BeforeDetach);
-    widget.node.parentNode!.removeChild(widget.node);
+    widget.node.parentNode!.removeChild(widget.attachmentNode);
     MessageLoop.sendMessage(widget, Widget.Msg.AfterDetach);
   }
 }
