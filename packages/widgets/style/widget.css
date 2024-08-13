@@ -15,7 +15,6 @@
 .lm-Widget {
   box-sizing: border-box;
   position: relative;
-  overflow: hidden;
 }
 
 .lm-Widget.lm-mod-hidden {
