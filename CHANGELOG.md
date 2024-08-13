@@ -6,6 +6,46 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2024.8.13
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2024.6.28...2c613f00ffe80fe63debb62108532135b1638e9c))
+
+```
+@lumino/application: 2.4.0 => 2.4.1
+@lumino/datagrid: 2.4.0 => 2.4.1
+@lumino/default-theme: 2.1.6 => 2.1.7
+@lumino/widgets: 2.4.0 => 2.5.0
+```
+
+### :warning: CSS breaking change
+
+`Widget` does not hide its overflow by default any longer. If this breaks your application styling, you can restore it locally by adding the CSS rule `overflow: hidden`. To restore the previous behavior fully, you can add the following CSS rule:
+
+```css
+.lm-Widget {
+  overflow: hidden;
+}
+```
+
+### Bugs fixed
+
+- Remove the overflow rule on widgets [#715](https://github.com/jupyterlab/lumino/pull/715) ([@fcollonval](https://github.com/fcollonval))
+
+### Maintenance and upkeep improvements
+
+- Update versions [#718](https://github.com/jupyterlab/lumino/pull/718) ([@fcollonval](https://github.com/fcollonval))
+- Bump @75lb/deep-merge from 1.1.1 to 1.1.2 [#717](https://github.com/jupyterlab/lumino/pull/717) ([@dependabot](https://github.com/dependabot))
+- Bump tj-actions/changed-files from 44.5.5 to 44.5.7 in the actions group [#716](https://github.com/jupyterlab/lumino/pull/716) ([@dependabot](https://github.com/dependabot))
+- Bump the actions group with 2 updates [#712](https://github.com/jupyterlab/lumino/pull/712) ([@dependabot](https://github.com/dependabot))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2024-06-28&to=2024-08-13&type=c))
+
+[@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2024-06-28..2024-08-13&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2024-06-28..2024-08-13&type=Issues) | [@krassowski](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2024-06-28..2024-08-13&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2024.6.28
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2024.3.25...51dd3b375eecc21ad3866a9497546681c4d5a07d))
@@ -62,8 +102,6 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2024-03-25&to=2024-06-28&type=c))
 
 [@brichet](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Abrichet+updated%3A2024-03-25..2024-06-28&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2024-03-25..2024-06-28&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2024-03-25..2024-06-28&type=Issues) | [@g547315](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ag547315+updated%3A2024-03-25..2024-06-28&type=Issues) | [@ianthomas23](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aianthomas23+updated%3A2024-03-25..2024-06-28&type=Issues) | [@JasonWeill](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3AJasonWeill+updated%3A2024-03-25..2024-06-28&type=Issues) | [@krassowski](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2024-03-25..2024-06-28&type=Issues) | [@martinRenou](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3AmartinRenou+updated%3A2024-03-25..2024-06-28&type=Issues) | [@tonyfast](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Atonyfast+updated%3A2024-03-25..2024-06-28&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Awelcome+updated%3A2024-03-25..2024-06-28&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2024.3.25
 
