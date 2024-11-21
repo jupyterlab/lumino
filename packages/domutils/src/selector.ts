@@ -109,13 +109,17 @@ namespace Private {
   /**
    * An empty element for testing selector validity.
    */
-  export const testElem = document.createElement('div');
+  export const testElem =
+    typeof document !== 'undefined'
+      ? document.createElement('div')
+      : ({} as any);
 
   /**
    * A cross-browser CSS selector matching prototype function.
    */
   export const protoMatchFunc = (() => {
-    let proto = Element.prototype as any;
+    let proto =
+      typeof Element === 'undefined' ? ({} as any) : Element.prototype;
     return (
       proto.matches ||
       proto.matchesSelector ||
