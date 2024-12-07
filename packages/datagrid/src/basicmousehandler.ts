@@ -641,8 +641,32 @@ export class BasicMouseHandler implements DataGrid.IMouseHandler {
             return;
           }
         }
-
-        grid.resizeColumn(colRegion, colIndex, null);
+        const cs = grid.selectionModel?.currentSelection();
+        const cv = grid.currentViewport;
+        const rowCount = grid.selectionModel?.dataModel.rowCount('body') ?? 0;
+        if (
+          colRegion == 'body' &&
+          cs != null &&
+          cv != null &&
+          cs.r1 == 0 &&
+          cs.r2 == rowCount - 1
+        ) {
+          // One or more columns are selected
+          let c1 = Math.max(Math.min(cs.c1, cs.c2), cv.firstColumn);
+          let c2 = Math.min(Math.max(cs.c1, cs.c2), cv.lastColumn);
+          if (c1 <= colIndex && colIndex <= c2) {
+            // When we double-click one of the selected column headers, resize all visible selected columns.
+            for (let ci = c1; ci <= c2; ci++) {
+              grid.resizeColumn(colRegion, ci, null);
+            }
+          } else {
+            // When we double-click the column header outside the selection, resize only the clicked column.
+            grid.resizeColumn(colRegion, colIndex, null);
+          }
+        } else {
+          // When no columns are selected, resize only the clicked column.
+          grid.resizeColumn(colRegion, colIndex, null);
+        }
       }
     }
 
