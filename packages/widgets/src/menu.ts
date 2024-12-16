@@ -1009,6 +1009,8 @@ export namespace Menu {
      * menu to be added as the last child of the host.
      */
     ref?: HTMLElement;
+
+    align?: 'left' | 'right';
   }
 
   /**
