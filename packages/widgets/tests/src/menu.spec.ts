@@ -606,10 +606,20 @@ describe('@lumino/widgets', () => {
 
       it('should accept align menu flags', () => {
         menu.addItem({ command: 'test' });
-        menu.open(100, 100, { align: 'right' });
+        menu.open(300, 300, { align: 'right' });
         let { width } = menu.node.getBoundingClientRect();
-        const expectedX = 100 - width;
-        expect(menu.node.style.transform).to.equal(`translate(${ expectedX }px, 10px)`);
+        const expectedX = parseFloat((300 - width).toFixed(3));
+        expect(menu.node.style.transform).to.equal(`translate(${ expectedX }px, 300px)`);
+      });
+
+      it('align should default to right if language direction is rtl', () => {
+        document.documentElement.setAttribute('dir', 'rtl');
+        menu.addItem({ command: 'test' });
+        menu.open(300, 300);
+        let { width } = menu.node.getBoundingClientRect();
+        const expectedX = parseFloat((300 - width).toFixed(3));
+        expect(menu.node.style.transform).to.equal(`translate(${ expectedX }px, 300px)`);
+        document.documentElement.removeAttribute('dir');  // Reset the direction
       });
 
       it('should bail if already attached', () => {
