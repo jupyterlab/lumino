@@ -609,7 +609,9 @@ describe('@lumino/widgets', () => {
         menu.open(300, 300, { align: 'right' });
         let { width } = menu.node.getBoundingClientRect();
         const expectedX = parseFloat((300 - width).toFixed(3));
-        expect(menu.node.style.transform).to.equal(`translate(${ expectedX }px, 300px)`);
+        expect(menu.node.style.transform).to.equal(
+          `translate(${expectedX}px, 300px)`
+        );
       });
 
       it('align should default to right if language direction is rtl', () => {
@@ -618,8 +620,10 @@ describe('@lumino/widgets', () => {
         menu.open(300, 300);
         let { width } = menu.node.getBoundingClientRect();
         const expectedX = parseFloat((300 - width).toFixed(3));
-        expect(menu.node.style.transform).to.equal(`translate(${ expectedX }px, 300px)`);
-        document.documentElement.removeAttribute('dir');  // Reset the direction
+        expect(menu.node.style.transform).to.equal(
+          `translate(${expectedX}px, 300px)`
+        );
+        document.documentElement.removeAttribute('dir'); // Reset the direction
       });
 
       it('should bail if already attached', () => {

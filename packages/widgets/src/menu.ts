@@ -465,8 +465,9 @@ export class Menu extends Widget {
     let forceY = options.forceY || false;
     const host = options.host ?? null;
     const ref = options.ref ?? null;
-    const align = options.align ?? (document.documentElement.dir === 'rtl' ? 'right' : 'left');
-
+    const align =
+      options.align ??
+      (document.documentElement.dir === 'rtl' ? 'right' : 'left');
 
     // Open the menu as a root menu.
     Private.openRootMenu(this, x, y, forceX, forceY, align, host, ref);
