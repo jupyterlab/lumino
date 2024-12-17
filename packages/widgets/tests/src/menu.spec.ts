@@ -608,7 +608,7 @@ describe('@lumino/widgets', () => {
         menu.addItem({ command: 'test' });
         menu.open(300, 300, { align: 'right' });
         let { width } = menu.node.getBoundingClientRect();
-        const expectedX = Math.round(300 - width);
+        const expectedX = Math.floor(300 - width);
         expect(
           menu.node.style.transform.startsWith(`translate(${expectedX}`)
         ).to.equal(true);
@@ -620,7 +620,7 @@ describe('@lumino/widgets', () => {
         menu.addItem({ command: 'test' });
         menu.open(300, 300);
         let { width } = menu.node.getBoundingClientRect();
-        const expectedX = Math.round(300 - width);
+        const expectedX = Math.floor(300 - width);
         expect(
           menu.node.style.transform.startsWith(`translate(${expectedX}`)
         ).to.equal(true);
