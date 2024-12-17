@@ -465,9 +465,10 @@ export class Menu extends Widget {
     let forceY = options.forceY || false;
     const host = options.host ?? null;
     const ref = options.ref ?? null;
+    const align = options.align ?? 'left';
 
     // Open the menu as a root menu.
-    Private.openRootMenu(this, x, y, forceX, forceY, host, ref);
+    Private.openRootMenu(this, x, y, forceX, forceY, align, host, ref);
 
     // Activate the menu to accept keyboard input.
     this.activate();
@@ -1561,6 +1562,7 @@ namespace Private {
     y: number,
     forceX: boolean,
     forceY: boolean,
+    align: 'left' | 'right',
     host: HTMLElement | null,
     ref: HTMLElement | null
   ): void {
@@ -1590,6 +1592,13 @@ namespace Private {
 
     // Measure the size of the menu.
     let { width, height } = node.getBoundingClientRect();
+
+    // align the menu to the right corner of the host
+    if (align === 'right') {
+      x -= width;
+    }
+
+
 
     // Adjust the X position of the menu to fit on-screen.
     if (!forceX && x + width > px + cw) {

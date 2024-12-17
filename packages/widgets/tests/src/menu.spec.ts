@@ -604,6 +604,14 @@ describe('@lumino/widgets', () => {
         );
       });
 
+      it('should accept align menu flags', () => {
+        menu.addItem({ command: 'test' });
+        menu.open(100, 100, { align: 'right' });
+        let { width } = menu.node.getBoundingClientRect();
+        const expectedX = 10 - width;
+        expect(menu.node.style.transform).to.equal(`translate(${ expectedX }px, 10px)`);
+      });
+
       it('should bail if already attached', () => {
         menu.addItem({ command: 'test' });
         menu.open(10, 10);
