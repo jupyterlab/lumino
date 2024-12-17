@@ -608,7 +608,7 @@ describe('@lumino/widgets', () => {
         menu.addItem({ command: 'test' });
         menu.open(100, 100, { align: 'right' });
         let { width } = menu.node.getBoundingClientRect();
-        const expectedX = 10 - width;
+        const expectedX = 100 - width;
         expect(menu.node.style.transform).to.equal(`translate(${ expectedX }px, 10px)`);
       });
 
