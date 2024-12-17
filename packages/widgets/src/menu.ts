@@ -470,7 +470,16 @@ export class Menu extends Widget {
       (document.documentElement.dir === 'rtl' ? 'right' : 'left');
 
     // Open the menu as a root menu.
-    Private.openRootMenu(this, x, y, forceX, forceY, horizontalAlignment, host, ref);
+    Private.openRootMenu(
+      this,
+      x,
+      y,
+      forceX,
+      forceY,
+      horizontalAlignment,
+      host,
+      ref
+    );
 
     // Activate the menu to accept keyboard input.
     this.activate();
