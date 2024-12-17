@@ -739,6 +739,7 @@ export namespace Menu {
         type?: ItemType;
     }
     export interface IOpenOptions {
+        align?: 'left' | 'right';
         forceX?: boolean;
         forceY?: boolean;
         host?: HTMLElement;

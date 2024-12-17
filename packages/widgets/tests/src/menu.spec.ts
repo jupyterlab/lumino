@@ -612,9 +612,7 @@ describe('@lumino/widgets', () => {
         expect(
           menu.node.style.transform.startsWith(`translate(${expectedX}`)
         ).to.equal(true);
-        expect(menu.node.style.transform.endsWith('px, 300px)')).to.equal(
-          true
-        );
+        expect(menu.node.style.transform.endsWith('px, 300px)')).to.equal(true);
       });
 
       it.only('align should default to right if language direction is rtl', () => {
@@ -626,9 +624,7 @@ describe('@lumino/widgets', () => {
         expect(
           menu.node.style.transform.startsWith(`translate(${expectedX}`)
         ).to.equal(true);
-        expect(menu.node.style.transform.endsWith('px, 300px)')).to.equal(
-          true
-        );
+        expect(menu.node.style.transform.endsWith('px, 300px)')).to.equal(true);
         document.documentElement.removeAttribute('dir'); // Reset the direction
       });
 
