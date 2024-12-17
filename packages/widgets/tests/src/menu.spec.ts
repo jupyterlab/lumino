@@ -604,7 +604,7 @@ describe('@lumino/widgets', () => {
         );
       });
 
-      it('should accept align menu flags', () => {
+      it('should accept horizontalAlignment menu flags', () => {
         menu.addItem({ command: 'test' });
         menu.open(300, 300, { horizontalAlignment: 'right' });
         let { width } = menu.node.getBoundingClientRect();
@@ -615,7 +615,7 @@ describe('@lumino/widgets', () => {
         expect(menu.node.style.transform.endsWith('px, 300px)')).to.equal(true);
       });
 
-      it.only('align should default to right if language direction is rtl', () => {
+      it.only('horizontalAlignment should default to `right` if language direction is `rtl`', () => {
         document.documentElement.setAttribute('dir', 'rtl');
         menu.addItem({ command: 'test' });
         menu.open(300, 300);
