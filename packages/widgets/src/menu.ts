@@ -1012,6 +1012,11 @@ export namespace Menu {
      */
     ref?: HTMLElement;
 
+    /**
+     * The alignment of the menu.
+     *
+     * The default is `'left'` unless the document `dir` attribute is `'rtl'`
+     */
     align?: 'left' | 'right';
   }
 
