@@ -465,12 +465,12 @@ export class Menu extends Widget {
     let forceY = options.forceY || false;
     const host = options.host ?? null;
     const ref = options.ref ?? null;
-    const align =
-      options.align ??
+    const horizontalAlignment =
+      options.horizontalAlignment ??
       (document.documentElement.dir === 'rtl' ? 'right' : 'left');
 
     // Open the menu as a root menu.
-    Private.openRootMenu(this, x, y, forceX, forceY, align, host, ref);
+    Private.openRootMenu(this, x, y, forceX, forceY, horizontalAlignment, host, ref);
 
     // Activate the menu to accept keyboard input.
     this.activate();
@@ -1018,7 +1018,7 @@ export namespace Menu {
      *
      * The default is `'left'` unless the document `dir` attribute is `'rtl'`
      */
-    align?: 'left' | 'right';
+    horizontalAlignment?: 'left' | 'right';
   }
 
   /**
@@ -1569,7 +1569,7 @@ namespace Private {
     y: number,
     forceX: boolean,
     forceY: boolean,
-    align: 'left' | 'right',
+    horizontalAlignment: 'left' | 'right',
     host: HTMLElement | null,
     ref: HTMLElement | null
   ): void {
@@ -1601,7 +1601,7 @@ namespace Private {
     let { width, height } = node.getBoundingClientRect();
 
     // align the menu to the right of the target if requested or language is RTL
-    if (align === 'right') {
+    if (horizontalAlignment === 'right') {
       x -= width;
     }
 

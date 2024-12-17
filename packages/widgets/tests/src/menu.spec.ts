@@ -606,7 +606,7 @@ describe('@lumino/widgets', () => {
 
       it('should accept align menu flags', () => {
         menu.addItem({ command: 'test' });
-        menu.open(300, 300, { align: 'right' });
+        menu.open(300, 300, { horizontalAlignment: 'right' });
         let { width } = menu.node.getBoundingClientRect();
         const expectedX = Math.floor(300 - width);
         expect(
