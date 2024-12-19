@@ -741,6 +741,7 @@ export namespace Menu {
     export interface IOpenOptions {
         forceX?: boolean;
         forceY?: boolean;
+        horizontalAlignment?: 'left' | 'right';
         host?: HTMLElement;
         ref?: HTMLElement;
     }

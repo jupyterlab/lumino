@@ -604,6 +604,30 @@ describe('@lumino/widgets', () => {
         );
       });
 
+      it('should accept horizontalAlignment menu flags', () => {
+        menu.addItem({ command: 'test' });
+        menu.open(300, 300, { horizontalAlignment: 'right' });
+        let { width } = menu.node.getBoundingClientRect();
+        const expectedX = Math.floor(300 - width);
+        expect(
+          menu.node.style.transform.startsWith(`translate(${expectedX}`)
+        ).to.equal(true);
+        expect(menu.node.style.transform.endsWith('px, 300px)')).to.equal(true);
+      });
+
+      it.only('horizontalAlignment should default to `right` if language direction is `rtl`', () => {
+        document.documentElement.setAttribute('dir', 'rtl');
+        menu.addItem({ command: 'test' });
+        menu.open(300, 300);
+        let { width } = menu.node.getBoundingClientRect();
+        const expectedX = Math.floor(300 - width);
+        expect(
+          menu.node.style.transform.startsWith(`translate(${expectedX}`)
+        ).to.equal(true);
+        expect(menu.node.style.transform.endsWith('px, 300px)')).to.equal(true);
+        document.documentElement.removeAttribute('dir'); // Reset the direction
+      });
+
       it('should bail if already attached', () => {
         menu.addItem({ command: 'test' });
         menu.open(10, 10);
