@@ -294,6 +294,29 @@ describe('@lumino/widgets', () => {
         expect(bar.activeIndex).to.equal(-1);
         bar.dispose();
       });
+
+      it('should allow adopting the validation check', () => {
+        class AllowEmptyMenusBar extends MenuBar {
+          protected override isValidIndex(index: number): boolean {
+            return index >= 0 && index < this.menus.length;
+          }
+        }
+        const bar = new AllowEmptyMenusBar();
+        let emptyMenu = new Menu({ commands });
+        bar.insertMenu(1, emptyMenu);
+
+        // check that empty menu can be active
+        bar.activeIndex = 1;
+        expect(bar.activeIndex).to.equal(1);
+
+        // other indices should still be disallowed
+        bar.activeIndex = -1;
+        expect(bar.activeIndex).to.equal(-1);
+        bar.activeIndex = 2;
+        expect(bar.activeIndex).to.equal(-1);
+
+        bar.dispose();
+      });
     });
 
     describe('#menus', () => {

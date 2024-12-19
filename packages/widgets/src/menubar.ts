@@ -140,13 +140,8 @@ export class MenuBar extends Widget {
    * If the menu cannot be activated, the index will be set to `-1`.
    */
   set activeIndex(value: number) {
-    // Adjust the value for an out of range index.
-    if (value < 0 || value >= this._menus.length) {
-      value = -1;
-    }
-
-    // An empty menu cannot be active
-    if (value > -1 && this._menus[value].items.length === 0) {
+    // Adjust the value for an invalid index.
+    if (!this.isValidIndex(value)) {
       value = -1;
     }
 
@@ -160,6 +155,16 @@ export class MenuBar extends Widget {
 
     // Schedule an update of the items.
     this.update();
+  }
+
+  /**
+   * Before setting a new index, this method is used to validate it.
+   * 
+   * By default it checks whether the index is within menu range
+   * and whether the corresponding menu has at least one item.
+   */
+  protected isValidIndex(index: number): boolean {
+    return index >= 0 && index < this._menus.length && this._menus[index].items.length > 0;
   }
 
   /**
