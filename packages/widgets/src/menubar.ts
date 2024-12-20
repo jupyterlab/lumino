@@ -159,12 +159,16 @@ export class MenuBar extends Widget {
 
   /**
    * Before setting a new index, this method is used to validate it.
-   * 
+   *
    * By default it checks whether the index is within menu range
    * and whether the corresponding menu has at least one item.
    */
   protected isValidIndex(index: number): boolean {
-    return index >= 0 && index < this._menus.length && this._menus[index].items.length > 0;
+    return (
+      index >= 0 &&
+      index < this._menus.length &&
+      this._menus[index].items.length > 0
+    );
   }
 
   /**
