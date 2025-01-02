@@ -789,6 +789,7 @@ export class MenuBar extends Widget {
     dispose(): void;
     handleEvent(event: Event): void;
     insertMenu(index: number, menu: Menu, update?: boolean): void;
+    protected isValidIndex(index: number): boolean;
     get menus(): ReadonlyArray<Menu>;
     protected onActivateRequest(msg: Message): void;
     protected onAfterDetach(msg: Message): void;
