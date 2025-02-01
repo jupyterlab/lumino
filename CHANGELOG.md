@@ -6,6 +6,45 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2025.2.1
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2024.8.13...76e4a9044ae2937e20c867cd97b24e6bf7c119fe))
+
+```
+@lumino/application: 2.4.1 => 2.4.2
+@lumino/datagrid: 2.4.1 => 2.5.0
+@lumino/default-theme: 2.1.7 => 2.1.8
+@lumino/widgets: 2.5.0 => 2.6.0
+```
+
+### Enhancements made
+
+- Add `horizontalAlignment` to `Menu.open()` options [#732](https://github.com/jupyterlab/lumino/pull/732) ([@andrewfulton9](https://github.com/andrewfulton9))
+- [DataGrid] Add a feature to fit multiple column's width to their content [#731](https://github.com/jupyterlab/lumino/pull/731) ([@i-aki-y](https://github.com/i-aki-y))
+
+### Maintenance and upkeep improvements
+
+- Bump tj-actions/changed-files from 45.0.4 to 45.0.5 in the actions group [#734](https://github.com/jupyterlab/lumino/pull/734) ([@dependabot](https://github.com/dependabot))
+- Bump tj-actions/changed-files from 45.0.3 to 45.0.4 in the actions group [#730](https://github.com/jupyterlab/lumino/pull/730) ([@dependabot](https://github.com/dependabot))
+- Bump cross-spawn from 7.0.3 to 7.0.6 [#728](https://github.com/jupyterlab/lumino/pull/728) ([@dependabot](https://github.com/dependabot))
+- Bump tj-actions/changed-files from 45.0.2 to 45.0.3 in the actions group [#726](https://github.com/jupyterlab/lumino/pull/726) ([@dependabot](https://github.com/dependabot))
+- Bump axios from 1.6.1 to 1.7.7 [#724](https://github.com/jupyterlab/lumino/pull/724) ([@dependabot](https://github.com/dependabot))
+- Bump tj-actions/changed-files from 44.5.7 to 45.0.2 in the actions group across 1 directory [#723](https://github.com/jupyterlab/lumino/pull/723) ([@dependabot](https://github.com/dependabot))
+- Bump rollup from 3.25.1 to 3.29.5 [#722](https://github.com/jupyterlab/lumino/pull/722) ([@dependabot](https://github.com/dependabot))
+- Bump micromatch from 4.0.5 to 4.0.8 [#720](https://github.com/jupyterlab/lumino/pull/720) ([@dependabot](https://github.com/dependabot))
+
+### Documentation improvements
+
+- Fixed the broken link to `CONTRIBUTING.md` [#737](https://github.com/jupyterlab/lumino/pull/737) ([@hxrshxz](https://github.com/hxrshxz))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2024-08-13&to=2025-02-01&type=c))
+
+[@andrewfulton9](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aandrewfulton9+updated%3A2024-08-13..2025-02-01&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2024-08-13..2025-02-01&type=Issues) | [@hxrshxz](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ahxrshxz+updated%3A2024-08-13..2025-02-01&type=Issues) | [@i-aki-y](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ai-aki-y+updated%3A2024-08-13..2025-02-01&type=Issues) | [@krassowski](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2024-08-13..2025-02-01&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2024.8.13
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2024.6.28...2c613f00ffe80fe63debb62108532135b1638e9c))
@@ -43,8 +82,6 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2024-06-28&to=2024-08-13&type=c))
 
 [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2024-06-28..2024-08-13&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2024-06-28..2024-08-13&type=Issues) | [@krassowski](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2024-06-28..2024-08-13&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2024.6.28
 
