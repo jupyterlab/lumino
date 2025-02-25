@@ -33,6 +33,10 @@ import { Widget } from './widget';
 
 /**
  * A widget which displays menus as a canonical menu bar.
+ *
+ * #### Notes
+ * See also the related [example](../../examples/menubar/index.html) and
+ * its [source](https://github.com/jupyterlab/lumino/tree/main/examples/example-menubar).
  */
 export class MenuBar extends Widget {
   /**

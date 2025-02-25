@@ -52,6 +52,9 @@ import { TextRenderer } from './textrenderer';
  * the child widgets of a data grid directly is undefined behavior.
  *
  * This class is not designed to be subclassed.
+ * 
+ * See also the related [example](../../examples/datagrid/index.html) and
+ * its [source](https://github.com/jupyterlab/lumino/tree/main/examples/example-datagrid).
  */
 export class DataGrid extends Widget {
   /**

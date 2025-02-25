@@ -744,12 +744,16 @@ export namespace SplitLayout {
     /**
      * The orientation of the layout.
      *
+     * Possible values are documented in {@link SplitLayout.Orientation}.
+     * 
      * The default is `'horizontal'`.
      */
     orientation?: Orientation;
 
     /**
      * The content alignment of the layout.
+     *
+     * Possible values are documented in {@link SplitLayout.Alignment}.
      *
      * The default is `'start'`.
      */

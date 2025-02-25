@@ -15,12 +15,16 @@ import { Widget } from './widget';
  *
  * #### Notes
  * This class provides a convenience wrapper around {@link AccordionLayout}.
+ * 
+ * See also the related [example](../../examples/accordionpanel/index.html) and
+ * its [source](https://github.com/jupyterlab/lumino/tree/main/examples/example-accordionpanel).
  */
 export class AccordionPanel extends SplitPanel {
   /**
    * Construct a new accordion panel.
    *
    * @param options - The options for initializing the accordion panel.
+   * 
    */
   constructor(options: AccordionPanel.IOptions = {}) {
     super({ ...options, layout: Private.createLayout(options) });
