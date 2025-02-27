@@ -120,12 +120,16 @@ export namespace BoxPanel {
     /**
      * The layout direction of the panel.
      *
+     * Possible values are documented in {@link BoxLayout.Direction}.
+     *
      * The default is `'top-to-bottom'`.
      */
     direction?: Direction;
 
     /**
      * The content alignment of the panel.
+     *
+     * Possible values are documented in {@link BoxLayout.Alignment}.
      *
      * The default is `'start'`.
      */

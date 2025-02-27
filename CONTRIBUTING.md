@@ -76,3 +76,27 @@ To add an example to the static examples:
 - Add appropriate link in: `docs/source/examples.rst`
 - Add the example name to the `EXAMPLES` in `docs/source/conf.py`
 - Add `ignore-links` config in `package.json`
+
+## Documentation
+
+The documentation is built with [sphinx](https://www.sphinx-doc.org/en/master/)
+making use of the [PyData Sphinx theme](https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html).
+
+To build it locally
+
+- create and activate an isolated development environment with the necessary dependencies
+  with
+
+```bash
+conda env create -f docs/environment.yml
+conda activate lumino_documentation
+```
+
+- build, for example the html version, with
+
+```bash
+cd docs
+make html
+```
+
+The HTML pages are then located in the `build/html` directory.

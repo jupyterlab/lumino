@@ -31,6 +31,10 @@ import { Widget } from './widget';
 
 /**
  * A widget which provides a flexible docking area for widgets.
+ *
+ * #### Notes
+ * See also the related [example](../../examples/dockpanel/index.html) and
+ * its [source](https://github.com/jupyterlab/lumino/tree/main/examples/example-dockpanel).
  */
 export class DockPanel extends Widget {
   /**
