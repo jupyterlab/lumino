@@ -124,6 +124,7 @@ export class KeycodeLayout implements IKeyboardLayout {
    * @returns `true` if the key is valid, `false` otherwise.
    */
   isValidKey(key: string): boolean {
+    key = Private.normalizeCtrl(key);
     return key in this._keys || Private.isSpecialCharacter(key);
   }
 
@@ -135,6 +136,7 @@ export class KeycodeLayout implements IKeyboardLayout {
    * @returns `true` if the key is a modifier key, `false` otherwise.
    */
   isModifierKey(key: string): boolean {
+    key = Private.normalizeCtrl(key);
     return key in this._modifierKeys;
   }
 
@@ -235,5 +237,15 @@ namespace Private {
     // If the value starts with an uppercase latin character and is followed by one
     // or more alphanumeric basic latin characters, it is likely a special key.
     return SPECIAL_KEYS.has(key);
+  }
+
+  /**
+   * Normalize Ctrl to Control for backwards compatability.
+   *
+   * @param key - The key value that is to be normalized
+   * @returns The normalized key string
+   */
+  export function normalizeCtrl(key: string): string {
+    return key === 'Ctrl' ? 'Control' : key;
   }
 }
