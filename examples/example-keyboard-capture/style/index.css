@@ -1,0 +1,54 @@
+/*-----------------------------------------------------------------------------
+| Copyright (c) Jupyter Development Team.
+| Copyright (c) 2014-2017, PhosphorJS Contributors
+|
+| Distributed under the terms of the BSD 3-Clause License.
+|
+| The full license is in the file LICENSE, distributed with this software.
+|----------------------------------------------------------------------------*/
+@import '~@lumino/widgets/style/index.css';
+
+body {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  padding: 0;
+}
+
+#main {
+  flex: 1 1 auto;
+  overflow: auto;
+  padding: 10px;
+}
+
+.lm-keyboardCaptureArea {
+  border-radius: 5px;
+  border: 3px dashed #88a;
+  padding: 6px;
+  margin: 6px;
+}
+
+.lm-keyboardCaptureOutputArea kbd {
+  background-color: #eee;
+  border-radius: 5px;
+  border: 3px solid #b4b4b4;
+  box-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.2),
+    0 2px 0 0 rgba(255, 255, 255, 0.7) inset;
+  color: #333;
+  display: inline-block;
+  font-size: 0.85em;
+  font-weight: 700;
+  line-height: 1;
+  padding: 2px 4px;
+  white-space: nowrap;
+}
+
+.lm-keyboardCaptureOutputArea button {
+  margin: 4px;
+}

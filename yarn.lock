@@ -616,6 +616,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@lumino/example-keyboard-capture@workspace:examples/example-keyboard-capture":
+  version: 0.0.0-use.local
+  resolution: "@lumino/example-keyboard-capture@workspace:examples/example-keyboard-capture"
+  dependencies:
+    "@lumino/keyboard-capture": ^2.0.0
+    "@lumino/messaging": ^2.0.2
+    "@lumino/signaling": ^2.1.3
+    "@lumino/widgets": ^2.6.0
+    "@rollup/plugin-node-resolve": ^15.0.1
+    rimraf: ^5.0.1
+    rollup: ^3.25.1
+    rollup-plugin-styles: ^4.0.0
+    typescript: ~5.1.3
+  languageName: unknown
+  linkType: soft
+
 "@lumino/example-menubar@workspace:examples/example-menubar":
   version: 0.0.0-use.local
   resolution: "@lumino/example-menubar@workspace:examples/example-menubar"
@@ -636,6 +652,33 @@ __metadata:
   resolution: "@lumino/example-nested-dockpanel-amd@workspace:examples/example-nested-dockpanel-amd"
   dependencies:
     "@playwright/test": ^1.44.0
+  languageName: unknown
+  linkType: soft
+
+"@lumino/keyboard-capture@^2.0.0, @lumino/keyboard-capture@workspace:packages/keyboard-capture":
+  version: 0.0.0-use.local
+  resolution: "@lumino/keyboard-capture@workspace:packages/keyboard-capture"
+  dependencies:
+    "@lumino/keyboard": ^2.0.2
+    "@lumino/messaging": ^2.0.2
+    "@lumino/signaling": ^2.1.3
+    "@lumino/widgets": ^2.6.0
+    "@microsoft/api-extractor": ^7.36.0
+    "@rollup/plugin-commonjs": ^24.0.0
+    "@rollup/plugin-node-resolve": ^15.0.1
+    "@types/chai": ^3.4.35
+    "@types/mocha": ^2.2.39
+    "@web/test-runner": ^0.18.2
+    "@web/test-runner-playwright": ^0.11.0
+    chai: ^4.3.4
+    mocha: ^9.0.3
+    rimraf: ^5.0.1
+    rollup: ^3.25.1
+    rollup-plugin-postcss: ^4.0.2
+    rollup-plugin-sourcemaps: ^0.6.3
+    terser: ^5.18.1
+    tslib: ^2.3.0
+    typescript: ~5.1.3
   languageName: unknown
   linkType: soft
 
