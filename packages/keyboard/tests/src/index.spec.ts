@@ -11,8 +11,10 @@ import { expect } from 'chai';
 
 import {
   EN_US,
+  FR_FR,
   getKeyboardLayout,
   KeycodeLayout,
+  NB_NO,
   setKeyboardLayout
 } from '@lumino/keyboard';
 
@@ -190,6 +192,65 @@ describe('@lumino/keyboard', () => {
       expect(EN_US.isModifierKey('Control')).to.equal(true);
       expect(EN_US.isModifierKey('Alt')).to.equal(true);
       expect(EN_US.isModifierKey('Meta')).to.equal(true);
+    });
+  });
+
+  describe('FR_FR', () => {
+    it('should be a keycode layout', () => {
+      expect(FR_FR).to.be.an.instanceof(KeycodeLayout);
+    });
+
+    it('should have standardized keys', () => {
+      expect(FR_FR.isValidKey('A')).to.equal(true);
+      expect(FR_FR.isValidKey('Z')).to.equal(true);
+      expect(FR_FR.isValidKey('0')).to.equal(true);
+      expect(FR_FR.isValidKey('a')).to.equal(false);
+      expect(FR_FR.isValidKey('Ù')).to.equal(true);
+    });
+
+    it('should have modifier keys', () => {
+      expect(FR_FR.isValidKey('Shift')).to.equal(true);
+      expect(FR_FR.isValidKey('Control')).to.equal(true);
+      expect(FR_FR.isValidKey('Alt')).to.equal(true);
+      expect(NB_NO.isValidKey('AltGraph')).to.equal(true);
+      expect(FR_FR.isValidKey('Meta')).to.equal(true);
+    });
+
+    it('should correctly detect modifier keys', () => {
+      expect(FR_FR.isModifierKey('Shift')).to.equal(true);
+      expect(FR_FR.isModifierKey('Control')).to.equal(true);
+      expect(FR_FR.isModifierKey('Alt')).to.equal(true);
+      expect(FR_FR.isModifierKey('Meta')).to.equal(true);
+    });
+  });
+
+  describe('NB_NO', () => {
+    it('should be a keycode layout', () => {
+      expect(NB_NO).to.be.an.instanceof(KeycodeLayout);
+    });
+
+    it('should have standardized keys', () => {
+      expect(NB_NO.isValidKey('A')).to.equal(true);
+      expect(NB_NO.isValidKey('Z')).to.equal(true);
+      expect(NB_NO.isValidKey('0')).to.equal(true);
+      expect(NB_NO.isValidKey('a')).to.equal(false);
+      expect(NB_NO.isValidKey('Æ')).to.equal(true);
+    });
+
+    it('should have modifier keys', () => {
+      expect(NB_NO.isValidKey('Shift')).to.equal(true);
+      expect(NB_NO.isValidKey('Control')).to.equal(true);
+      expect(NB_NO.isValidKey('Alt')).to.equal(true);
+      expect(NB_NO.isValidKey('AltGraph')).to.equal(true);
+      expect(NB_NO.isValidKey('Meta')).to.equal(true);
+    });
+
+    it('should correctly detect modifier keys', () => {
+      expect(NB_NO.isModifierKey('Shift')).to.equal(true);
+      expect(NB_NO.isModifierKey('Control')).to.equal(true);
+      expect(NB_NO.isModifierKey('Alt')).to.equal(true);
+      expect(NB_NO.isModifierKey('AltGraph')).to.equal(true);
+      expect(NB_NO.isModifierKey('Meta')).to.equal(true);
     });
   });
 });

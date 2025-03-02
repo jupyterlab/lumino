@@ -136,8 +136,7 @@ export const EN_US: IKeyboardLayout = new KeycodeLayout(
     222: "'",
     224: 'Meta' // firefox
   },
-  // TODO: Figure out Ctrl vs Control
-  [...MODIFIER_KEYS, 'Ctrl'],
+  MODIFIER_KEYS,
   {
     AltLeft: 'Alt',
     AltRight: 'Alt',
