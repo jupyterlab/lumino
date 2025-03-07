@@ -462,6 +462,25 @@ export class Widget implements IMessageHandler, IObservableDisposable {
   }
 
   /**
+   * Check if the widget or any of it's parents is hidden.
+   *
+   * Checking parents is necessary as lumino does not propagate visibility
+   * changes from parents down to children (although it does notify parents
+   * about changes to children visibility).
+   */
+  isWithinHiddenWidget(): boolean {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    let parent: Widget | null = this;
+    do {
+      if (parent.isHidden) {
+        return true;
+      }
+      parent = parent.parent;
+    } while (parent != null);
+    return false;
+  }
+
+  /**
    * Show or hide the widget according to a boolean value.
    *
    * @param hidden - `true` to hide the widget, or `false` to show it.
