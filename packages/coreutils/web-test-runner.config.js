@@ -7,7 +7,7 @@ module.exports = {
   testFramework: {
     config: {
       forbidOnly: process.env.CI ? true : false,
-      forbidPending: process.env.CI ? true : false,
+      forbidPending: process.env.CI ? true : false
     }
   }
 };
