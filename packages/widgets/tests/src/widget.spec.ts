@@ -685,6 +685,28 @@ describe('@lumino/widgets', () => {
       });
     });
 
+    describe('#isWithinHiddenWidget()', () => {
+      it('should be true if the widget is hidden', () => {
+        let widget = new Widget();
+        widget.hide();
+        expect(widget.isWithinHiddenWidget()).to.equal(true);
+      });
+
+      it('should be false if the widget is not hidden without parent', () => {
+        let widget = new Widget();
+        expect(widget.isWithinHiddenWidget()).to.equal(false);
+      });
+
+      it('should be true if the widget is not hidden but parent is hidden', () => {
+        let parent = new Widget();
+        parent.hide();
+        let widget = new Widget();
+        widget.parent = parent;
+        expect(widget.isHidden).to.equal(false);
+        expect(widget.isWithinHiddenWidget()).to.equal(true);
+      });
+    });
+
     describe('#setHidden()', () => {
       it('should call hide if `hidden = true`', () => {
         let widget = new LogWidget();

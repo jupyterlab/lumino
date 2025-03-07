@@ -1319,6 +1319,7 @@ export class Widget implements IMessageHandler, IObservableDisposable {
     get isDisposed(): boolean;
     get isHidden(): boolean;
     get isVisible(): boolean;
+    isWithinHiddenWidget(): boolean;
     get layout(): Layout | null;
     set layout(value: Layout | null);
     readonly node: HTMLElement;
