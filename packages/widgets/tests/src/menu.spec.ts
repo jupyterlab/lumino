@@ -615,7 +615,7 @@ describe('@lumino/widgets', () => {
         expect(menu.node.style.transform.endsWith('px, 300px)')).to.equal(true);
       });
 
-      it.only('horizontalAlignment should default to `right` if language direction is `rtl`', () => {
+      it('horizontalAlignment should default to `right` if language direction is `rtl`', () => {
         document.documentElement.setAttribute('dir', 'rtl');
         menu.addItem({ command: 'test' });
         menu.open(300, 300);
