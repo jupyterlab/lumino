@@ -553,6 +553,44 @@ describe('@lumino/widgets', () => {
           'example:run-cell'
         );
       });
+
+      it('should clear the widget content if hidden', () => {
+        commands.addCommand('test', { execute: () => {}, label: 'test' });
+        palette.addItem({ command: 'test', category: 'test' });
+        const content = palette.contentNode;
+        const itemClass = '.lm-CommandPalette-item';
+        const items = () => content.querySelectorAll(itemClass);
+
+        palette.refresh();
+        MessageLoop.flush();
+
+        expect(items()).to.have.length(1);
+
+        palette.hide();
+        palette.refresh();
+        MessageLoop.flush();
+        expect(items()).to.have.length(0);
+      });
+
+      it('should clear the widget content if container is hidden', () => {
+        const parent = new Widget();
+        palette.parent = parent;
+        commands.addCommand('test', { execute: () => {}, label: 'test' });
+        palette.addItem({ command: 'test', category: 'test' });
+        const content = palette.contentNode;
+        const itemClass = '.lm-CommandPalette-item';
+        const items = () => content.querySelectorAll(itemClass);
+
+        palette.refresh();
+        MessageLoop.flush();
+
+        expect(items()).to.have.length(1);
+
+        parent.hide();
+        palette.refresh();
+        MessageLoop.flush();
+        expect(items()).to.have.length(0);
+      });
     });
 
     describe('#handleEvent()', () => {
