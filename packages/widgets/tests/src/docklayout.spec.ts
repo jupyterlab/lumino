@@ -225,24 +225,24 @@ describe('@lumino/widgets', () => {
     });
 
     // TODO: More tests to add
-    describe('#widgets()', () => {
-      it.skip('should have some tests');
-    });
-    describe('#selectedWidgets()', () => {
-      it.skip('should have some tests');
-    });
-    describe('#tabBars()', () => {
-      it.skip('should have some tests');
-    });
-    describe('#moveHandle()', () => {
-      it.skip('should have some tests');
-    });
-    describe('#saveLayout()', () => {
-      it.skip('should have some tests');
-    });
-    describe('#restoreLayout()', () => {
-      it.skip('should have some tests');
-    });
+    // describe('#widgets()', () => {
+    //   it.skip('should have some tests');
+    // });
+    // describe('#selectedWidgets()', () => {
+    //   it.skip('should have some tests');
+    // });
+    // describe('#tabBars()', () => {
+    //   it.skip('should have some tests');
+    // });
+    // describe('#moveHandle()', () => {
+    //   it.skip('should have some tests');
+    // });
+    // describe('#saveLayout()', () => {
+    //   it.skip('should have some tests');
+    // });
+    // describe('#restoreLayout()', () => {
+    //   it.skip('should have some tests');
+    // });
     describe('#addWidget()', () => {
       type Mode = DockLayout.InsertMode;
       it('should add widgets', () => {
@@ -292,17 +292,17 @@ describe('@lumino/widgets', () => {
         }
       });
     });
-    describe('#removeWidget()', () => {
-      it.skip('should have some tests');
-    });
-    describe('#hitTestTabAreas()', () => {
-      it.skip('should have some tests');
-    });
-    describe('#attachWidget()', () => {
-      it.skip('should have some tests');
-    });
-    describe('#detachWidget()', () => {
-      it.skip('should have some tests');
-    });
+    // describe('#removeWidget()', () => {
+    //   it.skip('should have some tests');
+    // });
+    // describe('#hitTestTabAreas()', () => {
+    //   it.skip('should have some tests');
+    // });
+    // describe('#attachWidget()', () => {
+    //   it.skip('should have some tests');
+    // });
+    // describe('#detachWidget()', () => {
+    //   it.skip('should have some tests');
+    // });
   });
 });
