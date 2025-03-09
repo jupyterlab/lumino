@@ -68,8 +68,11 @@ export function hasBrowserLayout(): boolean {
  */
 export async function useBrowserLayout(): Promise<boolean> {
   const keyboardApi = (navigator as any)?.keyboard;
-  if (!(await Private.updateBrowserLayout())) {
-    return false;
+  // avoid updating if already set
+  if (Private.keyboardLayout.name !== Private.INTERNAL_BROWSER_LAYOUT_NAME) {
+    if (!(await Private.updateBrowserLayout())) {
+      return false;
+    }
   }
   if (keyboardApi?.addEventListener) {
     keyboardApi.addEventListener('layoutchange', Private.updateBrowserLayout);
@@ -87,7 +90,12 @@ namespace Private {
   export let keyboardLayout = EN_US;
 
   /**
-   * Polyfill until Object.fromEntries is available
+   * Internal name for browser-based keyboard layout.
+   */
+  export const INTERNAL_BROWSER_LAYOUT_NAME = '__lumino-internal-browser';
+
+  /**
+   * Polyfill until Object.fromEntries is available.
    */
   function fromEntries<T>(entries: Iterable<[string, T]>) {
     const ret = {} as { [key: string]: T };
@@ -114,10 +122,17 @@ namespace Private {
       return undefined;
     }
     return new KeycodeLayout(
-      'browser',
+      INTERNAL_BROWSER_LAYOUT_NAME,
       {},
       MODIFIER_KEYS,
-      fromEntries(browserMap.entries())
+      fromEntries(
+        browserMap
+          .entries()
+          .map(([k, v]: string[]) => [
+            k,
+            v.charAt(0).toUpperCase() + v.slice(1)
+          ])
+      )
     );
   }
 
