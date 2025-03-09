@@ -11,12 +11,14 @@ import { expect } from 'chai';
 
 import {
   EN_US,
-  FR_FR,
   getKeyboardLayout,
+  KeyboardLayouts,
   KeycodeLayout,
-  NB_NO,
   setKeyboardLayout
 } from '@lumino/keyboard';
+
+const FR_FR = KeyboardLayouts.find(layout => layout.name === 'fr-FR');
+const NB_NO = KeyboardLayouts.find(layout => layout.name === 'nb-NO');
 
 describe('@lumino/keyboard', () => {
   describe('getKeyboardLayout()', () => {

@@ -15,8 +15,11 @@
 import { IKeyboardLayout } from './core';
 export { IKeyboardLayout, KeycodeLayout } from './core';
 
+export { EN_US } from './layouts';
 import { EN_US } from './layouts';
-export * from './layouts';
+import * as Layouts from './layouts';
+
+export const KeyboardLayouts = Object.values(Layouts);
 
 /**
  * Get the global application keyboard layout instance.
