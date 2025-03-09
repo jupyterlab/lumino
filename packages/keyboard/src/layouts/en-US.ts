@@ -34,7 +34,7 @@ import { MODIFIER_KEYS } from '../special-keys';
  * Other combinations may also work, but are untested.
  */
 export const EN_US: IKeyboardLayout = new KeycodeLayout(
-  'en-us',
+  'en-US',
   {
     8: 'Backspace',
     9: 'Tab',
