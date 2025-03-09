@@ -12,12 +12,13 @@
  * @module keyboard
  */
 
-import { IKeyboardLayout } from './core';
+import { IKeyboardLayout, KeycodeLayout } from './core';
 export { IKeyboardLayout, KeycodeLayout } from './core';
 
 export { EN_US } from './layouts';
 import { EN_US } from './layouts';
 import * as Layouts from './layouts';
+import { MODIFIER_KEYS } from './special-keys';
 
 export const KeyboardLayouts = Object.values(Layouts);
 
@@ -42,7 +43,38 @@ export function getKeyboardLayout(): IKeyboardLayout {
  * to a layout which is appropriate for the user's system.
  */
 export function setKeyboardLayout(layout: IKeyboardLayout): void {
+  try {
+    Private.unsubscribeBrowserUpdates();
+  } catch (e) {
+    // Ignore exceptions in experimental code
+  }
   Private.keyboardLayout = layout;
+}
+
+/**
+ * Whether the browser supports inspecting the keyboard layout.
+ *
+ * @alpha
+ */
+export function hasBrowserLayout(): boolean {
+  return !!(navigator as any)?.keyboard?.getLayoutMap;
+}
+
+/**
+ * Use the keyboard layout of the browser if it supports it.
+ *
+ * @alpha
+ * @returns Whether the browser supports inspecting the keyboard layout.
+ */
+export async function useBrowserLayout(): Promise<boolean> {
+  const keyboardApi = (navigator as any)?.keyboard;
+  if (!(await Private.updateBrowserLayout())) {
+    return false;
+  }
+  if (keyboardApi?.addEventListener) {
+    keyboardApi.addEventListener('layoutchange', Private.updateBrowserLayout);
+  }
+  return true;
 }
 
 /**
@@ -53,4 +85,61 @@ namespace Private {
    * The global keyboard layout instance.
    */
   export let keyboardLayout = EN_US;
+
+  /**
+   * Polyfill until Object.fromEntries is available
+   */
+  function fromEntries<T>(entries: Iterable<[string, T]>) {
+    const ret = {} as { [key: string]: T };
+    for (const [key, value] of entries) {
+      ret[key] = value;
+    }
+    return ret;
+  }
+
+  /**
+   * Get the current browser keyboard layout, or null if unsupported.
+   *
+   * @returns The keyboard layout of the browser at this moment if supported, otherwise null.
+   */
+  export async function getBrowserKeyboardLayout(): Promise<
+    IKeyboardLayout | undefined
+  > {
+    const keyboardApi = (navigator as any)?.keyboard;
+    if (!keyboardApi) {
+      return undefined;
+    }
+    const browserMap = await keyboardApi.getLayoutMap();
+    if (!browserMap) {
+      return undefined;
+    }
+    return new KeycodeLayout(
+      'browser',
+      {},
+      MODIFIER_KEYS,
+      fromEntries(browserMap.entries())
+    );
+  }
+
+  /**
+   * Set the active layout to that of the browser at this instant.
+   */
+  export async function updateBrowserLayout(): Promise<boolean> {
+    const initial = await getBrowserKeyboardLayout();
+    if (!initial) {
+      return false;
+    }
+    keyboardLayout = initial;
+    return true;
+  }
+
+  /**
+   * Unsubscribe any browser updates
+   */
+  export function unsubscribeBrowserUpdates(): void {
+    const keyboardApi = (navigator as any)?.keyboard;
+    if (keyboardApi?.removeEventListener) {
+      keyboardApi.removeEventListener(updateBrowserLayout);
+    }
+  }
 }
