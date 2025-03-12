@@ -1,6 +1,11 @@
 // Copyright (c) Jupyter Development Team.
 // Distributed under the terms of the Modified BSD License.
 
+/**
+ * Known modifier keys.
+ *
+ * Ref. https://www.w3.org/TR/uievents-key/#keys-modifier
+ */
 export const MODIFIER_KEYS = [
   'Alt',
   'AltGraph',
@@ -13,7 +18,9 @@ export const MODIFIER_KEYS = [
   'ScrollLock',
   'Shift',
   'Symbol',
-  'SymbolLock'
+  'SymbolLock',
+  'Hyper',
+  'Super'
 ];
 
 /**
