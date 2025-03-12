@@ -1,6 +1,0 @@
-{
-  "extends": ["../../typedoc.base.json"],
-  "entryPoints": ["src/index.ts"],
-  "name": "keyboard-capture",
-  "readme": "none"
-}
