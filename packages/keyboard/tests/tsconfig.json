@@ -6,5 +6,5 @@
     "rootDir": "src",
     "types": ["chai", "mocha"]
   },
-  "include": ["src/**/*"]
+  "include": ["src/*"]
 }
