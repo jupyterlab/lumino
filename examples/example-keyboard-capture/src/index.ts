@@ -14,7 +14,6 @@ import { OutputWidget } from './output';
 
 import '../style/index.css';
 
-
 /**
  * Initialize the applicaiton.
  */
