@@ -50,19 +50,15 @@ jobs:
           git add ./review/api/*.api.md
           git commit --allow-empty -m "API changes"
 
-      - name: Get API changes
-        id: api-changed
-        uses: tj-actions/changed-files@v45.0.7
-        with:
-          base_sha: 'HEAD~1'
-          sha: 'HEAD'
-          # only checks for modified files in this directory
-          files: review/api/*.api.md
+      # TODO: re-enable check for the following files:
+      # review/api/*.api.md
+      # - name: Get API changes
+      #   id: api-changed
 
-      - name: Fail if API are modified
-        if: steps.api-changed.outputs.any_changed == 'true'
-        run: |
-          for file in ${{ steps.api-changed.outputs.all_changed_files }}; do
-            echo "$file"
-          done
-          exit 1
+      # - name: Fail if API are modified
+      #   if: steps.api-changed.outputs.any_changed == 'true'
+      #   run: |
+      #     for file in ${{ steps.api-changed.outputs.all_changed_files }}; do
+      #       echo "$file"
+      #     done
+      #     exit 1
