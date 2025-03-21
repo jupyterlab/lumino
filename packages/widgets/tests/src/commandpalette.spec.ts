@@ -44,6 +44,7 @@ describe('@lumino/widgets', () => {
   beforeEach(() => {
     commands = new CommandRegistry();
     palette = new CommandPalette({ commands });
+    Widget.attach(palette, document.body);
   });
 
   afterEach(() => {
@@ -493,65 +494,76 @@ describe('@lumino/widgets', () => {
         });
 
         let palette = new CommandPalette({ commands });
-        palette.addItem({ command: 'example:cut', category: 'Edit' });
-        palette.addItem({ command: 'example:copy', category: 'Edit' });
-        palette.addItem({ command: 'example:paste', category: 'Edit' });
-        palette.addItem({ command: 'example:one', category: 'Number' });
-        palette.addItem({ command: 'example:two', category: 'Number' });
-        palette.addItem({ command: 'example:three', category: 'Number' });
-        palette.addItem({ command: 'example:four', category: 'Number' });
-        palette.addItem({ command: 'example:black', category: 'Number' });
-        palette.addItem({ command: 'example:new-tab', category: 'File' });
-        palette.addItem({ command: 'example:close-tab', category: 'File' });
-        palette.addItem({ command: 'example:save-on-exit', category: 'File' });
-        palette.addItem({
-          command: 'example:open-task-manager',
-          category: 'File'
-        });
-        palette.addItem({ command: 'example:close', category: 'File' });
-        palette.addItem({
-          command: 'example:clear-cell',
-          category: 'Notebook Cell Operations'
-        });
-        palette.addItem({
-          command: 'example:cut-cells',
-          category: 'Notebook Cell Operations'
-        });
-        palette.addItem({
-          command: 'example:run-cell',
-          category: 'Notebook Cell Operations'
-        });
-        palette.addItem({ command: 'example:cell-test', category: 'Console' });
-        palette.addItem({ command: 'notebook:new', category: 'Notebook' });
-        palette.id = 'palette';
+        Widget.attach(palette, document.body);
+        try {
+          palette.addItem({ command: 'example:cut', category: 'Edit' });
+          palette.addItem({ command: 'example:copy', category: 'Edit' });
+          palette.addItem({ command: 'example:paste', category: 'Edit' });
+          palette.addItem({ command: 'example:one', category: 'Number' });
+          palette.addItem({ command: 'example:two', category: 'Number' });
+          palette.addItem({ command: 'example:three', category: 'Number' });
+          palette.addItem({ command: 'example:four', category: 'Number' });
+          palette.addItem({ command: 'example:black', category: 'Number' });
+          palette.addItem({ command: 'example:new-tab', category: 'File' });
+          palette.addItem({ command: 'example:close-tab', category: 'File' });
+          palette.addItem({
+            command: 'example:save-on-exit',
+            category: 'File'
+          });
+          palette.addItem({
+            command: 'example:open-task-manager',
+            category: 'File'
+          });
+          palette.addItem({ command: 'example:close', category: 'File' });
+          palette.addItem({
+            command: 'example:clear-cell',
+            category: 'Notebook Cell Operations'
+          });
+          palette.addItem({
+            command: 'example:cut-cells',
+            category: 'Notebook Cell Operations'
+          });
+          palette.addItem({
+            command: 'example:run-cell',
+            category: 'Notebook Cell Operations'
+          });
+          palette.addItem({
+            command: 'example:cell-test',
+            category: 'Console'
+          });
+          palette.addItem({ command: 'notebook:new', category: 'Notebook' });
+          palette.id = 'palette';
 
-        // Search the command palette: update the inputNode, then force a refresh
-        palette.inputNode.value = 'clea';
-        palette.refresh();
-        MessageLoop.flush();
+          // Search the command palette: update the inputNode, then force a refresh
+          palette.inputNode.value = 'clea';
+          palette.refresh();
+          MessageLoop.flush();
 
-        // Expect that headers and items appear in descending score order,
-        // even if the same header occurs multiple times.
-        const children = palette.contentNode.children;
-        expect(children.length).to.equal(7);
-        expect(children[0].textContent).to.equal('Notebook Cell Operations');
-        expect(children[1].getAttribute('data-command')).to.equal(
-          'example:clear-cell'
-        );
-        // The next match should be from a different category
-        expect(children[2].textContent).to.equal('File');
-        expect(children[3].getAttribute('data-command')).to.equal(
-          'example:close-tab'
-        );
-        // The next match should be the same as in a previous category
-        expect(children[4].textContent).to.equal('Notebook Cell Operations');
-        expect(children[5].getAttribute('data-command')).to.equal(
-          'example:cut-cells'
-        );
-        // The next match has the same category as the previous one did, so the header is not repeated
-        expect(children[6].getAttribute('data-command')).to.equal(
-          'example:run-cell'
-        );
+          // Expect that headers and items appear in descending score order,
+          // even if the same header occurs multiple times.
+          const children = palette.contentNode.children;
+          expect(children.length).to.equal(7);
+          expect(children[0].textContent).to.equal('Notebook Cell Operations');
+          expect(children[1].getAttribute('data-command')).to.equal(
+            'example:clear-cell'
+          );
+          // The next match should be from a different category
+          expect(children[2].textContent).to.equal('File');
+          expect(children[3].getAttribute('data-command')).to.equal(
+            'example:close-tab'
+          );
+          // The next match should be the same as in a previous category
+          expect(children[4].textContent).to.equal('Notebook Cell Operations');
+          expect(children[5].getAttribute('data-command')).to.equal(
+            'example:cut-cells'
+          );
+          // The next match has the same category as the previous one did, so the header is not repeated
+          expect(children[6].getAttribute('data-command')).to.equal(
+            'example:run-cell'
+          );
+        } finally {
+          palette.dispose();
+        }
       });
 
       it('should clear the widget content if hidden', () => {
@@ -574,22 +586,27 @@ describe('@lumino/widgets', () => {
 
       it('should clear the widget content if container is hidden', () => {
         const parent = new Widget();
-        palette.parent = parent;
-        commands.addCommand('test', { execute: () => {}, label: 'test' });
-        palette.addItem({ command: 'test', category: 'test' });
-        const content = palette.contentNode;
-        const itemClass = '.lm-CommandPalette-item';
-        const items = () => content.querySelectorAll(itemClass);
+        Widget.attach(parent, document.body);
+        try {
+          palette.parent = parent;
+          commands.addCommand('test', { execute: () => {}, label: 'test' });
+          palette.addItem({ command: 'test', category: 'test' });
+          const content = palette.contentNode;
+          const itemClass = '.lm-CommandPalette-item';
+          const items = () => content.querySelectorAll(itemClass);
 
-        palette.refresh();
-        MessageLoop.flush();
+          palette.refresh();
+          MessageLoop.flush();
 
-        expect(items()).to.have.length(1);
+          expect(items()).to.have.length(1);
 
-        parent.hide();
-        palette.refresh();
-        MessageLoop.flush();
-        expect(items()).to.have.length(0);
+          parent.hide();
+          palette.refresh();
+          MessageLoop.flush();
+          expect(items()).to.have.length(0);
+        } finally {
+          parent.dispose();
+        }
       });
     });
 
@@ -597,11 +614,14 @@ describe('@lumino/widgets', () => {
       it('should handle click, keydown, and input events', () => {
         let palette = new LogPalette({ commands });
         Widget.attach(palette, document.body);
-        ['click', 'keydown', 'input'].forEach(type => {
-          palette.node.dispatchEvent(new Event(type, { bubbles }));
-          expect(palette.events).to.contain(type);
-        });
-        palette.dispose();
+        try {
+          ['click', 'keydown', 'input'].forEach(type => {
+            palette.node.dispatchEvent(new Event(type, { bubbles }));
+            expect(palette.events).to.contain(type);
+          });
+        } finally {
+          palette.dispose();
+        }
       });
 
       context('click', () => {
@@ -610,7 +630,6 @@ describe('@lumino/widgets', () => {
           commands.addCommand('test', { execute: () => (called = true) });
 
           palette.addItem(defaultOptions);
-          Widget.attach(palette, document.body);
           MessageLoop.flush();
 
           let node = palette.contentNode.querySelector(
@@ -625,7 +644,6 @@ describe('@lumino/widgets', () => {
           commands.addCommand('test', { execute: () => (called = true) });
 
           palette.addItem(defaultOptions);
-          Widget.attach(palette, document.body);
           MessageLoop.flush();
 
           let node = palette.contentNode.querySelector(
@@ -642,7 +660,6 @@ describe('@lumino/widgets', () => {
           let content = palette.contentNode;
 
           palette.addItem(defaultOptions);
-          Widget.attach(palette, document.body);
           MessageLoop.flush();
 
           let node = content.querySelector('.lm-mod-active');
@@ -663,7 +680,6 @@ describe('@lumino/widgets', () => {
           let content = palette.contentNode;
 
           palette.addItem(defaultOptions);
-          Widget.attach(palette, document.body);
           MessageLoop.flush();
 
           let node = content.querySelector('.lm-mod-active');
@@ -685,7 +701,6 @@ describe('@lumino/widgets', () => {
           let content = palette.contentNode;
 
           palette.addItem(defaultOptions);
-          Widget.attach(palette, document.body);
           MessageLoop.flush();
 
           let node = content.querySelector('.lm-mod-active');
@@ -715,7 +730,6 @@ describe('@lumino/widgets', () => {
           let content = palette.contentNode;
 
           palette.addItem(defaultOptions);
-          Widget.attach(palette, document.body);
           MessageLoop.flush();
 
           expect(content.querySelector('.lm-mod-active')).to.equal(null);
@@ -742,7 +756,6 @@ describe('@lumino/widgets', () => {
             palette.addItem({ command: name, category: 'test' });
           });
 
-          Widget.attach(palette, document.body);
           MessageLoop.flush();
 
           let content = palette.contentNode;
@@ -772,7 +785,6 @@ describe('@lumino/widgets', () => {
             });
           });
 
-          Widget.attach(palette, document.body);
           MessageLoop.flush();
 
           let headers = () =>

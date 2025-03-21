@@ -253,6 +253,15 @@ describe('@lumino/widgets', () => {
         let widget = new Widget();
         expect(widget.isVisible).to.equal(false);
       });
+
+      it('should be false if the widget is not hidden but its parent is hidden', () => {
+        let parent = new Widget();
+        parent.hide();
+        let widget = new Widget();
+        widget.parent = parent;
+        expect(widget.isHidden).to.equal(false);
+        expect(widget.isVisible).to.equal(false);
+      });
     });
 
     describe('#node', () => {
@@ -682,28 +691,6 @@ describe('@lumino/widgets', () => {
         widget.hide();
         expect(widget.messages).to.not.contain('before-hide');
         widget.dispose();
-      });
-    });
-
-    describe('#isWithinHiddenWidget()', () => {
-      it('should be true if the widget is hidden', () => {
-        let widget = new Widget();
-        widget.hide();
-        expect(widget.isWithinHiddenWidget()).to.equal(true);
-      });
-
-      it('should be false if the widget is not hidden without parent', () => {
-        let widget = new Widget();
-        expect(widget.isWithinHiddenWidget()).to.equal(false);
-      });
-
-      it('should be true if the widget is not hidden but parent is hidden', () => {
-        let parent = new Widget();
-        parent.hide();
-        let widget = new Widget();
-        widget.parent = parent;
-        expect(widget.isHidden).to.equal(false);
-        expect(widget.isWithinHiddenWidget()).to.equal(true);
       });
     });
 
