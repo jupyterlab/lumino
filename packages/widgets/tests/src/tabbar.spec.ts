@@ -1815,6 +1815,7 @@ describe('@lumino/widgets', () => {
          * TODO:
          * Find a way to trigger the change of focus.
          */
+        /*
         it.skip('should keep focus on the second tab on tabulation', () => {
           const node = document.createElement('div');
           node.setAttribute('tabindex', '0');
@@ -1844,6 +1845,7 @@ describe('@lumino/widgets', () => {
           );
           expect(document.activeElement).to.equal(secondTab);
         });
+        */
       });
 
       context('contextmenu', () => {
