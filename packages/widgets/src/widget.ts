@@ -882,7 +882,7 @@ export namespace Widget {
      * The widget is visible.
      *
      * @deprecated since 2.7.0, apply that flag consistently was not reliable
-     * so it was drop in favor of a recursive check of the visibility of all parents.
+     * so it was dropped in favor of a recursive check of the visibility of all parents.
      */
     IsVisible = 0x8,
 
