@@ -1364,6 +1364,7 @@ export namespace Widget {
         IsAttached = 2,
         IsDisposed = 1,
         IsHidden = 4,
+        // @deprecated
         IsVisible = 8
     }
     export enum HiddenMode {

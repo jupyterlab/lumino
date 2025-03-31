@@ -295,7 +295,9 @@ export class CommandPalette extends Widget {
    * A message handler invoked on an `'update-request'` message.
    */
   protected onUpdateRequest(msg: Message): void {
-    if (this.isHidden) {
+    if (!this.isVisible) {
+      // Ensure to clear the content if the widget is hidden
+      VirtualDOM.render(null, this.contentNode);
       return;
     }
 

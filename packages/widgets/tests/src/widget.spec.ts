@@ -253,6 +253,15 @@ describe('@lumino/widgets', () => {
         let widget = new Widget();
         expect(widget.isVisible).to.equal(false);
       });
+
+      it('should be false if the widget is not hidden but its parent is hidden', () => {
+        let parent = new Widget();
+        parent.hide();
+        let widget = new Widget();
+        widget.parent = parent;
+        expect(widget.isHidden).to.equal(false);
+        expect(widget.isVisible).to.equal(false);
+      });
     });
 
     describe('#node', () => {
