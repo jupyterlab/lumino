@@ -1,6 +1,6 @@
 {
   "name": "@lumino/properties",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Lumino Attached Properties",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -38,7 +38,7 @@
     "watch": "tsc --build --watch"
   },
   "devDependencies": {
-    "@lumino/buildutils": "^2.0.1",
+    "@lumino/buildutils": "^2.0.2",
     "@microsoft/api-extractor": "^7.36.0",
     "@rollup/plugin-commonjs": "^24.0.0",
     "@rollup/plugin-node-resolve": "^15.0.1",
