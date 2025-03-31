@@ -6,6 +6,61 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2025.3.31
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2025.2.1...80501aca210d9ed4b1fc9ffae3f8a609282549f1))
+
+```
+@lumino/algorithm: 2.0.2 => 2.0.3
+@lumino/application: 2.4.2 => 2.4.3
+@lumino/collections: 2.0.2 => 2.0.3
+@lumino/commands: 2.3.1 => 2.3.2
+@lumino/coreutils: 2.2.0 => 2.2.1
+@lumino/datagrid: 2.5.0 => 2.5.1
+@lumino/default-theme: 2.1.8 => 2.1.9
+@lumino/disposable: 2.1.3 => 2.1.4
+@lumino/domutils: 2.0.2 => 2.0.3
+@lumino/dragdrop: 2.1.5 => 2.1.6
+@lumino/keyboard: 2.0.2 => 2.0.3
+@lumino/messaging: 2.0.2 => 2.0.3
+@lumino/polling: 2.1.3 => 2.1.4
+@lumino/properties: 2.0.2 => 2.0.3
+@lumino/signaling: 2.1.3 => 2.1.4
+@lumino/virtualdom: 2.0.2 => 2.0.3
+@lumino/widgets: 2.6.0 => 2.7.0
+```
+
+> [!IMPORTANT]
+> This release changes the algorithm of `Widget.isVisible` to be more robust in case the widget is contained within a hidden parent.\
+> It also deprecates the flag `Widget.Flag.isVisible`.
+
+### Enhancements made
+
+- Don't refresh if palette is within a hidden branch [#746](https://github.com/jupyterlab/lumino/pull/746) ([@fcollonval](https://github.com/fcollonval))
+
+### Maintenance and upkeep improvements
+
+- Update versions [#751](https://github.com/jupyterlab/lumino/pull/751) ([@fcollonval](https://github.com/fcollonval))
+- Bump axios from 1.7.7 to 1.8.3 [#748](https://github.com/jupyterlab/lumino/pull/748) ([@dependabot](https://github.com/dependabot))
+- Remove use of `tj-actions/changed-files` [#747](https://github.com/jupyterlab/lumino/pull/747) ([@jtpio](https://github.com/jtpio))
+- Forbid .only and .skip on CI [#745](https://github.com/jupyterlab/lumino/pull/745) ([@fcollonval](https://github.com/fcollonval))
+- "npm run" -> yarn [#743](https://github.com/jupyterlab/lumino/pull/743) ([@vidartf](https://github.com/vidartf))
+- Bump the actions group with 2 updates [#742](https://github.com/jupyterlab/lumino/pull/742) ([@dependabot](https://github.com/dependabot))
+- Bump koa from 2.15.3 to 2.15.4 [#739](https://github.com/jupyterlab/lumino/pull/739) ([@dependabot](https://github.com/dependabot))
+- Bump tj-actions/changed-files from 45.0.5 to 45.0.6 in the actions group [#738](https://github.com/jupyterlab/lumino/pull/738) ([@dependabot](https://github.com/dependabot))
+
+### Documentation improvements
+
+- Add links to the examples and documentation contribution instructions [#741](https://github.com/jupyterlab/lumino/pull/741) ([@cmarmo](https://github.com/cmarmo))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2025-02-01&to=2025-03-31&type=c))
+
+[@cmarmo](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Acmarmo+updated%3A2025-02-01..2025-03-31&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2025-02-01..2025-03-31&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2025-02-01..2025-03-31&type=Issues) | [@jtpio](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajtpio+updated%3A2025-02-01..2025-03-31&type=Issues) | [@vidartf](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Avidartf+updated%3A2025-02-01..2025-03-31&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2025.2.1
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2024.8.13...76e4a9044ae2937e20c867cd97b24e6bf7c119fe))
@@ -42,8 +97,6 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2024-08-13&to=2025-02-01&type=c))
 
 [@andrewfulton9](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aandrewfulton9+updated%3A2024-08-13..2025-02-01&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2024-08-13..2025-02-01&type=Issues) | [@hxrshxz](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ahxrshxz+updated%3A2024-08-13..2025-02-01&type=Issues) | [@i-aki-y](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ai-aki-y+updated%3A2024-08-13..2025-02-01&type=Issues) | [@krassowski](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2024-08-13..2025-02-01&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2024.8.13
 
