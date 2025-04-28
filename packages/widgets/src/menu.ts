@@ -1371,7 +1371,7 @@ export namespace Menu {
           }
           if (data.item.isToggled) {
             aria.role = 'menuitemcheckbox';
-            aria['aria-checked'] = data.item.isToggled.toString();
+            aria['aria-checked'] = 'true';
           } else {
             aria.role = 'menuitem';
           }
