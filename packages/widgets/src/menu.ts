@@ -1369,7 +1369,12 @@ export namespace Menu {
           if (!data.item.isEnabled) {
             aria['aria-disabled'] = 'true';
           }
-          aria.role = 'menuitem';
+          if (data.item.isToggled) {
+            aria.role = 'menuitemcheckbox';
+            aria['aria-checked'] = data.item.isToggled.toString();
+          } else {
+            aria.role = 'menuitem';
+          }
       }
       return aria;
     }
