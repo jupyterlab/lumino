@@ -24,11 +24,9 @@ export class SocketStream<T, U> extends Stream<T, U> implements IDisposable {
    *
    * @param options = The socket stream instantiation options.
    */
-  constructor(
-    sender: T,
-    protected readonly options: SocketStream.IOptions
-  ) {
+  constructor(sender: T, options: SocketStream.IOptions) {
     super(sender);
+    this.factory = () => new (options.WebSocket || WebSocket)(options.url);
     this.subscription = new Poll({ factory: () => this.subscribe() });
   }
 
@@ -67,6 +65,11 @@ export class SocketStream<T, U> extends Stream<T, U> implements IDisposable {
   }
 
   /**
+   * A factory that generates a new web socket instance for subscription.
+   */
+  protected readonly factory: () => WebSocket;
+
+  /**
    * The current active socket. This value is updated by the `subscribe` method.
    */
   protected socket: WebSocket | null = null;
@@ -86,10 +89,9 @@ export class SocketStream<T, U> extends Stream<T, U> implements IDisposable {
       return;
     }
     return new Promise<void>((_, reject) => {
-      const Socket = this.options.WebSocket || WebSocket;
-      const socket = (this.socket = new Socket(this.options.url));
-      socket.onclose = () => reject(new Error('socket stream: socket closed'));
-      socket.onmessage = msg => msg.data && this.emit(JSON.parse(msg.data));
+      this.socket = this.factory();
+      this.socket.onclose = () => reject(new Error('socket stream has closed'));
+      this.socket.onmessage = ({ data }) => data && this.emit(JSON.parse(data));
     });
   }
 }
