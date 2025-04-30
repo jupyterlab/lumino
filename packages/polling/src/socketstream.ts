@@ -18,11 +18,11 @@ import { Poll } from './poll';
  */
 export class SocketStream<T, U> extends Stream<T, U> implements IDisposable {
   /**
-   * Construct a new socket stream.
+   * Construct a new web socket stream.
    *
    * @param sender - The sender which owns the stream.
    *
-   * @param options = The socket stream instantiation options.
+   * @param options - Web socket `url` and optional `WebSocket` constructor.
    */
   constructor(sender: T, options: SocketStream.IOptions) {
     super(sender);
@@ -41,9 +41,8 @@ export class SocketStream<T, U> extends Stream<T, U> implements IDisposable {
    * Dispose the stream.
    */
   dispose() {
-    super.stop();
-    this.subscription.dispose();
-    const { socket } = this;
+    const { socket, subscription } = this;
+    subscription.dispose();
     if (socket) {
       this.socket = null;
       socket.onclose = () => undefined;
@@ -53,6 +52,7 @@ export class SocketStream<T, U> extends Stream<T, U> implements IDisposable {
       socket.close();
     }
     Signal.clearData(this);
+    super.stop();
   }
 
   /**
@@ -75,9 +75,9 @@ export class SocketStream<T, U> extends Stream<T, U> implements IDisposable {
   protected socket: WebSocket | null = null;
 
   /**
-   * The poll instance that mediates the web socket lifecycle.
+   * A handle to the socket subscription to dispose when necessary.
    */
-  protected readonly subscription: Poll;
+  protected readonly subscription: IDisposable;
 
   /**
    * Open a web socket and subscribe to its updates.
@@ -88,7 +88,7 @@ export class SocketStream<T, U> extends Stream<T, U> implements IDisposable {
     if (this.isDisposed) {
       return;
     }
-    return new Promise<void>((_, reject) => {
+    return new Promise((_, reject) => {
       this.socket = this.factory();
       this.socket.onclose = () => reject(new Error('socket stream has closed'));
       this.socket.onmessage = ({ data }) => data && this.emit(JSON.parse(data));
