@@ -1,6 +1,6 @@
 {
   "name": "lumino-top-level",
-  "version": "2025.3.31",
+  "version": "2025.4.30",
   "private": true,
   "workspaces": [
     "examples/*",

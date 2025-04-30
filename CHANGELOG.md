@@ -6,6 +6,36 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2025.4.30
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2025.3.31...3df3ab5a8e32b50edd26bed62f7ebd362e18b32e))
+
+```
+@lumino/application: 2.4.3 => 2.4.4
+@lumino/datagrid: 2.5.1 => 2.5.2
+@lumino/default-theme: 2.1.9 => 2.1.10
+@lumino/widgets: 2.7.0 => 2.7.1
+```
+
+### Bugs fixed
+
+- Improve accessibility for menu items with toggle state [#753](https://github.com/jupyterlab/lumino/pull/753) ([@nkn2022](https://github.com/nkn2022))
+
+### Maintenance and upkeep improvements
+
+- Bump versions for v2025.4.30 [#758](https://github.com/jupyterlab/lumino/pull/758) ([@krassowski](https://github.com/krassowski))
+- Fix test status badge [#757](https://github.com/jupyterlab/lumino/pull/757) ([@krassowski](https://github.com/krassowski))
+- Run workflows that were pinned to no-longer supported `ubuntu-20.04` on `ubuntu-latest` [#754](https://github.com/jupyterlab/lumino/pull/754) ([@krassowski](https://github.com/krassowski))
+- Bump koa from 2.15.4 to 2.16.1 [#752](https://github.com/jupyterlab/lumino/pull/752) ([@dependabot](https://github.com/dependabot))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2025-03-31&to=2025-04-30&type=c))
+
+[@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2025-03-31..2025-04-30&type=Issues) | [@krassowski](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2025-03-31..2025-04-30&type=Issues) | [@nkn2022](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ankn2022+updated%3A2025-03-31..2025-04-30&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2025.3.31
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2025.2.1...80501aca210d9ed4b1fc9ffae3f8a609282549f1))
@@ -58,8 +88,6 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2025-02-01&to=2025-03-31&type=c))
 
 [@cmarmo](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Acmarmo+updated%3A2025-02-01..2025-03-31&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2025-02-01..2025-03-31&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2025-02-01..2025-03-31&type=Issues) | [@jtpio](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajtpio+updated%3A2025-02-01..2025-03-31&type=Issues) | [@vidartf](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Avidartf+updated%3A2025-02-01..2025-03-31&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2025.2.1
 
