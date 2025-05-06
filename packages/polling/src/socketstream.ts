@@ -22,11 +22,13 @@ export class SocketStream<T, U> extends Stream<T, U> implements IDisposable {
    *
    * @param sender - The sender which owns the stream.
    *
-   * @param options - Web socket `url` and optional `WebSocket` constructor.
+   * @param connector - A factory that returns a new web socket connection.
    */
-  constructor(sender: T, options: SocketStream.IOptions) {
+  constructor(
+    sender: T,
+    protected readonly connector: () => WebSocket
+  ) {
     super(sender);
-    this.factory = () => new (options.WebSocket || WebSocket)(options.url);
     this.subscription = new Poll({ factory: () => this.subscribe() });
   }
 
@@ -56,18 +58,13 @@ export class SocketStream<T, U> extends Stream<T, U> implements IDisposable {
   }
 
   /**
-   * Send a message to the underlying web socket.
+   * Send a message via the underlying web socket.
    *
    * @param data - The payload of the message sent via the web socket.
    */
   send(data: string | ArrayBufferLike | Blob | ArrayBufferView): void {
     this.socket?.send(data);
   }
-
-  /**
-   * A factory that generates a new web socket instance for subscription.
-   */
-  protected readonly factory: () => WebSocket;
 
   /**
    * The current active socket. This value is updated by the `subscribe` method.
@@ -89,29 +86,9 @@ export class SocketStream<T, U> extends Stream<T, U> implements IDisposable {
       return;
     }
     return new Promise((_, reject) => {
-      this.socket = this.factory();
+      this.socket = this.connector();
       this.socket.onclose = () => reject(new Error('socket stream has closed'));
       this.socket.onmessage = ({ data }) => data && this.emit(JSON.parse(data));
     });
-  }
-}
-
-/**
- * A namespace for `SocketStream` statics.
- */
-export namespace SocketStream {
-  /**
-   * Instantiation options for a socket stream.
-   */
-  export interface IOptions {
-    /**
-     * The web socket URL to open.
-     */
-    url: string;
-
-    /**
-     * An optional web socket constructor.
-     */
-    WebSocket?: typeof WebSocket;
   }
 }
