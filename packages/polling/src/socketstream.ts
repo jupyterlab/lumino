@@ -5,7 +5,7 @@ import { IDisposable } from '@lumino/disposable';
 
 import { Signal, Stream } from '@lumino/signaling';
 
-import { Poll } from './poll';
+import { Poll } from '.';
 
 /**
  * A utility class to wrap and augment a web socket. A socket stream emits web
@@ -72,9 +72,9 @@ export class SocketStream<T, U> extends Stream<T, U> implements IDisposable {
   protected socket: WebSocket | null = null;
 
   /**
-   * A handle to the socket subscription to dispose when necessary.
+   * A handle to the socket subscription.
    */
-  protected readonly subscription: IDisposable;
+  protected readonly subscription: Poll;
 
   /**
    * Open a web socket and subscribe to its updates.
