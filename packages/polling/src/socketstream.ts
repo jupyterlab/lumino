@@ -29,30 +29,29 @@ export class SocketStream<T, U> extends Stream<T, U> implements IDisposable {
     protected readonly connector: () => WebSocket
   ) {
     super(sender);
-    this.subscription = new Poll({ factory: () => this.subscribe() });
   }
 
   /**
    * Whether the stream is disposed.
    */
   get isDisposed() {
-    return this.subscription.isDisposed;
+    return this.connection.isDisposed;
   }
 
   /**
    * Dispose the stream.
    */
   dispose() {
-    const { socket, subscription } = this;
-    subscription.dispose();
+    const { connection, socket } = this;
+    connection.dispose();
     if (socket) {
-      this.socket = null;
-      socket.onclose = () => undefined;
-      socket.onerror = () => undefined;
-      socket.onmessage = () => undefined;
-      socket.onopen = () => undefined;
+      socket.onclose = null;
+      socket.onerror = null;
+      socket.onmessage = null;
+      socket.onopen = null;
       socket.close();
     }
+    this.socket = null;
     Signal.clearData(this);
     super.stop();
   }
@@ -63,25 +62,28 @@ export class SocketStream<T, U> extends Stream<T, U> implements IDisposable {
    * @param data - The payload of the message sent via the web socket.
    */
   send(data: string | ArrayBufferLike | Blob | ArrayBufferView): void {
-    this.socket?.send(data);
+    if (this.isDisposed) {
+      return;
+    }
+    this.socket!.send(data);
   }
 
   /**
-   * The current active socket. This value is updated by the `subscribe` method.
+   * A handle to the socket connection poll.
+   */
+  protected readonly connection = new Poll({ factory: () => this.reconnect() });
+
+  /**
+   * The current active socket. This value is updated by the `reconnect` method.
    */
   protected socket: WebSocket | null = null;
 
   /**
-   * A handle to the socket subscription.
-   */
-  protected readonly subscription: Poll;
-
-  /**
-   * Open a web socket and subscribe to its updates.
+   * (Re)open a web socket connection and subscribe to its updates.
    *
    * @returns A promise that rejects when the socket connection is closed.
    */
-  protected async subscribe(): Promise<void> {
+  protected async reconnect(): Promise<void> {
     if (this.isDisposed) {
       return;
     }
