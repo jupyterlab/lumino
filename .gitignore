@@ -9,6 +9,15 @@ build
 review/api/temp
 *.tsbuildinfo
 
+# copied changelog file
+docs/source/changelog.md
+
+# generated api files
+docs/source/api
+
+# generated example files
+docs/source/examples
+
 # jetbrains ide stuff
 *.iml
 .idea/
@@ -18,3 +27,18 @@ review/api/temp
 .history
 .vscode
 
+.jupyter_releaser_checkout
+.eslintcache
+.ipynb_checkpoints
+
+# yarn v2+
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# CI stuff
+pw-browsers/

@@ -7,21 +7,13 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  expect
-} from 'chai';
+import { expect } from 'chai';
 
-import {
-  MimeData
-} from '@lumino/coreutils';
-
+import { MimeData } from '@lumino/coreutils';
 
 describe('@lumino/coreutils', () => {
-
   describe('MimeData', () => {
-
     describe('#types()', () => {
-
       it('should get an array of the MIME types contained within the dataset', () => {
         let data = new MimeData();
         data.setData('foo', 1);
@@ -40,11 +32,9 @@ describe('@lumino/coreutils', () => {
         data.setData('d', null);
         expect(data.types()).to.deep.equal(['b', 'c', 'a', 'd']);
       });
-
     });
 
     describe('#hasData()', () => {
-
       it('should return `true` if the dataset contains the value', () => {
         let data = new MimeData();
         data.setData('foo', 1);
@@ -56,11 +46,9 @@ describe('@lumino/coreutils', () => {
         data.setData('foo', 1);
         expect(data.hasData('bar')).to.equal(false);
       });
-
     });
 
     describe('#getData()', () => {
-
       it('should get the value for the given MIME type', () => {
         let data = new MimeData();
         let value = { foo: 1, bar: '10' };
@@ -72,11 +60,9 @@ describe('@lumino/coreutils', () => {
         let data = new MimeData();
         expect(data.getData('foo')).to.equal(undefined);
       });
-
     });
 
     describe('#setData()', () => {
-
       it('should set the data value for the given MIME type', () => {
         let data = new MimeData();
         let value = { foo: 1, bar: '10' };
@@ -90,11 +76,9 @@ describe('@lumino/coreutils', () => {
         data.setData('foo', 2);
         expect(data.getData('foo')).to.equal(2);
       });
-
     });
 
     describe('#clearData()', () => {
-
       it('should remove the data entry for the given MIME type', () => {
         let data = new MimeData();
         data.setData('foo', 1);
@@ -107,11 +91,9 @@ describe('@lumino/coreutils', () => {
         data.clearData('foo');
         expect(data.getData('foo')).to.equal(undefined);
       });
-
     });
 
     describe('#clear()', () => {
-
       it('should remove all entries from the dataset', () => {
         let data = new MimeData();
         data.setData('foo', 1);
@@ -120,9 +102,6 @@ describe('@lumino/coreutils', () => {
         data.clear();
         expect(data.types()).to.deep.equal([]);
       });
-
     });
-
   });
-
 });

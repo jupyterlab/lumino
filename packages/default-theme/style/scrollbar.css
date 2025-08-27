@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) Jupyter Development Team.
+ * Distributed under the terms of the Modified BSD License.
+ */
+
 /*-----------------------------------------------------------------------------
 | Copyright (c) Jupyter Development Team.
 | Copyright (c) 2014-2017, PhosphorJS Contributors
@@ -7,32 +12,22 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
-
-/* <DEPRECATED> */
-.p-ScrollBar[data-orientation='horizontal'],
-/* </DEPRECATED> */
 .lm-ScrollBar[data-orientation='horizontal'] {
   min-height: 16px;
   max-height: 16px;
   min-width: 45px;
-  border-top: 1px solid #A0A0A0;
+  border-top: 1px solid #a0a0a0;
 }
 
-
-/* <DEPRECATED> */
-.p-ScrollBar[data-orientation='vertical'],
-/* </DEPRECATED> */
 .lm-ScrollBar[data-orientation='vertical'] {
   min-width: 16px;
   max-width: 16px;
   min-height: 45px;
-  border-left: 1px solid #A0A0A0;
+  border-left: 1px solid #a0a0a0;
 }
 
-
-/* <DEPRECATED> */ .p-ScrollBar-button, /* </DEPRECATED> */
 .lm-ScrollBar-button {
-  background-color: #F0F0F0;
+  background-color: #f0f0f0;
   background-position: center center;
   min-height: 15px;
   max-height: 15px;
@@ -40,92 +35,60 @@
   max-width: 15px;
 }
 
-
-/* <DEPRECATED> */ .p-ScrollBar-button:hover, /* </DEPRECATED> */
 .lm-ScrollBar-button:hover {
-  background-color: #DADADA;
+  background-color: #dadada;
 }
 
-
-/* <DEPRECATED> */ .p-ScrollBar-button.p-mod-active, /* </DEPRECATED> */
 .lm-ScrollBar-button.lm-mod-active {
-  background-color: #CDCDCD;
+  background-color: #cdcdcd;
 }
 
-
-/* <DEPRECATED> */ .p-ScrollBar-track, /* </DEPRECATED> */
 .lm-ScrollBar-track {
-  background: #F0F0F0;
+  background: #f0f0f0;
 }
 
-
-/* <DEPRECATED> */ .p-ScrollBar-thumb, /* </DEPRECATED> */
 .lm-ScrollBar-thumb {
-  background: #CDCDCD;
+  background: #cdcdcd;
 }
 
-
-/* <DEPRECATED> */ .p-ScrollBar-thumb:hover, /* </DEPRECATED> */
 .lm-ScrollBar-thumb:hover {
-  background: #BABABA;
+  background: #bababa;
 }
 
-
-/* <DEPRECATED> */ .p-ScrollBar-thumb.lm-mod-active, /* </DEPRECATED> */
 .lm-ScrollBar-thumb.lm-mod-active {
-  background: #A0A0A0;
+  background: #a0a0a0;
 }
 
-
-/* <DEPRECATED> */
-.p-ScrollBar[data-orientation='horizontal'] .p-ScrollBar-thumb,
-/* </DEPRECATED> */
 .lm-ScrollBar[data-orientation='horizontal'] .lm-ScrollBar-thumb {
   height: 100%;
   min-width: 15px;
-  border-left: 1px solid #A0A0A0;
-  border-right: 1px solid #A0A0A0;
+  border-left: 1px solid #a0a0a0;
+  border-right: 1px solid #a0a0a0;
 }
 
-
-/* <DEPRECATED> */
-.p-ScrollBar[data-orientation='vertical'] .p-ScrollBar-thumb,
-/* </DEPRECATED> */
 .lm-ScrollBar[data-orientation='vertical'] .lm-ScrollBar-thumb {
   width: 100%;
   min-height: 15px;
-  border-top: 1px solid #A0A0A0;
-  border-bottom: 1px solid #A0A0A0;
+  border-top: 1px solid #a0a0a0;
+  border-bottom: 1px solid #a0a0a0;
 }
 
-
-/* <DEPRECATED> */
-.p-ScrollBar[data-orientation='horizontal'] .p-ScrollBar-button[data-action='decrement'],
-/* </DEPRECATED> */
-.lm-ScrollBar[data-orientation='horizontal'] .lm-ScrollBar-button[data-action='decrement'] {
+.lm-ScrollBar[data-orientation='horizontal']
+  .lm-ScrollBar-button[data-action='decrement'] {
   background-image: url(../images/caretleft.png);
 }
 
-
-/* <DEPRECATED> */
-.p-ScrollBar[data-orientation='horizontal'] .p-ScrollBar-button[data-action='increment'],
-/* </DEPRECATED> */
-.lm-ScrollBar[data-orientation='horizontal'] .lm-ScrollBar-button[data-action='increment'] {
+.lm-ScrollBar[data-orientation='horizontal']
+  .lm-ScrollBar-button[data-action='increment'] {
   background-image: url(../images/caretright.png);
 }
 
-
-/* <DEPRECATED> */
-.p-ScrollBar[data-orientation='vertical'] .p-ScrollBar-button[data-action='decrement'],
-/* </DEPRECATED> */
-.lm-ScrollBar[data-orientation='vertical'] .lm-ScrollBar-button[data-action='decrement'] {
+.lm-ScrollBar[data-orientation='vertical']
+  .lm-ScrollBar-button[data-action='decrement'] {
   background-image: url(../images/caretup.png);
 }
 
-
-/* <DEPRECATED> */
-.p-ScrollBar[data-orientation='vertical'] .p-ScrollBar-button[data-action='increment'],
-/* </DEPRECATED> */
-.lm-ScrollBar[data-orientation='vertical'] .lm-ScrollBar-button[data-action='increment'] {
+.lm-ScrollBar[data-orientation='vertical']
+  .lm-ScrollBar-button[data-action='increment'] {
   background-image: url(../images/caretdown.png);
 }

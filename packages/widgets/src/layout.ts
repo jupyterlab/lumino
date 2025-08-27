@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 // Copyright (c) Jupyter Development Team.
 // Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
@@ -7,34 +8,17 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  IIterable, IIterator, each
-} from '@lumino/algorithm';
+import { IDisposable } from '@lumino/disposable';
 
-import {
-  IDisposable
-} from '@lumino/disposable';
+import { ElementExt } from '@lumino/domutils';
 
-import {
-  ElementExt
-} from '@lumino/domutils';
+import { Message, MessageLoop } from '@lumino/messaging';
 
-import {
-  Message, MessageLoop
-} from '@lumino/messaging';
+import { AttachedProperty } from '@lumino/properties';
 
-import {
-  AttachedProperty
-} from '@lumino/properties';
+import { Signal } from '@lumino/signaling';
 
-import {
-  Signal
-} from '@lumino/signaling';
-
-import {
-  Widget
-} from './widget';
-
+import { Widget } from './widget';
 
 /**
  * An abstract base class for creating lumino layouts.
@@ -50,8 +34,7 @@ import {
  * widgets to the layout. A subclass should define that API in a way
  * which is meaningful for its intended use.
  */
-export
-abstract class Layout implements IIterable<Widget>, IDisposable {
+export abstract class Layout implements Iterable<Widget>, IDisposable {
   /**
    * Construct a new layout.
    *
@@ -166,7 +149,7 @@ abstract class Layout implements IIterable<Widget>, IDisposable {
    * #### Notes
    * This abstract method must be implemented by a subclass.
    */
-  abstract iter(): IIterator<Widget>;
+  abstract [Symbol.iterator](): IterableIterator<Widget>;
 
   /**
    * Remove a widget from the layout.
@@ -195,48 +178,48 @@ abstract class Layout implements IIterable<Widget>, IDisposable {
    */
   processParentMessage(msg: Message): void {
     switch (msg.type) {
-    case 'resize':
-      this.onResize(msg as Widget.ResizeMessage);
-      break;
-    case 'update-request':
-      this.onUpdateRequest(msg);
-      break;
-    case 'fit-request':
-      this.onFitRequest(msg);
-      break;
-    case 'before-show':
-      this.onBeforeShow(msg);
-      break;
-    case 'after-show':
-      this.onAfterShow(msg);
-      break;
-    case 'before-hide':
-      this.onBeforeHide(msg);
-      break;
-    case 'after-hide':
-      this.onAfterHide(msg);
-      break;
-    case 'before-attach':
-      this.onBeforeAttach(msg);
-      break;
-    case 'after-attach':
-      this.onAfterAttach(msg);
-      break;
-    case 'before-detach':
-      this.onBeforeDetach(msg);
-      break;
-    case 'after-detach':
-      this.onAfterDetach(msg);
-      break;
-    case 'child-removed':
-      this.onChildRemoved(msg as Widget.ChildMessage);
-      break;
-    case 'child-shown':
-      this.onChildShown(msg as Widget.ChildMessage);
-      break;
-    case 'child-hidden':
-      this.onChildHidden(msg as Widget.ChildMessage);
-      break;
+      case 'resize':
+        this.onResize(msg as Widget.ResizeMessage);
+        break;
+      case 'update-request':
+        this.onUpdateRequest(msg);
+        break;
+      case 'fit-request':
+        this.onFitRequest(msg);
+        break;
+      case 'before-show':
+        this.onBeforeShow(msg);
+        break;
+      case 'after-show':
+        this.onAfterShow(msg);
+        break;
+      case 'before-hide':
+        this.onBeforeHide(msg);
+        break;
+      case 'after-hide':
+        this.onAfterHide(msg);
+        break;
+      case 'before-attach':
+        this.onBeforeAttach(msg);
+        break;
+      case 'after-attach':
+        this.onAfterAttach(msg);
+        break;
+      case 'before-detach':
+        this.onBeforeDetach(msg);
+        break;
+      case 'after-detach':
+        this.onAfterDetach(msg);
+        break;
+      case 'child-removed':
+        this.onChildRemoved(msg as Widget.ChildMessage);
+        break;
+      case 'child-shown':
+        this.onChildShown(msg as Widget.ChildMessage);
+        break;
+      case 'child-hidden':
+        this.onChildHidden(msg as Widget.ChildMessage);
+        break;
     }
   }
 
@@ -254,9 +237,9 @@ abstract class Layout implements IIterable<Widget>, IDisposable {
    * widget nodes to the parent widget's node.
    */
   protected init(): void {
-    each(this, widget => {
+    for (const widget of this) {
       widget.parent = this.parent;
-    });
+    }
   }
 
   /**
@@ -273,9 +256,9 @@ abstract class Layout implements IIterable<Widget>, IDisposable {
    * This may be reimplemented by subclasses as needed.
    */
   protected onResize(msg: Widget.ResizeMessage): void {
-    each(this, widget => {
+    for (const widget of this) {
       MessageLoop.sendMessage(widget, Widget.ResizeMessage.UnknownSize);
-    });
+    }
   }
 
   /**
@@ -292,9 +275,9 @@ abstract class Layout implements IIterable<Widget>, IDisposable {
    * This may be reimplemented by subclasses as needed.
    */
   protected onUpdateRequest(msg: Message): void {
-    each(this, widget => {
+    for (const widget of this) {
       MessageLoop.sendMessage(widget, Widget.ResizeMessage.UnknownSize);
-    });
+    }
   }
 
   /**
@@ -308,9 +291,9 @@ abstract class Layout implements IIterable<Widget>, IDisposable {
    * This may be reimplemented by subclasses as needed.
    */
   protected onBeforeAttach(msg: Message): void {
-    each(this, widget => {
+    for (const widget of this) {
       MessageLoop.sendMessage(widget, msg);
-    });
+    }
   }
 
   /**
@@ -324,9 +307,9 @@ abstract class Layout implements IIterable<Widget>, IDisposable {
    * This may be reimplemented by subclasses as needed.
    */
   protected onAfterAttach(msg: Message): void {
-    each(this, widget => {
+    for (const widget of this) {
       MessageLoop.sendMessage(widget, msg);
-    });
+    }
   }
 
   /**
@@ -340,9 +323,9 @@ abstract class Layout implements IIterable<Widget>, IDisposable {
    * This may be reimplemented by subclasses as needed.
    */
   protected onBeforeDetach(msg: Message): void {
-    each(this, widget => {
+    for (const widget of this) {
       MessageLoop.sendMessage(widget, msg);
-    });
+    }
   }
 
   /**
@@ -356,9 +339,9 @@ abstract class Layout implements IIterable<Widget>, IDisposable {
    * This may be reimplemented by subclasses as needed.
    */
   protected onAfterDetach(msg: Message): void {
-    each(this, widget => {
+    for (const widget of this) {
       MessageLoop.sendMessage(widget, msg);
-    });
+    }
   }
 
   /**
@@ -372,11 +355,11 @@ abstract class Layout implements IIterable<Widget>, IDisposable {
    * This may be reimplemented by subclasses as needed.
    */
   protected onBeforeShow(msg: Message): void {
-    each(this, widget => {
+    for (const widget of this) {
       if (!widget.isHidden) {
         MessageLoop.sendMessage(widget, msg);
       }
-    });
+    }
   }
 
   /**
@@ -390,11 +373,11 @@ abstract class Layout implements IIterable<Widget>, IDisposable {
    * This may be reimplemented by subclasses as needed.
    */
   protected onAfterShow(msg: Message): void {
-    each(this, widget => {
+    for (const widget of this) {
       if (!widget.isHidden) {
         MessageLoop.sendMessage(widget, msg);
       }
-    });
+    }
   }
 
   /**
@@ -408,11 +391,11 @@ abstract class Layout implements IIterable<Widget>, IDisposable {
    * This may be reimplemented by subclasses as needed.
    */
   protected onBeforeHide(msg: Message): void {
-    each(this, widget => {
+    for (const widget of this) {
       if (!widget.isHidden) {
         MessageLoop.sendMessage(widget, msg);
       }
-    });
+    }
   }
 
   /**
@@ -426,11 +409,11 @@ abstract class Layout implements IIterable<Widget>, IDisposable {
    * This may be reimplemented by subclasses as needed.
    */
   protected onAfterHide(msg: Message): void {
-    each(this, widget => {
+    for (const widget of this) {
       if (!widget.isHidden) {
         MessageLoop.sendMessage(widget, msg);
       }
-    });
+    }
   }
 
   /**
@@ -451,7 +434,7 @@ abstract class Layout implements IIterable<Widget>, IDisposable {
    * #### Notes
    * The default implementation of this handler is a no-op.
    */
-  protected onFitRequest(msg: Message): void { }
+  protected onFitRequest(msg: Message): void {}
 
   /**
    * A message handler invoked on a `'child-shown'` message.
@@ -459,7 +442,7 @@ abstract class Layout implements IIterable<Widget>, IDisposable {
    * #### Notes
    * The default implementation of this handler is a no-op.
    */
-  protected onChildShown(msg: Widget.ChildMessage): void { }
+  protected onChildShown(msg: Widget.ChildMessage): void {}
 
   /**
    * A message handler invoked on a `'child-hidden'` message.
@@ -467,19 +450,17 @@ abstract class Layout implements IIterable<Widget>, IDisposable {
    * #### Notes
    * The default implementation of this handler is a no-op.
    */
-  protected onChildHidden(msg: Widget.ChildMessage): void { }
+  protected onChildHidden(msg: Widget.ChildMessage): void {}
 
   private _disposed = false;
   private _fitPolicy: Layout.FitPolicy;
   private _parent: Widget | null = null;
 }
 
-
 /**
  * The namespace for the `Layout` class statics.
  */
-export
-namespace Layout {
+export namespace Layout {
   /**
    * A type alias for the layout fit policy.
    *
@@ -489,24 +470,21 @@ namespace Layout {
    *
    * Some layout implementations may ignore the fit policy.
    */
-  export
-  type FitPolicy = (
-    /**
+  export type FitPolicy =
+    | /**
      * No size constraint will be applied to the parent widget.
      */
-    'set-no-constraint' |
+    'set-no-constraint'
 
     /**
      * The computed min size will be applied to the parent widget.
      */
-    'set-min-size'
-  );
+    | 'set-min-size';
 
   /**
    * An options object for initializing a layout.
    */
-  export
-  interface IOptions {
+  export interface IOptions {
     /**
      * The fit policy for the layout.
      *
@@ -518,14 +496,12 @@ namespace Layout {
   /**
    * A type alias for the horizontal alignment of a widget.
    */
-  export
-  type HorizontalAlignment = 'left' | 'center' | 'right';
+  export type HorizontalAlignment = 'left' | 'center' | 'right';
 
   /**
    * A type alias for the vertical alignment of a widget.
    */
-  export
-  type VerticalAlignment = 'top' | 'center' | 'bottom';
+  export type VerticalAlignment = 'top' | 'center' | 'bottom';
 
   /**
    * Get the horizontal alignment for a widget.
@@ -544,8 +520,7 @@ namespace Layout {
    *
    * Some layout implementations may ignore horizontal alignment.
    */
-  export
-  function getHorizontalAlignment(widget: Widget): HorizontalAlignment {
+  export function getHorizontalAlignment(widget: Widget): HorizontalAlignment {
     return Private.horizontalAlignmentProperty.get(widget);
   }
 
@@ -570,8 +545,10 @@ namespace Layout {
    * message to widget's parent, provided the parent has a layout
    * installed.
    */
-  export
-  function setHorizontalAlignment(widget: Widget, value: HorizontalAlignment): void {
+  export function setHorizontalAlignment(
+    widget: Widget,
+    value: HorizontalAlignment
+  ): void {
     Private.horizontalAlignmentProperty.set(widget, value);
   }
 
@@ -592,8 +569,7 @@ namespace Layout {
    *
    * Some layout implementations may ignore vertical alignment.
    */
-  export
-  function getVerticalAlignment(widget: Widget): VerticalAlignment {
+  export function getVerticalAlignment(widget: Widget): VerticalAlignment {
     return Private.verticalAlignmentProperty.get(widget);
   }
 
@@ -618,12 +594,13 @@ namespace Layout {
    * message to widget's parent, provided the parent has a layout
    * installed.
    */
-  export
-  function setVerticalAlignment(widget: Widget, value: VerticalAlignment): void {
+  export function setVerticalAlignment(
+    widget: Widget,
+    value: VerticalAlignment
+  ): void {
     Private.verticalAlignmentProperty.set(widget, value);
   }
 }
-
 
 /**
  * An object which assists in the absolute layout of widgets.
@@ -634,8 +611,7 @@ namespace Layout {
  *
  * This class is used by nearly all of the built-in lumino layouts.
  */
-export
-class LayoutItem implements IDisposable {
+export class LayoutItem implements IDisposable {
   /**
    * Construct a new layout item.
    *
@@ -643,10 +619,12 @@ class LayoutItem implements IDisposable {
    *
    * #### Notes
    * The widget will be set to absolute positioning.
+   * The widget will use strict CSS containment.
    */
   constructor(widget: Widget) {
     this.widget = widget;
     this.widget.node.style.position = 'absolute';
+    this.widget.node.style.contain = 'strict';
   }
 
   /**
@@ -671,6 +649,7 @@ class LayoutItem implements IDisposable {
     style.left = '';
     style.width = '';
     style.height = '';
+    style.contain = '';
   }
 
   /**
@@ -776,32 +755,32 @@ class LayoutItem implements IDisposable {
     // Adjust the left edge for the horizontal alignment, if needed.
     if (clampW < width) {
       switch (Layout.getHorizontalAlignment(this.widget)) {
-      case 'left':
-        break;
-      case 'center':
-        left += (width - clampW) / 2;
-        break;
-      case 'right':
-        left += width - clampW;
-        break;
-      default:
-        throw 'unreachable';
+        case 'left':
+          break;
+        case 'center':
+          left += (width - clampW) / 2;
+          break;
+        case 'right':
+          left += width - clampW;
+          break;
+        default:
+          throw 'unreachable';
       }
     }
 
     // Adjust the top edge for the vertical alignment, if needed.
     if (clampH < height) {
       switch (Layout.getVerticalAlignment(this.widget)) {
-      case 'top':
-        break;
-      case 'center':
-        top += (height - clampH) / 2;
-        break;
-      case 'bottom':
-        top += height - clampH;
-        break;
-      default:
-        throw 'unreachable';
+        case 'top':
+          break;
+        case 'center':
+          top += (height - clampH) / 2;
+          break;
+        case 'bottom':
+          top += height - clampH;
+          break;
+        default:
+          throw 'unreachable';
       }
     }
 
@@ -853,7 +832,6 @@ class LayoutItem implements IDisposable {
   private _disposed = false;
 }
 
-
 /**
  * The namespace for the module implementation details.
  */
@@ -861,8 +839,10 @@ namespace Private {
   /**
    * The attached property for a widget horizontal alignment.
    */
-  export
-  const horizontalAlignmentProperty = new AttachedProperty<Widget, Layout.HorizontalAlignment>({
+  export const horizontalAlignmentProperty = new AttachedProperty<
+    Widget,
+    Layout.HorizontalAlignment
+  >({
     name: 'horizontalAlignment',
     create: () => 'center',
     changed: onAlignmentChanged
@@ -871,8 +851,10 @@ namespace Private {
   /**
    * The attached property for a widget vertical alignment.
    */
-  export
-  const verticalAlignmentProperty = new AttachedProperty<Widget, Layout.VerticalAlignment>({
+  export const verticalAlignmentProperty = new AttachedProperty<
+    Widget,
+    Layout.VerticalAlignment
+  >({
     name: 'verticalAlignment',
     create: () => 'top',
     changed: onAlignmentChanged

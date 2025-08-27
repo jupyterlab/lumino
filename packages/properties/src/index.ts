@@ -8,6 +8,10 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
+/**
+ * @packageDocumentation
+ * @module properties
+ */
 
 /**
  * A class which attaches a value to an external object.
@@ -22,8 +26,7 @@
  * non-trivial storage overhead involved in their use. The pattern is
  * therefore best used for the storage of rare data.
  */
-export
-class AttachedProperty<T, U> {
+export class AttachedProperty<T, U> {
   /**
    * Construct a new attached property.
    *
@@ -84,7 +87,7 @@ class AttachedProperty<T, U> {
       oldValue = map[this._pid] = this._createValue(owner);
     }
     let newValue = this._coerceValue(owner, value);
-    this._maybeNotify(owner, oldValue, map[this._pid] = newValue);
+    this._maybeNotify(owner, oldValue, (map[this._pid] = newValue));
   }
 
   /**
@@ -105,7 +108,7 @@ class AttachedProperty<T, U> {
       oldValue = map[this._pid] = this._createValue(owner);
     }
     let newValue = this._coerceValue(owner, oldValue);
-    this._maybeNotify(owner, oldValue, map[this._pid] = newValue);
+    this._maybeNotify(owner, oldValue, (map[this._pid] = newValue));
   }
 
   /**
@@ -143,23 +146,20 @@ class AttachedProperty<T, U> {
   }
 
   private _pid = Private.nextPID();
-  private _create: ((owner: T) => U);
+  private _create: (owner: T) => U;
   private _coerce: ((owner: T, value: U) => U) | null;
   private _compare: ((oldValue: U, newValue: U) => boolean) | null;
   private _changed: ((owner: T, oldValue: U, newValue: U) => void) | null;
 }
 
-
 /**
  * The namespace for the `AttachedProperty` class statics.
  */
-export
-namespace AttachedProperty {
+export namespace AttachedProperty {
   /**
    * The options object used to initialize an attached property.
    */
-  export
-  interface IOptions<T, U> {
+  export interface IOptions<T, U> {
     /**
      * The human readable name for the property.
      *
@@ -227,12 +227,10 @@ namespace AttachedProperty {
    * This will clear all property values for the owner, but it will
    * **not** run the change notification for any of the properties.
    */
-  export
-  function clearData(owner: any): void {
+  export function clearData(owner: unknown): void {
     Private.ownerData.delete(owner);
   }
 }
-
 
 /**
  * The namespace for the module implementation details.
@@ -241,20 +239,17 @@ namespace Private {
   /**
    * A typedef for a mapping of property id to property value.
    */
-  export
-  type PropertyMap = { [key: string]: any };
+  export type PropertyMap = { [key: string]: any };
 
   /**
    * A weak mapping of property owner to property map.
    */
-  export
-  const ownerData = new WeakMap<any, PropertyMap>();
+  export const ownerData = new WeakMap<any, PropertyMap>();
 
   /**
    * A function which computes successive unique property ids.
    */
-  export
-  const nextPID = (() => {
+  export const nextPID = (() => {
     let id = 0;
     return () => {
       let rand = Math.random();
@@ -268,8 +263,7 @@ namespace Private {
    *
    * This will create the map if one does not already exist.
    */
-  export
-  function ensureMap(owner: any): PropertyMap {
+  export function ensureMap(owner: unknown): PropertyMap {
     let map = ownerData.get(owner);
     if (map) {
       return map;

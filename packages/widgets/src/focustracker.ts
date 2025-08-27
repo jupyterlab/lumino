@@ -7,22 +7,13 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  ArrayExt, each, filter, find, max
-} from '@lumino/algorithm';
+import { ArrayExt, find, max } from '@lumino/algorithm';
 
-import {
-  IDisposable
-} from '@lumino/disposable';
+import { IDisposable } from '@lumino/disposable';
 
-import {
-  ISignal, Signal
-} from '@lumino/signaling';
+import { ISignal, Signal } from '@lumino/signaling';
 
-import {
-  Widget
-} from './widget';
-
+import { Widget } from './widget';
 
 /**
  * A class which tracks focus among a set of widgets.
@@ -30,13 +21,7 @@ import {
  * This class is useful when code needs to keep track of the most
  * recently focused widget(s) among a set of related widgets.
  */
-export
-class FocusTracker<T extends Widget> implements IDisposable {
-  /**
-   * Construct a new focus tracker.
-   */
-  constructor() { }
-
+export class FocusTracker<T extends Widget> implements IDisposable {
   /**
    * Dispose of the resources held by the tracker.
    */
@@ -53,10 +38,10 @@ class FocusTracker<T extends Widget> implements IDisposable {
     Signal.clearData(this);
 
     // Remove all event listeners.
-    each(this._widgets, w => {
-      w.node.removeEventListener('focus', this, true);
-      w.node.removeEventListener('blur', this, true);
-    });
+    for (const widget of this._widgets) {
+      widget.node.removeEventListener('focus', this, true);
+      widget.node.removeEventListener('blur', this, true);
+    }
 
     // Clear the internal data structures.
     this._activeWidget = null;
@@ -241,14 +226,15 @@ class FocusTracker<T extends Widget> implements IDisposable {
     }
 
     // Filter the widgets for those which have had focus.
-    let valid = filter(this._widgets, w => this._numbers.get(w) !== -1);
+    let valid = this._widgets.filter(w => this._numbers.get(w) !== -1);
 
     // Get the valid widget with the max focus number.
-    let previous = max(valid, (first, second) => {
-      let a = this._numbers.get(first)!;
-      let b = this._numbers.get(second)!;
-      return a - b;
-    }) || null;
+    let previous =
+      max(valid, (first, second) => {
+        let a = this._numbers.get(first)!;
+        let b = this._numbers.get(second)!;
+        return a - b;
+      }) || null;
 
     // Set the current and active widgets.
     this._setWidgets(previous, null);
@@ -266,12 +252,12 @@ class FocusTracker<T extends Widget> implements IDisposable {
    */
   handleEvent(event: Event): void {
     switch (event.type) {
-    case 'focus':
-      this._evtFocus(event as FocusEvent);
-      break;
-    case 'blur':
-      this._evtBlur(event as FocusEvent);
-      break;
+      case 'focus':
+        this._evtFocus(event as FocusEvent);
+        break;
+      case 'blur':
+        this._evtBlur(event as FocusEvent);
+        break;
     }
   }
 
@@ -356,20 +342,19 @@ class FocusTracker<T extends Widget> implements IDisposable {
   private _numbers = new Map<T, number>();
   private _nodes = new Map<HTMLElement, T>();
   private _activeChanged = new Signal<this, FocusTracker.IChangedArgs<T>>(this);
-  private _currentChanged = new Signal<this, FocusTracker.IChangedArgs<T>>(this);
+  private _currentChanged = new Signal<this, FocusTracker.IChangedArgs<T>>(
+    this
+  );
 }
-
 
 /**
  * The namespace for the `FocusTracker` class statics.
  */
-export
-namespace FocusTracker {
+export namespace FocusTracker {
   /**
    * An arguments object for the changed signals.
    */
-  export
-  interface IChangedArgs<T extends Widget> {
+  export interface IChangedArgs<T extends Widget> {
     /**
      * The old value for the widget.
      */

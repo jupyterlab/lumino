@@ -7,28 +7,18 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  ISignal, Signal
-} from '@lumino/signaling';
+import { ISignal, Signal } from '@lumino/signaling';
 
-import {
-  CellRenderer
-} from './cellrenderer';
+import { CellRenderer } from './cellrenderer';
 
-import {
-  DataModel
-} from './datamodel';
+import { DataModel } from './datamodel';
 
-import {
-  TextRenderer
-} from './textrenderer';
-
+import { TextRenderer } from './textrenderer';
 
 /**
  * A class which manages the mapping of cell renderers.
  */
-export
-class RendererMap {
+export class RendererMap {
   /**
    * Construct a new renderer map.
    *
@@ -94,23 +84,19 @@ class RendererMap {
   private _changed = new Signal<this, void>(this);
 }
 
-
 /**
  * The namespace for the `RendererMap` class statics.
  */
-export
-namespace RendererMap {
+export namespace RendererMap {
   /**
    * A type alias for a cell renderer resolver function.
    */
-  export
-  type Resolver = CellRenderer.ConfigFunc<CellRenderer | undefined>;
+  export type Resolver = CellRenderer.ConfigFunc<CellRenderer | undefined>;
 
   /**
    * A type alias for a `RendererMap` values type.
    */
-  export
-  type Values = {
+  export type Values = {
     [R in DataModel.CellRegion]?: Resolver | CellRenderer | undefined;
   };
 }

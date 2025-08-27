@@ -7,14 +7,15 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import 'es6-promise/auto';  // polyfill Promise on IE
-
 import '@lumino/widgets/style/index.css';
 
+import './accordionlayout.spec';
+import './accordionpanel.spec';
 import './boxengine.spec';
 import './boxlayout.spec';
 import './boxpanel.spec';
 import './commandpalette.spec';
+import './contextmenu.spec';
 import './docklayout.spec';
 import './dockpanel.spec';
 import './focustracker.spec';

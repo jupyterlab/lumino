@@ -7,92 +7,21 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  MimeData
-} from '@lumino/coreutils';
-
-import {
-  DisposableDelegate, IDisposable
-} from '@lumino/disposable';
-
-
 /**
- * A type alias which defines the possible independent drop actions.
+ * @packageDocumentation
+ * @module dragdrop
  */
-export
-type DropAction = 'none' | 'copy' | 'link' | 'move';
+import { MimeData } from '@lumino/coreutils';
 
-
-/**
- * A type alias which defines the possible supported drop actions.
- */
-export
-type SupportedActions = DropAction | 'copy-link' | 'copy-move' | 'link-move' | 'all';
-
+import { DisposableDelegate, IDisposable } from '@lumino/disposable';
 
 /**
- * A custom event type used for drag-drop operations.
+ * @deprecated
  *
  * #### Notes
- * In order to receive `'lm-dragover'`, `'lm-dragleave'`, or `'lm-drop'`
- * events, a drop target must cancel the `'lm-dragenter'` event by
- * calling the event's `preventDefault()` method.
+ * This interface is deprecated. Use Drag.Event instead.
  */
-export
-interface IDragEvent extends MouseEvent {
-  /**
-   * The drop action supported or taken by the drop target.
-   *
-   * #### Notes
-   * At the start of each event, this value will be `'none'`. During a
-   * `'lm-dragover'` event, the drop target must set this value to one
-   * of the supported actions, or the drop event will not occur.
-   *
-   * When handling the drop event, the drop target should set this
-   * to the action which was *actually* taken. This value will be
-   * reported back to the drag initiator.
-   */
-  dropAction: DropAction;
-
-  /**
-   * The drop action proposed by the drag initiator.
-   *
-   * #### Notes
-   * This is the action which is *preferred* by the drag initiator. The
-   * drop target is not required to perform this action, but should if
-   * it all possible.
-   */
-  readonly proposedAction: DropAction;
-
-  /**
-   * The drop actions supported by the drag initiator.
-   *
-   * #### Notes
-   * If the `dropAction` is not set to one of the supported actions
-   * during the `'lm-dragover'` event, the drop event will not occur.
-   */
-  readonly supportedActions: SupportedActions;
-
-  /**
-   * The mime data associated with the event.
-   *
-   * #### Notes
-   * This is mime data provided by the drag initiator. Drop targets
-   * should use this data to determine if they can handle the drop.
-   */
-  readonly mimeData: MimeData;
-
-  /**
-   * The source object of the drag, as provided by the drag initiator.
-   *
-   * #### Notes
-   * For advanced applications, the drag initiator may wish to expose
-   * a source object to the drop targets. That will be provided here
-   * if given by the drag initiator, otherwise it will be `null`.
-   */
-  readonly source: any;
-}
-
+export interface IDragEvent extends Drag.Event {}
 
 /**
  * An object which manages a drag-drop operation.
@@ -131,14 +60,14 @@ interface IDragEvent extends MouseEvent {
  * transfer of arbitrary non-string objects; features which are not
  * possible with the native drag-drop API.
  */
-export
-class Drag implements IDisposable {
+export class Drag implements IDisposable {
   /**
    * Construct a new drag object.
    *
    * @param options - The options for initializing the drag.
    */
   constructor(options: Drag.IOptions) {
+    this.document = options.document || document;
     this.mimeData = options.mimeData;
     this.dragImage = options.dragImage || null;
     this.proposedAction = options.proposedAction || 'copy';
@@ -161,7 +90,12 @@ class Drag implements IDisposable {
 
     // If there is a current target, dispatch a drag leave event.
     if (this._currentTarget) {
-      let event = Private.createMouseEvent('mouseup', -1, -1);
+      let event = new PointerEvent('pointerup', {
+        bubbles: true,
+        cancelable: true,
+        clientX: -1,
+        clientY: -1
+      });
       Private.dispatchDragLeave(this, this._currentTarget, null, event);
     }
 
@@ -175,6 +109,11 @@ class Drag implements IDisposable {
   readonly mimeData: MimeData;
 
   /**
+   * The target document for dragging events.
+   */
+  readonly document: Document | ShadowRoot;
+
+  /**
    * The drag image element for the drag object.
    */
   readonly dragImage: HTMLElement | null;
@@ -182,12 +121,12 @@ class Drag implements IDisposable {
   /**
    * The proposed drop action for the drag object.
    */
-  readonly proposedAction: DropAction;
+  readonly proposedAction: Drag.DropAction;
 
   /**
    * The supported drop actions for the drag object.
    */
-  readonly supportedActions: SupportedActions;
+  readonly supportedActions: Drag.SupportedActions;
 
   /**
    * Get the drag source for the drag object.
@@ -222,10 +161,10 @@ class Drag implements IDisposable {
    *
    * This method assumes the left mouse button is already held down.
    */
-  start(clientX: number, clientY: number): Promise<DropAction> {
-    // If the drag object is already disposed, resolve to `None`.
+  start(clientX: number, clientY: number): Promise<Drag.DropAction> {
+    // If the drag object is already disposed, resolve to `none`.
     if (this._disposed) {
-      return Promise.resolve('none' as DropAction);
+      return Promise.resolve('none');
     }
 
     // If the drag has already been started, return the promise.
@@ -240,12 +179,17 @@ class Drag implements IDisposable {
     this._attachDragImage(clientX, clientY);
 
     // Create the promise which will be resolved on completion.
-    this._promise = new Promise<DropAction>((resolve, reject) => {
+    this._promise = new Promise<Drag.DropAction>(resolve => {
       this._resolve = resolve;
     });
 
     // Trigger a fake move event to kick off the drag operation.
-    let event = Private.createMouseEvent('mousemove', clientX, clientY);
+    let event = new PointerEvent('pointermove', {
+      bubbles: true,
+      cancelable: true,
+      clientX,
+      clientY
+    });
     document.dispatchEvent(event);
 
     // Return the pending promise for the drag operation.
@@ -263,21 +207,21 @@ class Drag implements IDisposable {
    * called directly by user code.
    */
   handleEvent(event: Event): void {
-    switch(event.type) {
-    case 'mousemove':
-      this._evtMouseMove(event as MouseEvent);
-      break;
-    case 'mouseup':
-      this._evtMouseUp(event as MouseEvent);
-      break;
-    case 'keydown':
-      this._evtKeyDown(event as KeyboardEvent);
-      break;
-    default:
-      // Stop all other events during drag-drop.
-      event.preventDefault();
-      event.stopPropagation();
-      break;
+    switch (event.type) {
+      case 'pointermove':
+        this._evtPointerMove(event as PointerEvent);
+        break;
+      case 'pointerup':
+        this._evtPointerUp(event as PointerEvent);
+        break;
+      case 'keydown':
+        this._evtKeyDown(event as KeyboardEvent);
+        break;
+      default:
+        // Stop all other events during drag-drop.
+        event.preventDefault();
+        event.stopPropagation();
+        break;
     }
   }
 
@@ -291,14 +235,13 @@ class Drag implements IDisposable {
       return;
     }
     let style = this.dragImage.style;
-    style.top = `${clientY}px`;
-    style.left = `${clientX}px`;
+    style.transform = `translate(${clientX}px, ${clientY}px)`;
   }
 
   /**
-   * Handle the `'mousemove'` event for the drag object.
+   * Handle the `'pointermove'` event for the drag object.
    */
-  private _evtMouseMove(event: MouseEvent): void {
+  private _evtPointerMove(event: PointerEvent): void {
     // Stop all input events during drag-drop.
     event.preventDefault();
     event.stopPropagation();
@@ -315,9 +258,9 @@ class Drag implements IDisposable {
   }
 
   /**
-   * Handle the `'mouseup'` event for the drag object.
+   * Handle the `'pointerup'` event for the drag object.
    */
-  private _evtMouseUp(event: MouseEvent): void {
+  private _evtPointerUp(event: PointerEvent): void {
     // Stop all input events during drag-drop.
     event.preventDefault();
     event.stopPropagation();
@@ -370,13 +313,13 @@ class Drag implements IDisposable {
    * Add the document event listeners for the drag object.
    */
   private _addListeners(): void {
-    document.addEventListener('mousedown', this, true);
-    document.addEventListener('mousemove', this, true);
-    document.addEventListener('mouseup', this, true);
-    document.addEventListener('mouseenter', this, true);
-    document.addEventListener('mouseleave', this, true);
-    document.addEventListener('mouseover', this, true);
-    document.addEventListener('mouseout', this, true);
+    document.addEventListener('pointerdown', this, true);
+    document.addEventListener('pointermove', this, true);
+    document.addEventListener('pointerup', this, true);
+    document.addEventListener('pointerenter', this, true);
+    document.addEventListener('pointerleave', this, true);
+    document.addEventListener('pointerover', this, true);
+    document.addEventListener('pointerout', this, true);
     document.addEventListener('keydown', this, true);
     document.addEventListener('keyup', this, true);
     document.addEventListener('keypress', this, true);
@@ -387,13 +330,13 @@ class Drag implements IDisposable {
    * Remove the document event listeners for the drag object.
    */
   private _removeListeners(): void {
-    document.removeEventListener('mousedown', this, true);
-    document.removeEventListener('mousemove', this, true);
-    document.removeEventListener('mouseup', this, true);
-    document.removeEventListener('mouseenter', this, true);
-    document.removeEventListener('mouseleave', this, true);
-    document.removeEventListener('mouseover', this, true);
-    document.removeEventListener('mouseout', this, true);
+    document.removeEventListener('pointerdown', this, true);
+    document.removeEventListener('pointermove', this, true);
+    document.removeEventListener('pointerup', this, true);
+    document.removeEventListener('pointerenter', this, true);
+    document.removeEventListener('pointerleave', this, true);
+    document.removeEventListener('pointerover', this, true);
+    document.removeEventListener('pointerout', this, true);
     document.removeEventListener('keydown', this, true);
     document.removeEventListener('keyup', this, true);
     document.removeEventListener('keypress', this, true);
@@ -403,7 +346,7 @@ class Drag implements IDisposable {
   /**
    * Update the drag scroll element under the mouse.
    */
-  private _updateDragScroll(event: MouseEvent): void {
+  private _updateDragScroll(event: PointerEvent): void {
     // Find the scroll target under the mouse.
     let target = Private.findScrollTarget(event);
 
@@ -424,14 +367,14 @@ class Drag implements IDisposable {
   /**
    * Update the current target node using the given mouse event.
    */
-  private _updateCurrentTarget(event: MouseEvent): void {
+  private _updateCurrentTarget(event: PointerEvent): void {
     // Fetch common local state.
     let prevTarget = this._currentTarget;
     let currTarget = this._currentTarget;
     let prevElem = this._currentElement;
 
     // Find the current indicated element at the given position.
-    let currElem = document.elementFromPoint(event.clientX, event.clientY);
+    let currElem = Private.findElementBehindBackdrop(event, this.document);
 
     // Update the current element reference.
     this._currentElement = currElem;
@@ -472,15 +415,15 @@ class Drag implements IDisposable {
       return;
     }
     this.dragImage.classList.add('lm-mod-drag-image');
-    /* <DEPRECATED> */
-    this.dragImage.classList.add('p-mod-drag-image');
-    /* </DEPRECATED> */
     let style = this.dragImage.style;
     style.pointerEvents = 'none';
     style.position = 'fixed';
-    style.top = `${clientY}px`;
-    style.left = `${clientX}px`;
-    document.body.appendChild(this.dragImage);
+    style.transform = `translate(${clientX}px, ${clientY}px)`;
+    const body =
+      this.document instanceof Document
+        ? this.document.body
+        : (this.document.firstElementChild as HTMLElement);
+    body.appendChild(this.dragImage);
   }
 
   /**
@@ -502,35 +445,35 @@ class Drag implements IDisposable {
   /**
    * Set the internal drop action state and update the drag cursor.
    */
-  private _setDropAction(action: DropAction): void {
+  private _setDropAction(action: Drag.DropAction): void {
     action = Private.validateAction(action, this.supportedActions);
     if (this._override && this._dropAction === action) {
       return;
     }
     switch (action) {
-    case 'none':
-      this._dropAction = action;
-      this._override = Drag.overrideCursor('no-drop');
-      break;
-    case 'copy':
-      this._dropAction = action;
-      this._override = Drag.overrideCursor('copy');
-      break;
-    case 'link':
-      this._dropAction = action;
-      this._override = Drag.overrideCursor('alias');
-      break;
-    case 'move':
-      this._dropAction = action;
-      this._override = Drag.overrideCursor('move');
-      break;
+      case 'none':
+        this._dropAction = action;
+        this._override = Drag.overrideCursor('no-drop', this.document);
+        break;
+      case 'copy':
+        this._dropAction = action;
+        this._override = Drag.overrideCursor('copy', this.document);
+        break;
+      case 'link':
+        this._dropAction = action;
+        this._override = Drag.overrideCursor('alias', this.document);
+        break;
+      case 'move':
+        this._dropAction = action;
+        this._override = Drag.overrideCursor('move', this.document);
+        break;
     }
   }
 
   /**
    * Finalize the drag operation and resolve the drag promise.
    */
-  private _finalize(action: DropAction): void {
+  private _finalize(action: Drag.DropAction): void {
     // Store the resolve function as a temp variable.
     let resolve = this._resolve;
 
@@ -583,18 +526,18 @@ class Drag implements IDisposable {
 
     // Scroll the element in the specified direction.
     switch (edge) {
-    case 'top':
-      element.scrollTop -= s;
-      break;
-    case 'left':
-      element.scrollLeft -= s;
-      break;
-    case 'right':
-      element.scrollLeft += s;
-      break;
-    case 'bottom':
-      element.scrollTop += s;
-      break;
+      case 'top':
+        element.scrollTop -= s;
+        break;
+      case 'left':
+        element.scrollLeft -= s;
+        break;
+      case 'right':
+        element.scrollLeft += s;
+        break;
+      case 'bottom':
+        element.scrollTop += s;
+        break;
     }
 
     // Request the next cycle of the scroll loop.
@@ -602,26 +545,43 @@ class Drag implements IDisposable {
   };
 
   private _disposed = false;
-  private _dropAction: DropAction = 'none';
+  private _dropAction: Drag.DropAction = 'none';
   private _override: IDisposable | null = null;
   private _currentTarget: Element | null = null;
   private _currentElement: Element | null = null;
-  private _promise: Promise<DropAction> | null = null;
+  private _promise: Promise<Drag.DropAction> | null = null;
   private _scrollTarget: Private.IScrollTarget | null = null;
-  private _resolve: ((value: DropAction) => void) | null = null;
+  private _resolve: ((value: Drag.DropAction) => void) | null = null;
 }
-
 
 /**
  * The namespace for the `Drag` class statics.
  */
-export
-namespace Drag {
+export namespace Drag {
+  /**
+   * A type alias which defines the possible independent drop actions.
+   */
+  export type DropAction = 'none' | 'copy' | 'link' | 'move';
+
+  /**
+   * A type alias which defines the possible supported drop actions.
+   */
+  export type SupportedActions =
+    | DropAction
+    | 'copy-link'
+    | 'copy-move'
+    | 'link-move'
+    | 'all';
+
   /**
    * An options object for initializing a `Drag` object.
    */
-  export
-  interface IOptions {
+  export interface IOptions {
+    /**
+     * The root element for dragging DOM artifacts (defaults to document).
+     */
+    document?: Document | ShadowRoot;
+
     /**
      * The populated mime data for the drag operation.
      */
@@ -684,6 +644,124 @@ namespace Drag {
   }
 
   /**
+   * A custom event used for drag-drop operations.
+   *
+   * #### Notes
+   * In order to receive `'lm-dragover'`, `'lm-dragleave'`, or `'lm-drop'`
+   * events, a drop target must cancel the `'lm-dragenter'` event by
+   * calling the event's `preventDefault()` method.
+   */
+  export class Event extends DragEvent {
+    constructor(event: PointerEvent, options: Event.IOptions) {
+      super(options.type, {
+        bubbles: true,
+        cancelable: true,
+        altKey: event.altKey,
+        button: event.button,
+        clientX: event.clientX,
+        clientY: event.clientY,
+        ctrlKey: event.ctrlKey,
+        detail: 0,
+        metaKey: event.metaKey,
+        relatedTarget: options.related,
+        screenX: event.screenX,
+        screenY: event.screenY,
+        shiftKey: event.shiftKey,
+        view: window
+      });
+
+      const { drag } = options;
+      this.dropAction = 'none';
+      this.mimeData = drag.mimeData;
+      this.proposedAction = drag.proposedAction;
+      this.supportedActions = drag.supportedActions;
+      this.source = drag.source;
+    }
+
+    /**
+     * The drop action supported or taken by the drop target.
+     *
+     * #### Notes
+     * At the start of each event, this value will be `'none'`. During a
+     * `'lm-dragover'` event, the drop target must set this value to one
+     * of the supported actions, or the drop event will not occur.
+     *
+     * When handling the drop event, the drop target should set this
+     * to the action which was *actually* taken. This value will be
+     * reported back to the drag initiator.
+     */
+    dropAction: DropAction;
+
+    /**
+     * The drop action proposed by the drag initiator.
+     *
+     * #### Notes
+     * This is the action which is *preferred* by the drag initiator. The
+     * drop target is not required to perform this action, but should if
+     * it all possible.
+     */
+    readonly proposedAction: DropAction;
+
+    /**
+     * The drop actions supported by the drag initiator.
+     *
+     * #### Notes
+     * If the `dropAction` is not set to one of the supported actions
+     * during the `'lm-dragover'` event, the drop event will not occur.
+     */
+    readonly supportedActions: SupportedActions;
+
+    /**
+     * The mime data associated with the event.
+     *
+     * #### Notes
+     * This is mime data provided by the drag initiator. Drop targets
+     * should use this data to determine if they can handle the drop.
+     */
+    readonly mimeData: MimeData;
+
+    /**
+     * The source object of the drag, as provided by the drag initiator.
+     *
+     * #### Notes
+     * For advanced applications, the drag initiator may wish to expose
+     * a source object to the drop targets. That will be provided here
+     * if given by the drag initiator, otherwise it will be `null`.
+     */
+    readonly source: any;
+  }
+
+  /**
+   * The namespace for the `Event` class statics.
+   */
+  export namespace Event {
+    /**
+     * An options object for initializing a `Drag` object.
+     */
+    export interface IOptions {
+      /**
+       * The drag object to use for seeding the drag data.
+       */
+      drag: Drag;
+
+      /**
+       * The related target for the event, or `null`.
+       */
+      related: Element | null;
+
+      /**
+       * The drag event type.
+       */
+      type:
+        | 'lm-dragenter'
+        | 'lm-dragexit'
+        | 'lm-dragleave'
+        | 'lm-dragover'
+        | 'lm-drop';
+    }
+  }
+
+  /**
    * Override the cursor icon for the entire document.
    *
    * @param cursor - The string representing the cursor style.
@@ -709,31 +787,13 @@ namespace Drag {
    * override.dispose();
    * ```
    */
-  export
-  function overrideCursor(cursor: string): IDisposable {
-    let id = ++overrideCursorID;
-    document.body.style.cursor = cursor;
-    document.body.classList.add('lm-mod-override-cursor');
-    /* <DEPRECATED> */
-    document.body.classList.add('p-mod-override-cursor');
-    /* </DEPRECATED> */
-    return new DisposableDelegate(() => {
-      if (id === overrideCursorID) {
-        document.body.style.cursor = '';
-        document.body.classList.remove('lm-mod-override-cursor');
-        /* <DEPRECATED> */
-        document.body.classList.remove('p-mod-override-cursor');
-        /* </DEPRECATED> */
-      }
-    });
+  export function overrideCursor(
+    cursor: string,
+    doc: Document | ShadowRoot = document
+  ): IDisposable {
+    return Private.overrideCursor(cursor, doc);
   }
-
-  /**
-   * The internal id for the active cursor override.
-   */
-  let overrideCursorID = 0;
 }
-
 
 /**
  * The namespace for the module implementation details.
@@ -742,43 +802,24 @@ namespace Private {
   /**
    * The size of a drag scroll edge, in pixels.
    */
-  export
-  const SCROLL_EDGE_SIZE = 20;
+  export const SCROLL_EDGE_SIZE = 20;
 
   /**
    * Validate the given action is one of the supported actions.
    *
    * Returns the given action or `'none'` if the action is unsupported.
    */
-  export
-  function validateAction(action: DropAction, supported: SupportedActions): DropAction {
-    return (actionTable[action] & supportedTable[supported]) ? action : 'none';
-  }
-
-  /**
-   * Create a left mouse event at the given position.
-   *
-   * @param type - The event type for the mouse event.
-   *
-   * @param clientX - The client X position.
-   *
-   * @param clientY - The client Y position.
-   *
-   * @returns A newly created and initialized mouse event.
-   */
-  export
-  function createMouseEvent(type: string, clientX: number, clientY: number): MouseEvent {
-    let event = document.createEvent('MouseEvent');
-    event.initMouseEvent(type, true, true, window, 0, 0, 0,
-      clientX, clientY, false, false, false, false, 0, null);
-    return event;
+  export function validateAction(
+    action: Drag.DropAction,
+    supported: Drag.SupportedActions
+  ): Drag.DropAction {
+    return actionTable[action] & supportedTable[supported] ? action : 'none';
   }
 
   /**
    * An object which holds the scroll target data.
    */
-  export
-  interface IScrollTarget {
+  export interface IScrollTarget {
     /**
      * The element to be scrolled.
      */
@@ -796,27 +837,69 @@ namespace Private {
   }
 
   /**
+   * Find the event target using pointer position if given, or otherwise
+   * the central position of the backdrop.
+   */
+  export function findElementBehindBackdrop(
+    event?: PointerEvent,
+    root: Document | ShadowRoot = document
+  ) {
+    if (event) {
+      // Check if we already cached element for this event.
+      if (lastElementEventSearch && event == lastElementEventSearch.event) {
+        return lastElementEventSearch.element;
+      }
+      Private.cursorBackdrop.style.zIndex = '-1000';
+      const element: Element | null = root.elementFromPoint(
+        event.clientX,
+        event.clientY
+      );
+      Private.cursorBackdrop.style.zIndex = '';
+      lastElementEventSearch = { event, element };
+      return element;
+    } else {
+      const transform = cursorBackdrop.style.transform;
+      if (lastElementSearch && transform === lastElementSearch.transform) {
+        return lastElementSearch.element;
+      }
+      const bbox = Private.cursorBackdrop.getBoundingClientRect();
+      Private.cursorBackdrop.style.zIndex = '-1000';
+      const element = root.elementFromPoint(
+        bbox.left + bbox.width / 2,
+        bbox.top + bbox.height / 2
+      );
+      Private.cursorBackdrop.style.zIndex = '';
+      lastElementSearch = { transform, element };
+      return element;
+    }
+  }
+
+  let lastElementEventSearch: {
+    event: PointerEvent;
+    element: Element | null;
+  } | null = null;
+  let lastElementSearch: {
+    transform: string;
+    element: Element | null;
+  } | null = null;
+
+  /**
    * Find the drag scroll target under the mouse, if any.
    */
-  export
-  function findScrollTarget(event: MouseEvent): IScrollTarget | null {
+  export function findScrollTarget(event: PointerEvent): IScrollTarget | null {
     // Look up the client mouse position.
     let x = event.clientX;
     let y = event.clientY;
 
     // Get the element under the mouse.
-    let element: Element | null = document.elementFromPoint(x, y);
+    let element: Element | null = findElementBehindBackdrop(event);
 
     // Search for a scrollable target based on the mouse position.
     // The null assert in third clause of for-loop is required due to:
     // https://github.com/Microsoft/TypeScript/issues/14143
     for (; element; element = element!.parentElement) {
       // Ignore elements which are not marked as scrollable.
-      let scrollable = element.hasAttribute('data-lm-dragscroll');
-      /* <DEPRECATED> */
-      scrollable = scrollable || element.hasAttribute('data-p-dragscroll');
-      /* </DEPRECATED> */
-      if (!scrollable) {
+      if (!element.hasAttribute('data-lm-dragscroll')) {
         continue;
       }
 
@@ -859,20 +942,20 @@ namespace Private {
 
       // Find the edge for the computed distance.
       switch (distance) {
-      case db:
-        edge = 'bottom';
-        break;
-      case dt:
-        edge = 'top';
-        break;
-      case dr:
-        edge = 'right';
-        break;
-      case dl:
-        edge = 'left';
-        break;
-      default:
-        throw 'unreachable';
+        case db:
+          edge = 'bottom';
+          break;
+        case dt:
+          edge = 'top';
+          break;
+        case dr:
+          edge = 'right';
+          break;
+        case dl:
+          edge = 'left';
+          break;
+        default:
+          throw 'unreachable';
       }
 
       // Compute how much the element can scroll in width and height.
@@ -882,20 +965,20 @@ namespace Private {
       // Determine if the element should be scrolled for the edge.
       let shouldScroll: boolean;
       switch (edge) {
-      case 'top':
-        shouldScroll = dsh > 0 && element.scrollTop > 0;
-        break;
-      case 'left':
-        shouldScroll = dsw > 0 && element.scrollLeft > 0;
-        break;
-      case 'right':
-        shouldScroll = dsw > 0 && element.scrollLeft < dsw;
-        break;
-      case 'bottom':
-        shouldScroll = dsh > 0 && element.scrollTop < dsh;
-        break;
-      default:
-        throw 'unreachable';
+        case 'top':
+          shouldScroll = dsh > 0 && element.scrollTop > 0;
+          break;
+        case 'left':
+          shouldScroll = dsw > 0 && element.scrollLeft > 0;
+          break;
+        case 'right':
+          shouldScroll = dsw > 0 && element.scrollLeft < dsw;
+          break;
+        case 'bottom':
+          shouldScroll = dsh > 0 && element.scrollTop < dsh;
+          break;
+        default:
+          throw 'unreachable';
       }
 
       // Skip the element if it should not be scrolled.
@@ -931,15 +1014,23 @@ namespace Private {
    * This largely implements the drag enter portion of the whatwg spec:
    * https://html.spec.whatwg.org/multipage/interaction.html#drag-and-drop-processing-model
    */
-  export
-  function dispatchDragEnter(drag: Drag, currElem: Element | null, currTarget: Element | null, event: MouseEvent): Element | null {
+  export function dispatchDragEnter(
+    drag: Drag,
+    currElem: Element | null,
+    currTarget: Element | null,
+    event: PointerEvent
+  ): Element | null {
     // If the current element is null, return null as the new target.
     if (!currElem) {
       return null;
     }
 
     // Dispatch a drag enter event to the current element.
-    let dragEvent = createDragEvent('lm-dragenter', drag, event, currTarget);
+    let dragEvent = new Drag.Event(event, {
+      drag,
+      related: currTarget,
+      type: 'lm-dragenter'
+    });
     let canceled = !currElem.dispatchEvent(dragEvent);
 
     // If the event was canceled, use the current element as the new target.
@@ -947,30 +1038,26 @@ namespace Private {
       return currElem;
     }
 
-    /* <DEPRECATED> */
-    dragEvent = createDragEvent('p-dragenter', drag, event, currTarget);
-    canceled = !currElem.dispatchEvent(dragEvent);
-    if (canceled) {
-      return currElem;
-    }
-    /* </DEPRECATED> */
-
     // If the current element is the document body, keep the original target.
-    if (currElem === document.body) {
+    const body =
+      drag.document instanceof Document
+        ? drag.document.body
+        : (drag.document.firstElementChild as HTMLElement);
+
+    if (currElem === body) {
       return currTarget;
     }
 
     // Dispatch a drag enter event on the document body.
-    dragEvent = createDragEvent('lm-dragenter', drag, event, currTarget);
-    document.body.dispatchEvent(dragEvent);
-
-    /* <DEPRECATED> */
-    dragEvent = createDragEvent('p-dragenter', drag, event, currTarget);
-    document.body.dispatchEvent(dragEvent);
-    /* </DEPRECATED> */
+    dragEvent = new Drag.Event(event, {
+      drag,
+      related: currTarget,
+      type: 'lm-dragenter'
+    });
+    body.dispatchEvent(dragEvent);
 
     // Ignore the event cancellation, and use the body as the new target.
-    return document.body;
+    return body;
   }
 
   /**
@@ -990,21 +1077,24 @@ namespace Private {
    * This largely implements the drag exit portion of the whatwg spec:
    * https://html.spec.whatwg.org/multipage/interaction.html#drag-and-drop-processing-model
    */
-  export
-  function dispatchDragExit(drag: Drag, prevTarget: Element | null, currTarget: Element | null, event: MouseEvent): void {
+  export function dispatchDragExit(
+    drag: Drag,
+    prevTarget: Element | null,
+    currTarget: Element | null,
+    event: PointerEvent
+  ): void {
     // If the previous target is null, do nothing.
     if (!prevTarget) {
       return;
     }
 
     // Dispatch the drag exit event to the previous target.
-    let dragEvent = createDragEvent('lm-dragexit', drag, event, currTarget);
+    let dragEvent = new Drag.Event(event, {
+      drag,
+      related: currTarget,
+      type: 'lm-dragexit'
+    });
     prevTarget.dispatchEvent(dragEvent);
-
-    /* <DEPRECATED> */
-    dragEvent = createDragEvent('p-dragexit', drag, event, currTarget);
-    prevTarget.dispatchEvent(dragEvent);
-    /* </DEPRECATED> */
   }
 
   /**
@@ -1024,21 +1114,24 @@ namespace Private {
    * This largely implements the drag leave portion of the whatwg spec:
    * https://html.spec.whatwg.org/multipage/interaction.html#drag-and-drop-processing-model
    */
-  export
-  function dispatchDragLeave(drag: Drag, prevTarget: Element | null, currTarget: Element | null, event: MouseEvent): void {
+  export function dispatchDragLeave(
+    drag: Drag,
+    prevTarget: Element | null,
+    currTarget: Element | null,
+    event: PointerEvent
+  ): void {
     // If the previous target is null, do nothing.
     if (!prevTarget) {
       return;
     }
 
     // Dispatch the drag leave event to the previous target.
-    let dragEvent = createDragEvent('lm-dragleave', drag, event, currTarget);
+    let dragEvent = new Drag.Event(event, {
+      drag,
+      related: currTarget,
+      type: 'lm-dragleave'
+    });
     prevTarget.dispatchEvent(dragEvent);
-
-    /* <DEPRECATED> */
-    dragEvent = createDragEvent('p-dragleave', drag, event, currTarget);
-    prevTarget.dispatchEvent(dragEvent);
-    /* </DEPRECATED> */
   }
 
   /**
@@ -1057,29 +1150,28 @@ namespace Private {
    * This largely implements the drag over portion of the whatwg spec:
    * https://html.spec.whatwg.org/multipage/interaction.html#drag-and-drop-processing-model
    */
-  export
-  function dispatchDragOver(drag: Drag, currTarget: Element | null, event: MouseEvent): DropAction {
+  export function dispatchDragOver(
+    drag: Drag,
+    currTarget: Element | null,
+    event: PointerEvent
+  ): Drag.DropAction {
     // If there is no current target, the drop action is none.
     if (!currTarget) {
       return 'none';
     }
 
     // Dispatch the drag over event to the current target.
-    let dragEvent = createDragEvent('lm-dragover', drag, event, null);
+    let dragEvent = new Drag.Event(event, {
+      drag,
+      related: null,
+      type: 'lm-dragover'
+    });
     let canceled = !currTarget.dispatchEvent(dragEvent);
 
     // If the event was canceled, return the drop action result.
     if (canceled) {
       return dragEvent.dropAction;
     }
-
-    /* <DEPRECATED> */
-    dragEvent = createDragEvent('p-dragover', drag, event, null);
-    canceled = !currTarget.dispatchEvent(dragEvent);
-    if (canceled) {
-      return dragEvent.dropAction;
-    }
-    /* </DEPRECATED> */
 
     // Otherwise, the effective drop action is none.
     return 'none';
@@ -1101,29 +1193,28 @@ namespace Private {
    * This largely implements the drag over portion of the whatwg spec:
    * https://html.spec.whatwg.org/multipage/interaction.html#drag-and-drop-processing-model
    */
-  export
-  function dispatchDrop(drag: Drag, currTarget: Element | null, event: MouseEvent): DropAction {
+  export function dispatchDrop(
+    drag: Drag,
+    currTarget: Element | null,
+    event: PointerEvent
+  ): Drag.DropAction {
     // If there is no current target, the drop action is none.
     if (!currTarget) {
       return 'none';
     }
 
     // Dispatch the drop event to the current target.
-    let dragEvent = createDragEvent('lm-drop', drag, event, null);
+    let dragEvent = new Drag.Event(event, {
+      drag,
+      related: null,
+      type: 'lm-drop'
+    });
     let canceled = !currTarget.dispatchEvent(dragEvent);
 
     // If the event was canceled, return the drop action result.
     if (canceled) {
       return dragEvent.dropAction;
     }
-
-    /* <DEPRECATED> */
-    dragEvent = createDragEvent('p-drop', drag, event, null);
-    canceled = !currTarget.dispatchEvent(dragEvent);
-    if (canceled) {
-      return dragEvent.dropAction;
-    }
-    /* </DEPRECATED> */
 
     // Otherwise, the effective drop action is none.
     return 'none';
@@ -1133,62 +1224,139 @@ namespace Private {
    * A lookup table from drop action to bit value.
    */
   const actionTable: { [key: string]: number } = {
-    'none': 0x0,
-    'copy': 0x1,
-    'link': 0x2,
-    'move': 0x4
+    none: 0x0,
+    copy: 0x1,
+    link: 0x2,
+    move: 0x4
   };
 
   /**
    * A lookup table from supported action to drop action bit mask.
    */
   const supportedTable: { [key: string]: number } = {
-    'none': actionTable['none'],
-    'copy': actionTable['copy'],
-    'link': actionTable['link'],
-    'move': actionTable['move'],
+    none: actionTable['none'],
+    copy: actionTable['copy'],
+    link: actionTable['link'],
+    move: actionTable['move'],
     'copy-link': actionTable['copy'] | actionTable['link'],
     'copy-move': actionTable['copy'] | actionTable['move'],
     'link-move': actionTable['link'] | actionTable['move'],
-    'all': actionTable['copy'] | actionTable['link'] | actionTable['move']
+    all: actionTable['copy'] | actionTable['link'] | actionTable['move']
   };
 
   /**
-   * Create a new initialized `IDragEvent` from the given data.
-   *
-   * @param type - The event type for the drag event.
-   *
-   * @param drag - The drag object to use for seeding the drag data.
-   *
-   * @param event - The mouse event to use for seeding the mouse data.
-   *
-   * @param related - The related target for the event, or `null`.
-   *
-   * @returns A new object which implements `IDragEvent`.
+   * Implementation of `Drag.overrideCursor`.
    */
-  function createDragEvent(type: string, drag: Drag, event: MouseEvent, related: Element | null): IDragEvent {
-    // Create a new mouse event to use as the drag event. Currently,
-    // JS engines do now allow user-defined Event subclasses.
-    let dragEvent = document.createEvent('MouseEvent');
-
-    // Initialize the mouse event data.
-    dragEvent.initMouseEvent(
-      type, true, true, window, 0,
-      event.screenX, event.screenY,
-      event.clientX, event.clientY,
-      event.ctrlKey, event.altKey,
-      event.shiftKey, event.metaKey,
-      event.button, related
-    );
-
-    // Forcefully add the custom drag event properties.
-    (dragEvent as any).dropAction = 'none';
-    (dragEvent as any).mimeData = drag.mimeData;
-    (dragEvent as any).proposedAction = drag.proposedAction;
-    (dragEvent as any).supportedActions = drag.supportedActions;
-    (dragEvent as any).source = drag.source;
-
-    // Return the fully initialized drag event.
-    return dragEvent as IDragEvent;
+  export function overrideCursor(
+    cursor: string,
+    doc: Document | ShadowRoot = document
+  ): IDisposable {
+    let id = ++overrideCursorID;
+    const body =
+      doc instanceof Document
+        ? doc.body
+        : (doc.firstElementChild as HTMLElement);
+    if (!cursorBackdrop.isConnected) {
+      // Hide the backdrop until the pointer moves to avoid issues with
+      // native double click detection, used in e.g. datagrid editing.
+      cursorBackdrop.style.transform = 'scale(0)';
+      body.appendChild(cursorBackdrop);
+      resetBackdropScroll();
+      document.addEventListener('pointermove', alignBackdrop, {
+        capture: true,
+        passive: true
+      });
+      cursorBackdrop.addEventListener('scroll', propagateBackdropScroll, {
+        capture: true,
+        passive: true
+      });
+    }
+    cursorBackdrop.style.cursor = cursor;
+    return new DisposableDelegate(() => {
+      if (id === overrideCursorID && cursorBackdrop.isConnected) {
+        document.removeEventListener('pointermove', alignBackdrop, true);
+        cursorBackdrop.removeEventListener(
+          'scroll',
+          propagateBackdropScroll,
+          true
+        );
+        body.removeChild(cursorBackdrop);
+      }
+    });
   }
+
+  /**
+   * Move cursor backdrop to match cursor position.
+   */
+  function alignBackdrop(event: PointerEvent) {
+    if (!cursorBackdrop) {
+      return;
+    }
+    cursorBackdrop.style.transform = `translate(${event.clientX}px, ${event.clientY}px)`;
+  }
+
+  /**
+   * Propagate the scroll event from the backdrop element to the scroll target.
+   * The scroll target is defined by presence of `data-lm-dragscroll` attribute.
+   */
+  function propagateBackdropScroll(_event: Event) {
+    if (!cursorBackdrop) {
+      return;
+    }
+    // Get the element under behind the centre of the cursor backdrop
+    // (essentially behind the cursor, but possibly a few pixels off).
+    let element: Element | null = findElementBehindBackdrop();
+    if (!element) {
+      return;
+    }
+    // Find scroll target.
+    const scrollTarget = element.closest('[data-lm-dragscroll]');
+    if (!scrollTarget) {
+      return;
+    }
+    // Apply the scroll delta to the correct target.
+    scrollTarget.scrollTop += cursorBackdrop.scrollTop - backdropScrollOrigin;
+    scrollTarget.scrollLeft += cursorBackdrop.scrollLeft - backdropScrollOrigin;
+
+    // Center the scroll position.
+    resetBackdropScroll();
+  }
+
+  /**
+   * Reset the backdrop scroll to allow further scrolling.
+   */
+  function resetBackdropScroll() {
+    cursorBackdrop.scrollTop = backdropScrollOrigin;
+    cursorBackdrop.scrollLeft = backdropScrollOrigin;
+  }
+
+  /**
+   * The center of the backdrop node scroll area.
+   */
+  const backdropScrollOrigin = 500;
+
+  /**
+   * Create cursor backdrop node.
+   */
+  function createCursorBackdrop(): HTMLElement {
+    const backdrop = document.createElement('div');
+    backdrop.classList.add('lm-cursor-backdrop');
+    return backdrop;
+  }
+
+  /**
+   * The internal id for the active cursor override.
+   */
+  let overrideCursorID = 0;
+
+  /**
+   * A backdrop node overriding pointer cursor.
+   *
+   * #### Notes
+   * We use a backdrop node rather than setting the cursor directly on the body
+   * because setting it on body requires more extensive style recalculation for
+   * reliable application of the cursor, this is the cursor not being overriden
+   * when over child elements with another style like `cursor: other!important`.
+   */
+  export const cursorBackdrop: HTMLElement = createCursorBackdrop();
 }

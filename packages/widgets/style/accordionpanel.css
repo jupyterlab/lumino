@@ -1,0 +1,11 @@
+/*
+ * Copyright (c) Jupyter Development Team.
+ * Distributed under the terms of the Modified BSD License.
+ */
+
+.lm-AccordionPanel[data-orientation='horizontal'] > .lm-AccordionPanel-title {
+  /* Title is rotated for horizontal accordion panel using CSS */
+  display: block;
+  transform-origin: top left;
+  transform: rotate(-90deg) translate(-100%);
+}

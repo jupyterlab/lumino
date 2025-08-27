@@ -8,12 +8,10 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
-
 /**
  * The namespace for string-specific algorithms.
  */
-export
-namespace StringExt {
+export namespace StringExt {
   /**
    * Find the indices of characters in a source text.
    *
@@ -34,8 +32,11 @@ namespace StringExt {
    *
    * Characters are matched using strict `===` equality.
    */
-  export
-  function findIndices(source: string, query: string, start = 0): number[] | null {
+  export function findIndices(
+    source: string,
+    query: string,
+    start = 0
+  ): number[] | null {
     let indices = new Array<number>(query.length);
     for (let i = 0, j = start, n = query.length; i < n; ++i, ++j) {
       j = source.indexOf(query[i], j);
@@ -50,8 +51,7 @@ namespace StringExt {
   /**
    * The result of a string match function.
    */
-  export
-  interface IMatchResult {
+  export interface IMatchResult {
     /**
      * A score which indicates the strength of the match.
      *
@@ -91,8 +91,11 @@ namespace StringExt {
    * that early and consecutive character matches are preferred, while
    * late matches are heavily penalized.
    */
-  export
-  function matchSumOfSquares(source: string, query: string, start = 0): IMatchResult | null {
+  export function matchSumOfSquares(
+    source: string,
+    query: string,
+    start = 0
+  ): IMatchResult | null {
     let indices = findIndices(source, query, start);
     if (!indices) {
       return null;
@@ -128,8 +131,11 @@ namespace StringExt {
    * of matched characters are preferred, while fragmented matches are
    * penalized.
    */
-  export
-  function matchSumOfDeltas(source: string, query: string, start = 0): IMatchResult | null {
+  export function matchSumOfDeltas(
+    source: string,
+    query: string,
+    start = 0
+  ): IMatchResult | null {
     let indices = findIndices(source, query, start);
     if (!indices) {
       return null;
@@ -156,10 +162,13 @@ namespace StringExt {
    *
    * @returns An array of unmatched and highlighted chunks.
    */
-  export
-  function highlight<T>(source: string, indices: ReadonlyArray<number>, fn: (chunk: string) => T): Array<string | T> {
+  export function highlight<T>(
+    source: string,
+    indices: ReadonlyArray<number>,
+    fn: (chunk: string) => T
+  ): Array<string | T> {
     // Set up the result array.
-    let result: Array<string |T> = [];
+    let result: Array<string | T> = [];
 
     // Set up the counter variables.
     let k = 0;
@@ -202,15 +211,14 @@ namespace StringExt {
 
   /**
    * A 3-way string comparison function.
-   * 
+   *
    * @param a - The first string of interest.
-   * 
+   *
    * @param b - The second string of interest.
-   * 
+   *
    * @returns `-1` if `a < b`, else `1` if `a > b`, else `0`.
    */
-  export
-  function cmp(a: string, b: string): number {
+  export function cmp(a: string, b: string): number {
     return a < b ? -1 : a > b ? 1 : 0;
   }
 }

@@ -7,21 +7,13 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  expect
-} from 'chai';
+import { expect } from 'chai';
 
-import {
-  BoxLayout, BoxPanel, Widget
-} from '@lumino/widgets';
-
+import { BoxLayout, BoxPanel, Widget } from '@lumino/widgets';
 
 describe('@lumino/widgets', () => {
-
   describe('BoxPanel', () => {
-
     describe('#constructor()', () => {
-
       it('should take no arguments', () => {
         let panel = new BoxPanel();
         expect(panel).to.be.an.instanceof(BoxPanel);
@@ -42,7 +34,9 @@ describe('@lumino/widgets', () => {
       it('should ignore other options if a layout is given', () => {
         let layout = new BoxLayout();
         let panel = new BoxPanel({
-          layout, direction: 'bottom-to-top', spacing: 10
+          layout,
+          direction: 'bottom-to-top',
+          spacing: 10
         });
         expect(panel.layout).to.equal(layout);
         expect(panel.direction).to.equal('top-to-bottom');
@@ -53,11 +47,9 @@ describe('@lumino/widgets', () => {
         let panel = new BoxPanel();
         expect(panel.hasClass('lm-BoxPanel')).to.equal(true);
       });
-
     });
 
     describe('#direction', () => {
-
       it('should default to `"top-to-bottom"`', () => {
         let panel = new BoxPanel();
         expect(panel.direction).to.equal('top-to-bottom');
@@ -68,11 +60,9 @@ describe('@lumino/widgets', () => {
         panel.direction = 'left-to-right';
         expect(panel.direction).to.equal('left-to-right');
       });
-
     });
 
     describe('#spacing', () => {
-
       it('should default to `4`', () => {
         let panel = new BoxPanel();
         expect(panel.spacing).to.equal(4);
@@ -83,22 +73,18 @@ describe('@lumino/widgets', () => {
         panel.spacing = 8;
         expect(panel.spacing).to.equal(8);
       });
-
     });
 
     describe('#onChildAdded()', () => {
-
       it('should add the child class to a child added to the panel', () => {
         let panel = new BoxPanel();
         let widget = new Widget();
         panel.addWidget(widget);
         expect(widget.hasClass('lm-BoxPanel-child')).to.equal(true);
       });
-
     });
 
     describe('#onChildRemoved()', () => {
-
       it('should remove the child class from a child removed from the panel', () => {
         let panel = new BoxPanel();
         let widget = new Widget();
@@ -106,47 +92,36 @@ describe('@lumino/widgets', () => {
         widget.parent = null;
         expect(widget.hasClass('lm-BoxPanel-child')).to.equal(false);
       });
-
     });
 
     describe('.getStretch()', () => {
-
       it('should get the box panel stretch factor for the given widget', () => {
         let widget = new Widget();
         expect(BoxPanel.getStretch(widget)).to.equal(0);
       });
-
     });
 
     describe('.setStretch()', () => {
-
       it('should set the box panel stretch factor for the given widget', () => {
         let widget = new Widget();
         BoxPanel.setStretch(widget, 8);
         expect(BoxPanel.getStretch(widget)).to.equal(8);
       });
-
     });
 
     describe('.getSizeBasis()', () => {
-
       it('should get the box panel size basis for the given widget', () => {
         let widget = new Widget();
         expect(BoxPanel.getSizeBasis(widget)).to.equal(0);
       });
-
     });
 
     describe('.setSizeBasis()', () => {
-
       it('should set the box panel size basis for the given widget', () => {
         let widget = new Widget();
         BoxPanel.setSizeBasis(widget, 8);
         expect(BoxPanel.getSizeBasis(widget)).to.equal(8);
       });
-
     });
-
   });
-
 });

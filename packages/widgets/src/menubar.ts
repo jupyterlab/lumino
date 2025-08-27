@@ -7,44 +7,38 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  ArrayExt
-} from '@lumino/algorithm';
+import { ArrayExt } from '@lumino/algorithm';
+
+import { ElementExt } from '@lumino/domutils';
+
+import { getKeyboardLayout } from '@lumino/keyboard';
+
+import { Message, MessageLoop } from '@lumino/messaging';
+
+import { CommandRegistry } from '@lumino/commands';
 
 import {
-  ElementExt
-} from '@lumino/domutils';
-
-import {
-  getKeyboardLayout
-} from '@lumino/keyboard';
-
-import {
-  Message, MessageLoop
-} from '@lumino/messaging';
-
-import {
-  ElementDataset, VirtualDOM, VirtualElement, h
+  ElementARIAAttrs,
+  ElementDataset,
+  h,
+  VirtualDOM,
+  VirtualElement
 } from '@lumino/virtualdom';
 
-import {
-  Menu
-} from './menu';
+import { Menu } from './menu';
 
-import {
-  Title
-} from './title';
+import { Title } from './title';
 
-import {
-  Widget
-} from './widget';
-
+import { Widget } from './widget';
 
 /**
  * A widget which displays menus as a canonical menu bar.
+ *
+ * #### Notes
+ * See also the related [example](../../examples/menubar/index.html) and
+ * its [source](https://github.com/jupyterlab/lumino/tree/main/examples/example-menubar).
  */
-export
-class MenuBar extends Widget {
+export class MenuBar extends Widget {
   /**
    * Construct a new menu bar.
    *
@@ -53,11 +47,15 @@ class MenuBar extends Widget {
   constructor(options: MenuBar.IOptions = {}) {
     super({ node: Private.createNode() });
     this.addClass('lm-MenuBar');
-    /* <DEPRECATED> */
-    this.addClass('p-MenuBar');
-    /* </DEPRECATED> */
     this.setFlag(Widget.Flag.DisallowLayout);
     this.renderer = options.renderer || MenuBar.defaultRenderer;
+    this._forceItemsPosition = options.forceItemsPosition || {
+      forceX: true,
+      forceY: true
+    };
+    this._overflowMenuOptions = options.overflowMenuOptions || {
+      isVisible: true
+    };
   }
 
   /**
@@ -85,6 +83,20 @@ class MenuBar extends Widget {
   }
 
   /**
+   * The overflow index of the menu bar.
+   */
+  get overflowIndex(): number {
+    return this._overflowIndex;
+  }
+
+  /**
+   * The overflow menu of the menu bar.
+   */
+  get overflowMenu(): Menu | null {
+    return this._overflowMenu;
+  }
+
+  /**
    * Get the menu bar content node.
    *
    * #### Notes
@@ -93,7 +105,9 @@ class MenuBar extends Widget {
    * Modifying this node directly can lead to undefined behavior.
    */
   get contentNode(): HTMLUListElement {
-    return this.node.getElementsByClassName('lm-MenuBar-content')[0] as HTMLUListElement;
+    return this.node.getElementsByClassName(
+      'lm-MenuBar-content'
+    )[0] as HTMLUListElement;
   }
 
   /**
@@ -132,6 +146,11 @@ class MenuBar extends Widget {
   set activeIndex(value: number) {
     // Adjust the value for an out of range index.
     if (value < 0 || value >= this._menus.length) {
+      value = -1;
+    }
+
+    // An empty menu cannot be active
+    if (value > -1 && this._menus[value].items.length === 0) {
       value = -1;
     }
 
@@ -184,8 +203,8 @@ class MenuBar extends Widget {
    * #### Notes
    * If the menu is already added to the menu bar, it will be moved.
    */
-  addMenu(menu: Menu): void {
-    this.insertMenu(this._menus.length, menu);
+  addMenu(menu: Menu, update: boolean = true): void {
+    this.insertMenu(this._menus.length, menu, update);
   }
 
   /**
@@ -200,7 +219,7 @@ class MenuBar extends Widget {
    *
    * If the menu is already added to the menu bar, it will be moved.
    */
-  insertMenu(index: number, menu: Menu): void {
+  insertMenu(index: number, menu: Menu, update: boolean = true): void {
     // Close the child menu before making changes.
     this._closeChildMenu();
 
@@ -217,9 +236,6 @@ class MenuBar extends Widget {
 
       // Add the styling class to the menu.
       menu.addClass('lm-MenuBar-menu');
-      /* <DEPRECATED> */
-      menu.addClass('p-MenuBar-menu');
-      /* </DEPRECATED> */
 
       // Connect to the menu signals.
       menu.aboutToClose.connect(this._onMenuAboutToClose, this);
@@ -227,7 +243,9 @@ class MenuBar extends Widget {
       menu.title.changed.connect(this._onTitleChanged, this);
 
       // Schedule an update of the items.
-      this.update();
+      if (update) {
+        this.update();
+      }
 
       // There is nothing more to do.
       return;
@@ -249,7 +267,9 @@ class MenuBar extends Widget {
     ArrayExt.move(this._menus, i, j);
 
     // Schedule an update of the items.
-    this.update();
+    if (update) {
+      this.update();
+    }
   }
 
   /**
@@ -260,8 +280,8 @@ class MenuBar extends Widget {
    * #### Notes
    * This is a no-op if the menu is not in the menu bar.
    */
-  removeMenu(menu: Menu): void {
-    this.removeMenuAt(this._menus.indexOf(menu));
+  removeMenu(menu: Menu, update: boolean = true): void {
+    this.removeMenuAt(this._menus.indexOf(menu), update);
   }
 
   /**
@@ -272,7 +292,7 @@ class MenuBar extends Widget {
    * #### Notes
    * This is a no-op if the index is out of range.
    */
-  removeMenuAt(index: number): void {
+  removeMenuAt(index: number, update: boolean = true): void {
     // Close the child menu before making changes.
     this._closeChildMenu();
 
@@ -291,12 +311,11 @@ class MenuBar extends Widget {
 
     // Remove the styling class from the menu.
     menu.removeClass('lm-MenuBar-menu');
-    /* <DEPRECATED> */
-    menu.removeClass('p-MenuBar-menu');
-    /* </DEPRECATED> */
 
     // Schedule an update of the items.
-    this.update();
+    if (update) {
+      this.update();
+    }
   }
 
   /**
@@ -317,9 +336,6 @@ class MenuBar extends Widget {
       menu.menuRequested.disconnect(this._onMenuMenuRequested, this);
       menu.title.changed.disconnect(this._onTitleChanged, this);
       menu.removeClass('lm-MenuBar-menu');
-      /* <DEPRECATED> */
-      menu.removeClass('p-MenuBar-menu');
-      /* </DEPRECATED> */
     }
 
     // Clear the menus array.
@@ -341,22 +357,22 @@ class MenuBar extends Widget {
    */
   handleEvent(event: Event): void {
     switch (event.type) {
-    case 'keydown':
-      this._evtKeyDown(event as KeyboardEvent);
-      break;
-    case 'mousedown':
-      this._evtMouseDown(event as MouseEvent);
-      break;
-    case 'mousemove':
-      this._evtMouseMove(event as MouseEvent);
-      break;
-    case 'mouseleave':
-      this._evtMouseLeave(event as MouseEvent);
-      break;
-    case 'contextmenu':
-      event.preventDefault();
-      event.stopPropagation();
-      break;
+      case 'keydown':
+        this._evtKeyDown(event as KeyboardEvent);
+        break;
+      case 'mousedown':
+        this._evtMouseDown(event as MouseEvent);
+        break;
+      case 'mousemove':
+        this._evtMouseMove(event as MouseEvent);
+        break;
+      case 'focusout':
+        this._evtFocusOut(event as FocusEvent);
+        break;
+      case 'contextmenu':
+        event.preventDefault();
+        event.stopPropagation();
+        break;
     }
   }
 
@@ -367,7 +383,7 @@ class MenuBar extends Widget {
     this.node.addEventListener('keydown', this);
     this.node.addEventListener('mousedown', this);
     this.node.addEventListener('mousemove', this);
-    this.node.addEventListener('mouseleave', this);
+    this.node.addEventListener('focusout', this);
     this.node.addEventListener('contextmenu', this);
   }
 
@@ -378,7 +394,7 @@ class MenuBar extends Widget {
     this.node.removeEventListener('keydown', this);
     this.node.removeEventListener('mousedown', this);
     this.node.removeEventListener('mousemove', this);
-    this.node.removeEventListener('mouseleave', this);
+    this.node.removeEventListener('focusout', this);
     this.node.removeEventListener('contextmenu', this);
     this._closeChildMenu();
   }
@@ -388,8 +404,16 @@ class MenuBar extends Widget {
    */
   protected onActivateRequest(msg: Message): void {
     if (this.isAttached) {
-      this.node.focus();
+      this._focusItemAt(0);
     }
+  }
+
+  /**
+   * A message handler invoked on a `'resize'` message.
+   */
+  protected onResize(msg: Widget.ResizeMessage): void {
+    this.update();
+    super.onResize(msg);
   }
 
   /**
@@ -399,28 +423,176 @@ class MenuBar extends Widget {
     let menus = this._menus;
     let renderer = this.renderer;
     let activeIndex = this._activeIndex;
-    let content = new Array<VirtualElement>(menus.length);
-    for (let i = 0, n = menus.length; i < n; ++i) {
-      let title = menus[i].title;
-      let active = i === activeIndex;
-      content[i] = renderer.renderItem({ title, active });
+    let tabFocusIndex =
+      this._tabFocusIndex >= 0 && this._tabFocusIndex < menus.length
+        ? this._tabFocusIndex
+        : 0;
+    let length = this._overflowIndex > -1 ? this._overflowIndex : menus.length;
+    let totalMenuSize = 0;
+    let isVisible = false;
+
+    // Check that the overflow menu doesn't count
+    length = this._overflowMenu !== null ? length - 1 : length;
+    let content = new Array<VirtualElement>(length);
+
+    // Render visible menus
+    for (let i = 0; i < length; ++i) {
+      content[i] = renderer.renderItem({
+        title: menus[i].title,
+        active: i === activeIndex,
+        tabbable: i === tabFocusIndex,
+        disabled: menus[i].items.length === 0,
+        onfocus: () => {
+          this._tabFocusIndex = i;
+          this.activeIndex = i;
+        }
+      });
+      // Calculate size of current menu
+      totalMenuSize += this._menuItemSizes[i];
+      // Check if overflow menu is already rendered
+      if (menus[i].title.label === this._overflowMenuOptions.title) {
+        isVisible = true;
+        length--;
+      }
+    }
+    // Render overflow menu if needed and active
+    if (this._overflowMenuOptions.isVisible) {
+      if (this._overflowIndex > -1 && !isVisible) {
+        // Create overflow menu
+        if (this._overflowMenu === null) {
+          const overflowMenuTitle = this._overflowMenuOptions.title ?? '...';
+          this._overflowMenu = new Menu({ commands: new CommandRegistry() });
+          this._overflowMenu.title.label = overflowMenuTitle;
+          this._overflowMenu.title.mnemonic = 0;
+          this.addMenu(this._overflowMenu, false);
+        }
+        // Move menus to overflow menu
+        for (let i = menus.length - 2; i >= length; i--) {
+          const submenu = this.menus[i];
+          submenu.title.mnemonic = 0;
+          this._overflowMenu.insertItem(0, {
+            type: 'submenu',
+            submenu: submenu
+          });
+          this.removeMenu(submenu, false);
+        }
+        content[length] = renderer.renderItem({
+          title: this._overflowMenu.title,
+          active: length === activeIndex && menus[length].items.length !== 0,
+          tabbable: length === tabFocusIndex,
+          disabled: menus[length].items.length === 0,
+          onfocus: () => {
+            this._tabFocusIndex = length;
+            this.activeIndex = length;
+          }
+        });
+        length++;
+      } else if (this._overflowMenu !== null) {
+        // Remove submenus from overflow menu
+        let overflowMenuItems = this._overflowMenu.items;
+        let screenSize = this.node.offsetWidth;
+        let n = this._overflowMenu.items.length;
+        for (let i = 0; i < n; ++i) {
+          let index = menus.length - 1 - i;
+          if (screenSize - totalMenuSize > this._menuItemSizes[index]) {
+            let menu = overflowMenuItems[0].submenu as Menu;
+            this._overflowMenu.removeItemAt(0);
+            this.insertMenu(length, menu, false);
+            content[length] = renderer.renderItem({
+              title: menu.title,
+              active: false,
+              tabbable: length === tabFocusIndex,
+              disabled: menus[length].items.length === 0,
+              onfocus: () => {
+                this._tabFocusIndex = length;
+                this.activeIndex = length;
+              }
+            });
+            length++;
+          }
+        }
+        if (this._overflowMenu.items.length === 0) {
+          this.removeMenu(this._overflowMenu, false);
+          content.pop();
+          this._overflowMenu = null;
+          this._overflowIndex = -1;
+        }
+      }
     }
     VirtualDOM.render(content, this.contentNode);
+    this._updateOverflowIndex();
+  }
+
+  /**
+   * Calculate and update the current overflow index.
+   */
+  private _updateOverflowIndex(): void {
+    if (!this._overflowMenuOptions.isVisible) {
+      return;
+    }
+
+    // Get elements visible in the main menu bar
+    const itemMenus = this.contentNode.childNodes;
+    let screenSize = this.node.offsetWidth;
+    let totalMenuSize = 0;
+    let index = -1;
+    let n = itemMenus.length;
+
+    if (this._menuItemSizes.length == 0) {
+      // Check if it is the first resize and get info about menu items sizes
+      for (let i = 0; i < n; i++) {
+        let item = itemMenus[i] as HTMLLIElement;
+        // Add sizes to array
+        totalMenuSize += item.offsetWidth;
+        this._menuItemSizes.push(item.offsetWidth);
+        if (totalMenuSize > screenSize && index === -1) {
+          index = i;
+        }
+      }
+    } else {
+      // Calculate current menu size
+      for (let i = 0; i < this._menuItemSizes.length; i++) {
+        totalMenuSize += this._menuItemSizes[i];
+        if (totalMenuSize > screenSize) {
+          index = i;
+          break;
+        }
+      }
+    }
+    this._overflowIndex = index;
   }
 
   /**
    * Handle the `'keydown'` event for the menu bar.
+   *
+   * #### Notes
+   * All keys are trapped except the tab key that is ignored.
    */
   private _evtKeyDown(event: KeyboardEvent): void {
-    // A menu bar handles all keydown events.
-    event.preventDefault();
-    event.stopPropagation();
-
     // Fetch the key code for the event.
     let kc = event.keyCode;
 
-    // Enter, Up Arrow, Down Arrow
-    if (kc === 13 || kc === 38 || kc === 40) {
+    // Reset the active index on tab, but do not trap the tab key.
+    if (kc === 9) {
+      this.activeIndex = -1;
+      return;
+    }
+
+    // A menu bar handles all other keydown events.
+    event.preventDefault();
+    event.stopPropagation();
+
+    // Enter, Space, Up Arrow, Down Arrow
+    if (kc === 13 || kc === 32 || kc === 38 || kc === 40) {
+      // The active index may have changed (for example, user hovers over an
+      // item with the mouse), so be sure to use the focus index.
+      this.activeIndex = this._tabFocusIndex;
+      if (this.activeIndex !== this._tabFocusIndex) {
+        // Bail if the setter refused to set activeIndex to tabFocusIndex
+        // because it means that the item at tabFocusIndex cannot be opened (for
+        // example, it has an empty menu)
+        return;
+      }
       this.openActiveMenu();
       return;
     }
@@ -428,24 +600,22 @@ class MenuBar extends Widget {
     // Escape
     if (kc === 27) {
       this._closeChildMenu();
-      this.activeIndex = -1;
-      this.node.blur();
+      this._focusItemAt(this.activeIndex);
       return;
     }
 
-    // Left Arrow
-    if (kc === 37) {
-      let i = this._activeIndex;
+    // Left or Right Arrow
+    if (kc === 37 || kc === 39) {
+      let direction = kc === 37 ? -1 : 1;
+      let start = this._tabFocusIndex + direction;
       let n = this._menus.length;
-      this.activeIndex = i === 0 ? n - 1 : i - 1;
-      return;
-    }
-
-    // Right Arrow
-    if (kc === 39) {
-      let i = this._activeIndex;
-      let n = this._menus.length;
-      this.activeIndex = i === n - 1 ? 0 : i + 1;
+      for (let i = 0; i < n; i++) {
+        let index = (n + start + direction * i) % n;
+        if (this._menus[index].items.length) {
+          this._focusItemAt(index);
+          return;
+        }
+      }
       return;
     }
 
@@ -470,8 +640,10 @@ class MenuBar extends Widget {
       this.openActiveMenu();
     } else if (result.index !== -1) {
       this.activeIndex = result.index;
+      this._focusItemAt(this.activeIndex);
     } else if (result.auto !== -1) {
       this.activeIndex = result.auto;
+      this._focusItemAt(this.activeIndex);
     }
   }
 
@@ -487,7 +659,6 @@ class MenuBar extends Widget {
 
     // Stop the propagation of the event. Immediate propagation is
     // also stopped so that an open menu does not handle the event.
-    event.preventDefault();
     event.stopPropagation();
     event.stopImmediatePropagation();
 
@@ -512,8 +683,14 @@ class MenuBar extends Widget {
       this._closeChildMenu();
       this.activeIndex = index;
     } else {
+      // If we don't call preventDefault() here, then the item in the menu
+      // bar will take focus over the menu that is being opened.
+      event.preventDefault();
+      const position = this._positionForMenu(index);
+      Menu.saveWindowData();
+      // Begin DOM modifications.
       this.activeIndex = index;
-      this._openChildMenu();
+      this._openChildMenu(position);
     }
   }
 
@@ -538,22 +715,60 @@ class MenuBar extends Widget {
       return;
     }
 
+    // Get position for the new menu >before< updating active index.
+    const position =
+      index >= 0 && this._childMenu ? this._positionForMenu(index) : null;
+
+    // Before any modification, update window data.
+    Menu.saveWindowData();
+
+    // Begin DOM modifications.
+
     // Update the active index to the hovered item.
     this.activeIndex = index;
 
     // Open the new menu if a menu is already open.
-    if (this._childMenu) {
-      this._openChildMenu();
+    if (position) {
+      this._openChildMenu(position);
     }
   }
 
   /**
-   * Handle the `'mouseleave'` event for the menu bar.
+   * Find initial position for the menu based on menubar item position.
+   *
+   * NOTE: this should be called before updating active index to avoid
+   * an additional layout and style invalidation as changing active
+   * index modifies DOM.
    */
-  private _evtMouseLeave(event: MouseEvent): void {
-    // Reset the active index if there is no open menu.
-    if (!this._childMenu) {
+  private _positionForMenu(index: number): Private.IPosition {
+    let itemNode = this.contentNode.children[index];
+    let { left, bottom } = (itemNode as HTMLElement).getBoundingClientRect();
+    return {
+      top: bottom,
+      left
+    };
+  }
+
+  /**
+   * Handle the `'focusout'` event for the menu bar.
+   */
+  private _evtFocusOut(event: FocusEvent): void {
+    // Reset the active index if there is no open menu and the menubar is losing focus.
+    if (!this._childMenu && !this.node.contains(event.relatedTarget as Node)) {
       this.activeIndex = -1;
+    }
+  }
+
+  /**
+   * Focus an item in the menu bar.
+   *
+   * #### Notes
+   * Does not open the associated menu.
+   */
+  private _focusItemAt(index: number): void {
+    const itemNode = this.contentNode.childNodes[index] as HTMLElement | void;
+    if (itemNode) {
+      itemNode.focus();
     }
   }
 
@@ -563,7 +778,7 @@ class MenuBar extends Widget {
    * If a different child menu is already open, it will be closed,
    * even if there is no active menu.
    */
-  private _openChildMenu(): void {
+  private _openChildMenu(options: { left?: number; top?: number } = {}): void {
     // If there is no active menu, close the current menu.
     let newMenu = this.activeMenu;
     if (!newMenu) {
@@ -584,22 +799,29 @@ class MenuBar extends Widget {
     if (oldMenu) {
       oldMenu.close();
     } else {
-      this.addClass('lm-mod-active');
-      /* <DEPRECATED> */
-      this.addClass('p-mod-active');
-      /* </DEPRECATED> */
       document.addEventListener('mousedown', this, true);
     }
 
-    // Ensure the menu bar is updated and look up the item node.
+    // Update the tab focus index and ensure the menu bar is updated.
+    this._tabFocusIndex = this.activeIndex;
     MessageLoop.sendMessage(this, Widget.Msg.UpdateRequest);
-    let itemNode = this.contentNode.children[this._activeIndex];
 
     // Get the positioning data for the new menu.
-    let { left, bottom } = (itemNode as HTMLElement).getBoundingClientRect();
+    let { left, top } = options;
+    if (typeof left === 'undefined' || typeof top === 'undefined') {
+      ({ left, top } = this._positionForMenu(this._activeIndex));
+    }
+    // Begin DOM modifications
+
+    if (!oldMenu) {
+      // Continue setup for new menu
+      this.addClass('lm-mod-active');
+    }
 
     // Open the new menu at the computed location.
-    newMenu.open(left, bottom, { forceX: true, forceY: true });
+    if (newMenu.items.length > 0) {
+      newMenu.open(left, top, this._forceItemsPosition);
+    }
   }
 
   /**
@@ -612,12 +834,8 @@ class MenuBar extends Widget {
     if (!this._childMenu) {
       return;
     }
-
     // Remove the active class from the menu bar.
     this.removeClass('lm-mod-active');
-    /* <DEPRECATED> */
-    this.removeClass('p-mod-active');
-    /* </DEPRECATED> */
 
     // Remove the document listeners.
     document.removeEventListener('mousedown', this, true);
@@ -644,9 +862,6 @@ class MenuBar extends Widget {
 
     // Remove the active class from the menu bar.
     this.removeClass('lm-mod-active');
-    /* <DEPRECATED> */
-    this.removeClass('p-mod-active');
-    /* </DEPRECATED> */
 
     // Remove the document listeners.
     document.removeEventListener('mousedown', this, true);
@@ -673,12 +888,12 @@ class MenuBar extends Widget {
 
     // Active the next requested index.
     switch (args) {
-    case 'next':
-      this.activeIndex = i === n - 1 ? 0 : i + 1;
-      break;
-    case 'previous':
-      this.activeIndex = i === 0 ? n - 1 : i - 1;
-      break;
+      case 'next':
+        this.activeIndex = i === n - 1 ? 0 : i + 1;
+        break;
+      case 'previous':
+        this.activeIndex = i === 0 ? n - 1 : i - 1;
+        break;
     }
 
     // Open the active menu.
@@ -692,35 +907,61 @@ class MenuBar extends Widget {
     this.update();
   }
 
+  // Track the index of the item that is currently focused or hovered. -1 means nothing focused or hovered.
   private _activeIndex = -1;
+  // Track which item can be focused using the TAB key. Unlike _activeIndex will
+  // always point to a menuitem. Whenever you update this value, it's important
+  // to follow it with an "update-request" message so that the `tabindex`
+  // attribute on each menubar item gets properly updated.
+  private _tabFocusIndex = 0;
+  private _forceItemsPosition: Menu.IOpenOptions;
+  private _overflowMenuOptions: IOverflowMenuOptions;
   private _menus: Menu[] = [];
   private _childMenu: Menu | null = null;
+  private _overflowMenu: Menu | null = null;
+  private _menuItemSizes: number[] = [];
+  private _overflowIndex: number = -1;
 }
-
 
 /**
  * The namespace for the `MenuBar` class statics.
  */
-export
-namespace MenuBar {
+export namespace MenuBar {
   /**
    * An options object for creating a menu bar.
    */
-  export
-  interface IOptions {
+  export interface IOptions {
     /**
      * A custom renderer for creating menu bar content.
      *
      * The default is a shared renderer instance.
      */
     renderer?: IRenderer;
+    /**
+     * Whether to force the position of the menu. The MenuBar forces the
+     * coordinates of its menus by default. With this option you can disable it.
+     *
+     * Setting to `false` will enable the logic which repositions the
+     * coordinates of the menu if it will not fit entirely on screen.
+     *
+     * The default is `true`.
+     */
+    forceItemsPosition?: Menu.IOpenOptions;
+    /**
+     * Whether to add a overflow menu if there's overflow.
+     *
+     * Setting to `true` will enable the logic that creates an overflow menu
+     * to show the menu items that don't fit entirely on the screen.
+     *
+     * The default is `true`.
+     */
+    overflowMenuOptions?: IOverflowMenuOptions;
   }
 
   /**
    * An object which holds the data to render a menu bar item.
    */
-  export
-  interface IRenderData {
+  export interface IRenderData {
     /**
      * The title to be rendered.
      */
@@ -730,13 +971,28 @@ namespace MenuBar {
      * Whether the item is the active item.
      */
     readonly active: boolean;
+
+    /**
+     * Whether the user can tab to the item.
+     */
+    readonly tabbable: boolean;
+
+    /**
+     * Whether the item is disabled.
+     *
+     * #### Notes
+     * A disabled item cannot be active.
+     * A disabled item cannot be focussed.
+     */
+    readonly disabled?: boolean;
+
+    readonly onfocus?: (event: FocusEvent) => void;
   }
 
   /**
    * A renderer for use with a menu bar.
    */
-  export
-  interface IRenderer {
+  export interface IRenderer {
     /**
      * Render the virtual element for a menu bar item.
      *
@@ -753,13 +1009,7 @@ namespace MenuBar {
    * #### Notes
    * Subclasses are free to reimplement rendering methods as needed.
    */
-  export
-  class Renderer implements IRenderer {
-    /**
-     * Construct a new renderer.
-     */
-    constructor() { }
-
+  export class Renderer implements IRenderer {
     /**
      * Render the virtual element for a menu bar item.
      *
@@ -770,11 +1020,17 @@ namespace MenuBar {
     renderItem(data: IRenderData): VirtualElement {
       let className = this.createItemClass(data);
       let dataset = this.createItemDataset(data);
-      return (
-        h.li({ className, dataset },
-          this.renderIcon(data),
-          this.renderLabel(data)
-        )
+      let aria = this.createItemARIA(data);
+      return h.li(
+        {
+          className,
+          dataset,
+          ...(data.disabled ? {} : { tabindex: data.tabbable ? '0' : '-1' }),
+          onfocus: data.onfocus,
+          ...aria
+        },
+        this.renderIcon(data),
+        this.renderLabel(data)
       );
     }
 
@@ -788,14 +1044,8 @@ namespace MenuBar {
     renderIcon(data: IRenderData): VirtualElement {
       let className = this.createIconClass(data);
 
-      /* <DEPRECATED> */
-      if (typeof data.title.icon === 'string') {
-        return h.div({className}, data.title.iconLabel);
-      }
-      /* </DEPRECATED> */
-
-      // if data.title.icon is undefined, it will be ignored
-      return h.div({className}, data.title.icon!, data.title.iconLabel);
+      // If data.title.icon is undefined, it will be ignored.
+      return h.div({ className }, data.title.icon!, data.title.iconLabel);
     }
 
     /**
@@ -807,12 +1057,7 @@ namespace MenuBar {
      */
     renderLabel(data: IRenderData): VirtualElement {
       let content = this.formatLabel(data);
-      return h.div({ className:
-        'lm-MenuBar-itemLabel'
-          /* <DEPRECATED> */
-            + ' p-MenuBar-itemLabel'
-          /* </DEPRECATED> */
-      }, content);
+      return h.div({ className: 'lm-MenuBar-itemLabel' }, content);
     }
 
     /**
@@ -824,17 +1069,11 @@ namespace MenuBar {
      */
     createItemClass(data: IRenderData): string {
       let name = 'lm-MenuBar-item';
-      /* <DEPRECATED> */
-      name += ' p-MenuBar-item';
-      /* </DEPRECATED> */
       if (data.title.className) {
         name += ` ${data.title.className}`;
       }
-      if (data.active) {
+      if (data.active && !data.disabled) {
         name += ' lm-mod-active';
-      /* <DEPRECATED> */
-      name += ' p-mod-active';
-      /* </DEPRECATED> */
       }
       return name;
     }
@@ -851,6 +1090,21 @@ namespace MenuBar {
     }
 
     /**
+     * Create the aria attributes for menu bar item.
+     *
+     * @param data - The data to use for the aria attributes.
+     *
+     * @returns The aria attributes object for the item.
+     */
+    createItemARIA(data: IRenderData): ElementARIAAttrs {
+      return {
+        role: 'menuitem',
+        'aria-haspopup': 'true',
+        'aria-disabled': data.disabled ? 'true' : 'false'
+      };
+    }
+
+    /**
      * Create the class name for the menu bar item icon.
      *
      * @param data - The data to use for the class name.
@@ -859,9 +1113,6 @@ namespace MenuBar {
      */
     createIconClass(data: IRenderData): string {
       let name = 'lm-MenuBar-itemIcon';
-      /* <DEPRECATED> */
-      name += ' p-MenuBar-itemIcon';
-      /* </DEPRECATED> */
       let extra = data.title.iconClass;
       return extra ? `${name} ${extra}` : name;
     }
@@ -888,12 +1139,7 @@ namespace MenuBar {
       let char = label[mnemonic];
 
       // Wrap the mnemonic character in a span.
-      let span = h.span({
-        className: 'lm-MenuBar-itemMnemonic'
-          /* <DEPRECATED> */
-          + ' p-MenuBar-itemMnemonic'
-          /* </DEPRECATED> */
-      }, char);
+      let span = h.span({ className: 'lm-MenuBar-itemMnemonic' }, char);
 
       // Return the content parts.
       return [prefix, span, suffix];
@@ -903,10 +1149,26 @@ namespace MenuBar {
   /**
    * The default `Renderer` instance.
    */
-  export
-  const defaultRenderer = new Renderer();
+  export const defaultRenderer = new Renderer();
 }
 
+/**
+ * Options for overflow menu.
+ */
+export interface IOverflowMenuOptions {
+  /**
+   * Determines if a overflow menu appears when the menu items overflow.
+   *
+   * Defaults to `true`.
+   */
+  isVisible: boolean;
+  /**
+   * Determines the title of the overflow menu.
+   *
+   * Default: `...`.
+   */
+  title?: string;
+}
 
 /**
  * The namespace for the module implementation details.
@@ -915,24 +1177,33 @@ namespace Private {
   /**
    * Create the DOM node for a menu bar.
    */
-  export
-  function createNode(): HTMLDivElement {
+  export function createNode(): HTMLDivElement {
     let node = document.createElement('div');
     let content = document.createElement('ul');
     content.className = 'lm-MenuBar-content';
-    /* <DEPRECATED> */
-    content.classList.add('p-MenuBar-content');
-    /* </DEPRECATED> */
     node.appendChild(content);
-    node.tabIndex = -1;
+    content.setAttribute('role', 'menubar');
     return node;
+  }
+
+  /**
+   * Position for the menu relative to top-left screen corner.
+   */
+  export interface IPosition {
+    /**
+     * Pixels right from screen origin.
+     */
+    left: number;
+    /**
+     * Pixels down from screen origin.
+     */
+    top: number;
   }
 
   /**
    * The results of a mnemonic search.
    */
-  export
-  interface IMnemonicResult {
+  export interface IMnemonicResult {
     /**
      * The index of the first matching mnemonic item, or `-1`.
      */
@@ -954,8 +1225,11 @@ namespace Private {
    *
    * The search starts at the given index and wraps around.
    */
-  export
-  function findMnemonic(menus: ReadonlyArray<Menu>, key: string, start: number): IMnemonicResult {
+  export function findMnemonic(
+    menus: ReadonlyArray<Menu>,
+    key: string,
+    start: number
+  ): IMnemonicResult {
     // Setup the result variables.
     let index = -1;
     let auto = -1;

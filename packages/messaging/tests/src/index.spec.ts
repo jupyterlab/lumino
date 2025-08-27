@@ -7,18 +7,18 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  expect
-} from 'chai';
+import { expect } from 'chai';
 
 import {
-  ConflatableMessage, IMessageHandler, IMessageHook, Message, MessageHook,
+  ConflatableMessage,
+  IMessageHandler,
+  IMessageHook,
+  Message,
+  MessageHook,
   MessageLoop
 } from '@lumino/messaging';
 
-
 class Handler implements IMessageHandler {
-
   messages: string[] = [];
 
   processMessage(msg: Message): void {
@@ -26,17 +26,13 @@ class Handler implements IMessageHandler {
   }
 }
 
-
 class BadHandler implements IMessageHandler {
-
   processMessage(msg: Message): void {
     throw new Error('process error');
   }
 }
 
-
 class GlobalHandler extends Handler {
-
   static messages: string[] = [];
 
   processMessage(msg: Message): void {
@@ -45,9 +41,7 @@ class GlobalHandler extends Handler {
   }
 }
 
-
 class LogHook implements IMessageHook {
-
   preventTypes: string[] = [];
 
   messages: string[] = [];
@@ -61,60 +55,45 @@ class LogHook implements IMessageHook {
   }
 }
 
-
 const defer = (() => {
   let ok = typeof requestAnimationFrame === 'function';
   return ok ? requestAnimationFrame : setImmediate;
 })();
 
-
 describe('@lumino/messaging', () => {
-
   describe('Message', () => {
-
     describe('#constructor()', () => {
-
       it('should require a single message type argument', () => {
         let msg = new Message('test');
         expect(msg).to.be.an.instanceof(Message);
       });
-
     });
 
     describe('#type', () => {
-
       it('should return the message type', () => {
         let msg = new Message('test');
         expect(msg.type).to.equal('test');
       });
-
     });
 
     describe('#isConflatable', () => {
-
       it('should be `false` by default', () => {
         let msg = new Message('test');
         expect(msg.isConflatable).to.equal(false);
       });
-
     });
 
     describe('#conflate()', () => {
-
       it('should return `false` by default', () => {
         let msg = new Message('test');
         let other = new Message('test');
         expect(msg.conflate(other)).to.equal(false);
       });
-
     });
-
   });
 
   describe('ConflatableMessage', () => {
-
     describe('#constructor()', () => {
-
       it('should require a single message type argument', () => {
         let msg = new ConflatableMessage('test');
         expect(msg).to.be.an.instanceof(ConflatableMessage);
@@ -124,34 +103,26 @@ describe('@lumino/messaging', () => {
         let msg = new ConflatableMessage('test');
         expect(msg).to.be.an.instanceof(Message);
       });
-
     });
 
     describe('#isConflatable', () => {
-
       it('should be `true` by default', () => {
         let msg = new ConflatableMessage('test');
         expect(msg.isConflatable).to.equal(true);
       });
-
     });
 
     describe('#conflate()', () => {
-
       it('should return `true` by default', () => {
         let msg = new ConflatableMessage('test');
         let other = new ConflatableMessage('test');
         expect(msg.conflate(other)).to.equal(true);
       });
-
     });
-
   });
 
   describe('IMessageHandler', () => {
-
     describe('#processMessage()', () => {
-
       it('should process the messages sent to the handler', () => {
         let handler = new Handler();
         MessageLoop.sendMessage(handler, new Message('one'));
@@ -159,15 +130,11 @@ describe('@lumino/messaging', () => {
         MessageLoop.sendMessage(handler, new Message('three'));
         expect(handler.messages).to.deep.equal(['one', 'two', 'three']);
       });
-
     });
-
   });
 
   describe('IMessageHook', () => {
-
     describe('#messageHook()', () => {
-
       it('should be called for every message sent to a handler', () => {
         let handler = new Handler();
         let logHook = new LogHook();
@@ -198,22 +165,25 @@ describe('@lumino/messaging', () => {
         MessageLoop.sendMessage(handler2, new Message('three'));
         expect(handler1.messages).to.deep.equal(['three']);
         expect(handler2.messages).to.deep.equal(['three']);
-        expect(logHook.messages).to.deep.equal(['one', 'one', 'two', 'two', 'three', 'three']);
+        expect(logHook.messages).to.deep.equal([
+          'one',
+          'one',
+          'two',
+          'two',
+          'three',
+          'three'
+        ]);
         expect(logHook.handlers.length).to.equal(6);
         for (let i of [0, 2, 4]) {
           expect(logHook.handlers[i]).to.equal(handler1);
           expect(logHook.handlers[i + 1]).to.equal(handler2);
         }
       });
-
     });
-
   });
 
   describe('MessageLoop', () => {
-
     describe('sendMessage()', () => {
-
       it('should send a message to the handler to process immediately', () => {
         let handler = new Handler();
         expect(handler.messages).to.deep.equal([]);
@@ -271,21 +241,25 @@ describe('@lumino/messaging', () => {
       it('should ignore exceptions in handlers', () => {
         let handler = new BadHandler();
         let msg = new Message('one');
-        expect(() => { MessageLoop.sendMessage(handler, msg); }).to.not.throw(Error);
+        expect(() => {
+          MessageLoop.sendMessage(handler, msg);
+        }).to.not.throw(Error);
       });
 
       it('should ignore exceptions in hooks', () => {
         let handler = new Handler();
         let msg = new Message('one');
-        MessageLoop.installMessageHook(handler, (): boolean => { throw ''; });
-        expect(() => { MessageLoop.sendMessage(handler, msg); }).to.not.throw(Error);
+        MessageLoop.installMessageHook(handler, (): boolean => {
+          throw '';
+        });
+        expect(() => {
+          MessageLoop.sendMessage(handler, msg);
+        }).to.not.throw(Error);
       });
-
     });
 
     describe('postMessage()', () => {
-
-      it('should post a message to the handler in the future', (done) => {
+      it('should post a message to the handler in the future', done => {
         let handler = new Handler();
         expect(handler.messages).to.deep.equal([]);
         MessageLoop.postMessage(handler, new Message('one'));
@@ -298,7 +272,7 @@ describe('@lumino/messaging', () => {
         });
       });
 
-      it('should conflate a conflatable message', (done) => {
+      it('should conflate a conflatable message', done => {
         let handler = new Handler();
         let one = new Message('one');
         let two = new Message('two');
@@ -317,7 +291,7 @@ describe('@lumino/messaging', () => {
         });
       });
 
-      it('should not conflate a non-conflatable message', (done) => {
+      it('should not conflate a non-conflatable message', done => {
         let handler = new Handler();
         let cf1 = new Message('one');
         let cf2 = new ConflatableMessage('one');
@@ -331,7 +305,7 @@ describe('@lumino/messaging', () => {
         });
       });
 
-      it('should not conflate messages for different handlers', (done) => {
+      it('should not conflate messages for different handlers', done => {
         let h1 = new Handler();
         let h2 = new Handler();
         let msg = new ConflatableMessage('one');
@@ -344,7 +318,7 @@ describe('@lumino/messaging', () => {
         });
       });
 
-      it('should obey global order of posted messages', (done) => {
+      it('should obey global order of posted messages', done => {
         let handler1 = new GlobalHandler();
         let handler2 = new GlobalHandler();
         let handler3 = new GlobalHandler();
@@ -359,18 +333,23 @@ describe('@lumino/messaging', () => {
         expect(handler3.messages).to.deep.equal([]);
         expect(GlobalHandler.messages).to.deep.equal([]);
         defer(() => {
-          expect(GlobalHandler.messages).to.deep.equal(['one', 'two', 'three', 'A', 'B', 'C']);
+          expect(GlobalHandler.messages).to.deep.equal([
+            'one',
+            'two',
+            'three',
+            'A',
+            'B',
+            'C'
+          ]);
           expect(handler1.messages).to.deep.equal(['two', 'A']);
           expect(handler2.messages).to.deep.equal(['three', 'B']);
           expect(handler3.messages).to.deep.equal(['one', 'C']);
           done();
         });
       });
-
     });
 
     describe('installMessageHook()', () => {
-
       it('should install a hook for a handler', () => {
         let handler = new Handler();
         let logHook = new LogHook();
@@ -412,11 +391,9 @@ describe('@lumino/messaging', () => {
         expect(logHook1.messages).to.deep.equal(['one', 'two']);
         expect(logHook2.messages).to.deep.equal(['one', 'two']);
       });
-
     });
 
     describe('removeMessageHook()', () => {
-
       it('should remove a previously installed hook', () => {
         let handler = new Handler();
         let logHook1 = new LogHook();
@@ -469,12 +446,10 @@ describe('@lumino/messaging', () => {
         expect(logHook3.messages).to.deep.equal(['one']);
         expect(logHook2.messages).to.deep.equal(['one', 'two', 'three']);
       });
-
     });
 
     describe('clearData()', () => {
-
-      it('should remove all message data associated with a handler', (done) => {
+      it('should remove all message data associated with a handler', done => {
         let h1 = new Handler();
         let h2 = new Handler();
         let logHook = new LogHook();
@@ -493,12 +468,11 @@ describe('@lumino/messaging', () => {
           done();
         });
       });
-
     });
 
     describe('flush()', () => {
-
       it('should immediately process all posted messages', () => {
+        const expected = ['one', 'two', 'three', 'six', 'four', 'five'];
         let h1 = new Handler();
         let h2 = new Handler();
         MessageLoop.postMessage(h1, new Message('one'));
@@ -507,9 +481,21 @@ describe('@lumino/messaging', () => {
         MessageLoop.postMessage(h2, new Message('two'));
         MessageLoop.postMessage(h1, new Message('three'));
         MessageLoop.postMessage(h2, new Message('three'));
+
         MessageLoop.flush();
-        expect(h1.messages).to.deep.equal(['one', 'two', 'three']);
-        expect(h2.messages).to.deep.equal(['one', 'two', 'three']);
+
+        MessageLoop.postMessage(h1, new Message('four'));
+        MessageLoop.postMessage(h2, new Message('four'));
+        MessageLoop.postMessage(h1, new Message('five'));
+        MessageLoop.postMessage(h2, new Message('five'));
+
+        MessageLoop.sendMessage(h1, new Message('six'));
+        MessageLoop.sendMessage(h2, new Message('six'));
+
+        MessageLoop.flush();
+
+        expect(h1.messages).to.deep.equal(expected);
+        expect(h2.messages).to.deep.equal(expected);
       });
 
       it('should ignore recursive calls', () => {
@@ -540,34 +526,41 @@ describe('@lumino/messaging', () => {
 
         MessageLoop.flush();
 
-        expect(h1.messages).to.deep.equal(['one', 'two', 'three', 'four', 'five', 'six']);
+        expect(h1.messages).to.deep.equal([
+          'one',
+          'two',
+          'three',
+          'four',
+          'five',
+          'six'
+        ]);
         expect(h2.messages).to.deep.equal(['one', 'two', 'three']);
       });
-
     });
 
     describe('getExceptionHandler()', () => {
-
       it('should default to an exception handler', () => {
         expect(MessageLoop.getExceptionHandler()).to.be.a('function');
       });
-
     });
 
     describe('setExceptionHandler()', () => {
-
       afterEach(() => {
         MessageLoop.setExceptionHandler(console.error);
       });
 
       it('should set the exception handler', () => {
-        let handler = (err: Error) => { console.error(err); };
+        let handler = (err: Error) => {
+          console.error(err);
+        };
         MessageLoop.setExceptionHandler(handler);
         expect(MessageLoop.getExceptionHandler()).to.equal(handler);
       });
 
       it('should return the old exception handler', () => {
-        let handler = (err: Error) => { console.error(err); };
+        let handler = (err: Error) => {
+          console.error(err);
+        };
         let old1 = MessageLoop.setExceptionHandler(handler);
         let old2 = MessageLoop.setExceptionHandler(old1);
         expect(old1).to.equal(console.error);
@@ -577,7 +570,9 @@ describe('@lumino/messaging', () => {
       it('should invoke the exception handler on a message handler exception', () => {
         let called = false;
         let handler = new BadHandler();
-        MessageLoop.setExceptionHandler(() => { called = true; });
+        MessageLoop.setExceptionHandler(() => {
+          called = true;
+        });
         expect(called).to.equal(false);
         MessageLoop.sendMessage(handler, new Message('foo'));
         expect(called).to.equal(true);
@@ -586,18 +581,19 @@ describe('@lumino/messaging', () => {
       it('should invoke the exception handler on a message hook exception', () => {
         let called = false;
         let handler = new Handler();
-        MessageLoop.setExceptionHandler(() => { called = true; });
+        MessageLoop.setExceptionHandler(() => {
+          called = true;
+        });
         expect(called).to.equal(false);
         MessageLoop.sendMessage(handler, new Message('foo'));
         expect(called).to.equal(false);
-        MessageLoop.installMessageHook(handler, () => { throw 'error' });
+        MessageLoop.installMessageHook(handler, () => {
+          throw 'error';
+        });
         expect(called).to.equal(false);
         MessageLoop.sendMessage(handler, new Message('foo'));
         expect(called).to.equal(true);
       });
-
     });
-
   });
-
 });

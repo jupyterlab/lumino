@@ -1,0 +1,21 @@
+{
+  "name": "@lumino/example-accordionpanel",
+  "version": "2.1.10",
+  "private": true,
+  "scripts": {
+    "build": "tsc && rollup -c",
+    "clean": "rimraf build"
+  },
+  "dependencies": {
+    "@lumino/default-theme": "^2.1.10",
+    "@lumino/messaging": "^2.0.3",
+    "@lumino/widgets": "^2.7.1"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^15.0.1",
+    "rimraf": "^5.0.1",
+    "rollup": "^3.25.1",
+    "rollup-plugin-styles": "^4.0.0",
+    "typescript": "~5.1.3"
+  }
+}

@@ -8,29 +8,13 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
-import {
-  expect
-} from 'chai';
+import { expect } from 'chai';
 
-import {
-  each
-} from '@lumino/algorithm';
-
-import {
-  TabBar, DockPanel, Widget
-} from '@lumino/widgets';
-
-import {
-//  LogWidget
-} from './widget.spec';
-
+import { DockPanel, TabBar, Widget } from '@lumino/widgets';
 
 describe('@lumino/widgets', () => {
-
   describe('DockPanel', () => {
-
     describe('#constructor()', () => {
-
       it('should construct a new dock panel and take no arguments', () => {
         let panel = new DockPanel();
         expect(panel).to.be.an.instanceof(DockPanel);
@@ -40,10 +24,20 @@ describe('@lumino/widgets', () => {
         let renderer = Object.create(TabBar.defaultRenderer);
         let panel = new DockPanel({
           tabsMovable: true,
-          renderer
+          renderer,
+          tabsConstrained: true
         });
-        each(panel.tabBars(), (tabBar) => { expect(tabBar.tabsMovable).to.equal(true); });
-        each(panel.tabBars(), (tabBar) => { expect(tabBar.renderer).to.equal(renderer); });
+        for (const tabBar of panel.tabBars()) {
+          expect(tabBar.tabsMovable).to.equal(true);
+        }
+        for (const tabBar of panel.tabBars()) {
+          expect(tabBar.renderer).to.equal(renderer);
+        }
+      });
+
+      it('should not have tabs constrained by default', () => {
+        let panel = new DockPanel();
+        expect(panel.tabsConstrained).to.equal(false);
       });
 
       it('should add a `lm-DockPanel` class', () => {
@@ -51,10 +45,18 @@ describe('@lumino/widgets', () => {
         expect(panel.hasClass('lm-DockPanel')).to.equal(true);
       });
 
+      it('should not have tabbar as child', () => {
+        let panel = new DockPanel();
+        // Adding a widget in the dock panel adds the DOM of a TabBar, but the TabBar
+        // widget should not be a in the children list of the DockPanel widget.
+        panel.addWidget(new Widget());
+        for (const tabBar of panel.tabBars()) {
+          expect(panel.contains(tabBar)).to.be.false;
+        }
+      });
     });
 
     describe('#dispose()', () => {
-
       it('should dispose of the resources held by the widget', () => {
         let panel = new DockPanel();
         panel.addWidget(new Widget());
@@ -63,11 +65,69 @@ describe('@lumino/widgets', () => {
         panel.dispose();
         expect(panel.isDisposed).to.equal(true);
       });
+    });
 
+    describe('#handles()', () => {
+      it('should return the handles within the dock panel', () => {
+        let dock = new DockPanel();
+        dock.addWidget(new Widget());
+        dock.addWidget(new Widget(), { mode: 'split-bottom' });
+        expect(Array.from(dock.handles())).to.have.lengthOf(2); // one is hidden
+        dock.dispose();
+      });
+    });
+
+    describe('hiddenMode', () => {
+      let panel: DockPanel;
+      let widgets: Widget[] = [];
+
+      beforeEach(() => {
+        panel = new DockPanel();
+
+        // Create two stacked widgets
+        widgets.push(new Widget());
+        panel.addWidget(widgets[0]);
+        widgets.push(new Widget());
+        panel.addWidget(widgets[1], { mode: 'tab-after' });
+      });
+
+      afterEach(() => {
+        panel.dispose();
+      });
+
+      it("should be 'display' mode by default", () => {
+        expect(panel.hiddenMode).to.equal(Widget.HiddenMode.Display);
+      });
+
+      it("should switch to 'scale'", () => {
+        widgets[0].hiddenMode = Widget.HiddenMode.Scale;
+
+        panel.hiddenMode = Widget.HiddenMode.Scale;
+
+        expect(widgets[0].hiddenMode).to.equal(Widget.HiddenMode.Scale);
+        expect(widgets[1].hiddenMode).to.equal(Widget.HiddenMode.Scale);
+      });
+
+      it("should switch to 'display'", () => {
+        widgets[0].hiddenMode = Widget.HiddenMode.Scale;
+
+        panel.hiddenMode = Widget.HiddenMode.Scale;
+        panel.hiddenMode = Widget.HiddenMode.Display;
+
+        expect(widgets[0].hiddenMode).to.equal(Widget.HiddenMode.Display);
+        expect(widgets[1].hiddenMode).to.equal(Widget.HiddenMode.Display);
+      });
+
+      it("should not set 'scale' if only one widget", () => {
+        panel.layout!.removeWidget(widgets[1]);
+
+        panel.hiddenMode = Widget.HiddenMode.Scale;
+
+        expect(widgets[0].hiddenMode).to.equal(Widget.HiddenMode.Display);
+      });
     });
 
     describe('#tabsMovable', () => {
-
       it('should get whether tabs are movable', () => {
         let panel = new DockPanel();
         expect(panel.tabsMovable).to.equal(true);
@@ -79,14 +139,15 @@ describe('@lumino/widgets', () => {
         let w2 = new Widget();
         panel.addWidget(w1);
         panel.addWidget(w2, { mode: 'split-right', ref: w1 });
-        each(panel.tabBars(), (tabBar) => { expect(tabBar.tabsMovable).to.equal(true); });
+        for (const tabBar of panel.tabBars()) {
+          expect(tabBar.tabsMovable).to.equal(true);
+        }
 
         panel.tabsMovable = false;
-        each(panel.tabBars(), (tabBar) => { expect(tabBar.tabsMovable).to.equal(false); });
+        for (const tabBar of panel.tabBars()) {
+          expect(tabBar.tabsMovable).to.equal(false);
+        }
       });
-
     });
-
   });
-
 });

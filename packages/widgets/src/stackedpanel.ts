@@ -7,31 +7,21 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  ISignal, Signal
-} from '@lumino/signaling';
+import { ISignal, Signal } from '@lumino/signaling';
 
-import {
-  Panel
-} from './panel';
+import { Panel } from './panel';
 
-import {
-  StackedLayout
-} from './stackedlayout';
+import { StackedLayout } from './stackedlayout';
 
-import {
-  Widget
-} from './widget';
-
+import { Widget } from './widget';
 
 /**
  * A panel where visible widgets are stacked atop one another.
  *
  * #### Notes
- * This class provides a convenience wrapper around a [[StackedLayout]].
+ * This class provides a convenience wrapper around a {@link StackedLayout}.
  */
-export
-class StackedPanel extends Panel {
+export class StackedPanel extends Panel {
   /**
    * Construct a new stacked panel.
    *
@@ -40,9 +30,28 @@ class StackedPanel extends Panel {
   constructor(options: StackedPanel.IOptions = {}) {
     super({ layout: Private.createLayout(options) });
     this.addClass('lm-StackedPanel');
-    /* <DEPRECATED> */
-    this.addClass('p-StackedPanel');
-    /* </DEPRECATED> */
+  }
+
+  /**
+   * The method for hiding widgets.
+   *
+   * #### Notes
+   * If there is only one child widget, `Display` hiding mode will be used
+   * regardless of this setting.
+   */
+  get hiddenMode(): Widget.HiddenMode {
+    return (this.layout as StackedLayout).hiddenMode;
+  }
+
+  /**
+   * Set the method for hiding widgets.
+   *
+   * #### Notes
+   * If there is only one child widget, `Display` hiding mode will be used
+   * regardless of this setting.
+   */
+  set hiddenMode(v: Widget.HiddenMode) {
+    (this.layout as StackedLayout).hiddenMode = v;
   }
 
   /**
@@ -57,9 +66,6 @@ class StackedPanel extends Panel {
    */
   protected onChildAdded(msg: Widget.ChildMessage): void {
     msg.child.addClass('lm-StackedPanel-child');
-    /* <DEPRECATED> */
-    msg.child.addClass('p-StackedPanel-child');
-    /* </DEPRECATED> */
   }
 
   /**
@@ -67,26 +73,20 @@ class StackedPanel extends Panel {
    */
   protected onChildRemoved(msg: Widget.ChildMessage): void {
     msg.child.removeClass('lm-StackedPanel-child');
-    /* <DEPRECATED> */
-    msg.child.removeClass('p-StackedPanel-child');
-    /* </DEPRECATED> */
     this._widgetRemoved.emit(msg.child);
   }
 
   private _widgetRemoved = new Signal<this, Widget>(this);
 }
 
-
 /**
  * The namespace for the `StackedPanel` class statics.
  */
-export
-namespace StackedPanel {
+export namespace StackedPanel {
   /**
    * An options object for creating a stacked panel.
    */
-  export
-  interface IOptions {
+  export interface IOptions {
     /**
      * The stacked layout to use for the stacked panel.
      *
@@ -96,7 +96,6 @@ namespace StackedPanel {
   }
 }
 
-
 /**
  * The namespace for the module implementation details.
  */
@@ -104,8 +103,7 @@ namespace Private {
   /**
    * Create a stacked layout for the given panel options.
    */
-  export
-  function createLayout(options: StackedPanel.IOptions): StackedLayout {
+  export function createLayout(options: StackedPanel.IOptions): StackedLayout {
     return options.layout || new StackedLayout();
   }
 }

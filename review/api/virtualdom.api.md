@@ -5,13 +5,21 @@
 ```ts
 
 // @public
-export type CSSPropertyNames = ('alignContent' | 'alignItems' | 'alignSelf' | 'alignmentBaseline' | 'animation' | 'animationDelay' | 'animationDirection' | 'animationDuration' | 'animationFillMode' | 'animationIterationCount' | 'animationName' | 'animationPlayState' | 'animationTimingFunction' | 'backfaceVisibility' | 'background' | 'backgroundAttachment' | 'backgroundClip' | 'backgroundColor' | 'backgroundImage' | 'backgroundOrigin' | 'backgroundPosition' | 'backgroundPositionX' | 'backgroundPositionY' | 'backgroundRepeat' | 'backgroundSize' | 'baselineShift' | 'border' | 'borderBottom' | 'borderBottomColor' | 'borderBottomLeftRadius' | 'borderBottomRightRadius' | 'borderBottomStyle' | 'borderBottomWidth' | 'borderCollapse' | 'borderColor' | 'borderImage' | 'borderImageOutset' | 'borderImageRepeat' | 'borderImageSlice' | 'borderImageSource' | 'borderImageWidth' | 'borderLeft' | 'borderLeftColor' | 'borderLeftStyle' | 'borderLeftWidth' | 'borderRadius' | 'borderRight' | 'borderRightColor' | 'borderRightStyle' | 'borderRightWidth' | 'borderSpacing' | 'borderStyle' | 'borderTop' | 'borderTopColor' | 'borderTopLeftRadius' | 'borderTopRightRadius' | 'borderTopStyle' | 'borderTopWidth' | 'borderWidth' | 'bottom' | 'boxShadow' | 'boxSizing' | 'breakAfter' | 'breakBefore' | 'breakInside' | 'captionSide' | 'clear' | 'clip' | 'clipPath' | 'clipRule' | 'color' | 'colorInterpolationFilters' | 'columnCount' | 'columnFill' | 'columnGap' | 'columnRule' | 'columnRuleColor' | 'columnRuleStyle' | 'columnRuleWidth' | 'columnSpan' | 'columnWidth' | 'columns' | 'content' | 'counterIncrement' | 'counterReset' | 'cssFloat' | 'cssText' | 'cursor' | 'direction' | 'display' | 'dominantBaseline' | 'emptyCells' | 'enableBackground' | 'fill' | 'fillOpacity' | 'fillRule' | 'filter' | 'flex' | 'flexBasis' | 'flexDirection' | 'flexFlow' | 'flexGrow' | 'flexShrink' | 'flexWrap' | 'floodColor' | 'floodOpacity' | 'font' | 'fontFamily' | 'fontFeatureSettings' | 'fontSize' | 'fontSizeAdjust' | 'fontStretch' | 'fontStyle' | 'fontVariant' | 'fontWeight' | 'glyphOrientationHorizontal' | 'glyphOrientationVertical' | 'height' | 'imeMode' | 'justifyContent' | 'kerning' | 'left' | 'letterSpacing' | 'lightingColor' | 'lineHeight' | 'listStyle' | 'listStyleImage' | 'listStylePosition' | 'listStyleType' | 'margin' | 'marginBottom' | 'marginLeft' | 'marginRight' | 'marginTop' | 'marker' | 'markerEnd' | 'markerMid' | 'markerStart' | 'mask' | 'maxHeight' | 'maxWidth' | 'minHeight' | 'minWidth' | 'msContentZoomChaining' | 'msContentZoomLimit' | 'msContentZoomLimitMax' | 'msContentZoomLimitMin' | 'msContentZoomSnap' | 'msContentZoomSnapPoints' | 'msContentZoomSnapType' | 'msContentZooming' | 'msFlowFrom' | 'msFlowInto' | 'msFontFeatureSettings' | 'msGridColumn' | 'msGridColumnAlign' | 'msGridColumnSpan' | 'msGridColumns' | 'msGridRow' | 'msGridRowAlign' | 'msGridRowSpan' | 'msGridRows' | 'msHighContrastAdjust' | 'msHyphenateLimitChars' | 'msHyphenateLimitLines' | 'msHyphenateLimitZone' | 'msHyphens' | 'msImeAlign' | 'msOverflowStyle' | 'msScrollChaining' | 'msScrollLimit' | 'msScrollLimitXMax' | 'msScrollLimitXMin' | 'msScrollLimitYMax' | 'msScrollLimitYMin' | 'msScrollRails' | 'msScrollSnapPointsX' | 'msScrollSnapPointsY' | 'msScrollSnapType' | 'msScrollSnapX' | 'msScrollSnapY' | 'msScrollTranslation' | 'msTextCombineHorizontal' | 'msTextSizeAdjust' | 'msTouchAction' | 'msTouchSelect' | 'msUserSelect' | 'msWrapFlow' | 'msWrapMargin' | 'msWrapThrough' | 'opacity' | 'order' | 'orphans' | 'outline' | 'outlineColor' | 'outlineStyle' | 'outlineWidth' | 'overflow' | 'overflowX' | 'overflowY' | 'padding' | 'paddingBottom' | 'paddingLeft' | 'paddingRight' | 'paddingTop' | 'pageBreakAfter' | 'pageBreakBefore' | 'pageBreakInside' | 'perspective' | 'perspectiveOrigin' | 'pointerEvents' | 'position' | 'quotes' | 'resize' | 'right' | 'rubyAlign' | 'rubyOverhang' | 'rubyPosition' | 'stopColor' | 'stopOpacity' | 'stroke' | 'strokeDasharray' | 'strokeDashoffset' | 'strokeLinecap' | 'strokeLinejoin' | 'strokeMiterlimit' | 'strokeOpacity' | 'strokeWidth' | 'tableLayout' | 'textAlign' | 'textAlignLast' | 'textAnchor' | 'textDecoration' | 'textIndent' | 'textJustify' | 'textKashida' | 'textKashidaSpace' | 'textOverflow' | 'textShadow' | 'textTransform' | 'textUnderlinePosition' | 'top' | 'touchAction' | 'transform' | 'transformOrigin' | 'transformStyle' | 'transition' | 'transitionDelay' | 'transitionDuration' | 'transitionProperty' | 'transitionTimingFunction' | 'unicodeBidi' | 'verticalAlign' | 'visibility' | 'webkitAlignContent' | 'webkitAlignItems' | 'webkitAlignSelf' | 'webkitAnimation' | 'webkitAnimationDelay' | 'webkitAnimationDirection' | 'webkitAnimationDuration' | 'webkitAnimationFillMode' | 'webkitAnimationIterationCount' | 'webkitAnimationName' | 'webkitAnimationPlayState' | 'webkitAnimationTimingFunction' | 'webkitAppearance' | 'webkitBackfaceVisibility' | 'webkitBackgroundClip' | 'webkitBackgroundOrigin' | 'webkitBackgroundSize' | 'webkitBorderBottomLeftRadius' | 'webkitBorderBottomRightRadius' | 'webkitBorderImage' | 'webkitBorderRadius' | 'webkitBorderTopLeftRadius' | 'webkitBorderTopRightRadius' | 'webkitBoxAlign' | 'webkitBoxDirection' | 'webkitBoxFlex' | 'webkitBoxOrdinalGroup' | 'webkitBoxOrient' | 'webkitBoxPack' | 'webkitBoxSizing' | 'webkitColumnBreakAfter' | 'webkitColumnBreakBefore' | 'webkitColumnBreakInside' | 'webkitColumnCount' | 'webkitColumnGap' | 'webkitColumnRule' | 'webkitColumnRuleColor' | 'webkitColumnRuleStyle' | 'webkitColumnRuleWidth' | 'webkitColumnSpan' | 'webkitColumnWidth' | 'webkitColumns' | 'webkitFilter' | 'webkitFlex' | 'webkitFlexBasis' | 'webkitFlexDirection' | 'webkitFlexFlow' | 'webkitFlexGrow' | 'webkitFlexShrink' | 'webkitFlexWrap' | 'webkitJustifyContent' | 'webkitOrder' | 'webkitPerspective' | 'webkitPerspectiveOrigin' | 'webkitTapHighlightColor' | 'webkitTextFillColor' | 'webkitTextSizeAdjust' | 'webkitTransform' | 'webkitTransformOrigin' | 'webkitTransformStyle' | 'webkitTransition' | 'webkitTransitionDelay' | 'webkitTransitionDuration' | 'webkitTransitionProperty' | 'webkitTransitionTimingFunction' | 'webkitUserModify' | 'webkitUserSelect' | 'webkitWritingMode' | 'whiteSpace' | 'widows' | 'width' | 'wordBreak' | 'wordSpacing' | 'wordWrap' | 'writingMode' | 'zIndex' | 'zoom');
+export type ARIAAttrNames = 'aria-activedescendant' | 'aria-atomic' | 'aria-autocomplete' | 'aria-busy' | 'aria-checked' | 'aria-colcount' | 'aria-colindex' | 'aria-colspan' | 'aria-controls' | 'aria-current' | 'aria-describedby' | 'aria-details' | 'aria-dialog' | 'aria-disabled' | 'aria-dropeffect' | 'aria-errormessage' | 'aria-expanded' | 'aria-flowto' | 'aria-grabbed' | 'aria-haspopup' | 'aria-hidden' | 'aria-invalid' | 'aria-keyshortcuts' | 'aria-label' | 'aria-labelledby' | 'aria-level' | 'aria-live' | 'aria-multiline' | 'aria-multiselectable' | 'aria-orientation' | 'aria-owns' | 'aria-placeholder' | 'aria-posinset' | 'aria-pressed' | 'aria-readonly' | 'aria-relevant' | 'aria-required' | 'aria-roledescription' | 'aria-rowcount' | 'aria-rowindex' | 'aria-rowspan' | 'aria-selected' | 'aria-setsize' | 'aria-sort' | 'aria-valuemax' | 'aria-valuemin' | 'aria-valuenow' | 'aria-valuetext' | 'role';
 
 // @public
-export type ElementAttrNames = ('abbr' | 'accept' | 'accept-charset' | 'accesskey' | 'action' | 'allowfullscreen' | 'alt' | 'autocomplete' | 'autofocus' | 'autoplay' | 'autosave' | 'checked' | 'cite' | 'cols' | 'colspan' | 'contenteditable' | 'controls' | 'coords' | 'crossorigin' | 'data' | 'datetime' | 'default' | 'dir' | 'dirname' | 'disabled' | 'download' | 'draggable' | 'dropzone' | 'enctype' | 'form' | 'formaction' | 'formenctype' | 'formmethod' | 'formnovalidate' | 'formtarget' | 'headers' | 'height' | 'hidden' | 'high' | 'href' | 'hreflang' | 'id' | 'inputmode' | 'integrity' | 'ismap' | 'kind' | 'label' | 'lang' | 'list' | 'loop' | 'low' | 'max' | 'maxlength' | 'media' | 'mediagroup' | 'method' | 'min' | 'minlength' | 'multiple' | 'muted' | 'name' | 'novalidate' | 'optimum' | 'pattern' | 'placeholder' | 'poster' | 'preload' | 'readonly' | 'rel' | 'required' | 'reversed' | 'rows' | 'rowspan' | 'sandbox' | 'scope' | 'selected' | 'shape' | 'size' | 'sizes' | 'span' | 'spellcheck' | 'src' | 'srcdoc' | 'srclang' | 'srcset' | 'start' | 'step' | 'tabindex' | 'target' | 'title' | 'type' | 'typemustmatch' | 'usemap' | 'value' | 'width' | 'wrap');
+export type CSSPropertyNames = 'alignContent' | 'alignItems' | 'alignSelf' | 'alignmentBaseline' | 'animation' | 'animationDelay' | 'animationDirection' | 'animationDuration' | 'animationFillMode' | 'animationIterationCount' | 'animationName' | 'animationPlayState' | 'animationTimingFunction' | 'backfaceVisibility' | 'background' | 'backgroundAttachment' | 'backgroundClip' | 'backgroundColor' | 'backgroundImage' | 'backgroundOrigin' | 'backgroundPosition' | 'backgroundPositionX' | 'backgroundPositionY' | 'backgroundRepeat' | 'backgroundSize' | 'baselineShift' | 'border' | 'borderBottom' | 'borderBottomColor' | 'borderBottomLeftRadius' | 'borderBottomRightRadius' | 'borderBottomStyle' | 'borderBottomWidth' | 'borderCollapse' | 'borderColor' | 'borderImage' | 'borderImageOutset' | 'borderImageRepeat' | 'borderImageSlice' | 'borderImageSource' | 'borderImageWidth' | 'borderLeft' | 'borderLeftColor' | 'borderLeftStyle' | 'borderLeftWidth' | 'borderRadius' | 'borderRight' | 'borderRightColor' | 'borderRightStyle' | 'borderRightWidth' | 'borderSpacing' | 'borderStyle' | 'borderTop' | 'borderTopColor' | 'borderTopLeftRadius' | 'borderTopRightRadius' | 'borderTopStyle' | 'borderTopWidth' | 'borderWidth' | 'bottom' | 'boxShadow' | 'boxSizing' | 'breakAfter' | 'breakBefore' | 'breakInside' | 'captionSide' | 'clear' | 'clip' | 'clipPath' | 'clipRule' | 'color' | 'colorInterpolationFilters' | 'columnCount' | 'columnFill' | 'columnGap' | 'columnRule' | 'columnRuleColor' | 'columnRuleStyle' | 'columnRuleWidth' | 'columnSpan' | 'columnWidth' | 'columns' | 'content' | 'counterIncrement' | 'counterReset' | 'cssFloat' | 'cssText' | 'cursor' | 'direction' | 'display' | 'dominantBaseline' | 'emptyCells' | 'enableBackground' | 'fill' | 'fillOpacity' | 'fillRule' | 'filter' | 'flex' | 'flexBasis' | 'flexDirection' | 'flexFlow' | 'flexGrow' | 'flexShrink' | 'flexWrap' | 'floodColor' | 'floodOpacity' | 'font' | 'fontFamily' | 'fontFeatureSettings' | 'fontSize' | 'fontSizeAdjust' | 'fontStretch' | 'fontStyle' | 'fontVariant' | 'fontWeight' | 'glyphOrientationHorizontal' | 'glyphOrientationVertical' | 'height' | 'imeMode' | 'justifyContent' | 'kerning' | 'left' | 'letterSpacing' | 'lightingColor' | 'lineHeight' | 'listStyle' | 'listStyleImage' | 'listStylePosition' | 'listStyleType' | 'margin' | 'marginBottom' | 'marginLeft' | 'marginRight' | 'marginTop' | 'marker' | 'markerEnd' | 'markerMid' | 'markerStart' | 'mask' | 'maxHeight' | 'maxWidth' | 'minHeight' | 'minWidth' | 'msContentZoomChaining' | 'msContentZoomLimit' | 'msContentZoomLimitMax' | 'msContentZoomLimitMin' | 'msContentZoomSnap' | 'msContentZoomSnapPoints' | 'msContentZoomSnapType' | 'msContentZooming' | 'msFlowFrom' | 'msFlowInto' | 'msFontFeatureSettings' | 'msGridColumn' | 'msGridColumnAlign' | 'msGridColumnSpan' | 'msGridColumns' | 'msGridRow' | 'msGridRowAlign' | 'msGridRowSpan' | 'msGridRows' | 'msHighContrastAdjust' | 'msHyphenateLimitChars' | 'msHyphenateLimitLines' | 'msHyphenateLimitZone' | 'msHyphens' | 'msImeAlign' | 'msOverflowStyle' | 'msScrollChaining' | 'msScrollLimit' | 'msScrollLimitXMax' | 'msScrollLimitXMin' | 'msScrollLimitYMax' | 'msScrollLimitYMin' | 'msScrollRails' | 'msScrollSnapPointsX' | 'msScrollSnapPointsY' | 'msScrollSnapType' | 'msScrollSnapX' | 'msScrollSnapY' | 'msScrollTranslation' | 'msTextCombineHorizontal' | 'msTextSizeAdjust' | 'msTouchAction' | 'msTouchSelect' | 'msUserSelect' | 'msWrapFlow' | 'msWrapMargin' | 'msWrapThrough' | 'opacity' | 'order' | 'orphans' | 'outline' | 'outlineColor' | 'outlineStyle' | 'outlineWidth' | 'overflow' | 'overflowX' | 'overflowY' | 'padding' | 'paddingBottom' | 'paddingLeft' | 'paddingRight' | 'paddingTop' | 'pageBreakAfter' | 'pageBreakBefore' | 'pageBreakInside' | 'perspective' | 'perspectiveOrigin' | 'pointerEvents' | 'position' | 'quotes' | 'resize' | 'right' | 'rubyAlign' | 'rubyOverhang' | 'rubyPosition' | 'stopColor' | 'stopOpacity' | 'stroke' | 'strokeDasharray' | 'strokeDashoffset' | 'strokeLinecap' | 'strokeLinejoin' | 'strokeMiterlimit' | 'strokeOpacity' | 'strokeWidth' | 'tableLayout' | 'textAlign' | 'textAlignLast' | 'textAnchor' | 'textDecoration' | 'textIndent' | 'textJustify' | 'textKashida' | 'textKashidaSpace' | 'textOverflow' | 'textShadow' | 'textTransform' | 'textUnderlinePosition' | 'top' | 'touchAction' | 'transform' | 'transformOrigin' | 'transformStyle' | 'transition' | 'transitionDelay' | 'transitionDuration' | 'transitionProperty' | 'transitionTimingFunction' | 'unicodeBidi' | 'verticalAlign' | 'visibility' | 'webkitAlignContent' | 'webkitAlignItems' | 'webkitAlignSelf' | 'webkitAnimation' | 'webkitAnimationDelay' | 'webkitAnimationDirection' | 'webkitAnimationDuration' | 'webkitAnimationFillMode' | 'webkitAnimationIterationCount' | 'webkitAnimationName' | 'webkitAnimationPlayState' | 'webkitAnimationTimingFunction' | 'webkitAppearance' | 'webkitBackfaceVisibility' | 'webkitBackgroundClip' | 'webkitBackgroundOrigin' | 'webkitBackgroundSize' | 'webkitBorderBottomLeftRadius' | 'webkitBorderBottomRightRadius' | 'webkitBorderImage' | 'webkitBorderRadius' | 'webkitBorderTopLeftRadius' | 'webkitBorderTopRightRadius' | 'webkitBoxAlign' | 'webkitBoxDirection' | 'webkitBoxFlex' | 'webkitBoxOrdinalGroup' | 'webkitBoxOrient' | 'webkitBoxPack' | 'webkitBoxSizing' | 'webkitColumnBreakAfter' | 'webkitColumnBreakBefore' | 'webkitColumnBreakInside' | 'webkitColumnCount' | 'webkitColumnGap' | 'webkitColumnRule' | 'webkitColumnRuleColor' | 'webkitColumnRuleStyle' | 'webkitColumnRuleWidth' | 'webkitColumnSpan' | 'webkitColumnWidth' | 'webkitColumns' | 'webkitFilter' | 'webkitFlex' | 'webkitFlexBasis' | 'webkitFlexDirection' | 'webkitFlexFlow' | 'webkitFlexGrow' | 'webkitFlexShrink' | 'webkitFlexWrap' | 'webkitJustifyContent' | 'webkitOrder' | 'webkitPerspective' | 'webkitPerspectiveOrigin' | 'webkitTapHighlightColor' | 'webkitTextFillColor' | 'webkitTextSizeAdjust' | 'webkitTransform' | 'webkitTransformOrigin' | 'webkitTransformStyle' | 'webkitTransition' | 'webkitTransitionDelay' | 'webkitTransitionDuration' | 'webkitTransitionProperty' | 'webkitTransitionTimingFunction' | 'webkitUserModify' | 'webkitUserSelect' | 'webkitWritingMode' | 'whiteSpace' | 'widows' | 'width' | 'wordBreak' | 'wordSpacing' | 'wordWrap' | 'writingMode' | 'zIndex' | 'zoom';
 
 // @public
-export type ElementAttrs = (ElementBaseAttrs & ElementEventAttrs & ElementSpecialAttrs);
+export type ElementARIAAttrs = {
+    readonly [T in ARIAAttrNames]?: string;
+};
+
+// @public
+export type ElementAttrNames = 'abbr' | 'accept' | 'accept-charset' | 'accesskey' | 'action' | 'allowfullscreen' | 'alt' | 'autocomplete' | 'autofocus' | 'autoplay' | 'autosave' | 'checked' | 'cite' | 'cols' | 'colspan' | 'contenteditable' | 'controls' | 'coords' | 'crossorigin' | 'data' | 'datetime' | 'default' | 'dir' | 'dirname' | 'disabled' | 'download' | 'draggable' | 'dropzone' | 'enctype' | 'form' | 'formaction' | 'formenctype' | 'formmethod' | 'formnovalidate' | 'formtarget' | 'headers' | 'height' | 'hidden' | 'high' | 'href' | 'hreflang' | 'id' | 'inputmode' | 'integrity' | 'ismap' | 'kind' | 'label' | 'lang' | 'list' | 'loop' | 'low' | 'max' | 'maxlength' | 'media' | 'mediagroup' | 'method' | 'min' | 'minlength' | 'multiple' | 'muted' | 'name' | 'novalidate' | 'optimum' | 'pattern' | 'placeholder' | 'poster' | 'preload' | 'readonly' | 'rel' | 'required' | 'reversed' | 'rows' | 'rowspan' | 'sandbox' | 'scope' | 'selected' | 'shape' | 'size' | 'sizes' | 'span' | 'spellcheck' | 'src' | 'srcdoc' | 'srclang' | 'srcset' | 'start' | 'step' | 'tabindex' | 'target' | 'title' | 'type' | 'typemustmatch' | 'usemap' | 'value' | 'width' | 'wrap';
+
+// @public
+export type ElementAttrs = ElementBaseAttrs & ElementARIAAttrs & ElementEventAttrs & ElementSpecialAttrs;
 
 // @public
 export type ElementBaseAttrs = {
@@ -25,11 +33,11 @@ export type ElementDataset = {
 
 // @public
 export type ElementEventAttrs = {
-    readonly [T in keyof ElementEventMap]?: (this: HTMLElement, event: ElementEventMap[T]) => any;
+    readonly [T in keyof ElementEventMap_2]?: (this: HTMLElement, event: ElementEventMap_2[T]) => any;
 };
 
 // @public
-export type ElementEventMap = {
+type ElementEventMap_2 = {
     onabort: UIEvent;
     onauxclick: MouseEvent;
     onblur: FocusEvent;
@@ -52,7 +60,7 @@ export type ElementEventMap = {
     ondrop: DragEvent;
     ondurationchange: Event;
     onemptied: Event;
-    onended: MediaStreamErrorEvent;
+    onended: ErrorEvent;
     onerror: ErrorEvent;
     onfocus: FocusEvent;
     oninput: Event;
@@ -100,6 +108,7 @@ export type ElementEventMap = {
     onvolumechange: Event;
     onwaiting: Event;
 };
+export { ElementEventMap_2 as ElementEventMap }
 
 // @public
 export type ElementInlineStyle = {
@@ -121,6 +130,12 @@ export function h(tag: string, ...children: h.Child[]): VirtualElement;
 // @public (undocumented)
 export function h(tag: string, attrs: ElementAttrs, ...children: h.Child[]): VirtualElement;
 
+// @public (undocumented)
+export function h(tag: string, renderer: VirtualElement.IRenderer, ...children: h.Child[]): VirtualElement;
+
+// @public (undocumented)
+export function h(tag: string, attrs: ElementAttrs, renderer: VirtualElement.IRenderer, ...children: h.Child[]): VirtualElement;
+
 // @public
 export namespace h {
     export type Child = (string | VirtualNode | null) | Array<string | VirtualNode | null>;
@@ -129,6 +144,10 @@ export namespace h {
         (...children: Child[]): VirtualElement;
         // (undocumented)
         (attrs: ElementAttrs, ...children: Child[]): VirtualElement;
+        // (undocumented)
+        (renderer: VirtualElement.IRenderer, ...children: h.Child[]): VirtualElement;
+        // (undocumented)
+        (attrs: ElementAttrs, renderer: VirtualElement.IRenderer, ...children: h.Child[]): VirtualElement;
     }
     const // (undocumented)
     a: IFactory;
@@ -327,18 +346,51 @@ export namespace h {
 }
 
 // @public
+export function hpass(tag: string, renderer?: VirtualElementPass.IRenderer): VirtualElementPass;
+
+// @public (undocumented)
+export function hpass(tag: string, attrs: ElementAttrs, renderer?: VirtualElementPass.IRenderer): VirtualElementPass;
+
+// @public
 export namespace VirtualDOM {
+    export function realize(node: VirtualText): Text;
+    // (undocumented)
     export function realize(node: VirtualElement): HTMLElement;
     export function render(content: VirtualNode | ReadonlyArray<VirtualNode> | null, host: HTMLElement): void;
 }
 
 // @public
 export class VirtualElement {
-    constructor(tag: string, attrs: ElementAttrs, children: ReadonlyArray<VirtualNode>);
+    constructor(tag: string, attrs: ElementAttrs, children: ReadonlyArray<VirtualNode>, renderer?: VirtualElement.IRenderer);
     readonly attrs: ElementAttrs;
     readonly children: ReadonlyArray<VirtualNode>;
+    readonly renderer: VirtualElement.IRenderer | undefined;
     readonly tag: string;
-    readonly type: 'element';
+    readonly type: "element";
+}
+
+// @public (undocumented)
+export namespace VirtualElement {
+    export type IRenderer = {
+        render: (host: HTMLElement, options?: {
+            attrs?: ElementAttrs;
+            children?: ReadonlyArray<VirtualNode>;
+        }) => void;
+        unrender?: (host: HTMLElement, options?: {
+            attrs?: ElementAttrs;
+            children?: ReadonlyArray<VirtualNode>;
+        }) => void;
+    };
+}
+
+// @public
+export class VirtualElementPass extends VirtualElement {
+    constructor(tag: string, attrs: ElementAttrs, renderer: VirtualElementPass.IRenderer | null);
+}
+
+// @public (undocumented)
+export namespace VirtualElementPass {
+    export type IRenderer = VirtualElement.IRenderer;
 }
 
 // @public
@@ -348,9 +400,8 @@ export type VirtualNode = VirtualElement | VirtualText;
 export class VirtualText {
     constructor(content: string);
     readonly content: string;
-    readonly type: 'text';
+    readonly type: "text";
 }
-
 
 // (No @packageDocumentation comment for this package)
 

@@ -7,11 +7,12 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  ArrayExt, each, find
-} from '@lumino/algorithm';
-
-
+/**
+ * @packageDocumentation
+ * @module signaling
+ */
+import { ArrayExt, find } from '@lumino/algorithm';
+import { PromiseDelegate } from '@lumino/coreutils';
 
 /**
  * A type alias for a slot function.
@@ -23,9 +24,7 @@ import {
  * #### Notes
  * A slot is invoked when a signal to which it is connected is emitted.
  */
-export
-type Slot<T, U> = (sender: T, args: U) => void;
-
+export type Slot<T, U> = (sender: T, args: U) => void;
 
 /**
  * An object used for type-safe inter-object communication.
@@ -36,8 +35,7 @@ type Slot<T, U> = (sender: T, args: U) => void;
  * and consumers connect callbacks (subscribers) to those signals. The
  * subscribers are invoked whenever the publisher emits the signal.
  */
-export
-interface ISignal<T, U> {
+export interface ISignal<T, U> {
   /**
    * Connect a slot to the signal.
    *
@@ -80,6 +78,10 @@ interface ISignal<T, U> {
   disconnect(slot: Slot<T, U>, thisArg?: any): boolean;
 }
 
+/**
+ * An object that is both a signal and an async iterable.
+ */
+export interface IStream<T, U> extends ISignal<T, U>, AsyncIterable<U> {}
 
 /**
  * A concrete implementation of `ISignal`.
@@ -130,8 +132,7 @@ interface ISignal<T, U> {
  * m2.value = 17;  // logs: bar 17
  * ```
  */
-export
-class Signal<T, U> implements ISignal<T, U> {
+export class Signal<T, U> implements ISignal<T, U> {
   /**
    * Construct a new signal.
    *
@@ -156,7 +157,7 @@ class Signal<T, U> implements ISignal<T, U> {
    *
    * @returns `true` if the connection succeeds, `false` otherwise.
    */
-  connect(slot: Slot<T, U>, thisArg?: any): boolean {
+  connect(slot: Slot<T, U>, thisArg?: unknown): boolean {
     return Private.connect(this, slot, thisArg);
   }
 
@@ -170,7 +171,7 @@ class Signal<T, U> implements ISignal<T, U> {
    *
    * @returns `true` if the connection is removed, `false` otherwise.
    */
-  disconnect(slot: Slot<T, U>, thisArg?: any): boolean {
+  disconnect(slot: Slot<T, U>, thisArg?: unknown): boolean {
     return Private.disconnect(this, slot, thisArg);
   }
 
@@ -189,12 +190,10 @@ class Signal<T, U> implements ISignal<T, U> {
   }
 }
 
-
 /**
  * The namespace for the `Signal` class statics.
  */
-export
-namespace Signal {
+export namespace Signal {
   /**
    * Remove all connections between a sender and receiver.
    *
@@ -207,8 +206,7 @@ namespace Signal {
    * is considered the receiver. Otherwise, the `slot` is considered
    * the receiver.
    */
-  export
-  function disconnectBetween(sender: any, receiver: any): void {
+  export function disconnectBetween(sender: unknown, receiver: unknown): void {
     Private.disconnectBetween(sender, receiver);
   }
 
@@ -217,8 +215,7 @@ namespace Signal {
    *
    * @param sender - The sender object of interest.
    */
-  export
-  function disconnectSender(sender: any): void {
+  export function disconnectSender(sender: unknown): void {
     Private.disconnectSender(sender);
   }
 
@@ -232,8 +229,7 @@ namespace Signal {
    * is considered the receiver. Otherwise, the `slot` is considered
    * the receiver.
    */
-  export
-  function disconnectReceiver(receiver: any): void {
+  export function disconnectReceiver(receiver: unknown): void {
     Private.disconnectReceiver(receiver);
   }
 
@@ -247,8 +243,7 @@ namespace Signal {
    * is considered the receiver. Otherwise, the `slot` is considered
    * the receiver.
    */
-  export
-  function disconnectAll(object: any): void {
+  export function disconnectAll(object: unknown): void {
     Private.disconnectAll(object);
   }
 
@@ -261,16 +256,14 @@ namespace Signal {
    * This removes all signal connections and any other signal data
    * associated with the object.
    */
-  export
-  function clearData(object: any): void {
+  export function clearData(object: unknown): void {
     Private.disconnectAll(object);
   }
 
   /**
    * A type alias for the exception handler function.
    */
-  export
-  type ExceptionHandler = (err: Error) => void;
+  export type ExceptionHandler = (err: Error) => void;
 
   /**
    * Get the signal exception handler.
@@ -280,8 +273,7 @@ namespace Signal {
    * #### Notes
    * The default exception handler is `console.error`.
    */
-  export
-  function getExceptionHandler(): ExceptionHandler {
+  export function getExceptionHandler(): ExceptionHandler {
     return Private.exceptionHandler;
   }
 
@@ -295,24 +287,113 @@ namespace Signal {
    * #### Notes
    * The exception handler is invoked when a slot throws an exception.
    */
-  export
-  function setExceptionHandler(handler: ExceptionHandler): ExceptionHandler {
+  export function setExceptionHandler(
+    handler: ExceptionHandler
+  ): ExceptionHandler {
     let old = Private.exceptionHandler;
     Private.exceptionHandler = handler;
     return old;
   }
 }
 
+/**
+ * A concrete implementation of `IStream`.
+ *
+ * #### Example
+ * ```typescript
+ * import { IStream, Stream } from '@lumino/signaling';
+ *
+ * class SomeClass {
+ *
+ *   constructor(name: string) {
+ *     this.name = name;
+ *   }
+ *
+ *   readonly name: string;
+ *
+ *   get pings(): IStream<this, string> {
+ *     return this._pings;
+ *   }
+ *
+ *   ping(value: string) {
+ *     this._pings.emit(value);
+ *   }
+ *
+ *   private _pings = new Stream<this, string>(this);
+ * }
+ *
+ * let m1 = new SomeClass('foo');
+ *
+ * m1.pings.connect((_, value: string) => {
+ *   console.log('connect', value);
+ * });
+ *
+ * void (async () => {
+ *   for await (const ping of m1.pings) {
+ *     console.log('iterator', ping);
+ *   }
+ * })();
+ *
+ * m1.ping('alpha');  // logs: connect alpha
+ *                    // logs: iterator alpha
+ * m1.ping('beta');   // logs: connect beta
+ *                    // logs: iterator beta
+ * ```
+ */
+export class Stream<T, U> extends Signal<T, U> implements IStream<T, U> {
+  /**
+   * Return an async iterator that yields every emission.
+   */
+  async *[Symbol.asyncIterator](): AsyncIterableIterator<U> {
+    let pending = this._pending;
+    while (true) {
+      try {
+        const { args, next } = await pending.promise;
+        pending = next;
+        yield args;
+      } catch (_) {
+        return; // Any promise rejection stops the iterator.
+      }
+    }
+  }
+
+  /**
+   * Emit the signal, invoke the connected slots, and yield the emission.
+   *
+   * @param args - The args to pass to the connected slots.
+   */
+  emit(args: U): void {
+    const pending = this._pending;
+    const next = (this._pending = new PromiseDelegate());
+    pending.resolve({ args, next });
+    super.emit(args);
+  }
+
+  /**
+   * Stop the stream's async iteration.
+   */
+  stop(): void {
+    this._pending.promise.catch(() => undefined);
+    this._pending.reject('stop');
+    this._pending = new PromiseDelegate();
+  }
+
+  private _pending: Private.Pending<U> = new PromiseDelegate();
+}
 
 /**
  * The namespace for the module implementation details.
  */
 namespace Private {
   /**
+   * A pending promise in a promise chain underlying a stream.
+   */
+  export type Pending<U> = PromiseDelegate<{ args: U; next: Pending<U> }>;
+
+  /**
    * The signal exception handler function.
    */
-  export
-  let exceptionHandler: Signal.ExceptionHandler = (err: Error) => {
+  export let exceptionHandler: Signal.ExceptionHandler = (err: Error) => {
     console.error(err);
   };
 
@@ -328,8 +409,11 @@ namespace Private {
    *
    * @returns `true` if the connection succeeds, `false` otherwise.
    */
-  export
-  function connect<T, U>(signal: Signal<T, U>, slot: Slot<T, U>, thisArg?: any): boolean {
+  export function connect<T, U>(
+    signal: Signal<T, U>,
+    slot: Slot<T, U>,
+    thisArg?: unknown
+  ): boolean {
     // Coerce a `null` `thisArg` to `undefined`.
     thisArg = thisArg || undefined;
 
@@ -376,8 +460,11 @@ namespace Private {
    *
    * @returns `true` if the connection is removed, `false` otherwise.
    */
-  export
-  function disconnect<T, U>(signal: Signal<T, U>, slot: Slot<T, U>, thisArg?: any): boolean {
+  export function disconnect<T, U>(
+    signal: Signal<T, U>,
+    slot: Slot<T, U>,
+    thisArg?: unknown
+  ): boolean {
     // Coerce a `null` `thisArg` to `undefined`.
     thisArg = thisArg || undefined;
 
@@ -415,8 +502,7 @@ namespace Private {
    *
    * @param receiver - The receiver object of interest.
    */
-  export
-  function disconnectBetween(sender: any, receiver: any): void {
+  export function disconnectBetween(sender: unknown, receiver: unknown): void {
     // If there are no receivers, there is nothing to do.
     let receivers = receiversForSender.get(sender);
     if (!receivers || receivers.length === 0) {
@@ -430,17 +516,17 @@ namespace Private {
     }
 
     // Clear each connection between the sender and receiver.
-    each(senders, connection => {
+    for (const connection of senders) {
       // Skip connections which have already been cleared.
       if (!connection.signal) {
-        return;
+        continue;
       }
 
       // Clear the connection if it matches the sender.
       if (connection.signal.sender === sender) {
         connection.signal = null;
       }
-    });
+    }
 
     // Schedule a cleanup of the senders and receivers.
     scheduleCleanup(receivers);
@@ -452,8 +538,7 @@ namespace Private {
    *
    * @param sender - The sender object of interest.
    */
-  export
-  function disconnectSender(sender: any): void {
+  export function disconnectSender(sender: unknown): void {
     // If there are no receivers, there is nothing to do.
     let receivers = receiversForSender.get(sender);
     if (!receivers || receivers.length === 0) {
@@ -461,10 +546,10 @@ namespace Private {
     }
 
     // Clear each receiver connection.
-    each(receivers, connection => {
+    for (const connection of receivers) {
       // Skip connections which have already been cleared.
       if (!connection.signal) {
-        return;
+        continue;
       }
 
       // Choose the best object for the receiver.
@@ -475,7 +560,7 @@ namespace Private {
 
       // Cleanup the array of senders, which is now known to exist.
       scheduleCleanup(sendersForReceiver.get(receiver)!);
-    });
+    }
 
     // Schedule a cleanup of the receivers.
     scheduleCleanup(receivers);
@@ -486,8 +571,7 @@ namespace Private {
    *
    * @param receiver - The receiver object of interest.
    */
-  export
-  function disconnectReceiver(receiver: any): void {
+  export function disconnectReceiver(receiver: unknown): void {
     // If there are no senders, there is nothing to do.
     let senders = sendersForReceiver.get(receiver);
     if (!senders || senders.length === 0) {
@@ -495,10 +579,10 @@ namespace Private {
     }
 
     // Clear each sender connection.
-    each(senders, connection => {
+    for (const connection of senders) {
       // Skip connections which have already been cleared.
       if (!connection.signal) {
-        return;
+        continue;
       }
 
       // Lookup the sender for the connection.
@@ -509,7 +593,7 @@ namespace Private {
 
       // Cleanup the array of receivers, which is now known to exist.
       scheduleCleanup(receiversForSender.get(sender)!);
-    });
+    }
 
     // Schedule a cleanup of the list of senders.
     scheduleCleanup(senders);
@@ -520,8 +604,7 @@ namespace Private {
    *
    * @param object - The object of interest.
    */
-  export
-  function disconnectAll(object: any): void {
+  export function disconnectAll(object: unknown): void {
     // Remove all connections where the given object is the sender.
     disconnectSender(object);
     // Remove all connections where the given object is the receiver.
@@ -540,8 +623,7 @@ namespace Private {
    *
    * Exceptions thrown by connected slots will be caught and logged.
    */
-  export
-  function emit<T, U>(signal: Signal<T,  U>, args: U): void {
+  export function emit<T, U>(signal: Signal<T, U>, args: U): void {
     // If there are no receivers, there is nothing to do.
     let receivers = receiversForSender.get(signal.sender);
     if (!receivers || receivers.length === 0) {
@@ -600,19 +682,25 @@ namespace Private {
    */
   const schedule = (() => {
     let ok = typeof requestAnimationFrame === 'function';
-    // @ts-ignore
     return ok ? requestAnimationFrame : setImmediate;
   })();
 
   /**
    * Find a connection which matches the given parameters.
    */
-  function findConnection(connections: IConnection[], signal: Signal<any, any>, slot: Slot<any, any>, thisArg: any): IConnection | undefined {
-    return find(connections, connection => (
-      connection.signal === signal &&
-      connection.slot === slot &&
-      connection.thisArg === thisArg
-    ));
+  function findConnection(
+    connections: IConnection[],
+    signal: Signal<any, any>,
+    slot: Slot<any, any>,
+    thisArg: any
+  ): IConnection | undefined {
+    return find(
+      connections,
+      connection =>
+        connection.signal === signal &&
+        connection.slot === slot &&
+        connection.thisArg === thisArg
+    );
   }
 
   /**

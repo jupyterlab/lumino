@@ -1,0 +1,11 @@
+{
+  "name": "@lumino/example-nested-dockpanel-amd",
+  "version": "2.0.1",
+  "private": true,
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.44.0"
+  }
+}

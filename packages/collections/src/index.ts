@@ -7,6 +7,8 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-export * from './bplustree';
+/**
+ * @packageDocumentation
+ * @module collections
+ */
 export * from './linkedlist';
-

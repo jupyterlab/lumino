@@ -7,40 +7,24 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  ArrayExt, IIterator, each, map
-} from '@lumino/algorithm';
+import { ArrayExt } from '@lumino/algorithm';
 
-import {
-  ElementExt
-} from '@lumino/domutils';
+import { ElementExt } from '@lumino/domutils';
 
-import {
-  Message, MessageLoop
-} from '@lumino/messaging';
+import { Message, MessageLoop } from '@lumino/messaging';
 
-import {
-  AttachedProperty
-} from '@lumino/properties';
+import { AttachedProperty } from '@lumino/properties';
 
-import {
-  BoxEngine, BoxSizer
-} from './boxengine';
+import { BoxEngine, BoxSizer } from './boxengine';
 
-import {
- Layout, LayoutItem
-} from './layout';
+import { Layout, LayoutItem } from './layout';
 
-import {
-  Widget
-} from './widget';
-
+import { Widget } from './widget';
 
 /**
  * A layout which arranges its widgets in a grid.
  */
-export
-class GridLayout extends Layout {
+export class GridLayout extends Layout {
   /**
    * Construct a new grid layout.
    *
@@ -67,11 +51,11 @@ class GridLayout extends Layout {
    */
   dispose(): void {
     // Dispose of the widgets and layout items.
-    each(this._items, item => {
+    for (const item of this._items) {
       let widget = item.widget;
       item.dispose();
       widget.dispose();
-    });
+    }
 
     // Clear the layout state.
     this._box = null;
@@ -304,8 +288,10 @@ class GridLayout extends Layout {
    *
    * @returns A new iterator over the widgets in the layout.
    */
-  iter(): IIterator<Widget> {
-    return map(this._items, item => item.widget);
+  *[Symbol.iterator](): IterableIterator<Widget> {
+    for (const item of this._items) {
+      yield item.widget;
+    }
   }
 
   /**
@@ -373,7 +359,9 @@ class GridLayout extends Layout {
    */
   protected init(): void {
     super.init();
-    each(this, widget => { this.attachWidget(widget); });
+    for (const widget of this) {
+      this.attachWidget(widget);
+    }
   }
 
   /**
@@ -556,7 +544,7 @@ class GridLayout extends Layout {
     }
 
     // Update the box sizing and add it to the computed min size.
-    let box = this._box = ElementExt.boxSizing(this.parent!.node);
+    let box = (this._box = ElementExt.boxSizing(this.parent!.node));
     minW += box.horizontalSum;
     minH += box.verticalSum;
 
@@ -672,17 +660,14 @@ class GridLayout extends Layout {
   private _box: ElementExt.IBoxSizing | null = null;
 }
 
-
 /**
  * The namespace for the `GridLayout` class statics.
  */
-export
-namespace GridLayout {
+export namespace GridLayout {
   /**
    * An options object for initializing a grid layout.
    */
-  export
-  interface IOptions extends Layout.IOptions {
+  export interface IOptions extends Layout.IOptions {
     /**
      * The initial row count for the layout.
      *
@@ -715,8 +700,7 @@ namespace GridLayout {
   /**
    * An object which holds the cell configuration for a widget.
    */
-  export
-  interface ICellConfig {
+  export interface ICellConfig {
     /**
      * The row index for the widget.
      */
@@ -745,8 +729,7 @@ namespace GridLayout {
    *
    * @returns The cell config for the widget.
    */
-  export
-  function getCellConfig(widget: Widget): ICellConfig {
+  export function getCellConfig(widget: Widget): ICellConfig {
     return Private.cellConfigProperty.get(widget);
   }
 
@@ -757,12 +740,13 @@ namespace GridLayout {
    *
    * @param value - The value for the cell config.
    */
-  export
-  function setCellConfig(widget: Widget, value: Partial<ICellConfig>): void {
+  export function setCellConfig(
+    widget: Widget,
+    value: Partial<ICellConfig>
+  ): void {
     Private.cellConfigProperty.set(widget, Private.normalizeConfig(value));
   }
 }
-
 
 /**
  * The namespace for the module implementation details.
@@ -771,8 +755,10 @@ namespace Private {
   /**
    * The property descriptor for the widget cell config.
    */
-  export
-  const cellConfigProperty = new AttachedProperty<Widget, GridLayout.ICellConfig>({
+  export const cellConfigProperty = new AttachedProperty<
+    Widget,
+    GridLayout.ICellConfig
+  >({
     name: 'cellConfig',
     create: () => ({ row: 0, column: 0, rowSpan: 1, columnSpan: 1 }),
     changed: onChildCellConfigChanged
@@ -781,8 +767,9 @@ namespace Private {
   /**
    * Normalize a partial cell config object.
    */
-  export
-  function normalizeConfig(config: Partial<GridLayout.ICellConfig>): GridLayout.ICellConfig {
+  export function normalizeConfig(
+    config: Partial<GridLayout.ICellConfig>
+  ): GridLayout.ICellConfig {
     let row = Math.max(0, Math.floor(config.row || 0));
     let column = Math.max(0, Math.floor(config.column || 0));
     let rowSpan = Math.max(1, Math.floor(config.rowSpan || 0));
@@ -793,16 +780,14 @@ namespace Private {
   /**
    * Clamp a value to an integer >= 0.
    */
-  export
-  function clampValue(value: number): number {
+  export function clampValue(value: number): number {
     return Math.max(0, Math.floor(value));
   }
 
   /**
    * A sort comparison function for row spans.
    */
-  export
-  function rowSpanCmp(a: LayoutItem, b: LayoutItem): number {
+  export function rowSpanCmp(a: LayoutItem, b: LayoutItem): number {
     let c1 = cellConfigProperty.get(a.widget);
     let c2 = cellConfigProperty.get(b.widget);
     return c1.rowSpan - c2.rowSpan;
@@ -811,8 +796,7 @@ namespace Private {
   /**
    * A sort comparison function for column spans.
    */
-  export
-  function columnSpanCmp(a: LayoutItem, b: LayoutItem): number {
+  export function columnSpanCmp(a: LayoutItem, b: LayoutItem): number {
     let c1 = cellConfigProperty.get(a.widget);
     let c2 = cellConfigProperty.get(b.widget);
     return c1.columnSpan - c2.columnSpan;
@@ -821,8 +805,7 @@ namespace Private {
   /**
    * Reallocate the box sizers for the given grid dimensions.
    */
-  export
-  function reallocSizers(sizers: BoxSizer[], count: number): void {
+  export function reallocSizers(sizers: BoxSizer[], count: number): void {
     // Coerce the count to the valid range.
     count = Math.max(1, Math.floor(count));
 
@@ -840,8 +823,12 @@ namespace Private {
   /**
    * Distribute a min size constraint across a range of sizers.
    */
-  export
-  function distributeMin(sizers: BoxSizer[], i1: number, i2: number, minSize: number): void {
+  export function distributeMin(
+    sizers: BoxSizer[],
+    i1: number,
+    i2: number,
+    minSize: number
+  ): void {
     // Sanity check the indices.
     if (i2 < i1) {
       return;

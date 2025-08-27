@@ -6,57 +6,58 @@
 
 import { CommandRegistry } from '@lumino/commands';
 import { ContextMenu } from '@lumino/widgets';
+import { IPlugin } from '@lumino/coreutils';
 import { Menu } from '@lumino/widgets';
+import { PluginRegistry } from '@lumino/coreutils';
 import { Token } from '@lumino/coreutils';
 import { Widget } from '@lumino/widgets';
 
 // @public
-export class Application<T extends Widget> {
+export class Application<T extends Widget = Widget> {
     constructor(options: Application.IOptions<T>);
+    activateDeferredPlugins(): Promise<void>;
     activatePlugin(id: string): Promise<void>;
     protected addEventListeners(): void;
     protected attachShell(id: string): void;
     readonly commands: CommandRegistry;
     readonly contextMenu: ContextMenu;
-    protected evtContextMenu(event: MouseEvent): void;
+    deactivatePlugin(id: string): Promise<string[]>;
+    get deferredPlugins(): string[];
+    deregisterPlugin(id: string, force?: boolean): void;
+    protected evtContextMenu(event: PointerEvent): void;
     protected evtKeydown(event: KeyboardEvent): void;
+    protected evtKeyup(event: KeyboardEvent): void;
     protected evtResize(event: Event): void;
+    getPluginDescription(id: string): string;
     handleEvent(event: Event): void;
     hasPlugin(id: string): boolean;
+    isPluginActivated(id: string): boolean;
     listPlugins(): string[];
+    protected pluginRegistry: PluginRegistry;
     registerPlugin(plugin: IPlugin<this, any>): void;
     registerPlugins(plugins: IPlugin<this, any>[]): void;
     resolveOptionalService<U>(token: Token<U>): Promise<U | null>;
     resolveRequiredService<U>(token: Token<U>): Promise<U>;
     readonly shell: T;
     start(options?: Application.IStartOptions): Promise<void>;
-    readonly started: Promise<void>;
-    }
+    get started(): Promise<void>;
+}
 
 // @public
 export namespace Application {
-    export interface IOptions<T extends Widget> {
+    export interface IOptions<T extends Widget> extends PluginRegistry.IOptions {
         contextMenuRenderer?: Menu.IRenderer;
+        pluginRegistry?: PluginRegistry;
         shell: T;
     }
     export interface IStartOptions {
+        bubblingKeydown?: boolean;
         hostID?: string;
         ignorePlugins?: string[];
         startPlugins?: string[];
     }
 }
 
-// @public
-export interface IPlugin<T, U> {
-    activate: (app: T, ...args: any[]) => U | Promise<U>;
-    autoStart?: boolean;
-    id: string;
-    optional?: Token<any>[];
-    provides?: Token<U>;
-    requires?: Token<any>[];
-}
-
-
-// (No @packageDocumentation comment for this package)
+export { IPlugin }
 
 ```

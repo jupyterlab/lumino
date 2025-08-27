@@ -1,0 +1,31 @@
+header:
+  license:
+    spdx-id: BSD-3-Clause
+    copyright-owner: Jupyter Development Team
+    software-name: JupyterLab
+    content: |
+      Copyright (c) Jupyter Development Team.
+      Distributed under the terms of the Modified BSD License.
+
+  paths-ignore:
+    - '**/*.ipynb'
+    - '**/*.json'
+    - '**/*.md'
+    - '**/*.yml'
+    - '**/*.yaml'
+    - '**/build'
+    - '**/lib'
+    - '**/node_modules'
+    - '**/static'
+    - '**/typings'
+    - '*.map.js'
+    - '*.bundle.js'
+    - '**/.*'
+    - '.husky/pre-commit'
+    - 'binder/postBuild'
+    - 'binder/start'
+    - 'CNAME'
+    - 'LICENSE'
+    - 'yarn.lock'
+
+  comment: on-failure

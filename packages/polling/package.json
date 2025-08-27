@@ -1,6 +1,6 @@
 {
   "name": "@lumino/polling",
-  "version": "1.3.3",
+  "version": "2.1.4",
   "description": "Lumino Polling",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -11,68 +11,59 @@
     "url": "https://github.com/jupyterlab/lumino.git"
   },
   "license": "BSD-3-Clause",
-  "author": "A. T. Darian <git@darian.af>",
-  "contributors": [
-    "A. T. Darian <git@darian.af>",
-    "Ian Rose <ian.r.rose@gmail.com>",
-    "Jason Grout <jgrout6@bloomberg.net>",
-    "Steven Silvester <steven.silvester@gmail.com>"
-  ],
+  "author": "Project Jupyter",
+  "main": "dist/index.js",
+  "jsdelivr": "dist/index.min.js",
+  "unpkg": "dist/index.min.js",
+  "module": "dist/index.es6",
+  "types": "types/index.d.ts",
   "files": [
     "dist/*",
     "src/*",
     "types/*"
   ],
-  "main": "dist/index.js",
-  "unpkg": "dist/index.min.js",
-  "module": "dist/index.es6",
-  "types": "types/index.d.ts",
   "scripts": {
     "api": "api-extractor run --local --verbose",
-    "build": "tsc --build && rollup -c",
-    "build:test": "tsc --build tests && cd tests && webpack",
-    "clean": "rimraf ./lib && rimraf *.tsbuildinfo && rimraf ./types && rimraf ./dist",
-    "clean:test": "rimraf tests/build",
-    "docs": "typedoc --options tdoptions.json src",
+    "build": "yarn build:src && rollup -c",
+    "build:src": "tsc --build",
+    "build:test": "yarn clean:test && tsc --build tests && cd tests && rollup -c",
+    "clean": "rimraf ./lib *.tsbuildinfo ./types ./dist",
+    "clean:test": "rimraf tests/lib tests/tsconfig.tsbuildinfo",
     "minimize": "terser dist/index.js -c -m --source-map \"content='dist/index.js.map',url='index.min.js.map'\" -o dist/index.min.js",
-    "test": "npm run test:firefox",
-    "test:chrome": "cd tests && karma start --browsers=Chrome",
-    "test:firefox": "cd tests && karma start --browsers=Firefox",
-    "test:ie": "cd tests && karma start --browsers=IE",
+    "test": "yarn build:test && web-test-runner tests/lib/bundle.test.js --node-resolve --playwright",
+    "test:chromium": "yarn test -- --browsers chromium",
+    "test:debug": "yarn test -- --manual --open",
+    "test:firefox": "yarn test -- --browsers firefox",
+    "test:webkit": "yarn test -- --browsers webkit",
     "watch": "tsc --build --watch"
   },
   "dependencies": {
-    "@lumino/coreutils": "^1.5.3",
-    "@lumino/disposable": "^1.4.3",
-    "@lumino/signaling": "^1.4.3"
+    "@lumino/coreutils": "^2.2.1",
+    "@lumino/disposable": "^2.1.4",
+    "@lumino/signaling": "^2.1.4"
   },
   "devDependencies": {
-    "@microsoft/api-extractor": "^7.6.0",
+    "@lumino/buildutils": "^2.0.2",
+    "@microsoft/api-extractor": "^7.36.0",
+    "@rollup/plugin-commonjs": "^24.0.0",
+    "@rollup/plugin-node-resolve": "^15.0.1",
     "@types/chai": "^3.4.35",
     "@types/mocha": "^2.2.39",
     "@types/node": "^12.12.17",
-    "chai": "^3.5.0",
-    "karma": "^4.4.1",
-    "karma-chrome-launcher": "^2.0.0",
-    "karma-firefox-launcher": "^1.0.0",
-    "karma-ie-launcher": "^1.0.0",
-    "karma-mocha": "^1.3.0",
-    "karma-mocha-reporter": "^2.2.2",
-    "mocha": "^6.2.2",
-    "rimraf": "^2.5.2",
-    "rollup": "^2.22.1",
-    "rollup-plugin-node-resolve": "^5.2.0",
-    "rollup-plugin-postcss": "^2.0.3",
-    "rollup-plugin-sourcemaps": "^0.5.0",
-    "terser": "^4.6.2",
-    "tslib": "1.10.0",
-    "typedoc": "~0.12.0",
-    "typescript": "~3.6.4",
-    "webpack": "^4.41.3",
-    "webpack-cli": "^3.3.10"
+    "@web/test-runner": "^0.18.2",
+    "@web/test-runner-playwright": "^0.11.0",
+    "chai": "^4.3.4",
+    "mocha": "^9.0.3",
+    "postcss": "^8.4.24",
+    "rimraf": "^5.0.1",
+    "rollup": "^3.25.1",
+    "rollup-plugin-postcss": "^4.0.2",
+    "rollup-plugin-sourcemaps": "^0.6.3",
+    "terser": "^5.18.1",
+    "tslib": "^2.5.3",
+    "typescript": "~5.1.3"
   },
   "publishConfig": {
     "access": "public"
-  },
-  "jsdelivr": "dist/index.min.js"
+  }
 }

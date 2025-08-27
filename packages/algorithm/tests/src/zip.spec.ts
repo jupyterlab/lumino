@@ -7,37 +7,37 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  ZipIterator, iter, zip
-} from '@lumino/algorithm';
+import { zip } from '@lumino/algorithm';
 
-import {
-  testIterator
-} from './iter.spec';
-
+import { testIterator } from './iter.spec';
 
 describe('@lumino/algorithm', () => {
-
-  describe('zip()', () => {
-
+  describe('zip() with same-length iterables', () => {
     testIterator(() => {
-      return [zip([1, 2, 3], [4, 5, 6]), [[1, 4], [2, 5], [3, 6]]];
+      return [
+        zip([1, 2, 3], [4, 5, 6]),
+        [
+          [1, 4],
+          [2, 5],
+          [3, 6]
+        ]
+      ];
     });
-
   });
 
-  describe('ZipIterator', () => {
-
+  describe('zip() with different-length iterables', () => {
     testIterator(() => {
-      let i1 = iter(['one', 'two']);
-      let i2 = iter([1, 2]);
-      let i3 = iter([true, false]);
-      type T = string | number | boolean;
-      let it = new ZipIterator<T>([i1, i2, i3]);
-      let results = [['one', 1, true], ['two', 2, false]];
+      let i1 = ['one', 'two', 'three', 'four'];
+      let i2 = [true, false, true];
+      let i3 = [1, 2, 3, 4];
+      type T = string | boolean | number;
+      let it = zip<T>(i1, i2, i3);
+      let results = [
+        ['one', true, 1],
+        ['two', false, 2],
+        ['three', true, 3]
+      ];
       return [it, results];
     });
-
   });
-
 });

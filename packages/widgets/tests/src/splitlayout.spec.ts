@@ -7,30 +7,24 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  expect
-} from 'chai';
+import { expect } from 'chai';
+
+import { every } from '@lumino/algorithm';
 
 import {
-  each, every
-} from '@lumino/algorithm';
-
-import {
-  IMessageHandler, IMessageHook, Message, MessageLoop
+  IMessageHandler,
+  IMessageHook,
+  Message,
+  MessageLoop
 } from '@lumino/messaging';
 
-import {
-  SplitLayout, Widget
-} from '@lumino/widgets';
-
+import { SplitLayout, Widget } from '@lumino/widgets';
 
 const renderer: SplitLayout.IRenderer = {
   createHandle: () => document.createElement('div')
 };
 
-
 class LogSplitLayout extends SplitLayout {
-
   methods: string[] = [];
 
   protected init(): void {
@@ -43,7 +37,11 @@ class LogSplitLayout extends SplitLayout {
     this.methods.push('attachWidget');
   }
 
-  protected moveWidget(fromIndex: number, toIndex: number, widget: Widget): void {
+  protected moveWidget(
+    fromIndex: number,
+    toIndex: number,
+    widget: Widget
+  ): void {
     super.moveWidget(fromIndex, toIndex, widget);
     this.methods.push('moveWidget');
   }
@@ -89,9 +87,7 @@ class LogSplitLayout extends SplitLayout {
   }
 }
 
-
 class LogHook implements IMessageHook {
-
   messages: string[] = [];
 
   messageHook(target: IMessageHandler, msg: Message): boolean {
@@ -100,22 +96,16 @@ class LogHook implements IMessageHook {
   }
 }
 
-
 describe('@lumino/widgets', () => {
-
   describe('SplitLayout', () => {
-
     describe('#constructor()', () => {
-
       it('should accept a renderer', () => {
         let layout = new SplitLayout({ renderer });
         expect(layout).to.be.an.instanceof(SplitLayout);
       });
-
     });
 
     describe('#orientation', () => {
-
       it('should get the layout orientation for the split layout', () => {
         let layout = new SplitLayout({ renderer });
         expect(layout.orientation).to.equal('horizontal');
@@ -132,37 +122,35 @@ describe('@lumino/widgets', () => {
         let layout = new SplitLayout({ renderer });
         parent.layout = layout;
         layout.orientation = 'vertical';
-        expect(parent.node.getAttribute('data-orientation')).to.equal('vertical');
+        expect(parent.node.getAttribute('data-orientation')).to.equal(
+          'vertical'
+        );
         layout.orientation = 'horizontal';
-        expect(parent.node.getAttribute('data-orientation')).to.equal('horizontal');
+        expect(parent.node.getAttribute('data-orientation')).to.equal(
+          'horizontal'
+        );
       });
 
-      it('should post a fit request to the parent widget', (done) => {
+      it('should post a fit request to the parent widget', () => {
         let layout = new LogSplitLayout({ renderer });
         let parent = new Widget();
         parent.layout = layout;
         layout.orientation = 'vertical';
-        requestAnimationFrame(() => {
-          expect(layout.methods).to.contain('onFitRequest');
-          done();
-        });
+        MessageLoop.flush();
+        expect(layout.methods).to.contain('onFitRequest', 'unexpected failure');
       });
 
-      it('should be a no-op if the value does not change', (done) => {
+      it('should be a no-op if the value does not change', () => {
         let layout = new LogSplitLayout({ renderer });
         let parent = new Widget();
         parent.layout = layout;
         layout.orientation = 'horizontal';
-        requestAnimationFrame(() => {
-          expect(layout.methods).to.not.contain('onFitRequest');
-          done();
-        });
+        MessageLoop.flush();
+        expect(layout.methods).to.not.contain('onFitRequest');
       });
-
     });
 
     describe('#spacing', () => {
-
       it('should get the inter-element spacing for the split layout', () => {
         let layout = new SplitLayout({ renderer });
         expect(layout.spacing).to.equal(4);
@@ -174,76 +162,70 @@ describe('@lumino/widgets', () => {
         expect(layout.spacing).to.equal(10);
       });
 
-      it('should post a fit rquest to the parent widget', (done) => {
+      it('should post a fit request to the parent widget', () => {
         let layout = new LogSplitLayout({ renderer });
         let parent = new Widget();
         parent.layout = layout;
         layout.spacing = 10;
-        requestAnimationFrame(() => {
-          expect(layout.methods).to.contain('onFitRequest');
-          done();
-        });
+        MessageLoop.flush();
+        expect(layout.methods).to.contain('onFitRequest');
       });
 
-      it('should be a no-op if the value does not change', (done) => {
+      it('should be a no-op if the value does not change', () => {
         let layout = new LogSplitLayout({ renderer });
         let parent = new Widget();
         parent.layout = layout;
         layout.spacing = 4;
-        requestAnimationFrame(() => {
-          expect(layout.methods).to.not.contain('onFitRequest');
-          done();
-        });
+        MessageLoop.flush();
+        expect(layout.methods).to.not.contain('onFitRequest');
       });
-
     });
 
     describe('#renderer', () => {
-
       it('should get the renderer for the layout', () => {
         let layout = new SplitLayout({ renderer });
         expect(layout.renderer).to.equal(renderer);
       });
-
     });
 
     describe('#handles', () => {
-
       it('should be a read-only sequence of the split handles in the layout', () => {
         let layout = new SplitLayout({ renderer });
         let widgets = [new Widget(), new Widget(), new Widget()];
-        each(widgets, w => { layout.addWidget(w); });
+        widgets.forEach(w => {
+          layout.addWidget(w);
+        });
         expect(every(layout.handles, h => h instanceof HTMLElement));
       });
-
     });
 
     describe('#relativeSizes()', () => {
-
       it('should get the current sizes of the widgets in the layout', () => {
         let layout = new SplitLayout({ renderer });
         let widgets = [new Widget(), new Widget(), new Widget()];
         let parent = new Widget();
         parent.layout = layout;
-        each(widgets, w => { layout.addWidget(w); });
+        widgets.forEach(w => {
+          layout.addWidget(w);
+        });
         let sizes = layout.relativeSizes();
-        expect(sizes).to.deep.equal([1/3, 1/3, 1/3]);
+        expect(sizes).to.deep.equal([1 / 3, 1 / 3, 1 / 3]);
         parent.dispose();
       });
-
     });
 
     describe('#setRelativeSizes()', () => {
-
       it('should set the desired sizes for the widgets in the panel', () => {
         let layout = new SplitLayout({ renderer });
         let widgets = [new Widget(), new Widget(), new Widget()];
         let parent = new Widget();
         parent.layout = layout;
-        each(widgets, w => { layout.addWidget(w); });
+        widgets.forEach(w => {
+          layout.addWidget(w);
+        });
         layout.setRelativeSizes([10, 10, 10]);
         let sizes = layout.relativeSizes();
-        expect(sizes).to.deep.equal([10/30, 10/30, 10/30]);
+        expect(sizes).to.deep.equal([10 / 30, 10 / 30, 10 / 30]);
         parent.dispose();
       });
 
@@ -252,46 +234,50 @@ describe('@lumino/widgets', () => {
         let widgets = [new Widget(), new Widget(), new Widget()];
         let parent = new Widget();
         parent.layout = layout;
-        each(widgets, w => { layout.addWidget(w); });
+        widgets.forEach(w => {
+          layout.addWidget(w);
+        });
         layout.setRelativeSizes([10, 15, 20, 20]);
         let sizes = layout.relativeSizes();
-        expect(sizes).to.deep.equal([10/45, 15/45, 20/45]);
+        expect(sizes).to.deep.equal([10 / 45, 15 / 45, 20 / 45]);
         parent.dispose();
       });
-
     });
 
     describe('#moveHandle()', () => {
-
-      it('should set the offset position of a split handle', (done) => {
+      it('should set the offset position of a split handle', () => {
         let parent = new Widget();
         let layout = new SplitLayout({ renderer });
         let widgets = [new Widget(), new Widget(), new Widget()];
-        each(widgets, w => { layout.addWidget(w); });
-        each(widgets, w => { w.node.style.minHeight = '100px'; });
-        each(widgets, w => { w.node.style.minWidth = '100px'; });
+        widgets.forEach(w => {
+          layout.addWidget(w);
+        });
+        widgets.forEach(w => {
+          w.node.style.minHeight = '100px';
+        });
+        widgets.forEach(w => {
+          w.node.style.minWidth = '100px';
+        });
         parent.layout = layout;
         Widget.attach(parent, document.body);
         MessageLoop.flush();
         let handle = layout.handles[1];
         let left = handle.offsetLeft;
         layout.moveHandle(1, left + 20);
-        requestAnimationFrame(() => {
-          expect(handle.offsetLeft).to.not.equal(left);
-          done();
-        });
+        MessageLoop.flush();
+        expect(handle.offsetLeft).to.not.equal(left);
       });
-
     });
 
     describe('#init()', () => {
-
       it('should set the orientation attribute of the parent widget', () => {
         let parent = new Widget();
         let layout = new LogSplitLayout({ renderer });
         parent.layout = layout;
         expect(layout.methods).to.contain('init');
-        expect(parent.node.getAttribute('data-orientation')).to.equal('horizontal');
+        expect(parent.node.getAttribute('data-orientation')).to.equal(
+          'horizontal'
+        );
       });
 
       it('should attach all widgets to the DOM', () => {
@@ -299,17 +285,17 @@ describe('@lumino/widgets', () => {
         Widget.attach(parent, document.body);
         let layout = new LogSplitLayout({ renderer });
         let widgets = [new Widget(), new Widget(), new Widget()];
-        each(widgets, w => { layout.addWidget(w); });
+        widgets.forEach(w => {
+          layout.addWidget(w);
+        });
         parent.layout = layout;
         expect(every(widgets, w => w.parent === parent)).to.equal(true);
         expect(every(widgets, w => w.isAttached)).to.equal(true);
         parent.dispose();
       });
-
     });
 
     describe('#attachWidget()', () => {
-
       it("should attach a widget to the parent's DOM node", () => {
         let layout = new LogSplitLayout({ renderer });
         let parent = new Widget();
@@ -321,7 +307,7 @@ describe('@lumino/widgets', () => {
         expect(layout.handles.length).to.equal(1);
       });
 
-      it("should send before/after attach messages if the parent is attached", () => {
+      it('should send before/after attach messages if the parent is attached', () => {
         let layout = new LogSplitLayout({ renderer });
         let parent = new Widget();
         let widget = new Widget();
@@ -334,29 +320,27 @@ describe('@lumino/widgets', () => {
         expect(hook.messages).to.contain('after-attach');
       });
 
-      it('should post a layout request for the parent widget', (done) => {
+      it('should post a layout request for the parent widget', () => {
         let layout = new LogSplitLayout({ renderer });
         let parent = new Widget();
         parent.layout = layout;
         let widget = new Widget();
         Widget.attach(parent, document.body);
         layout.addWidget(widget);
-        requestAnimationFrame(() => {
-          expect(layout.methods).to.contain('onFitRequest');
-          done();
-        });
+        MessageLoop.flush();
+        expect(layout.methods).to.contain('onFitRequest');
       });
-
     });
 
     describe('#moveWidget()', () => {
-
       it("should move a widget in the parent's DOM node", () => {
         let layout = new LogSplitLayout({ renderer });
         let widgets = [new Widget(), new Widget(), new Widget()];
         let parent = new Widget();
         parent.layout = layout;
-        each(widgets, w => { layout.addWidget(w); });
+        widgets.forEach(w => {
+          layout.addWidget(w);
+        });
         let widget = widgets[0];
         let handle = layout.handles[0];
         layout.insertWidget(2, widget);
@@ -365,24 +349,22 @@ describe('@lumino/widgets', () => {
         expect(layout.widgets[2]).to.equal(widget);
       });
 
-      it('should post a a layout request to the parent', (done) => {
+      it('should post a a layout request to the parent', () => {
         let layout = new LogSplitLayout({ renderer });
         let widgets = [new Widget(), new Widget(), new Widget()];
         let parent = new Widget();
         parent.layout = layout;
-        each(widgets, w => { layout.addWidget(w); });
+        widgets.forEach(w => {
+          layout.addWidget(w);
+        });
         let widget = widgets[0];
         layout.insertWidget(2, widget);
-        requestAnimationFrame(() => {
-          expect(layout.methods).to.contain('onFitRequest');
-          done();
-        });
+        MessageLoop.flush();
+        expect(layout.methods).to.contain('onFitRequest');
       });
-
     });
 
     describe('#detachWidget()', () => {
-
       it("should detach a widget from the parent's DOM node", () => {
         let layout = new LogSplitLayout({ renderer });
         let widget = new Widget();
@@ -395,7 +377,7 @@ describe('@lumino/widgets', () => {
         parent.dispose();
       });
 
-      it("should send before/after detach message if the parent is attached", () => {
+      it('should send before/after detach message if the parent is attached', () => {
         let layout = new LogSplitLayout({ renderer });
         let parent = new Widget();
         let widget = new Widget();
@@ -411,7 +393,7 @@ describe('@lumino/widgets', () => {
         parent.dispose();
       });
 
-      it('should post a a layout request to the parent', (done) => {
+      it('should post a a layout request to the parent', () => {
         let layout = new LogSplitLayout({ renderer });
         let widget = new Widget();
         let parent = new Widget();
@@ -419,140 +401,117 @@ describe('@lumino/widgets', () => {
         layout.addWidget(widget);
         Widget.attach(parent, document.body);
         layout.removeWidget(widget);
-        requestAnimationFrame(() => {
-          expect(layout.methods).to.contain('onFitRequest');
-          parent.dispose();
-          done();
-        });
+        MessageLoop.flush();
+        expect(layout.methods).to.contain('onFitRequest');
+        parent.dispose();
       });
-
     });
 
     describe('#onAfterShow()', () => {
-
-      it('should post an update to the parent', (done) => {
+      it('should post an update to the parent', () => {
         let layout = new LogSplitLayout({ renderer });
         let parent = new Widget();
         parent.layout = layout;
         parent.hide();
         Widget.attach(parent, document.body);
         parent.show();
+        MessageLoop.flush();
         expect(layout.methods).to.contain('onAfterShow');
-        requestAnimationFrame(() => {
-          expect(layout.methods).to.contain('onUpdateRequest');
-          parent.dispose();
-          done();
-        });
+        expect(layout.methods).to.contain('onUpdateRequest');
+        parent.dispose();
       });
-
     });
 
     describe('#onAfterAttach()', () => {
-
-      it('should post a layout request to the parent', (done) => {
+      it('should post a layout request to the parent', () => {
         let layout = new LogSplitLayout({ renderer });
         let parent = new Widget();
         parent.layout = layout;
         Widget.attach(parent, document.body);
+        MessageLoop.flush();
         expect(layout.methods).to.contain('onAfterAttach');
-        requestAnimationFrame(() => {
-          expect(layout.methods).to.contain('onFitRequest');
-          parent.dispose();
-          done();
-        });
+        expect(layout.methods).to.contain('onFitRequest');
+        parent.dispose();
       });
-
     });
 
     describe('#onChildShown()', () => {
-
-      it('should post a fit request to the parent', (done) => {
+      it('should post a fit request to the parent', () => {
         let parent = new Widget();
         let layout = new LogSplitLayout({ renderer });
         parent.layout = layout;
         let widgets = [new Widget(), new Widget(), new Widget()];
         widgets[0].hide();
-        each(widgets, w => { layout.addWidget(w); });
+        widgets.forEach(w => {
+          layout.addWidget(w);
+        });
         Widget.attach(parent, document.body);
         widgets[0].show();
+        MessageLoop.flush();
         expect(layout.methods).to.contain('onChildShown');
-        requestAnimationFrame(() => {
-          expect(layout.methods).to.contain('onFitRequest');
-          parent.dispose();
-          done();
-        });
+        expect(layout.methods).to.contain('onFitRequest');
+        parent.dispose();
       });
-
     });
 
     describe('#onChildHidden()', () => {
-
-      it('should post a fit request to the parent', (done) => {
+      it('should post a fit request to the parent', () => {
         let parent = new Widget();
         let layout = new LogSplitLayout({ renderer });
         parent.layout = layout;
         let widgets = [new Widget(), new Widget(), new Widget()];
-        each(widgets, w => { layout.addWidget(w); });
+        widgets.forEach(w => {
+          layout.addWidget(w);
+        });
         Widget.attach(parent, document.body);
         widgets[0].hide();
+        MessageLoop.flush();
         expect(layout.methods).to.contain('onChildHidden');
-        requestAnimationFrame(() => {
-          expect(layout.methods).to.contain('onFitRequest');
-          parent.dispose();
-          done();
-        });
+        expect(layout.methods).to.contain('onFitRequest');
+        parent.dispose();
       });
-
     });
 
     describe('#onResize', () => {
-
       it('should be called when a resize event is sent to the parent', () => {
         let parent = new Widget();
         let layout = new LogSplitLayout({ renderer });
         parent.layout = layout;
         let widgets = [new Widget(), new Widget(), new Widget()];
-        each(widgets, w => { layout.addWidget(w); });
+        widgets.forEach(w => {
+          layout.addWidget(w);
+        });
         Widget.attach(parent, document.body);
         MessageLoop.sendMessage(parent, Widget.ResizeMessage.UnknownSize);
         expect(layout.methods).to.contain('onResize');
         parent.dispose();
       });
-
     });
 
     describe('.getStretch()', () => {
-
       it('should get the split layout stretch factor for the given widget', () => {
         let widget = new Widget();
         expect(SplitLayout.getStretch(widget)).to.equal(0);
       });
-
     });
 
     describe('.setStretch()', () => {
-
       it('should set the split layout stretch factor for the given widget', () => {
         let widget = new Widget();
         SplitLayout.setStretch(widget, 10);
         expect(SplitLayout.getStretch(widget)).to.equal(10);
       });
 
-      it('should post a fit request to the parent', (done) => {
+      it('should post a fit request to the parent', () => {
         let parent = new Widget();
         let widget = new Widget();
         let layout = new LogSplitLayout({ renderer });
         parent.layout = layout;
         layout.addWidget(widget);
         SplitLayout.setStretch(widget, 10);
-        requestAnimationFrame(() => {
-          expect(layout.methods).to.contain('onFitRequest');
-          done();
-        });
+        MessageLoop.flush();
+        expect(layout.methods).to.contain('onFitRequest');
       });
-
     });
-
   });
-
 });

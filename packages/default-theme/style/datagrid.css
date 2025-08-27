@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) Jupyter Development Team.
+ * Distributed under the terms of the Modified BSD License.
+ */
+
 /*-----------------------------------------------------------------------------
 | Copyright (c) 2014-2018, PhosphorJS Contributors
 |
@@ -6,22 +11,16 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
-
-/* <DEPRECATED> */ .p-DataGrid, /* </DEPRECATED> */
 .lm-DataGrid {
   min-width: 64px;
   min-height: 64px;
-  border: 1px solid #A0A0A0;
+  border: 1px solid #a0a0a0;
 }
 
-
-/* <DEPRECATED> */ .p-DataGrid-scrollCorner, /* </DEPRECATED> */
 .lm-DataGrid-scrollCorner {
-  background-color: #F0F0F0;
+  background-color: #f0f0f0;
 }
 
-
-/* <DEPRECATED> */ .p-DataGrid-scrollCorner::after, /* </DEPRECATED> */
 .lm-DataGrid-scrollCorner::after {
   content: '';
   position: absolute;
@@ -29,7 +28,7 @@
   left: 0;
   width: 1px;
   height: 1px;
-  background-color: #A0A0A0;
+  background-color: #a0a0a0;
 }
 
 .lm-DataGrid-cellEditorOccluder {

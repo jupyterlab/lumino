@@ -7,41 +7,21 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  expect
-} from 'chai';
+import { expect } from 'chai';
 
-import {
-  simulate
-} from 'simulate-event';
+import { CommandRegistry } from '@lumino/commands';
 
-import {
-  CommandRegistry
-} from '@lumino/commands';
+import { JSONObject } from '@lumino/coreutils';
 
-import {
-  JSONObject
-} from '@lumino/coreutils';
+import { Platform } from '@lumino/domutils';
 
-import {
-  Platform
-} from '@lumino/domutils';
+import { Message } from '@lumino/messaging';
 
-import {
-  Message
-} from '@lumino/messaging';
+import { h, VirtualDOM } from '@lumino/virtualdom';
 
-import {
-  VirtualDOM, h
-} from '@lumino/virtualdom';
-
-import {
-  Menu, Widget
-} from '@lumino/widgets';
-
+import { Menu, Widget } from '@lumino/widgets';
 
 class LogMenu extends Menu {
-
   events: string[] = [];
 
   methods: string[] = [];
@@ -77,50 +57,69 @@ class LogMenu extends Menu {
   }
 }
 
+const bubbles = true;
 
 describe('@lumino/widgets', () => {
-
   let commands = new CommandRegistry();
   let logMenu: LogMenu = null!;
   let menu: Menu = null!;
   let executed = '';
+  const iconClass = 'foo';
+  const iconRenderer = {
+    render: (host: HTMLElement, options?: any) => {
+      const renderNode = document.createElement('div');
+      host.classList.add(iconClass);
+      host.appendChild(renderNode);
+    }
+  };
 
   before(() => {
     commands.addCommand('test', {
-      execute: (args: JSONObject) => { executed = 'test' },
+      execute: (args: JSONObject) => {
+        executed = 'test';
+      },
       label: 'Test Label',
-      icon: 'foo',
+      icon: iconRenderer,
+      iconClass,
       caption: 'Test Caption',
       className: 'testClass',
       mnemonic: 0
     });
     commands.addCommand('test-toggled', {
-      execute: (args: JSONObject) => { executed = 'test-toggled' },
+      execute: (args: JSONObject) => {
+        executed = 'test-toggled';
+      },
       label: 'Test Toggled Label',
-      icon: 'foo',
+      icon: iconRenderer,
       className: 'testClass',
       isToggled: (args: JSONObject) => true,
       mnemonic: 6
     });
     commands.addCommand('test-disabled', {
-      execute: (args: JSONObject) => { executed = 'test-disabled' },
+      execute: (args: JSONObject) => {
+        executed = 'test-disabled';
+      },
       label: 'Test Disabled Label',
-      icon: 'foo',
+      icon: iconRenderer,
       className: 'testClass',
       isEnabled: (args: JSONObject) => false,
-      mnemonic: 5,
+      mnemonic: 5
     });
     commands.addCommand('test-hidden', {
-      execute: (args: JSONObject) => { executed = 'test-hidden' },
+      execute: (args: JSONObject) => {
+        executed = 'test-hidden';
+      },
       label: 'Hidden Label',
-      icon: 'foo',
+      icon: iconRenderer,
       className: 'testClass',
       isVisible: (args: JSONObject) => false
     });
     commands.addCommand('test-zenith', {
-      execute: (args: JSONObject) => { executed = 'test-zenith' },
+      execute: (args: JSONObject) => {
+        executed = 'test-zenith';
+      },
       label: 'Zenith Label',
-      icon: 'foo',
+      icon: iconRenderer,
       className: 'testClass'
     });
     commands.addKeyBinding({
@@ -142,9 +141,7 @@ describe('@lumino/widgets', () => {
   });
 
   describe('Menu', () => {
-
     describe('#constructor()', () => {
-
       it('should take options for initializing the menu', () => {
         let menu = new Menu({ commands });
         expect(menu).to.be.an.instanceof(Menu);
@@ -154,11 +151,9 @@ describe('@lumino/widgets', () => {
         let menu = new Menu({ commands });
         expect(menu.hasClass('lm-Menu')).to.equal(true);
       });
-
     });
 
     describe('#dispose()', () => {
-
       it('should dispose of the resources held by the menu', () => {
         menu.addItem({});
         expect(menu.items.length).to.equal(1);
@@ -166,11 +161,9 @@ describe('@lumino/widgets', () => {
         expect(menu.items.length).to.equal(0);
         expect(menu.isDisposed).to.equal(true);
       });
-
     });
 
     describe('#aboutToClose', () => {
-
       it('should be emitted just before the menu is closed', () => {
         let called = false;
         menu.open(0, 0);
@@ -191,11 +184,9 @@ describe('@lumino/widgets', () => {
         menu.close();
         expect(called).to.equal(false);
       });
-
     });
 
     describe('menuRequested', () => {
-
       it('should be emitted when a left arrow key is pressed and a submenu cannot be opened or closed', () => {
         let called = false;
         menu.open(0, 0);
@@ -203,7 +194,12 @@ describe('@lumino/widgets', () => {
           expect(args).to.equal('previous');
           called = true;
         });
-        simulate(menu.node, 'keydown', { keyCode: 37 });
+        menu.node.dispatchEvent(
+          new KeyboardEvent('keydown', {
+            bubbles,
+            keyCode: 37 // Left arrow
+          })
+        );
         expect(called).to.equal(true);
       });
 
@@ -214,7 +210,12 @@ describe('@lumino/widgets', () => {
           expect(args).to.equal('next');
           called = true;
         });
-        simulate(menu.node, 'keydown', { keyCode: 39 });
+        menu.node.dispatchEvent(
+          new KeyboardEvent('keydown', {
+            bubbles,
+            keyCode: 39 // Right arrow
+          })
+        );
         expect(called).to.equal(true);
       });
 
@@ -233,23 +234,24 @@ describe('@lumino/widgets', () => {
         submenu.menuRequested.connect(() => {
           submenuCalled = true;
         });
-        simulate(submenu.node, 'keydown', { keyCode: 39 });
+        submenu.node.dispatchEvent(
+          new KeyboardEvent('keydown', {
+            bubbles,
+            keyCode: 39 // Right arrow
+          })
+        );
         expect(called).to.equal(true);
         expect(submenuCalled).to.equal(false);
       });
-
     });
 
     describe('#commands', () => {
-
       it('should be the command registry for the menu', () => {
         expect(menu.commands).to.equal(commands);
       });
-
     });
 
     describe('#renderer', () => {
-
       it('should default to the default renderer', () => {
         expect(menu.renderer).to.equal(Menu.defaultRenderer);
       });
@@ -259,11 +261,9 @@ describe('@lumino/widgets', () => {
         let menu = new Menu({ commands, renderer });
         expect(menu.renderer).to.equal(renderer);
       });
-
     });
 
     describe('#parentMenu', () => {
-
       it('should get the parent menu of the menu', () => {
         let submenu = new Menu({ commands });
         let item = menu.addItem({ type: 'submenu', submenu });
@@ -280,11 +280,9 @@ describe('@lumino/widgets', () => {
         expect(submenu.parentMenu).to.equal(null);
         expect(menu.parentMenu).to.equal(null);
       });
-
     });
 
     describe('#childMenu', () => {
-
       it('should get the child menu of the menu', () => {
         let submenu = new Menu({ commands });
         let item = menu.addItem({ type: 'submenu', submenu });
@@ -300,11 +298,9 @@ describe('@lumino/widgets', () => {
         menu.open(0, 0);
         expect(menu.childMenu).to.equal(null);
       });
-
     });
 
     describe('#rootMenu', () => {
-
       it('should get the root menu of the menu hierarchy', () => {
         let submenu1 = new Menu({ commands });
         let submenu2 = new Menu({ commands });
@@ -328,11 +324,9 @@ describe('@lumino/widgets', () => {
         expect(submenu1.rootMenu).to.equal(submenu1);
         expect(submenu2.rootMenu).to.equal(submenu2);
       });
-
     });
 
     describe('#leafMenu', () => {
-
       it('should get the leaf menu of the menu hierarchy', () => {
         let submenu1 = new Menu({ commands });
         let submenu2 = new Menu({ commands });
@@ -356,20 +350,16 @@ describe('@lumino/widgets', () => {
         expect(submenu1.leafMenu).to.equal(submenu1);
         expect(submenu2.leafMenu).to.equal(submenu2);
       });
-
     });
 
     describe('#contentNode', () => {
-
       it('should get the menu content node', () => {
         let content = menu.contentNode;
         expect(content.classList.contains('lm-Menu-content')).to.equal(true);
       });
-
     });
 
     describe('#activeItem', () => {
-
       it('should get the currently active menu item', () => {
         let item = menu.addItem({ command: 'test' });
         menu.activeIndex = 0;
@@ -384,7 +374,7 @@ describe('@lumino/widgets', () => {
 
       it('should set the currently active menu item', () => {
         expect(menu.activeItem).to.equal(null);
-        let item = menu.activeItem = menu.addItem({ command: 'test' });
+        let item = (menu.activeItem = menu.addItem({ command: 'test' }));
         expect(menu.activeItem).to.equal(item);
       });
 
@@ -393,11 +383,9 @@ describe('@lumino/widgets', () => {
         menu.activeItem = menu.addItem({ command: 'test-disabled' });
         expect(menu.activeItem).to.equal(null);
       });
-
     });
 
     describe('#activeIndex', () => {
-
       it('should get the index of the currently active menu item', () => {
         menu.activeItem = menu.addItem({ command: 'test' });
         expect(menu.activeIndex).to.equal(0);
@@ -421,21 +409,17 @@ describe('@lumino/widgets', () => {
         menu.activeIndex = 0;
         expect(menu.activeIndex).to.equal(-1);
       });
-
     });
 
     describe('#items', () => {
-
       it('should be a read-only array of the menu items in the menu', () => {
         let item1 = menu.addItem({ command: 'foo' });
         let item2 = menu.addItem({ command: 'bar' });
         expect(menu.items).to.deep.equal([item1, item2]);
       });
-
     });
 
     describe('#activateNextItem()', () => {
-
       it('should activate the next selectable item in the menu', () => {
         menu.addItem({ command: 'test-disabled' });
         menu.addItem({ command: 'test' });
@@ -449,14 +433,12 @@ describe('@lumino/widgets', () => {
         menu.activateNextItem();
         expect(menu.activeIndex).to.equal(-1);
       });
-
     });
 
     describe('#activatePreviousItem()', () => {
-
       it('should activate the next selectable item in the menu', () => {
         menu.addItem({ command: 'test' });
-        menu.addItem({ command: 'test-disabled'});
+        menu.addItem({ command: 'test-disabled' });
         menu.activatePreviousItem();
         expect(menu.activeIndex).to.equal(0);
       });
@@ -467,11 +449,9 @@ describe('@lumino/widgets', () => {
         menu.activatePreviousItem();
         expect(menu.activeIndex).to.equal(-1);
       });
-
     });
 
     describe('#triggerActiveItem()', () => {
-
       it('should execute a command if it is the active item', () => {
         menu.addItem({ command: 'test' });
         menu.open(0, 0);
@@ -510,21 +490,17 @@ describe('@lumino/widgets', () => {
         expect(submenu.parentMenu).to.equal(null);
         expect(submenu.activeIndex).to.equal(-1);
       });
-
     });
 
     describe('#addItem()', () => {
-
       it('should add a menu item to the end of the menu', () => {
         menu.addItem({});
-        let item = menu.addItem({ command: 'test'});
+        let item = menu.addItem({ command: 'test' });
         expect(menu.items[1]).to.equal(item);
       });
-
     });
 
     describe('#insertItem()', () => {
-
       it('should insert a menu item into the menu at the specified index', () => {
         let item1 = menu.insertItem(0, { command: 'test' });
         let item2 = menu.insertItem(0, { command: 'test-disabled' });
@@ -533,7 +509,6 @@ describe('@lumino/widgets', () => {
         expect(menu.items[1]).to.equal(item2);
         expect(menu.items[2]).to.equal(item1);
       });
-
 
       it('should clamp the index to the bounds of the items', () => {
         let item1 = menu.insertItem(0, { command: 'test' });
@@ -550,11 +525,9 @@ describe('@lumino/widgets', () => {
         menu.insertItem(0, { command: 'test' });
         expect(menu.isAttached).to.equal(false);
       });
-
     });
 
     describe('#removeItem()', () => {
-
       it('should remove a menu item from the menu by value', () => {
         menu.removeItem(menu.addItem({ command: 'test' }));
         expect(menu.items.length).to.equal(0);
@@ -567,11 +540,9 @@ describe('@lumino/widgets', () => {
         menu.removeItem(item);
         expect(menu.isAttached).to.equal(false);
       });
-
     });
 
     describe('#removeItemAt()', () => {
-
       it('should remove a menu item from the menu by index', () => {
         menu.addItem({ command: 'test' });
         menu.removeItemAt(0);
@@ -585,11 +556,9 @@ describe('@lumino/widgets', () => {
         menu.removeItemAt(0);
         expect(menu.isAttached).to.equal(false);
       });
-
     });
 
     describe('#clearItems()', () => {
-
       it('should remove all items from the menu', () => {
         menu.addItem({ command: 'test-disabled' });
         menu.addItem({ command: 'test' });
@@ -607,58 +576,129 @@ describe('@lumino/widgets', () => {
         menu.clearItems();
         expect(menu.isAttached).to.equal(false);
       });
-
     });
 
     describe('#open()', () => {
-
       it('should open the menu at the specified location', () => {
         menu.addItem({ command: 'test' });
         menu.open(10, 10);
-        expect(menu.node.style.left).to.equal('10px');
-        expect(menu.node.style.top).to.equal('10px');
+        expect(menu.node.style.transform).to.equal('translate(10px, 10px)');
       });
 
       it('should be adjusted to fit naturally on the screen', () => {
         menu.addItem({ command: 'test' });
         menu.open(-10, 10000);
-        expect(menu.node.style.left).to.equal('0px');
-        expect(menu.node.style.top).to.not.equal('10000px');
+        expect(
+          menu.node.style.transform.startsWith('translate(0px, ')
+        ).to.equal(true);
+        expect(menu.node.style.transform.endsWith(', 10000px)')).to.equal(
+          false
+        );
       });
 
       it('should accept flags to force the location', () => {
         menu.addItem({ command: 'test' });
         menu.open(10000, 10000, { forceX: true, forceY: true });
-        expect(menu.node.style.left).to.equal('10000px');
-        expect(menu.node.style.top).to.equal('10000px');
+        expect(menu.node.style.transform).to.equal(
+          'translate(10000px, 10000px)'
+        );
+      });
+
+      it('should accept horizontalAlignment menu flags', () => {
+        menu.addItem({ command: 'test' });
+        menu.open(300, 300, { horizontalAlignment: 'right' });
+        let { width } = menu.node.getBoundingClientRect();
+        const expectedX = Math.floor(300 - width);
+        expect(
+          menu.node.style.transform.startsWith(`translate(${expectedX}`)
+        ).to.equal(true);
+        expect(menu.node.style.transform.endsWith('px, 300px)')).to.equal(true);
+      });
+
+      it('horizontalAlignment should default to `right` if language direction is `rtl`', () => {
+        document.documentElement.setAttribute('dir', 'rtl');
+        menu.addItem({ command: 'test' });
+        menu.open(300, 300);
+        let { width } = menu.node.getBoundingClientRect();
+        const expectedX = Math.floor(300 - width);
+        expect(
+          menu.node.style.transform.startsWith(`translate(${expectedX}`)
+        ).to.equal(true);
+        expect(menu.node.style.transform.endsWith('px, 300px)')).to.equal(true);
+        document.documentElement.removeAttribute('dir'); // Reset the direction
       });
 
       it('should bail if already attached', () => {
         menu.addItem({ command: 'test' });
         menu.open(10, 10);
         menu.open(100, 100);
-        expect(menu.node.style.left).to.equal('10px');
-        expect(menu.node.style.top).to.equal('10px');
+        expect(menu.node.style.transform).to.equal('translate(10px, 10px)');
       });
 
+      it('should insert as last child under document.body by default', () => {
+        const div = document.body.appendChild(document.createElement('div'));
+        menu.addItem({ command: 'test' });
+        menu.open(10, 10);
+        expect(menu.node.parentElement).to.equal(document.body);
+        expect(menu.node.previousElementSibling).to.equal(div);
+        expect(menu.node.nextElementSibling).to.be.null;
+      });
+
+      it('should insert as last child under specified host element', () => {
+        const div = document.body.appendChild(document.createElement('div'));
+        const child = div.appendChild(document.createElement('div'));
+        menu.addItem({ command: 'test' });
+        menu.open(10, 10, { host: div });
+        expect(menu.node.parentElement).to.equal(div);
+        expect(menu.node.previousElementSibling).to.equal(child);
+        expect(menu.node.nextElementSibling).to.be.null;
+      });
+
+      it('should insert before reference element under document.body', () => {
+        const div1 = document.body.appendChild(document.createElement('div'));
+        const div2 = document.body.appendChild(document.createElement('div'));
+        menu.addItem({ command: 'test' });
+        menu.open(10, 10, { ref: div2 });
+        expect(menu.node.parentElement).to.equal(document.body);
+        expect(menu.node.previousElementSibling).to.equal(div1);
+        expect(menu.node.nextElementSibling).to.equal(div2);
+      });
+
+      it('should insert before reference element under specified host element', () => {
+        const div = document.body.appendChild(document.createElement('div'));
+        const child1 = div.appendChild(document.createElement('div'));
+        const child2 = div.appendChild(document.createElement('div'));
+        menu.open(10, 10, { host: div, ref: child2 });
+        expect(menu.node.parentElement).to.equal(div);
+        expect(menu.node.previousElementSibling).to.equal(child1);
+        expect(menu.node.nextElementSibling).to.equal(child2);
+      });
     });
 
     describe('#handleEvent()', () => {
-
       context('keydown', () => {
-
         it('should trigger the active item on enter', () => {
           menu.addItem({ command: 'test' });
           menu.activeIndex = 0;
           menu.open(0, 0);
-          simulate(menu.node, 'keydown', { keyCode: 13 });
+          menu.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 13 // Enter
+            })
+          );
           expect(executed).to.equal('test');
         });
 
         it('should close the menu on escape', () => {
           menu.open(0, 0);
           expect(menu.isAttached).to.equal(true);
-          simulate(menu.node, 'keydown', { keyCode: 27 });
+          menu.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 27 // Escape
+            })
+          );
           expect(menu.isAttached).to.equal(false);
         });
 
@@ -670,7 +710,12 @@ describe('@lumino/widgets', () => {
           menu.activateNextItem();
           menu.triggerActiveItem();
           expect(menu.childMenu).to.equal(submenu);
-          simulate(submenu.node, 'keydown', { keyCode: 37 });
+          submenu.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 37 // Left arrow
+            })
+          );
           expect(menu.childMenu).to.equal(null);
         });
 
@@ -679,7 +724,12 @@ describe('@lumino/widgets', () => {
           menu.addItem({ command: 'test' });
           menu.addItem({ command: 'test' });
           menu.open(0, 0);
-          simulate(menu.node, 'keydown', { keyCode: 38 });
+          menu.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 38 // Up arrow
+            })
+          );
           expect(menu.activeIndex).to.equal(2);
         });
 
@@ -690,15 +740,25 @@ describe('@lumino/widgets', () => {
           menu.open(0, 0);
           menu.activateNextItem();
           expect(menu.childMenu).to.equal(null);
-          simulate(menu.node, 'keydown', { keyCode: 39 });
+          menu.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 39 // Right arrow
+            })
+          );
           expect(menu.childMenu).to.equal(submenu);
         });
 
-        it('should activate the next itom on down arrow', () => {
+        it('should activate the next item on down arrow', () => {
           menu.addItem({ command: 'test' });
           menu.addItem({ command: 'test' });
           menu.open(0, 0);
-          simulate(menu.node, 'keydown', { keyCode: 40 });
+          menu.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 40 // Down arrow
+            })
+          );
           expect(menu.activeIndex).to.equal(0);
         });
 
@@ -718,7 +778,12 @@ describe('@lumino/widgets', () => {
           menu.addItem({ type: 'submenu', submenu: submenu2 });
 
           menu.open(0, 0);
-          simulate(menu.node, 'keydown', { keyCode: 70 });  // F
+          menu.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 70 // `F` key
+            })
+          );
           expect(menu.activeIndex).to.equal(0);
         });
 
@@ -730,19 +795,22 @@ describe('@lumino/widgets', () => {
           menu.addItem({ command: 'test-zenith' });
           menu.open(0, 0);
           expect(menu.activeIndex).to.equal(-1);
-          simulate(menu.node, 'keydown', { keyCode: 90 });  // Z
+          menu.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 90 // `Z` key
+            })
+          );
           expect(menu.activeIndex).to.equal(4);
         });
-
       });
 
       context('mouseup', () => {
-
         it('should trigger the active item', () => {
           menu.addItem({ command: 'test' });
           menu.activeIndex = 0;
           menu.open(0, 0);
-          simulate(menu.node, 'mouseup');
+          menu.node.dispatchEvent(new MouseEvent('mouseup', { bubbles }));
           expect(executed).to.equal('test');
         });
 
@@ -750,24 +818,33 @@ describe('@lumino/widgets', () => {
           menu.addItem({ command: 'test' });
           menu.activeIndex = 0;
           menu.open(0, 0);
-          simulate(menu.node, 'mouseup', { button: 1 });
+          menu.node.dispatchEvent(
+            new MouseEvent('mouseup', {
+              bubbles,
+              button: 1
+            })
+          );
           expect(executed).to.equal('');
         });
-
       });
 
       context('mousemove', () => {
-
         it('should set the active index', () => {
           menu.addItem({ command: 'test' });
           menu.open(0, 0);
           let node = menu.node.getElementsByClassName('lm-Menu-item')[0];
           let rect = node.getBoundingClientRect();
-          simulate(menu.node, 'mousemove', { clientX: rect.left, clientY: rect.top });
+          menu.node.dispatchEvent(
+            new MouseEvent('mousemove', {
+              bubbles,
+              clientX: rect.left + 1,
+              clientY: rect.top + 1
+            })
+          );
           expect(menu.activeIndex).to.equal(0);
         });
 
-        it('should open a child menu after a timeout', (done) => {
+        it('should open a child menu after a timeout', done => {
           let submenu = new Menu({ commands });
           submenu.addItem({ command: 'test' });
           submenu.title.label = 'Test Label';
@@ -775,7 +852,13 @@ describe('@lumino/widgets', () => {
           menu.open(0, 0);
           let node = menu.node.getElementsByClassName('lm-Menu-item')[0];
           let rect = node.getBoundingClientRect();
-          simulate(menu.node, 'mousemove', { clientX: rect.left, clientY: rect.top });
+          menu.node.dispatchEvent(
+            new MouseEvent('mousemove', {
+              bubbles,
+              clientX: rect.left + 1,
+              clientY: rect.top + 1
+            })
+          );
           expect(menu.activeIndex).to.equal(0);
           expect(submenu.isAttached).to.equal(false);
           setTimeout(() => {
@@ -784,7 +867,7 @@ describe('@lumino/widgets', () => {
           }, 500);
         });
 
-        it('should close an open sub menu', (done) => {
+        it('should close an open sub menu', done => {
           let submenu = new Menu({ commands });
           submenu.addItem({ command: 'test' });
           submenu.title.label = 'Test Label';
@@ -795,7 +878,13 @@ describe('@lumino/widgets', () => {
           menu.triggerActiveItem();
           let node = menu.node.getElementsByClassName('lm-Menu-item')[0];
           let rect = node.getBoundingClientRect();
-          simulate(menu.node, 'mousemove', { clientX: rect.left, clientY: rect.top });
+          menu.node.dispatchEvent(
+            new MouseEvent('mousemove', {
+              bubbles,
+              clientX: rect.left,
+              clientY: rect.top
+            })
+          );
           expect(menu.activeIndex).to.equal(0);
           expect(submenu.isAttached).to.equal(true);
           setTimeout(() => {
@@ -803,11 +892,9 @@ describe('@lumino/widgets', () => {
             done();
           }, 500);
         });
-
       });
 
       context('mouseleave', () => {
-
         it('should reset the active index', () => {
           let submenu = new Menu({ commands });
           submenu.addItem({ command: 'test' });
@@ -816,23 +903,39 @@ describe('@lumino/widgets', () => {
           menu.open(0, 0);
           let node = menu.node.getElementsByClassName('lm-Menu-item')[0];
           let rect = node.getBoundingClientRect();
-          simulate(menu.node, 'mousemove', { clientX: rect.left, clientY: rect.top });
+          menu.node.dispatchEvent(
+            new MouseEvent('mousemove', {
+              bubbles,
+              clientX: rect.left + 1,
+              clientY: rect.top + 1
+            })
+          );
           expect(menu.activeIndex).to.equal(0);
-          simulate(menu.node, 'mouseleave', { clientX: rect.left, clientY: rect.top });
+          menu.node.dispatchEvent(
+            new MouseEvent('mouseleave', {
+              bubbles,
+              clientX: rect.left,
+              clientY: rect.top
+            })
+          );
           expect(menu.activeIndex).to.equal(-1);
           menu.dispose();
         });
-
       });
 
       context('mousedown', () => {
-
         it('should not close the menu if on a child node', () => {
           menu.addItem({ command: 'test' });
           menu.open(0, 0);
           expect(menu.isAttached).to.equal(true);
           let rect = menu.node.getBoundingClientRect();
-          simulate(menu.node, 'mousedown', { clientX: rect.left, clientY: rect.top });
+          menu.node.dispatchEvent(
+            new MouseEvent('mousedown', {
+              bubbles,
+              clientX: rect.left + 1,
+              clientY: rect.top + 1
+            })
+          );
           expect(menu.isAttached).to.equal(true);
         });
 
@@ -840,66 +943,64 @@ describe('@lumino/widgets', () => {
           menu.addItem({ command: 'test' });
           menu.open(0, 0);
           expect(menu.isAttached).to.equal(true);
-          simulate(menu.node, 'mousedown', { clientX: -10 });
+          menu.node.dispatchEvent(
+            new MouseEvent('mousedown', {
+              bubbles,
+              clientX: -10
+            })
+          );
           expect(menu.isAttached).to.equal(false);
         });
-
       });
-
     });
 
     describe('#onBeforeAttach()', () => {
-
       it('should add event listeners', () => {
         let node = logMenu.node;
         logMenu.open(0, 0);
         expect(logMenu.methods).to.contain('onBeforeAttach');
-        simulate(node, 'keydown');
+        node.dispatchEvent(new KeyboardEvent('keydown', { bubbles }));
         expect(logMenu.events).to.contain('keydown');
-        simulate(node, 'mouseup');
+        node.dispatchEvent(new MouseEvent('mouseup', { bubbles }));
         expect(logMenu.events).to.contain('mouseup');
-        simulate(node, 'mousemove');
+        node.dispatchEvent(new MouseEvent('mousemove', { bubbles }));
         expect(logMenu.events).to.contain('mousemove');
-        simulate(node, 'mouseenter');
+        node.dispatchEvent(new MouseEvent('mouseenter', { bubbles }));
         expect(logMenu.events).to.contain('mouseenter');
-        simulate(node, 'mouseleave');
+        node.dispatchEvent(new MouseEvent('mouseleave', { bubbles }));
         expect(logMenu.events).to.contain('mouseleave');
-        simulate(node, 'contextmenu');
+        node.dispatchEvent(new MouseEvent('contextmenu', { bubbles }));
         expect(logMenu.events).to.contain('contextmenu');
-        simulate(document.body, 'mousedown');
+        document.body.dispatchEvent(new MouseEvent('mousedown', { bubbles }));
         expect(logMenu.events).to.contain('mousedown');
       });
-
     });
 
     describe('#onAfterDetach()', () => {
-
       it('should remove event listeners', () => {
         let node = logMenu.node;
         logMenu.open(0, 0);
         logMenu.close();
         expect(logMenu.methods).to.contain('onAfterDetach');
-        simulate(node, 'keydown');
+        node.dispatchEvent(new KeyboardEvent('keydown', { bubbles }));
         expect(logMenu.events).to.not.contain('keydown');
-        simulate(node, 'mouseup');
+        node.dispatchEvent(new MouseEvent('mouseup', { bubbles }));
         expect(logMenu.events).to.not.contain('mouseup');
-        simulate(node, 'mousemove');
+        node.dispatchEvent(new MouseEvent('mousemove', { bubbles }));
         expect(logMenu.events).to.not.contain('mousemove');
-        simulate(node, 'mouseenter');
+        node.dispatchEvent(new MouseEvent('mouseenter', { bubbles }));
         expect(logMenu.events).to.not.contain('mouseenter');
-        simulate(node, 'mouseleave');
+        node.dispatchEvent(new MouseEvent('mouseleave', { bubbles }));
         expect(logMenu.events).to.not.contain('mouseleave');
-        simulate(node, 'contextmenu');
+        node.dispatchEvent(new MouseEvent('contextmenu', { bubbles }));
         expect(logMenu.events).to.not.contain('contextmenu');
-        simulate(document.body, 'mousedown');
+        document.body.dispatchEvent(new MouseEvent('mousedown', { bubbles }));
         expect(logMenu.events).to.not.contain('mousedown');
       });
-
     });
 
     describe('#onActivateRequest', () => {
-
-      it('should focus the menu', (done) => {
+      it('should focus the menu', done => {
         logMenu.open(0, 0);
         expect(document.activeElement).to.not.equal(logMenu.node);
         expect(logMenu.methods).to.not.contain('onActivateRequest');
@@ -909,11 +1010,9 @@ describe('@lumino/widgets', () => {
           done();
         });
       });
-
     });
 
     describe('#onUpdateRequest()', () => {
-
       it('should be called prior to opening', () => {
         expect(logMenu.methods).to.not.contain('onUpdateRequest');
         logMenu.open(0, 0);
@@ -928,18 +1027,26 @@ describe('@lumino/widgets', () => {
         menu.addItem({ type: 'submenu', submenu: new Menu({ commands }) });
         menu.addItem({ type: 'separator' });
         menu.open(0, 0);
-        let elements = menu.node.querySelectorAll('.lm-Menu-item[data-type="separator"');
+        let elements = menu.node.querySelectorAll(
+          '.lm-Menu-item[data-type="separator"'
+        );
         expect(elements.length).to.equal(4);
-        expect(elements[0].classList.contains('lm-mod-collapsed')).to.equal(true);
-        expect(elements[1].classList.contains('lm-mod-collapsed')).to.equal(false);
-        expect(elements[2].classList.contains('lm-mod-collapsed')).to.equal(true);
-        expect(elements[3].classList.contains('lm-mod-collapsed')).to.equal(true);
+        expect(elements[0].classList.contains('lm-mod-collapsed')).to.equal(
+          true
+        );
+        expect(elements[1].classList.contains('lm-mod-collapsed')).to.equal(
+          false
+        );
+        expect(elements[2].classList.contains('lm-mod-collapsed')).to.equal(
+          true
+        );
+        expect(elements[3].classList.contains('lm-mod-collapsed')).to.equal(
+          true
+        );
       });
-
     });
 
     describe('#onCloseRequest()', () => {
-
       it('should reset the active index', () => {
         menu.addItem({ command: 'test' });
         menu.activeIndex = 0;
@@ -962,7 +1069,7 @@ describe('@lumino/widgets', () => {
         expect(submenu.isAttached).equal(false);
       });
 
-      it('should remove the menu from its parent and activate the parent', (done) => {
+      it('should remove the menu from its parent and activate the parent', done => {
         let submenu = new Menu({ commands });
         submenu.addItem({ command: 'test' });
         menu.addItem({ type: 'submenu', submenu });
@@ -993,13 +1100,10 @@ describe('@lumino/widgets', () => {
         menu.close();
         expect(called).to.equal(true);
       });
-
     });
 
     describe('.IItem', () => {
-
       describe('#type', () => {
-
         it('should get the type of the menu item', () => {
           let item = menu.addItem({ type: 'separator' });
           expect(item.type).to.equal('separator');
@@ -1009,11 +1113,9 @@ describe('@lumino/widgets', () => {
           let item = menu.addItem({});
           expect(item.type).to.equal('command');
         });
-
       });
 
       describe('#command', () => {
-
         it('should get the command to execute when the item is triggered', () => {
           let item = menu.addItem({ command: 'foo' });
           expect(item.command).to.equal('foo');
@@ -1023,11 +1125,9 @@ describe('@lumino/widgets', () => {
           let item = menu.addItem({});
           expect(item.command).to.equal('');
         });
-
       });
 
       describe('#args', () => {
-
         it('should get the arguments for the command', () => {
           let item = menu.addItem({ args: { foo: 1 } });
           expect(item.args).to.deep.equal({ foo: 1 });
@@ -1037,11 +1137,9 @@ describe('@lumino/widgets', () => {
           let item = menu.addItem({});
           expect(item.args).to.deep.equal({});
         });
-
       });
 
       describe('#submenu', () => {
-
         it('should get the submenu for the item', () => {
           let submenu = new Menu({ commands });
           let item = menu.addItem({ submenu });
@@ -1052,11 +1150,9 @@ describe('@lumino/widgets', () => {
           let item = menu.addItem({});
           expect(item.submenu).to.equal(null);
         });
-
       });
 
       describe('#label', () => {
-
         it('should get the label of a command item for a `command` type', () => {
           let item = menu.addItem({ command: 'test' });
           expect(item.label).to.equal('Test Label');
@@ -1075,11 +1171,9 @@ describe('@lumino/widgets', () => {
           item = menu.addItem({ type: 'separator' });
           expect(item.label).to.equal('');
         });
-
       });
 
       describe('#mnemonic', () => {
-
         it('should get the mnemonic index of a command item for a `command` type', () => {
           let item = menu.addItem({ command: 'test' });
           expect(item.mnemonic).to.equal(0);
@@ -1098,34 +1192,25 @@ describe('@lumino/widgets', () => {
           item = menu.addItem({ type: 'separator' });
           expect(item.mnemonic).to.equal(-1);
         });
-
       });
 
       describe('#icon', () => {
-
-        it('should get the icon class of a command item for a `command` type', () => {
-          let item = menu.addItem({ command: 'test' });
-          expect(item.icon).to.equal('foo');
-        });
-
         it('should get the title icon of a submenu item for a `submenu` type', () => {
           let submenu = new Menu({ commands });
-          submenu.title.icon = 'bar';
+          submenu.title.iconClass = 'bar';
           let item = menu.addItem({ type: 'submenu', submenu });
-          expect(item.icon).to.equal('bar');
+          expect(item.iconClass).to.equal('bar');
         });
 
-        it('should default to an empty string', () => {
+        it('should default to undefined', () => {
           let item = menu.addItem({});
-          expect(item.icon).to.equal('');
+          expect(item.icon).to.equal(undefined);
           item = menu.addItem({ type: 'separator' });
-          expect(item.icon).to.equal('');
+          expect(item.icon).to.equal(undefined);
         });
-
       });
 
       describe('#caption', () => {
-
         it('should get the caption of a command item for a `command` type', () => {
           let item = menu.addItem({ command: 'test' });
           expect(item.caption).to.equal('Test Caption');
@@ -1144,11 +1229,9 @@ describe('@lumino/widgets', () => {
           item = menu.addItem({ type: 'separator' });
           expect(item.caption).to.equal('');
         });
-
       });
 
       describe('#className', () => {
-
         it('should get the extra class name of a command item for a `command` type', () => {
           let item = menu.addItem({ command: 'test' });
           expect(item.className).to.equal('testClass');
@@ -1167,11 +1250,9 @@ describe('@lumino/widgets', () => {
           item = menu.addItem({ type: 'separator' });
           expect(item.className).to.equal('');
         });
-
       });
 
       describe('#isEnabled', () => {
-
         it('should get whether the command is enabled for a `command` type', () => {
           let item = menu.addItem({ command: 'test-disabled' });
           expect(item.isEnabled).to.equal(false);
@@ -1193,11 +1274,9 @@ describe('@lumino/widgets', () => {
           let item = menu.addItem({ type: 'separator' });
           expect(item.isEnabled).to.equal(true);
         });
-
       });
 
       describe('#isToggled', () => {
-
         it('should get whether the command is toggled for a `command` type', () => {
           let item = menu.addItem({ command: 'test-toggled' });
           expect(item.isToggled).to.equal(true);
@@ -1213,11 +1292,9 @@ describe('@lumino/widgets', () => {
           item = menu.addItem({ type: 'submenu' });
           expect(item.isToggled).to.equal(false);
         });
-
       });
 
       describe('#isVisible', () => {
-
         it('should get whether the command is visible for a `command` type', () => {
           let item = menu.addItem({ command: 'test-hidden' });
           expect(item.isVisible).to.equal(false);
@@ -1229,7 +1306,7 @@ describe('@lumino/widgets', () => {
           let submenu = new Menu({ commands });
           let item = menu.addItem({ type: 'submenu', submenu });
           expect(item.isVisible).to.equal(true);
-          item = menu.addItem({ type: 'submenu'});
+          item = menu.addItem({ type: 'submenu' });
           expect(item.isVisible).to.equal(false);
         });
 
@@ -1237,11 +1314,9 @@ describe('@lumino/widgets', () => {
           let item = menu.addItem({ type: 'separator' });
           expect(item.isVisible).to.equal(true);
         });
-
       });
 
       describe('#keyBinding', () => {
-
         it('should get the key binding for the menu item', () => {
           let item = menu.addItem({ command: 'test' });
           expect(item.keyBinding!.keys).to.deep.equal(['Ctrl T']);
@@ -1253,20 +1328,20 @@ describe('@lumino/widgets', () => {
           item = menu.addItem({ type: 'submenu' });
           expect(item.keyBinding).to.equal(null);
         });
-
       });
-
     });
 
     describe('.Renderer', () => {
-
       let renderer = new Menu.Renderer();
 
       describe('#renderItem()', () => {
-
         it('should render an item node for the menu', () => {
           let item = menu.addItem({ command: 'test' });
-          let vNode = renderer.renderItem({ item, active: false, collapsed: false });
+          let vNode = renderer.renderItem({
+            item,
+            active: false,
+            collapsed: false
+          });
           let node = VirtualDOM.realize(vNode);
           expect(node.classList.contains('lm-Menu-item')).to.equal(true);
           expect(node.classList.contains('lm-mod-hidden')).to.equal(false);
@@ -1278,256 +1353,308 @@ describe('@lumino/widgets', () => {
           expect(node.getAttribute('data-type')).to.equal('command');
           expect(node.querySelector('.lm-Menu-itemIcon')).to.not.equal(null);
           expect(node.querySelector('.lm-Menu-itemLabel')).to.not.equal(null);
-          expect(node.querySelector('.lm-Menu-itemSubmenuIcon')).to.not.equal(null);
+          expect(node.querySelector('.lm-Menu-itemSubmenuIcon')).to.not.equal(
+            null
+          );
         });
 
         it('should handle the hidden item state', () => {
           let item = menu.addItem({ command: 'test-hidden' });
-          let vNode = renderer.renderItem({ item, active: false, collapsed: false });
+          let vNode = renderer.renderItem({
+            item,
+            active: false,
+            collapsed: false
+          });
           let node = VirtualDOM.realize(vNode);
           expect(node.classList.contains('lm-mod-hidden')).to.equal(true);
         });
 
         it('should handle the disabled item state', () => {
           let item = menu.addItem({ command: 'test-disabled' });
-          let vNode = renderer.renderItem({ item, active: false, collapsed: false });
+          let vNode = renderer.renderItem({
+            item,
+            active: false,
+            collapsed: false
+          });
           let node = VirtualDOM.realize(vNode);
           expect(node.classList.contains('lm-mod-disabled')).to.equal(true);
         });
 
         it('should handle the toggled item state', () => {
           let item = menu.addItem({ command: 'test-toggled' });
-          let vNode = renderer.renderItem({ item, active: false, collapsed: false });
+          let vNode = renderer.renderItem({
+            item,
+            active: false,
+            collapsed: false
+          });
           let node = VirtualDOM.realize(vNode);
           expect(node.classList.contains('lm-mod-toggled')).to.equal(true);
         });
 
         it('should handle the active item state', () => {
           let item = menu.addItem({ command: 'test' });
-          let vNode = renderer.renderItem({ item, active: true, collapsed: false });
+          let vNode = renderer.renderItem({
+            item,
+            active: true,
+            collapsed: false
+          });
           let node = VirtualDOM.realize(vNode);
           expect(node.classList.contains('lm-mod-active')).to.equal(true);
         });
 
         it('should handle the collapsed item state', () => {
           let item = menu.addItem({ command: 'test-collapsed' });
-          let vNode = renderer.renderItem({ item, active: false, collapsed: true });
+          let vNode = renderer.renderItem({
+            item,
+            active: false,
+            collapsed: true
+          });
           let node = VirtualDOM.realize(vNode);
           expect(node.classList.contains('lm-mod-collapsed')).to.equal(true);
         });
-
       });
 
       describe('#renderIcon()', () => {
-
         it('should render the icon node for the menu', () => {
           let item = menu.addItem({ command: 'test' });
-          let vNode = renderer.renderIcon({ item, active: false, collapsed: false });
+          let vNode = renderer.renderIcon({
+            item,
+            active: false,
+            collapsed: false
+          });
           let node = VirtualDOM.realize(vNode);
           expect(node.classList.contains('lm-Menu-itemIcon')).to.equal(true);
           expect(node.classList.contains('foo')).to.equal(true);
         });
-
       });
 
       describe('#renderLabel()', () => {
-
         it('should render the label node for the menu', () => {
           let item = menu.addItem({ command: 'test' });
-          let vNode = renderer.renderLabel({ item, active: false, collapsed: false });
+          let vNode = renderer.renderLabel({
+            item,
+            active: false,
+            collapsed: false
+          });
           let node = VirtualDOM.realize(vNode);
           let span = '<span class="lm-Menu-itemMnemonic">T</span>est Label';
-          /* <DEPRECATED> */
-          span = '<span class="lm-Menu-itemMnemonic p-Menu-itemMnemonic">T</span>est Label';
-          /* </DEPRECATED> */
           expect(node.classList.contains('lm-Menu-itemLabel')).to.equal(true);
           expect(node.innerHTML).to.equal(span);
         });
-
       });
 
       describe('#renderShortcut()', () => {
-
         it('should render the shortcut node for the menu', () => {
           let item = menu.addItem({ command: 'test' });
-          let vNode = renderer.renderShortcut({ item, active: false, collapsed: false });
+          let vNode = renderer.renderShortcut({
+            item,
+            active: false,
+            collapsed: false
+          });
           let node = VirtualDOM.realize(vNode);
-          expect(node.classList.contains('lm-Menu-itemShortcut')).to.equal(true);
+          expect(node.classList.contains('lm-Menu-itemShortcut')).to.equal(
+            true
+          );
           if (Platform.IS_MAC) {
             expect(node.innerHTML).to.equal('\u2303 T');
           } else {
             expect(node.innerHTML).to.equal('Ctrl+T');
           }
         });
-
       });
 
       describe('#renderSubmenu()', () => {
-
         it('should render the submenu icon node for the menu', () => {
           let item = menu.addItem({ command: 'test' });
-          let vNode = renderer.renderSubmenu({ item, active: false, collapsed: false });
+          let vNode = renderer.renderSubmenu({
+            item,
+            active: false,
+            collapsed: false
+          });
           let node = VirtualDOM.realize(vNode);
-          expect(node.classList.contains('lm-Menu-itemSubmenuIcon')).to.equal(true);
+          expect(node.classList.contains('lm-Menu-itemSubmenuIcon')).to.equal(
+            true
+          );
         });
-
       });
 
       describe('#createItemClass()', () => {
-
         it('should create the full class name for the item node', () => {
           let item = menu.addItem({ command: 'test' });
 
-          let name = renderer.createItemClass({ item, active: false, collapsed: false });
+          let name = renderer.createItemClass({
+            item,
+            active: false,
+            collapsed: false
+          });
           let expected = 'lm-Menu-item testClass';
-          /* <DEPRECATED> */
-          expected = 'lm-Menu-item p-Menu-item testClass';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
 
-          name = renderer.createItemClass({ item, active: true, collapsed: false });
+          name = renderer.createItemClass({
+            item,
+            active: true,
+            collapsed: false
+          });
           expected = 'lm-Menu-item lm-mod-active testClass';
-          /* <DEPRECATED> */
-          expected = 'lm-Menu-item p-Menu-item lm-mod-active p-mod-active testClass';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
 
-          name = renderer.createItemClass({ item, active: false, collapsed: true });
+          name = renderer.createItemClass({
+            item,
+            active: false,
+            collapsed: true
+          });
           expected = 'lm-Menu-item lm-mod-collapsed testClass';
-          /* <DEPRECATED> */
-          expected = 'lm-Menu-item p-Menu-item lm-mod-collapsed p-mod-collapsed testClass';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
 
           item = menu.addItem({ command: 'test-disabled' });
-          name = renderer.createItemClass({ item, active: false, collapsed: false });
+          name = renderer.createItemClass({
+            item,
+            active: false,
+            collapsed: false
+          });
           expected = 'lm-Menu-item lm-mod-disabled testClass';
-          /* <DEPRECATED> */
-          expected = 'lm-Menu-item p-Menu-item lm-mod-disabled p-mod-disabled testClass';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
 
           item = menu.addItem({ command: 'test-toggled' });
-          name = renderer.createItemClass({ item, active: false, collapsed: false });
+          name = renderer.createItemClass({
+            item,
+            active: false,
+            collapsed: false
+          });
           expected = 'lm-Menu-item lm-mod-toggled testClass';
-          /* <DEPRECATED> */
-          expected = 'lm-Menu-item p-Menu-item lm-mod-toggled p-mod-toggled testClass';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
 
           item = menu.addItem({ command: 'test-hidden' });
-          name = renderer.createItemClass({ item, active: false, collapsed: false });
+          name = renderer.createItemClass({
+            item,
+            active: false,
+            collapsed: false
+          });
           expected = 'lm-Menu-item lm-mod-hidden testClass';
-          /* <DEPRECATED> */
-          expected = 'lm-Menu-item p-Menu-item lm-mod-hidden p-mod-hidden testClass';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
 
           let submenu = new Menu({ commands });
           submenu.title.className = 'fooClass';
           item = menu.addItem({ type: 'submenu', submenu });
-          name = renderer.createItemClass({ item, active: false, collapsed: false });
+          name = renderer.createItemClass({
+            item,
+            active: false,
+            collapsed: false
+          });
           expected = 'lm-Menu-item fooClass';
-          /* <DEPRECATED> */
-          expected = 'lm-Menu-item p-Menu-item fooClass';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
         });
-
       });
 
       describe('#createItemDataset()', () => {
-
         it('should create the item dataset', () => {
           let item = menu.addItem({ command: 'test' });
-          let dataset = renderer.createItemDataset({ item, active: false, collapsed: false });
+          let dataset = renderer.createItemDataset({
+            item,
+            active: false,
+            collapsed: false
+          });
           expect(dataset).to.deep.equal({ type: 'command', command: 'test' });
 
           item = menu.addItem({ type: 'separator' });
-          dataset = renderer.createItemDataset({ item, active: false, collapsed: false });
+          dataset = renderer.createItemDataset({
+            item,
+            active: false,
+            collapsed: false
+          });
           expect(dataset).to.deep.equal({ type: 'separator' });
 
           let submenu = new Menu({ commands });
           item = menu.addItem({ type: 'submenu', submenu });
-          dataset = renderer.createItemDataset({ item, active: false, collapsed: false });
+          dataset = renderer.createItemDataset({
+            item,
+            active: false,
+            collapsed: false
+          });
           expect(dataset).to.deep.equal({ type: 'submenu' });
         });
-
       });
 
       describe('#createIconClass()', () => {
-
         it('should create the icon class name', () => {
           let item = menu.addItem({ command: 'test' });
-          let name = renderer.createIconClass({ item, active: false, collapsed: false });
+          let name = renderer.createIconClass({
+            item,
+            active: false,
+            collapsed: false
+          });
           let expected = 'lm-Menu-itemIcon foo';
-          /* <DEPRECATED> */
-          expected = 'lm-Menu-itemIcon p-Menu-itemIcon foo';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
 
           item = menu.addItem({ type: 'separator' });
-          name = renderer.createIconClass({ item, active: false, collapsed: false });
+          name = renderer.createIconClass({
+            item,
+            active: false,
+            collapsed: false
+          });
           expected = 'lm-Menu-itemIcon';
-          /* <DEPRECATED> */
-          expected = 'lm-Menu-itemIcon p-Menu-itemIcon';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
 
           let submenu = new Menu({ commands });
-          submenu.title.icon = 'bar';
+          submenu.title.iconClass = 'bar';
           item = menu.addItem({ type: 'submenu', submenu });
-          name = renderer.createIconClass({ item, active: false, collapsed: false });
+          name = renderer.createIconClass({
+            item,
+            active: false,
+            collapsed: false
+          });
           expected = 'lm-Menu-itemIcon bar';
-          /* <DEPRECATED> */
-          expected = 'lm-Menu-itemIcon p-Menu-itemIcon bar';
-          /* </DEPRECATED> */
           expect(name).to.equal(expected);
         });
-
       });
 
       describe('#formatLabel()', () => {
-
         it('should format the item label', () => {
           let item = menu.addItem({ command: 'test' });
-          let child = renderer.formatLabel({ item, active: false, collapsed: false });
+          let child = renderer.formatLabel({
+            item,
+            active: false,
+            collapsed: false
+          });
           let node = VirtualDOM.realize(h.div(child));
           let span = '<span class="lm-Menu-itemMnemonic">T</span>est Label';
-          /* <DEPRECATED> */
-          span = '<span class="lm-Menu-itemMnemonic p-Menu-itemMnemonic">T</span>est Label';
-          /* </DEPRECATED> */
           expect(node.innerHTML).to.equal(span);
 
           item = menu.addItem({ type: 'separator' });
-          child = renderer.formatLabel({ item, active: false, collapsed: false });
+          child = renderer.formatLabel({
+            item,
+            active: false,
+            collapsed: false
+          });
           expect(child).to.equal('');
 
           let submenu = new Menu({ commands });
           submenu.title.label = 'Submenu Label';
           item = menu.addItem({ type: 'submenu', submenu });
-          child = renderer.formatLabel({ item, active: false, collapsed: false });
+          child = renderer.formatLabel({
+            item,
+            active: false,
+            collapsed: false
+          });
           expect(child).to.equal('Submenu Label');
         });
-
       });
 
       describe('#formatShortcut()', () => {
-
         it('should format the item shortcut', () => {
           let item = menu.addItem({ command: 'test' });
-          let child = renderer.formatShortcut({ item, active: false, collapsed: false });
+          let child = renderer.formatShortcut({
+            item,
+            active: false,
+            collapsed: false
+          });
           if (Platform.IS_MAC) {
             expect(child).to.equal('\u2303 T');
           } else {
             expect(child).to.equal('Ctrl+T');
           }
         });
-
       });
-
     });
-
   });
-
 });

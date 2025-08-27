@@ -7,135 +7,55 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  CommandRegistry
-} from '@lumino/commands';
+/**
+ * @packageDocumentation
+ * @module application
+ */
+
+import { CommandRegistry } from '@lumino/commands';
 
 import {
-  PromiseDelegate, Token
+  type IPlugin,
+  PluginRegistry,
+  PromiseDelegate,
+  type Token
 } from '@lumino/coreutils';
 
-import {
-  ContextMenu, Menu, Widget
-} from '@lumino/widgets';
+import { ContextMenu, Menu, Widget } from '@lumino/widgets';
 
-
+// Export IPlugin for API backward compatibility
 /**
- * A user-defined application plugin.
- *
- * #### Notes
- * Plugins are the foundation for building an extensible application.
- *
- * Plugins consume and provide "services", which are nothing more than
- * concrete implementations of interfaces and/or abstract types.
- *
- * Unlike regular imports and exports, which tie the service consumer
- * to a particular implementation of the service, plugins decouple the
- * service producer from the service consumer, allowing an application
- * to be easily customized by third parties in a type-safe fashion.
+ * @deprecated You should import it from @lumino/coreutils.
  */
-export
-interface IPlugin<T, U> {
-  /**
-   * The human readable id of the plugin.
-   *
-   * #### Notes
-   * This must be unique within an application.
-   */
-  id: string;
-
-  /**
-   * Whether the plugin should be activated on application start.
-   *
-   * #### Notes
-   * The default is `false`.
-   */
-  autoStart?: boolean;
-
-  /**
-   * The types of required services for the plugin, if any.
-   *
-   * #### Notes
-   * These tokens correspond to the services that are required by
-   * the plugin for correct operation.
-   *
-   * When the plugin is activated, a concrete instance of each type
-   * will be passed to the `activate()` function, in the order they
-   * are specified in the `requires` array.
-   */
-  requires?: Token<any>[];
-
-  /**
-   * The types of optional services for the plugin, if any.
-   *
-   * #### Notes
-   * These tokens correspond to the services that can be used by the
-   * plugin if available, but are not necessarily required.
-   *
-   * The optional services will be passed to the `activate()` function
-   * following all required services. If an optional service cannot be
-   * resolved, `null` will be passed in its place.
-   */
-  optional?: Token<any>[];
-
-  /**
-   * The type of service provided by the plugin, if any.
-   *
-   * #### Notes
-   * This token corresponds to the service exported by the plugin.
-   *
-   * When the plugin is activated, the return value of `activate()`
-   * is used as the concrete instance of the type.
-   */
-  provides?: Token<U>;
-
-  /**
-   * A function invoked to activate the plugin.
-   *
-   * @param app - The application which owns the plugin.
-   *
-   * @param args - The services specified by the `requires` property.
-   *
-   * @returns The provided service, or a promise to the service.
-   *
-   * #### Notes
-   * This function will be called whenever the plugin is manually
-   * activated, or when another plugin being activated requires
-   * the service it provides.
-   *
-   * This function will not be called unless all of its required
-   * services can be fulfilled.
-   */
-  activate: (app: T, ...args: any[]) => U | Promise<U>;
-}
-
+export { type IPlugin };
 
 /**
  * A class for creating pluggable applications.
+ *
+ * @typeParam T - The type of the application shell.
  *
  * #### Notes
  * The `Application` class is useful when creating large, complex
  * UI applications with the ability to be safely extended by third
  * party code via plugins.
  */
-export
-class Application<T extends Widget> {
+export class Application<T extends Widget = Widget> {
   /**
    * Construct a new application.
    *
    * @param options - The options for creating the application.
    */
   constructor(options: Application.IOptions<T>) {
-    // Create the application command registry.
-    let commands = new CommandRegistry();
-
-    // Create the application context menu.
-    let renderer = options.contextMenuRenderer;
-    let contextMenu = new ContextMenu({ commands, renderer });
+    this.pluginRegistry =
+      options.pluginRegistry ?? new PluginRegistry<this>(options);
+    this.pluginRegistry.application = this;
 
     // Initialize the application state.
-    this.commands = commands;
-    this.contextMenu = contextMenu;
+    this.commands = new CommandRegistry();
+    this.contextMenu = new ContextMenu({
+      commands: this.commands,
+      renderer: options.contextMenuRenderer
+    });
     this.shell = options.shell;
   }
 
@@ -160,6 +80,13 @@ class Application<T extends Widget> {
   readonly shell: T;
 
   /**
+   * The list of all the deferred plugins.
+   */
+  get deferredPlugins(): string[] {
+    return this.pluginRegistry.deferredPlugins;
+  }
+
+  /**
    * A promise which resolves after the application has started.
    *
    * #### Notes
@@ -171,14 +98,81 @@ class Application<T extends Widget> {
   }
 
   /**
+   * Activate all the deferred plugins.
+   *
+   * @returns A promise which will resolve when each plugin is activated
+   * or rejects with an error if one cannot be activated.
+   */
+  async activateDeferredPlugins(): Promise<void> {
+    await this.pluginRegistry.activatePlugins('defer');
+  }
+
+  /**
+   * Activate the plugin with the given ID.
+   *
+   * @param id - The ID of the plugin of interest.
+   *
+   * @returns A promise which resolves when the plugin is activated
+   *   or rejects with an error if it cannot be activated.
+   */
+  async activatePlugin(id: string): Promise<void> {
+    return this.pluginRegistry.activatePlugin(id);
+  }
+
+  /**
+   * Deactivate the plugin and its downstream dependents if and only if the
+   * plugin and its dependents all support `deactivate`.
+   *
+   * @param id - The ID of the plugin of interest.
+   *
+   * @returns A list of IDs of downstream plugins deactivated with this one.
+   */
+  async deactivatePlugin(id: string): Promise<string[]> {
+    return this.pluginRegistry.deactivatePlugin(id);
+  }
+
+  /**
+   * Deregister a plugin with the application.
+   *
+   * @param id - The ID of the plugin of interest.
+   *
+   * @param force - Whether to deregister the plugin even if it is active.
+   */
+  deregisterPlugin(id: string, force?: boolean): void {
+    this.pluginRegistry.deregisterPlugin(id, force);
+  }
+
+  /**
+   * Get a plugin description.
+   *
+   * @param id - The ID of the plugin of interest.
+   *
+   * @returns The plugin description.
+   */
+  getPluginDescription(id: string): string {
+    return this.pluginRegistry.getPluginDescription(id);
+  }
+
+  /**
    * Test whether a plugin is registered with the application.
    *
-   * @param id - The id of the plugin of interest.
+   * @param id - The ID of the plugin of interest.
    *
    * @returns `true` if the plugin is registered, `false` otherwise.
    */
   hasPlugin(id: string): boolean {
-    return id in this._pluginMap;
+    return this.pluginRegistry.hasPlugin(id);
+  }
+
+  /**
+   * Test whether a plugin is activated with the application.
+   *
+   * @param id - The ID of the plugin of interest.
+   *
+   * @returns `true` if the plugin is activated, `false` otherwise.
+   */
+  isPluginActivated(id: string): boolean {
+    return this.pluginRegistry.isPluginActivated(id);
   }
 
   /**
@@ -187,7 +181,7 @@ class Application<T extends Widget> {
    * @returns A new array of the registered plugin IDs.
    */
   listPlugins(): string[] {
-    return Object.keys(this._pluginMap);
+    return this.pluginRegistry.listPlugins();
   }
 
   /**
@@ -196,31 +190,14 @@ class Application<T extends Widget> {
    * @param plugin - The plugin to register.
    *
    * #### Notes
-   * An error will be thrown if a plugin with the same id is already
+   * An error will be thrown if a plugin with the same ID is already
    * registered, or if the plugin has a circular dependency.
    *
    * If the plugin provides a service which has already been provided
    * by another plugin, the new service will override the old service.
    */
   registerPlugin(plugin: IPlugin<this, any>): void {
-    // Throw an error if the plugin id is already registered.
-    if (plugin.id in this._pluginMap) {
-      throw new Error(`Plugin '${plugin.id}' is already registered.`);
-    }
-
-    // Create the normalized plugin data.
-    let data = Private.createPluginData(plugin);
-
-    // Ensure the plugin does not cause a cyclic dependency.
-    Private.ensureNoCycle(data, this._pluginMap, this._serviceMap);
-
-    // Add the service token to the service map.
-    if (data.provides) {
-      this._serviceMap.set(data.provides, data.id);
-    }
-
-    // Add the plugin to the plugin map.
-    this._pluginMap[data.id] = data;
+    this.pluginRegistry.registerPlugin(plugin);
   }
 
   /**
@@ -232,95 +209,7 @@ class Application<T extends Widget> {
    * This calls `registerPlugin()` for each of the given plugins.
    */
   registerPlugins(plugins: IPlugin<this, any>[]): void {
-    for (let plugin of plugins) {
-      this.registerPlugin(plugin);
-    }
-  }
-
-  /**
-   * Activate the plugin with the given id.
-   *
-   * @param id - The ID of the plugin of interest.
-   *
-   * @returns A promise which resolves when the plugin is activated
-   *   or rejects with an error if it cannot be activated.
-   */
-  activatePlugin(id: string): Promise<void> {
-    // Reject the promise if the plugin is not registered.
-    let data = this._pluginMap[id];
-    if (!data) {
-      return Promise.reject(new Error(`Plugin '${id}' is not registered.`));
-    }
-
-    // Resolve immediately if the plugin is already activated.
-    if (data.activated) {
-      return Promise.resolve(undefined);
-    }
-
-    // Return the pending resolver promise if it exists.
-    if (data.promise) {
-      return data.promise;
-    }
-
-    // Resolve the required services for the plugin.
-    let required = data.requires.map(t => this.resolveRequiredService(t));
-
-    // Resolve the optional services for the plugin.
-    let optional = data.optional.map(t => this.resolveOptionalService(t));
-
-    // Create the array of promises to resolve.
-    let promises = required.concat(optional);
-
-    // Setup the resolver promise for the plugin.
-    data.promise = Promise.all(promises).then(services => {
-      return data.activate.apply(undefined, [this, ...services]);
-    }).then(service => {
-      data.service = service;
-      data.activated = true;
-      data.promise = null;
-    }).catch(error => {
-      data.promise = null;
-      throw error;
-    });
-
-    // Return the pending resolver promise.
-    return data.promise;
-  }
-
-  /**
-   * Resolve a required service of a given type.
-   *
-   * @param token - The token for the service type of interest.
-   *
-   * @returns A promise which resolves to an instance of the requested
-   *   service, or rejects with an error if it cannot be resolved.
-   *
-   * #### Notes
-   * Services are singletons. The same instance will be returned each
-   * time a given service token is resolved.
-   *
-   * If the plugin which provides the service has not been activated,
-   * resolving the service will automatically activate the plugin.
-   *
-   * User code will not typically call this method directly. Instead,
-   * the required services for the user's plugins will be resolved
-   * automatically when the plugin is activated.
-   */
-  resolveRequiredService<U>(token: Token<U>): Promise<U> {
-    // Reject the promise if there is no provider for the type.
-    let id = this._serviceMap.get(token);
-    if (!id) {
-      return Promise.reject(new Error(`No provider for: ${token.name}.`));
-    }
-
-    // Resolve immediately if the plugin is already activated.
-    let data = this._pluginMap[id];
-    if (data.activated) {
-      return Promise.resolve(data.service);
-    }
-
-    // Otherwise, activate the plugin and wait on the results.
-    return this.activatePlugin(id).then(() => data.service);
+    this.pluginRegistry.registerPlugins(plugins);
   }
 
   /**
@@ -342,26 +231,31 @@ class Application<T extends Widget> {
    * the optional services for the user's plugins will be resolved
    * automatically when the plugin is activated.
    */
-  resolveOptionalService<U>(token: Token<U>): Promise<U | null> {
-    // Resolve with `null` if there is no provider for the type.
-    let id = this._serviceMap.get(token);
-    if (!id) {
-      return Promise.resolve(null);
-    }
+  async resolveOptionalService<U>(token: Token<U>): Promise<U | null> {
+    return this.pluginRegistry.resolveOptionalService<U>(token);
+  }
 
-    // Resolve immediately if the plugin is already activated.
-    let data = this._pluginMap[id];
-    if (data.activated) {
-      return Promise.resolve(data.service);
-    }
-
-    // Otherwise, activate the plugin and wait on the results.
-    return this.activatePlugin(id).then(() => {
-      return data.service;
-    }).catch(reason => {
-      console.error(reason);
-      return null;
-    });
+  /**
+   * Resolve a required service of a given type.
+   *
+   * @param token - The token for the service type of interest.
+   *
+   * @returns A promise which resolves to an instance of the requested
+   *   service, or rejects with an error if it cannot be resolved.
+   *
+   * #### Notes
+   * Services are singletons. The same instance will be returned each
+   * time a given service token is resolved.
+   *
+   * If the plugin which provides the service has not been activated,
+   * resolving the service will automatically activate the plugin.
+   *
+   * User code will not typically call this method directly. Instead,
+   * the required services for the user's plugins will be resolved
+   * automatically when the plugin is activated.
+   */
+  async resolveRequiredService<U>(token: Token<U>): Promise<U> {
+    return this.pluginRegistry.resolveRequiredService<U>(token);
   }
 
   /**
@@ -385,7 +279,7 @@ class Application<T extends Widget> {
    * 3. Attach the shell widget to the DOM
    * 4. Add the application event listeners
    */
-  start(options: Application.IStartOptions = {}): Promise<void> {
+  async start(options: Application.IStartOptions = {}): Promise<void> {
     // Return immediately if the application is already started.
     if (this._started) {
       return this._delegate.promise;
@@ -394,29 +288,17 @@ class Application<T extends Widget> {
     // Mark the application as started;
     this._started = true;
 
-    // Parse the host id for attaching the shell.
-    let hostID = options.hostID || '';
+    this._bubblingKeydown = options.bubblingKeydown ?? false;
 
-    // Collect the ids of the startup plugins.
-    let startups = Private.collectStartupPlugins(this._pluginMap, options);
-
-    // Generate the activation promises.
-    let promises = startups.map(id => {
-      return this.activatePlugin(id).catch(error => {
-        console.error(`Plugin '${id}' failed to activate.`);
-        console.error(error);
-      });
-    });
+    // Parse the host ID for attaching the shell.
+    const hostID = options.hostID ?? '';
 
     // Wait for the plugins to activate, then finalize startup.
-    Promise.all(promises).then(() => {
-      this.attachShell(hostID);
-      this.addEventListeners();
-      this._delegate.resolve(undefined);
-    });
+    await this.pluginRegistry.activatePlugins('startUp', options);
 
-    // Return the pending delegate promise.
-    return this._delegate.promise;
+    this.attachShell(hostID);
+    this.addEventListeners();
+    this._delegate.resolve();
   }
 
   /**
@@ -431,30 +313,36 @@ class Application<T extends Widget> {
    */
   handleEvent(event: Event): void {
     switch (event.type) {
-    case 'resize':
-      this.evtResize(event);
-      break;
-    case 'keydown':
-      this.evtKeydown(event as KeyboardEvent);
-      break;
-    case 'contextmenu':
-      this.evtContextMenu(event as MouseEvent);
-      break;
+      case 'resize':
+        this.evtResize(event);
+        break;
+      case 'keydown':
+        this.evtKeydown(event as KeyboardEvent);
+        break;
+      case 'keyup':
+        this.evtKeyup(event as KeyboardEvent);
+        break;
+      case 'contextmenu':
+        this.evtContextMenu(event as PointerEvent);
+        break;
     }
   }
 
   /**
    * Attach the application shell to the DOM.
    *
-   * @param id - The id of the host node for the shell, or `''`.
+   * @param id - The ID of the host node for the shell, or `''`.
    *
    * #### Notes
-   * If the id is not provided, the document body will be the host.
+   * If the ID is not provided, the document body will be the host.
    *
    * A subclass may reimplement this method as needed.
    */
   protected attachShell(id: string): void {
-    Widget.attach(this.shell, (id && document.getElementById(id)) || document.body);
+    Widget.attach(
+      this.shell,
+      (id && document.getElementById(id)) || document.body
+    );
   }
 
   /**
@@ -468,7 +356,8 @@ class Application<T extends Widget> {
    */
   protected addEventListeners(): void {
     document.addEventListener('contextmenu', this);
-    document.addEventListener('keydown', this, true);
+    document.addEventListener('keydown', this, !this._bubblingKeydown);
+    document.addEventListener('keyup', this, !this._bubblingKeydown);
     window.addEventListener('resize', this);
   }
 
@@ -486,6 +375,19 @@ class Application<T extends Widget> {
   }
 
   /**
+   * A method invoked on a document `'keyup'` event.
+   *
+   * #### Notes
+   * The default implementation of this method invokes the key up
+   * processing method of the application command registry.
+   *
+   * A subclass may reimplement this method as needed.
+   */
+  protected evtKeyup(event: KeyboardEvent): void {
+    this.commands.processKeyupEvent(event);
+  }
+
+  /**
    * A method invoked on a document `'contextmenu'` event.
    *
    * #### Notes
@@ -498,7 +400,7 @@ class Application<T extends Widget> {
    *
    * A subclass may reimplement this method as needed.
    */
-  protected evtContextMenu(event: MouseEvent): void {
+  protected evtContextMenu(event: PointerEvent): void {
     if (event.shiftKey) {
       return;
     }
@@ -520,23 +422,23 @@ class Application<T extends Widget> {
     this.shell.update();
   }
 
-  private _started = false;
-  private _pluginMap = Private.createPluginMap();
-  private _serviceMap = Private.createServiceMap();
+  /**
+   * Application plugin registry.
+   */
+  protected pluginRegistry: PluginRegistry;
   private _delegate = new PromiseDelegate<void>();
+  private _started = false;
+  private _bubblingKeydown = false;
 }
-
 
 /**
  * The namespace for the `Application` class statics.
  */
-export
-namespace Application {
+export namespace Application {
   /**
    * An options object for creating an application.
    */
-  export
-  interface IOptions<T extends Widget> {
+  export interface IOptions<T extends Widget> extends PluginRegistry.IOptions {
     /**
      * The shell widget to use for the application.
      *
@@ -550,13 +452,20 @@ namespace Application {
      * A custom renderer for the context menu.
      */
     contextMenuRenderer?: Menu.IRenderer;
+
+    /**
+     * Application plugin registry.
+     *
+     * If defined the options related to the plugin registry will
+     * be ignored.
+     */
+    pluginRegistry?: PluginRegistry;
   }
 
   /**
    * An options object for application startup.
    */
-  export
-  interface IStartOptions {
+  export interface IStartOptions {
     /**
      * The ID of the DOM node to host the application shell.
      *
@@ -580,184 +489,13 @@ namespace Application {
      * This will override `startPlugins` and any `autoStart` plugins.
      */
     ignorePlugins?: string[];
-  }
-}
-
-
-/**
- * The namespace for the module implementation details.
- */
-namespace Private {
-  /**
-   * An object which holds the full application state for a plugin.
-   */
-  export
-  interface IPluginData {
-    /**
-     * The human readable id of the plugin.
-     */
-    readonly id: string;
 
     /**
-     * Whether the plugin should be activated on application start.
+     * Whether to capture keydown event at bubbling or capturing (default) phase for
+     * keyboard shortcuts.
+     *
+     * @experimental
      */
-    readonly autoStart: boolean;
-
-    /**
-     * The types of required services for the plugin, or `[]`.
-     */
-    readonly requires: Token<any>[];
-
-    /**
-     * The types of optional services for the the plugin, or `[]`.
-     */
-    readonly optional: Token<any>[];
-
-    /**
-     * The type of service provided by the plugin, or `null`.
-     */
-    readonly provides: Token<any> | null;
-
-    /**
-     * The function which activates the plugin.
-     */
-    readonly activate: (app: any, ...args: any[]) => any;
-
-    /**
-     * Whether the plugin has been activated.
-     */
-    activated: boolean;
-
-    /**
-     * The resolved service for the plugin, or `null`.
-     */
-    service: any | null;
-
-    /**
-     * The pending resolver promise, or `null`.
-     */
-    promise: Promise<void> | null;
-  }
-
-  /**
-   * A type alias for a mapping of plugin id to plugin data.
-   */
-  export
-  type PluginMap = { [id: string]: IPluginData };
-
-  /**
-   * A type alias for a mapping of service token to plugin id.
-   */
-  export
-  type ServiceMap = Map<Token<any>, string>;
-
-  /**
-   * Create a new plugin map.
-   */
-  export
-  function createPluginMap(): PluginMap {
-    return Object.create(null);
-  }
-
-  /**
-   * Create a new service map.
-   */
-  export
-  function createServiceMap(): ServiceMap {
-    return new Map<Token<any>, string>();
-  }
-
-  /**
-   * Create a normalized plugin data object for the given plugin.
-   */
-  export
-  function createPluginData(plugin: IPlugin<any, any>): IPluginData {
-    return {
-      id: plugin.id,
-      service: null,
-      promise: null,
-      activated: false,
-      activate: plugin.activate,
-      provides: plugin.provides || null,
-      autoStart: plugin.autoStart || false,
-      requires: plugin.requires ? plugin.requires.slice() : [],
-      optional: plugin.optional ? plugin.optional.slice() : []
-    };
-  }
-
-  /**
-   * Ensure no cycle is present in the plugin resolution graph.
-   *
-   * If a cycle is detected, an error will be thrown.
-   */
-  export
-  function ensureNoCycle(data: IPluginData, pluginMap: PluginMap, serviceMap: ServiceMap): void {
-    let dependencies = data.requires.concat(data.optional);
-    // Bail early if there cannot be a cycle.
-    if (!data.provides || dependencies.length === 0) {
-      return;
-    }
-
-    // Setup a stack to trace service resolution.
-    let trace = [data.id];
-
-    // Throw an exception if a cycle is present.
-    if (dependencies.some(visit)) {
-      throw new Error(`Cycle detected: ${trace.join(' -> ')}.`);
-    }
-
-    function visit(token: Token<any>): boolean {
-      if (token === data.provides) {
-        return true;
-      }
-      let id = serviceMap.get(token);
-      if (!id) {
-        return false;
-      }
-      let other = pluginMap[id];
-      let otherDependencies = other.requires.concat(other.optional);
-      if (otherDependencies.length === 0) {
-        return false;
-      }
-      trace.push(id);
-      if (otherDependencies.some(visit)) {
-        return true;
-      }
-      trace.pop();
-      return false;
-    }
-  }
-
-  /**
-   * Collect the IDs of the plugins to activate on startup.
-   */
-  export
-  function collectStartupPlugins(pluginMap: PluginMap, options: Application.IStartOptions): string[] {
-    // Create a map to hold the plugin IDs.
-    let resultMap: { [id: string]: boolean } = Object.create(null);
-
-    // Collect the auto-start plugins.
-    for (let id in pluginMap) {
-      if (pluginMap[id].autoStart) {
-        resultMap[id] = true;
-      }
-    }
-
-    // Add the startup plugins.
-    if (options.startPlugins) {
-      for (let id of options.startPlugins) {
-        resultMap[id] = true;
-      }
-    }
-
-    // Remove the ignored plugins.
-    if (options.ignorePlugins) {
-      for (let id of options.ignorePlugins) {
-        delete resultMap[id];
-      }
-    }
-
-    // Return the final startup plugins.
-    return Object.keys(resultMap);
+    bubblingKeydown?: boolean;
   }
 }

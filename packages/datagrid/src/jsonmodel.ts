@@ -7,20 +7,14 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  ReadonlyJSONObject
-} from '@lumino/coreutils';
+import { ReadonlyJSONObject } from '@lumino/coreutils';
 
-import {
-  DataModel
-} from './datamodel';
-
+import { DataModel } from './datamodel';
 
 /**
  * A data model implementation for in-memory JSON data.
  */
-export
-class JSONModel extends DataModel {
+export class JSONModel extends DataModel {
   /**
    * Create a data model with static JSON data.
    *
@@ -46,7 +40,7 @@ class JSONModel extends DataModel {
     if (region === 'body') {
       return this._data.length;
     }
-    return 1;  // TODO multiple column-header rows?
+    return 1; // TODO multiple column-header rows?
   }
 
   /**
@@ -84,32 +78,31 @@ class JSONModel extends DataModel {
 
     // Look up the field and value for the region.
     switch (region) {
-    case 'body':
-      field = this._bodyFields[column];
-      value = this._data[row][field.name];
-      break;
-    case 'column-header':
-      field = this._bodyFields[column];
-      value = field.title || field.name;
-      break;
-    case 'row-header':
-      field = this._headerFields[column];
-      value = this._data[row][field.name];
-      break;
-    case 'corner-header':
-      field = this._headerFields[column];
-      value = field.title || field.name;
-      break;
-    default:
-      throw 'unreachable';
+      case 'body':
+        field = this._bodyFields[column];
+        value = this._data[row][field.name];
+        break;
+      case 'column-header':
+        field = this._bodyFields[column];
+        value = field.title || field.name;
+        break;
+      case 'row-header':
+        field = this._headerFields[column];
+        value = this._data[row][field.name];
+        break;
+      case 'corner-header':
+        field = this._headerFields[column];
+        value = field.title || field.name;
+        break;
+      default:
+        throw 'unreachable';
     }
 
     // Test whether the value is a missing value.
-    let missing = (
+    let missing =
       this._missingValues !== null &&
       typeof value === 'string' &&
-      this._missingValues[value] === true
-    );
+      this._missingValues[value] === true;
 
     // Return the final value.
     return missing ? null : value;
@@ -126,7 +119,11 @@ class JSONModel extends DataModel {
    *
    * @returns The metadata for the cell.
    */
-  metadata(region: DataModel.CellRegion, row: number, column: number): DataModel.Metadata {
+  metadata(
+    region: DataModel.CellRegion,
+    row: number,
+    column: number
+  ): DataModel.Metadata {
     if (region === 'body' || region === 'column-header') {
       return this._bodyFields[column];
     }
@@ -139,12 +136,10 @@ class JSONModel extends DataModel {
   private _missingValues: Private.MissingValuesMap | null;
 }
 
-
 /**
  * The namespace for the `JSONModel` class statics.
  */
-export
-namespace JSONModel {
+export namespace JSONModel {
   /**
    * An object which describes a column of data in the model.
    *
@@ -152,8 +147,7 @@ namespace JSONModel {
    * This is based on the JSON Table Schema specification:
    * https://specs.frictionlessdata.io/table-schema/
    */
-  export
-  type Field = {
+  export type Field = {
     /**
      * The name of the column.
      *
@@ -193,8 +187,7 @@ namespace JSONModel {
    * This is based on the JSON Table Schema specification:
    * https://specs.frictionlessdata.io/table-schema/
    */
-  export
-  type Schema = {
+  export type Schema = {
     /**
      * The fields which describe the data model columns.
      *
@@ -227,14 +220,12 @@ namespace JSONModel {
    * the rows of the table. The keys of the records correspond to the
    * field names of the columns.
    */
-  export
-  type DataSource = ReadonlyArray<ReadonlyJSONObject>;
+  export type DataSource = ReadonlyArray<ReadonlyJSONObject>;
 
   /**
    * An options object for initializing a JSON data model.
    */
-  export
-  interface IOptions {
+  export interface IOptions {
     /**
      * The schema for the for the data model.
      *
@@ -251,7 +242,6 @@ namespace JSONModel {
   }
 }
 
-
 /**
  * The namespace for the module implementation details.
  */
@@ -259,8 +249,7 @@ namespace Private {
   /**
    * An object which holds the results of splitting schema fields.
    */
-  export
-  type SplitFieldsResult = {
+  export type SplitFieldsResult = {
     /**
      * The non-primary key fields to use for the grid body.
      */
@@ -275,8 +264,7 @@ namespace Private {
   /**
    * Split the schema fields into header and body fields.
    */
-  export
-  function splitFields(schema: JSONModel.Schema): SplitFieldsResult {
+  export function splitFields(schema: JSONModel.Schema): SplitFieldsResult {
     // Normalize the primary keys.
     let primaryKeys: string[];
     if (schema.primaryKey === undefined) {
@@ -305,16 +293,16 @@ namespace Private {
   /**
    * A type alias for a missing value map.
    */
-  export
-  type MissingValuesMap = { [key: string]: boolean };
+  export type MissingValuesMap = { [key: string]: boolean };
 
   /**
    * Create a missing values map for a schema.
    *
    * This returns `null` if there are no missing values.
    */
-  export
-  function createMissingMap(schema: JSONModel.Schema): MissingValuesMap | null {
+  export function createMissingMap(
+    schema: JSONModel.Schema
+  ): MissingValuesMap | null {
     // Bail early if there are no missing values.
     if (!schema.missingValues || schema.missingValues.length === 0) {
       return null;

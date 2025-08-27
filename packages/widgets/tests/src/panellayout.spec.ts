@@ -7,25 +7,20 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  expect
-} from 'chai';
+import { expect } from 'chai';
+
+import { every } from '@lumino/algorithm';
 
 import {
-  each, every
-} from '@lumino/algorithm';
-
-import {
-  IMessageHandler, IMessageHook, Message, MessageLoop
+  IMessageHandler,
+  IMessageHook,
+  Message,
+  MessageLoop
 } from '@lumino/messaging';
 
-import {
-  PanelLayout, Widget
-} from '@lumino/widgets';
-
+import { PanelLayout, Widget } from '@lumino/widgets';
 
 class LogHook implements IMessageHook {
-
   messages: string[] = [];
 
   messageHook(target: IMessageHandler, msg: Message): boolean {
@@ -34,9 +29,7 @@ class LogHook implements IMessageHook {
   }
 }
 
-
 class LogPanelLayout extends PanelLayout {
-
   methods: string[] = [];
 
   protected init(): void {
@@ -49,7 +42,11 @@ class LogPanelLayout extends PanelLayout {
     this.methods.push('attachWidget');
   }
 
-  protected moveWidget(fromIndex: number, toIndex: number, widget: Widget): void {
+  protected moveWidget(
+    fromIndex: number,
+    toIndex: number,
+    widget: Widget
+  ): void {
     super.moveWidget(fromIndex, toIndex, widget);
     this.methods.push('moveWidget');
   }
@@ -65,25 +62,21 @@ class LogPanelLayout extends PanelLayout {
   }
 }
 
-
 describe('@lumino/widgets', () => {
-
   describe('PanelLayout', () => {
-
     describe('#dispose()', () => {
-
       it('should dispose of the resources held by the widget', () => {
         let layout = new PanelLayout();
         let widgets = [new Widget(), new Widget()];
-        each(widgets, w => { layout.addWidget(w); });
+        widgets.forEach(w => {
+          layout.addWidget(w);
+        });
         layout.dispose();
         expect(every(widgets, w => w.isDisposed)).to.equal(true);
       });
-
     });
 
     describe('#widgets', () => {
-
       it('should be a read-only sequence of widgets in the layout', () => {
         let layout = new PanelLayout();
         let widget = new Widget();
@@ -92,25 +85,26 @@ describe('@lumino/widgets', () => {
         expect(widgets.length).to.equal(1);
         expect(widgets[0]).to.equal(widget);
       });
-
     });
 
-    describe('#iter()', () => {
-
+    describe('[Symbol.iterator]()', () => {
       it('should create an iterator over the widgets in the layout', () => {
         let layout = new PanelLayout();
         let widgets = [new Widget(), new Widget()];
-        each(widgets, w => { layout.addWidget(w); });
-        each(widgets, w => { w.title.label = 'foo'; });
-        let iter = layout.iter();
-        expect(every(iter, w => w.title.label === 'foo')).to.equal(true);
-        expect(layout.iter()).to.not.equal(iter);
+        widgets.forEach(w => {
+          layout.addWidget(w);
+        });
+        widgets.forEach(w => {
+          w.title.label = 'foo';
+        });
+        expect(every(layout, w => w.title.label === 'foo')).to.equal(true);
+        let it1 = layout[Symbol.iterator](),
+          it2 = layout[Symbol.iterator]();
+        expect(it1).to.not.equal(it2);
       });
-
     });
 
     describe('#addWidget()', () => {
-
       it('should add a widget to the end of the layout', () => {
         let layout = new PanelLayout();
         layout.addWidget(new Widget());
@@ -127,11 +121,9 @@ describe('@lumino/widgets', () => {
         layout.addWidget(widget);
         expect(layout.widgets[1]).to.equal(widget);
       });
-
     });
 
     describe('#insertWidget()', () => {
-
       it('should insert a widget at the specified index', () => {
         let layout = new PanelLayout();
         layout.addWidget(new Widget());
@@ -167,11 +159,9 @@ describe('@lumino/widgets', () => {
         layout.insertWidget(0, widget);
         expect(layout.widgets[0]).to.equal(widget);
       });
-
     });
 
     describe('#removeWidget()', () => {
-
       it('should remove a widget by value', () => {
         let layout = new PanelLayout();
         let widget = new Widget();
@@ -181,11 +171,9 @@ describe('@lumino/widgets', () => {
         expect(layout.widgets.length).to.equal(1);
         expect(layout.widgets[0]).to.not.equal(widget);
       });
-
     });
 
     describe('#removeWidgetAt()', () => {
-
       it('should remove a widget at a given index', () => {
         let layout = new PanelLayout();
         let widget = new Widget();
@@ -195,11 +183,9 @@ describe('@lumino/widgets', () => {
         expect(layout.widgets.length).to.equal(1);
         expect(layout.widgets[0]).to.not.equal(widget);
       });
-
     });
 
     describe('#init()', () => {
-
       it('should be invoked when the layout is installed on its parent', () => {
         let widget = new Widget();
         let layout = new LogPanelLayout();
@@ -212,17 +198,17 @@ describe('@lumino/widgets', () => {
         Widget.attach(parent, document.body);
         let layout = new LogPanelLayout();
         let widgets = [new Widget(), new Widget(), new Widget()];
-        each(widgets, w => { layout.addWidget(w); });
+        widgets.forEach(w => {
+          layout.addWidget(w);
+        });
         parent.layout = layout;
         expect(every(widgets, w => w.parent === parent)).to.equal(true);
         expect(every(widgets, w => w.isAttached)).to.equal(true);
         parent.dispose();
       });
-
     });
 
     describe('#attachWidget()', () => {
-
       it("should attach a widget to the parent's DOM node", () => {
         let panel = new Widget();
         let layout = new LogPanelLayout();
@@ -234,7 +220,7 @@ describe('@lumino/widgets', () => {
         panel.dispose();
       });
 
-      it("should send before/after attach messages if the parent is attached", () => {
+      it('should send before/after attach messages if the parent is attached', () => {
         let panel = new Widget();
         let layout = new LogPanelLayout();
         let widget = new Widget();
@@ -248,11 +234,9 @@ describe('@lumino/widgets', () => {
         expect(hook.messages).to.contain('after-attach');
         panel.dispose();
       });
-
     });
 
     describe('#moveWidget()', () => {
-
       it("should move a widget in the parent's DOM node", () => {
         let panel = new Widget();
         let layout = new LogPanelLayout();
@@ -266,7 +250,7 @@ describe('@lumino/widgets', () => {
         panel.dispose();
       });
 
-      it("should send before/after detach/attach messages if the parent is attached", () => {
+      it('should send before/after detach/attach messages if the parent is attached', () => {
         let panel = new Widget();
         let layout = new LogPanelLayout();
         let widget = new Widget();
@@ -284,11 +268,9 @@ describe('@lumino/widgets', () => {
         expect(hook.messages).to.contain('after-attach');
         panel.dispose();
       });
-
     });
 
     describe('#detachWidget()', () => {
-
       it("should detach a widget from the parent's DOM node", () => {
         let panel = new Widget();
         let layout = new LogPanelLayout();
@@ -301,7 +283,7 @@ describe('@lumino/widgets', () => {
         panel.dispose();
       });
 
-      it("should send before/after detach message if the parent is attached", () => {
+      it('should send before/after detach message if the parent is attached', () => {
         let panel = new Widget();
         let layout = new LogPanelLayout();
         let widget = new Widget();
@@ -317,11 +299,9 @@ describe('@lumino/widgets', () => {
         expect(hook.messages).to.contain('after-detach');
         panel.dispose();
       });
-
     });
 
     describe('#onChildRemoved()', () => {
-
       it('should be called when a widget is removed from its parent', () => {
         let panel = new Widget();
         let layout = new LogPanelLayout();
@@ -341,9 +321,6 @@ describe('@lumino/widgets', () => {
         widget.parent = null;
         expect(layout.widgets.length).to.equal(0);
       });
-
     });
-
   });
-
 });

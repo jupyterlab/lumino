@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "composite": true,
+    "declaration": true,
+    "declarationDir": "types",
+    "esModuleInterop": true,
+    "importHelpers": true,
+    "incremental": true,
+    "jsx": "react",
+    "module": "ES6",
+    "moduleResolution": "node",
+    "noEmitOnError": true,
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "preserveWatchOutput": true,
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "strictNullChecks": true,
+    "target": "ES2018",
+    "types": []
+  }
+}

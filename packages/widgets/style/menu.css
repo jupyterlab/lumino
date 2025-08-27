@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) Jupyter Development Team.
+ * Distributed under the terms of the Modified BSD License.
+ */
+
 /*-----------------------------------------------------------------------------
 | Copyright (c) Jupyter Development Team.
 | Copyright (c) 2014-2017, PhosphorJS Contributors
@@ -7,8 +12,6 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
-
-/* <DEPRECATED> */ .p-Menu, /* </DEPRECATED> */
 .lm-Menu {
   z-index: 10000;
   position: absolute;
@@ -22,8 +25,6 @@
   user-select: none;
 }
 
-
-/* <DEPRECATED> */ .p-Menu-content, /* </DEPRECATED> */
 .lm-Menu-content {
   margin: 0;
   padding: 0;
@@ -31,42 +32,26 @@
   list-style-type: none;
 }
 
-
-/* <DEPRECATED> */ .p-Menu-item, /* </DEPRECATED> */
 .lm-Menu-item {
   display: table-row;
 }
 
-
-/* <DEPRECATED> */
-.p-Menu-item.p-mod-hidden,
-.p-Menu-item.p-mod-collapsed,
-/* </DEPRECATED> */
 .lm-Menu-item.lm-mod-hidden,
 .lm-Menu-item.lm-mod-collapsed {
   display: none !important;
 }
 
-
-/* <DEPRECATED> */
-.p-Menu-itemIcon,
-.p-Menu-itemSubmenuIcon,
-/* </DEPRECATED> */
 .lm-Menu-itemIcon,
 .lm-Menu-itemSubmenuIcon {
   display: table-cell;
   text-align: center;
 }
 
-
-/* <DEPRECATED> */ .p-Menu-itemLabel, /* </DEPRECATED> */
 .lm-Menu-itemLabel {
   display: table-cell;
   text-align: left;
 }
 
-
-/* <DEPRECATED> */ .p-Menu-itemShortcut, /* </DEPRECATED> */
 .lm-Menu-itemShortcut {
   display: table-cell;
   text-align: right;

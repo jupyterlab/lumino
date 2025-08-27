@@ -7,27 +7,19 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  BoxLayout
-} from './boxlayout';
+import { BoxLayout } from './boxlayout';
 
-import {
-  Panel
-} from './panel';
+import { Panel } from './panel';
 
-import {
-  Widget
-} from './widget';
-
+import { Widget } from './widget';
 
 /**
  * A panel which arranges its widgets in a single row or column.
  *
  * #### Notes
- * This class provides a convenience wrapper around a [[BoxLayout]].
+ * This class provides a convenience wrapper around a {@link BoxLayout}.
  */
-export
-class BoxPanel extends Panel {
+export class BoxPanel extends Panel {
   /**
    * Construct a new box panel.
    *
@@ -36,9 +28,6 @@ class BoxPanel extends Panel {
   constructor(options: BoxPanel.IOptions = {}) {
     super({ layout: Private.createLayout(options) });
     this.addClass('lm-BoxPanel');
-    /* <DEPRECATED> */
-    this.addClass('p-BoxPanel');
-    /* </DEPRECATED> */
   }
 
   /**
@@ -100,9 +89,6 @@ class BoxPanel extends Panel {
    */
   protected onChildAdded(msg: Widget.ChildMessage): void {
     msg.child.addClass('lm-BoxPanel-child');
-    /* <DEPRECATED> */
-    msg.child.addClass('p-BoxPanel-child');
-    /* </DEPRECATED> */
   }
 
   /**
@@ -110,37 +96,31 @@ class BoxPanel extends Panel {
    */
   protected onChildRemoved(msg: Widget.ChildMessage): void {
     msg.child.removeClass('lm-BoxPanel-child');
-    /* <DEPRECATED> */
-    msg.child.removeClass('p-BoxPanel-child');
-    /* </DEPRECATED> */
   }
 }
-
 
 /**
  * The namespace for the `BoxPanel` class statics.
  */
-export
-namespace BoxPanel {
+export namespace BoxPanel {
   /**
    * A type alias for a box panel direction.
    */
-  export
-  type Direction = BoxLayout.Direction;
+  export type Direction = BoxLayout.Direction;
 
   /**
    * A type alias for a box panel alignment.
    */
-  export
-  type Alignment = BoxLayout.Alignment;
+  export type Alignment = BoxLayout.Alignment;
 
   /**
    * An options object for initializing a box panel.
    */
-  export
-  interface IOptions {
+  export interface IOptions {
     /**
      * The layout direction of the panel.
+     *
+     * Possible values are documented in {@link BoxLayout.Direction}.
      *
      * The default is `'top-to-bottom'`.
      */
@@ -148,6 +128,8 @@ namespace BoxPanel {
 
     /**
      * The content alignment of the panel.
+     *
+     * Possible values are documented in {@link BoxLayout.Alignment}.
      *
      * The default is `'start'`.
      */
@@ -177,8 +159,7 @@ namespace BoxPanel {
    *
    * @returns The box panel stretch factor for the widget.
    */
-  export
-  function getStretch(widget: Widget): number {
+  export function getStretch(widget: Widget): number {
     return BoxLayout.getStretch(widget);
   }
 
@@ -189,8 +170,7 @@ namespace BoxPanel {
    *
    * @param value - The value for the stretch factor.
    */
-  export
-  function setStretch(widget: Widget, value: number): void {
+  export function setStretch(widget: Widget, value: number): void {
     BoxLayout.setStretch(widget, value);
   }
 
@@ -201,8 +181,7 @@ namespace BoxPanel {
    *
    * @returns The box panel size basis for the widget.
    */
-  export
-  function getSizeBasis(widget: Widget): number {
+  export function getSizeBasis(widget: Widget): number {
     return BoxLayout.getSizeBasis(widget);
   }
 
@@ -213,12 +192,10 @@ namespace BoxPanel {
    *
    * @param value - The value for the size basis.
    */
-  export
-  function setSizeBasis(widget: Widget, value: number): void {
+  export function setSizeBasis(widget: Widget, value: number): void {
     BoxLayout.setSizeBasis(widget, value);
   }
 }
-
 
 /**
  * The namespace for the module implementation details.
@@ -227,8 +204,7 @@ namespace Private {
   /**
    * Create a box layout for the given panel options.
    */
-  export
-  function createLayout(options: BoxPanel.IOptions): BoxLayout {
+  export function createLayout(options: BoxPanel.IOptions): BoxLayout {
     return options.layout || new BoxLayout(options);
   }
 }

@@ -7,29 +7,15 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  expect
-} from 'chai';
+import { expect } from 'chai';
 
-import {
-  each
-} from '@lumino/algorithm';
+import { StackedPanel, TabBar, TabPanel, Widget } from '@lumino/widgets';
 
-import {
-  StackedPanel, TabBar, TabPanel, Widget
-} from '@lumino/widgets';
-
-import {
-  LogWidget
-} from './widget.spec';
-
+import { LogWidget } from './widget.spec';
 
 describe('@lumino/widgets', () => {
-
   describe('TabPanel', () => {
-
     describe('#constructor()', () => {
-
       it('should construct a new tab panel and take no arguments', () => {
         let panel = new TabPanel();
         expect(panel).to.be.an.instanceof(TabPanel);
@@ -50,11 +36,9 @@ describe('@lumino/widgets', () => {
         let panel = new TabPanel();
         expect(panel.hasClass('lm-TabPanel')).to.equal(true);
       });
-
     });
 
     describe('#dispose()', () => {
-
       it('should dispose of the resources held by the widget', () => {
         let panel = new TabPanel();
         panel.addWidget(new Widget());
@@ -63,11 +47,9 @@ describe('@lumino/widgets', () => {
         panel.dispose();
         expect(panel.isDisposed).to.equal(true);
       });
-
     });
 
     describe('#currentChanged', () => {
-
       it('should be emitted when the current tab is changed', () => {
         let panel = new TabPanel();
         panel.addWidget(new Widget());
@@ -91,7 +73,9 @@ describe('@lumino/widgets', () => {
         panel.addWidget(new Widget());
         panel.addWidget(new Widget());
         let called = false;
-        panel.currentChanged.connect((sender, args) => { called = true; });
+        panel.currentChanged.connect((sender, args) => {
+          called = true;
+        });
         panel.insertWidget(0, new Widget());
         expect(called).to.equal(false);
       });
@@ -102,7 +86,9 @@ describe('@lumino/widgets', () => {
         panel.addWidget(new Widget());
         let called = false;
         panel.currentIndex = 1;
-        panel.currentChanged.connect((sender, args) => { called = true; });
+        panel.currentChanged.connect((sender, args) => {
+          called = true;
+        });
         panel.widgets[0].parent = null;
         expect(called).to.equal(false);
       });
@@ -112,15 +98,15 @@ describe('@lumino/widgets', () => {
         panel.addWidget(new Widget());
         panel.addWidget(new Widget());
         let called = false;
-        panel.currentChanged.connect((sender, args) => { called = true; });
+        panel.currentChanged.connect((sender, args) => {
+          called = true;
+        });
         panel.insertWidget(2, panel.widgets[0]);
         expect(called).to.equal(false);
       });
-
     });
 
     describe('#currentIndex', () => {
-
       it('should get the index of the currently selected tab', () => {
         let panel = new TabPanel();
         panel.addWidget(new Widget());
@@ -149,11 +135,9 @@ describe('@lumino/widgets', () => {
         panel.currentIndex = 2;
         expect(panel.currentIndex).to.equal(-1);
       });
-
     });
 
     describe('#currentWidget', () => {
-
       it('should get the currently selected tab', () => {
         let panel = new TabPanel();
         let widget = new Widget();
@@ -182,45 +166,47 @@ describe('@lumino/widgets', () => {
         panel.currentWidget = new Widget();
         expect(panel.currentWidget).to.equal(null);
       });
-
     });
 
     describe('#tabsMovable', () => {
-
       it('should be the tabsMovable property of the tabBar', () => {
         let panel = new TabPanel();
         expect(panel.tabsMovable).to.equal(false);
         panel.tabsMovable = true;
         expect(panel.tabBar.tabsMovable).to.equal(true);
       });
-
     });
 
     describe('#tabPlacement', () => {
-
       it('should be the tab placement for the tab panel', () => {
         let panel = new TabPanel();
         expect(panel.tabPlacement).to.equal('top');
         expect(panel.tabBar.orientation).to.equal('horizontal');
-        expect(panel.tabBar.node.getAttribute('data-placement')).to.equal('top');
+        expect(panel.tabBar.node.getAttribute('data-placement')).to.equal(
+          'top'
+        );
 
         panel.tabPlacement = 'bottom';
         expect(panel.tabBar.orientation).to.equal('horizontal');
-        expect(panel.tabBar.node.getAttribute('data-placement')).to.equal('bottom');
+        expect(panel.tabBar.node.getAttribute('data-placement')).to.equal(
+          'bottom'
+        );
 
         panel.tabPlacement = 'left';
         expect(panel.tabBar.orientation).to.equal('vertical');
-        expect(panel.tabBar.node.getAttribute('data-placement')).to.equal('left');
+        expect(panel.tabBar.node.getAttribute('data-placement')).to.equal(
+          'left'
+        );
 
         panel.tabPlacement = 'right';
         expect(panel.tabBar.orientation).to.equal('vertical');
-        expect(panel.tabBar.node.getAttribute('data-placement')).to.equal('right');
+        expect(panel.tabBar.node.getAttribute('data-placement')).to.equal(
+          'right'
+        );
       });
-
     });
 
     describe('#tabBar', () => {
-
       it('should get the tab bar associated with the tab panel', () => {
         let panel = new TabPanel();
         let bar = panel.tabBar;
@@ -236,7 +222,9 @@ describe('@lumino/widgets', () => {
       it('should move the widget in the stacked panel when a tab is moved', () => {
         let panel = new TabPanel();
         let widgets = [new LogWidget(), new LogWidget()];
-        each(widgets, w => { panel.addWidget(w); });
+        widgets.forEach(w => {
+          panel.addWidget(w);
+        });
         Widget.attach(panel, document.body);
         let bar = panel.tabBar;
         let called = false;
@@ -257,8 +245,12 @@ describe('@lumino/widgets', () => {
       it('should show the new widget when the current tab changes', () => {
         let panel = new TabPanel();
         let widgets = [new LogWidget(), new LogWidget(), new LogWidget()];
-        each(widgets, w => { panel.addWidget(w); });
-        each(widgets, w => { w.node.tabIndex = -1; });
+        widgets.forEach(w => {
+          panel.addWidget(w);
+        });
+        widgets.forEach(w => {
+          w.node.tabIndex = -1;
+        });
         Widget.attach(panel, document.body);
         panel.tabBar.currentChanged.connect((sender, args) => {
           expect(widgets[args.previousIndex].isVisible).to.equal(false);
@@ -283,11 +275,9 @@ describe('@lumino/widgets', () => {
         expect(called).to.equal(true);
         panel.dispose();
       });
-
     });
 
     describe('#stackedPanel', () => {
-
       it('should get the stacked panel associated with the tab panel', () => {
         let panel = new TabPanel();
         let stack = panel.stackedPanel;
@@ -314,26 +304,26 @@ describe('@lumino/widgets', () => {
         widget.parent = null;
         expect(called).to.equal(true);
       });
-
     });
 
     describe('#widgets', () => {
-
       it('should get a read-only array of the widgets in the panel', () => {
         let panel = new TabPanel();
         let widgets = [new Widget(), new Widget(), new Widget()];
-        each(widgets, w => { panel.addWidget(w); });
+        widgets.forEach(w => {
+          panel.addWidget(w);
+        });
         expect(panel.widgets).to.deep.equal(widgets);
       });
-
     });
 
     describe('#addWidget()', () => {
-
       it('should add a widget to the end of the tab panel', () => {
         let panel = new TabPanel();
         let widgets = [new Widget(), new Widget(), new Widget()];
-        each(widgets, w => { panel.addWidget(w); });
+        widgets.forEach(w => {
+          panel.addWidget(w);
+        });
         let widget = new Widget();
         panel.addWidget(widget);
         expect(panel.widgets[3]).to.equal(widget);
@@ -343,19 +333,21 @@ describe('@lumino/widgets', () => {
       it('should move an existing widget', () => {
         let panel = new TabPanel();
         let widgets = [new Widget(), new Widget(), new Widget()];
-        each(widgets, w => { panel.addWidget(w); });
+        widgets.forEach(w => {
+          panel.addWidget(w);
+        });
         panel.addWidget(widgets[0]);
         expect(panel.widgets[2]).to.equal(widgets[0]);
       });
-
     });
 
     describe('#insertWidget()', () => {
-
       it('should insert a widget into the tab panel at a specified index', () => {
         let panel = new TabPanel();
         let widgets = [new Widget(), new Widget(), new Widget()];
-        each(widgets, w => { panel.addWidget(w); });
+        widgets.forEach(w => {
+          panel.addWidget(w);
+        });
         let widget = new Widget();
         panel.insertWidget(1, widget);
         expect(panel.widgets[1]).to.equal(widget);
@@ -365,13 +357,12 @@ describe('@lumino/widgets', () => {
       it('should move an existing widget', () => {
         let panel = new TabPanel();
         let widgets = [new Widget(), new Widget(), new Widget()];
-        each(widgets, w => { panel.addWidget(w); });
+        widgets.forEach(w => {
+          panel.addWidget(w);
+        });
         panel.insertWidget(0, widgets[2]);
         expect(panel.widgets[0]).to.equal(widgets[2]);
       });
-
     });
-
   });
-
 });

@@ -7,21 +7,13 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  expect
-} from 'chai';
+import { expect } from 'chai';
 
-import {
-  ArrayExt
-} from '@lumino/algorithm';
-
+import { ArrayExt } from '@lumino/algorithm';
 
 describe('@lumino/algorithm', () => {
-
   describe('ArrayExt', () => {
-
     describe('firstIndexOf()', () => {
-
       it('should find the index of the first matching value', () => {
         let data = ['one', 'two', 'three', 'four', 'one'];
         let i = ArrayExt.firstIndexOf(data, 'one');
@@ -69,11 +61,9 @@ describe('@lumino/algorithm', () => {
         let i = ArrayExt.firstIndexOf(data, 'two', 3, 2);
         expect(i).to.equal(1);
       });
-
     });
 
     describe('lastIndexOf()', () => {
-
       it('should find the index of the last matching value', () => {
         let data = ['one', 'two', 'three', 'four', 'one'];
         let i = ArrayExt.lastIndexOf(data, 'one');
@@ -121,11 +111,9 @@ describe('@lumino/algorithm', () => {
         let i = ArrayExt.lastIndexOf(data, 'four', 2, 3);
         expect(i).to.equal(3);
       });
-
     });
 
     describe('findFirstIndex()', () => {
-
       it('should find the index of the first matching value', () => {
         let data = [1, 2, 3, 4, 5];
         let i = ArrayExt.findFirstIndex(data, v => v % 2 === 0);
@@ -173,11 +161,9 @@ describe('@lumino/algorithm', () => {
         let i = ArrayExt.findFirstIndex(data, v => v % 2 === 0, 4, 2);
         expect(i).to.equal(1);
       });
-
     });
 
     describe('findLastIndex()', () => {
-
       it('should find the index of the last matching value', () => {
         let data = [1, 2, 3, 4, 5];
         let i = ArrayExt.findLastIndex(data, v => v % 2 === 0);
@@ -225,11 +211,9 @@ describe('@lumino/algorithm', () => {
         let i = ArrayExt.findLastIndex(data, v => v % 2 === 0, 0, 2);
         expect(i).to.equal(3);
       });
-
     });
 
     describe('findFirstValue()', () => {
-
       it('should find the index of the first matching value', () => {
         let data = ['apple', 'bottle', 'cat', 'dog', 'egg', 'blue'];
         let i = ArrayExt.findFirstValue(data, v => v[0] === 'b');
@@ -277,11 +261,9 @@ describe('@lumino/algorithm', () => {
         let i = ArrayExt.findFirstValue(data, v => v[0] === 'b', 4, 2);
         expect(i).to.equal('bottle');
       });
-
     });
 
     describe('findLastValue()', () => {
-
       it('should find the index of the last matching value', () => {
         let data = ['apple', 'bottle', 'cat', 'dog', 'egg', 'blue'];
         let i = ArrayExt.findLastValue(data, v => v[0] === 'b');
@@ -329,11 +311,9 @@ describe('@lumino/algorithm', () => {
         let i = ArrayExt.findLastValue(data, v => v[0] === 'e', 2, 4);
         expect(i).to.equal('egg');
       });
-
     });
 
     describe('lowerBound()', () => {
-
       it('should return the index of the first element `>=` a value', () => {
         let data = [1, 2, 2, 3, 3, 4, 5, 5];
         let cmp = (a: number, b: number) => a - b;
@@ -371,11 +351,9 @@ describe('@lumino/algorithm', () => {
         let r = ArrayExt.lowerBound(data, 5, cmp, 3, 5);
         expect(r).to.equal(4);
       });
-
     });
 
     describe('upperBound()', () => {
-
       it('should return the index of the first element `>` a value', () => {
         let data = [1, 2, 2, 3, 3, 4, 5, 5];
         let cmp = (a: number, b: number) => a - b;
@@ -413,11 +391,9 @@ describe('@lumino/algorithm', () => {
         let r = ArrayExt.upperBound(data, 5, cmp, 3, 5);
         expect(r).to.equal(5);
       });
-
     });
 
     describe('move()', () => {
-
       it('should move an element from one index to another', () => {
         let data = [1, 2, 3, 4, 5];
         ArrayExt.move(data, 1, 3);
@@ -439,11 +415,9 @@ describe('@lumino/algorithm', () => {
         expect(data1).to.deep.equal([1]);
         expect(data2).to.deep.equal([]);
       });
-
     });
 
     describe('reverse()', () => {
-
       it('should reverse an array in-place', () => {
         let data = [1, 2, 3, 4, 5];
         ArrayExt.reverse(data);
@@ -474,11 +448,9 @@ describe('@lumino/algorithm', () => {
         expect(data1).to.deep.equal([1]);
         expect(data2).to.deep.equal([]);
       });
-
     });
 
     describe('rotate()', () => {
-
       it('should rotate the elements left by a positive delta', () => {
         let data = [1, 2, 3, 4, 5];
         ArrayExt.rotate(data, 2);
@@ -523,11 +495,9 @@ describe('@lumino/algorithm', () => {
         ArrayExt.rotate(data, 2, 5, 4);
         expect(data).to.deep.equal([1, 2, 3, 4, 5]);
       });
-
     });
 
     describe('fill()', () => {
-
       it('should fill an array with a static value', () => {
         let data = [0, 0, 0, 0, 0];
         ArrayExt.fill(data, 1);
@@ -545,11 +515,9 @@ describe('@lumino/algorithm', () => {
         ArrayExt.fill(data, 1, 3, 1);
         expect(data).to.deep.equal([1, 1, 0, 1, 1]);
       });
-
     });
 
     describe('insert()', () => {
-
       it('should insert a value at the specified index', () => {
         let data: number[] = [];
         ArrayExt.insert(data, 0, 9);
@@ -579,11 +547,9 @@ describe('@lumino/algorithm', () => {
         ArrayExt.insert(data, 8, 4);
         expect(data).to.deep.equal([8, 7, 9, 6, 4]);
       });
-
     });
 
     describe('removeAt()', () => {
-
       it('should remove the value at a specified index', () => {
         let data = [7, 4, 8, 5, 9, 6];
         expect(ArrayExt.removeAt(data, 1)).to.equal(4);
@@ -607,11 +573,9 @@ describe('@lumino/algorithm', () => {
         expect(ArrayExt.removeAt(data, -12)).to.equal(undefined);
         expect(data).to.deep.equal([7, 4, 8, 5, 9, 6]);
       });
-
     });
 
     describe('removeFirstOf()', () => {
-
       it('should remove the first occurrence of a value', () => {
         let data = ['one', 'two', 'three', 'four', 'one'];
         let i = ArrayExt.removeFirstOf(data, 'one');
@@ -667,11 +631,9 @@ describe('@lumino/algorithm', () => {
         expect(i).to.equal(1);
         expect(data).to.deep.equal(['one', 'three', 'four', 'one']);
       });
-
     });
 
     describe('removeLastOf()', () => {
-
       it('should remove the last occurrence of a value', () => {
         let data = ['one', 'two', 'three', 'four', 'one'];
         let i = ArrayExt.removeLastOf(data, 'one');
@@ -727,11 +689,9 @@ describe('@lumino/algorithm', () => {
         expect(i).to.equal(1);
         expect(data).to.deep.equal(['one', 'three', 'four', 'one']);
       });
-
     });
 
     describe('removeAllOf()', () => {
-
       it('should remove all occurrences of a value', () => {
         let data = ['one', 'two', 'three', 'four', 'one'];
         let i = ArrayExt.removeAllOf(data, 'one');
@@ -787,11 +747,9 @@ describe('@lumino/algorithm', () => {
         expect(i).to.equal(2);
         expect(data).to.deep.equal(['two', 'three', 'four']);
       });
-
     });
 
     describe('removeFirstWhere()', () => {
-
       it('should remove the first occurrence of a value', () => {
         let data = [1, 2, 3, 4, 5];
         let result = ArrayExt.removeFirstWhere(data, v => v % 2 === 0);
@@ -855,11 +813,9 @@ describe('@lumino/algorithm', () => {
         expect(result.value).to.equal(2);
         expect(data).to.deep.equal([1, 3, 4, 5]);
       });
-
     });
 
     describe('removeLastWhere()', () => {
-
       it('should remove the last occurrence of a value', () => {
         let data = [1, 2, 3, 4, 5];
         let result = ArrayExt.removeLastWhere(data, v => v % 2 === 0);
@@ -923,11 +879,9 @@ describe('@lumino/algorithm', () => {
         expect(result.value).to.equal(4);
         expect(data).to.deep.equal([1, 2, 3, 5]);
       });
-
     });
 
     describe('removeAllWhere()', () => {
-
       it('should remove all occurrences of a value', () => {
         let data = [1, 2, 3, 4, 3, 5, 1];
         let count = ArrayExt.removeAllWhere(data, v => v % 3 === 0);
@@ -983,9 +937,6 @@ describe('@lumino/algorithm', () => {
         expect(count).to.equal(1);
         expect(data).to.deep.equal([1, 2, 4, 3, 5, 1]);
       });
-
     });
-
   });
-
 });

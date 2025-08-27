@@ -7,27 +7,19 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  expect
-} from 'chai';
+import { expect } from 'chai';
 
-import {
-  Signal
-} from '@lumino/signaling';
-
+import { Signal, Stream } from '@lumino/signaling';
 
 class TestObject {
-
   readonly one = new Signal<this, void>(this);
 
   readonly two = new Signal<this, number>(this);
 
-  readonly three = new Signal<this, string[]>(this);
+  readonly three = new Stream<this, string[]>(this);
 }
 
-
 class ExtendedObject extends TestObject {
-
   notifyCount = 0;
 
   onNotify(): void {
@@ -35,9 +27,7 @@ class ExtendedObject extends TestObject {
   }
 }
 
-
 class TestHandler {
-
   name = '';
 
   oneCount = 0;
@@ -64,24 +54,18 @@ class TestHandler {
   }
 }
 
-
 describe('@lumino/signaling', () => {
-
   describe('Signal', () => {
-
     describe('#sender', () => {
-
       it('should be the sender of the signal', () => {
         let obj = new TestObject();
         expect(obj.one.sender).to.equal(obj);
         expect(obj.two.sender).to.equal(obj);
         expect(obj.three.sender).to.equal(obj);
       });
-
     });
 
     describe('#connect()', () => {
-
       it('should return true on success', () => {
         let obj = new TestObject();
         let handler = new TestHandler();
@@ -132,11 +116,9 @@ describe('@lumino/signaling', () => {
         let c2 = obj.one.connect(handler.onOne, handler);
         expect(c2).to.equal(true);
       });
-
     });
 
     describe('#disconnect()', () => {
-
       it('should return true on success', () => {
         let obj = new TestObject();
         let handler = new TestHandler();
@@ -205,14 +187,14 @@ describe('@lumino/signaling', () => {
         obj.one.emit(undefined);
         expect(handler.oneCount).to.equal(0);
       });
-
     });
 
     describe('#emit()', () => {
-
       it('should be a no-op if there are no connection', () => {
         let obj = new TestObject();
-        expect(() => { obj.one.emit(undefined); }).to.not.throw(Error);
+        expect(() => {
+          obj.one.emit(undefined);
+        }).to.not.throw(Error);
       });
 
       it('should pass the sender and args to the handlers', () => {
@@ -270,7 +252,7 @@ describe('@lumino/signaling', () => {
         expect(names1).to.deep.equal(['foo', 'baz']);
       });
 
-      it('should not invoke signals added during emission', () =>  {
+      it('should not invoke signals added during emission', () => {
         let obj = new TestObject();
         let handler1 = new TestHandler();
         let handler2 = new TestHandler();
@@ -281,7 +263,7 @@ describe('@lumino/signaling', () => {
         let adder = {
           add: () => {
             obj.three.connect(handler3.onThree, handler3);
-          },
+          }
         };
         obj.three.connect(handler1.onThree, handler1);
         obj.three.connect(handler2.onThree, handler2);
@@ -306,7 +288,7 @@ describe('@lumino/signaling', () => {
         let remover = {
           remove: () => {
             obj.three.disconnect(handler3.onThree, handler3);
-          },
+          }
         };
         obj.three.connect(handler1.onThree, handler1);
         obj.three.connect(handler2.onThree, handler2);
@@ -316,11 +298,9 @@ describe('@lumino/signaling', () => {
         obj.three.emit(names);
         expect(names).to.deep.equal(['foo', 'bar']);
       });
-
     });
 
     describe('.disconnectBetween()', () => {
-
       it('should clear all connections between a sender and receiver', () => {
         let obj = new TestObject();
         let handler1 = new TestHandler();
@@ -347,11 +327,9 @@ describe('@lumino/signaling', () => {
       it('should be a no-op if the sender or receiver is not connected', () => {
         expect(() => Signal.disconnectBetween({}, {})).to.not.throw(Error);
       });
-
     });
 
     describe('.disconnectSender()', () => {
-
       it('should disconnect all signals from a specific sender', () => {
         let obj1 = new TestObject();
         let obj2 = new TestObject();
@@ -371,11 +349,9 @@ describe('@lumino/signaling', () => {
       it('should be a no-op if the sender is not connected', () => {
         expect(() => Signal.disconnectSender({})).to.not.throw(Error);
       });
-
     });
 
     describe('.disconnectReceiver()', () => {
-
       it('should disconnect all signals from a specific receiver', () => {
         let obj1 = new TestObject();
         let obj2 = new TestObject();
@@ -400,14 +376,14 @@ describe('@lumino/signaling', () => {
       it('should be a no-op if the receiver is not connected', () => {
         expect(() => Signal.disconnectReceiver({})).to.not.throw(Error);
       });
-
     });
 
     describe('.disconnectAll()', () => {
-
       it('should clear all connections for an object', () => {
         let counter = 0;
-        let onCount = () => { counter++ };
+        let onCount = () => {
+          counter++;
+        };
         let ext1 = new ExtendedObject();
         let ext2 = new ExtendedObject();
         ext1.one.connect(ext1.onNotify, ext1);
@@ -423,14 +399,14 @@ describe('@lumino/signaling', () => {
         expect(ext2.notifyCount).to.equal(1);
         expect(counter).to.equal(1);
       });
-
     });
 
     describe('.clearData()', () => {
-
       it('should clear all signal data associated with an object', () => {
         let counter = 0;
-        let onCount = () => { counter++ };
+        let onCount = () => {
+          counter++;
+        };
         let ext1 = new ExtendedObject();
         let ext2 = new ExtendedObject();
         ext1.one.connect(ext1.onNotify, ext1);
@@ -446,31 +422,31 @@ describe('@lumino/signaling', () => {
         expect(ext2.notifyCount).to.equal(1);
         expect(counter).to.equal(1);
       });
-
     });
 
     describe('.getExceptionHandler()', () => {
-
       it('should default to an exception handler', () => {
         expect(Signal.getExceptionHandler()).to.be.a('function');
       });
-
     });
 
     describe('.setExceptionHandler()', () => {
-
       afterEach(() => {
         Signal.setExceptionHandler(console.error);
       });
 
       it('should set the exception handler', () => {
-        let handler = (err: Error) => { console.error(err); };
+        let handler = (err: Error) => {
+          console.error(err);
+        };
         Signal.setExceptionHandler(handler);
         expect(Signal.getExceptionHandler()).to.equal(handler);
       });
 
       it('should return the old exception handler', () => {
-        let handler = (err: Error) => { console.error(err); };
+        let handler = (err: Error) => {
+          console.error(err);
+        };
         let old1 = Signal.setExceptionHandler(handler);
         let old2 = Signal.setExceptionHandler(old1);
         expect(old1).to.equal(console.error);
@@ -482,14 +458,155 @@ describe('@lumino/signaling', () => {
         let obj = new TestObject();
         let handler = new TestHandler();
         obj.one.connect(handler.onThrow, handler);
-        Signal.setExceptionHandler(() => { called = true; });
+        Signal.setExceptionHandler(() => {
+          called = true;
+        });
         expect(called).to.equal(false);
         obj.one.emit(undefined);
         expect(called).to.equal(true);
       });
-
     });
-
   });
 
+  describe('Stream', () => {
+    describe('#[Symbol.asyncIterator]()', () => {
+      it('should yield emissions', async () => {
+        const stream = new Stream<unknown, string>({});
+        const input = 'async';
+        const expected = 'aINTERRUPTEDsync';
+        const wait = Promise.resolve();
+        let emitted = '';
+        let once = true;
+        stream.connect(() => {
+          if (once) {
+            once = false;
+            stream.emit('I');
+            stream.emit('N');
+            stream.emit('T');
+            stream.emit('E');
+            stream.emit('R');
+            stream.emit('R');
+            stream.emit('U');
+            stream.emit('P');
+            stream.emit('T');
+            stream.emit('E');
+            stream.emit('D');
+          }
+        });
+        input.split('').forEach(x => wait.then(() => stream.emit(x)));
+        wait.then(() => stream.stop());
+        for await (const letter of stream) {
+          emitted = emitted.concat(letter);
+        }
+        expect(emitted).to.equal(expected);
+      });
+
+      it('should return an async iterator', async () => {
+        const stream = new Stream<unknown, string>({});
+        const input = 'iterator';
+        const expected = 'iAHEMterator';
+        const wait = Promise.resolve();
+        let emitted = '';
+        let once = true;
+        stream.connect(() => {
+          if (once) {
+            once = false;
+            stream.emit('A');
+            stream.emit('H');
+            stream.emit('E');
+            stream.emit('M');
+          }
+        });
+        input.split('').forEach(x => wait.then(() => stream.emit(x)));
+        wait.then(() => stream.stop());
+
+        const it = stream[Symbol.asyncIterator]();
+        let emission: IteratorResult<string, any>;
+        while (!(emission = await it.next()).done) {
+          emitted = emitted.concat(emission.value);
+        }
+
+        expect(emitted).to.equal(expected);
+      });
+    });
+
+    describe('#stop()', () => {
+      it('should stop emissions in the async interable', async () => {
+        const stream = new Stream<unknown, string>({});
+        const one = 'alpha';
+        const two = 'beta';
+        const three = 'delta';
+        const expected = 'aINTERRUPTEDlphadelta';
+        const wait = Promise.resolve();
+        let emitted = '';
+        let once = true;
+
+        stream.connect(() => {
+          if (once) {
+            once = false;
+            stream.emit('I');
+            stream.emit('N');
+            stream.emit('T');
+            stream.emit('E');
+            stream.emit('R');
+            stream.emit('R');
+            stream.emit('U');
+            stream.emit('P');
+            stream.emit('T');
+            stream.emit('E');
+            stream.emit('D');
+          }
+        });
+
+        one.split('').forEach(x => wait.then(() => stream.emit(x)));
+        wait.then(() => stream.stop());
+
+        // These should not be collected because the iterator has stopped.
+        two.split('').forEach(x => wait.then(() => stream.emit(x)));
+        wait.then(() => stream.stop());
+
+        for await (const letter of stream) {
+          emitted = emitted.concat(letter);
+        }
+
+        // These should be collected because there is a new iterator.
+        three.split('').forEach(x => wait.then(() => stream.emit(x)));
+        wait.then(() => stream.stop());
+
+        for await (const letter of stream) {
+          emitted = emitted.concat(letter);
+        }
+
+        expect(emitted).to.equal(expected);
+      });
+
+      it('should resolve to `done` in an async iterator', async () => {
+        const stream = new Stream<unknown, string>({});
+        const input = 'stopiterator';
+        const expected = 'sAHEMtopiterator';
+        const wait = Promise.resolve();
+        let emitted = '';
+        let once = true;
+        stream.connect(() => {
+          if (once) {
+            once = false;
+            stream.emit('A');
+            stream.emit('H');
+            stream.emit('E');
+            stream.emit('M');
+          }
+        });
+        input.split('').forEach(x => wait.then(() => stream.emit(x)));
+        wait.then(() => stream.stop());
+
+        const it = stream[Symbol.asyncIterator]();
+        let emission: IteratorResult<string, any>;
+        while (!(emission = await it.next()).done) {
+          emitted = emitted.concat(emission.value);
+        }
+
+        expect(emitted).to.equal(expected);
+      });
+    });
+  });
 });

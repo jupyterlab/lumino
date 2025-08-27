@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 // Copyright (c) Jupyter Development Team.
 // Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
@@ -7,25 +8,24 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import 'es6-promise/auto';  // polyfill Promise on IE
+import { CommandRegistry } from '@lumino/commands';
+
+import { Message, MessageLoop } from '@lumino/messaging';
 
 import {
-  CommandRegistry
-} from '@lumino/commands';
-
-import {
-  Message
-} from '@lumino/messaging';
-
-import {
-  BoxPanel, CommandPalette, ContextMenu, DockPanel, Menu, MenuBar, Widget
+  BoxPanel,
+  CommandPalette,
+  ContextMenu,
+  DockPanel,
+  Menu,
+  MenuBar,
+  TabBar,
+  Widget
 } from '@lumino/widgets';
 
 import '../style/index.css';
 
-
 const commands = new CommandRegistry();
-
 
 function createMenu(): Menu {
   let sub1 = new Menu({ commands });
@@ -63,8 +63,8 @@ function createMenu(): Menu {
   return root;
 }
 
-
 class ContentWidget extends Widget {
+  static menuFocus: ContentWidget | null;
 
   static createNode(): HTMLElement {
     let node = document.createElement('div');
@@ -84,6 +84,10 @@ class ContentWidget extends Widget {
     this.title.label = name;
     this.title.closable = true;
     this.title.caption = `Long description for: ${name}`;
+    let widget = this;
+    this.node.addEventListener('contextmenu', (event: MouseEvent) => {
+      ContentWidget.menuFocus = widget;
+    });
   }
 
   get inputNode(): HTMLInputElement {
@@ -95,11 +99,15 @@ class ContentWidget extends Widget {
       this.inputNode.focus();
     }
   }
+
+  protected onBeforeDetach(msg: Message): void {
+    if (ContentWidget.menuFocus === this) {
+      ContentWidget.menuFocus = null;
+    }
+  }
 }
 
-
 function main(): void {
-
   commands.addCommand('example:cut', {
     label: 'Cut',
     mnemonic: 1,
@@ -158,7 +166,7 @@ function main(): void {
     label: 'Task Manager',
     mnemonic: 5,
     isEnabled: () => false,
-    execute: () => { }
+    execute: () => {}
   });
 
   commands.addCommand('example:close', {
@@ -282,10 +290,15 @@ function main(): void {
   menu3.title.label = 'View';
   menu3.title.mnemonic = 0;
 
+  let emptyMenu = new Menu({ commands });
+  emptyMenu.title.label = 'Empty Menu';
+  emptyMenu.title.mnemonic = 0;
+
   let bar = new MenuBar();
   bar.addMenu(menu1);
   bar.addMenu(menu2);
   bar.addMenu(menu3);
+  bar.addMenu(emptyMenu);
   bar.id = 'menuBar';
 
   let palette = new CommandPalette({ commands });
@@ -302,9 +315,18 @@ function main(): void {
   palette.addItem({ command: 'example:save-on-exit', category: 'File' });
   palette.addItem({ command: 'example:open-task-manager', category: 'File' });
   palette.addItem({ command: 'example:close', category: 'File' });
-  palette.addItem({ command: 'example:clear-cell', category: 'Notebook Cell Operations' });
-  palette.addItem({ command: 'example:cut-cells', category: 'Notebook Cell Operations' });
-  palette.addItem({ command: 'example:run-cell', category: 'Notebook Cell Operations' });
+  palette.addItem({
+    command: 'example:clear-cell',
+    category: 'Notebook Cell Operations'
+  });
+  palette.addItem({
+    command: 'example:cut-cells',
+    category: 'Notebook Cell Operations'
+  });
+  palette.addItem({
+    command: 'example:run-cell',
+    category: 'Notebook Cell Operations'
+  });
   palette.addItem({ command: 'example:cell-test', category: 'Console' });
   palette.addItem({ command: 'notebook:new', category: 'Notebook' });
   palette.id = 'palette';
@@ -312,6 +334,7 @@ function main(): void {
   let contextMenu = new ContextMenu({ commands });
 
   document.addEventListener('contextmenu', (event: MouseEvent) => {
+    if (event.shiftKey) return;
     if (contextMenu.open(event)) {
       event.preventDefault();
     }
@@ -321,16 +344,43 @@ function main(): void {
   contextMenu.addItem({ command: 'example:copy', selector: '.content' });
   contextMenu.addItem({ command: 'example:paste', selector: '.content' });
 
-  contextMenu.addItem({ command: 'example:one', selector: '.lm-CommandPalette' });
-  contextMenu.addItem({ command: 'example:two', selector: '.lm-CommandPalette' });
-  contextMenu.addItem({ command: 'example:three', selector: '.lm-CommandPalette' });
-  contextMenu.addItem({ command: 'example:four', selector: '.lm-CommandPalette' });
-  contextMenu.addItem({ command: 'example:black', selector: '.lm-CommandPalette' });
+  contextMenu.addItem({
+    command: 'example:one',
+    selector: '.lm-CommandPalette'
+  });
+  contextMenu.addItem({
+    command: 'example:two',
+    selector: '.lm-CommandPalette'
+  });
+  contextMenu.addItem({
+    command: 'example:three',
+    selector: '.lm-CommandPalette'
+  });
+  contextMenu.addItem({
+    command: 'example:four',
+    selector: '.lm-CommandPalette'
+  });
+  contextMenu.addItem({
+    command: 'example:black',
+    selector: '.lm-CommandPalette'
+  });
 
-  contextMenu.addItem({ command: 'notebook:new', selector: '.lm-CommandPalette-input' });
-  contextMenu.addItem({ command: 'example:save-on-exit', selector: '.lm-CommandPalette-input' });
-  contextMenu.addItem({ command: 'example:open-task-manager', selector: '.lm-CommandPalette-input' });
-  contextMenu.addItem({ type: 'separator', selector: '.lm-CommandPalette-input' });
+  contextMenu.addItem({
+    command: 'notebook:new',
+    selector: '.lm-CommandPalette-input'
+  });
+  contextMenu.addItem({
+    command: 'example:save-on-exit',
+    selector: '.lm-CommandPalette-input'
+  });
+  contextMenu.addItem({
+    command: 'example:open-task-manager',
+    selector: '.lm-CommandPalette-input'
+  });
+  contextMenu.addItem({
+    type: 'separator',
+    selector: '.lm-CommandPalette-input'
+  });
 
   document.addEventListener('keydown', (event: KeyboardEvent) => {
     commands.processKeydownEvent(event);
@@ -355,7 +405,90 @@ function main(): void {
   dock.addWidget(b2, { mode: 'split-right', ref: y1 });
   dock.id = 'dock';
 
+  dock.addRequested.connect((sender: DockPanel, arg: TabBar<Widget>) => {
+    let w = new ContentWidget('Green');
+    sender.addWidget(w, { ref: arg.titles[0].owner });
+  });
+
+  let doSplit = (mode: DockPanel.InsertMode) => {
+    let ref = ContentWidget.menuFocus;
+    if (ref) {
+      let name = ref.title.label;
+      let widget = new ContentWidget(name);
+      widget.inputNode.value = `${name} ${mode}`;
+      dock.addWidget(widget, { mode: mode, ref: ref });
+    }
+  };
+
+  commands.addCommand('example:split-left', {
+    label: 'Split left',
+    execute: () => doSplit('split-left')
+  });
+
+  commands.addCommand('example:split-right', {
+    label: 'Split right',
+    execute: () => doSplit('split-right')
+  });
+
+  commands.addCommand('example:split-top', {
+    label: 'Split top',
+    execute: () => doSplit('split-top')
+  });
+
+  commands.addCommand('example:split-bottom', {
+    label: 'Split bottom',
+    execute: () => doSplit('split-bottom')
+  });
+
+  commands.addCommand('example:merge-left', {
+    label: 'Merge left',
+    execute: () => doSplit('merge-left')
+  });
+
+  commands.addCommand('example:merge-right', {
+    label: 'Merge right',
+    execute: () => doSplit('merge-right')
+  });
+
+  commands.addCommand('example:merge-top', {
+    label: 'Merge top',
+    execute: () => doSplit('merge-top')
+  });
+
+  commands.addCommand('example:merge-bottom', {
+    label: 'Merge bottom',
+    execute: () => doSplit('merge-bottom')
+  });
+
   let savedLayouts: DockPanel.ILayoutConfig[] = [];
+
+  commands.addCommand('example:add-button', {
+    label: 'Toggle add button',
+    mnemonic: 0,
+    caption: 'Toggle add Button',
+    execute: () => {
+      dock.addButtonEnabled = !dock.addButtonEnabled;
+      console.log('Toggle add button');
+    }
+  });
+
+  contextMenu.addItem({ command: 'example:add-button', selector: '.content' });
+  let contextSub1 = new Menu({ commands });
+  contextSub1.title.label = 'Splitting';
+  contextSub1.addItem({ command: 'example:split-left' });
+  contextSub1.addItem({ command: 'example:split-right' });
+  contextSub1.addItem({ command: 'example:split-top' });
+  contextSub1.addItem({ command: 'example:split-bottom' });
+  contextSub1.addItem({ type: 'separator' });
+  contextSub1.addItem({ command: 'example:merge-left' });
+  contextSub1.addItem({ command: 'example:merge-right' });
+  contextSub1.addItem({ command: 'example:merge-top' });
+  contextSub1.addItem({ command: 'example:merge-bottom' });
+  contextMenu.addItem({
+    type: 'submenu',
+    submenu: contextSub1,
+    selector: '.content'
+  });
 
   commands.addCommand('save-dock-layout', {
     label: 'Save Layout',
@@ -392,11 +525,13 @@ function main(): void {
   main.addWidget(palette);
   main.addWidget(dock);
 
-  window.onresize = () => { main.update(); };
+  window.onresize = () => {
+    MessageLoop.postMessage(bar, new Widget.ResizeMessage(-1, -1));
+    main.update();
+  };
 
   Widget.attach(bar, document.body);
   Widget.attach(main, document.body);
 }
-
 
 window.onload = main;

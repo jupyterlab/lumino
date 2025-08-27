@@ -7,33 +7,17 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  expect
-} from 'chai';
+import { expect } from 'chai';
 
-import {
-  generate, simulate
-} from 'simulate-event';
+import { range } from '@lumino/algorithm';
 
-import {
-  each, range
-} from '@lumino/algorithm';
+import { Message, MessageLoop } from '@lumino/messaging';
 
-import {
-  Message, MessageLoop
-} from '@lumino/messaging';
+import { TabBar, Title, Widget } from '@lumino/widgets';
 
-import {
-  TabBar, Title, Widget
-} from '@lumino/widgets';
-
-import {
-  VirtualDOM, VirtualElement
-} from '@lumino/virtualdom';
-
+import { VirtualDOM, VirtualElement } from '@lumino/virtualdom';
 
 class LogTabBar extends TabBar<Widget> {
-
   events: string[] = [];
 
   methods: string[] = [];
@@ -59,70 +43,83 @@ class LogTabBar extends TabBar<Widget> {
   }
 }
 
-
 function populateBar(bar: TabBar<Widget>): void {
   // Add some tabs with labels.
-  each(range(3), i => {
+  for (const i of range(3)) {
     let widget = new Widget();
     widget.title.label = `Test - ${i}`;
     widget.title.closable = true;
     bar.addTab(widget.title);
-  });
+  }
   // Force the tabs to render
   MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
   // Add the close icon content.
-  each(range(3), i => {
+  for (const i of range(3)) {
     let tab = bar.contentNode.children[i];
     let icon = tab.querySelector(bar.renderer.closeIconSelector);
     icon!.textContent = 'X';
-  });
+  }
 }
 
+type Action = 'pointerdown' | 'pointermove' | 'pointerup' | 'dblclick';
 
 type Direction = 'left' | 'right' | 'up' | 'down';
 
-
-function startDrag(bar: LogTabBar, index = 0, direction: Direction = 'right'): void {
+function startDrag(
+  bar: LogTabBar,
+  index = 0,
+  direction: Direction = 'right'
+): void {
   bar.tabsMovable = true;
   let tab = bar.contentNode.children[index] as HTMLElement;
   bar.currentIndex = index;
   // Force an update.
   MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
-  simulateOnNode(tab, 'mousedown');
-  let called = true;
-  bar.tabDetachRequested.connect((sender, args) => { called = true; });
+  let called = false;
+  bar.tabDetachRequested.connect((sender, args) => {
+    called = true;
+  });
   let rect = bar.contentNode.getBoundingClientRect();
   let args: any;
   switch (direction) {
-  case 'left':
-    args = { clientX: rect.left - 200, clientY: rect.top };
-    break;
-  case 'up':
-    args = { clientX: rect.left, clientY: rect.top - 200 };
-    break;
-  case 'down':
-    args = { clientX: rect.left, clientY: rect.bottom + 200 };
-    break;
-  default:
-    args = { clientX: rect.right + 200, clientY: rect.top };
-    break;
+    case 'left':
+      args = { clientX: rect.left - 200, clientY: rect.top };
+      break;
+    case 'up':
+      args = { clientX: rect.left, clientY: rect.top - 200 };
+      break;
+    case 'down':
+      args = { clientX: rect.left, clientY: rect.bottom + 200 };
+      break;
+    default:
+      args = { clientX: rect.right + 200, clientY: rect.top };
+      break;
   }
-  simulate(document.body, 'mousemove', args);
+  simulateOnNode(tab, 'pointerdown');
+  document.body.dispatchEvent(
+    new PointerEvent('pointermove', {
+      ...args,
+      cancelable: true
+    })
+  );
   expect(called).to.equal(true);
   bar.events = [];
 }
 
-
-function simulateOnNode(node: Element, eventName: string): void {
+function simulateOnNode(node: Element, action: Action): void {
   let rect = node.getBoundingClientRect();
-  simulate(node, eventName, { clientX: rect.left + 1, clientY: rect.top });
+  node.dispatchEvent(
+    new PointerEvent(action, {
+      clientX: rect.left + 1,
+      clientY: rect.top,
+      cancelable: true,
+      bubbles: true
+    })
+  );
 }
 
-
 describe('@lumino/widgets', () => {
-
   describe('TabBar', () => {
-
     let bar: LogTabBar;
 
     beforeEach(() => {
@@ -135,7 +132,6 @@ describe('@lumino/widgets', () => {
     });
 
     describe('#constructor()', () => {
-
       it('should take no arguments', () => {
         let newBar = new TabBar<Widget>();
         expect(newBar).to.be.an.instanceof(TabBar);
@@ -147,6 +143,7 @@ describe('@lumino/widgets', () => {
           orientation: 'horizontal',
           tabsMovable: true,
           allowDeselect: true,
+          addButtonEnabled: true,
           insertBehavior: 'select-tab',
           removeBehavior: 'select-previous-tab',
           renderer
@@ -154,28 +151,25 @@ describe('@lumino/widgets', () => {
         expect(newBar).to.be.an.instanceof(TabBar);
         expect(newBar.tabsMovable).to.equal(true);
         expect(newBar.renderer).to.equal(renderer);
+        expect(newBar.addButtonEnabled).to.equal(true);
       });
 
       it('should add the `lm-TabBar` class', () => {
         let newBar = new TabBar<Widget>();
         expect(newBar.hasClass('lm-TabBar')).to.equal(true);
       });
-
     });
 
     describe('#dispose()', () => {
-
       it('should dispose of the resources held by the widget', () => {
         bar.dispose();
         expect(bar.isDisposed).to.equal(true);
         bar.dispose();
         expect(bar.isDisposed).to.equal(true);
       });
-
     });
 
     describe('#currentChanged', () => {
-
       it('should be emitted when the current tab is changed', () => {
         populateBar(bar);
         let called = false;
@@ -195,7 +189,9 @@ describe('@lumino/widgets', () => {
       it('should not be emitted when another tab is inserted', () => {
         populateBar(bar);
         let called = false;
-        bar.currentChanged.connect((sender, args) => { called = true; });
+        bar.currentChanged.connect((sender, args) => {
+          called = true;
+        });
         let widget = new Widget();
         bar.insertTab(0, widget.title);
         expect(called).to.equal(false);
@@ -205,7 +201,9 @@ describe('@lumino/widgets', () => {
         populateBar(bar);
         let called = false;
         bar.currentIndex = 1;
-        bar.currentChanged.connect((sender, args) => { called = true; });
+        bar.currentChanged.connect((sender, args) => {
+          called = true;
+        });
         bar.removeTab(bar.titles[0]);
         expect(called).to.equal(false);
       });
@@ -213,16 +211,16 @@ describe('@lumino/widgets', () => {
       it('should not be emitted when the current tab is moved', () => {
         populateBar(bar);
         let called = false;
-        bar.currentChanged.connect((sender, args) => { called = true; });
+        bar.currentChanged.connect((sender, args) => {
+          called = true;
+        });
         bar.insertTab(2, bar.titles[0]);
         expect(called).to.equal(false);
       });
-
     });
 
     describe('#tabMoved', () => {
-
-      it('should be emitted when a tab is moved right by the user', (done) => {
+      it('should be emitted when a tab is moved right by the user', done => {
         populateBar(bar);
         let titles = bar.titles.slice();
         bar.tabMoved.connect((sender, args) => {
@@ -233,10 +231,14 @@ describe('@lumino/widgets', () => {
           done();
         });
         startDrag(bar);
-        simulate(document.body, 'mouseup');
+        document.body.dispatchEvent(
+          new PointerEvent('pointerup', {
+            cancelable: true
+          })
+        );
       });
 
-      it('should be emitted when a tab is moved left by the user', (done) => {
+      it('should be emitted when a tab is moved left by the user', done => {
         populateBar(bar);
         let titles = bar.titles.slice();
         bar.tabMoved.connect((sender, args) => {
@@ -247,27 +249,29 @@ describe('@lumino/widgets', () => {
           done();
         });
         startDrag(bar, 2, 'left');
-        simulate(document.body, 'mouseup');
+        document.body.dispatchEvent(new PointerEvent('pointerup'));
       });
 
       it('should not be emitted when a tab is moved programmatically', () => {
         populateBar(bar);
         let called = false;
-        bar.tabMoved.connect((sender, args) => { called = true; });
+        bar.tabMoved.connect((sender, args) => {
+          called = true;
+        });
         bar.insertTab(2, bar.titles[0]);
         expect(called).to.equal(false);
       });
-
     });
 
     describe('#tabActivateRequested', () => {
-
       let tab: HTMLElement;
 
       beforeEach(() => {
         populateBar(bar);
         bar.tabsMovable = false;
-        tab = bar.contentNode.getElementsByClassName('lm-TabBar-tab')[2] as HTMLElement;
+        tab = bar.contentNode.getElementsByClassName(
+          'lm-TabBar-tab'
+        )[2] as HTMLElement;
       });
 
       it('should be emitted when a tab is left pressed by the user', () => {
@@ -281,7 +285,7 @@ describe('@lumino/widgets', () => {
           expect(args.title).to.equal(bar.titles[2]);
           called = true;
         });
-        simulateOnNode(tab, 'mousedown');
+        simulateOnNode(tab, 'pointerdown');
         expect(called).to.equal(true);
       });
 
@@ -290,9 +294,13 @@ describe('@lumino/widgets', () => {
         bar.currentIndex = 1;
         // Force an update.
         MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
-        bar.tabActivateRequested.connect(() => { called++; });
-        bar.currentChanged.connect(() => { called++; });
-        simulateOnNode(tab, 'mousedown');
+        bar.tabActivateRequested.connect(() => {
+          called++;
+        });
+        bar.currentChanged.connect(() => {
+          called++;
+        });
+        simulateOnNode(tab, 'pointerdown');
         expect(bar.currentIndex).to.equal(2);
         expect(called).to.equal(2);
       });
@@ -302,16 +310,16 @@ describe('@lumino/widgets', () => {
         bar.currentIndex = 2;
         // Force an update.
         MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
-        bar.tabActivateRequested.connect(() => { called = true; });
-        simulateOnNode(tab, 'mousedown');
+        bar.tabActivateRequested.connect(() => {
+          called = true;
+        });
+        simulateOnNode(tab, 'pointerdown');
         expect(bar.currentIndex).to.equal(2);
         expect(called).to.equal(true);
       });
-
     });
 
     describe('#tabCloseRequested', () => {
-
       let tab: Element;
       let closeIcon: Element;
 
@@ -331,8 +339,21 @@ describe('@lumino/widgets', () => {
           expect(args.title).to.equal(bar.titles[0]);
           called = true;
         });
-        simulate(closeIcon, 'mousedown', { clientX: rect.left, clientY: rect.top, button: 0 });
-        simulate(closeIcon, 'mouseup', { clientX: rect.left, clientY: rect.top, button: 0 });
+        closeIcon.dispatchEvent(
+          new PointerEvent('pointerdown', {
+            clientX: rect.left,
+            clientY: rect.top,
+            button: 0,
+            bubbles: true
+          })
+        );
+        closeIcon.dispatchEvent(
+          new PointerEvent('pointerup', {
+            clientX: rect.left,
+            clientY: rect.top,
+            button: 0
+          })
+        );
         expect(called).to.equal(true);
       });
 
@@ -345,8 +366,21 @@ describe('@lumino/widgets', () => {
           expect(args.title).to.equal(bar.titles[0]);
           called = true;
         });
-        simulate(tab, 'mousedown', { clientX: rect.left, clientY: rect.top, button: 1 });
-        simulate(tab, 'mouseup', { clientX: rect.left, clientY: rect.top, button: 1 });
+        tab.dispatchEvent(
+          new PointerEvent('pointerdown', {
+            clientX: rect.left,
+            clientY: rect.top,
+            button: 1,
+            bubbles: true
+          })
+        );
+        tab.dispatchEvent(
+          new PointerEvent('pointerup', {
+            clientX: rect.left,
+            clientY: rect.top,
+            button: 1
+          })
+        );
         expect(called).to.equal(true);
       });
 
@@ -362,17 +396,108 @@ describe('@lumino/widgets', () => {
         });
         let rect1 = closeIcon.getBoundingClientRect();
         let rect2 = tab.getBoundingClientRect();
-        simulate(closeIcon, 'mousedown', { clientX: rect1.left, clientY: rect1.top, button: 0 });
-        simulate(closeIcon, 'mouseup', { clientX: rect1.left, clientY: rect1.top, button: 0 });
-        simulate(tab, 'mousedown', { clientX: rect2.left, clientY: rect2.top, button: 1 });
-        simulate(tab, 'mouseup', { clientX: rect2.left, clientY: rect2.top, button: 1 });
+        closeIcon.dispatchEvent(
+          new PointerEvent('pointerdown', {
+            clientX: rect1.left,
+            clientY: rect1.top,
+            button: 0,
+            cancelable: true
+          })
+        );
+        closeIcon.dispatchEvent(
+          new PointerEvent('pointerup', {
+            clientX: rect1.left,
+            clientY: rect1.top,
+            button: 0,
+            cancelable: true
+          })
+        );
+        tab.dispatchEvent(
+          new PointerEvent('pointerdown', {
+            clientX: rect2.left,
+            clientY: rect2.top,
+            button: 1,
+            cancelable: true
+          })
+        );
+        tab.dispatchEvent(
+          new PointerEvent('pointereup', {
+            clientX: rect2.left,
+            clientY: rect2.top,
+            button: 1,
+            cancelable: true
+          })
+        );
         expect(called).to.equal(false);
       });
+    });
 
+    describe('#addRequested', () => {
+      let addButton: Element;
+
+      beforeEach(() => {
+        populateBar(bar);
+        bar.currentIndex = 0;
+        addButton = bar.addButtonNode;
+      });
+
+      it('should be emitted when the add button is clicked', () => {
+        bar.addButtonEnabled = true;
+        let called = false;
+        let rect = addButton.getBoundingClientRect();
+        bar.addRequested.connect((sender, args) => {
+          expect(sender).to.equal(bar);
+          expect(args).to.equal(undefined);
+          called = true;
+        });
+        addButton.dispatchEvent(
+          new PointerEvent('pointerdown', {
+            clientX: rect.left,
+            clientY: rect.top,
+            button: 0,
+            bubbles: true
+          })
+        );
+        addButton.dispatchEvent(
+          new PointerEvent('pointerup', {
+            clientX: rect.left,
+            clientY: rect.top,
+            button: 0
+          })
+        );
+        expect(called).to.equal(true);
+      });
+
+      it('should not be emitted if addButtonEnabled is `false`', () => {
+        bar.addButtonEnabled = false;
+        let called = false;
+        let rect = addButton.getBoundingClientRect();
+        bar.addRequested.connect((sender, args) => {
+          expect(sender).to.equal(bar);
+          expect(args).to.equal(undefined);
+          called = true;
+        });
+        addButton.dispatchEvent(
+          new PointerEvent('pointerdown', {
+            clientX: rect.left,
+            clientY: rect.top,
+            button: 0,
+            cancelable: true
+          })
+        );
+        addButton.dispatchEvent(
+          new PointerEvent('pointerup', {
+            clientX: rect.left,
+            clientY: rect.top,
+            button: 0,
+            cancelable: true
+          })
+        );
+        expect(called).to.equal(false);
+      });
     });
 
     describe('#tabDetachRequested', () => {
-
       let tab: HTMLElement;
 
       beforeEach(() => {
@@ -382,7 +507,7 @@ describe('@lumino/widgets', () => {
       });
 
       it('should be emitted when a tab is dragged beyond the detach threshold', () => {
-        simulateOnNode(tab, 'mousedown');
+        simulateOnNode(tab, 'pointerdown');
         let called = false;
         bar.tabDetachRequested.connect((sender, args) => {
           expect(sender).to.equal(bar);
@@ -393,12 +518,18 @@ describe('@lumino/widgets', () => {
           called = true;
         });
         let rect = bar.contentNode.getBoundingClientRect();
-        simulate(document.body, 'mousemove', { clientX: rect.right + 200, clientY: rect.top });
+        document.body.dispatchEvent(
+          new PointerEvent('pointermove', {
+            clientX: rect.right + 200,
+            clientY: rect.top,
+            cancelable: true
+          })
+        );
         expect(called).to.equal(true);
       });
 
       it('should be handled by calling `releaseMouse` and removing the tab', () => {
-        simulateOnNode(tab, 'mousedown');
+        simulateOnNode(tab, 'pointerdown');
         let called = false;
         bar.tabDetachRequested.connect((sender, args) => {
           bar.releaseMouse();
@@ -406,12 +537,18 @@ describe('@lumino/widgets', () => {
           called = true;
         });
         let rect = bar.contentNode.getBoundingClientRect();
-        simulate(document.body, 'mousemove', { clientX: rect.right + 200, clientY: rect.top });
+        document.body.dispatchEvent(
+          new PointerEvent('pointermove', {
+            clientX: rect.right + 200,
+            clientY: rect.top,
+            cancelable: true
+          })
+        );
         expect(called).to.equal(true);
       });
 
       it('should only be emitted once per drag cycle', () => {
-        simulateOnNode(tab, 'mousedown');
+        simulateOnNode(tab, 'pointerdown');
         let called = 0;
         bar.tabDetachRequested.connect((sender, args) => {
           bar.releaseMouse();
@@ -419,14 +556,26 @@ describe('@lumino/widgets', () => {
           called++;
         });
         let rect = bar.contentNode.getBoundingClientRect();
-        simulate(document.body, 'mousemove', { clientX: rect.right + 200, clientY: rect.top });
+        document.body.dispatchEvent(
+          new PointerEvent('pointermove', {
+            clientX: rect.right + 200,
+            clientY: rect.top,
+            cancelable: true
+          })
+        );
         expect(called).to.equal(1);
-        simulate(document.body, 'mousemove', { clientX: rect.right + 201, clientY: rect.top });
+        document.body.dispatchEvent(
+          new PointerEvent('pointermove', {
+            clientX: rect.right + 201,
+            clientY: rect.top,
+            cancelable: true
+          })
+        );
         expect(called).to.equal(1);
       });
 
       it('should add the `lm-mod-dragging` class to the tab and the bar', () => {
-        simulateOnNode(tab, 'mousedown');
+        simulateOnNode(tab, 'pointerdown');
         let called = false;
         bar.tabDetachRequested.connect((sender, args) => {
           expect(tab.classList.contains('lm-mod-dragging')).to.equal(true);
@@ -434,14 +583,18 @@ describe('@lumino/widgets', () => {
           called = true;
         });
         let rect = bar.contentNode.getBoundingClientRect();
-        simulate(document.body, 'mousemove', { clientX: rect.right + 200, clientY: rect.top });
+        document.body.dispatchEvent(
+          new PointerEvent('pointermove', {
+            clientX: rect.right + 200,
+            clientY: rect.top,
+            cancelable: true
+          })
+        );
         expect(called).to.equal(true);
       });
-
     });
 
     describe('#renderer', () => {
-
       it('should be the tab bar renderer', () => {
         let renderer = Object.create(TabBar.defaultRenderer);
         let bar = new TabBar<Widget>({ renderer });
@@ -452,11 +605,9 @@ describe('@lumino/widgets', () => {
         let bar = new TabBar<Widget>();
         expect(bar.renderer).to.equal(TabBar.defaultRenderer);
       });
-
     });
 
     describe('#tabsMovable', () => {
-
       it('should get whether the tabs are movable by the user', () => {
         let bar = new TabBar<Widget>();
         expect(bar.tabsMovable).to.equal(false);
@@ -474,11 +625,34 @@ describe('@lumino/widgets', () => {
         bar.insertTab(2, titles[0]);
         expect(bar.titles[2]).to.equal(titles[0]);
       });
+    });
 
+    describe('#addButtonEnabled', () => {
+      it('should get whether the add button is enabled', () => {
+        let bar = new TabBar<Widget>();
+        expect(bar.addButtonEnabled).to.equal(false);
+      });
+
+      it('should set whether the add button is enabled', () => {
+        let bar = new TabBar<Widget>();
+        bar.addButtonEnabled = true;
+        expect(bar.addButtonEnabled).to.equal(true);
+      });
+
+      it('should not show the add button if not set', () => {
+        populateBar(bar);
+        expect(bar.addButtonNode.classList.contains('lm-mod-hidden')).to.equal(
+          true
+        );
+
+        bar.addButtonEnabled = true;
+        expect(bar.addButtonNode.classList.contains('lm-mod-hidden')).to.equal(
+          false
+        );
+      });
     });
 
     describe('#allowDeselect', () => {
-
       it('should determine whether a tab can be deselected by the user', () => {
         populateBar(bar);
         bar.allowDeselect = false;
@@ -486,15 +660,17 @@ describe('@lumino/widgets', () => {
         bar.currentIndex = 2;
         // Force the tabs to render
         MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
-        let tab = bar.contentNode.getElementsByClassName('lm-TabBar-tab')[2] as HTMLElement;
-        simulateOnNode(tab, 'mousedown');
+        let tab = bar.contentNode.getElementsByClassName(
+          'lm-TabBar-tab'
+        )[2] as HTMLElement;
+        simulateOnNode(tab, 'pointerdown');
         expect(bar.currentIndex).to.equal(2);
-        simulateOnNode(tab, 'mouseup');
+        simulateOnNode(tab, 'pointerup');
 
         bar.allowDeselect = true;
-        simulateOnNode(tab, 'mousedown');
+        simulateOnNode(tab, 'pointerdown');
         expect(bar.currentIndex).to.equal(-1);
-        simulateOnNode(tab, 'mouseup');
+        simulateOnNode(tab, 'pointerup');
       });
 
       it('should always allow programmatic deselection', () => {
@@ -504,10 +680,19 @@ describe('@lumino/widgets', () => {
         expect(bar.currentIndex).to.equal(-1);
       });
 
+      it('focus should work if there is no current tab', () => {
+        populateBar(bar);
+        bar.allowDeselect = true;
+        const tab = bar.contentNode.firstChild as HTMLElement;
+        expect(bar.currentIndex).to.equal(0);
+        expect(tab.getAttribute('tabindex')).to.equal('0');
+        simulateOnNode(tab, 'pointerdown');
+        expect(bar.currentIndex).to.equal(-1);
+        expect(tab.getAttribute('tabindex')).to.equal('0');
+      });
     });
 
     describe('#insertBehavior', () => {
-
       it('should not change the selection', () => {
         populateBar(bar);
         bar.insertBehavior = 'none';
@@ -539,11 +724,9 @@ describe('@lumino/widgets', () => {
         bar.insertTab(1, new Widget().title);
         expect(bar.currentIndex).to.equal(1);
       });
-
     });
 
     describe('#removeBehavior', () => {
-
       it('should select no tab', () => {
         populateBar(bar);
         bar.removeBehavior = 'none';
@@ -591,11 +774,9 @@ describe('@lumino/widgets', () => {
         bar.removeTabAt(1);
         expect(bar.currentIndex).to.equal(0);
       });
-
     });
 
     describe('#currentTitle', () => {
-
       it('should get the currently selected title', () => {
         populateBar(bar);
         bar.currentIndex = 0;
@@ -616,15 +797,12 @@ describe('@lumino/widgets', () => {
 
       it('should set the title to `null` if the title does not exist', () => {
         populateBar(bar);
-        bar.currentTitle =  new Widget().title;
+        bar.currentTitle = new Widget().title;
         expect(bar.currentTitle).to.equal(null);
       });
-
     });
 
-
     describe('#currentIndex', () => {
-
       it('should get index of the currently selected tab', () => {
         populateBar(bar);
         expect(bar.currentIndex).to.equal(0);
@@ -664,7 +842,7 @@ describe('@lumino/widgets', () => {
         expect(called).to.equal(true);
       });
 
-      it('should schedule an update of the tabs', (done) => {
+      it('should schedule an update of the tabs', done => {
         populateBar(bar);
         requestAnimationFrame(() => {
           bar.currentIndex = 1;
@@ -676,7 +854,7 @@ describe('@lumino/widgets', () => {
         });
       });
 
-      it('should be a no-op if the index does not change', (done) => {
+      it('should be a no-op if the index does not change', done => {
         populateBar(bar);
         requestAnimationFrame(() => {
           bar.currentIndex = 0;
@@ -687,11 +865,9 @@ describe('@lumino/widgets', () => {
           });
         });
       });
-
     });
 
     describe('#orientation', () => {
-
       it('should be the orientation of the tab bar', () => {
         expect(bar.orientation).to.equal('horizontal');
         bar.orientation = 'vertical';
@@ -700,37 +876,37 @@ describe('@lumino/widgets', () => {
 
       it('should set the orientation attribute of the tab bar', () => {
         bar.orientation = 'horizontal';
-        expect(bar.node.getAttribute('data-orientation')).to.equal('horizontal');
+        expect(bar.node.getAttribute('data-orientation')).to.equal(
+          'horizontal'
+        );
         bar.orientation = 'vertical';
         expect(bar.node.getAttribute('data-orientation')).to.equal('vertical');
       });
-
     });
 
     describe('#titles', () => {
-
       it('should get the read-only array of titles in the tab bar', () => {
         let bar = new TabBar<Widget>();
         let widgets = [new Widget(), new Widget(), new Widget()];
-        each(widgets, widget => { bar.addTab(widget.title); });
-        expect(bar.titles.length).to.equal(3);
-        each(bar.titles, (title, i) => {
-          expect(title.owner).to.equal(widgets[i]);
+        widgets.forEach(widget => {
+          bar.addTab(widget.title);
         });
+        expect(bar.titles.length).to.equal(3);
+        for (const [i, title] of bar.titles.entries()) {
+          expect(title.owner).to.equal(widgets[i]);
+        }
       });
-
     });
 
     describe('#contentNode', () => {
-
       it('should get the tab bar content node', () => {
-        expect(bar.contentNode.classList.contains('lm-TabBar-content')).to.equal(true);
+        expect(
+          bar.contentNode.classList.contains('lm-TabBar-content')
+        ).to.equal(true);
       });
-
     });
 
     describe('#addTab()', () => {
-
       it('should add a tab to the end of the tab bar', () => {
         populateBar(bar);
         let title = new Widget().title;
@@ -751,11 +927,9 @@ describe('@lumino/widgets', () => {
         bar.addTab(titles[0]);
         expect(bar.titles[2]).to.equal(titles[0]);
       });
-
     });
 
     describe('#insertTab()', () => {
-
       it('should insert a tab into the tab bar at the specified index', () => {
         populateBar(bar);
         let title = new Widget().title;
@@ -787,7 +961,7 @@ describe('@lumino/widgets', () => {
         expect(bar.titles[1]).to.equal(titles[0]);
       });
 
-      it('should schedule an update of the tabs', (done) => {
+      it('should schedule an update of the tabs', done => {
         let bar = new LogTabBar();
         bar.insertTab(0, new Widget().title);
         requestAnimationFrame(() => {
@@ -796,7 +970,7 @@ describe('@lumino/widgets', () => {
         });
       });
 
-      it('should schedule an update if the title changes', (done) => {
+      it('should schedule an update if the title changes', done => {
         let bar = new LogTabBar();
         let title = new Widget().title;
         bar.insertTab(0, title);
@@ -810,11 +984,9 @@ describe('@lumino/widgets', () => {
           });
         });
       });
-
     });
 
     describe('#removeTab()', () => {
-
       it('should remove a tab from the tab bar by value', () => {
         populateBar(bar);
         let titles = bar.titles.slice();
@@ -827,7 +999,7 @@ describe('@lumino/widgets', () => {
         bar.removeTab(new Widget().title);
       });
 
-      it('should schedule an update of the tabs', (done) => {
+      it('should schedule an update of the tabs', done => {
         let bar = new LogTabBar();
         bar.insertTab(0, new Widget().title);
         requestAnimationFrame(() => {
@@ -839,11 +1011,9 @@ describe('@lumino/widgets', () => {
           });
         });
       });
-
     });
 
     describe('#removeTabAt()', () => {
-
       it('should remove a tab at a specific index', () => {
         populateBar(bar);
         let titles = bar.titles.slice();
@@ -856,7 +1026,7 @@ describe('@lumino/widgets', () => {
         bar.removeTabAt(9);
       });
 
-      it('should schedule an update of the tabs', (done) => {
+      it('should schedule an update of the tabs', done => {
         let bar = new LogTabBar();
         bar.insertTab(0, new Widget().title);
         requestAnimationFrame(() => {
@@ -868,11 +1038,9 @@ describe('@lumino/widgets', () => {
           });
         });
       });
-
     });
 
     describe('#clearTabs()', () => {
-
       it('should remove all tabs from the tab bar', () => {
         populateBar(bar);
         bar.clearTabs();
@@ -902,27 +1070,25 @@ describe('@lumino/widgets', () => {
         populateBar(bar);
         let called = false;
         bar.currentIndex = -1;
-        bar.currentChanged.connect((sender, args) => { called = true; });
+        bar.currentChanged.connect((sender, args) => {
+          called = true;
+        });
         bar.clearTabs();
         expect(called).to.equal(false);
       });
-
     });
 
     describe('#releaseMouse()', () => {
-
       it('should release the mouse and restore the non-dragged tab positions', () => {
         populateBar(bar);
         startDrag(bar, 0, 'left');
         bar.releaseMouse();
-        simulate(document.body, 'mousemove');
-        expect(bar.events.indexOf('mousemove')).to.equal(-1);
+        document.body.dispatchEvent(new PointerEvent('pointermove'));
+        expect(bar.events.indexOf('pointermove')).to.equal(-1);
       });
-
     });
 
     describe('#handleEvent()', () => {
-
       let tab: Element;
       let closeIcon: Element;
 
@@ -935,7 +1101,6 @@ describe('@lumino/widgets', () => {
       });
 
       context('left click', () => {
-
         it('should emit a tab close requested signal', () => {
           let called = false;
           let rect = closeIcon.getBoundingClientRect();
@@ -945,8 +1110,22 @@ describe('@lumino/widgets', () => {
             expect(args.title).to.equal(bar.titles[0]);
             called = true;
           });
-          simulate(closeIcon, 'mousedown', { clientX: rect.left, clientY: rect.top, button: 0 });
-          simulate(closeIcon, 'mouseup', { clientX: rect.left, clientY: rect.top, button: 0 });
+          closeIcon.dispatchEvent(
+            new PointerEvent('pointerdown', {
+              clientX: rect.left,
+              clientY: rect.top,
+              button: 0,
+              bubbles: true
+            })
+          );
+          closeIcon.dispatchEvent(
+            new PointerEvent('pointerup', {
+              clientX: rect.left,
+              clientY: rect.top,
+              button: 0,
+              cancelable: true
+            })
+          );
           expect(called).to.equal(true);
         });
 
@@ -954,18 +1133,50 @@ describe('@lumino/widgets', () => {
           startDrag(bar, 1, 'up');
           let called = false;
           let rect = closeIcon.getBoundingClientRect();
-          bar.tabCloseRequested.connect((sender, args) => { called = true; });
-          simulate(closeIcon, 'mousedown', { clientX: rect.left, clientY: rect.top, button: 0 });
-          simulate(closeIcon, 'mouseup', { clientX: rect.left, clientY: rect.top, button: 0 });
+          bar.tabCloseRequested.connect((sender, args) => {
+            called = true;
+          });
+          closeIcon.dispatchEvent(
+            new PointerEvent('pointerdown', {
+              clientX: rect.left,
+              clientY: rect.top,
+              button: 0,
+              cancelable: true
+            })
+          );
+          closeIcon.dispatchEvent(
+            new PointerEvent('pointerup', {
+              clientX: rect.left,
+              clientY: rect.top,
+              button: 0,
+              cancelable: true
+            })
+          );
           expect(called).to.equal(false);
         });
 
         it('should do nothing if the click is not on a close icon', () => {
           let called = false;
           let rect = closeIcon.getBoundingClientRect();
-          bar.tabCloseRequested.connect((sender, args) => { called = true; });
-          simulate(closeIcon, 'mousedown', { clientX: rect.left, clientY: rect.top, button: 0 });
-          simulate(closeIcon, 'mouseup', { clientX: rect.left - 1, clientY: rect.top - 1, button: 0 });
+          bar.tabCloseRequested.connect((sender, args) => {
+            called = true;
+          });
+          closeIcon.dispatchEvent(
+            new PointerEvent('pointerdown', {
+              clientX: rect.left,
+              clientY: rect.top,
+              button: 0,
+              cancelable: true
+            })
+          );
+          closeIcon.dispatchEvent(
+            new PointerEvent('pointerup', {
+              clientX: rect.left - 1,
+              clientY: rect.top - 1,
+              button: 0,
+              cancelable: true
+            })
+          );
           expect(called).to.equal(false);
           expect(called).to.equal(false);
         });
@@ -974,16 +1185,30 @@ describe('@lumino/widgets', () => {
           let called = false;
           bar.titles[0].closable = false;
           let rect = closeIcon.getBoundingClientRect();
-          bar.tabCloseRequested.connect((sender, args) => { called = true; });
-          simulate(closeIcon, 'mousedown', { clientX: rect.left, clientY: rect.top, button: 0 });
-          simulate(closeIcon, 'mouseup', { clientX: rect.left, clientY: rect.top, button: 0 });
+          bar.tabCloseRequested.connect((sender, args) => {
+            called = true;
+          });
+          closeIcon.dispatchEvent(
+            new PointerEvent('pointerdown', {
+              clientX: rect.left,
+              clientY: rect.top,
+              button: 0,
+              cancelable: true
+            })
+          );
+          closeIcon.dispatchEvent(
+            new PointerEvent('pointerup', {
+              clientX: rect.left,
+              clientY: rect.top,
+              button: 0,
+              cancelable: true
+            })
+          );
           expect(called).to.equal(false);
         });
-
       });
 
       context('middle click', () => {
-
         it('should emit a tab close requested signal', () => {
           let called = false;
           let rect = tab.getBoundingClientRect();
@@ -993,8 +1218,22 @@ describe('@lumino/widgets', () => {
             expect(args.title).to.equal(bar.titles[0]);
             called = true;
           });
-          simulate(tab, 'mousedown', { clientX: rect.left, clientY: rect.top, button: 1 });
-          simulate(tab, 'mouseup', { clientX: rect.left, clientY: rect.top, button: 1 });
+          tab.dispatchEvent(
+            new PointerEvent('pointerdown', {
+              clientX: rect.left,
+              clientY: rect.top,
+              button: 1,
+              bubbles: true
+            })
+          );
+          tab.dispatchEvent(
+            new PointerEvent('pointerup', {
+              clientX: rect.left,
+              clientY: rect.top,
+              button: 1,
+              cancelable: true
+            })
+          );
           expect(called).to.equal(true);
         });
 
@@ -1002,18 +1241,50 @@ describe('@lumino/widgets', () => {
           startDrag(bar, 1, 'up');
           let called = false;
           let rect = tab.getBoundingClientRect();
-          bar.tabCloseRequested.connect((sender, args) => { called = true; });
-          simulate(tab, 'mousedown', { clientX: rect.left, clientY: rect.top, button: 1 });
-          simulate(tab, 'mouseup', { clientX: rect.left, clientY: rect.top, button: 1 });
+          bar.tabCloseRequested.connect((sender, args) => {
+            called = true;
+          });
+          tab.dispatchEvent(
+            new PointerEvent('pointerdown', {
+              clientX: rect.left,
+              clientY: rect.top,
+              button: 1,
+              cancelable: true
+            })
+          );
+          tab.dispatchEvent(
+            new PointerEvent('pointerup', {
+              clientX: rect.left,
+              clientY: rect.top,
+              button: 1,
+              cancelable: true
+            })
+          );
           expect(called).to.equal(false);
         });
 
         it('should do nothing if the click is not on the tab', () => {
           let called = false;
           let rect = tab.getBoundingClientRect();
-          bar.tabCloseRequested.connect((sender, args) => { called = true; });
-          simulate(tab, 'mousedown', { clientX: rect.left, clientY: rect.top, button: 1 });
-          simulate(tab, 'mouseup', { clientX: rect.left - 1, clientY: rect.top - 1, button: 1 });
+          bar.tabCloseRequested.connect((sender, args) => {
+            called = true;
+          });
+          tab.dispatchEvent(
+            new PointerEvent('pointerdown', {
+              clientX: rect.left,
+              clientY: rect.top,
+              button: 1,
+              cancelable: true
+            })
+          );
+          tab.dispatchEvent(
+            new PointerEvent('pointerup', {
+              clientX: rect.left - 1,
+              clientY: rect.top - 1,
+              button: 1,
+              cancelable: true
+            })
+          );
           expect(called).to.equal(false);
           expect(called).to.equal(false);
         });
@@ -1022,86 +1293,135 @@ describe('@lumino/widgets', () => {
           let called = false;
           bar.titles[0].closable = false;
           let rect = tab.getBoundingClientRect();
-          bar.tabCloseRequested.connect((sender, args) => { called = true; });
-          simulate(tab, 'mousedown', { clientX: rect.left, clientY: rect.top, button: 1 });
-          simulate(tab, 'mouseup', { clientX: rect.left, clientY: rect.top, button: 1 });
+          bar.tabCloseRequested.connect((sender, args) => {
+            called = true;
+          });
+          tab.dispatchEvent(
+            new PointerEvent('pointerdown', {
+              clientX: rect.left,
+              clientY: rect.top,
+              button: 1,
+              cancelable: true
+            })
+          );
+          tab.dispatchEvent(
+            new PointerEvent('pointerup', {
+              clientX: rect.left,
+              clientY: rect.top,
+              button: 1,
+              cancelable: true
+            })
+          );
           expect(called).to.equal(false);
         });
-
       });
 
-      context('mousedown', () => {
-
+      context('pointerdown', () => {
         it('should add event listeners if the tabs are movable', () => {
-          simulateOnNode(tab, 'mousedown');
-          simulate(document.body, 'mousemove');
-          expect(bar.events.indexOf('mousemove')).to.not.equal(-1);
+          simulateOnNode(tab, 'pointerdown');
+          document.body.dispatchEvent(new PointerEvent('pointermove'));
+          expect(bar.events.indexOf('pointermove')).to.not.equal(-1);
         });
 
         it('should do nothing if not a left mouse press', () => {
           let rect = tab.getBoundingClientRect();
-          simulate(tab, 'mousedown', { clientX: rect.left, clientY: rect.top, button: 1 });
-          simulate(document.body, 'mousemove');
-          expect(bar.events.indexOf('mousemove')).to.equal(-1);
+          tab.dispatchEvent(
+            new PointerEvent('pointerdown', {
+              clientX: rect.left,
+              clientY: rect.top,
+              button: 1,
+              cancelable: true
+            })
+          );
+          document.body.dispatchEvent(new PointerEvent('pointermove'));
+          expect(bar.events.indexOf('pointermove')).to.equal(-1);
         });
 
         it('should do nothing if the press is not on a tab', () => {
           let rect = tab.getBoundingClientRect();
-          simulate(tab, 'mousedown', { clientX: rect.left - 1, clientY: rect.top });
-          simulate(document.body, 'mousemove');
-          expect(bar.events.indexOf('mousemove')).to.equal(-1);
+          tab.dispatchEvent(
+            new PointerEvent('pointerdown', {
+              clientX: rect.left - 1,
+              clientY: rect.top,
+              cancelable: true
+            })
+          );
+          document.body.dispatchEvent(new PointerEvent('pointermove'));
+          expect(bar.events.indexOf('pointermove')).to.equal(-1);
         });
 
         it('should do nothing if the press is on a close icon', () => {
-          simulateOnNode(closeIcon, 'mousedown');
-          simulate(document.body, 'mousemove');
-          expect(bar.events.indexOf('mousemove')).to.equal(-1);
+          simulateOnNode(closeIcon, 'pointerdown');
+          document.body.dispatchEvent(new PointerEvent('pointermove'));
+          expect(bar.events.indexOf('pointermove')).to.equal(-1);
         });
 
         it('should do nothing if the tabs are not movable', () => {
           bar.tabsMovable = false;
-          simulateOnNode(tab, 'mousedown');
-          simulate(document.body, 'mousemove');
-          expect(bar.events.indexOf('mousemove')).to.equal(-1);
+          simulateOnNode(tab, 'pointerdown');
+          document.body.dispatchEvent(new PointerEvent('pointermove'));
+          expect(bar.events.indexOf('pointermove')).to.equal(-1);
         });
 
         it('should do nothing if there is a drag in progress', () => {
           startDrag(bar, 2, 'down');
           let rect = tab.getBoundingClientRect();
-          let evt = generate('mousedown', { clientX: rect.left, clientY: rect.top });
-          let cancelled = !tab.dispatchEvent(evt);
+          let event = new PointerEvent('pointerdown', {
+            clientX: rect.left,
+            clientY: rect.top,
+            cancelable: true
+          });
+          let cancelled = !tab.dispatchEvent(event);
           expect(cancelled).to.equal(false);
         });
-
       });
 
-      context('mousemove', () => {
-
+      context('pointermove', () => {
         it('should do nothing if there is a drag in progress', () => {
-          simulateOnNode(tab, 'mousedown');
+          simulateOnNode(tab, 'pointerdown');
           let called = 0;
-          bar.tabDetachRequested.connect((sender, args) => { called++; });
+          bar.tabDetachRequested.connect((sender, args) => {
+            called++;
+          });
           let rect = bar.contentNode.getBoundingClientRect();
-          simulate(document.body, 'mousemove', { clientX: rect.right + 200, clientY: rect.top });
+          document.body.dispatchEvent(
+            new PointerEvent('pointermove', {
+              clientX: rect.right + 200,
+              clientY: rect.top,
+              cancelable: true
+            })
+          );
           expect(called).to.equal(1);
-          simulate(document.body, 'mousemove', { clientX: rect.right + 200, clientY: rect.top });
+          document.body.dispatchEvent(
+            new PointerEvent('pointermove', {
+              clientX: rect.right + 200,
+              clientY: rect.top,
+              cancelable: true
+            })
+          );
           expect(called).to.equal(1);
         });
 
         it('should bail if the drag threshold is not exceeded', () => {
-          simulateOnNode(tab, 'mousedown');
+          simulateOnNode(tab, 'pointerdown');
           let called = false;
           bar.tabDetachRequested.connect((sender, args) => {
             bar.releaseMouse();
             called = true;
           });
           let rect = bar.contentNode.getBoundingClientRect();
-          simulate(document.body, 'mousemove', { clientX: rect.right + 1, clientY: rect.top });
+          document.body.dispatchEvent(
+            new PointerEvent('pointermove', {
+              clientX: rect.right + 1,
+              clientY: rect.top,
+              cancelable: true
+            })
+          );
           expect(called).to.equal(false);
         });
 
         it('should emit the detach requested signal if the threshold is exceeded', () => {
-          simulateOnNode(tab, 'mousedown');
+          simulateOnNode(tab, 'pointerdown');
           let called = false;
           bar.tabDetachRequested.connect((sender, args) => {
             expect(sender).to.equal(bar);
@@ -1112,19 +1432,31 @@ describe('@lumino/widgets', () => {
             called = true;
           });
           let rect = bar.contentNode.getBoundingClientRect();
-          simulate(document.body, 'mousemove', { clientX: rect.right + 200, clientY: rect.top });
+          document.body.dispatchEvent(
+            new PointerEvent('pointermove', {
+              clientX: rect.right + 200,
+              clientY: rect.top,
+              cancelable: true
+            })
+          );
           expect(called).to.equal(true);
         });
 
         it('should bail if the signal handler aborted the drag', () => {
-          simulateOnNode(tab, 'mousedown');
+          simulateOnNode(tab, 'pointerdown');
           let called = false;
           bar.tabDetachRequested.connect((sender, args) => {
             bar.releaseMouse();
             called = true;
           });
           let rect = bar.contentNode.getBoundingClientRect();
-          simulate(document.body, 'mousemove', { clientX: rect.right + 200, clientY: rect.top });
+          document.body.dispatchEvent(
+            new PointerEvent('pointermove', {
+              clientX: rect.right + 200,
+              clientY: rect.top,
+              cancelable: true
+            })
+          );
           expect(called).to.equal(true);
           let left = rect.left;
           rect = tab.getBoundingClientRect();
@@ -1132,30 +1464,38 @@ describe('@lumino/widgets', () => {
         });
 
         it('should update the positions of the tabs', () => {
-          simulateOnNode(tab, 'mousedown');
+          simulateOnNode(tab, 'pointerdown');
           let called = false;
-          bar.tabDetachRequested.connect((sender, args) => { called = true; });
+          bar.tabDetachRequested.connect((sender, args) => {
+            called = true;
+          });
           let rect = bar.contentNode.getBoundingClientRect();
-          simulate(document.body, 'mousemove', { clientX: rect.right + 200, clientY: rect.top });
+          document.body.dispatchEvent(
+            new PointerEvent('pointermove', {
+              clientX: rect.right + 200,
+              clientY: rect.top,
+              cancelable: true
+            })
+          );
           expect(called).to.equal(true);
           let left = rect.left;
           rect = tab.getBoundingClientRect();
           expect(left).to.not.equal(rect.left);
         });
-
       });
 
-      context('mouseup', () => {
-
-        it('should emit the `tabMoved` signal', (done) => {
+      context('pointerup', () => {
+        it('should emit the `tabMoved` signal', done => {
           startDrag(bar);
-          simulate(document.body, 'mouseup');
-          bar.tabMoved.connect(() => { done(); });
+          document.body.dispatchEvent(new PointerEvent('pointerup'));
+          bar.tabMoved.connect(() => {
+            done();
+          });
         });
 
-        it('should move the tab to its final position', (done) => {
+        it('should move the tab to its final position', done => {
           startDrag(bar);
-          simulate(document.body, 'mouseup');
+          document.body.dispatchEvent(new PointerEvent('pointerup'));
           let title = bar.titles[0];
           bar.tabMoved.connect(() => {
             expect(bar.titles[2]).to.equal(title);
@@ -1165,59 +1505,465 @@ describe('@lumino/widgets', () => {
 
         it('should cancel a middle mouse release', () => {
           startDrag(bar);
-          let evt = generate('mouseup', { button: 1 });
-          let cancelled = !document.body.dispatchEvent(evt);
+          let event = new PointerEvent('pointerup', {
+            button: 1,
+            cancelable: true
+          });
+          let cancelled = !document.body.dispatchEvent(event);
           expect(cancelled).to.equal(true);
         });
-
       });
 
       context('keydown', () => {
-
         it('should prevent default', () => {
           startDrag(bar);
-          let evt = generate('keydown');
-          let cancelled = !document.body.dispatchEvent(evt);
+          let event = new KeyboardEvent('keydown', { cancelable: true });
+          let cancelled = !document.body.dispatchEvent(event);
           expect(cancelled).to.equal(true);
         });
 
         it('should release the mouse if `Escape` is pressed', () => {
           startDrag(bar);
-          simulate(document.body, 'keydown', { keyCode: 27 });
-          simulateOnNode(tab, 'mousedown');
-          expect(bar.events.indexOf('mousemove')).to.equal(-1);
+          document.body.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              keyCode: 27,
+              cancelable: true
+            })
+          );
+          simulateOnNode(tab, 'pointerdown');
+          expect(bar.events.indexOf('pointermove')).to.equal(-1);
         });
 
+        it('should activate the focused title on Enter', () => {
+          // Focus 3rd tab
+          (bar.contentNode.children[2] as HTMLElement).focus();
+
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              key: 'Enter',
+              cancelable: true,
+              bubbles: true
+            })
+          );
+
+          expect(bar.currentIndex).to.equal(2);
+        });
+
+        it('should activate the focused title on Space', () => {
+          // Focus 2nd tab
+          (bar.contentNode.children[1] as HTMLElement).focus();
+
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              key: ' ',
+              cancelable: true,
+              bubbles: true
+            })
+          );
+
+          expect(bar.currentIndex).to.equal(1);
+        });
+
+        it('should add a tab when Enter is pressed with focus on add button', () => {
+          let addRequested = false;
+          bar.addButtonEnabled = true;
+          bar.addButtonNode.focus();
+
+          bar.addRequested.connect(() => {
+            addRequested = true;
+          });
+
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              key: 'Enter',
+              cancelable: true,
+              bubbles: true
+            })
+          );
+
+          expect(addRequested).to.be.true;
+        });
+
+        it('should add a tab when Space is pressed with focus on add button', () => {
+          let addRequested = false;
+          bar.addButtonEnabled = true;
+          bar.addButtonNode.focus();
+
+          bar.addRequested.connect(() => {
+            addRequested = true;
+          });
+
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              key: ' ',
+              cancelable: true,
+              bubbles: true
+            })
+          );
+
+          expect(addRequested).to.be.true;
+        });
+
+        it('should have the tabindex="0" on the first tab by default', () => {
+          populateBar(bar);
+          const firstTab = bar.contentNode.firstChild as HTMLElement;
+          expect(firstTab.getAttribute('tabindex')).to.equal('0');
+          for (let i = 1; i < bar.titles.length; i++) {
+            let tab = bar.contentNode.children[i] as HTMLElement;
+            expect(tab.getAttribute('tabindex')).to.equal('-1');
+          }
+          expect(bar.addButtonNode.getAttribute('tabindex')).to.equal('-1');
+        });
+
+        it('should have a role attribute of button', () => {
+          populateBar(bar);
+          expect(bar.addButtonNode.getAttribute('role')).to.equal('button');
+        });
+
+        it('should focus the second tab on right arrow keydown', () => {
+          populateBar(bar);
+          const firstTab = bar.contentNode.firstChild as HTMLElement;
+          firstTab.focus();
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              key: 'ArrowRight',
+              cancelable: true,
+              bubbles: true
+            })
+          );
+          expect(firstTab.getAttribute('tabindex')).to.equal('-1');
+          const secondTab = bar.contentNode.children[1] as HTMLElement;
+          expect(secondTab.getAttribute('tabindex')).to.equal('0');
+          expect(document.activeElement).to.equal(secondTab);
+        });
+
+        it('should focus the last tab on left arrow keydown', () => {
+          populateBar(bar);
+          const firstTab = bar.contentNode.firstChild as HTMLElement;
+          firstTab.focus();
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              key: 'ArrowLeft',
+              cancelable: true,
+              bubbles: true
+            })
+          );
+          expect(firstTab.getAttribute('tabindex')).to.equal('-1');
+          const lastTab = bar.contentNode.lastChild as HTMLElement;
+          expect(lastTab.getAttribute('tabindex')).to.equal('0');
+          expect(document.activeElement).to.equal(lastTab);
+        });
+
+        it('should focus the add button on left arrow keydown', () => {
+          bar.addButtonEnabled = true;
+          populateBar(bar);
+          const firstTab = bar.contentNode.firstChild as HTMLElement;
+          firstTab.focus();
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              key: 'ArrowLeft',
+              cancelable: true,
+              bubbles: true
+            })
+          );
+          expect(firstTab.getAttribute('tabindex')).to.equal('-1');
+          expect(bar.addButtonNode.getAttribute('tabindex')).to.equal('0');
+          expect(document.activeElement).to.equal(bar.addButtonNode);
+        });
+
+        it('should be no-op on up and down arrow keydown', () => {
+          populateBar(bar);
+          const firstTab = bar.contentNode.firstChild as HTMLElement;
+          firstTab.focus();
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              key: 'ArrowUp',
+              cancelable: true,
+              bubbles: true
+            })
+          );
+          expect(firstTab.getAttribute('tabindex')).to.equal('0');
+          expect(document.activeElement).to.equal(firstTab);
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              key: 'ArrowDown',
+              cancelable: true,
+              bubbles: true
+            })
+          );
+          expect(firstTab.getAttribute('tabindex')).to.equal('0');
+          expect(document.activeElement).to.equal(firstTab);
+        });
+
+        it('should focus the second tab on down arrow keydown', () => {
+          bar.orientation = 'vertical';
+          populateBar(bar);
+          const firstTab = bar.contentNode.firstChild as HTMLElement;
+          firstTab.focus();
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              key: 'ArrowDown',
+              cancelable: true,
+              bubbles: true
+            })
+          );
+          expect(firstTab.getAttribute('tabindex')).to.equal('-1');
+          const secondTab = bar.contentNode.children[1] as HTMLElement;
+          expect(secondTab.getAttribute('tabindex')).to.equal('0');
+          expect(document.activeElement).to.equal(secondTab);
+        });
+
+        it('should focus the last tab on up arrow keydown', () => {
+          bar.orientation = 'vertical';
+          populateBar(bar);
+          const firstTab = bar.contentNode.firstChild as HTMLElement;
+          firstTab.focus();
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              key: 'ArrowUp',
+              cancelable: true,
+              bubbles: true
+            })
+          );
+          expect(firstTab.getAttribute('tabindex')).to.equal('-1');
+          const lastTab = bar.contentNode.lastChild as HTMLElement;
+          expect(lastTab.getAttribute('tabindex')).to.equal('0');
+          expect(document.activeElement).to.equal(lastTab);
+        });
+
+        it('should be no-op on left and right arrow keydown', () => {
+          bar.orientation = 'vertical';
+          populateBar(bar);
+          const firstTab = bar.contentNode.firstChild as HTMLElement;
+          firstTab.focus();
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              key: 'ArrowLeft',
+              cancelable: true,
+              bubbles: true
+            })
+          );
+          expect(firstTab.getAttribute('tabindex')).to.equal('0');
+          expect(document.activeElement).to.equal(firstTab);
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              key: 'ArrowRight',
+              cancelable: true,
+              bubbles: true
+            })
+          );
+          expect(firstTab.getAttribute('tabindex')).to.equal('0');
+          expect(document.activeElement).to.equal(firstTab);
+        });
+
+        it('should focus the first tab on "Home" keydown', () => {
+          populateBar(bar);
+          const firstTab = bar.contentNode.firstChild as HTMLElement;
+          const lastTab = bar.contentNode.lastChild as HTMLElement;
+          firstTab.setAttribute('tabindex', '-1');
+          lastTab.setAttribute('tabindex', '0');
+          lastTab.focus();
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              key: 'Home',
+              cancelable: true,
+              bubbles: true
+            })
+          );
+          expect(firstTab.getAttribute('tabindex')).to.equal('0');
+          expect(document.activeElement).to.equal(firstTab);
+        });
+
+        it('should focus the last tab on "End" keydown', () => {
+          populateBar(bar);
+          const lastTab = bar.contentNode.lastChild as HTMLElement;
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              key: 'End',
+              cancelable: true,
+              bubbles: true
+            })
+          );
+          expect(lastTab.getAttribute('tabindex')).to.equal('0');
+          expect(document.activeElement).to.equal(lastTab);
+        });
+
+        it('should not change the tabindex values when focusing another element', () => {
+          const node = document.createElement('div');
+          node.setAttribute('tabindex', '0');
+          document.body.append(node);
+          populateBar(bar);
+          const firstTab = bar.contentNode.firstChild as HTMLElement;
+          firstTab.focus();
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              key: 'ArrowRight',
+              cancelable: true,
+              bubbles: true
+            })
+          );
+          node.focus();
+          const secondTab = bar.contentNode.children[1] as HTMLElement;
+          expect(document.activeElement).not.to.equal(secondTab);
+          expect(secondTab.getAttribute('tabindex')).to.equal('0');
+        });
+
+        /**
+         * This test is skipped as it seems there is no way to trigger a change of focus
+         * when simulating tabulation keydown.
+         *
+         * TODO:
+         * Find a way to trigger the change of focus.
+         */
+        /*
+        it.skip('should keep focus on the second tab on tabulation', () => {
+          const node = document.createElement('div');
+          node.setAttribute('tabindex', '0');
+          document.body.append(node);
+          populateBar(bar);
+          const firstTab = bar.contentNode.firstChild as HTMLElement;
+          firstTab.focus();
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              key: 'ArrowRight',
+              cancelable: true,
+              bubbles: true
+            })
+          );
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              key: 'Tab'
+            })
+          );
+          const secondTab = bar.contentNode.children[1] as HTMLElement;
+          expect(document.activeElement).not.to.equal(secondTab);
+          bar.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              key: 'Tab',
+              shiftKey: true
+            })
+          );
+          expect(document.activeElement).to.equal(secondTab);
+        });
+        */
       });
 
       context('contextmenu', () => {
-
         it('should prevent default', () => {
           startDrag(bar);
-          let evt = generate('contextmenu');
-          let cancelled = !document.body.dispatchEvent(evt);
+          let event = new MouseEvent('contextmenu', { cancelable: true });
+          let cancelled = !document.body.dispatchEvent(event);
           expect(cancelled).to.equal(true);
         });
+      });
+    });
 
+    describe('editable title', () => {
+      let title: Title<Widget>;
+
+      const triggerDblClick = (tab: HTMLElement) => {
+        const tabLabel = tab.querySelector(
+          '.lm-TabBar-tabLabel'
+        ) as HTMLElement;
+        expect(tab.querySelector('input')).to.be.null;
+        simulateOnNode(tabLabel, 'dblclick');
+      };
+
+      beforeEach(() => {
+        bar.titlesEditable = true;
+        let owner = new Widget();
+        title = new Title({ owner, label: 'foo', closable: true });
+        bar.addTab(title);
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
       });
 
+      it('titles should be editable', () => {
+        const tab = bar.contentNode.firstChild as HTMLElement;
+        triggerDblClick(tab);
+        const input = tab.querySelector(
+          'input.lm-TabBar-tabInput'
+        ) as HTMLInputElement;
+        expect(input).not.to.be.null;
+        expect(input.value).to.equal(title.label);
+        expect(document.activeElement).to.equal(input);
+      });
+
+      it('title should be edited', () => {
+        const tab = bar.contentNode.firstChild as HTMLElement;
+        triggerDblClick(tab);
+        let input = tab.querySelector(
+          'input.lm-TabBar-tabInput'
+        ) as HTMLInputElement;
+        input.value = 'bar';
+        input.dispatchEvent(
+          new KeyboardEvent('keydown', {
+            key: 'Enter',
+            cancelable: true,
+            bubbles: true
+          })
+        );
+        input = tab.querySelector(
+          'input.lm-TabBar-tabInput'
+        ) as HTMLInputElement;
+        expect(input).to.be.null;
+        expect(title.label).to.equal('bar');
+      });
+
+      it('title edition should be canceled', () => {
+        const tab = bar.contentNode.firstChild as HTMLElement;
+        triggerDblClick(tab);
+        let input = tab.querySelector(
+          'input.lm-TabBar-tabInput'
+        ) as HTMLInputElement;
+        input.value = 'bar';
+        input.dispatchEvent(
+          new KeyboardEvent('keydown', {
+            key: 'Escape',
+            cancelable: true,
+            bubbles: true
+          })
+        );
+        input = tab.querySelector(
+          'input.lm-TabBar-tabInput'
+        ) as HTMLInputElement;
+        expect(input).to.be.null;
+        expect(title.label).to.equal('foo');
+      });
+
+      it('Arrow keys should have no effect on focus during edition', () => {
+        populateBar(bar);
+        const tab = bar.contentNode.firstChild as HTMLElement;
+        triggerDblClick(tab);
+        const input = tab.querySelector(
+          'input.lm-TabBar-tabInput'
+        ) as HTMLInputElement;
+        bar.node.dispatchEvent(
+          new KeyboardEvent('keydown', {
+            key: 'ArrowRight',
+            cancelable: true,
+            bubbles: true
+          })
+        );
+        expect(document.activeElement).to.equal(input);
+      });
     });
 
     describe('#onBeforeAttach()', () => {
-
       it('should add event listeners to the node', () => {
         let bar = new LogTabBar();
         Widget.attach(bar, document.body);
         expect(bar.methods).to.contain('onBeforeAttach');
-        simulate(bar.node, 'mousedown');
-        expect(bar.events.indexOf('mousedown')).to.not.equal(-1);
+        bar.node.dispatchEvent(
+          new PointerEvent('pointerdown', {
+            cancelable: true
+          })
+        );
+        expect(bar.events.indexOf('pointerdown')).to.not.equal(-1);
         bar.dispose();
       });
-
     });
 
     describe('#onAfterDetach()', () => {
-
       it('should remove event listeners', () => {
         let bar = new LogTabBar();
         let owner = new Widget();
@@ -1226,37 +1972,49 @@ describe('@lumino/widgets', () => {
         Widget.attach(bar, document.body);
         let tab = bar.contentNode.firstChild as HTMLElement;
         let rect = tab.getBoundingClientRect();
-        simulate(tab, 'mousedown', { clientX: rect.left, clientY: rect.top });
+        tab.dispatchEvent(
+          new PointerEvent('pointerdown', {
+            clientX: rect.left,
+            clientY: rect.top,
+            cancelable: true
+          })
+        );
         Widget.detach(bar);
         expect(bar.methods).to.contain('onAfterDetach');
-        simulate(document.body, 'mousemove');
-        expect(bar.events.indexOf('mousemove')).to.equal(-1);
-        simulate(document.body, 'mouseup');
-        expect(bar.events.indexOf('mouseup')).to.equal(-1);
+        document.body.dispatchEvent(
+          new PointerEvent('pointermove', {
+            cancelable: true
+          })
+        );
+        expect(bar.events.indexOf('pointermove')).to.equal(-1);
+        document.body.dispatchEvent(
+          new PointerEvent('pointerup', {
+            cancelable: true
+          })
+        );
+        expect(bar.events.indexOf('pointerup')).to.equal(-1);
       });
-
     });
 
     describe('#onUpdateRequest()', () => {
-
       it('should render tabs and set styles', () => {
         populateBar(bar);
         bar.currentIndex = 0;
         MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
         expect(bar.methods.indexOf('onUpdateRequest')).to.not.equal(-1);
-        each(bar.titles, (title, i) => {
+        for (const [i, title] of bar.titles.entries()) {
           let tab = bar.contentNode.children[i] as HTMLElement;
-          let label = tab.getElementsByClassName('lm-TabBar-tabLabel')[0] as HTMLElement;
+          let label = tab.getElementsByClassName(
+            'lm-TabBar-tabLabel'
+          )[0] as HTMLElement;
           expect(label.textContent).to.equal(title.label);
           let current = i === 0;
           expect(tab.classList.contains('lm-mod-current')).to.equal(current);
-        });
+        }
       });
-
     });
 
     describe('.Renderer', () => {
-
       let title: Title<Widget>;
 
       beforeEach(() => {
@@ -1265,31 +2023,36 @@ describe('@lumino/widgets', () => {
           owner,
           label: 'foo',
           closable: true,
-          icon: 'bar',
+          iconClass: 'bar',
           className: 'fizz',
           caption: 'this is a caption'
         });
       });
 
       describe('#closeIconSelector', () => {
-
         it('should be `.lm-TabBar-tabCloseIcon`', () => {
           let renderer = new TabBar.Renderer();
-          expect(renderer.closeIconSelector).to.equal('.lm-TabBar-tabCloseIcon');
+          expect(renderer.closeIconSelector).to.equal(
+            '.lm-TabBar-tabCloseIcon'
+          );
         });
-
       });
 
       describe('#renderTab()', () => {
-
         it('should render a virtual node for a tab', () => {
           let renderer = new TabBar.Renderer();
           let vNode = renderer.renderTab({ title, current: true, zIndex: 1 });
           let node = VirtualDOM.realize(vNode);
 
-          expect(node.getElementsByClassName('lm-TabBar-tabIcon').length).to.equal(1);
-          expect(node.getElementsByClassName('lm-TabBar-tabLabel').length).to.equal(1);
-          expect(node.getElementsByClassName('lm-TabBar-tabCloseIcon').length).to.equal(1);
+          expect(
+            node.getElementsByClassName('lm-TabBar-tabIcon').length
+          ).to.equal(1);
+          expect(
+            node.getElementsByClassName('lm-TabBar-tabLabel').length
+          ).to.equal(1);
+          expect(
+            node.getElementsByClassName('lm-TabBar-tabCloseIcon').length
+          ).to.equal(1);
 
           expect(node.classList.contains('lm-TabBar-tab')).to.equal(true);
           expect(node.classList.contains(title.className)).to.equal(true);
@@ -1297,41 +2060,29 @@ describe('@lumino/widgets', () => {
           expect(node.classList.contains('lm-mod-closable')).to.equal(true);
           expect(node.title).to.equal(title.caption);
 
-          let label = node.getElementsByClassName('lm-TabBar-tabLabel')[0] as HTMLElement;
+          let label = node.getElementsByClassName(
+            'lm-TabBar-tabLabel'
+          )[0] as HTMLElement;
           expect(label.textContent).to.equal(title.label);
 
-          let icon = node.getElementsByClassName('lm-TabBar-tabIcon')[0] as HTMLElement;
+          let icon = node.getElementsByClassName(
+            'lm-TabBar-tabIcon'
+          )[0] as HTMLElement;
           expect(icon.classList.contains(title.iconClass)).to.equal(true);
-
-          /* <DEPRECATED> */
-          // since a string was assigned to .icon, it should alias .iconClass
-          expect(icon.classList.contains(title.icon as string)).to.equal(true);
-          expect(title.icon).to.equal(title.iconClass);
-          /* </DEPRECATED> */
         });
-
       });
 
       describe('#renderIcon()', () => {
-
         it('should render the icon element for a tab', () => {
           let renderer = new TabBar.Renderer();
           let vNode = renderer.renderIcon({ title, current: true, zIndex: 1 });
           let node = VirtualDOM.realize(vNode as VirtualElement);
           expect(node.className).to.contain('lm-TabBar-tabIcon');
           expect(node.classList.contains(title.iconClass)).to.equal(true);
-
-          /* <DEPRECATED> */
-          // make sure that icon and iconClass match
-          expect(node.classList.contains(title.icon as string)).to.equal(true);
-          expect(title.icon).to.equal(title.iconClass);
-          /* </DEPRECATED> */
         });
-
       });
 
       describe('#renderLabel()', () => {
-
         it('should render the label element for a tab', () => {
           let renderer = new TabBar.Renderer();
           let vNode = renderer.renderLabel({ title, current: true, zIndex: 1 });
@@ -1339,84 +2090,78 @@ describe('@lumino/widgets', () => {
           expect(label.className).to.contain('lm-TabBar-tabLabel');
           expect(label.textContent).to.equal(title.label);
         });
-
       });
 
       describe('#renderCloseIcon()', () => {
-
         it('should render the close icon element for a tab', () => {
           let renderer = new TabBar.Renderer();
-          let vNode = renderer.renderCloseIcon({ title, current: true, zIndex: 1 });
+          let vNode = renderer.renderCloseIcon({
+            title,
+            current: true,
+            zIndex: 1
+          });
           let icon = VirtualDOM.realize(vNode);
           expect(icon.className).to.contain('lm-TabBar-tabCloseIcon');
         });
-
       });
 
       describe('#createTabKey()', () => {
-
         it('should create a unique render key for the tab', () => {
           let renderer = new TabBar.Renderer();
           let key = renderer.createTabKey({ title, current: true, zIndex: 1 });
-          let newKey = renderer.createTabKey({ title, current: true, zIndex: 1 });
+          let newKey = renderer.createTabKey({
+            title,
+            current: true,
+            zIndex: 1
+          });
           expect(key).to.equal(newKey);
         });
-
       });
 
       describe('#createTabStyle()', () => {
-
         it('should create the inline style object for a tab', () => {
           let renderer = new TabBar.Renderer();
-          let style = renderer.createTabStyle({ title, current: true, zIndex: 1 });
+          let style = renderer.createTabStyle({
+            title,
+            current: true,
+            zIndex: 1
+          });
           expect(style['zIndex']).to.equal('1');
         });
-
       });
 
       describe('#createTabClass()', () => {
-
         it('should create the class name for the tab', () => {
           let renderer = new TabBar.Renderer();
           let className = renderer.createTabClass({
-            title, current: true, zIndex: 1
+            title,
+            current: true,
+            zIndex: 1
           });
           expect(className).to.contain('lm-TabBar-tab');
           expect(className).to.contain('lm-mod-closable');
           expect(className).to.contain('lm-mod-current');
         });
-
       });
 
       describe('#createIconClass()', () => {
-
         it('should create class name for the tab icon', () => {
           let renderer = new TabBar.Renderer();
           let className = renderer.createIconClass({
-            title, current: true, zIndex: 1
+            title,
+            current: true,
+            zIndex: 1
           });
           expect(className).to.contain('lm-TabBar-tabIcon');
           expect(className).to.contain(title.iconClass);
-
-          /* <DEPRECATED> */
-          // make sure that icon and iconClass match
-          expect(className).to.contain(title.icon as string);
-          expect(title.icon).to.equal(title.iconClass);
-          /* </DEPRECATED> */
         });
-
       });
-
     });
 
     describe('.defaultRenderer', () => {
-
       it('should be an instance of `Renderer`', () => {
         expect(TabBar.defaultRenderer).to.be.an.instanceof(TabBar.Renderer);
       });
-
     });
-
   });
-
 });

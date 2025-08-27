@@ -7,18 +7,11 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  IIterator, some
-} from '@lumino/algorithm';
+import { some } from '@lumino/algorithm';
 
-import {
-  ISignal, Signal
-} from '@lumino/signaling';
+import { ISignal, Signal } from '@lumino/signaling';
 
-import {
-  DataModel
-} from './datamodel';
-
+import { DataModel } from './datamodel';
 
 /**
  * A base class for creating data grid selection models.
@@ -27,8 +20,7 @@ import {
  * If the predefined selection models are insufficient for a particular
  * use case, a custom model can be defined which derives from this class.
  */
-export
-abstract class SelectionModel {
+export abstract class SelectionModel {
   /**
    * Construct a new selection model.
    *
@@ -65,10 +57,12 @@ abstract class SelectionModel {
   /**
    * Move cursor down/up/left/right while making sure it remains
    * within the bounds of selected rectangles
-   * 
+   *
    * @param direction - The direction of the movement.
    */
-  abstract moveCursorWithinSelections(direction: SelectionModel.CursorMoveDirection): void;
+  abstract moveCursorWithinSelections(
+    direction: SelectionModel.CursorMoveDirection
+  ): void;
 
   /**
    * Get the current selection in the selection model.
@@ -88,7 +82,7 @@ abstract class SelectionModel {
    * #### Notes
    * The data grid will render the selections in order.
    */
-  abstract selections(): IIterator<SelectionModel.Selection>;
+  abstract selections(): IterableIterator<SelectionModel.Selection>;
 
   /**
    * Select the specified cells.
@@ -195,7 +189,12 @@ abstract class SelectionModel {
    *
    * The default implementation of this method is a no-op.
    */
-  protected onDataModelChanged(sender: DataModel, args: DataModel.ChangedArgs): void { }
+  protected onDataModelChanged(
+    sender: DataModel,
+    args: DataModel.ChangedArgs
+  ): void {
+    // pass
+  }
 
   /**
    * Emit the `changed` signal for the selection model.
@@ -212,18 +211,15 @@ abstract class SelectionModel {
   private _selectionMode: SelectionModel.SelectionMode = 'cell';
 }
 
-
 /**
  * The namespace for the `SelectionModel` class statics.
  */
-export
-namespace SelectionModel {
+export namespace SelectionModel {
   /**
    * A type alias for the selection mode.
    */
-  export
-  type SelectionMode = 'row' | 'column' | 'cell';
-  
+  export type SelectionMode = 'row' | 'column' | 'cell';
+
   /**
    * A type alias for the cursor move direction.
    */
@@ -232,14 +228,12 @@ namespace SelectionModel {
   /**
    * A type alias for the clear mode.
    */
-  export
-  type ClearMode = 'all' | 'current' | 'none';
+  export type ClearMode = 'all' | 'current' | 'none';
 
   /**
    * A type alias for the select args.
    */
-  export
-  type SelectArgs = {
+  export type SelectArgs = {
     /**
      * The first row of the selection.
      *
@@ -291,8 +285,7 @@ namespace SelectionModel {
   /**
    * A type alias for a selection in a selection model.
    */
-  export
-  type Selection = {
+  export type Selection = {
     /**
      * The first row of the selection.
      *
@@ -325,8 +318,7 @@ namespace SelectionModel {
   /**
    * An options object for initializing a selection model.
    */
-  export
-  interface IOptions {
+  export interface IOptions {
     /**
      * The data model for the selection model.
      */
@@ -341,7 +333,6 @@ namespace SelectionModel {
   }
 }
 
-
 /**
  * The namespace for the module implementation details.
  */
@@ -349,8 +340,10 @@ namespace Private {
   /**
    * Test whether a selection contains a given row.
    */
-  export
-  function containsRow(selection: SelectionModel.Selection, row: number): boolean {
+  export function containsRow(
+    selection: SelectionModel.Selection,
+    row: number
+  ): boolean {
     let { r1, r2 } = selection;
     return (row >= r1 && row <= r2) || (row >= r2 && row <= r1);
   }
@@ -358,8 +351,10 @@ namespace Private {
   /**
    * Test whether a selection contains a given column.
    */
-  export
-  function containsColumn(selection: SelectionModel.Selection, column: number): boolean {
+  export function containsColumn(
+    selection: SelectionModel.Selection,
+    column: number
+  ): boolean {
     let { c1, c2 } = selection;
     return (column >= c1 && column <= c2) || (column >= c2 && column <= c1);
   }
@@ -367,8 +362,11 @@ namespace Private {
   /**
    * Test whether a selection contains a given cell.
    */
-  export
-  function containsCell(selection: SelectionModel.Selection, row: number, column: number): boolean {
+  export function containsCell(
+    selection: SelectionModel.Selection,
+    row: number,
+    column: number
+  ): boolean {
     return containsRow(selection, row) && containsColumn(selection, column);
   }
 }

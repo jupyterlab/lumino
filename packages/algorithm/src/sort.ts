@@ -7,15 +7,11 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  IterableOrArrayLike, each
-} from './iter';
-
 
 /**
  * Topologically sort an iterable of edges.
  *
- * @param edges - The iterable or array-like object of edges to sort.
+ * @param edges - The iterable object of edges to sort.
  *   An edge is represented as a 2-tuple of `[fromNode, toNode]`.
  *
  * @returns The topologically sorted array of nodes.
@@ -38,18 +34,21 @@ import {
  * topologicSort(data);  // ['a', 'b', 'c', 'd', 'e']
  * ```
  */
-export
-function topologicSort<T>(edges: IterableOrArrayLike<[T, T]>): T[] {
+export function topologicSort<T>(edges: Iterable<[T, T]>): T[] {
   // Setup the shared sorting state.
   let sorted: T[] = [];
   let visited = new Set<T>();
   let graph = new Map<T, T[]>();
 
   // Add the edges to the graph.
-  each(edges, addEdge);
+  for (const edge of edges) {
+    addEdge(edge);
+  }
 
   // Visit each node in the graph.
-  graph.forEach((v, k) => { visit(k); });
+  for (const [k] of graph) {
+    visit(k);
+  }
 
   // Return the sorted results.
   return sorted;
@@ -73,7 +72,9 @@ function topologicSort<T>(edges: IterableOrArrayLike<[T, T]>): T[] {
     visited.add(node);
     let children = graph.get(node);
     if (children) {
-      children.forEach(visit);
+      for (const child of children) {
+        visit(child);
+      }
     }
     sorted.push(node);
   }

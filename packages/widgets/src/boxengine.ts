@@ -8,7 +8,6 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
-
 /**
  * A sizer object for use with the box engine layout functions.
  *
@@ -19,8 +18,7 @@
  * For best performance, this class should be treated as a raw data
  * struct. It should not typically be subclassed.
  */
-export
-class BoxSizer {
+export class BoxSizer {
   /**
    * The preferred size for the sizer.
    *
@@ -30,7 +28,7 @@ class BoxSizer {
    * deviation is required to fit into the available layout space.
    *
    * There is no limit to this value, but it will be clamped to the
-   * bounds defined by [[minSize]] and [[maxSize]].
+   * bounds defined by {@link minSize} and {@link maxSize}.
    *
    * The default value is `0`.
    */
@@ -44,7 +42,7 @@ class BoxSizer {
    * it means the sizer will overflow the available layout space.
    *
    * It is assumed that this value lies in the range `[0, Infinity)`
-   * and that it is `<=` to [[maxSize]]. Failure to adhere to this
+   * and that it is `<=` to {@link maxSize}. Failure to adhere to this
    * constraint will yield undefined results.
    *
    * The default value is `0`.
@@ -59,7 +57,7 @@ class BoxSizer {
    * it means the sizer will underflow the available layout space.
    *
    * It is assumed that this value lies in the range `[0, Infinity]`
-   * and that it is `>=` to [[minSize]]. Failure to adhere to this
+   * and that it is `>=` to {@link minSize}. Failure to adhere to this
    * constraint will yield undefined results.
    *
    * The default value is `Infinity`.
@@ -88,7 +86,7 @@ class BoxSizer {
    * The computed size of the sizer.
    *
    * #### Notes
-   * This value is the output of a call to [[boxCalc]]. It represents
+   * This value is the output of a call to {@link BoxEngine.calc}. It represents
    * the computed size for the object along the layout orientation,
    * and will always lie in the range `[minSize, maxSize]`.
    *
@@ -109,12 +107,10 @@ class BoxSizer {
   done = false;
 }
 
-
 /**
  * The namespace for the box engine layout functions.
  */
-export
-namespace BoxEngine {
+export namespace BoxEngine {
   /**
    * Calculate the optimal layout sizes for a sequence of box sizers.
    *
@@ -170,15 +166,14 @@ namespace BoxEngine {
    *   small, and positive if the available space is too large.
    *
    * #### Notes
-   * The [[size]] of each sizer is updated with the computed size.
+   * The {@link BoxSizer.size} of each sizer is updated with the computed size.
    *
    * This function can be called at any time to recompute the layout for
    * an existing sequence of sizers. The previously computed results will
    * have no effect on the new output. It is therefore not necessary to
    * create new sizer objects on each resize event.
    */
-  export
-  function calc(sizers: ArrayLike<BoxSizer>, space: number): number {
+  export function calc(sizers: ArrayLike<BoxSizer>, space: number): number {
     // Bail early if there is nothing to do.
     let count = sizers.length;
     if (count === 0) {
@@ -259,7 +254,7 @@ namespace BoxEngine {
           if (sizer.done || sizer.stretch === 0) {
             continue;
           }
-          let amt = sizer.stretch * distSpace / distStretch;
+          let amt = (sizer.stretch * distSpace) / distStretch;
           if (sizer.size - amt <= sizer.minSize) {
             freeSpace -= sizer.size - sizer.minSize;
             totalStretch -= sizer.stretch;
@@ -311,7 +306,7 @@ namespace BoxEngine {
           if (sizer.done || sizer.stretch === 0) {
             continue;
           }
-          let amt = sizer.stretch * distSpace / distStretch;
+          let amt = (sizer.stretch * distSpace) / distStretch;
           if (sizer.size + amt >= sizer.maxSize) {
             freeSpace -= sizer.maxSize - sizer.size;
             totalStretch -= sizer.stretch;
@@ -368,8 +363,11 @@ namespace BoxEngine {
    * This is useful when implementing box layouts where the boundaries
    * between the sizers are interactively adjustable by the user.
    */
-  export
-  function adjust(sizers: ArrayLike<BoxSizer>, index: number, delta: number): void {
+  export function adjust(
+    sizers: ArrayLike<BoxSizer>,
+    index: number,
+    delta: number
+  ): void {
     // Bail early when there is nothing to do.
     if (sizers.length === 0 || delta === 0) {
       return;
@@ -386,7 +384,11 @@ namespace BoxEngine {
   /**
    * Grow a sizer by a positive delta and adjust neighbors.
    */
-  function growSizer(sizers: ArrayLike<BoxSizer>, index: number, delta: number): void {
+  function growSizer(
+    sizers: ArrayLike<BoxSizer>,
+    index: number,
+    delta: number
+  ): void {
     // Compute how much the items to the left can expand.
     let growLimit = 0;
     for (let i = 0; i <= index; ++i) {
@@ -436,7 +438,11 @@ namespace BoxEngine {
   /**
    * Shrink a sizer by a positive delta and adjust neighbors.
    */
-  function shrinkSizer(sizers: ArrayLike<BoxSizer>, index: number, delta: number): void {
+  function shrinkSizer(
+    sizers: ArrayLike<BoxSizer>,
+    index: number,
+    delta: number
+  ): void {
     // Compute how much the items to the right can expand.
     let growLimit = 0;
     for (let i = index + 1, n = sizers.length; i < n; ++i) {

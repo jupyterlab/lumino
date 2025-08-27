@@ -7,48 +7,42 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  ArrayExt
-} from '@lumino/algorithm';
+import { ArrayExt } from '@lumino/algorithm';
+
+import { CommandRegistry } from '@lumino/commands';
+
+import { JSONExt, ReadonlyJSONObject } from '@lumino/coreutils';
+
+import { ElementExt } from '@lumino/domutils';
+
+import { getKeyboardLayout } from '@lumino/keyboard';
+
+import { Message, MessageLoop } from '@lumino/messaging';
+
+import { ISignal, Signal } from '@lumino/signaling';
 
 import {
-  CommandRegistry
-} from '@lumino/commands';
-
-import {
-  JSONExt, ReadonlyJSONObject
-} from '@lumino/coreutils';
-
-import {
-  ElementExt
-} from '@lumino/domutils';
-
-import {
-  getKeyboardLayout
-} from '@lumino/keyboard';
-
-import {
-  Message, MessageLoop
-} from '@lumino/messaging';
-
-import {
-  ISignal, Signal
-} from '@lumino/signaling';
-
-import {
-  ElementDataset, VirtualDOM, VirtualElement, h
+  ARIAAttrNames,
+  ElementARIAAttrs,
+  ElementDataset,
+  h,
+  VirtualDOM,
+  VirtualElement
 } from '@lumino/virtualdom';
 
-import {
-  Widget
-} from './widget';
+import { Widget } from './widget';
 
+interface IWindowData {
+  pageXOffset: number;
+  pageYOffset: number;
+  clientWidth: number;
+  clientHeight: number;
+}
 
 /**
  * A widget which displays items as a canonical menu.
  */
-export
-class Menu extends Widget {
+export class Menu extends Widget {
   /**
    * Construct a new menu.
    *
@@ -57,9 +51,6 @@ class Menu extends Widget {
   constructor(options: Menu.IOptions) {
     super({ node: Private.createNode() });
     this.addClass('lm-Menu');
-    /* <DEPRECATED> */
-    this.addClass('p-Menu');
-    /* </DEPRECATED> */
     this.setFlag(Widget.Flag.DisallowLayout);
     this.commands = options.commands;
     this.renderer = options.renderer || Menu.defaultRenderer;
@@ -138,6 +129,7 @@ class Menu extends Widget {
    * The root menu of the menu hierarchy.
    */
   get rootMenu(): Menu {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     let menu: Menu = this;
     while (menu._parentMenu) {
       menu = menu._parentMenu;
@@ -149,6 +141,7 @@ class Menu extends Widget {
    * The leaf menu of the menu hierarchy.
    */
   get leafMenu(): Menu {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     let menu: Menu = this;
     while (menu._childMenu) {
       menu = menu._childMenu;
@@ -165,7 +158,9 @@ class Menu extends Widget {
    * Modifying this node directly can lead to undefined behavior.
    */
   get contentNode(): HTMLUListElement {
-    return this.node.getElementsByClassName('lm-Menu-content')[0] as HTMLUListElement;
+    return this.node.getElementsByClassName(
+      'lm-Menu-content'
+    )[0] as HTMLUListElement;
   }
 
   /**
@@ -220,6 +215,14 @@ class Menu extends Widget {
     // Update the active index.
     this._activeIndex = value;
 
+    // Make active element in focus
+    if (
+      this._activeIndex >= 0 &&
+      this.contentNode.childNodes[this._activeIndex]
+    ) {
+      (this.contentNode.childNodes[this._activeIndex] as HTMLElement).focus();
+    }
+
     // schedule an update of the items.
     this.update();
   }
@@ -243,7 +246,10 @@ class Menu extends Widget {
     let start = ai < n - 1 ? ai + 1 : 0;
     let stop = start === 0 ? n - 1 : start - 1;
     this.activeIndex = ArrayExt.findFirstIndex(
-      this._items, Private.canActivate, start, stop
+      this._items,
+      Private.canActivate,
+      start,
+      stop
     );
   }
 
@@ -259,7 +265,10 @@ class Menu extends Widget {
     let start = ai <= 0 ? n - 1 : ai - 1;
     let stop = start === n - 1 ? 0 : start + 1;
     this.activeIndex = ArrayExt.findLastIndex(
-      this._items, Private.canActivate, start, stop
+      this._items,
+      Private.canActivate,
+      start,
+      stop
     );
   }
 
@@ -392,7 +401,7 @@ class Menu extends Widget {
 
     // Bail if the index is out of range.
     if (!item) {
-      return
+      return;
     }
 
     // Schedule an update of the items.
@@ -437,6 +446,12 @@ class Menu extends Widget {
    * fully fit on the screen. If it will not fit, it will be adjusted
    * to fit naturally on the screen.
    *
+   * The menu will be attached under the `host` element in the DOM
+   * (or `document.body` if `host` is `null`) and before the `ref`
+   * element (or as the last child of `host` if `ref` is `null`).
+   * The menu may be displayed outside of the `host` element
+   * following the rules of CSS absolute positioning.
+   *
    * This is a no-op if the menu is already attached to the DOM.
    */
   open(x: number, y: number, options: Menu.IOpenOptions = {}): void {
@@ -445,12 +460,26 @@ class Menu extends Widget {
       return;
     }
 
-    // Extract the position options.
+    // Extract the menu options.
     let forceX = options.forceX || false;
     let forceY = options.forceY || false;
+    const host = options.host ?? null;
+    const ref = options.ref ?? null;
+    const horizontalAlignment =
+      options.horizontalAlignment ??
+      (document.documentElement.dir === 'rtl' ? 'right' : 'left');
 
     // Open the menu as a root menu.
-    Private.openRootMenu(this, x, y, forceX, forceY);
+    Private.openRootMenu(
+      this,
+      x,
+      y,
+      forceX,
+      forceY,
+      horizontalAlignment,
+      host,
+      ref
+    );
 
     // Activate the menu to accept keyboard input.
     this.activate();
@@ -468,28 +497,28 @@ class Menu extends Widget {
    */
   handleEvent(event: Event): void {
     switch (event.type) {
-    case 'keydown':
-      this._evtKeyDown(event as KeyboardEvent);
-      break;
-    case 'mouseup':
-      this._evtMouseUp(event as MouseEvent);
-      break;
-    case 'mousemove':
-      this._evtMouseMove(event as MouseEvent);
-      break;
-    case 'mouseenter':
-      this._evtMouseEnter(event as MouseEvent);
-      break;
-    case 'mouseleave':
-      this._evtMouseLeave(event as MouseEvent);
-      break;
-    case 'mousedown':
-      this._evtMouseDown(event as MouseEvent);
-      break;
-    case 'contextmenu':
-      event.preventDefault();
-      event.stopPropagation();
-      break;
+      case 'keydown':
+        this._evtKeyDown(event as KeyboardEvent);
+        break;
+      case 'mouseup':
+        this._evtMouseUp(event as MouseEvent);
+        break;
+      case 'mousemove':
+        this._evtMouseMove(event as MouseEvent);
+        break;
+      case 'mouseenter':
+        this._evtMouseEnter(event as MouseEvent);
+        break;
+      case 'mouseleave':
+        this._evtMouseLeave(event as MouseEvent);
+        break;
+      case 'mousedown':
+        this._evtMouseDown(event as MouseEvent);
+        break;
+      case 'contextmenu':
+        event.preventDefault();
+        event.stopPropagation();
+        break;
     }
   }
 
@@ -541,7 +570,14 @@ class Menu extends Widget {
       let item = items[i];
       let active = i === activeIndex;
       let collapsed = collapsedFlags[i];
-      content[i] = renderer.renderItem({ item, active, collapsed });
+      content[i] = renderer.renderItem({
+        item,
+        active,
+        collapsed,
+        onfocus: () => {
+          this.activeIndex = i;
+        }
+      });
     }
     VirtualDOM.render(content, this.contentNode);
   }
@@ -817,6 +853,9 @@ class Menu extends Widget {
       return;
     }
 
+    // Prior to any DOM modifications save window data
+    Menu.saveWindowData();
+
     // Ensure the current child menu is closed.
     this._closeChildMenu();
 
@@ -899,6 +938,19 @@ class Menu extends Widget {
     }
   }
 
+  /**
+   * Save window data used for menu positioning in transient cache.
+   *
+   * In order to avoid layout trashing it is recommended to invoke this
+   * method immediately prior to opening the menu and any DOM modifications
+   * (like closing previously visible menu, or adding a class to menu widget).
+   *
+   * The transient cache will be released upon `open()` call.
+   */
+  static saveWindowData(): void {
+    Private.saveWindowData();
+  }
+
   private _childIndex = -1;
   private _activeIndex = -1;
   private _openTimerID = 0;
@@ -910,17 +962,14 @@ class Menu extends Widget {
   private _menuRequested = new Signal<this, 'next' | 'previous'>(this);
 }
 
-
 /**
  * The namespace for the `Menu` class statics.
  */
-export
-namespace Menu {
+export namespace Menu {
   /**
    * An options object for creating a menu.
    */
-  export
-  interface IOptions {
+  export interface IOptions {
     /**
      * The command registry for use with the menu.
      */
@@ -937,8 +986,7 @@ namespace Menu {
   /**
    * An options object for the `open` method on a menu.
    */
-  export
-  interface IOpenOptions {
+  export interface IOpenOptions {
     /**
      * Whether to force the X position of the menu.
      *
@@ -958,19 +1006,39 @@ namespace Menu {
      * The default is `false`.
      */
     forceY?: boolean;
+
+    /**
+     * The DOM node to use as the menu's host.
+     *
+     * If not specified then uses `document.body`.
+     */
+    host?: HTMLElement;
+
+    /**
+     * The child of `host` to use as the reference element.
+     * If this is provided, the menu will be inserted before this
+     * node in the host. The default is `null`, which will cause the
+     * menu to be added as the last child of the host.
+     */
+    ref?: HTMLElement;
+
+    /**
+     * The alignment of the menu.
+     *
+     * The default is `'left'` unless the document `dir` attribute is `'rtl'`
+     */
+    horizontalAlignment?: 'left' | 'right';
   }
 
   /**
    * A type alias for a menu item type.
    */
-  export
-  type ItemType = 'command' | 'submenu' | 'separator';
+  export type ItemType = 'command' | 'submenu' | 'separator';
 
   /**
    * An options object for creating a menu item.
    */
-  export
-  interface IItemOptions {
+  export interface IItemOptions {
     /**
      * The type of the menu item.
      *
@@ -1006,8 +1074,7 @@ namespace Menu {
    * #### Notes
    * Item objects are created automatically by a menu.
    */
-  export
-  interface IItem {
+  export interface IItem {
     /**
      * The type of the menu item.
      */
@@ -1041,8 +1108,7 @@ namespace Menu {
     /**
      * The icon renderer for the menu item.
      */
-    readonly icon: VirtualElement.IRenderer | undefined
-    /* <DEPRECATED> */ | string /* </DEPRECATED> */;
+    readonly icon: VirtualElement.IRenderer | undefined;
 
     /**
      * The icon class for the menu item.
@@ -1093,8 +1159,7 @@ namespace Menu {
   /**
    * An object which holds the data to render a menu item.
    */
-  export
-  interface IRenderData {
+  export interface IRenderData {
     /**
      * The item to be rendered.
      */
@@ -1109,13 +1174,17 @@ namespace Menu {
      * Whether the item should be collapsed.
      */
     readonly collapsed: boolean;
+
+    /**
+     * Handler for when element is in focus.
+     */
+    readonly onfocus?: () => void;
   }
 
   /**
    * A renderer for use with a menu.
    */
-  export
-  interface IRenderer {
+  export interface IRenderer {
     /**
      * Render the virtual element for a menu item.
      *
@@ -1132,13 +1201,7 @@ namespace Menu {
    * #### Notes
    * Subclasses are free to reimplement rendering methods as needed.
    */
-  export
-  class Renderer implements IRenderer {
-    /**
-     * Construct a new renderer.
-     */
-    constructor() { }
-
+  export class Renderer implements IRenderer {
     /**
      * Render the virtual element for a menu item.
      *
@@ -1149,13 +1212,19 @@ namespace Menu {
     renderItem(data: IRenderData): VirtualElement {
       let className = this.createItemClass(data);
       let dataset = this.createItemDataset(data);
-      return (
-        h.li({ className, dataset },
-          this.renderIcon(data),
-          this.renderLabel(data),
-          this.renderShortcut(data),
-          this.renderSubmenu(data)
-        )
+      let aria = this.createItemARIA(data);
+      return h.li(
+        {
+          className,
+          dataset,
+          tabindex: '0',
+          onfocus: data.onfocus,
+          ...aria
+        },
+        this.renderIcon(data),
+        this.renderLabel(data),
+        this.renderShortcut(data),
+        this.renderSubmenu(data)
       );
     }
 
@@ -1169,14 +1238,8 @@ namespace Menu {
     renderIcon(data: IRenderData): VirtualElement {
       let className = this.createIconClass(data);
 
-      /* <DEPRECATED> */
-      if (typeof data.item.icon === 'string') {
-        return h.div({className}, data.item.iconLabel);
-      }
-      /* </DEPRECATED> */
-
-      // if data.item.icon is undefined, it will be ignored
-      return h.div({className}, data.item.icon!, data.item.iconLabel);
+      // If data.item.icon is undefined, it will be ignored.
+      return h.div({ className }, data.item.icon!, data.item.iconLabel);
     }
 
     /**
@@ -1188,12 +1251,7 @@ namespace Menu {
      */
     renderLabel(data: IRenderData): VirtualElement {
       let content = this.formatLabel(data);
-      return h.div({
-        className: 'lm-Menu-itemLabel'
-          /* <DEPRECATED> */
-          + ' p-Menu-itemLabel'
-          /* </DEPRECATED> */
-      }, content);
+      return h.div({ className: 'lm-Menu-itemLabel' }, content);
     }
 
     /**
@@ -1205,12 +1263,7 @@ namespace Menu {
      */
     renderShortcut(data: IRenderData): VirtualElement {
       let content = this.formatShortcut(data);
-      return h.div({
-        className: 'lm-Menu-itemShortcut'
-          /* <DEPRECATED> */
-          + ' p-Menu-itemShortcut'
-          /* </DEPRECATED> */
-      }, content);
+      return h.div({ className: 'lm-Menu-itemShortcut' }, content);
     }
 
     /**
@@ -1221,12 +1274,7 @@ namespace Menu {
      * @returns A virtual element representing the submenu icon.
      */
     renderSubmenu(data: IRenderData): VirtualElement {
-      return h.div({
-        className: 'lm-Menu-itemSubmenuIcon'
-          /* <DEPRECATED> */
-          + ' p-Menu-itemSubmenuIcon'
-          /* </DEPRECATED> */
-      });
+      return h.div({ className: 'lm-Menu-itemSubmenuIcon' });
     }
 
     /**
@@ -1239,40 +1287,22 @@ namespace Menu {
     createItemClass(data: IRenderData): string {
       // Setup the initial class name.
       let name = 'lm-Menu-item';
-      /* <DEPRECATED> */
-      name += ' p-Menu-item';
-      /* </DEPRECATED> */
 
       // Add the boolean state classes.
       if (!data.item.isEnabled) {
         name += ' lm-mod-disabled';
-        /* <DEPRECATED> */
-        name += ' p-mod-disabled';
-        /* </DEPRECATED> */
       }
       if (data.item.isToggled) {
         name += ' lm-mod-toggled';
-        /* <DEPRECATED> */
-        name += ' p-mod-toggled';
-        /* </DEPRECATED> */
       }
       if (!data.item.isVisible) {
         name += ' lm-mod-hidden';
-        /* <DEPRECATED> */
-        name += ' p-mod-hidden';
-        /* </DEPRECATED> */
       }
       if (data.active) {
         name += ' lm-mod-active';
-        /* <DEPRECATED> */
-        name += ' p-mod-active';
-        /* </DEPRECATED> */
       }
       if (data.collapsed) {
         name += ' lm-mod-collapsed';
-        /* <DEPRECATED> */
-        name += ' p-mod-collapsed';
-        /* </DEPRECATED> */
       }
 
       // Add the extra class.
@@ -1312,11 +1342,41 @@ namespace Menu {
      */
     createIconClass(data: IRenderData): string {
       let name = 'lm-Menu-itemIcon';
-      /* <DEPRECATED> */
-      name += ' p-Menu-itemIcon';
-      /* </DEPRECATED> */
       let extra = data.item.iconClass;
       return extra ? `${name} ${extra}` : name;
+    }
+
+    /**
+     * Create the aria attributes for menu item.
+     *
+     * @param data - The data to use for the aria attributes.
+     *
+     * @returns The aria attributes object for the item.
+     */
+    createItemARIA(data: IRenderData): ElementARIAAttrs {
+      let aria: { [T in ARIAAttrNames]?: string } = {};
+      switch (data.item.type) {
+        case 'separator':
+          aria.role = 'presentation';
+          break;
+        case 'submenu':
+          aria['aria-haspopup'] = 'true';
+          if (!data.item.isEnabled) {
+            aria['aria-disabled'] = 'true';
+          }
+          break;
+        default:
+          if (!data.item.isEnabled) {
+            aria['aria-disabled'] = 'true';
+          }
+          if (data.item.isToggled) {
+            aria.role = 'menuitemcheckbox';
+            aria['aria-checked'] = 'true';
+          } else {
+            aria.role = 'menuitem';
+          }
+      }
+      return aria;
     }
 
     /**
@@ -1341,12 +1401,7 @@ namespace Menu {
       let char = label[mnemonic];
 
       // Wrap the mnemonic character in a span.
-      let span = h.span({
-        className: 'lm-Menu-itemMnemonic'
-          /* <DEPRECATED> */
-          + ' p-Menu-itemMnemonic'
-          /* </DEPRECATED> */
-      }, char);
+      let span = h.span({ className: 'lm-Menu-itemMnemonic' }, char);
 
       // Return the content parts.
       return [prefix, span, suffix];
@@ -1361,17 +1416,15 @@ namespace Menu {
      */
     formatShortcut(data: IRenderData): h.Child {
       let kb = data.item.keyBinding;
-      return kb ? kb.keys.map(CommandRegistry.formatKeystroke).join(', ') : null;
+      return kb ? CommandRegistry.formatKeystroke(kb.keys) : null;
     }
   }
 
   /**
    * The default `Renderer` instance.
    */
-  export
-  const defaultRenderer = new Renderer();
+  export const defaultRenderer = new Renderer();
 }
-
 
 /**
  * The namespace for the module implementation details.
@@ -1380,52 +1433,73 @@ namespace Private {
   /**
    * The ms delay for opening and closing a submenu.
    */
-  export
-  const TIMER_DELAY = 300;
+  export const TIMER_DELAY = 300;
 
   /**
    * The horizontal pixel overlap for an open submenu.
    */
-  export
-  const SUBMENU_OVERLAP = 3;
+  export const SUBMENU_OVERLAP = 3;
+
+  let transientWindowDataCache: IWindowData | null = null;
+  let transientCacheCounter: number = 0;
+
+  function getWindowData(): IWindowData {
+    // if transient cache is in use, take one from it
+    if (transientCacheCounter > 0) {
+      transientCacheCounter--;
+      return transientWindowDataCache!;
+    }
+    return _getWindowData();
+  }
+
+  /**
+   * Store window data in transient cache.
+   *
+   * The transient cache will be released upon `getWindowData()` call.
+   * If this function is called multiple times, the cache will be
+   * retained until as many calls to `getWindowData()` were made.
+   *
+   * Note: should be called before any DOM modifications.
+   */
+  export function saveWindowData(): void {
+    transientWindowDataCache = _getWindowData();
+    transientCacheCounter++;
+  }
 
   /**
    * Create the DOM node for a menu.
    */
-  export
-  function createNode(): HTMLDivElement {
+  export function createNode(): HTMLDivElement {
     let node = document.createElement('div');
     let content = document.createElement('ul');
     content.className = 'lm-Menu-content';
-    /* <DEPRECATED> */
-    content.classList.add('p-Menu-content');
-    /* </DEPRECATED> */
     node.appendChild(content);
-    node.tabIndex = -1;
+    content.setAttribute('role', 'menu');
+    node.tabIndex = 0;
     return node;
   }
 
   /**
    * Test whether a menu item can be activated.
    */
-  export
-  function canActivate(item: Menu.IItem): boolean {
+  export function canActivate(item: Menu.IItem): boolean {
     return item.type !== 'separator' && item.isEnabled && item.isVisible;
   }
 
   /**
    * Create a new menu item for an owner menu.
    */
-  export
-  function createItem(owner: Menu, options: Menu.IItemOptions): Menu.IItem {
+  export function createItem(
+    owner: Menu,
+    options: Menu.IItemOptions
+  ): Menu.IItem {
     return new MenuItem(owner.commands, options);
   }
 
   /**
    * Hit test a menu hierarchy starting at the given root.
    */
-  export
-  function hitTestMenus(menu: Menu, x: number, y: number): boolean {
+  export function hitTestMenus(menu: Menu, x: number, y: number): boolean {
     for (let temp: Menu | null = menu; temp; temp = temp.childMenu) {
       if (ElementExt.hitTest(temp.node, x, y)) {
         return true;
@@ -1437,8 +1511,9 @@ namespace Private {
   /**
    * Compute which extra separator items should be collapsed.
    */
-  export
-  function computeCollapsed(items: ReadonlyArray<Menu.IItem>): boolean[] {
+  export function computeCollapsed(
+    items: ReadonlyArray<Menu.IItem>
+  ): boolean[] {
     // Allocate the return array and fill it with `false`.
     let result = new Array<boolean>(items.length);
     ArrayExt.fill(result, false);
@@ -1490,19 +1565,37 @@ namespace Private {
     return result;
   }
 
+  function _getWindowData(): IWindowData {
+    return {
+      pageXOffset: window.pageXOffset,
+      pageYOffset: window.pageYOffset,
+      clientWidth: document.documentElement.clientWidth,
+      clientHeight: document.documentElement.clientHeight
+    };
+  }
+
   /**
    * Open a menu as a root menu at the target location.
    */
-  export
-  function openRootMenu(menu: Menu, x: number, y: number, forceX: boolean, forceY: boolean): void {
+  export function openRootMenu(
+    menu: Menu,
+    x: number,
+    y: number,
+    forceX: boolean,
+    forceY: boolean,
+    horizontalAlignment: 'left' | 'right',
+    host: HTMLElement | null,
+    ref: HTMLElement | null
+  ): void {
+    // Get the current position and size of the main viewport.
+    const windowData = getWindowData();
+    let px = windowData.pageXOffset;
+    let py = windowData.pageYOffset;
+    let cw = windowData.clientWidth;
+    let ch = windowData.clientHeight;
+
     // Ensure the menu is updated before attaching and measuring.
     MessageLoop.sendMessage(menu, Widget.Msg.UpdateRequest);
-
-    // Get the current position and size of the main viewport.
-    let px = window.pageXOffset;
-    let py = window.pageYOffset;
-    let cw = document.documentElement.clientWidth;
-    let ch = document.documentElement.clientHeight;
 
     // Compute the maximum allowed height for the menu.
     let maxHeight = ch - (forceY ? y : 0);
@@ -1512,26 +1605,27 @@ namespace Private {
     let style = node.style;
 
     // Clear the menu geometry and prepare it for measuring.
-    style.top = '';
-    style.left = '';
-    style.width = '';
-    style.height = '';
-    style.visibility = 'hidden';
+    style.opacity = '0';
     style.maxHeight = `${maxHeight}px`;
 
     // Attach the menu to the document.
-    Widget.attach(menu, document.body);
+    Widget.attach(menu, host || document.body, ref);
 
     // Measure the size of the menu.
     let { width, height } = node.getBoundingClientRect();
 
+    // align the menu to the right of the target if requested or language is RTL
+    if (horizontalAlignment === 'right') {
+      x -= width;
+    }
+
     // Adjust the X position of the menu to fit on-screen.
-    if (!forceX && (x + width > px + cw)) {
+    if (!forceX && x + width > px + cw) {
       x = px + cw - width;
     }
 
     // Adjust the Y position of the menu to fit on-screen.
-    if (!forceY && (y + height > py + ch)) {
+    if (!forceY && y + height > py + ch) {
       if (y > py + ch) {
         y = py + ch - height;
       } else {
@@ -1540,26 +1634,25 @@ namespace Private {
     }
 
     // Update the position of the menu to the computed position.
-    style.top = `${Math.max(0, y)}px`;
-    style.left = `${Math.max(0, x)}px`;
+    style.transform = `translate(${Math.max(0, x)}px, ${Math.max(0, y)}px`;
 
     // Finally, make the menu visible on the screen.
-    style.visibility = '';
+    style.opacity = '1';
   }
 
   /**
    * Open a menu as a submenu using an item node for positioning.
    */
-  export
-  function openSubmenu(submenu: Menu, itemNode: HTMLElement): void {
+  export function openSubmenu(submenu: Menu, itemNode: HTMLElement): void {
+    // Get the current position and size of the main viewport.
+    const windowData = getWindowData();
+    let px = windowData.pageXOffset;
+    let py = windowData.pageYOffset;
+    let cw = windowData.clientWidth;
+    let ch = windowData.clientHeight;
+
     // Ensure the menu is updated before opening.
     MessageLoop.sendMessage(submenu, Widget.Msg.UpdateRequest);
-
-    // Get the current position and size of the main viewport.
-    let px = window.pageXOffset;
-    let py = window.pageYOffset;
-    let cw = document.documentElement.clientWidth;
-    let ch = document.documentElement.clientHeight;
 
     // Compute the maximum allowed height for the menu.
     let maxHeight = ch;
@@ -1569,11 +1662,7 @@ namespace Private {
     let style = node.style;
 
     // Clear the menu geometry and prepare it for measuring.
-    style.top = '';
-    style.left = '';
-    style.width = '';
-    style.height = '';
-    style.visibility = 'hidden';
+    style.opacity = '0';
     style.maxHeight = `${maxHeight}px`;
 
     // Attach the menu to the document.
@@ -1605,18 +1694,16 @@ namespace Private {
     }
 
     // Update the position of the menu to the computed position.
-    style.top = `${Math.max(0, y)}px`;
-    style.left = `${Math.max(0, x)}px`;
+    style.transform = `translate(${Math.max(0, x)}px, ${Math.max(0, y)}px`;
 
     // Finally, make the menu visible on the screen.
-    style.visibility = '';
+    style.opacity = '1';
   }
 
   /**
    * The results of a mnemonic search.
    */
-  export
-  interface IMnemonicResult {
+  export interface IMnemonicResult {
     /**
      * The index of the first matching mnemonic item, or `-1`.
      */
@@ -1638,8 +1725,11 @@ namespace Private {
    *
    * The search starts at the given index and wraps around.
    */
-  export
-  function findMnemonic(items: ReadonlyArray<Menu.IItem>, key: string, start: number): IMnemonicResult {
+  export function findMnemonic(
+    items: ReadonlyArray<Menu.IItem>,
+    key: string,
+    start: number
+  ): IMnemonicResult {
     // Setup the result variables.
     let index = -1;
     let auto = -1;
@@ -1756,24 +1846,14 @@ namespace Private {
     /**
      * The icon renderer for the menu item.
      */
-    get icon(): VirtualElement.IRenderer | undefined
-    /* <DEPRECATED> */ | string /* </DEPRECATED> */
-    {
+    get icon(): VirtualElement.IRenderer | undefined {
       if (this.type === 'command') {
         return this._commands.icon(this.command, this.args);
       }
       if (this.type === 'submenu' && this.submenu) {
         return this.submenu.title.icon;
       }
-
-      /* <DEPRECATED> */
-      // alias to icon class if not otherwise defined
-      return this.iconClass;
-      /* </DEPRECATED> */
-
-      /* <FUTURE>
       return undefined;
-      </FUTURE> */
     }
 
     /**
@@ -1801,7 +1881,6 @@ namespace Private {
       }
       return '';
     }
-
 
     /**
      * The display caption for the menu item.
@@ -1884,9 +1963,11 @@ namespace Private {
     get keyBinding(): CommandRegistry.IKeyBinding | null {
       if (this.type === 'command') {
         let { command, args } = this;
-        return ArrayExt.findLastValue(this._commands.keyBindings, kb => {
-          return kb.command === command && JSONExt.deepEqual(kb.args, args);
-        }) || null;
+        return (
+          ArrayExt.findLastValue(this._commands.keyBindings, kb => {
+            return kb.command === command && JSONExt.deepEqual(kb.args, args);
+          }) || null
+        );
       }
       return null;
     }

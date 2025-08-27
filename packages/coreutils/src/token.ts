@@ -8,7 +8,6 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
-
 /**
  * A runtime object which captures compile-time type information.
  *
@@ -16,17 +15,23 @@
  * A token captures the compile-time type of an interface or class in
  * an object which can be used at runtime in a type-safe fashion.
  */
-export
-class Token<T> {
+export class Token<T> {
   /**
    * Construct a new token.
    *
    * @param name - A human readable name for the token.
+   * @param description - Token purpose description for documentation.
    */
-  constructor(name: string) {
+  constructor(name: string, description?: string) {
     this.name = name;
+    this.description = description ?? '';
     this._tokenStructuralPropertyT = null!;
   }
+
+  /**
+   * Token purpose description.
+   */
+  readonly description?: string; // FIXME remove `?` for the next major version
 
   /**
    * The human readable name for the token.
@@ -36,6 +41,7 @@ class Token<T> {
    */
   readonly name: string;
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   private _tokenStructuralPropertyT: T;
 }

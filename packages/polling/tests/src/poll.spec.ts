@@ -8,7 +8,7 @@ import { IPoll, Poll } from '@lumino/polling';
 /**
  * Return a promise that resolves in the given milliseconds with the given value.
  */
-function sleep<T>(milliseconds: number = 0, value?: T): Promise<T> {
+function sleep<T>(milliseconds: number = 0, value?: T): Promise<T | undefined> {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       resolve(value);
@@ -17,10 +17,11 @@ function sleep<T>(milliseconds: number = 0, value?: T): Promise<T> {
 }
 
 describe('Poll', () => {
-  let poll: Poll;
+  let poll: Poll | undefined;
 
   afterEach(() => {
-    poll.dispose();
+    poll?.dispose();
+    poll = undefined;
   });
 
   describe('#constructor()', () => {
@@ -65,7 +66,7 @@ describe('Poll', () => {
         ticker.push(tick.phase);
       });
       expect(poll.state.phase).to.equal('constructed');
-      await sleep(250); // Sleep for longer than the interval.
+      await sleep(1000); // Sleep for longer than the interval.
       expect(ticker.join(' ')).to.equal(expected);
     });
 
@@ -127,16 +128,67 @@ describe('Poll', () => {
         });
         expect(poll.frequency.max).to.equal(max);
       });
-      it('should default max to 30s', () => {
-        const interval = 500;
-        const max = 30 * 1000;
+
+      it('should normalize max to be biggest of default, max, interval', () => {
+        const interval = 25 * 1000;
+        const max = 20 * 1000;
         poll = new Poll({
           frequency: { interval },
           factory: () => Promise.resolve(),
-          name: '@lumino/polling:Poll#frequency:max-2'
+          name: '@lumino/polling:Poll#frequency:max-3'
         });
-        expect(poll.frequency.max).to.equal(max);
+        expect(poll.frequency.max).to.not.equal(max);
+        expect(poll.frequency.max).to.equal(30 * 1000); // Poll default max
       });
+
+      it('should normalize max to be biggest of default, max, interval', () => {
+        const interval = 40 * 1000;
+        const max = 20 * 1000;
+        poll = new Poll({
+          frequency: { interval },
+          factory: () => Promise.resolve(),
+          name: '@lumino/polling:Poll#frequency:max-4'
+        });
+        expect(poll.frequency.max).to.not.equal(max);
+        expect(poll.frequency.max).to.equal(interval);
+      });
+    });
+  });
+
+  describe('#hidden', () => {
+    class HiddenPoll extends Poll {
+      get hidden(): boolean {
+        return true;
+      }
+    }
+
+    it('should tick `linger` times when the document is hidden', async () => {
+      const total = 24;
+      const linger = 19;
+      const ticker: IPoll.Phase<any>[] = [];
+      const expected = `started${' resolved'.repeat(linger)}${' standby'.repeat(
+        total - linger
+      )}`;
+      let lingered = 0;
+      const poll = new HiddenPoll({
+        auto: false,
+        factory: async () => lingered++,
+        frequency: { interval: Poll.IMMEDIATE },
+        linger,
+        standby: 'when-hidden',
+        name: '@lumino/polling:Poll#hidden-1'
+      });
+      poll.ticked.connect((_, tick) => {
+        ticker.push(tick.phase);
+      });
+      await poll.start();
+      let i = 0;
+      while (i++ < total) {
+        await poll.tick;
+      }
+      expect(ticker.join(' ')).to.equal(expected);
+      expect(lingered).to.equal(linger);
+      poll.dispose();
     });
   });
 
@@ -181,12 +233,77 @@ describe('Poll', () => {
     });
   });
 
+  describe('#[Symbol.asyncIterator]', () => {
+    it('should yield after each tick', async () => {
+      const total = 15;
+      let i = 0;
+      poll = new Poll({
+        auto: false,
+        factory: async () => (++i > total ? poll?.stop() : undefined),
+        frequency: { interval: Poll.IMMEDIATE },
+        name: '@lumino/polling:Poll#[Symbol.asyncIterator]-1'
+      });
+      const expected = `started ${'resolved '.repeat(total)}stopped`;
+      const ticker: IPoll.Phase<any>[] = [];
+      void poll.start();
+      for await (const state of poll) {
+        ticker.push(state.phase);
+        if (state.phase === 'stopped') {
+          break;
+        }
+      }
+      expect(ticker.join(' ')).to.equal(expected);
+    });
+
+    it('should yield rejections', async () => {
+      const total = 11;
+      let i = 0;
+      poll = new Poll({
+        auto: false,
+        factory: async () => (++i > total ? poll!.stop() : Promise.reject()),
+        frequency: { interval: Poll.IMMEDIATE },
+        name: '@lumino/polling:Poll#[Symbol.asyncIterator]-2'
+      });
+      const expected = `started ${'rejected '.repeat(total)}stopped`;
+      const ticker: IPoll.Phase<any>[] = [];
+      void poll.start();
+      for await (const state of poll) {
+        ticker.push(state.phase);
+        if (state.phase === 'stopped') {
+          break;
+        }
+      }
+      expect(ticker.join(' ')).to.equal(expected);
+    });
+
+    it('should yield until disposed', async () => {
+      const total = 7;
+      let i = 0;
+      poll = new Poll({
+        auto: false,
+        factory: async () => (++i > total ? poll!.dispose() : undefined),
+        frequency: { interval: Poll.IMMEDIATE },
+        name: '@lumino/polling:Poll#[Symbol.asyncIterator]-3'
+      });
+      const expected = `started${' resolved'.repeat(total)}`;
+      const ticker: IPoll.Phase<any>[] = [];
+      void poll.start();
+      for await (const state of poll) {
+        ticker.push(state.phase);
+        if (poll.isDisposed) {
+          break;
+        }
+      }
+      expect(ticker.join(' ')).to.equal(expected);
+    });
+  });
+
   describe('#tick', () => {
     it('should resolve after a tick', async () => {
       poll = new Poll({
         auto: false,
         factory: () => Promise.resolve(),
-        frequency: { interval: 200, backoff: false },
+        frequency: { interval: 100, backoff: false },
         name: '@lumino/polling:Poll#tick-1'
       });
       const expected = 'started resolved resolved';
@@ -197,8 +314,8 @@ describe('Poll', () => {
       };
       void poll.tick.then(tock);
       void poll.start();
-      await sleep(250); // Sleep for longer than the interval.
-      expect(ticker.join(' ')).to.equal(expected);
+      await sleep(1000); // Sleep for longer than the interval.
+      expect(ticker.join(' ').startsWith(expected)).to.equal(true);
     });
 
     it('should resolve after `ticked` emits in lock step', async () => {
@@ -214,14 +331,14 @@ describe('Poll', () => {
         ticker.push(state.phase);
         expect(ticker.length).to.equal(tocker.length + 1);
       });
-      const tock = async (poll: Poll) => {
+      const tock = (poll: Poll): void => {
         tocker.push(poll.state.phase);
         expect(ticker.join(' ')).to.equal(tocker.join(' '));
-        poll.tick.then(tock).catch(() => undefined);
+        poll.tick.then(tock);
       };
       // Kick off the promise listener, but void its settlement to verify that
       // the poll's internal sync of the promise and the signal is correct.
-      void poll.tick.then(tock);
+      poll.tick.then(tock);
       await poll.stop();
       await poll.start();
       await poll.tick;
@@ -234,7 +351,7 @@ describe('Poll', () => {
       await poll.stop();
       await poll.start();
       await poll.tick;
-      await sleep(100);
+      await sleep(250);
       await poll.tick;
       expect(ticker.join(' ')).to.equal(tocker.join(' '));
     });
@@ -247,10 +364,10 @@ describe('Poll', () => {
         frequency: { interval: 100, backoff: false },
         name: '@lumino/polling:Poll#ticked-3'
       });
-      poll.ticked.connect((_, tick) => {
+      poll.ticked.connect((poll, tick) => {
         expect(tick).to.equal(poll.state);
       });
-      await sleep(250);
+      await sleep(1000); // Sleep for longer than the interval.
     });
   });
 

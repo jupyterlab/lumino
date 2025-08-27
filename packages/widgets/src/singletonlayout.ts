@@ -7,22 +7,11 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  IIterator, each, empty, once
-} from '@lumino/algorithm';
+import { MessageLoop } from '@lumino/messaging';
 
-import {
-  MessageLoop
-} from '@lumino/messaging';
+import { Layout } from './layout';
 
-import {
-  Layout
-} from './layout';
-
-import {
-  Widget
-} from './widget';
-
+import { Widget } from './widget';
 
 /**
  * A concrete layout implementation which holds a single widget.
@@ -31,8 +20,7 @@ import {
  * This class is useful for creating simple container widgets which
  * hold a single child. The child should be positioned with CSS.
  */
-export
-class SingletonLayout extends Layout {
+export class SingletonLayout extends Layout {
   /**
    * Dispose of the resources held by the layout.
    */
@@ -91,8 +79,10 @@ class SingletonLayout extends Layout {
    *
    * @returns A new iterator over the widgets in the layout.
    */
-  iter(): IIterator<Widget> {
-    return this._widget ? once(this._widget) : empty<Widget>();
+  *[Symbol.iterator](): IterableIterator<Widget> {
+    if (this._widget) {
+      yield this._widget;
+    }
   }
 
   /**
@@ -128,13 +118,13 @@ class SingletonLayout extends Layout {
    */
   protected init(): void {
     super.init();
-    each(this, widget => { this.attachWidget(widget); });
+    for (const widget of this) {
+      this.attachWidget(widget);
+    }
   }
 
   /**
    * Attach a widget to the parent's DOM node.
-   *
-   * @param index - The current index of the widget in the layout.
    *
    * @param widget - The widget to attach to the parent.
    *

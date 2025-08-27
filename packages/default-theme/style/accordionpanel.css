@@ -1,0 +1,56 @@
+/*
+ * Copyright (c) Jupyter Development Team.
+ * Distributed under the terms of the Modified BSD License.
+ */
+
+.lm-AccordionPanel .lm-AccordionPanel-title {
+  box-sizing: border-box;
+  padding: 0px 10px;
+  background: #e5e5e5;
+  border: 1px solid #c0c0c0;
+  border-bottom: none;
+  font:
+    12px Helvetica,
+    Arial,
+    sans-serif;
+  min-height: 22px;
+  max-height: 22px;
+  min-width: 35px;
+  line-height: 20px;
+  margin: 0px;
+}
+
+.lm-AccordionPanel .lm-AccordionPanel-title:focus,
+.lm-AccordionPanel .lm-AccordionPanel-title:hover {
+  background: #dbdbdb;
+}
+
+.lm-AccordionPanel .lm-AccordionPanel-title:focus,
+.lm-AccordionPanel
+  .lm-AccordionPanel-title:last-of-type:focus:not(.lm-mod-expanded) {
+  border: 1px solid lightskyblue;
+}
+
+.lm-AccordionPanel .lm-AccordionPanel-title:last-of-type:not(.lm-mod-expanded) {
+  border-bottom: 1px solid #c0c0c0;
+}
+
+.lm-AccordionPanel
+  .lm-AccordionPanel-title.lm-mod-expanded
+  .lm-AccordionPanel-titleCollapser:before {
+  content: '\f0d8';
+  font-family: FontAwesome;
+}
+
+.lm-AccordionPanel
+  .lm-AccordionPanel-title
+  .lm-AccordionPanel-titleCollapser:before {
+  content: '\f0d7';
+  font-family: FontAwesome;
+  position: absolute;
+  right: 10px;
+}
+
+.lm-AccordionPanel .lm-AccordionPanel-titleLabel {
+  padding: 0px 5px;
+}

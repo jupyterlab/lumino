@@ -7,21 +7,12 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  IIterable, IIterator, IRetroable, IterableOrArrayLike, each
-} from '@lumino/algorithm';
-
+import { IRetroable } from '@lumino/algorithm';
 
 /**
  * A generic doubly-linked list.
  */
-export
-class LinkedList<T> implements IIterable<T>, IRetroable<T> {
-  /**
-   * Construct a new linked list.
-   */
-  constructor() { }
-
+export class LinkedList<T> implements Iterable<T>, IRetroable<T> {
   /**
    * Whether the list is empty.
    *
@@ -116,8 +107,12 @@ class LinkedList<T> implements IIterable<T>, IRetroable<T> {
    * #### Complexity
    * Constant.
    */
-  iter(): IIterator<T> {
-    return new LinkedList.ForwardValueIterator<T>(this._first);
+  *[Symbol.iterator](): IterableIterator<T> {
+    let node = this._first;
+    while (node) {
+      yield node.value;
+      node = node.next;
+    }
   }
 
   /**
@@ -128,8 +123,12 @@ class LinkedList<T> implements IIterable<T>, IRetroable<T> {
    * #### Complexity
    * Constant.
    */
-  retro(): IIterator<T> {
-    return new LinkedList.RetroValueIterator<T>(this._last);
+  *retro(): IterableIterator<T> {
+    let node = this._last;
+    while (node) {
+      yield node.value;
+      node = node.prev;
+    }
   }
 
   /**
@@ -140,8 +139,12 @@ class LinkedList<T> implements IIterable<T>, IRetroable<T> {
    * #### Complexity
    * Constant.
    */
-  nodes(): IIterator<LinkedList.INode<T>> {
-    return new LinkedList.ForwardNodeIterator<T>(this._first);
+  *nodes(): IterableIterator<LinkedList.INode<T>> {
+    let node = this._first;
+    while (node) {
+      yield node;
+      node = node.next;
+    }
   }
 
   /**
@@ -152,8 +155,12 @@ class LinkedList<T> implements IIterable<T>, IRetroable<T> {
    * #### Complexity
    * Constant.
    */
-  retroNodes(): IIterator<LinkedList.INode<T>> {
-    return new LinkedList.RetroNodeIterator<T>(this._last);
+  *retroNodes(): IterableIterator<LinkedList.INode<T>> {
+    let node = this._last;
+    while (node) {
+      yield node;
+      node = node.prev;
+    }
   }
 
   /**
@@ -164,9 +171,11 @@ class LinkedList<T> implements IIterable<T>, IRetroable<T> {
    * #### Complexity
    * Linear.
    */
-  assign(values: IterableOrArrayLike<T>): void {
+  assign(values: Iterable<T>): void {
     this.clear();
-    each(values, value => { this.addLast(value); });
+    for (const value of values) {
+      this.addLast(value);
+    }
   }
 
   /**
@@ -459,12 +468,10 @@ class LinkedList<T> implements IIterable<T>, IRetroable<T> {
   private _size = 0;
 }
 
-
 /**
  * The namespace for the `LinkedList` class statics.
  */
-export
-namespace LinkedList {
+export namespace LinkedList {
   /**
    * An object which represents a node in a linked list.
    *
@@ -472,8 +479,7 @@ namespace LinkedList {
    * User code will not create linked list nodes directly. Nodes
    * are created automatically when values are added to a list.
    */
-  export
-  interface INode<T> {
+  export interface INode<T> {
     /**
      * The linked list which created and owns the node.
      *
@@ -506,217 +512,19 @@ namespace LinkedList {
   /**
    * Create a linked list from an iterable of values.
    *
-   * @param values - The iterable or array-like object of interest.
+   * @param values - The iterable object of interest.
    *
    * @returns A new linked list initialized with the given values.
    *
    * #### Complexity
    * Linear.
    */
-  export
-  function from<T>(values: IterableOrArrayLike<T>): LinkedList<T> {
+  export function from<T>(values: Iterable<T>): LinkedList<T> {
     let list = new LinkedList<T>();
     list.assign(values);
     return list;
   }
-
-  /**
-   * A forward iterator for values in a linked list.
-   */
-  export
-  class ForwardValueIterator<T> implements IIterator<T> {
-    /**
-     * Construct a forward value iterator.
-     *
-     * @param node - The first node in the list.
-     */
-    constructor(node: INode<T> | null) {
-      this._node = node;
-    }
-
-    /**
-     * Get an iterator over the object's values.
-     *
-     * @returns An iterator which yields the object's values.
-     */
-    iter(): IIterator<T> {
-      return this;
-    }
-
-    /**
-     * Create an independent clone of the iterator.
-     *
-     * @returns A new independent clone of the iterator.
-     */
-    clone(): IIterator<T> {
-      return new ForwardValueIterator<T>(this._node);
-    }
-
-    /**
-     * Get the next value from the iterator.
-     *
-     * @returns The next value from the iterator, or `undefined`.
-     */
-    next(): T | undefined {
-      if (!this._node) {
-        return undefined;
-      }
-      let node = this._node;
-      this._node = node.next;
-      return node.value;
-    }
-
-    private _node: INode<T> | null;
-  }
-
-  /**
-   * A reverse iterator for values in a linked list.
-   */
-  export
-  class RetroValueIterator<T> implements IIterator<T> {
-    /**
-     * Construct a retro value iterator.
-     *
-     * @param node - The last node in the list.
-     */
-    constructor(node: INode<T> | null) {
-      this._node = node;
-    }
-
-    /**
-     * Get an iterator over the object's values.
-     *
-     * @returns An iterator which yields the object's values.
-     */
-    iter(): IIterator<T> {
-      return this;
-    }
-
-    /**
-     * Create an independent clone of the iterator.
-     *
-     * @returns A new independent clone of the iterator.
-     */
-    clone(): IIterator<T> {
-      return new RetroValueIterator<T>(this._node);
-    }
-
-    /**
-     * Get the next value from the iterator.
-     *
-     * @returns The next value from the iterator, or `undefined`.
-     */
-    next(): T | undefined {
-      if (!this._node) {
-        return undefined;
-      }
-      let node = this._node;
-      this._node = node.prev;
-      return node.value;
-    }
-
-    private _node: INode<T> | null;
-  }
-
-  /**
-   * A forward iterator for nodes in a linked list.
-   */
-  export
-  class ForwardNodeIterator<T> implements IIterator<INode<T>> {
-    /**
-     * Construct a forward node iterator.
-     *
-     * @param node - The first node in the list.
-     */
-    constructor(node: INode<T> | null) {
-      this._node = node;
-    }
-
-    /**
-     * Get an iterator over the object's values.
-     *
-     * @returns An iterator which yields the object's values.
-     */
-    iter(): IIterator<INode<T>> {
-      return this;
-    }
-
-    /**
-     * Create an independent clone of the iterator.
-     *
-     * @returns A new independent clone of the iterator.
-     */
-    clone(): IIterator<INode<T>> {
-      return new ForwardNodeIterator<T>(this._node);
-    }
-
-    /**
-     * Get the next value from the iterator.
-     *
-     * @returns The next value from the iterator, or `undefined`.
-     */
-    next(): INode<T> | undefined {
-      if (!this._node) {
-        return undefined;
-      }
-      let node = this._node;
-      this._node = node.next;
-      return node;
-    }
-
-    private _node: INode<T> | null;
-  }
-
-  /**
-   * A reverse iterator for nodes in a linked list.
-   */
-  export
-  class RetroNodeIterator<T> implements IIterator<INode<T>> {
-    /**
-     * Construct a retro node iterator.
-     *
-     * @param node - The last node in the list.
-     */
-    constructor(node: INode<T> | null) {
-      this._node = node;
-    }
-
-    /**
-     * Get an iterator over the object's values.
-     *
-     * @returns An iterator which yields the object's values.
-     */
-    iter(): IIterator<INode<T>> {
-      return this;
-    }
-
-    /**
-     * Create an independent clone of the iterator.
-     *
-     * @returns A new independent clone of the iterator.
-     */
-    clone(): IIterator<INode<T>> {
-      return new RetroNodeIterator<T>(this._node);
-    }
-
-    /**
-     * Get the next value from the iterator.
-     *
-     * @returns The next value from the iterator, or `undefined`.
-     */
-    next(): INode<T> | undefined {
-      if (!this._node) {
-        return undefined;
-      }
-      let node = this._node;
-      this._node = node.prev;
-      return node;
-    }
-
-    private _node: INode<T> | null;
-  }
 }
-
 
 /**
  * The namespace for the module implementation details.
@@ -725,8 +533,7 @@ namespace Private {
   /**
    * The internal linked list node implementation.
    */
-  export
-  class LinkedListNode<T> {
+  export class LinkedListNode<T> {
     /**
      * The linked list which created and owns the node.
      */

@@ -7,14 +7,13 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  ArrayExt, each, every, retro, some
-} from '@lumino/algorithm';
+/**
+ * @packageDocumentation
+ * @module messaging
+ */
+import { ArrayExt, every, retro, some } from '@lumino/algorithm';
 
-import {
-  LinkedList
-} from '@lumino/collections';
-
+import { LinkedList } from '@lumino/collections';
 
 /**
  * A message which can be delivered to a message handler.
@@ -22,8 +21,7 @@ import {
  * #### Notes
  * This class may be subclassed to create complex message types.
  */
-export
-class Message {
+export class Message {
   /**
    * Construct a new message.
    *
@@ -102,7 +100,6 @@ class Message {
   }
 }
 
-
 /**
  * A convenience message class which conflates automatically.
  *
@@ -116,8 +113,7 @@ class Message {
  * If conflation of stateful messages is required, a custom `Message`
  * subclass should be created.
  */
-export
-class ConflatableMessage extends Message {
+export class ConflatableMessage extends Message {
   /**
    * Test whether the message is conflatable.
    *
@@ -139,7 +135,6 @@ class ConflatableMessage extends Message {
   }
 }
 
-
 /**
  * An object which handles messages.
  *
@@ -150,8 +145,7 @@ class ConflatableMessage extends Message {
  * widget frameworks where the number of distinct message types can be
  * unbounded.
  */
-export
-interface IMessageHandler {
+export interface IMessageHandler {
   /**
    * Process a message sent to the handler.
    *
@@ -159,7 +153,6 @@ interface IMessageHandler {
    */
   processMessage(msg: Message): void;
 }
-
 
 /**
  * An object which intercepts messages sent to a message handler.
@@ -175,10 +168,9 @@ interface IMessageHandler {
  * If all installed message hooks return `true`, the message will
  * be delivered to the handler for processing.
  *
- * **See also:** [[installMessageHook]] and [[removeMessageHook]]
+ * **See also:** {@link MessageLoop.installMessageHook} and {@link MessageLoop.removeMessageHook}
  */
-export
-interface IMessageHook {
+export interface IMessageHook {
   /**
    * Intercept a message sent to a message handler.
    *
@@ -192,23 +184,44 @@ interface IMessageHook {
   messageHook(handler: IMessageHandler, msg: Message): boolean;
 }
 
-
 /**
  * A type alias for message hook object or function.
  *
  * #### Notes
  * The signature and semantics of a message hook function are the same
- * as the `messageHook` method of [[IMessageHook]].
+ * as the `messageHook` method of {@link IMessageHook}.
  */
-export
-type MessageHook = IMessageHook | ((handler: IMessageHandler, msg: Message) => boolean);
-
+export type MessageHook =
+  | IMessageHook
+  | ((handler: IMessageHandler, msg: Message) => boolean);
 
 /**
  * The namespace for the global singleton message loop.
  */
-export
-namespace MessageLoop {
+export namespace MessageLoop {
+  /**
+   * A function that cancels the pending loop task; `null` if unavailable.
+   */
+  let pending: (() => void) | null = null;
+
+  /**
+   * Schedules a function for invocation as soon as possible asynchronously.
+   *
+   * @param fn The function to invoke when called back.
+   *
+   * @returns An anonymous function that will unschedule invocation if possible.
+   */
+  const schedule = (
+    resolved =>
+    (fn: () => unknown): (() => void) => {
+      let rejected = false;
+      resolved.then(() => !rejected && fn());
+      return () => {
+        rejected = true;
+      };
+    }
+  )(Promise.resolve());
+
   /**
    * Send a message to a message handler to process immediately.
    *
@@ -225,8 +238,7 @@ namespace MessageLoop {
    *
    * Exceptions in hooks and handlers will be caught and logged.
    */
-  export
-  function sendMessage(handler: IMessageHandler, msg: Message): void {
+  export function sendMessage(handler: IMessageHandler, msg: Message): void {
     // Lookup the message hooks for the handler.
     let hooks = messageHooks.get(handler);
 
@@ -261,8 +273,7 @@ namespace MessageLoop {
    *
    * Exceptions in hooks and handlers will be caught and logged.
    */
-  export
-  function postMessage(handler: IMessageHandler, msg: Message): void {
+  export function postMessage(handler: IMessageHandler, msg: Message): void {
     // Handle the common case of a non-conflatable message.
     if (!msg.isConflatable) {
       enqueueMessage(handler, msg);
@@ -308,9 +319,11 @@ namespace MessageLoop {
    *
    * If the hook is already installed, this is a no-op.
    */
-  export
-  function installMessageHook(handler: IMessageHandler, hook: MessageHook): void {
-    // Lookup the hooks for the handler.
+  export function installMessageHook(
+    handler: IMessageHandler,
+    hook: MessageHook
+  ): void {
+    // Look up the hooks for the handler.
     let hooks = messageHooks.get(handler);
 
     // Bail early if the hook is already installed.
@@ -338,8 +351,10 @@ namespace MessageLoop {
    *
    * If the hook is not installed, this is a no-op.
    */
-  export
-  function removeMessageHook(handler: IMessageHandler, hook: MessageHook): void {
+  export function removeMessageHook(
+    handler: IMessageHandler,
+    hook: MessageHook
+  ): void {
     // Lookup the hooks for the handler.
     let hooks = messageHooks.get(handler);
 
@@ -367,8 +382,7 @@ namespace MessageLoop {
    * #### Notes
    * This will clear all posted messages and hooks for the handler.
    */
-  export
-  function clearData(handler: IMessageHandler): void {
+  export function clearData(handler: IMessageHandler): void {
     // Lookup the hooks for the handler.
     let hooks = messageHooks.get(handler);
 
@@ -379,35 +393,34 @@ namespace MessageLoop {
     }
 
     // Clear all posted messages for the handler.
-    each(messageQueue, posted => {
+    for (const posted of messageQueue) {
       if (posted.handler === handler) {
         posted.handler = null;
         posted.msg = null;
       }
-    });
+    }
   }
 
   /**
    * Process the pending posted messages in the queue immediately.
    *
    * #### Notes
-   * This function is useful when posted messages must be processed
-   * immediately, instead of on the next animation frame.
+   * This function is useful when posted messages must be processed immediately.
    *
    * This function should normally not be needed, but it may be
    * required to work around certain browser idiosyncrasies.
    *
    * Recursing into this function is a no-op.
    */
-  export
-  function flush(): void {
+  export function flush(): void {
     // Bail if recursion is detected or if there is no pending task.
-    if (flushGuard || loopTaskID === 0) {
+    if (flushGuard || pending === null) {
       return;
     }
 
     // Unschedule the pending loop task.
-    unschedule(loopTaskID);
+    pending();
+    pending = null;
 
     // Run the message loop within the recursion guard.
     flushGuard = true;
@@ -418,8 +431,7 @@ namespace MessageLoop {
   /**
    * A type alias for the exception handler function.
    */
-  export
-  type ExceptionHandler = (err: Error) => void;
+  export type ExceptionHandler = (err: Error) => void;
 
   /**
    * Get the message loop exception handler.
@@ -429,8 +441,7 @@ namespace MessageLoop {
    * #### Notes
    * The default exception handler is `console.error`.
    */
-  export
-  function getExceptionHandler(): ExceptionHandler {
+  export function getExceptionHandler(): ExceptionHandler {
     return exceptionHandler;
   }
 
@@ -445,8 +456,9 @@ namespace MessageLoop {
    * The exception handler is invoked when a message handler or a
    * message hook throws an exception.
    */
-  export
-  function setExceptionHandler(handler: ExceptionHandler): ExceptionHandler {
+  export function setExceptionHandler(
+    handler: ExceptionHandler
+  ): ExceptionHandler {
     let old = exceptionHandler;
     exceptionHandler = handler;
     return old;
@@ -455,7 +467,7 @@ namespace MessageLoop {
   /**
    * A type alias for a posted message pair.
    */
-  type PostedMessage = { handler: IMessageHandler | null, msg: Message | null };
+  type PostedMessage = { handler: IMessageHandler | null; msg: Message | null };
 
   /**
    * The queue of posted message pairs.
@@ -465,7 +477,10 @@ namespace MessageLoop {
   /**
    * A mapping of handler to array of installed message hooks.
    */
-  const messageHooks = new WeakMap<IMessageHandler, Array<MessageHook | null>>();
+  const messageHooks = new WeakMap<
+    IMessageHandler,
+    Array<MessageHook | null>
+  >();
 
   /**
    * A set of message hook arrays which are pending cleanup.
@@ -479,33 +494,10 @@ namespace MessageLoop {
     console.error(err);
   };
 
-  type ScheduleHandle = number | any; //  requestAnimationFrame (number) and setImmediate (any)
-
-  /**
-   * The id of the pending loop task animation frame.
-   */
-  let loopTaskID: ScheduleHandle = 0;
-
   /**
    * A guard flag to prevent flush recursion.
    */
   let flushGuard = false;
-
-  /**
-   * A function to schedule an event loop callback.
-   */
-  const schedule = ((): ScheduleHandle => {
-    let ok = typeof requestAnimationFrame === 'function';
-    return ok ? requestAnimationFrame : setImmediate;
-  })();
-
-  /**
-   * A function to unschedule an event loop callback.
-   */
-  const unschedule = (() => {
-    let ok = typeof cancelAnimationFrame === 'function';
-    return ok ? cancelAnimationFrame : clearImmediate;
-  })();
 
   /**
    * Invoke a message hook with the specified handler and message.
@@ -514,7 +506,11 @@ namespace MessageLoop {
    *
    * Exceptions in the hook will be caught and logged.
    */
-  function invokeHook(hook: MessageHook, handler: IMessageHandler, msg: Message): boolean {
+  function invokeHook(
+    hook: MessageHook,
+    handler: IMessageHandler,
+    msg: Message
+  ): boolean {
     let result = true;
     try {
       if (typeof hook === 'function') {
@@ -551,12 +547,12 @@ namespace MessageLoop {
     messageQueue.addLast({ handler, msg });
 
     // Bail if a loop task is already pending.
-    if (loopTaskID !== 0) {
+    if (pending !== null) {
       return;
     }
 
     // Schedule a run of the message loop.
-    loopTaskID = schedule(runMessageLoop);
+    pending = schedule(runMessageLoop);
   }
 
   /**
@@ -567,8 +563,8 @@ namespace MessageLoop {
    * be processed on the next cycle of the loop.
    */
   function runMessageLoop(): void {
-    // Clear the task ID so the next loop can be scheduled.
-    loopTaskID = 0;
+    // Clear the task so the next loop can be scheduled.
+    pending = null;
 
     // If the message queue is empty, there is nothing else to do.
     if (messageQueue.isEmpty) {
@@ -582,6 +578,7 @@ namespace MessageLoop {
     messageQueue.addLast(sentinel);
 
     // Enter the message loop.
+    // eslint-disable-next-line no-constant-condition
     while (true) {
       // Remove the first posted message in the queue.
       let posted = messageQueue.removeFirst()!;

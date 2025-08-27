@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) Jupyter Development Team.
+ * Distributed under the terms of the Modified BSD License.
+ */
+
 /*-----------------------------------------------------------------------------
 | Copyright (c) Jupyter Development Team.
 | Copyright (c) 2014-2017, PhosphorJS Contributors
@@ -7,17 +12,11 @@
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
 
-
-/* <DEPRECATED> */ .p-Widget, /* </DEPRECATED> */
 .lm-Widget {
   box-sizing: border-box;
   position: relative;
-  overflow: hidden;
-  cursor: default;
 }
 
-
-/* <DEPRECATED> */ .p-Widget.p-mod-hidden, /* </DEPRECATED> */
 .lm-Widget.lm-mod-hidden {
   display: none !important;
 }

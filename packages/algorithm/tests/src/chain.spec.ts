@@ -7,39 +7,28 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  ChainIterator, iter, chain
-} from '@lumino/algorithm';
+import { chain } from '@lumino/algorithm';
 
-import {
-  testIterator
-} from './iter.spec';
-
+import { testIterator } from './iter.spec';
 
 describe('@lumino/algorithm', () => {
-
   describe('chain()', () => {
-
     testIterator(() => {
       let it = chain([1, 2, 3], [4], [5, 6]);
       let expected = [1, 2, 3, 4, 5, 6];
       return [it, expected];
     });
-
   });
 
   describe('ChainIterator', () => {
-
     testIterator(() => {
-      let a = iter([1, 2, 3]);
-      let b = iter(['four', 'five']);
-      let c = iter([true, false]);
+      let a = [1, 2, 3];
+      let b = ['four', 'five'];
+      let c = [true, false][Symbol.iterator]();
       type T = number | string | boolean;
-      let it = new ChainIterator<T>(iter([a, b, c]));
+      let it = chain<T>(a, b, c);
       let expected = [1, 2, 3, 'four', 'five', true, false];
       return [it, expected];
     });
-
   });
-
 });

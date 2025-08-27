@@ -7,7 +7,7 @@
 // @public
 export class ConflatableMessage extends Message {
     conflate(other: ConflatableMessage): boolean;
-    readonly isConflatable: boolean;
+    get isConflatable(): boolean;
 }
 
 // @public
@@ -24,7 +24,7 @@ export interface IMessageHook {
 export class Message {
     constructor(type: string);
     conflate(other: Message): boolean;
-    readonly isConflatable: boolean;
+    get isConflatable(): boolean;
     readonly type: string;
 }
 
@@ -43,7 +43,6 @@ export namespace MessageLoop {
     export function sendMessage(handler: IMessageHandler, msg: Message): void;
     export function setExceptionHandler(handler: ExceptionHandler): ExceptionHandler;
 }
-
 
 // (No @packageDocumentation comment for this package)
 

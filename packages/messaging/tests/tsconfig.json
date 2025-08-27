@@ -1,28 +1,12 @@
 {
+  "extends": "../../../tsconfigbase",
   "compilerOptions": {
-    "declaration": false,
-    "noImplicitAny": true,
-    "noEmitOnError": true,
-    "noUnusedLocals": true,
-    "strictNullChecks": true,
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "target": "ES5",
-    "outDir": "build",
-    "lib": [
-      "ES5",
-      "DOM"
-    ],
-    "types": [
-      "chai",
-      "mocha",
-      "@types/node"
-    ],
-    "rootDir": "src"
+    "lib": ["DOM", "ES2018"],
+    "outDir": "lib",
+    "rootDir": "src",
+    "types": ["chai", "mocha", "@types/node"]
   },
-  "include": [
-    "src/*"
-  ],
+  "include": ["src/*"],
   "references": [
     {
       "path": "../../algorithm"

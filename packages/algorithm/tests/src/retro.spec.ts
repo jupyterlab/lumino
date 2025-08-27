@@ -7,41 +7,28 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  expect
-} from 'chai';
+import { expect } from 'chai';
 
-import {
-  RetroArrayIterator, iter, retro, toArray
-} from '@lumino/algorithm';
+import { retro } from '@lumino/algorithm';
 
-import {
-  testIterator
-} from './iter.spec';
-
+import { testIterator } from './iter.spec';
 
 describe('@lumino/algorithm', () => {
-
   describe('retro()', () => {
-
     it('should create an iterator for an array-like object', () => {
-      expect(toArray(retro([0, 1, 2, 3]))).to.deep.equal([3, 2, 1, 0]);
+      expect(Array.from(retro([0, 1, 2, 3]))).to.deep.equal([3, 2, 1, 0]);
     });
 
     it('should call `retro` on a retroable', () => {
-      let iterator = iter([1, 2, 3, 4]);
-      let retroable = { retro: () => iterator };
-      expect(retro(retroable)).to.equal(iterator);
+      let data = [1, 2, 3, 4];
+      let retroable = { retro: () => retro(data) };
+      testIterator(() => [retro(retroable), data.slice().reverse()], 'retro');
     });
 
-  });
-
-  describe('RetroArrayIterator', () => {
-
-    testIterator(() => {
-      return [new RetroArrayIterator([1, 2, 3]), [3, 2, 1]];
+    it('should reverse an array', () => {
+      testIterator(() => {
+        return [retro([1, 2, 3]), [3, 2, 1]];
+      });
     });
-
   });
-
 });

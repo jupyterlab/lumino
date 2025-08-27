@@ -7,42 +7,40 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  ArrayExt, each
-} from '@lumino/algorithm';
+import { ArrayExt } from '@lumino/algorithm';
+
+import { IDisposable } from '@lumino/disposable';
+
+import { ElementExt } from '@lumino/domutils';
+
+import { Drag } from '@lumino/dragdrop';
+
+import { Message, MessageLoop } from '@lumino/messaging';
+
+import { ISignal, Signal } from '@lumino/signaling';
 
 import {
-  IDisposable
-} from '@lumino/disposable';
-
-import {
-  ElementExt
-} from '@lumino/domutils';
-
-import {
-  Drag
-} from '@lumino/dragdrop';
-
-import {
-  Message, MessageLoop
-} from '@lumino/messaging';
-
-import {
-  ISignal, Signal
-} from '@lumino/signaling';
-
-import {
-  ElementDataset, ElementInlineStyle, VirtualDOM, VirtualElement, h
+  ElementARIAAttrs,
+  ElementBaseAttrs,
+  ElementDataset,
+  ElementInlineStyle,
+  h,
+  VirtualDOM,
+  VirtualElement
 } from '@lumino/virtualdom';
 
-import {
-  Title
-} from './title';
+import { Title } from './title';
 
-import {
-  Widget
-} from './widget';
+import { Widget } from './widget';
 
+const ARROW_KEYS = [
+  'ArrowLeft',
+  'ArrowUp',
+  'ArrowRight',
+  'ArrowDown',
+  'Home',
+  'End'
+];
 
 /**
  * A widget which displays titles as a single row or column of tabs.
@@ -52,8 +50,7 @@ import {
  * text, then tab dragging will not work correctly. The `tabsMovable`
  * property should be set to `false` when rotating nodes from CSS.
  */
-export
-class TabBar<T> extends Widget {
+export class TabBar<T> extends Widget {
   /**
    * Construct a new tab bar.
    *
@@ -62,18 +59,18 @@ class TabBar<T> extends Widget {
   constructor(options: TabBar.IOptions<T> = {}) {
     super({ node: Private.createNode() });
     this.addClass('lm-TabBar');
-    /* <DEPRECATED> */
-    this.addClass('p-TabBar');
-    /* </DEPRECATED> */
+    this.contentNode.setAttribute('role', 'tablist');
     this.setFlag(Widget.Flag.DisallowLayout);
+    this._document = options.document || document;
     this.tabsMovable = options.tabsMovable || false;
     this.titlesEditable = options.titlesEditable || false;
     this.allowDeselect = options.allowDeselect || false;
+    this.addButtonEnabled = options.addButtonEnabled || false;
     this.insertBehavior = options.insertBehavior || 'select-tab-if-needed';
+    this.name = options.name || '';
+    this.orientation = options.orientation || 'horizontal';
     this.removeBehavior = options.removeBehavior || 'select-tab-after';
     this.renderer = options.renderer || TabBar.defaultRenderer;
-    this._orientation = options.orientation || 'horizontal';
-    this.dataset['orientation'] = this._orientation;
   }
 
   /**
@@ -122,8 +119,18 @@ class TabBar<T> extends Widget {
    *
    * This signal is emitted even if the clicked tab is the current tab.
    */
-  get tabActivateRequested(): ISignal<this, TabBar.ITabActivateRequestedArgs<T>> {
+  get tabActivateRequested(): ISignal<
+    this,
+    TabBar.ITabActivateRequestedArgs<T>
+  > {
     return this._tabActivateRequested;
+  }
+
+  /**
+   * A signal emitted when the tab bar add button is clicked.
+   */
+  get addRequested(): ISignal<this, void> {
+    return this._addRequested;
   }
 
   /**
@@ -156,6 +163,15 @@ class TabBar<T> extends Widget {
    * The renderer used by the tab bar.
    */
   readonly renderer: TabBar.IRenderer<T>;
+
+  /**
+   * The document to use with the tab bar.
+   *
+   * The default is the global `document` instance.
+   */
+  get document(): Document | ShadowRoot {
+    return this._document;
+  }
 
   /**
    * Whether the tabs are movable by the user.
@@ -263,9 +279,30 @@ class TabBar<T> extends Widget {
 
     // Emit the current changed signal.
     this._currentChanged.emit({
-      previousIndex: pi, previousTitle: pt,
-      currentIndex: ci, currentTitle: ct
+      previousIndex: pi,
+      previousTitle: pt,
+      currentIndex: ci,
+      currentTitle: ct
     });
+  }
+
+  /**
+   * Get the name of the tab bar.
+   */
+  get name(): string {
+    return this._name;
+  }
+
+  /**
+   * Set the name of the tab bar.
+   */
+  set name(value: string) {
+    this._name = value;
+    if (value) {
+      this.contentNode.setAttribute('aria-label', value);
+    } else {
+      this.contentNode.removeAttribute('aria-label');
+    }
   }
 
   /**
@@ -296,6 +333,31 @@ class TabBar<T> extends Widget {
     // Toggle the orientation values.
     this._orientation = value;
     this.dataset['orientation'] = value;
+    this.contentNode.setAttribute('aria-orientation', value);
+  }
+
+  /**
+   * Whether the add button is enabled.
+   */
+  get addButtonEnabled(): boolean {
+    return this._addButtonEnabled;
+  }
+
+  /**
+   * Set whether the add button is enabled.
+   */
+  set addButtonEnabled(value: boolean) {
+    // Do nothing if the value does not change.
+    if (this._addButtonEnabled === value) {
+      return;
+    }
+
+    this._addButtonEnabled = value;
+    if (value) {
+      this.addButtonNode.classList.remove('lm-mod-hidden');
+    } else {
+      this.addButtonNode.classList.add('lm-mod-hidden');
+    }
   }
 
   /**
@@ -314,7 +376,23 @@ class TabBar<T> extends Widget {
    * Modifying this node directly can lead to undefined behavior.
    */
   get contentNode(): HTMLUListElement {
-    return this.node.getElementsByClassName('lm-TabBar-content')[0] as HTMLUListElement;
+    return this.node.getElementsByClassName(
+      'lm-TabBar-content'
+    )[0] as HTMLUListElement;
+  }
+
+  /**
+   * The tab bar add button node.
+   *
+   * #### Notes
+   * This is the node which holds the add button.
+   *
+   * Modifying this node directly can lead to undefined behavior.
+   */
+  get addButtonNode(): HTMLDivElement {
+    return this.node.getElementsByClassName(
+      'lm-TabBar-addButton'
+    )[0] as HTMLDivElement;
   }
 
   /**
@@ -488,8 +566,10 @@ class TabBar<T> extends Widget {
 
     // Emit the current changed signal.
     this._currentChanged.emit({
-      previousIndex: pi, previousTitle: pt,
-      currentIndex: -1, currentTitle: null
+      previousIndex: pi,
+      previousTitle: pt,
+      currentIndex: -1,
+      currentTitle: null
     });
   }
 
@@ -517,25 +597,27 @@ class TabBar<T> extends Widget {
    */
   handleEvent(event: Event): void {
     switch (event.type) {
-    case 'mousedown':
-      this._evtMouseDown(event as MouseEvent);
-      break;
-    case 'mousemove':
-      this._evtMouseMove(event as MouseEvent);
-      break;
-    case 'mouseup':
-      this._evtMouseUp(event as MouseEvent);
-      break;
-    case 'dblclick':
-      this._evtDblClick(event as MouseEvent);
-      break;
-    case 'keydown':
-      this._evtKeyDown(event as KeyboardEvent);
-      break;
-    case 'contextmenu':
-      event.preventDefault();
-      event.stopPropagation();
-      break;
+      case 'pointerdown':
+        this._evtPointerDown(event as PointerEvent);
+        break;
+      case 'pointermove':
+        this._evtPointerMove(event as PointerEvent);
+        break;
+      case 'pointerup':
+        this._evtPointerUp(event as PointerEvent);
+        break;
+      case 'dblclick':
+        this._evtDblClick(event as MouseEvent);
+        break;
+      case 'keydown':
+        event.eventPhase === Event.CAPTURING_PHASE
+          ? this._evtKeyDownCapturing(event as KeyboardEvent)
+          : this._evtKeyDown(event as KeyboardEvent);
+        break;
+      case 'contextmenu':
+        event.preventDefault();
+        event.stopPropagation();
+        break;
     }
   }
 
@@ -543,16 +625,18 @@ class TabBar<T> extends Widget {
    * A message handler invoked on a `'before-attach'` message.
    */
   protected onBeforeAttach(msg: Message): void {
-    this.node.addEventListener('mousedown', this);
+    this.node.addEventListener('pointerdown', this);
     this.node.addEventListener('dblclick', this);
+    this.node.addEventListener('keydown', this);
   }
 
   /**
    * A message handler invoked on an `'after-detach'` message.
    */
   protected onAfterDetach(msg: Message): void {
-    this.node.removeEventListener('mousedown', this);
+    this.node.removeEventListener('pointerdown', this);
     this.node.removeEventListener('dblclick', this);
+    this.node.removeEventListener('keydown', this);
     this._releaseMouse();
   }
 
@@ -564,20 +648,47 @@ class TabBar<T> extends Widget {
     let renderer = this.renderer;
     let currentTitle = this.currentTitle;
     let content = new Array<VirtualElement>(titles.length);
+    // Keep the tabindex="0" attribute to the tab which handled it before the update.
+    // If the add button handles it, no need to do anything. If no element of the tab
+    // bar handles it, set it on the current or the first tab to ensure one element
+    // handles it after update.
+    const tabHandlingTabindex =
+      this._getCurrentTabindex() ??
+      (this._currentIndex > -1 ? this._currentIndex : 0);
+
     for (let i = 0, n = titles.length; i < n; ++i) {
       let title = titles[i];
       let current = title === currentTitle;
       let zIndex = current ? n : n - i - 1;
-      content[i] = renderer.renderTab({ title, current, zIndex });
+      let tabIndex = tabHandlingTabindex === i ? 0 : -1;
+      content[i] = renderer.renderTab({ title, current, zIndex, tabIndex });
     }
     VirtualDOM.render(content, this.contentNode);
+  }
+
+  /**
+   * Get the index of the tab which handles tabindex="0".
+   * If the add button handles tabindex="0", -1 is returned.
+   * If none of the previous handles tabindex="0", null is returned.
+   */
+  private _getCurrentTabindex(): number | null {
+    let index = null;
+    const elemTabindex = this.contentNode.querySelector('li[tabindex="0"]');
+    if (elemTabindex) {
+      index = [...this.contentNode.children].indexOf(elemTabindex);
+    } else if (
+      this._addButtonEnabled &&
+      this.addButtonNode.getAttribute('tabindex') === '0'
+    ) {
+      index = -1;
+    }
+    return index;
   }
 
   /**
    * Handle the `'dblclick'` event for the tab bar.
    */
   private _evtDblClick(event: MouseEvent): void {
-
     // Do nothing if titles are not editable
     if (!this.titlesEditable) {
       return;
@@ -585,7 +696,7 @@ class TabBar<T> extends Widget {
 
     let tabs = this.contentNode.children;
 
-    // Find the index of the released tab.
+    // Find the index of the targeted tab.
     let index = ArrayExt.findFirstIndex(tabs, tab => {
       return ElementExt.hitTest(tab, event.clientX, event.clientY);
     });
@@ -598,12 +709,11 @@ class TabBar<T> extends Widget {
     let title = this.titles[index];
     let label = tabs[index].querySelector('.lm-TabBar-tabLabel') as HTMLElement;
     if (label && label.contains(event.target as HTMLElement)) {
-
       let value = title.label || '';
 
       // Clear the label element
       let oldValue = label.innerHTML;
-      label.innerHTML = "";
+      label.innerHTML = '';
 
       let input = document.createElement('input');
       input.classList.add('lm-TabBar-tabInput');
@@ -613,9 +723,12 @@ class TabBar<T> extends Widget {
       let onblur = () => {
         input.removeEventListener('blur', onblur);
         label.innerHTML = oldValue;
-      }
+        this.node.addEventListener('keydown', this);
+      };
 
-      input.addEventListener('dblclick', (event: Event) => event.stopPropagation());
+      input.addEventListener('dblclick', (event: Event) =>
+        event.stopPropagation()
+      );
       input.addEventListener('blur', onblur);
       input.addEventListener('keydown', (event: KeyboardEvent) => {
         if (event.key === 'Enter') {
@@ -627,6 +740,7 @@ class TabBar<T> extends Widget {
           onblur();
         }
       });
+      this.node.removeEventListener('keydown', this);
       input.select();
       input.focus();
 
@@ -637,23 +751,111 @@ class TabBar<T> extends Widget {
   }
 
   /**
-   * Handle the `'keydown'` event for the tab bar.
+   * Handle the `'keydown'` event for the tab bar at capturing phase.
    */
-  private _evtKeyDown(event: KeyboardEvent): void {
+  private _evtKeyDownCapturing(event: KeyboardEvent): void {
+    if (event.eventPhase !== Event.CAPTURING_PHASE) {
+      return;
+    }
+
     // Stop all input events during drag.
     event.preventDefault();
     event.stopPropagation();
 
     // Release the mouse if `Escape` is pressed.
-    if (event.keyCode === 27) {
+    if (event.key === 'Escape') {
       this._releaseMouse();
     }
   }
 
   /**
-   * Handle the `'mousedown'` event for the tab bar.
+   * Handle the `'keydown'` event for the tab bar at target phase.
    */
-  private _evtMouseDown(event: MouseEvent): void {
+  private _evtKeyDown(event: KeyboardEvent): void {
+    // Allow for navigation using tab key
+    if (event.key === 'Tab' || event.eventPhase === Event.CAPTURING_PHASE) {
+      return;
+    }
+
+    // Check if Enter or Spacebar key has been pressed and open that tab
+    if (
+      event.key === 'Enter' ||
+      event.key === 'Spacebar' ||
+      event.key === ' '
+    ) {
+      // Get focus element that is in focus by the tab key
+      const focusedElement = document.activeElement;
+
+      // Test first if the focus is on the add button node
+      if (
+        this.addButtonEnabled &&
+        this.addButtonNode.contains(focusedElement)
+      ) {
+        event.preventDefault();
+        event.stopPropagation();
+        this._addRequested.emit();
+      } else {
+        const index = ArrayExt.findFirstIndex(this.contentNode.children, tab =>
+          tab.contains(focusedElement)
+        );
+        if (index >= 0) {
+          event.preventDefault();
+          event.stopPropagation();
+          this.currentIndex = index;
+        }
+      }
+      // Handle the arrow keys to switch tabs.
+    } else if (ARROW_KEYS.includes(event.key)) {
+      // Create a list of all focusable elements in the tab bar.
+      const focusable: Element[] = [...this.contentNode.children];
+      if (this.addButtonEnabled) {
+        focusable.push(this.addButtonNode);
+      }
+      // If the tab bar contains only one element, nothing to do.
+      if (focusable.length <= 1) {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+
+      // Get the current focused element.
+      let focusedIndex = focusable.indexOf(document.activeElement as Element);
+      if (focusedIndex === -1) {
+        focusedIndex = this._currentIndex;
+      }
+
+      // Find the next element to focus on.
+      let nextFocused: Element | null | undefined;
+      if (
+        (event.key === 'ArrowRight' && this._orientation === 'horizontal') ||
+        (event.key === 'ArrowDown' && this._orientation === 'vertical')
+      ) {
+        nextFocused = focusable[focusedIndex + 1] ?? focusable[0];
+      } else if (
+        (event.key === 'ArrowLeft' && this._orientation === 'horizontal') ||
+        (event.key === 'ArrowUp' && this._orientation === 'vertical')
+      ) {
+        nextFocused =
+          focusable[focusedIndex - 1] ?? focusable[focusable.length - 1];
+      } else if (event.key === 'Home') {
+        nextFocused = focusable[0];
+      } else if (event.key === 'End') {
+        nextFocused = focusable[focusable.length - 1];
+      }
+
+      // Change the focused element and the tabindex value.
+      if (nextFocused) {
+        focusable[focusedIndex]?.setAttribute('tabindex', '-1');
+        nextFocused?.setAttribute('tabindex', '0');
+        (nextFocused as HTMLElement).focus();
+      }
+    }
+  }
+
+  /**
+   * Handle the `'pointerdown'` event for the tab bar.
+   */
+  private _evtPointerDown(event: PointerEvent | MouseEvent): void {
     // Do nothing if it's not a left or middle mouse press.
     if (event.button !== 0 && event.button !== 1) {
       return;
@@ -664,6 +866,18 @@ class TabBar<T> extends Widget {
       return;
     }
 
+    // Do nothing if a title editable input was clicked.
+    if (
+      (event.target as HTMLElement).classList.contains('lm-TabBar-tabInput')
+    ) {
+      return;
+    }
+
+    // Check if the add button was clicked.
+    let addButtonClicked =
+      this.addButtonEnabled &&
+      this.addButtonNode.contains(event.target as HTMLElement);
+
     // Lookup the tab nodes.
     let tabs = this.contentNode.children;
 
@@ -672,8 +886,8 @@ class TabBar<T> extends Widget {
       return ElementExt.hitTest(tab, event.clientX, event.clientY);
     });
 
-    // Do nothing if the press is not on a tab.
-    if (index === -1) {
+    // Do nothing if the press is not on a tab or the add button.
+    if (index === -1 && !addButtonClicked) {
       return;
     }
 
@@ -699,11 +913,11 @@ class TabBar<T> extends Widget {
       detachRequested: false
     };
 
-    // Add the document mouse up listener.
-    document.addEventListener('mouseup', this, true);
+    // Add the document pointer up listener.
+    this.document.addEventListener('pointerup', this, true);
 
-    // Do nothing else if the middle button is clicked.
-    if (event.button === 1) {
+    // Do nothing else if the middle button or add button is clicked.
+    if (event.button === 1 || addButtonClicked) {
       return;
     }
 
@@ -715,9 +929,9 @@ class TabBar<T> extends Widget {
 
     // Add the extra listeners if the tabs are movable.
     if (this.tabsMovable) {
-      document.addEventListener('mousemove', this, true);
-      document.addEventListener('keydown', this, true);
-      document.addEventListener('contextmenu', this, true);
+      this.document.addEventListener('pointermove', this, true);
+      this.document.addEventListener('keydown', this, true);
+      this.document.addEventListener('contextmenu', this, true);
     }
 
     // Update the current index as appropriate.
@@ -734,14 +948,15 @@ class TabBar<T> extends Widget {
 
     // Emit the tab activate request signal.
     this._tabActivateRequested.emit({
-      index: this.currentIndex, title: this.currentTitle!
+      index: this.currentIndex,
+      title: this.currentTitle!
     });
   }
 
   /**
-   * Handle the `'mousemove'` event for the tab bar.
+   * Handle the `'pointermove'` event for the tab bar.
    */
-  private _evtMouseMove(event: MouseEvent): void {
+  private _evtPointerMove(event: PointerEvent | MouseEvent): void {
     // Do nothing if no drag is in progress.
     let data = this._dragData;
     if (!data) {
@@ -773,6 +988,10 @@ class TabBar<T> extends Widget {
         data.tabSize = tabRect.height;
         data.tabPressPos = data.pressY - tabRect.top;
       }
+      data.tabPressOffset = {
+        x: data.pressX - tabRect.left,
+        y: data.pressY - tabRect.top
+      };
       data.tabLayout = Private.snapTabLayout(tabs, this._orientation);
       data.contentRect = this.contentNode.getBoundingClientRect();
       data.override = Drag.overrideCursor('default');
@@ -780,10 +999,6 @@ class TabBar<T> extends Widget {
       // Add the dragging style classes.
       data.tab.classList.add('lm-mod-dragging');
       this.addClass('lm-mod-dragging');
-      /* <DEPRECATED> */
-      data.tab.classList.add('p-mod-dragging');
-      this.addClass('p-mod-dragging');
-      /* </DEPRECATED> */
 
       // Mark the drag as active.
       data.dragActive = true;
@@ -802,7 +1017,14 @@ class TabBar<T> extends Widget {
       let title = this._titles[index];
 
       // Emit the tab detach requested signal.
-      this._tabDetachRequested.emit({ index, title, tab, clientX, clientY });
+      this._tabDetachRequested.emit({
+        index,
+        title,
+        tab,
+        clientX,
+        clientY,
+        offset: data.tabPressOffset
+      });
 
       // Bail if the signal handler aborted the drag.
       if (data.dragAborted) {
@@ -815,9 +1037,9 @@ class TabBar<T> extends Widget {
   }
 
   /**
-   * Handle the `'mouseup'` event for the document.
+   * Handle the `'pointerup'` event for the document.
    */
-  private _evtMouseUp(event: MouseEvent): void {
+  private _evtPointerUp(event: PointerEvent | MouseEvent): void {
     // Do nothing if it's not a left or middle mouse release.
     if (event.button !== 0 && event.button !== 1) {
       return;
@@ -834,15 +1056,24 @@ class TabBar<T> extends Widget {
     event.stopPropagation();
 
     // Remove the extra mouse event listeners.
-    document.removeEventListener('mousemove', this, true);
-    document.removeEventListener('mouseup', this, true);
-    document.removeEventListener('keydown', this, true);
-    document.removeEventListener('contextmenu', this, true);
+    this.document.removeEventListener('pointermove', this, true);
+    this.document.removeEventListener('pointerup', this, true);
+    this.document.removeEventListener('keydown', this, true);
+    this.document.removeEventListener('contextmenu', this, true);
 
     // Handle a release when the drag is not active.
     if (!data.dragActive) {
       // Clear the drag data.
       this._dragData = null;
+
+      // Handle clicking the add button.
+      let addButtonClicked =
+        this.addButtonEnabled &&
+        this.addButtonNode.contains(event.target as HTMLElement);
+      if (addButtonClicked) {
+        this._addRequested.emit(undefined);
+        return;
+      }
 
       // Lookup the tab nodes.
       let tabs = this.contentNode.children;
@@ -890,9 +1121,6 @@ class TabBar<T> extends Widget {
 
     // Remove the dragging class from the tab so it can be transitioned.
     data.tab.classList.remove('lm-mod-dragging');
-    /* <DEPRECATED> */
-    data.tab.classList.remove('p-mod-dragging');
-    /* </DEPRECATED> */
 
     // Parse the transition duration for releasing the tab.
     let duration = Private.parseTransitionDuration(data.tab);
@@ -915,9 +1143,6 @@ class TabBar<T> extends Widget {
 
       // Remove the remaining dragging style.
       this.removeClass('lm-mod-dragging');
-      /* <DEPRECATED> */
-      this.removeClass('p-mod-dragging');
-      /* </DEPRECATED> */
 
       // If the tab was not moved, there is nothing else to do.
       let i = data.index;
@@ -934,7 +1159,9 @@ class TabBar<T> extends Widget {
 
       // Emit the tab moved signal.
       this._tabMoved.emit({
-        fromIndex: i, toIndex: j, title: this._titles[j]
+        fromIndex: i,
+        toIndex: j,
+        title: this._titles[j]
       });
 
       // Update the tabs immediately to prevent flicker.
@@ -955,11 +1182,11 @@ class TabBar<T> extends Widget {
     // Clear the drag data reference.
     this._dragData = null;
 
-    // Remove the extra mouse listeners.
-    document.removeEventListener('mousemove', this, true);
-    document.removeEventListener('mouseup', this, true);
-    document.removeEventListener('keydown', this, true);
-    document.removeEventListener('contextmenu', this, true);
+    // Remove the extra document event listeners.
+    this.document.removeEventListener('pointermove', this, true);
+    this.document.removeEventListener('pointerup', this, true);
+    this.document.removeEventListener('keydown', this, true);
+    this.document.removeEventListener('contextmenu', this, true);
 
     // Indicate the drag has been aborted. This allows the mouse
     // event handlers to return early when the drag is canceled.
@@ -979,10 +1206,6 @@ class TabBar<T> extends Widget {
     // Clear the dragging style classes.
     data.tab.classList.remove('lm-mod-dragging');
     this.removeClass('lm-mod-dragging');
-    /* <DEPRECATED> */
-    data.tab.classList.remove('p-mod-dragging');
-    this.removeClass('p-mod-dragging');
-    /* </DEPRECATED> */
   }
 
   /**
@@ -997,14 +1220,18 @@ class TabBar<T> extends Widget {
     let ci = this._currentIndex;
     let bh = this.insertBehavior;
 
+    // TODO: do we need to do an update to update the aria-selected attribute?
+
     // Handle the behavior where the new tab is always selected,
     // or the behavior where the new tab is selected if needed.
     if (bh === 'select-tab' || (bh === 'select-tab-if-needed' && ci === -1)) {
       this._currentIndex = i;
       this._previousTitle = ct;
       this._currentChanged.emit({
-        previousIndex: ci, previousTitle: ct,
-        currentIndex: i, currentTitle: title
+        previousIndex: ci,
+        previousTitle: ct,
+        currentIndex: i,
+        currentTitle: title
       });
       return;
     }
@@ -1050,12 +1277,16 @@ class TabBar<T> extends Widget {
       return;
     }
 
+    // TODO: do we need to do an update to adjust the aria-selected value?
+
     // No tab gets selected if the tab bar is empty.
     if (this._titles.length === 0) {
       this._currentIndex = -1;
       this._currentChanged.emit({
-        previousIndex: i, previousTitle: title,
-        currentIndex: -1, currentTitle: null
+        previousIndex: i,
+        previousTitle: title,
+        currentIndex: -1,
+        currentTitle: null
       });
       return;
     }
@@ -1064,8 +1295,10 @@ class TabBar<T> extends Widget {
     if (bh === 'select-tab-after') {
       this._currentIndex = Math.min(i, this._titles.length - 1);
       this._currentChanged.emit({
-        previousIndex: i, previousTitle: title,
-        currentIndex: this._currentIndex, currentTitle: this.currentTitle
+        previousIndex: i,
+        previousTitle: title,
+        currentIndex: this._currentIndex,
+        currentTitle: this.currentTitle
       });
       return;
     }
@@ -1074,8 +1307,10 @@ class TabBar<T> extends Widget {
     if (bh === 'select-tab-before') {
       this._currentIndex = Math.max(0, i - 1);
       this._currentChanged.emit({
-        previousIndex: i, previousTitle: title,
-        currentIndex: this._currentIndex, currentTitle: this.currentTitle
+        previousIndex: i,
+        previousTitle: title,
+        currentIndex: this._currentIndex,
+        currentTitle: this.currentTitle
       });
       return;
     }
@@ -1089,8 +1324,10 @@ class TabBar<T> extends Widget {
         this._currentIndex = Math.min(i, this._titles.length - 1);
       }
       this._currentChanged.emit({
-        previousIndex: i, previousTitle: title,
-        currentIndex: this._currentIndex, currentTitle: this.currentTitle
+        previousIndex: i,
+        previousTitle: title,
+        currentIndex: this._currentIndex,
+        currentTitle: this.currentTitle
       });
       return;
     }
@@ -1098,8 +1335,10 @@ class TabBar<T> extends Widget {
     // Otherwise, no tab gets selected.
     this._currentIndex = -1;
     this._currentChanged.emit({
-      previousIndex: i, previousTitle: title,
-      currentIndex: -1, currentTitle: null
+      previousIndex: i,
+      previousTitle: title,
+      currentIndex: -1,
+      currentTitle: null
     });
   }
 
@@ -1110,97 +1349,118 @@ class TabBar<T> extends Widget {
     this.update();
   }
 
+  private _name: string;
   private _currentIndex = -1;
   private _titles: Title<T>[] = [];
   private _orientation: TabBar.Orientation;
+  private _document: Document | ShadowRoot;
   private _titlesEditable: boolean = false;
   private _previousTitle: Title<T> | null = null;
   private _dragData: Private.IDragData | null = null;
+  private _addButtonEnabled: boolean = false;
   private _tabMoved = new Signal<this, TabBar.ITabMovedArgs<T>>(this);
-  private _currentChanged = new Signal<this, TabBar.ICurrentChangedArgs<T>>(this);
-  private _tabCloseRequested = new Signal<this, TabBar.ITabCloseRequestedArgs<T>>(this);
-  private _tabDetachRequested = new Signal<this, TabBar.ITabDetachRequestedArgs<T>>(this);
-  private _tabActivateRequested = new Signal<this, TabBar.ITabActivateRequestedArgs<T>>(this);
+  private _currentChanged = new Signal<this, TabBar.ICurrentChangedArgs<T>>(
+    this
+  );
+  private _addRequested = new Signal<this, void>(this);
+  private _tabCloseRequested = new Signal<
+    this,
+    TabBar.ITabCloseRequestedArgs<T>
+  >(this);
+  private _tabDetachRequested = new Signal<
+    this,
+    TabBar.ITabDetachRequestedArgs<T>
+  >(this);
+  private _tabActivateRequested = new Signal<
+    this,
+    TabBar.ITabActivateRequestedArgs<T>
+  >(this);
 }
-
 
 /**
  * The namespace for the `TabBar` class statics.
  */
-export
-namespace TabBar {
+export namespace TabBar {
   /**
    * A type alias for a tab bar orientation.
    */
-  export
-  type Orientation = (
-    /**
+  export type Orientation =
+    | /**
      * The tabs are arranged in a single row, left-to-right.
      *
      * The tab text orientation is horizontal.
      */
-    'horizontal' |
+    'horizontal'
 
     /**
      * The tabs are arranged in a single column, top-to-bottom.
      *
      * The tab text orientation is horizontal.
      */
-    'vertical'
-  );
+    | 'vertical';
 
   /**
    * A type alias for the selection behavior on tab insert.
    */
-  export
-  type InsertBehavior = (
-    /**
+  export type InsertBehavior =
+    | /**
      * The selected tab will not be changed.
      */
-    'none' |
+    'none'
 
     /**
      * The inserted tab will be selected.
      */
-    'select-tab' |
+    | 'select-tab'
 
     /**
      * The inserted tab will be selected if the current tab is null.
      */
-    'select-tab-if-needed'
-  );
+    | 'select-tab-if-needed';
 
   /**
    * A type alias for the selection behavior on tab remove.
    */
-  export
-  type RemoveBehavior = (
-    /**
+  export type RemoveBehavior =
+    | /**
      * No tab will be selected.
      */
-    'none' |
+    'none'
 
     /**
      * The tab after the removed tab will be selected if possible.
      */
-    'select-tab-after' |
+    | 'select-tab-after'
 
     /**
      * The tab before the removed tab will be selected if possible.
      */
-    'select-tab-before' |
+    | 'select-tab-before'
 
     /**
      * The previously selected tab will be selected if possible.
      */
-    'select-previous-tab'
-  );
+    | 'select-previous-tab';
 
   /**
    * An options object for creating a tab bar.
    */
-  export
-  interface IOptions<T> {
+  export interface IOptions<T> {
+    /**
+     * The document to use with the tab bar.
+     *
+     * The default is the global `document` instance.
+     */
+
+    document?: Document | ShadowRoot;
+
+    /**
+     * Name of the tab bar.
+     *
+     * This is used for accessibility reasons. The default is the empty string.
+     */
+    name?: string;
+
     /**
      * The layout orientation of the tab bar.
      *
@@ -1230,6 +1490,13 @@ namespace TabBar {
     titlesEditable?: boolean;
 
     /**
+     * Whether the add button is enabled.
+     *
+     * The default is `false`.
+     */
+    addButtonEnabled?: boolean;
+
+    /**
      * The selection behavior when inserting a tab.
      *
      * The default is `'select-tab-if-needed'`.
@@ -1254,8 +1521,7 @@ namespace TabBar {
   /**
    * The arguments object for the `currentChanged` signal.
    */
-  export
-  interface ICurrentChangedArgs<T> {
+  export interface ICurrentChangedArgs<T> {
     /**
      * The previously selected index.
      */
@@ -1280,8 +1546,7 @@ namespace TabBar {
   /**
    * The arguments object for the `tabMoved` signal.
    */
-  export
-  interface ITabMovedArgs<T> {
+  export interface ITabMovedArgs<T> {
     /**
      * The previous index of the tab.
      */
@@ -1301,8 +1566,7 @@ namespace TabBar {
   /**
    * The arguments object for the `tabActivateRequested` signal.
    */
-  export
-  interface ITabActivateRequestedArgs<T> {
+  export interface ITabActivateRequestedArgs<T> {
     /**
      * The index of the tab to activate.
      */
@@ -1317,8 +1581,7 @@ namespace TabBar {
   /**
    * The arguments object for the `tabCloseRequested` signal.
    */
-  export
-  interface ITabCloseRequestedArgs<T> {
+  export interface ITabCloseRequestedArgs<T> {
     /**
      * The index of the tab to close.
      */
@@ -1333,8 +1596,7 @@ namespace TabBar {
   /**
    * The arguments object for the `tabDetachRequested` signal.
    */
-  export
-  interface ITabDetachRequestedArgs<T> {
+  export interface ITabDetachRequestedArgs<T> {
     /**
      * The index of the tab to detach.
      */
@@ -1359,13 +1621,17 @@ namespace TabBar {
      * The current client Y position of the mouse.
      */
     readonly clientY: number;
+
+    /**
+     * The mouse position in the tab coordinate.
+     */
+    readonly offset?: { x: number; y: number };
   }
 
   /**
    * An object which holds the data to render a tab.
    */
-  export
-  interface IRenderData<T> {
+  export interface IRenderData<T> {
     /**
      * The title associated with the tab.
      */
@@ -1380,13 +1646,17 @@ namespace TabBar {
      * The z-index for the tab.
      */
     readonly zIndex: number;
+
+    /**
+     * The tabindex value for the tab.
+     */
+    readonly tabIndex?: number;
   }
 
   /**
    * A renderer for use with a tab bar.
    */
-  export
-  interface IRenderer<T> {
+  export interface IRenderer<T> {
     /**
      * A selector which matches the close icon node in a tab.
      */
@@ -1408,13 +1678,10 @@ namespace TabBar {
    * #### Notes
    * Subclasses are free to reimplement rendering methods as needed.
    */
-  export
-  class Renderer implements IRenderer<any> {
-    /**
-     * Construct a new renderer.
-     */
-    constructor() { }
-
+  export class Renderer implements IRenderer<any> {
+    constructor() {
+      this._uuid = ++Renderer._nInstance;
+    }
     /**
      * A selector which matches the close icon node in a tab.
      */
@@ -1430,16 +1697,25 @@ namespace TabBar {
     renderTab(data: IRenderData<any>): VirtualElement {
       let title = data.title.caption;
       let key = this.createTabKey(data);
+      let id = key;
       let style = this.createTabStyle(data);
       let className = this.createTabClass(data);
       let dataset = this.createTabDataset(data);
-      return (
-        h.li({ key, className, title, style, dataset },
+      let aria = this.createTabARIA(data);
+      if (data.title.closable) {
+        return h.li(
+          { id, key, className, title, style, dataset, ...aria },
           this.renderIcon(data),
           this.renderLabel(data),
           this.renderCloseIcon(data)
-        )
-      );
+        );
+      } else {
+        return h.li(
+          { id, key, className, title, style, dataset, ...aria },
+          this.renderIcon(data),
+          this.renderLabel(data)
+        );
+      }
     }
 
     /**
@@ -1453,14 +1729,8 @@ namespace TabBar {
       const { title } = data;
       let className = this.createIconClass(data);
 
-      /* <DEPRECATED> */
-      if (typeof title.icon === 'string') {
-        return h.div({className}, title.iconLabel);
-      }
-      /* </DEPRECATED> */
-
-      // if title.icon is undefined, it will be ignored
-      return h.div({className}, title.icon!, title.iconLabel);
+      // If title.icon is undefined, it will be ignored.
+      return h.div({ className }, title.icon!, title.iconLabel);
     }
 
     /**
@@ -1471,12 +1741,7 @@ namespace TabBar {
      * @returns A virtual element representing the tab label.
      */
     renderLabel(data: IRenderData<any>): VirtualElement {
-      return h.div({
-        className: 'lm-TabBar-tabLabel'
-          /* <DEPRECATED> */
-          + ' p-TabBar-tabLabel'
-          /* </DEPRECATED> */
-      }, data.title.label);
+      return h.div({ className: 'lm-TabBar-tabLabel' }, data.title.label);
     }
 
     /**
@@ -1487,12 +1752,7 @@ namespace TabBar {
      * @returns A virtual element representing the tab close icon.
      */
     renderCloseIcon(data: IRenderData<any>): VirtualElement {
-      return h.div({
-        className: 'lm-TabBar-tabCloseIcon'
-          /* <DEPRECATED> */
-          + ' p-TabBar-tabCloseIcon'
-          /* </DEPRECATED> */
-      });
+      return h.div({ className: 'lm-TabBar-tabCloseIcon' });
     }
 
     /**
@@ -1510,7 +1770,7 @@ namespace TabBar {
     createTabKey(data: IRenderData<any>): string {
       let key = this._tabKeys.get(data.title);
       if (key === undefined) {
-        key = `tab-key-${this._tabID++}`;
+        key = `tab-key-${this._uuid}-${this._tabID++}`;
         this._tabKeys.set(data.title, key);
       }
       return key;
@@ -1536,23 +1796,14 @@ namespace TabBar {
      */
     createTabClass(data: IRenderData<any>): string {
       let name = 'lm-TabBar-tab';
-      /* <DEPRECATED> */
-      name += ' p-TabBar-tab';
-      /* </DEPRECATED> */
       if (data.title.className) {
         name += ` ${data.title.className}`;
       }
       if (data.title.closable) {
         name += ' lm-mod-closable';
-        /* <DEPRECATED> */
-        name += ' p-mod-closable';
-        /* </DEPRECATED> */
       }
       if (data.current) {
         name += ' lm-mod-current';
-        /* <DEPRECATED> */
-        name += ' p-mod-current';
-        /* </DEPRECATED> */
       }
       return name;
     }
@@ -1569,6 +1820,21 @@ namespace TabBar {
     }
 
     /**
+     * Create the ARIA attributes for a tab.
+     *
+     * @param data - The data to use for the tab.
+     *
+     * @returns The ARIA attributes for the tab.
+     */
+    createTabARIA(data: IRenderData<any>): ElementARIAAttrs | ElementBaseAttrs {
+      return {
+        role: 'tab',
+        'aria-selected': data.current.toString(),
+        tabindex: `${data.tabIndex ?? '-1'}`
+      };
+    }
+
+    /**
      * Create the class name for the tab icon.
      *
      * @param data - The data to use for the tab.
@@ -1577,13 +1843,12 @@ namespace TabBar {
      */
     createIconClass(data: IRenderData<any>): string {
       let name = 'lm-TabBar-tabIcon';
-      /* <DEPRECATED> */
-      name += ' p-TabBar-tabIcon';
-      /* </DEPRECATED> */
       let extra = data.title.iconClass;
       return extra ? `${name} ${extra}` : name;
     }
 
+    private static _nInstance = 0;
+    private readonly _uuid: number;
     private _tabID = 0;
     private _tabKeys = new WeakMap<Title<any>, string>();
   }
@@ -1591,10 +1856,13 @@ namespace TabBar {
   /**
    * The default `Renderer` instance.
    */
-  export
-  const defaultRenderer = new Renderer();
-}
+  export const defaultRenderer = new Renderer();
 
+  /**
+   * A selector which matches the add button node in the tab bar.
+   */
+  export const addButtonSelector = '.lm-TabBar-addButton';
+}
 
 /**
  * The namespace for the module implementation details.
@@ -1603,20 +1871,17 @@ namespace Private {
   /**
    * The start drag distance threshold.
    */
-  export
-  const DRAG_THRESHOLD = 5;
+  export const DRAG_THRESHOLD = 5;
 
   /**
    * The detach distance threshold.
    */
-  export
-  const DETACH_THRESHOLD = 20;
+  export const DETACH_THRESHOLD = 20;
 
   /**
    * A struct which holds the drag data for a tab bar.
    */
-  export
-  interface IDragData {
+  export interface IDragData {
     /**
      * The tab node being dragged.
      */
@@ -1659,6 +1924,13 @@ namespace Private {
     tabPressPos: number;
 
     /**
+     * The original mouse position in tab coordinates.
+     *
+     * This is undefined if the drag is not active.
+     */
+    tabPressOffset?: { x: number; y: number };
+
+    /**
      * The tab target index upon mouse release.
      *
      * This will be `-1` if the drag is not active.
@@ -1677,7 +1949,7 @@ namespace Private {
      *
      * This will be `null` if the drag is not active.
      */
-    contentRect: ClientRect | null;
+    contentRect: DOMRect | null;
 
     /**
      * The disposable to clean up the cursor override.
@@ -1705,8 +1977,7 @@ namespace Private {
   /**
    * An object which holds layout data for a tab.
    */
-  export
-  interface ITabLayout {
+  export interface ITabLayout {
     /**
      * The left/top margin value for the tab.
      */
@@ -1726,31 +1997,32 @@ namespace Private {
   /**
    * Create the DOM node for a tab bar.
    */
-  export
-  function createNode(): HTMLDivElement {
+  export function createNode(): HTMLDivElement {
     let node = document.createElement('div');
     let content = document.createElement('ul');
+    content.setAttribute('role', 'tablist');
     content.className = 'lm-TabBar-content';
-    /* <DEPRECATED> */
-    content.classList.add('p-TabBar-content');
-    /* </DEPRECATED> */
     node.appendChild(content);
+
+    let add = document.createElement('div');
+    add.className = 'lm-TabBar-addButton lm-mod-hidden';
+    add.setAttribute('tabindex', '-1');
+    add.setAttribute('role', 'button');
+    node.appendChild(add);
     return node;
   }
 
   /**
    * Coerce a title or options into a real title.
    */
-  export
-  function asTitle<T>(value: Title<T> | Title.IOptions<T>): Title<T> {
+  export function asTitle<T>(value: Title<T> | Title.IOptions<T>): Title<T> {
     return value instanceof Title ? value : new Title<T>(value);
   }
 
   /**
    * Parse the transition duration for a tab node.
    */
-  export
-  function parseTransitionDuration(tab: HTMLElement): number {
+  export function parseTransitionDuration(tab: HTMLElement): number {
     let style = window.getComputedStyle(tab);
     return 1000 * (parseFloat(style.transitionDuration!) || 0);
   }
@@ -1758,8 +2030,10 @@ namespace Private {
   /**
    * Get a snapshot of the current tab layout values.
    */
-  export
-  function snapTabLayout(tabs: HTMLCollection, orientation: TabBar.Orientation): ITabLayout[] {
+  export function snapTabLayout(
+    tabs: HTMLCollection,
+    orientation: TabBar.Orientation
+  ): ITabLayout[] {
     let layout = new Array<ITabLayout>(tabs.length);
     for (let i = 0, n = tabs.length; i < n; ++i) {
       let node = tabs[i] as HTMLElement;
@@ -1784,8 +2058,7 @@ namespace Private {
   /**
    * Test if the event exceeds the drag threshold.
    */
-  export
-  function dragExceeded(data: IDragData, event: MouseEvent): boolean {
+  export function dragExceeded(data: IDragData, event: MouseEvent): boolean {
     let dx = Math.abs(event.clientX - data.pressX);
     let dy = Math.abs(event.clientY - data.pressY);
     return dx >= DRAG_THRESHOLD || dy >= DRAG_THRESHOLD;
@@ -1794,22 +2067,25 @@ namespace Private {
   /**
    * Test if the event exceeds the drag detach threshold.
    */
-  export
-  function detachExceeded(data: IDragData, event: MouseEvent): boolean {
+  export function detachExceeded(data: IDragData, event: MouseEvent): boolean {
     let rect = data.contentRect!;
     return (
-      (event.clientX < rect.left - DETACH_THRESHOLD) ||
-      (event.clientX >= rect.right + DETACH_THRESHOLD) ||
-      (event.clientY < rect.top - DETACH_THRESHOLD) ||
-      (event.clientY >= rect.bottom + DETACH_THRESHOLD)
+      event.clientX < rect.left - DETACH_THRESHOLD ||
+      event.clientX >= rect.right + DETACH_THRESHOLD ||
+      event.clientY < rect.top - DETACH_THRESHOLD ||
+      event.clientY >= rect.bottom + DETACH_THRESHOLD
     );
   }
 
   /**
    * Update the relative tab positions and computed target index.
    */
-  export
-  function layoutTabs(tabs: HTMLCollection, data: IDragData, event: MouseEvent, orientation: TabBar.Orientation): void {
+  export function layoutTabs(
+    tabs: HTMLCollection,
+    data: IDragData,
+    event: MouseEvent,
+    orientation: TabBar.Orientation
+  ): void {
     // Compute the orientation-sensitive values.
     let pressPos: number;
     let localPos: number;
@@ -1864,8 +2140,10 @@ namespace Private {
   /**
    * Position the drag tab at its final resting relative position.
    */
-  export
-  function finalizeTabPosition(data: IDragData, orientation: TabBar.Orientation): void {
+  export function finalizeTabPosition(
+    data: IDragData,
+    orientation: TabBar.Orientation
+  ): void {
     // Compute the orientation-sensitive client size.
     let clientSize: number;
     if (orientation === 'horizontal') {
@@ -1901,14 +2179,16 @@ namespace Private {
   /**
    * Reset the relative positions of the given tabs.
    */
-  export
-  function resetTabPositions(tabs: HTMLCollection, orientation: TabBar.Orientation): void {
-    each(tabs, tab => {
+  export function resetTabPositions(
+    tabs: HTMLCollection,
+    orientation: TabBar.Orientation
+  ): void {
+    for (const tab of tabs) {
       if (orientation === 'horizontal') {
         (tab as HTMLElement).style.left = '';
       } else {
         (tab as HTMLElement).style.top = '';
       }
-    });
+    }
   }
 }

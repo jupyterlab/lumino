@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 // Copyright (c) Jupyter Development Team.
 // Distributed under the terms of the Modified BSD License.
 /*-----------------------------------------------------------------------------
@@ -7,18 +8,17 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import {
-  expect
-} from 'chai';
+import { expect } from 'chai';
 
 import {
-  DisposableDelegate, DisposableSet, IDisposable,
-  ObservableDisposableDelegate, ObservableDisposableSet
+  DisposableDelegate,
+  DisposableSet,
+  IDisposable,
+  ObservableDisposableDelegate,
+  ObservableDisposableSet
 } from '@lumino/disposable';
 
-
 class TestDisposable implements IDisposable {
-
   count = 0;
 
   get isDisposed(): boolean {
@@ -30,40 +30,32 @@ class TestDisposable implements IDisposable {
   }
 }
 
-
 describe('@lumino/disposable', () => {
-
   describe('DisposableDelegate', () => {
-
     describe('#constructor()', () => {
-
       it('should accept a callback', () => {
-        let delegate = new DisposableDelegate(() => { });
+        let delegate = new DisposableDelegate(() => {});
         expect(delegate).to.be.an.instanceof(DisposableDelegate);
       });
-
     });
 
     describe('#isDisposed', () => {
-
       it('should be `false` before object is disposed', () => {
-        let delegate = new DisposableDelegate(() => { });
+        let delegate = new DisposableDelegate(() => {});
         expect(delegate.isDisposed).to.equal(false);
       });
 
       it('should be `true` after object is disposed', () => {
-        let delegate = new DisposableDelegate(() => { });
+        let delegate = new DisposableDelegate(() => {});
         delegate.dispose();
         expect(delegate.isDisposed).to.equal(true);
       });
-
     });
 
     describe('#dispose()', () => {
-
       it('should invoke a callback when disposed', () => {
         let called = false;
-        let delegate = new DisposableDelegate(() => called = true);
+        let delegate = new DisposableDelegate(() => (called = true));
         expect(called).to.equal(false);
         delegate.dispose();
         expect(called).to.equal(true);
@@ -78,40 +70,32 @@ describe('@lumino/disposable', () => {
         delegate.dispose();
         expect(count).to.equal(1);
       });
-
     });
-
   });
 
   describe('ObservableDisposableDelegate', () => {
-
     describe('#disposed', () => {
-
       it('should be emitted when the delegate is disposed', () => {
         let called = false;
-        let delegate = new ObservableDisposableDelegate(() => { });
-        delegate.disposed.connect(() => { called = true; });
+        let delegate = new ObservableDisposableDelegate(() => {});
+        delegate.disposed.connect(() => {
+          called = true;
+        });
         delegate.dispose();
         expect(called).to.equal(true);
       });
-
     });
-
   });
 
   describe('DisposableSet', () => {
-
     describe('#constructor()', () => {
-
       it('should accept no arguments', () => {
         let set = new DisposableSet();
         expect(set).to.be.an.instanceof(DisposableSet);
       });
-
     });
 
     describe('#isDisposed', () => {
-
       it('should be `false` before object is disposed', () => {
         let set = new DisposableSet();
         expect(set.isDisposed).to.equal(false);
@@ -122,11 +106,9 @@ describe('@lumino/disposable', () => {
         set.dispose();
         expect(set.isDisposed).to.equal(true);
       });
-
     });
 
     describe('#dispose()', () => {
-
       it('should dispose all items in the set', () => {
         let item1 = new TestDisposable();
         let item2 = new TestDisposable();
@@ -167,11 +149,9 @@ describe('@lumino/disposable', () => {
         expect(item2.count).to.equal(1);
         expect(item3.count).to.equal(1);
       });
-
     });
 
     describe('#add()', () => {
-
       it('should add items to the set', () => {
         let item1 = new TestDisposable();
         let item2 = new TestDisposable();
@@ -217,11 +197,9 @@ describe('@lumino/disposable', () => {
         set.dispose();
         expect(values).to.deep.equal([0, 1, 2]);
       });
-
     });
 
     describe('#remove()', () => {
-
       it('should remove items from the set', () => {
         let item1 = new TestDisposable();
         let item2 = new TestDisposable();
@@ -260,11 +238,9 @@ describe('@lumino/disposable', () => {
         set.dispose();
         expect(values).to.deep.equal([0, 1]);
       });
-
     });
 
     describe('#clear()', () => {
-
       it('remove all items from the set', () => {
         let item1 = new TestDisposable();
         let item2 = new TestDisposable();
@@ -279,11 +255,9 @@ describe('@lumino/disposable', () => {
         expect(item2.count).to.equal(0);
         expect(item3.count).to.equal(0);
       });
-
     });
 
     describe('.from()', () => {
-
       it('should accept an iterable of disposable items', () => {
         let item1 = new TestDisposable();
         let item2 = new TestDisposable();
@@ -291,15 +265,11 @@ describe('@lumino/disposable', () => {
         let set = DisposableSet.from([item1, item2, item3]);
         expect(set).to.be.an.instanceof(DisposableSet);
       });
-
     });
-
   });
 
   describe('ObservableDisposableSet', () => {
-
     describe('#disposed', () => {
-
       it('should be emitted when the set is disposed', () => {
         let called = false;
         let set = new ObservableDisposableSet();
@@ -321,11 +291,9 @@ describe('@lumino/disposable', () => {
         set.dispose();
         expect(called).to.equal(true);
       });
-
     });
 
     describe('.from()', () => {
-
       it('should accept an iterable of disposable items', () => {
         let item1 = new TestDisposable();
         let item2 = new TestDisposable();
@@ -333,7 +301,6 @@ describe('@lumino/disposable', () => {
         let set = ObservableDisposableSet.from([item1, item2, item3]);
         expect(set).to.be.an.instanceof(ObservableDisposableSet);
       });
-
     });
   });
 });
