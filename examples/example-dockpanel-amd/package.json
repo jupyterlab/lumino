@@ -1,6 +1,6 @@
 {
   "name": "@lumino/example-dockpanel-amd",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "private": true,
   "scripts": {
     "test": "playwright test"
