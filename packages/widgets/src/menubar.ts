@@ -364,6 +364,7 @@ export class MenuBar extends Widget {
         this._evtMouseDown(event as MouseEvent);
         break;
       case 'mousemove':
+      case 'mouseleave':
         this._evtMouseMove(event as MouseEvent);
         break;
       case 'focusout':
@@ -383,6 +384,7 @@ export class MenuBar extends Widget {
     this.node.addEventListener('keydown', this);
     this.node.addEventListener('mousedown', this);
     this.node.addEventListener('mousemove', this);
+    this.node.addEventListener('mouseleave', this);
     this.node.addEventListener('focusout', this);
     this.node.addEventListener('contextmenu', this);
   }
@@ -394,6 +396,7 @@ export class MenuBar extends Widget {
     this.node.removeEventListener('keydown', this);
     this.node.removeEventListener('mousedown', this);
     this.node.removeEventListener('mousemove', this);
+    this.node.removeEventListener('mouseleave', this);
     this.node.removeEventListener('focusout', this);
     this.node.removeEventListener('contextmenu', this);
     this._closeChildMenu();
