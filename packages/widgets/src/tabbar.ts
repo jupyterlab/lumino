@@ -777,15 +777,28 @@ export class TabBar<T> extends Widget {
       return;
     }
 
+    // Get focus element that is in focus by the tab key
+    const focusedElement = document.activeElement;
+    // Check if Delete key has been pressed and Delete that tab
+    if (event.key === 'Delete') {
+      const index = ArrayExt.findFirstIndex(this.contentNode.children, tab =>
+        tab.contains(focusedElement)
+      );
+      if (index >= 0) {
+        this.currentIndex = index;
+        let title = this._titles[index];
+        event.preventDefault();
+        event.stopPropagation();
+        this._tabCloseRequested.emit({ index, title });
+        return;
+      }
+    }
     // Check if Enter or Spacebar key has been pressed and open that tab
     if (
       event.key === 'Enter' ||
       event.key === 'Spacebar' ||
       event.key === ' '
     ) {
-      // Get focus element that is in focus by the tab key
-      const focusedElement = document.activeElement;
-
       // Test first if the focus is on the add button node
       if (
         this.addButtonEnabled &&
@@ -808,6 +821,7 @@ export class TabBar<T> extends Widget {
     } else if (ARROW_KEYS.includes(event.key)) {
       // Create a list of all focusable elements in the tab bar.
       const focusable: Element[] = [...this.contentNode.children];
+
       if (this.addButtonEnabled) {
         focusable.push(this.addButtonNode);
       }
@@ -1730,7 +1744,11 @@ export namespace TabBar {
       let className = this.createIconClass(data);
 
       // If title.icon is undefined, it will be ignored.
-      return h.div({ className }, title.icon!, title.iconLabel);
+      return h.div(
+        { className, 'aria-hidden': 'true' },
+        title.icon!,
+        title.iconLabel
+      );
     }
 
     /**
@@ -1741,7 +1759,14 @@ export namespace TabBar {
      * @returns A virtual element representing the tab label.
      */
     renderLabel(data: IRenderData<any>): VirtualElement {
-      return h.div({ className: 'lm-TabBar-tabLabel' }, data.title.label);
+      return h.div(
+        {
+          className: 'lm-TabBar-tabLabel',
+          tabindex: '-1',
+          'aria-hidden': 'true'
+        },
+        data.title.label
+      );
     }
 
     /**
@@ -1752,7 +1777,9 @@ export namespace TabBar {
      * @returns A virtual element representing the tab close icon.
      */
     renderCloseIcon(data: IRenderData<any>): VirtualElement {
-      return h.div({ className: 'lm-TabBar-tabCloseIcon' });
+      return h.div({
+        className: 'lm-TabBar-tabCloseIcon'
+      });
     }
 
     /**
