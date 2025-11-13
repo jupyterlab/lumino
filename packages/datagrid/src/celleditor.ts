@@ -941,8 +941,6 @@ export class NumberCellEditor extends InputCellEditor {
   protected startEditing(): void {
     super.startEditing();
 
-    this.input.step = 'any';
-
     const cell = this.cell;
 
     const metadata = cell.grid.dataModel!.metadata(
@@ -950,6 +948,9 @@ export class NumberCellEditor extends InputCellEditor {
       cell.row,
       cell.column
     );
+
+    this.input.step = metadata.step || 'any';
+
     const constraint = metadata.constraint;
     if (constraint) {
       if (constraint.minimum) {
