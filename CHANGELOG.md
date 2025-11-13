@@ -6,6 +6,46 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2025.11.13
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2025.4.30...c94af1758e75ffe807795d63722abbc39650a6e7))
+
+```
+@lumino/algorithm: 2.0.3 => 2.0.4
+@lumino/application: 2.4.4 => 2.4.5
+@lumino/collections: 2.0.3 => 2.0.4
+@lumino/commands: 2.3.2 => 2.3.3
+@lumino/coreutils: 2.2.1 => 2.2.2
+@lumino/datagrid: 2.5.2 => 2.5.3
+@lumino/default-theme: 2.1.10 => 2.1.11
+@lumino/disposable: 2.1.4 => 2.1.5
+@lumino/domutils: 2.0.3 => 2.0.4
+@lumino/dragdrop: 2.1.6 => 2.1.7
+@lumino/keyboard: 2.0.3 => 2.0.4
+@lumino/messaging: 2.0.3 => 2.0.4
+@lumino/polling: 2.1.4 => 2.1.5
+@lumino/properties: 2.0.3 => 2.0.4
+@lumino/signaling: 2.1.4 => 2.1.5
+@lumino/virtualdom: 2.0.3 => 2.0.4
+@lumino/widgets: 2.7.1 => 2.7.2
+```
+
+### Bugs fixed
+
+- menubar: reset active item on mouseleave [#770](https://github.com/jupyterlab/lumino/pull/770) ([@ndoschek](https://github.com/ndoschek))
+
+### Documentation improvements
+
+- array.ts: Fix typo of `from from` → `from` [#764](https://github.com/jupyterlab/lumino/pull/764) ([@schwehr](https://github.com/schwehr))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2025-04-30&to=2025-11-13&type=c))
+
+[@ndoschek](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Andoschek+updated%3A2025-04-30..2025-11-13&type=Issues) | [@schwehr](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aschwehr+updated%3A2025-04-30..2025-11-13&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2025.4.30
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2025.3.31...3df3ab5a8e32b50edd26bed62f7ebd362e18b32e))
@@ -33,8 +73,6 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2025-03-31&to=2025-04-30&type=c))
 
 [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2025-03-31..2025-04-30&type=Issues) | [@krassowski](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2025-03-31..2025-04-30&type=Issues) | [@nkn2022](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ankn2022+updated%3A2025-03-31..2025-04-30&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2025.3.31
 
