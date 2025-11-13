@@ -39,6 +39,7 @@ export class CommandPalette extends Widget {
     super({ node: Private.createNode() });
     this.addClass('lm-CommandPalette');
     this.setFlag(Widget.Flag.DisallowLayout);
+    this.keyToText = options.renderer?.keyToText;
     this.commands = options.commands;
     this.renderer = options.renderer || CommandPalette.defaultRenderer;
     this.commands.commandChanged.connect(this._onGenericChange, this);
@@ -63,6 +64,10 @@ export class CommandPalette extends Widget {
    * The renderer used by the command palette.
    */
   readonly renderer: CommandPalette.IRenderer;
+  /**
+   * The optional object used for translation of aria label punctuation.
+   */
+  readonly keyToText: CommandPalette.IRenderer['keyToText'];
 
   /**
    * The command palette search node.
@@ -752,12 +757,21 @@ export namespace CommandPalette {
      * @returns A virtual element representing the message.
      */
     renderEmptyMessage(data: IEmptyMessageRenderData): VirtualElement;
+
+    /**
+     * The optional object used for translation of aria label punctuation.
+     */
+    keyToText?: { [key: string]: string };
   }
 
   /**
    * The default implementation of `IRenderer`.
    */
   export class Renderer implements IRenderer {
+    /**
+     * The optional object used for translation of aria label punctuation.
+     */
+    keyToText?: { [key: string]: string };
     /**
      * Render the virtual element for a command palette header.
      *
@@ -879,7 +893,14 @@ export namespace CommandPalette {
      */
     renderItemShortcut(data: IItemRenderData): VirtualElement {
       let content = this.formatItemShortcut(data);
-      return h.div({ className: 'lm-CommandPalette-itemShortcut' }, content);
+      let ariaContent = this.formatItemAria(data);
+      return h.div(
+        {
+          className: 'lm-CommandPalette-itemShortcut',
+          'aria-label': `${ariaContent}`
+        },
+        content
+      );
     }
 
     /**
@@ -973,6 +994,18 @@ export namespace CommandPalette {
     formatItemShortcut(data: IItemRenderData): h.Child {
       let kb = data.item.keyBinding;
       return kb ? CommandRegistry.formatKeystroke(kb.keys) : null;
+    }
+
+    /**
+     * @param data - The data to use for the aria label content.
+     *
+     * @returns The aria label content to add to the shortcut node.
+     */
+    formatItemAria(data: IItemRenderData): h.Child {
+      let kbText = data.item.keyBinding;
+      return kbText
+        ? CommandRegistry.formatKeystrokeAriaLabel(kbText.keys, this.keyToText)
+        : null;
     }
 
     /**
