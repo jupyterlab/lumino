@@ -210,30 +210,29 @@ export class AccordionPanel extends SplitPanel {
    * @returns Relative size of widgets in this panel, if this size can
    * not be computed, return `undefined`
    */
-  private _computeWidgetSize(index: number): number[] | undefined {
+   private _computeWidgetSize(index: number): number[] | undefined {
     const layout = this.layout as AccordionLayout;
     const widget = layout.widgets[index];
-
+  
     if (!widget) {
       return undefined;
     }
-
+  
     const isHidden = widget.isHidden;
-    const widgetSizes = layout.absoluteSizes();
+    const sizes = layout.absoluteSizes();
     const delta = (isHidden ? -1 : 1) * this.spacing;
-    const totalSize = widgetSizes.reduce((prev, curr) => prev + curr, 0);
-    let newSize = [...widgetSizes];
-
+    const totalSize = sizes.reduce((prev, curr) => prev + curr, 0);
+    let newSizes = [...sizes];
+  
     if (this._collapseMode === 'in-place') {
-      // -------------------
-      // In-place collapse (FIXED)
-      // -------------------
+      // In-place collapse
       if (!isHidden) {
-        // Collapse
+        // Collapsing: widget is currently visible, will be hidden
         const currentSize = sizes[index];
         this._widgetSizesCache.set(widget, currentSize);
         newSizes[index] = 0;
   
+        // Find nearest visible neighbor to give the space to
         const neighbor =
           index > 0 && newSizes[index - 1] > 0
             ? index - 1
@@ -245,7 +244,7 @@ export class AccordionPanel extends SplitPanel {
           newSizes[neighbor] += currentSize + delta;
         }
       } else {
-        // Expand
+        // Expanding: widget is currently hidden, will be shown
         const previousSize = this._widgetSizesCache.get(widget);
         if (!previousSize) {
           return undefined;
@@ -253,6 +252,7 @@ export class AccordionPanel extends SplitPanel {
   
         newSizes[index] = previousSize;
   
+        // Find nearest visible neighbor to take space from
         const neighbor =
           index > 0 && newSizes[index - 1] > 0
             ? index - 1
@@ -269,29 +269,26 @@ export class AccordionPanel extends SplitPanel {
       return newSizes.map(sz => sz / total);
     }
   
-    // -------------------
-    // Default 'last-open' behavior (UNCHANGED)
-    // -------------------
-    const totalSize = sizes.reduce((prev, curr) => prev + curr, 0);
-  
+    // Default 'last-open' behavior
     if (!isHidden) {
+      // Collapsing
       const currentSize = sizes[index];
       this._widgetSizesCache.set(widget, currentSize);
       newSizes[index] = 0;
   
-      const widgetToCollapse = newSizes.map(sz => sz > 0).lastIndexOf(true);
-      if (widgetToCollapse === -1) {
+      const widgetToExpand = newSizes.map(sz => sz > 0).lastIndexOf(true);
+      if (widgetToExpand === -1) {
         return undefined;
       }
-      newSizes[widgetToCollapse] =
-        sizes[widgetToCollapse] + currentSize + delta;
+      newSizes[widgetToExpand] = sizes[widgetToExpand] + currentSize + delta;
     } else {
+      // Expanding
       const previousSize = this._widgetSizesCache.get(widget);
       if (!previousSize) {
         return undefined;
       }
   
-      newSizes[index] += previousSize;
+      newSizes[index] = previousSize;
   
       const widgetToCollapse = newSizes
         .map(sz => sz - previousSize > 0)
@@ -300,17 +297,15 @@ export class AccordionPanel extends SplitPanel {
       if (widgetToCollapse === -1) {
         newSizes.forEach((_, idx) => {
           if (idx !== index) {
-            newSizes[idx] -=
-              (sizes[idx] / totalSize) * (previousSize - delta);
+            newSizes[idx] -= (sizes[idx] / totalSize) * (previousSize - delta);
           }
         });
       } else {
         newSizes[widgetToCollapse] -= previousSize - delta;
       }
     }
-
-    // Return normalized relative sizes
-    return newSize.map(sz => sz / (totalSize + delta));
+  
+    return newSizes.map(sz => sz / (totalSize + delta));
   }
 
   /**
