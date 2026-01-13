@@ -229,10 +229,9 @@ export class AccordionPanel extends SplitPanel {
         this._widgetSizesCache.set(widget, currentSize);
         newSize[index] = 0;
         
-        // Calculate new total (shrinks the panel)
-        const newTotal = totalSize - currentSize - delta;
-        // Return normalized sizes - other sections keep absolute size
-        return newSize.map(sz => sz / newTotal);
+        // Don't normalize - return absolute sizes to keep other sections fixed
+        // This prevents sections from moving or resizing
+        return newSize;
       } else {
         // Expanding: restore previous size
         const previousSize = this._widgetSizesCache.get(widget);
@@ -242,10 +241,8 @@ export class AccordionPanel extends SplitPanel {
         }
         newSize[index] = previousSize;
         
-        // Calculate new total (expands the panel)
-        const newTotal = totalSize + previousSize + delta;
-        // Return normalized sizes - other sections keep absolute size
-        return newSize.map(sz => sz / newTotal);
+        // Don't normalize - return absolute sizes to keep other sections fixed
+        return newSize;
       }
     }
 
