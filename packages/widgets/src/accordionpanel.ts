@@ -213,107 +213,104 @@ export class AccordionPanel extends SplitPanel {
   private _computeWidgetSize(index: number): number[] | undefined {
     const layout = this.layout as AccordionLayout;
     const widget = layout.widgets[index];
-
+  
     if (!widget) {
       return undefined;
     }
-
+  
     const isHidden = widget.isHidden;
-    const widgetSizes = layout.absoluteSizes();
+    const sizes = layout.absoluteSizes();
     const delta = (isHidden ? -1 : 1) * this.spacing;
-    const totalSize = widgetSizes.reduce((prev, curr) => prev + curr, 0);
-    let newSize = [...widgetSizes];
-
+    let newSizes = [...sizes];
+  
     if (this._collapseMode === 'in-place') {
       // -------------------
-      // In-place collapse
+      // In-place collapse (FIXED)
       // -------------------
       if (!isHidden) {
-        // Hide the widget
-        const currentSize = widgetSizes[index];
+        // Collapse
+        const currentSize = sizes[index];
         this._widgetSizesCache.set(widget, currentSize);
-        newSize[index] = 0;
-
-        // Find nearest open neighbor (left first, then right)
-        let left = index - 1;
-        let right = index + 1;
-        while (left >= 0 || right < newSize.length) {
-          if (left >= 0 && newSize[left] > 0) {
-            newSize[left] += currentSize;
-            break;
-          } else if (right < newSize.length && newSize[right] > 0) {
-            newSize[right] += currentSize;
-            break;
-          }
-          left--;
-          right++;
+        newSizes[index] = 0;
+  
+        const neighbor =
+          index > 0 && newSizes[index - 1] > 0
+            ? index - 1
+            : index < newSizes.length - 1 && newSizes[index + 1] > 0
+            ? index + 1
+            : -1;
+  
+        if (neighbor >= 0) {
+          newSizes[neighbor] += currentSize + delta;
         }
       } else {
-        // Show the widget
+        // Expand
         const previousSize = this._widgetSizesCache.get(widget);
         if (!previousSize) {
           return undefined;
         }
-        newSize[index] += previousSize;
-
-        // Reduce nearest open neighbor
-        let left = index - 1;
-        let right = index + 1;
-        while (left >= 0 || right < newSize.length) {
-          if (left >= 0 && newSize[left] > 0) {
-            newSize[left] -= previousSize;
-            break;
-          } else if (right < newSize.length && newSize[right] > 0) {
-            newSize[right] -= previousSize;
-            break;
-          }
-          left--;
-          right++;
+  
+        newSizes[index] = previousSize;
+  
+        const neighbor =
+          index > 0 && newSizes[index - 1] > 0
+            ? index - 1
+            : index < newSizes.length - 1 && newSizes[index + 1] > 0
+            ? index + 1
+            : -1;
+  
+        if (neighbor >= 0) {
+          newSizes[neighbor] -= previousSize - delta;
         }
       }
+  
+      const total = newSizes.reduce((a, b) => a + b, 0);
+      return newSizes.map(sz => sz / total);
+    }
+  
+    // -------------------
+    // Default 'last-open' behavior (UNCHANGED)
+    // -------------------
+    const totalSize = sizes.reduce((prev, curr) => prev + curr, 0);
+  
+    if (!isHidden) {
+      const currentSize = sizes[index];
+      this._widgetSizesCache.set(widget, currentSize);
+      newSizes[index] = 0;
+  
+      const widgetToCollapse = newSizes.map(sz => sz > 0).lastIndexOf(true);
+      if (widgetToCollapse === -1) {
+        return undefined;
+      }
+      newSizes[widgetToCollapse] =
+        sizes[widgetToCollapse] + currentSize + delta;
     } else {
-      // -------------------
-      // Default 'last-open' collapse (existing behavior)
-      // -------------------
-      if (!isHidden) {
-        // Hide the widget
-        const currentSize = widgetSizes[index];
-        this._widgetSizesCache.set(widget, currentSize);
-        newSize[index] = 0;
-
-        const widgetToCollapse = newSize.map(sz => sz > 0).lastIndexOf(true);
-        if (widgetToCollapse === -1) {
-          return undefined;
-        }
-        newSize[widgetToCollapse] =
-          widgetSizes[widgetToCollapse] + currentSize + delta;
+      const previousSize = this._widgetSizesCache.get(widget);
+      if (!previousSize) {
+        return undefined;
+      }
+  
+      newSizes[index] += previousSize;
+  
+      const widgetToCollapse = newSizes
+        .map(sz => sz - previousSize > 0)
+        .lastIndexOf(true);
+  
+      if (widgetToCollapse === -1) {
+        newSizes.forEach((_, idx) => {
+          if (idx !== index) {
+            newSizes[idx] -=
+              (sizes[idx] / totalSize) * (previousSize - delta);
+          }
+        });
       } else {
-        // Show the widget
-        const previousSize = this._widgetSizesCache.get(widget);
-        if (!previousSize) {
-          return undefined;
-        }
-        newSize[index] += previousSize;
-
-        const widgetToCollapse = newSize
-          .map(sz => sz - previousSize > 0)
-          .lastIndexOf(true);
-        if (widgetToCollapse === -1) {
-          newSize.forEach((_, idx) => {
-            if (idx !== index) {
-              newSize[idx] -=
-                (widgetSizes[idx] / totalSize) * (previousSize - delta);
-            }
-          });
-        } else {
-          newSize[widgetToCollapse] -= previousSize - delta;
-        }
+        newSizes[widgetToCollapse] -= previousSize - delta;
       }
     }
-
-    // Return normalized relative sizes
-    return newSize.map(sz => sz / (totalSize + delta));
+  
+    return newSizes.map(sz => sz / (totalSize + delta));
   }
+
 
   /**
    * Handle the `'click'` event for the accordion panel
