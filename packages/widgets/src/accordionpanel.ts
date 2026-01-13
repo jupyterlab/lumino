@@ -401,7 +401,11 @@ export class AccordionPanel extends SplitPanel {
     } else {
       title.classList.remove('lm-mod-expanded');
       title.setAttribute('aria-expanded', 'false');
-      widget.hide();
+    
+      if (this._collapseMode === 'last-open') {
+        widget.hide(); // existing behavior
+      }
+      // in-place: DO NOT hide, size=0 is enough
     }
 
     // Emit the expansion state signal.
