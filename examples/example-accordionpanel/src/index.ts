@@ -80,5 +80,8 @@ function main(): void {
   window.onresize = () => {
     main.update();
   };
+  
+  Widget.attach(main, document.body);
+}
 
 window.onload = main;
