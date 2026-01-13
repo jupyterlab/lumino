@@ -233,16 +233,16 @@ export class AccordionPanel extends SplitPanel {
         this._widgetSizesCache.set(widget, currentSize);
         newSizes[index] = 0;
   
-        const neighbor =
-          index > 0 && newSizes[index - 1] > 0
-            ? index - 1
-            : index < newSizes.length - 1 && newSizes[index + 1] > 0
-            ? index + 1
-            : -1;
+        // const neighbor =
+        //   index > 0 && newSizes[index - 1] > 0
+        //     ? index - 1
+        //     : index < newSizes.length - 1 && newSizes[index + 1] > 0
+        //     ? index + 1
+        //     : -1;
   
-        if (neighbor >= 0) {
-          newSizes[neighbor] += currentSize + delta;
-        }
+        // if (neighbor >= 0) {
+        //   newSizes[neighbor] += currentSize + delta;
+        // }
       } else {
         // Expand
         const previousSize = this._widgetSizesCache.get(widget);
@@ -252,16 +252,16 @@ export class AccordionPanel extends SplitPanel {
   
         newSizes[index] = previousSize;
   
-        const neighbor =
-          index > 0 && newSizes[index - 1] > 0
-            ? index - 1
-            : index < newSizes.length - 1 && newSizes[index + 1] > 0
-            ? index + 1
-            : -1;
+        // const neighbor =
+        //   index > 0 && newSizes[index - 1] > 0
+        //     ? index - 1
+        //     : index < newSizes.length - 1 && newSizes[index + 1] > 0
+        //     ? index + 1
+        //     : -1;
   
-        if (neighbor >= 0) {
-          newSizes[neighbor] -= previousSize - delta;
-        }
+        // if (neighbor >= 0) {
+        //   newSizes[neighbor] -= previousSize - delta;
+        // }
       }
   
       const total = newSizes.reduce((a, b) => a + b, 0);
@@ -401,11 +401,6 @@ export class AccordionPanel extends SplitPanel {
     } else {
       title.classList.remove('lm-mod-expanded');
       title.setAttribute('aria-expanded', 'false');
-    
-      if (this._collapseMode === 'last-open') {
-        widget.hide(); // existing behavior
-      }
-      // in-place: DO NOT hide, size=0 is enough
     }
 
     // Emit the expansion state signal.
