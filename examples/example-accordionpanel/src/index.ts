@@ -40,28 +40,45 @@ class ContentWidget extends Widget {
 }
 
 function main(): void {
-  const accordion = new AccordionPanel();
-  accordion.id = 'accordion';
+  // Default accordion (existing behavior)
+  const defaultAccordion = new AccordionPanel();
+  defaultAccordion.id = 'accordion-default';
 
   const r1 = new ContentWidget('Red');
   const b1 = new ContentWidget('Blue');
   const g1 = new ContentWidget('Green');
 
-  accordion.addWidget(r1);
-  accordion.addWidget(b1);
-  accordion.addWidget(g1);
+  defaultAccordion.addWidget(r1);
+  defaultAccordion.addWidget(b1);
+  defaultAccordion.addWidget(g1);
 
-  BoxPanel.setStretch(accordion, 1);
+  BoxPanel.setStretch(defaultAccordion, 1);
 
+  // In-place collapse accordion (NEW behavior)
+  const inPlacePanel = new AccordionPanel({
+    collapseMode: 'in-place'
+  });
+  inPlacePanel.id = 'accordion-in-place';
+
+  const y1 = new ContentWidget('Yellow');
+  const p1 = new ContentWidget('Purple');
+  const o1 = new ContentWidget('Orange');
+
+  inPlacePanel.addWidget(y1);
+  inPlacePanel.addWidget(p1);
+  inPlacePanel.addWidget(o1);
+
+  BoxPanel.setStretch(inPlacePanel, 1);
+
+  // Main container
   const main = new BoxPanel({ direction: 'left-to-right', spacing: 0 });
   main.id = 'main';
-  main.addWidget(accordion);
+
+  main.addWidget(defaultAccordion);
+  main.addWidget(inPlacePanel);
 
   window.onresize = () => {
     main.update();
   };
-
-  Widget.attach(main, document.body);
-}
 
 window.onload = main;
