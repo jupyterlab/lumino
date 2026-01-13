@@ -33,7 +33,7 @@ export class AccordionPanel extends SplitPanel {
   }
 
   /**
-   * The collapse mode configuration used by the accordion panel
+   * The collapse mode used by the accordion panel.
    */
   get collapseMode(): 'last-open' | 'in-place' {
     return this._collapseMode;
@@ -42,7 +42,6 @@ export class AccordionPanel extends SplitPanel {
   set collapseMode(value: 'last-open' | 'in-place') {
     this._collapseMode = value;
   }
-
 
   /**
    * The renderer used by the accordion panel.
@@ -191,10 +190,6 @@ export class AccordionPanel extends SplitPanel {
       this.update();
     }
   }
-  /**
-   * Adding a new configuration for collapse behavior.
-   */
-  private _collapseMode: 'last-open' | 'in-place';
 
   /**
    * Compute the size of widgets in this panel on the title click event.
@@ -210,102 +205,92 @@ export class AccordionPanel extends SplitPanel {
    * @returns Relative size of widgets in this panel, if this size can
    * not be computed, return `undefined`
    */
-   private _computeWidgetSize(index: number): number[] | undefined {
+  private _computeWidgetSize(index: number): number[] | undefined {
     const layout = this.layout as AccordionLayout;
+
     const widget = layout.widgets[index];
-  
     if (!widget) {
       return undefined;
     }
-  
     const isHidden = widget.isHidden;
-    const sizes = layout.absoluteSizes();
+    const widgetSizes = layout.absoluteSizes();
     const delta = (isHidden ? -1 : 1) * this.spacing;
-    const totalSize = sizes.reduce((prev, curr) => prev + curr, 0);
-    let newSizes = [...sizes];
-  
+    const totalSize = widgetSizes.reduce(
+      (prev: number, curr: number) => prev + curr
+    );
+
+    let newSize = [...widgetSizes];
+
+    // NEW: In-place collapse mode
     if (this._collapseMode === 'in-place') {
-      // In-place collapse
       if (!isHidden) {
-        // Collapsing: widget is currently visible, will be hidden
-        const currentSize = sizes[index];
+        // Collapsing: save current size and set to 0
+        const currentSize = widgetSizes[index];
         this._widgetSizesCache.set(widget, currentSize);
-        newSizes[index] = 0;
-  
-        // Find nearest visible neighbor to give the space to
-        const neighbor =
-          index > 0 && newSizes[index - 1] > 0
-            ? index - 1
-            : index < newSizes.length - 1 && newSizes[index + 1] > 0
-            ? index + 1
-            : -1;
-  
-        if (neighbor >= 0) {
-          newSizes[neighbor] += currentSize + delta;
-        }
+        newSize[index] = 0;
+        
+        // Calculate new total (shrinks the panel)
+        const newTotal = totalSize - currentSize - delta;
+        // Return normalized sizes - other sections keep absolute size
+        return newSize.map(sz => sz / newTotal);
       } else {
-        // Expanding: widget is currently hidden, will be shown
+        // Expanding: restore previous size
         const previousSize = this._widgetSizesCache.get(widget);
         if (!previousSize) {
+          // Previous size unavailable, let SplitLayout decide
           return undefined;
         }
-  
-        newSizes[index] = previousSize;
-  
-        // Find nearest visible neighbor to take space from
-        const neighbor =
-          index > 0 && newSizes[index - 1] > 0
-            ? index - 1
-            : index < newSizes.length - 1 && newSizes[index + 1] > 0
-            ? index + 1
-            : -1;
-  
-        if (neighbor >= 0) {
-          newSizes[neighbor] -= previousSize - delta;
-        }
+        newSize[index] = previousSize;
+        
+        // Calculate new total (expands the panel)
+        const newTotal = totalSize + previousSize + delta;
+        // Return normalized sizes - other sections keep absolute size
+        return newSize.map(sz => sz / newTotal);
       }
-  
-      const total = newSizes.reduce((a, b) => a + b, 0);
-      return newSizes.map(sz => sz / total);
     }
-  
-    // Default 'last-open' behavior
+
+    // DEFAULT: 'last-open' behavior (UNCHANGED)
     if (!isHidden) {
-      // Collapsing
-      const currentSize = sizes[index];
+      // Hide the widget
+      const currentSize = widgetSizes[index];
+
       this._widgetSizesCache.set(widget, currentSize);
-      newSizes[index] = 0;
-  
-      const widgetToExpand = newSizes.map(sz => sz > 0).lastIndexOf(true);
-      if (widgetToExpand === -1) {
+      newSize[index] = 0;
+
+      const widgetToCollapse = newSize.map(sz => sz > 0).lastIndexOf(true);
+      if (widgetToCollapse === -1) {
+        // All widget are closed, let the `SplitLayout` compute widget sizes.
         return undefined;
       }
-      newSizes[widgetToExpand] = sizes[widgetToExpand] + currentSize + delta;
+
+      newSize[widgetToCollapse] =
+        widgetSizes[widgetToCollapse] + currentSize + delta;
     } else {
-      // Expanding
+      // Show the widget
       const previousSize = this._widgetSizesCache.get(widget);
       if (!previousSize) {
+        // Previous size is unavailable, let the `SplitLayout` compute widget sizes.
         return undefined;
       }
-  
-      newSizes[index] = previousSize;
-  
-      const widgetToCollapse = newSizes
+      newSize[index] += previousSize;
+
+      const widgetToCollapse = newSize
         .map(sz => sz - previousSize > 0)
         .lastIndexOf(true);
-  
       if (widgetToCollapse === -1) {
-        newSizes.forEach((_, idx) => {
+        // Can not reduce the size of one widget, reduce all opened widgets
+        // proportionally with its size.
+        newSize.forEach((_, idx) => {
           if (idx !== index) {
-            newSizes[idx] -= (sizes[idx] / totalSize) * (previousSize - delta);
+            newSize[idx] -=
+              (widgetSizes[idx] / totalSize) * (previousSize - delta);
           }
         });
       } else {
-        newSizes[widgetToCollapse] -= previousSize - delta;
+        newSize[widgetToCollapse] -= previousSize - delta;
       }
     }
-  
-    return newSizes.map(sz => sz / (totalSize + delta));
+    return newSize.map(sz => sz / (totalSize + delta));
   }
 
   /**
@@ -383,31 +368,28 @@ export class AccordionPanel extends SplitPanel {
 
   private _toggleExpansion(index: number) {
     const title = this.titles[index];
-    const layout = this.layout as AccordionLayout;
-    const widget = layout.widgets[index];
-  
-    const isExpanding = widget.isHidden;
-  
-    if (isExpanding) {
-      // EXPAND
-      widget.show();
+    const widget = (this.layout as AccordionLayout).widgets[index];
+
+    const newSize = this._computeWidgetSize(index);
+    if (newSize) {
+      this.setRelativeSizes(newSize, false);
+    }
+
+    if (widget.isHidden) {
       title.classList.add('lm-mod-expanded');
       title.setAttribute('aria-expanded', 'true');
+      widget.show();
     } else {
-      // COLLAPSE  ← THIS WAS MISSING
-      widget.hide();
       title.classList.remove('lm-mod-expanded');
       title.setAttribute('aria-expanded', 'false');
+      widget.hide();
     }
-  
-    const newSizes = this._computeWidgetSize(index);
-    if (newSizes) {
-      this.setRelativeSizes(newSizes, false);
-    }
-  
+
+    // Emit the expansion state signal.
     this._expansionToggled.emit(index);
   }
 
+  private _collapseMode: 'last-open' | 'in-place';
   private _widgetSizesCache: WeakMap<Widget, number> = new WeakMap();
   private _expansionToggled = new Signal<this, number>(this);
 }
@@ -443,22 +425,21 @@ export namespace AccordionPanel {
      * The default is a new `AccordionLayout`.
      */
     layout?: AccordionLayout;
-     /**
-     * Collapse behavior for the panel sections.
+
+    /**
+     * The collapse behavior mode for accordion sections.
      *
-     * Options:
-     * - `'last-open'` (default): current behavior, last open widget expands to bottom
-     * - `'in-place'`: collapses the widget in place without moving it, redistributing its size
-     * 
-     *  * Example:
-     * ```ts
+     * - `'last-open'` (default): When a section collapses, its space is redistributed
+     *   to the last open section. This is the original behavior.
+     * - `'in-place'`: Sections collapse and expand in place without affecting other
+     *   sections. The panel itself shrinks/grows accordingly.
+     *
+     * #### Example
+     * ```typescript
      * const panel = new AccordionPanel({
      *   collapseMode: 'in-place',
      *   orientation: 'vertical'
      * });
-     *
-     * panel.addWidget(myWidget1);
-     * panel.addWidget(myWidget2);
      * ```
      */
     collapseMode?: 'last-open' | 'in-place';
