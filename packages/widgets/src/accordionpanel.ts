@@ -392,23 +392,28 @@ export class AccordionPanel extends SplitPanel {
 
   private _toggleExpansion(index: number) {
     const title = this.titles[index];
-    const widget = (this.layout as AccordionLayout).widgets[index];
-
-    const newSize = this._computeWidgetSize(index);
-    if (newSize) {
-      this.setRelativeSizes(newSize, false);
-    }
-
-    if (widget.isHidden) {
+    const layout = this.layout as AccordionLayout;
+    const widget = layout.widgets[index];
+  
+    const isExpanding = widget.isHidden;
+  
+    if (isExpanding) {
+      // EXPAND
+      widget.show();
       title.classList.add('lm-mod-expanded');
       title.setAttribute('aria-expanded', 'true');
-      widget.show();
     } else {
+      // COLLAPSE  ← THIS WAS MISSING
+      widget.hide();
       title.classList.remove('lm-mod-expanded');
       title.setAttribute('aria-expanded', 'false');
     }
-
-    // Emit the expansion state signal.
+  
+    const newSizes = this._computeWidgetSize(index);
+    if (newSizes) {
+      this.setRelativeSizes(newSizes, false);
+    }
+  
     this._expansionToggled.emit(index);
   }
 
