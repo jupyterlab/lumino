@@ -213,65 +213,61 @@ export class AccordionPanel extends SplitPanel {
   private _computeWidgetSize(index: number): number[] | undefined {
     const layout = this.layout as AccordionLayout;
     const widget = layout.widgets[index];
-  
+
     if (!widget) {
       return undefined;
     }
-  
+
     const isHidden = widget.isHidden;
-    const sizes = layout.absoluteSizes();
+    const widgetSizes = layout.absoluteSizes();
     const delta = (isHidden ? -1 : 1) * this.spacing;
-    let newSizes = [...sizes];
-  
+    const totalSize = widgetSizes.reduce((prev, curr) => prev + curr, 0);
+    let newSize = [...widgetSizes];
+
     if (this._collapseMode === 'in-place') {
-      const currentSize = sizes[index];
-    
+      // -------------------
+      // In-place collapse (FIXED)
+      // -------------------
       if (!isHidden) {
-        // -------- Collapse --------
+        // Collapse
+        const currentSize = sizes[index];
         this._widgetSizesCache.set(widget, currentSize);
         newSizes[index] = 0;
-    
-        // Redistribute freed space to widgets AFTER this one
-        const receivers = newSizes
-          .map((sz, i) => i > index && sz > 0 ? i : -1)
-          .filter(i => i !== -1);
-    
-        if (receivers.length === 0) {
-          return undefined;
+  
+        const neighbor =
+          index > 0 && newSizes[index - 1] > 0
+            ? index - 1
+            : index < newSizes.length - 1 && newSizes[index + 1] > 0
+            ? index + 1
+            : -1;
+  
+        if (neighbor >= 0) {
+          newSizes[neighbor] += currentSize + delta;
         }
-    
-        const share = currentSize / receivers.length;
-        receivers.forEach(i => {
-          newSizes[i] += share;
-        });
-    
       } else {
-        // -------- Expand --------
+        // Expand
         const previousSize = this._widgetSizesCache.get(widget);
         if (!previousSize) {
           return undefined;
         }
-    
+  
         newSizes[index] = previousSize;
-    
-        const donors = newSizes
-          .map((sz, i) => i > index && sz > 0 ? i : -1)
-          .filter(i => i !== -1);
-    
-        if (donors.length === 0) {
-          return undefined;
+  
+        const neighbor =
+          index > 0 && newSizes[index - 1] > 0
+            ? index - 1
+            : index < newSizes.length - 1 && newSizes[index + 1] > 0
+            ? index + 1
+            : -1;
+  
+        if (neighbor >= 0) {
+          newSizes[neighbor] -= previousSize - delta;
         }
-    
-        const share = previousSize / donors.length;
-        donors.forEach(i => {
-          newSizes[i] -= share;
-        });
       }
-    
+  
       const total = newSizes.reduce((a, b) => a + b, 0);
       return newSizes.map(sz => sz / total);
     }
-
   
     // -------------------
     // Default 'last-open' behavior (UNCHANGED)
@@ -312,10 +308,10 @@ export class AccordionPanel extends SplitPanel {
         newSizes[widgetToCollapse] -= previousSize - delta;
       }
     }
-  
-    return newSizes.map(sz => sz / (totalSize + delta));
-  }
 
+    // Return normalized relative sizes
+    return newSize.map(sz => sz / (totalSize + delta));
+  }
 
   /**
    * Handle the `'click'` event for the accordion panel
