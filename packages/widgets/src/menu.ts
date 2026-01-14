@@ -376,7 +376,11 @@ export class Menu extends Widget {
    * This is a no-op if the item is not in the menu.
    */
   removeItem(item: Menu.IItem): void {
-    this.removeItemAt(this._items.indexOf(item));
+    let index = this._items.indexOf(item);
+    if (index === -1) {
+      return;
+    }
+    this.removeItemAt(index);
   }
 
   /**

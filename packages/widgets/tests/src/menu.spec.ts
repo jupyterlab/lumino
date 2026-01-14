@@ -540,6 +540,17 @@ describe('@lumino/widgets', () => {
         menu.removeItem(item);
         expect(menu.isAttached).to.equal(false);
       });
+
+      it('should be a no-op if the item is not in the menu', () => {
+        let item1 = menu.addItem({ command: 'test1' });
+        let item2 = menu.addItem({ command: 'test2' });
+        menu.removeItem(item1);
+        expect(menu.items.length).to.equal(1);
+        expect(menu.items[0]).to.equal(item2);
+        menu.removeItem(item1); // should be no-op
+        expect(menu.items.length).to.equal(1);
+        expect(menu.items[0]).to.equal(item2);
+      });
     });
 
     describe('#removeItemAt()', () => {
