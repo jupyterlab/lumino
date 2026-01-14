@@ -416,7 +416,6 @@ private _computeWidgetSize(index: number): number[] | undefined {
 
     this._expansionToggled.emit(index);
   }
-}
 
   private _collapseMode: 'last-open' | 'in-place';
   private _widgetSizesCache: WeakMap<Widget, number> = new WeakMap();
