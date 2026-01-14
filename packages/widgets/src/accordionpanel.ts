@@ -216,46 +216,40 @@ private _computeWidgetSize(index: number): number[] | undefined {
     }
     const isHidden = widget.isHidden;
     const widgetSizes = layout.absoluteSizes();
-    const delta = (isHidden ? -1 : 1) * this.spacing;
-    
-    // Calculate the current actual sum of visible parts
-    const totalSize = widgetSizes.reduce((prev: number, curr: number) => prev + curr, 0);
+    // Explicitly type the accumulator to satisfy the compiler
+    const totalSize = widgetSizes.reduce(
+      (acc: number, val: number): number => acc + val, 
+      0
+    );
 
     let newSize = [...widgetSizes];
 
     if (this._collapseMode === 'in-place') {
       if (!isHidden) {
-        // --- COLLAPSING ---
         const currentSize = widgetSizes[index];
         this._widgetSizesCache.set(widget, currentSize);
         newSize[index] = 0;
 
-        // Search ONLY for a successor (widget BELOW)
         let consumerIndex = -1;
+        // Strict successor search
         for (let i = index + 1; i < newSize.length; i++) {
-          // Check if the widget is not hidden or is the last placeholder
           if (newSize[i] > 0) {
             consumerIndex = i;
             break;
           }
         }
 
-        // If we found a widget BELOW, give it the space (keeps titles above fixed)
         if (consumerIndex !== -1) {
           newSize[consumerIndex] += currentSize + delta;
         } 
-        // If NO widget is below (last widget), we don't assign space to anyone.
-        // The space simply becomes 0 for that index.
-        
+        // If last widget (consumerIndex === -1), space is NOT redistributed.
       } else {
-        // --- EXPANDING ---
         const previousSize = this._widgetSizesCache.get(widget);
-        if (!previousSize) {
+        if (previousSize === undefined) {
           return undefined;
         }
         newSize[index] = previousSize;
 
-        // Look for the same successor to take the space BACK from
         let consumerIndex = -1;
         for (let i = index + 1; i < newSize.length; i++) {
           if (newSize[i] > 0) {
@@ -269,16 +263,11 @@ private _computeWidgetSize(index: number): number[] | undefined {
         }
       }
 
-      // --- THE FIX FOR NORMALIZATION ---
-      // We must normalize against the total area. 
-      // If the sum of newSize is now smaller than totalSize (because it was the last widget),
-      // the SplitLayout will naturally try to expand other widgets unless we are careful.
-      const currentSum = newSize.reduce((a, b) => a + b, 0);
-      
-      // If we are closing the last widget and didn't redistribute, 
-      // currentSum < totalSize. We normalize to the ORIGINAL total 
-      // to keep the relative scale of other widgets exactly the same.
-      return newSize.map(sz => sz / (totalSize + delta));
+      // Normalization: Use the original total (totalSize + delta) 
+      // This prevents the browser from stretching remaining widgets 
+      // when the last widget is closed.
+      const denominator = totalSize + delta;
+      return denominator === 0 ? undefined : newSize.map(sz => sz / denominator);
     }
 
     // --- DEFAULT: 'last-open' behavior ---
