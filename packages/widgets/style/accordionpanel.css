@@ -9,3 +9,13 @@
   transform-origin: top left;
   transform: rotate(-90deg) translate(-100%);
 }
+
+/* Hide the title bar for the spacer widget */
+.lm-AccordionPanel-spacer {
+  display: none !important; /* The widget itself needs to stay in DOM but empty */
+}
+
+/* Find the title associated with the last child and hide it */
+.lm-AccordionPanel > .lm-AccordionPanel-title:last-of-type {
+  display: none;
+}
