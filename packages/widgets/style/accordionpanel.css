@@ -10,23 +10,24 @@
   transform: rotate(-90deg) translate(-100%);
 }
 
-.lm-AccordionPanel > .lm-AccordionPanel-title:last-of-type {
+/* 1. Hide the title bar associated specifically with the spacer widget */
+.lm-AccordionPanel > .lm-AccordionPanel-title:has(+ .lm-AccordionPanel-spacer) {
   display: none !important;
-  visibility: hidden !important;
   height: 0 !important;
   margin: 0 !important;
   padding: 0 !important;
   border: none !important;
 }
 
-/* Style the spacer widget to be invisible */
+/* 2. Style the spacer widget to be invisible and non-interactive */
 .lm-AccordionPanel-spacer {
   background: transparent !important;
   border: none !important;
   outline: none !important;
+  pointer-events: none;
 }
 
-/* Ensure the spacer doesn't have the default SplitPanel divider above it */
-.lm-AccordionPanel > .lm-SplitPanel-handle:last-of-type {
+/* 3. Hide the splitter handle that appears right before the spacer */
+.lm-AccordionPanel > .lm-SplitPanel-handle:has(+ .lm-AccordionPanel-spacer) {
   display: none !important;
 }
