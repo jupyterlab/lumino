@@ -26,6 +26,8 @@ export class AccordionPanel extends SplitPanel {
    * @param options - The options for initializing the accordion panel.
    *
    */
+  private _spacer: Widget;
+  
   constructor(options: AccordionPanel.IOptions = {}) {
     super({ ...options, layout: Private.createLayout(options) });
     this.addClass('lm-AccordionPanel');
@@ -37,9 +39,9 @@ export class AccordionPanel extends SplitPanel {
     // Ensure the spacer is visible so it can hold space, 
     // but it has no content/title
     super.addWidget(this._spacer);
+    this.setRelativeSizes([1, 1, 1, 0.00001]);
   }
   
-  private _spacer: Widget;
 
   /**
    * The collapse mode used by the accordion panel.
@@ -79,7 +81,9 @@ export class AccordionPanel extends SplitPanel {
    * A read-only array of the section titles in the panel.
    */
   get titles(): ReadonlyArray<HTMLElement> {
-    return (this.layout as AccordionLayout).titles;
+    const allTitles = (this.layout as AccordionLayout).titles;
+    // We only return titles for "real" widgets, excluding the spacer at the end
+    return allTitles.slice(0, -1);
   }
 
   /**
@@ -384,8 +388,15 @@ private _computeWidgetSize(index: number): number[] | undefined {
   }
 
   private _toggleExpansion(index: number) {
+    // This now uses the filtered titles array
     const title = this.titles[index];
-    const widget = (this.layout as AccordionLayout).widgets[index];
+    const widgets = (this.layout as AccordionLayout).widgets;
+    const widget = widgets[index];
+
+    // Ensure we never try to toggle the spacer itself
+    if (widget === this._spacer) {
+      return;
+    }
 
     const newSize = this._computeWidgetSize(index);
 
@@ -399,13 +410,13 @@ private _computeWidgetSize(index: number): number[] | undefined {
       widget.hide();
     }
     
-    // Apply sizes after the visibility toggle to ensure SplitLayout respects current state
     if (newSize) {
       this.setRelativeSizes(newSize, false);
     }
 
     this._expansionToggled.emit(index);
   }
+}
 
   private _collapseMode: 'last-open' | 'in-place';
   private _widgetSizesCache: WeakMap<Widget, number> = new WeakMap();
