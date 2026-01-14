@@ -33,9 +33,15 @@ export class AccordionPanel extends SplitPanel {
     this.addClass('lm-AccordionPanel');
     this._collapseMode = options.collapseMode || 'last-open';
 
-    // 1. Initialize the spacer but DO NOT add it yet
+    // 1. Initialize the spacer
     this._spacer = new Widget();
     this._spacer.addClass('lm-AccordionPanel-spacer');
+    
+    // 2. IMPORTANT: Always add the spacer if we are in in-place mode.
+    // We add it via super.addWidget so it doesn't trigger our overridden addWidget.
+    if (this._collapseMode === 'in-place') {
+      super.addWidget(this._spacer);
+    }
   }
 
   /**
@@ -52,10 +58,8 @@ export class AccordionPanel extends SplitPanel {
     this._collapseMode = value;
 
     if (value === 'in-place') {
-      // Add spacer to the very end
       super.addWidget(this._spacer);
     } else {
-      // Remove spacer for default behavior
       this._spacer.parent = null;
     }
     this.update();
@@ -67,10 +71,8 @@ export class AccordionPanel extends SplitPanel {
   get titles(): ReadonlyArray<HTMLElement> {
     const allTitles = (this.layout as AccordionLayout).titles;
     const widgets = (this.layout as AccordionLayout).widgets;
-    
-    // Find where the spacer is. If not found, index is -1.
     const spacerIndex = widgets.indexOf(this._spacer);
-    
+
     if (spacerIndex !== -1) {
       const filtered = [...allTitles];
       filtered.splice(spacerIndex, 1);
@@ -115,16 +117,16 @@ export class AccordionPanel extends SplitPanel {
    * If the widget is already contained in the panel, it will be moved.
    */
   addWidget(widget: Widget): void {
-    if (this.collapseMode === 'in-place') {
-      // Insert before the spacer so spacer stays last
-      const index = (this.layout as AccordionLayout).widgets.indexOf(this._spacer);
-      this.insertWidget(index, widget);
+    const widgets = (this.layout as AccordionLayout).widgets;
+    const spacerIndex = widgets.indexOf(this._spacer);
+    
+    if (this.collapseMode === 'in-place' && spacerIndex !== -1) {
+      this.insertWidget(spacerIndex, widget);
     } else {
       super.addWidget(widget);
       widget.title.changed.connect(this._onTitleChanged, this);
     }
   }
-
   /**
    * Collapse the widget at position `index`.
    *
@@ -407,13 +409,12 @@ private _computeWidgetSize(index: number): number[] | undefined {
   }
 
   private _toggleExpansion(index: number) {
-    // This now uses the filtered titles array
-    const title = this.titles[index];
     const widgets = (this.layout as AccordionLayout).widgets;
     const widget = widgets[index];
+    const titles = (this.layout as AccordionLayout).titles;
+    const title = titles[index];
 
-    // Ensure we never try to toggle the spacer itself
-    if (widget === this._spacer) {
+    if (!widget || widget === this._spacer) {
       return;
     }
 
@@ -430,7 +431,8 @@ private _computeWidgetSize(index: number): number[] | undefined {
     }
     
     if (newSize) {
-      this.setRelativeSizes(newSize, false);
+      // Set sizes WITHOUT animation to prevent redistribution flicker
+      this.setRelativeSizes(newSize);
     }
 
     this._expansionToggled.emit(index);
