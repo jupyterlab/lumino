@@ -53,7 +53,7 @@ function main(): void {
 
   // New accordion with 'in-place' collapse mode
   const accordionInPlace = new AccordionPanel({
-    collapseMode: 'in-place'  // NEW: Sections collapse in-place without redistributing space
+    collapseMode: 'in-place' // NEW: Sections collapse in-place without redistributing space
   });
   accordionInPlace.id = 'accordion-inplace';
 
@@ -81,8 +81,12 @@ function main(): void {
 
   // Demo info
   console.log('Two Accordion Panels loaded!');
-  console.log('Left: Default "last-open" mode - last section expands when others collapse');
-  console.log('Right: New "in-place" mode - sections collapse independently without affecting others');
+  console.log(
+    'Left: Default "last-open" mode - last section expands when others collapse'
+  );
+  console.log(
+    'Right: New "in-place" mode - sections collapse independently without affecting others'
+  );
 }
 
 window.onload = main;
