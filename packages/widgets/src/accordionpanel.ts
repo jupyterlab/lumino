@@ -30,7 +30,16 @@ export class AccordionPanel extends SplitPanel {
     super({ ...options, layout: Private.createLayout(options) });
     this.addClass('lm-AccordionPanel');
     this._collapseMode = options.collapseMode || 'last-open';
+  
+    // Add the hidden spacer widget at the very end
+    this._spacer = new Widget();
+    this._spacer.addClass('lm-AccordionPanel-spacer');
+    // Ensure the spacer is visible so it can hold space, 
+    // but it has no content/title
+    super.addWidget(this._spacer);
   }
+  
+  private _spacer: Widget;
 
   /**
    * The collapse mode used by the accordion panel.
@@ -209,74 +218,64 @@ export class AccordionPanel extends SplitPanel {
    * not be computed, return `undefined`
    */
 private _computeWidgetSize(index: number): number[] | undefined {
-    const layout = this.layout as AccordionLayout;
-    const widget = layout.widgets[index];
-    if (!widget) {
-      return undefined;
-    }
+  const layout = this.layout as AccordionLayout;
+  const widgets = layout.widgets;
+  const widget = widgets[index];
+  
+  if (!widget || widget === this._spacer) {
+    return undefined;
+  }
 
-    const isHidden = widget.isHidden;
-    const widgetSizes = layout.absoluteSizes();
-    // DEFINE DELTA HERE so it is available to all blocks
-    const delta = (isHidden ? -1 : 1) * this.spacing;
+  const isHidden = widget.isHidden;
+  const widgetSizes = layout.absoluteSizes();
+  const delta = (isHidden ? -1 : 1) * this.spacing;
+  const totalPanelSize = widgetSizes.reduce((acc, val) => acc + val, 0);
+
+  let newSize = [...widgetSizes];
+
+  if (this._collapseMode === 'in-place') {
+    const currentSize = widgetSizes[index];
     
-    const totalSize = widgetSizes.reduce(
-      (acc: number, val: number): number => acc + val, 
-      0
-    );
+    if (!isHidden) {
+      // --- COLLAPSING ---
+      this._widgetSizesCache.set(widget, currentSize);
+      newSize[index] = 0;
 
-    let newSize = [...widgetSizes];
-
-    if (this._collapseMode === 'in-place') {
-      if (!isHidden) {
-        // --- COLLAPSING ---
-        const currentSize = widgetSizes[index];
-        this._widgetSizesCache.set(widget, currentSize);
-        newSize[index] = 0;
-
-        // Search ONLY for a successor (widget BELOW)
-        let consumerIndex = -1;
-        for (let i = index + 1; i < newSize.length; i++) {
-          if (newSize[i] > 0) {
-            consumerIndex = i;
-            break;
-          }
-        }
-
-        // If found, give space to the one below. 
-        // If NOT found (last widget), space stays 0 and isn't given to anyone.
-        if (consumerIndex !== -1) {
-          newSize[consumerIndex] += currentSize + delta;
-        } 
-      } else {
-        // --- EXPANDING ---
-        const previousSize = this._widgetSizesCache.get(widget);
-        if (previousSize === undefined) {
-          return undefined;
-        }
-        newSize[index] = previousSize;
-
-        let consumerIndex = -1;
-        for (let i = index + 1; i < newSize.length; i++) {
-          if (newSize[i] > 0) {
-            consumerIndex = i;
-            break;
-          }
-        }
-
-        if (consumerIndex !== -1) {
-          newSize[consumerIndex] = Math.max(0, newSize[consumerIndex] - (previousSize - delta));
+      // Find the next available "consumer" (could be a widget or our spacer)
+      let consumerIndex = -1;
+      for (let i = index + 1; i < newSize.length; i++) {
+        // The spacer is always at the end and is never hidden
+        if (widgets[i] === this._spacer || !widgets[i].isHidden) {
+          consumerIndex = i;
+          break;
         }
       }
 
-      // NORMALIZATION FIX:
-      // Divide by (totalSize + delta) regardless of whether we redistributed.
-      // This keeps the ratios of the other widgets constant relative to the 
-      // original container size.
-      const denominator = totalSize + delta;
-      return denominator <= 0 ? undefined : newSize.map(sz => sz / denominator);
+      if (consumerIndex !== -1) {
+        newSize[consumerIndex] += currentSize + delta;
+      }
+    } else {
+      // --- EXPANDING ---
+      const previousSize = this._widgetSizesCache.get(widget) || 0;
+      newSize[index] = previousSize;
+
+      let consumerIndex = -1;
+      for (let i = index + 1; i < newSize.length; i++) {
+        if (widgets[i] === this._spacer || !widgets[i].isHidden) {
+          consumerIndex = i;
+          break;
+        }
+      }
+
+      if (consumerIndex !== -1) {
+        // Take space back from the successor (or spacer)
+        newSize[consumerIndex] = Math.max(0, newSize[consumerIndex] - (previousSize - delta));
+      }
     }
 
+    const denominator = totalPanelSize + delta;
+    return denominator <= 0 ? undefined : newSize.map(sz => sz / denominator);
+  }
     // --- DEFAULT: 'last-open' behavior ---
     if (!isHidden) {
       const currentSize = widgetSizes[index];
@@ -308,7 +307,7 @@ private _computeWidgetSize(index: number): number[] | undefined {
         newSize[widgetToCollapse] -= previousSize - delta;
       }
     }
-    return newSize.map(sz => sz / (totalSize + delta));
+    return newSize.map(sz => sz / (totalPanelSize + delta));
   }
 
   /**
