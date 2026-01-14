@@ -232,7 +232,7 @@ private _computeWidgetSize(index: number): number[] | undefined {
         this._widgetSizesCache.set(widget, currentSize);
         newSize[index] = 0;
 
-        // Trade space with widget BELOW (successor) to keep title fixed
+        // Trade space ONLY with widget BELOW (successor)
         let consumerIndex = -1;
         for (let i = index + 1; i < newSize.length; i++) {
           if (newSize[i] > 0 || i === newSize.length - 1) {
@@ -240,11 +240,10 @@ private _computeWidgetSize(index: number): number[] | undefined {
             break;
           }
         }
-        // Fallback to widget ABOVE if no widget below exists
-        if (consumerIndex === -1 && index > 0) {
-          consumerIndex = index - 1;
-        }
-
+        
+        // If consumerIndex is found, we redistribute. 
+        // If NO consumerIndex is found (last widget), we do nothing.
+        // This causes the last widget to just close "at its place".
         if (consumerIndex !== -1) {
           newSize[consumerIndex] += currentSize + delta;
         }
@@ -256,7 +255,7 @@ private _computeWidgetSize(index: number): number[] | undefined {
         }
         newSize[index] = previousSize;
 
-        // Take space back from widget BELOW (successor)
+        // Take space back ONLY from widget BELOW
         let consumerIndex = -1;
         for (let i = index + 1; i < newSize.length; i++) {
           if (newSize[i] > 0 || i === newSize.length - 1) {
@@ -264,16 +263,12 @@ private _computeWidgetSize(index: number): number[] | undefined {
             break;
           }
         }
-        if (consumerIndex === -1 && index > 0) {
-          consumerIndex = index - 1;
-        }
 
         if (consumerIndex !== -1) {
-          // Ensure we don't result in negative size
           newSize[consumerIndex] = Math.max(0, newSize[consumerIndex] - (previousSize - delta));
         }
       }
-      // Return normalized relative sizes for SplitPanel
+      // Return normalized ratios relative to the original panel size
       return newSize.map(sz => sz / (totalSize + delta));
     }
 
