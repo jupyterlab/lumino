@@ -10,12 +10,23 @@
   transform: rotate(-90deg) translate(-100%);
 }
 
-/* Hide the title bar for the spacer widget */
-.lm-AccordionPanel-spacer {
-  display: none !important; /* The widget itself needs to stay in DOM but empty */
+.lm-AccordionPanel > .lm-AccordionPanel-title:last-of-type {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
 }
 
-/* Find the title associated with the last child and hide it */
-.lm-AccordionPanel > .lm-AccordionPanel-title:last-of-type {
-  display: none;
+/* Style the spacer widget to be invisible */
+.lm-AccordionPanel-spacer {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+}
+
+/* Ensure the spacer doesn't have the default SplitPanel divider above it */
+.lm-AccordionPanel > .lm-SplitPanel-handle:last-of-type {
+  display: none !important;
 }
