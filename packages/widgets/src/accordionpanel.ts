@@ -32,19 +32,14 @@ export class AccordionPanel extends SplitPanel {
     super({ ...options, layout: Private.createLayout(options) });
     this.addClass('lm-AccordionPanel');
     this._collapseMode = options.collapseMode || 'last-open';
-  
-    // Add the hidden spacer widget at the very end
+
+    // 1. Initialize the spacer but DO NOT add it yet
     this._spacer = new Widget();
     this._spacer.addClass('lm-AccordionPanel-spacer');
-    // Ensure the spacer is visible so it can hold space, 
-    // but it has no content/title
-    super.addWidget(this._spacer);
-    this.setRelativeSizes([1, 1, 1, 0.00001]);
   }
-  
 
   /**
-   * The collapse mode used by the accordion panel.
+   * Ensure the spacer is at the end only when 'in-place' is active.
    */
   get collapseMode(): 'last-open' | 'in-place' {
     return this._collapseMode;
@@ -55,6 +50,33 @@ export class AccordionPanel extends SplitPanel {
       return;
     }
     this._collapseMode = value;
+
+    if (value === 'in-place') {
+      // Add spacer to the very end
+      super.addWidget(this._spacer);
+    } else {
+      // Remove spacer for default behavior
+      this._spacer.parent = null;
+    }
+    this.update();
+  }
+
+  /**
+   * Filter titles dynamically based on the spacer's actual position.
+   */
+  get titles(): ReadonlyArray<HTMLElement> {
+    const allTitles = (this.layout as AccordionLayout).titles;
+    const widgets = (this.layout as AccordionLayout).widgets;
+    
+    // Find where the spacer is. If not found, index is -1.
+    const spacerIndex = widgets.indexOf(this._spacer);
+    
+    if (spacerIndex !== -1) {
+      const filtered = [...allTitles];
+      filtered.splice(spacerIndex, 1);
+      return filtered;
+    }
+    return allTitles;
   }
 
   /**
@@ -78,15 +100,6 @@ export class AccordionPanel extends SplitPanel {
   }
 
   /**
-   * A read-only array of the section titles in the panel.
-   */
-  get titles(): ReadonlyArray<HTMLElement> {
-    const allTitles = (this.layout as AccordionLayout).titles;
-    // We only return titles for "real" widgets, excluding the spacer at the end
-    return allTitles.slice(0, -1);
-  }
-
-  /**
    * A signal emitted when a widget of the AccordionPanel is collapsed or expanded.
    */
   get expansionToggled(): ISignal<this, number> {
@@ -102,8 +115,14 @@ export class AccordionPanel extends SplitPanel {
    * If the widget is already contained in the panel, it will be moved.
    */
   addWidget(widget: Widget): void {
-    super.addWidget(widget);
-    widget.title.changed.connect(this._onTitleChanged, this);
+    if (this.collapseMode === 'in-place') {
+      // Insert before the spacer so spacer stays last
+      const index = (this.layout as AccordionLayout).widgets.indexOf(this._spacer);
+      this.insertWidget(index, widget);
+    } else {
+      super.addWidget(widget);
+      widget.title.changed.connect(this._onTitleChanged, this);
+    }
   }
 
   /**
