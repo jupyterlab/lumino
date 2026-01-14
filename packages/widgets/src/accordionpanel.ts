@@ -214,9 +214,12 @@ private _computeWidgetSize(index: number): number[] | undefined {
     if (!widget) {
       return undefined;
     }
+
     const isHidden = widget.isHidden;
     const widgetSizes = layout.absoluteSizes();
-    // Explicitly type the accumulator to satisfy the compiler
+    // DEFINE DELTA HERE so it is available to all blocks
+    const delta = (isHidden ? -1 : 1) * this.spacing;
+    
     const totalSize = widgetSizes.reduce(
       (acc: number, val: number): number => acc + val, 
       0
@@ -226,12 +229,13 @@ private _computeWidgetSize(index: number): number[] | undefined {
 
     if (this._collapseMode === 'in-place') {
       if (!isHidden) {
+        // --- COLLAPSING ---
         const currentSize = widgetSizes[index];
         this._widgetSizesCache.set(widget, currentSize);
         newSize[index] = 0;
 
+        // Search ONLY for a successor (widget BELOW)
         let consumerIndex = -1;
-        // Strict successor search
         for (let i = index + 1; i < newSize.length; i++) {
           if (newSize[i] > 0) {
             consumerIndex = i;
@@ -239,11 +243,13 @@ private _computeWidgetSize(index: number): number[] | undefined {
           }
         }
 
+        // If found, give space to the one below. 
+        // If NOT found (last widget), space stays 0 and isn't given to anyone.
         if (consumerIndex !== -1) {
           newSize[consumerIndex] += currentSize + delta;
         } 
-        // If last widget (consumerIndex === -1), space is NOT redistributed.
       } else {
+        // --- EXPANDING ---
         const previousSize = this._widgetSizesCache.get(widget);
         if (previousSize === undefined) {
           return undefined;
@@ -263,11 +269,12 @@ private _computeWidgetSize(index: number): number[] | undefined {
         }
       }
 
-      // Normalization: Use the original total (totalSize + delta) 
-      // This prevents the browser from stretching remaining widgets 
-      // when the last widget is closed.
+      // NORMALIZATION FIX:
+      // Divide by (totalSize + delta) regardless of whether we redistributed.
+      // This keeps the ratios of the other widgets constant relative to the 
+      // original container size.
       const denominator = totalSize + delta;
-      return denominator === 0 ? undefined : newSize.map(sz => sz / denominator);
+      return denominator <= 0 ? undefined : newSize.map(sz => sz / denominator);
     }
 
     // --- DEFAULT: 'last-open' behavior ---
