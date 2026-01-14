@@ -300,7 +300,7 @@ private _computeWidgetSize(index: number): number[] | undefined {
       if (widgetToCollapse === -1) {
         newSize.forEach((_, idx) => {
           if (idx !== index) {
-            newSize[idx] -= (widgetSizes[idx] / totalSize) * (previousSize - delta);
+            newSize[idx] -= (widgetSizes[idx] / totalPanelSize) * (previousSize - delta);
           }
         });
       } else {
