@@ -6,6 +6,39 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2026.1.15
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2025.11.13...f5a3f413c865abdb014aad1f348260b3bc7baef7))
+
+```
+@lumino/application: 2.4.5 => 2.4.6
+@lumino/datagrid: 2.5.3 => 2.5.4
+@lumino/default-theme: 2.1.11 => 2.1.12
+@lumino/widgets: 2.7.2 => 2.7.3
+```
+
+### Bugs fixed
+
+- Fix: removing a non-existent menu item should be a no-op [#777](https://github.com/jupyterlab/lumino/pull/777) ([@jasongrout](https://github.com/jasongrout), [@krassowski](https://github.com/krassowski))
+- Add top and left positioning [#772](https://github.com/jupyterlab/lumino/pull/772) ([@SylvainCorlay](https://github.com/SylvainCorlay), [@afshin](https://github.com/afshin), [@martinRenou](https://github.com/martinRenou))
+
+### Maintenance and upkeep improvements
+
+- Bump the actions group across 1 directory with 8 updates [#774](https://github.com/jupyterlab/lumino/pull/774) ([@krassowski](https://github.com/krassowski))
+- Bump jws from 3.2.2 to 3.2.3 [#771](https://github.com/jupyterlab/lumino/pull/771) ([@krassowski](https://github.com/krassowski))
+- Bump koa from 2.16.1 to 2.16.2 [#763](https://github.com/jupyterlab/lumino/pull/763) ([@krassowski](https://github.com/krassowski))
+
+### Contributors to this release
+
+The following people contributed discussions, new ideas, code and documentation contributions, and review.
+See [our definition of contributors](https://github-activity.readthedocs.io/en/latest/#how-does-this-tool-define-contributions-in-the-reports).
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2025-11-13&to=2026-01-15&type=c))
+
+@afshin ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aafshin+updated%3A2025-11-13..2026-01-15&type=Issues)) | @jasongrout ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajasongrout+updated%3A2025-11-13..2026-01-15&type=Issues)) | @krassowski ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2025-11-13..2026-01-15&type=Issues)) | @martinRenou ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3AmartinRenou+updated%3A2025-11-13..2026-01-15&type=Issues)) | @SylvainCorlay ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3ASylvainCorlay+updated%3A2025-11-13..2026-01-15&type=Issues))
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2025.11.13
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2025.4.30...c94af1758e75ffe807795d63722abbc39650a6e7))
@@ -43,8 +76,6 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2025-04-30&to=2025-11-13&type=c))
 
 [@ndoschek](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Andoschek+updated%3A2025-04-30..2025-11-13&type=Issues) | [@schwehr](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aschwehr+updated%3A2025-04-30..2025-11-13&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2025.4.30
 
