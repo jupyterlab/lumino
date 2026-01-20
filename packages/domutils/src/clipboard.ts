@@ -18,6 +18,7 @@ export namespace ClipboardExt {
    * @param text - The text to copy to the clipboard.
    */
   export function copyText(text: string): void {
+    if (typeof document === 'undefined') return;
     // Fetch the document body.
     const body = document.body;
 
