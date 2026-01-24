@@ -721,6 +721,17 @@ export class DockPanel extends Widget {
     this._document.addEventListener('pointermove', this, true);
     this._document.addEventListener('contextmenu', this, true);
 
+    // Set the pointer capture to this split panel, ensuring the document
+    // listeners above will be triggered even if the pointer drifts over another
+    // document, like an iframe.
+    let pointerId = event.pointerId;
+    try {
+      this.node.setPointerCapture(pointerId);
+    } catch (e) {
+      // Pointer capture is nice to try, but may fail. In that case, ignore the
+      // failure.
+    }
+
     // Compute the offset deltas for the handle press.
     let rect = handle.getBoundingClientRect();
     let deltaX = event.clientX - rect.left;
@@ -729,7 +740,7 @@ export class DockPanel extends Widget {
     // Override the cursor and store the press data.
     let style = window.getComputedStyle(handle);
     let override = Drag.overrideCursor(style.cursor!, this._document);
-    this._pressData = { handle, deltaX, deltaY, override };
+    this._pressData = { handle, deltaX, deltaY, override, pointerId };
   }
 
   /**
@@ -782,6 +793,12 @@ export class DockPanel extends Widget {
     // Bail early if no drag is in progress.
     if (!this._pressData) {
       return;
+    }
+
+    // Release the pointer capture if it is set.
+    let pointerId = this._pressData.pointerId;
+    if (this.node.hasPointerCapture(pointerId)) {
+      this.node.releasePointerCapture(pointerId);
     }
 
     // Clear the override cursor.
@@ -1466,6 +1483,11 @@ namespace Private {
      * The disposable which will clear the override cursor.
      */
     override: IDisposable;
+
+    /**
+     * Pointer ID of the press event.
+     */
+    pointerId: number;
   }
 
   /**

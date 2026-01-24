@@ -262,6 +262,17 @@ export class SplitPanel extends Panel {
     document.addEventListener('keydown', this, true);
     document.addEventListener('contextmenu', this, true);
 
+    // Set the pointer capture to this split panel, ensuring the document
+    // listeners above will be triggered even if the pointer drifts over another
+    // document, like an iframe.
+    let pointerId = event.pointerId;
+    try {
+      this.node.setPointerCapture(pointerId);
+    } catch (e) {
+      // Pointer capture is nice to try, but may fail. In that case, ignore the
+      // failure.
+    }
+
     // Compute the offset delta for the handle press.
     let delta: number;
     let handle = layout.handles[index];
@@ -275,7 +286,7 @@ export class SplitPanel extends Panel {
     // Override the cursor and store the press data.
     let style = window.getComputedStyle(handle);
     let override = Drag.overrideCursor(style.cursor!);
-    this._pressData = { index, delta, override };
+    this._pressData = { index, delta, override, pointerId };
   }
 
   /**
@@ -326,8 +337,16 @@ export class SplitPanel extends Panel {
       return;
     }
 
+    // Release the pointer capture if it is set.
+    let pointerId = this._pressData.pointerId;
+    if (this.node.hasPointerCapture(pointerId)) {
+      this.node.releasePointerCapture(pointerId);
+    }
+
     // Clear the override cursor.
     this._pressData.override.dispose();
+
+    // Clear the press data.
     this._pressData = null;
 
     // Emit the handle moved signal.
@@ -471,6 +490,11 @@ namespace Private {
      * The disposable which will clear the override cursor.
      */
     override: IDisposable;
+
+    /**
+     * Pointer ID of the press event.
+     */
+    pointerId: number;
   }
 
   /**
