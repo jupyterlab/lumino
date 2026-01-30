@@ -24,8 +24,9 @@ git push origin main
 push --delete origin <version-tag>
 ```
 
-Then when triggering the _Step 1: Prep Release_ and _Step 2: Publish Release_ actions, you will
-need to set the _New Version Spec_ to the current date `<YEAR>.<MONTH>.<DAY>`.
+Then when triggering the _Step 1: Prep Release_ action, you will need to set
+the _New Version Spec_ to the current date `<YEAR>.<MONTH>.<DAY>`.
+Do not include leading zeros (for example, February 1, 2029 should be `2029.2.1`).
 
 ## Manual Release
 
