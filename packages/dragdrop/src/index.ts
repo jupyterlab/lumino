@@ -1299,8 +1299,13 @@ namespace Private {
     // even if the pointer drifts over an iframe. When the backdrop element is
     // removed from the DOM when the override dispose is called, any pointer
     // capture is released.
-    let pointerId = event.pointerId;
-    cursorBackdrop.setPointerCapture(pointerId);
+    try {
+      cursorBackdrop.setPointerCapture(event.pointerId);
+    } catch (e) {
+      // Ignore errors in pointer capture to guard defensively against failures,
+      // e.g., older browsers or synthetic events in tests that don't have
+      // active pointers.
+    }
   }
 
   /**
