@@ -1293,6 +1293,14 @@ namespace Private {
       return;
     }
     cursorBackdrop.style.transform = `translate(${event.clientX}px, ${event.clientY}px)`;
+
+    // Capture the pointer to the cursor backdrop, ensuring that the cursor
+    // override and any other pointer listeners on the document are respected
+    // even if the pointer drifts over an iframe. When the backdrop element is
+    // removed from the DOM when the override dispose is called, any pointer
+    // capture is released.
+    let pointerId = event.pointerId;
+    cursorBackdrop.setPointerCapture(pointerId);
   }
 
   /**
