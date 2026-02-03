@@ -1280,6 +1280,8 @@ namespace Private {
           propagateBackdropScroll,
           true
         );
+
+        // Removing the element from the DOM also releases the pointer capture.
         body.removeChild(cursorBackdrop);
       }
     });
@@ -1300,7 +1302,9 @@ namespace Private {
     // removed from the DOM when the override dispose is called, any pointer
     // capture is released.
     try {
-      cursorBackdrop.setPointerCapture(event.pointerId);
+      if (!cursorBackdrop.hasPointerCapture(event.pointerId)) {
+        cursorBackdrop.setPointerCapture(event.pointerId);
+      }
     } catch (e) {
       // Ignore errors in pointer capture to guard defensively against failures,
       // e.g., older browsers or synthetic events in tests that don't have
