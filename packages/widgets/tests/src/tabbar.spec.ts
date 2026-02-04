@@ -111,7 +111,7 @@ function simulateOnNode(node: Element, action: Action): void {
   node.dispatchEvent(
     new PointerEvent(action, {
       clientX: rect.left + 1,
-      clientY: rect.top,
+      clientY: rect.top + 1,
       cancelable: true,
       bubbles: true
     })
