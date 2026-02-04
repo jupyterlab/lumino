@@ -514,14 +514,15 @@ describe('@lumino/widgets', () => {
           expect(args.index).to.equal(0);
           expect(args.title).to.equal(bar.titles[0]);
           expect(args.clientX).to.equal(rect.right + 200);
-          expect(args.clientY).to.equal(rect.top);
+          // Firefox on macos sometimes returns floats for rect.top
+          expect(args.clientY).to.equal(Math.round(rect.top));
           called = true;
         });
         let rect = bar.contentNode.getBoundingClientRect();
         document.body.dispatchEvent(
           new PointerEvent('pointermove', {
             clientX: rect.right + 200,
-            clientY: rect.top,
+            clientY: Math.round(rect.top),
             cancelable: true
           })
         );
@@ -1428,14 +1429,15 @@ describe('@lumino/widgets', () => {
             expect(args.index).to.equal(0);
             expect(args.title).to.equal(bar.titles[0]);
             expect(args.clientX).to.equal(rect.right + 200);
-            expect(args.clientY).to.equal(rect.top);
+            // Firefox on macos sometimes returns floats for rect.top
+            expect(args.clientY).to.equal(Math.round(rect.top));
             called = true;
           });
           let rect = bar.contentNode.getBoundingClientRect();
           document.body.dispatchEvent(
             new PointerEvent('pointermove', {
               clientX: rect.right + 200,
-              clientY: rect.top,
+              clientY: Math.round(rect.top),
               cancelable: true
             })
           );
