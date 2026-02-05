@@ -6,6 +6,38 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2026.2.5
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2025.1.30...4f31e56b15633e363c84322ca58414746bdd0140))
+
+```
+@lumino/application: 2.4.7 => 2.4.8
+@lumino/datagrid: 2.5.5 => 2.5.6
+@lumino/default-theme: 2.1.13 => 2.1.14
+@lumino/dragdrop: 2.1.7 => 2.1.8
+@lumino/widgets: 2.7.4 => 2.7.5
+```
+
+### Bugs fixed
+
+- Capture pointer events to the cursor override div instead of the dockpanel or splitpanel [#784](https://github.com/jupyterlab/lumino/pull/784) ([@jasongrout](https://github.com/jasongrout), [@krassowski](https://github.com/krassowski))
+
+### Maintenance and upkeep improvements
+
+- Fix more macos firefox tests [#787](https://github.com/jupyterlab/lumino/pull/787) ([@jasongrout](https://github.com/jasongrout), [@krassowski](https://github.com/krassowski))
+- Fix macos:firefox flaky tests [#786](https://github.com/jupyterlab/lumino/pull/786) ([@jasongrout](https://github.com/jasongrout), [@krassowski](https://github.com/krassowski))
+
+### Contributors to this release
+
+The following people contributed discussions, new ideas, code and documentation contributions, and review.
+See [our definition of contributors](https://github-activity.readthedocs.io/en/latest/use/#how-does-this-tool-define-contributions-in-the-reports).
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2026-01-30&to=2026-02-05&type=c))
+
+@jasongrout ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajasongrout+updated%3A2026-01-30..2026-02-05&type=Issues)) | @krassowski ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2026-01-30..2026-02-05&type=Issues))
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2025.1.30
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2026.1.15...58eebd4c824a46f7cf7d578aee508506513df1c1))
@@ -38,8 +70,6 @@ See [our definition of contributors](https://github-activity.readthedocs.io/en/l
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2026-01-16&to=2026-01-30&type=c))
 
 @jasongrout ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajasongrout+updated%3A2026-01-16..2026-01-30&type=Issues)) | @krassowski ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2026-01-16..2026-01-30&type=Issues)) | @safisa ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Asafisa+updated%3A2026-01-16..2026-01-30&type=Issues)) | @tsmaeder ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Atsmaeder+updated%3A2026-01-16..2026-01-30&type=Issues))
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2026.1.15
 
