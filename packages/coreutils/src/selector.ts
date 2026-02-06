@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) Jupyter Development Team.
+ * Distributed under the terms of the Modified BSD License.
+ */
+
 /**
  * Remove :is() and :where() functional pseudo-classes so that
  * commas inside them do not count as top-level selector separators.

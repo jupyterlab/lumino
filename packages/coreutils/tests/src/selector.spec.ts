@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) Jupyter Development Team.
+ * Distributed under the terms of the Modified BSD License.
+ */
+
 import { hasTopLevelComma } from '@lumino/coreutils/src/selector';
 import { expect } from 'chai';
 
