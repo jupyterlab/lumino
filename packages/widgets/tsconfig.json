@@ -6,7 +6,7 @@
     "outDir": "lib",
     "rootDir": "src"
   },
-  "include": ["src/*"],
+  "include": ["src/*", "../coreutils/src/selector.ts"],
   "references": [
     {
       "path": "../algorithm"
