@@ -557,13 +557,12 @@ export class CommandRegistry {
       return;
     }
 
-    // Add the keystroke to the current key sequence.
-    this._keystrokes.push(keystroke);
-
+    // Create a temporary sequence with the new keystroke to check for matches.
+    const newKeystrokes = [...this._keystrokes, keystroke];
     // Find the exact and partial matches for the key sequence.
     const { exact, partial } = Private.matchKeyBinding(
       this._keyBindings,
-      this._keystrokes,
+      newKeystrokes,
       event
     );
     // Whether there is any partial match.
@@ -589,6 +588,9 @@ export class CommandRegistry {
       event.preventDefault();
       event.stopPropagation();
     }
+
+    // Save new keystrokes
+    this._keystrokes = newKeystrokes;
 
     // Store the event for possible playback in the future and for
     // the use in execution hold check.
