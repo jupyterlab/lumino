@@ -710,6 +710,7 @@ __metadata:
     "@web/test-runner-playwright": ^0.11.0
     chai: ^4.3.4
     mocha: ^9.0.3
+    mock-socket: ^9.3.1
     postcss: ^8.4.24
     rimraf: ^5.0.1
     rollup: ^3.25.1
@@ -8317,6 +8318,13 @@ __metadata:
     _mocha: bin/_mocha
     mocha: bin/mocha
   checksum: 4d5ca4ce33fc66627e63acdf09a634e2358c9a00f61de7788b1091b6aad430da04f97f9ecb82d56dc034b623cb833b65576136fd010d77679c03fcea5bc1e12d
+  languageName: node
+  linkType: hard
+
+"mock-socket@npm:^9.3.1":
+  version: 9.3.1
+  resolution: "mock-socket@npm:9.3.1"
+  checksum: cb2dde4fc5dde280dd5ccb78eaaa223382ee16437f46b86558017655584ad08c22e733bde2dd5cc86927def506b6caeb0147e3167b9a62d70d5cf19d44103853
   languageName: node
   linkType: hard
 
