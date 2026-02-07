@@ -11,6 +11,9 @@ import { ArrayExt } from '@lumino/algorithm';
 
 import { CommandRegistry } from '@lumino/commands';
 
+import { hasTopLevelComma } from '@lumino/coreutils';
+
+
 import { DisposableDelegate, IDisposable } from '@lumino/disposable';
 
 import { Selector } from '@lumino/domutils';
@@ -328,7 +331,7 @@ namespace Private {
    * invalid or contains commas.
    */
   function validateSelector(selector: string): string {
-    if (selector.indexOf(',') !== -1) {
+    if (hasTopLevelComma(selector)) {
       throw new Error(`Selector cannot contain commas: ${selector}`);
     }
     if (!Selector.isValid(selector)) {
