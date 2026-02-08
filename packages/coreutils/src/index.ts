@@ -14,4 +14,3 @@
 export * from './index.common';
 export * from './random.browser';
 export * from './uuid.browser';
-export * from './selector'

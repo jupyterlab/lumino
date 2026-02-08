@@ -12,7 +12,6 @@
  * @module commands
  */
 import { ArrayExt } from '@lumino/algorithm';
-import { hasTopLevelComma } from '@lumino/coreutils';
 
 import {
   JSONExt,
@@ -1688,7 +1687,7 @@ namespace Private {
   function validateSelector(
     options: CommandRegistry.IKeyBindingOptions
   ): string {
-    if (hasTopLevelComma(options.selector)) {
+    if (Selector.hasTopLevelComma(options.selector)) {
       throw new Error(`Selector cannot contain commas: ${options.selector}`);
     }
     if (!Selector.isValid(options.selector)) {
