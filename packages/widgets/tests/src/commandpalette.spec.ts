@@ -836,6 +836,20 @@ describe('@lumino/widgets', () => {
           keys: ['Ctrl A'],
           selector: 'body'
         });
+        commands.addCommand('test-aria', {
+          label: 'Test Aria',
+          caption: 'A simple aria-label test',
+          className: 'testAriaClass',
+          isEnabled: () => enabledFlag,
+          isToggled: () => toggledFlag,
+          execute: () => {}
+        });
+        commands.addKeyBinding({
+          command: 'test-aria',
+          keys: ['Ctrl ,'],
+          selector: 'body'
+        });
+
         item = palette.addItem({
           command: 'test',
           category: 'Test Category'
@@ -1109,6 +1123,39 @@ describe('@lumino/widgets', () => {
             active: false
           });
           expect(child).to.equal('A simple test command');
+        });
+      });
+
+      describe('#formatItemShortcut()', () => {
+        it('should format the item shortcut text', () => {
+          let child = renderer.formatItemShortcut({
+            item,
+            indices: null,
+            active: false
+          });
+          if (Platform.IS_MAC) {
+            expect(child).to.equal('\u2303 A');
+          } else {
+            expect(child).to.equal('Ctrl+A');
+          }
+        });
+      });
+      describe('#formatItemAria', () => {
+        it('should format the item aria-label', () => {
+          let item = palette.addItem({
+            command: 'test-aria',
+            category: 'Test Category'
+          });
+          let child = renderer.formatItemAria({
+            item,
+            indices: null,
+            active: false
+          });
+          if (Platform.IS_MAC) {
+            expect(child).to.equal('\u2303 ,');
+          } else {
+            expect(child).to.equal('Ctrl+Comma');
+          }
         });
       });
     });

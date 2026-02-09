@@ -52,6 +52,7 @@ export class Menu extends Widget {
     super({ node: Private.createNode() });
     this.addClass('lm-Menu');
     this.setFlag(Widget.Flag.DisallowLayout);
+    this.keyToText = options.renderer?.keyToText;
     this.commands = options.commands;
     this.renderer = options.renderer || Menu.defaultRenderer;
   }
@@ -64,6 +65,10 @@ export class Menu extends Widget {
     this._items.length = 0;
     super.dispose();
   }
+  /**
+   * The optional object used for translation of aria label punctuation.
+   */
+  readonly keyToText: Menu.IRenderer['keyToText'];
 
   /**
    * A signal emitted just before the menu is closed.
@@ -1197,6 +1202,10 @@ export namespace Menu {
      * @returns A virtual element representing the item.
      */
     renderItem(data: IRenderData): VirtualElement;
+    /**
+     * The optional object used for translation of aria label punctuation.
+     */
+    keyToText?: { [key: string]: string };
   }
 
   /**
@@ -1206,6 +1215,10 @@ export namespace Menu {
    * Subclasses are free to reimplement rendering methods as needed.
    */
   export class Renderer implements IRenderer {
+    /**
+     * The optional object used for translation of aria label punctuation.
+     */
+    keyToText?: { [key: string]: string };
     /**
      * Render the virtual element for a menu item.
      *
@@ -1267,7 +1280,14 @@ export namespace Menu {
      */
     renderShortcut(data: IRenderData): VirtualElement {
       let content = this.formatShortcut(data);
-      return h.div({ className: 'lm-Menu-itemShortcut' }, content);
+      let ariaContent = this.formatShortcutText(data);
+      return h.div(
+        {
+          className: 'lm-Menu-itemShortcut',
+          'aria-label': `${ariaContent}`
+        },
+        content
+      );
     }
 
     /**
@@ -1421,6 +1441,19 @@ export namespace Menu {
     formatShortcut(data: IRenderData): h.Child {
       let kb = data.item.keyBinding;
       return kb ? CommandRegistry.formatKeystroke(kb.keys) : null;
+    }
+
+    /**
+     * @param data - The data to use for the aria label content.
+     *
+     * @returns The aria label content to add to the shortcut node.
+     */
+    formatShortcutText(data: IRenderData): h.Child {
+      let kbText = data.item.keyBinding;
+
+      return kbText
+        ? CommandRegistry.formatKeystrokeAriaLabel(kbText.keys, this.keyToText)
+        : null;
     }
   }
 

@@ -180,6 +180,7 @@ export class CommandPalette extends Widget {
     handleEvent(event: Event): void;
     get inputNode(): HTMLInputElement;
     get items(): ReadonlyArray<CommandPalette.IItem>;
+    readonly keyToText: CommandPalette.IRenderer['keyToText'];
     protected onActivateRequest(msg: Message): void;
     protected onAfterDetach(msg: Message): void;
     protected onAfterShow(msg: Message): void;
@@ -235,6 +236,9 @@ export namespace CommandPalette {
         renderer?: IRenderer;
     }
     export interface IRenderer {
+        keyToText?: {
+            [key: string]: string;
+        };
         renderEmptyMessage(data: IEmptyMessageRenderData): VirtualElement;
         renderHeader(data: IHeaderRenderData): VirtualElement;
         renderItem(data: IItemRenderData): VirtualElement;
@@ -245,9 +249,14 @@ export namespace CommandPalette {
         createItemDataset(data: IItemRenderData): ElementDataset;
         formatEmptyMessage(data: IEmptyMessageRenderData): h.Child;
         formatHeader(data: IHeaderRenderData): h.Child;
+        // (undocumented)
+        formatItemAria(data: IItemRenderData): h.Child;
         formatItemCaption(data: IItemRenderData): h.Child;
         formatItemLabel(data: IItemRenderData): h.Child;
         formatItemShortcut(data: IItemRenderData): h.Child;
+        keyToText?: {
+            [key: string]: string;
+        };
         renderEmptyMessage(data: IEmptyMessageRenderData): VirtualElement;
         renderHeader(data: IHeaderRenderData): VirtualElement;
         renderItem(data: IItemRenderData): VirtualElement;
@@ -695,6 +704,7 @@ export class Menu extends Widget {
     handleEvent(event: Event): void;
     insertItem(index: number, options: Menu.IItemOptions): Menu.IItem;
     get items(): ReadonlyArray<Menu.IItem>;
+    readonly keyToText: Menu.IRenderer['keyToText'];
     get leafMenu(): Menu;
     get menuRequested(): ISignal<this, 'next' | 'previous'>;
     protected onActivateRequest(msg: Message): void;
@@ -756,6 +766,9 @@ export namespace Menu {
         readonly onfocus?: () => void;
     }
     export interface IRenderer {
+        keyToText?: {
+            [key: string]: string;
+        };
         renderItem(data: IRenderData): VirtualElement;
     }
     export type ItemType = 'command' | 'submenu' | 'separator';
@@ -766,6 +779,11 @@ export namespace Menu {
         createItemDataset(data: IRenderData): ElementDataset;
         formatLabel(data: IRenderData): h.Child;
         formatShortcut(data: IRenderData): h.Child;
+        // (undocumented)
+        formatShortcutText(data: IRenderData): h.Child;
+        keyToText?: {
+            [key: string]: string;
+        };
         renderIcon(data: IRenderData): VirtualElement;
         renderItem(data: IRenderData): VirtualElement;
         renderLabel(data: IRenderData): VirtualElement;

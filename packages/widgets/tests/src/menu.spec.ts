@@ -85,6 +85,17 @@ describe('@lumino/widgets', () => {
       className: 'testClass',
       mnemonic: 0
     });
+    commands.addCommand('test-aria', {
+      execute: (args: JSONObject) => {
+        executed = 'test-aria';
+      },
+      label: 'Test Aria Label',
+      icon: iconRenderer,
+      iconClass,
+      caption: 'Test Caption',
+      className: 'testClass',
+      mnemonic: 0
+    });
     commands.addCommand('test-toggled', {
       execute: (args: JSONObject) => {
         executed = 'test-toggled';
@@ -126,6 +137,11 @@ describe('@lumino/widgets', () => {
       keys: ['Ctrl T'],
       selector: 'body',
       command: 'test'
+    });
+    commands.addKeyBinding({
+      keys: ['Ctrl ,'],
+      selector: 'body',
+      command: 'test-aria'
     });
   });
 
@@ -1664,6 +1680,21 @@ describe('@lumino/widgets', () => {
           } else {
             expect(child).to.equal('Ctrl+T');
           }
+        });
+        describe('#formatShortcutText()', () => {
+          it('should format the item aria-label', () => {
+            let item = menu.addItem({ command: 'test-aria' });
+            let child = renderer.formatShortcutText({
+              item,
+              active: false,
+              collapsed: false
+            });
+            if (Platform.IS_MAC) {
+              expect(child).to.equal('\u2303 ,');
+            } else {
+              expect(child).to.equal('Ctrl+Comma');
+            }
+          });
         });
       });
     });
