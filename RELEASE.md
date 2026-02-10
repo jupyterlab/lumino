@@ -4,29 +4,30 @@
 
 The recommended way to make a release is to use [`jupyter_releaser`](https://jupyter-releaser.readthedocs.io/en/latest/get_started/making_release_from_repo.html).
 
-Because `lumino` uses independent versions, the versioning must be
-done manually as follows:
 
-```bash
-yarn
-yarn run update:versions
-# Update yarn.lock
-yarn
-git commit -a -m "Update versions"
-git push origin main
-```
+1. Create and push a commit to `main` that updates individual package version
+   numbers.
+    ```bash
+    yarn
+    yarn run update:versions
+    # Update yarn.lock
+    yarn
+    git commit -a -m "Update versions"
+    git push origin main
+    ```
 
-If you forget to bump the versions and need to undo:
+    If you forget to bump the versions and need to undo:
 
-```bash
-git revert <version-bump-commit-sha>
-git push origin main
-push --delete origin <version-tag>
-```
+    ```bash
+    git revert <version-bump-commit-sha>
+    git push origin main
+    git push --delete origin <version-tag>
+    ```
 
-Then when triggering the _Step 1: Prep Release_ action, you will need to set
-the _New Version Spec_ to the current date `<YEAR>.<MONTH>.<DAY>`.
-Do not include leading zeros (for example, February 1, 2029 should be `2029.2.1`).
+2. Run the _Step 1: Prep Release_ action with the default arguments.
+
+3. Run the _Step 2: Publish Release_ action with the default arguments.
+
 
 ## Manual Release
 
