@@ -130,7 +130,6 @@ namespace Private {
    */
   export const testElem = document.createElement('div');
 
-
   /**
    * A cross-browser CSS selector matching prototype function.
    */
