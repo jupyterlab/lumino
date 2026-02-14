@@ -1687,7 +1687,7 @@ namespace Private {
   function validateSelector(
     options: CommandRegistry.IKeyBindingOptions
   ): string {
-    if (options.selector.indexOf(',') !== -1) {
+    if (Selector.hasTopLevelComma(options.selector)) {
       throw new Error(`Selector cannot contain commas: ${options.selector}`);
     }
     if (!Selector.isValid(options.selector)) {
