@@ -13,6 +13,8 @@ export { Poll } from './poll';
 
 export { Debouncer, RateLimiter, Throttler } from './ratelimiter';
 
+export { SocketStream } from './socketstream';
+
 /**
  * A readonly poll that calls an asynchronous function with each tick.
  *
