@@ -1406,14 +1406,21 @@ export class TabBar<T> extends Widget {
 
     // Clear the inline width on all tabs, triggering the CSS transition.
     let tabs = this.contentNode.children;
+    if (tabs.length === 0) {
+      this.removeClass('lm-mod-unfreezing');
+    } else {
+      const onTransitionEnd = (event: Event) => {
+        if ((event as TransitionEvent).propertyName === 'width') {
+          this.removeClass('lm-mod-unfreezing');
+          this.node.removeEventListener('transitionend', onTransitionEnd);
+        }
+      };
+      this.node.addEventListener('transitionend', onTransitionEnd);
+    }
+
     for (let i = 0, n = tabs.length; i < n; ++i) {
       (tabs[i] as HTMLElement).style.width = '';
     }
-
-    // Remove the unfreezing class after the transition completes.
-    setTimeout(() => {
-      this.removeClass('lm-mod-unfreezing');
-    }, 150);
 
     // Schedule an update to re-render the tabs at natural size.
     this.update();

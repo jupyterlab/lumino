@@ -1039,6 +1039,51 @@ describe('@lumino/widgets', () => {
           });
         });
       });
+
+      it('should not freeze tab widths if closed programmatically (e.g., keyboard shortcut)', () => {
+        populateBar(bar);
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        let tabs = bar.contentNode.children;
+        let originalWidth = (tabs[0] as HTMLElement).style.width;
+
+        bar.removeTabAt(0);
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+
+        // Since it was closed programmatically (no close-icon click),
+        // widths should NOT be explicitly frozen.
+        expect((tabs[0] as HTMLElement).style.width).to.equal(originalWidth);
+      });
+
+      it('should freeze tab widths if closed via close icon and unfreeze on pointerleave', () => {
+        populateBar(bar);
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+
+        let tabs = bar.contentNode.children;
+        let closeIcon = tabs[0].querySelector(
+          bar.renderer.closeIconSelector
+        ) as HTMLElement;
+
+        bar.tabCloseRequested.connect((sender, args) => {
+          bar.removeTabAt(args.index);
+          MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        });
+
+        simulateOnNode(closeIcon, 'pointerdown');
+        simulateOnNode(closeIcon, 'pointerup');
+
+        let remainingTabs = bar.contentNode.children;
+        expect((remainingTabs[0] as HTMLElement).style.width).to.not.equal('');
+
+        bar.node.dispatchEvent(
+          new PointerEvent('pointerleave', { bubbles: false })
+        );
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+
+        expect(bar.hasClass('lm-mod-unfreezing')).to.equal(true);
+        for (let i = 0, n = remainingTabs.length; i < n; ++i) {
+          expect((remainingTabs[i] as HTMLElement).style.width).to.equal('');
+        }
+      });
     });
 
     describe('#clearTabs()', () => {
