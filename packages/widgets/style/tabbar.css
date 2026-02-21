@@ -97,6 +97,10 @@
   transition: none;
 }
 
+.lm-TabBar.lm-mod-unfreezing .lm-TabBar-tab {
+  transition: width 150ms ease;
+}
+
 .lm-TabBar-tabLabel .lm-TabBar-tabInput {
   user-select: all;
   width: 100%;
