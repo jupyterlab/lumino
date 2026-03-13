@@ -306,8 +306,10 @@ export class DockLayout extends Layout {
       // the gap between handle regions is bridged:
       //   'vertical'   primary (ns-resize, horizontal bar) → expand Y bounds
       //   'horizontal' primary (ew-resize, vertical bar)   → expand X bounds
-      let left = rect.left, right = rect.right;
-      let top = rect.top, bottom = rect.bottom;
+      let left = rect.left,
+        right = rect.right;
+      let top = rect.top,
+        bottom = rect.bottom;
       if (primaryOrientation === 'vertical') {
         top -= tol;
         bottom += tol;
@@ -316,7 +318,12 @@ export class DockLayout extends Layout {
         right += tol;
       }
 
-      if (clientX >= left && clientX <= right && clientY >= top && clientY <= bottom) {
+      if (
+        clientX >= left &&
+        clientX <= right &&
+        clientY >= top &&
+        clientY <= bottom
+      ) {
         return candidate;
       }
     }

@@ -396,7 +396,11 @@ export class SplitPanel extends Panel {
         const lo = layout.orientation === 'horizontal' ? r.top : r.left;
         const hi = layout.orientation === 'horizontal' ? r.bottom : r.right;
         if (crossPos >= lo - tol && crossPos <= hi + tol) {
-          return { panel: candidate, index: i, delta: Math.max(0, crossPos - lo) };
+          return {
+            panel: candidate,
+            index: i,
+            delta: Math.max(0, crossPos - lo)
+          };
         }
       }
     }
