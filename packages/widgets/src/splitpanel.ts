@@ -253,8 +253,8 @@ export class SplitPanel extends Panel {
     }
 
     // Find the handle which contains the target, if any.
-    let layout = this.layout as SplitLayout;
-    let index = ArrayExt.findFirstIndex(layout.handles, handle => {
+    const layout = this.layout as SplitLayout;
+    const index = ArrayExt.findFirstIndex(layout.handles, handle => {
       return handle.contains(event.target as HTMLElement);
     });
 
@@ -274,76 +274,36 @@ export class SplitPanel extends Panel {
     document.addEventListener('contextmenu', this, true);
 
     // Compute the offset delta for the handle press.
-    let delta: number;
-    let handle = layout.handles[index];
-    let rect = handle.getBoundingClientRect();
-    if (layout.orientation === 'horizontal') {
-      delta = event.clientX - rect.left;
-    } else {
-      delta = event.clientY - rect.top;
-    }
+    const handle = layout.handles[index];
+    const rect = handle.getBoundingClientRect();
+    const delta =
+      layout.orientation === 'horizontal'
+        ? event.clientX - rect.left
+        : event.clientY - rect.top;
 
-    // Override the cursor and store the press data.
-    let style = window.getComputedStyle(handle);
-    let override = Drag.overrideCursor(style.cursor!);
-
-    // Check whether an adjacent widget is an orthogonal SplitPanel and has
-    // a handle that intersects the cursor position in the cross-axis.
-    let innerPanel: SplitPanel | undefined;
-    let innerIndex: number | undefined;
-    let innerDelta: number | undefined;
-
-    const layoutWidgets = this.widgets;
-    for (const candidate of [layoutWidgets[index], layoutWidgets[index + 1]]) {
-      if (!(candidate instanceof SplitPanel)) {
-        continue;
-      }
-      // The inner panel must have the orthogonal orientation.
-      if (candidate.orientation === layout.orientation) {
-        continue;
-      }
-      const innerLayout = candidate.layout as SplitLayout;
-      const tol = (innerLayout as any)._spacing ?? 4;
-      for (let i = 0; i < innerLayout.handles.length; i++) {
-        const h = innerLayout.handles[i];
-        if (h.classList.contains('lm-mod-hidden')) {
-          continue;
-        }
-        const hRect = h.getBoundingClientRect();
-        if (layout.orientation === 'horizontal') {
-          // Outer is horizontal (vertical bars); cross-axis is Y.
-          // Expand inner rect by tolerance to bridge the gap at the intersection.
-          if (event.clientY >= hRect.top - tol && event.clientY <= hRect.bottom + tol) {
-            innerPanel = candidate;
-            innerIndex = i;
-            innerDelta = Math.max(0, event.clientY - hRect.top);
-            break;
-          }
-        } else {
-          // Outer is vertical (horizontal bars); cross-axis is X.
-          if (event.clientX >= hRect.left - tol && event.clientX <= hRect.right + tol) {
-            innerPanel = candidate;
-            innerIndex = i;
-            innerDelta = Math.max(0, event.clientX - hRect.left);
-            break;
-          }
-        }
-      }
-      if (innerPanel) {
-        break;
-      }
-    }
+    // Check whether an adjacent widget is an orthogonal SplitPanel whose
+    // handle intersects the cursor position in the cross-axis.
+    const crossPos =
+      layout.orientation === 'horizontal' ? event.clientY : event.clientX;
+    const found = this._findInnerIntersect(index, crossPos);
 
     // Use 'all-scroll' at intersections; otherwise use the handle's cursor.
-    if (innerPanel) {
+    const style = window.getComputedStyle(handle);
+    let override = Drag.overrideCursor(style.cursor!);
+    if (found) {
       override.dispose();
-      override = Drag.overrideCursor('all-scroll');
+      override = Drag.overrideCursor('move');
     }
 
     // Clear hover cursor — drag override takes over.
     this._clearHoverCursor();
 
-    this._pressData = { index, delta, override, innerPanel, innerIndex, innerDelta };
+    this._pressData = {
+      index,
+      delta,
+      override,
+      innerIntersect: found ?? undefined
+    };
   }
 
   /**
@@ -355,32 +315,26 @@ export class SplitPanel extends Panel {
     event.stopPropagation();
 
     // Compute the desired offset position for the handle.
-    let pos: number;
-    let layout = this.layout as SplitLayout;
-    let rect = this.node.getBoundingClientRect();
-    if (layout.orientation === 'horizontal') {
-      pos = event.clientX - rect.left - this._pressData!.delta;
-    } else {
-      pos = event.clientY - rect.top - this._pressData!.delta;
-    }
+    const layout = this.layout as SplitLayout;
+    const rect = this.node.getBoundingClientRect();
+    const { index, delta, innerIntersect } = this._pressData!;
+    const pos =
+      layout.orientation === 'horizontal'
+        ? event.clientX - rect.left - delta
+        : event.clientY - rect.top - delta;
 
     // Move the handle as close to the desired position as possible.
-    layout.moveHandle(this._pressData!.index, pos);
+    layout.moveHandle(index, pos);
 
     // Also move the inner panel's intersecting handle in the cross-axis.
-    if (this._pressData!.innerPanel) {
-      const innerPanel = this._pressData!.innerPanel!;
-      const innerLayout = innerPanel.layout as SplitLayout;
-      const innerRect = innerPanel.node.getBoundingClientRect();
-      let innerPos: number;
-      if (layout.orientation === 'horizontal') {
-        // Outer is horizontal; inner is vertical, so move in Y.
-        innerPos = event.clientY - innerRect.top - this._pressData!.innerDelta!;
-      } else {
-        // Outer is vertical; inner is horizontal, so move in X.
-        innerPos = event.clientX - innerRect.left - this._pressData!.innerDelta!;
-      }
-      innerLayout.moveHandle(this._pressData!.innerIndex!, innerPos);
+    if (innerIntersect) {
+      const innerLayout = innerIntersect.panel.layout as SplitLayout;
+      const innerRect = innerIntersect.panel.node.getBoundingClientRect();
+      const innerPos =
+        layout.orientation === 'horizontal'
+          ? event.clientY - innerRect.top - innerIntersect.delta
+          : event.clientX - innerRect.left - innerIntersect.delta;
+      innerLayout.moveHandle(innerIntersect.index, innerPos);
     }
   }
 
@@ -425,13 +379,52 @@ export class SplitPanel extends Panel {
   }
 
   /**
+   * Find an orthogonal inner SplitPanel handle that intersects with the
+   * given outer handle index at the specified cross-axis position.
+   *
+   * The search is tolerant by `layout.spacing` pixels to account for the
+   * gap that separates child handles from the parent handle's boundary.
+   *
+   * @returns The intersecting handle descriptor, or `null` if none is found.
+   */
+  private _findInnerIntersect(
+    handleIndex: number,
+    crossPos: number
+  ): { panel: SplitPanel; index: number; delta: number } | null {
+    const layout = this.layout as SplitLayout;
+    const tol = layout.spacing;
+    for (const candidate of [
+      this.widgets[handleIndex],
+      this.widgets[handleIndex + 1]
+    ]) {
+      if (!(candidate instanceof SplitPanel)) {
+        continue;
+      }
+      if (candidate.orientation === layout.orientation) {
+        continue;
+      }
+      const innerLayout = candidate.layout as SplitLayout;
+      for (let i = 0; i < innerLayout.handles.length; i++) {
+        const h = innerLayout.handles[i];
+        if (h.classList.contains('lm-mod-hidden')) {
+          continue;
+        }
+        const r = h.getBoundingClientRect();
+        const lo = layout.orientation === 'horizontal' ? r.top : r.left;
+        const hi = layout.orientation === 'horizontal' ? r.bottom : r.right;
+        if (crossPos >= lo - tol && crossPos <= hi + tol) {
+          return { panel: candidate, index: i, delta: Math.max(0, crossPos - lo) };
+        }
+      }
+    }
+    return null;
+  }
+
+  /**
    * Update the cursor on a handle when the pointer hovers near an intersection
    * with an orthogonal child SplitPanel's handle.
    */
   private _evtPointerHoverMove(event: PointerEvent): void {
-    if (this._pressData) {
-      return; // drag in progress
-    }
     const layout = this.layout as SplitLayout;
     const target = event.target as HTMLElement;
     const handleIndex = ArrayExt.findFirstIndex(layout.handles, h =>
@@ -440,44 +433,11 @@ export class SplitPanel extends Panel {
 
     if (handleIndex !== -1) {
       const handle = layout.handles[handleIndex];
-      const layoutWidgets = this.widgets;
-      const tol = (layout as any)._spacing ?? 4;
-      let found = false;
+      const crossPos =
+        layout.orientation === 'horizontal' ? event.clientY : event.clientX;
+      const intersect = this._findInnerIntersect(handleIndex, crossPos);
 
-      for (const candidate of [
-        layoutWidgets[handleIndex],
-        layoutWidgets[handleIndex + 1]
-      ]) {
-        if (!(candidate instanceof SplitPanel)) {
-          continue;
-        }
-        if (candidate.orientation === layout.orientation) {
-          continue;
-        }
-        const innerLayout = candidate.layout as SplitLayout;
-        for (let i = 0; i < innerLayout.handles.length; i++) {
-          const h = innerLayout.handles[i];
-          if (h.classList.contains('lm-mod-hidden')) {
-            continue;
-          }
-          const hRect = h.getBoundingClientRect();
-          const inCross =
-            layout.orientation === 'horizontal'
-              ? event.clientY >= hRect.top - tol &&
-                event.clientY <= hRect.bottom + tol
-              : event.clientX >= hRect.left - tol &&
-                event.clientX <= hRect.right + tol;
-          if (inCross) {
-            found = true;
-            break;
-          }
-        }
-        if (found) {
-          break;
-        }
-      }
-
-      if (found) {
+      if (intersect) {
         if (this._hoveredHandle !== handle) {
           this._clearHoverCursor();
           this._hoveredHandle = handle;
@@ -634,23 +594,20 @@ namespace Private {
     override: IDisposable;
 
     /**
-     * The orthogonally-oriented child SplitPanel whose handle intersects
-     * the pressed outer handle, if any.
+     * Data for two-axis resizing when the pressed handle intersects an
+     * orthogonal child panel's handle, or `undefined` if not applicable.
      *
-     * When set, this panel's handle is also moved during pointermove,
-     * enabling simultaneous two-axis resizing for nested SplitPanels.
+     * When set, the inner handle is moved alongside the outer handle during
+     * pointermove, enabling simultaneous two-axis resizing.
      */
-    innerPanel?: SplitPanel;
-
-    /**
-     * The index of the intersecting handle within the inner panel's layout.
-     */
-    innerIndex?: number;
-
-    /**
-     * The offset of the press within the inner handle's cross-axis coordinate.
-     */
-    innerDelta?: number;
+    innerIntersect?: {
+      /** The orthogonally-oriented child SplitPanel. */
+      panel: SplitPanel;
+      /** The handle index within the inner panel's layout. */
+      index: number;
+      /** The press offset within the inner handle's cross-axis coordinate. */
+      delta: number;
+    };
   }
 
   /**
