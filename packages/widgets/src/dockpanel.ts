@@ -704,9 +704,9 @@ export class DockPanel extends Widget {
     }
 
     // Find the handle which contains the mouse target, if any.
-    let layout = this.layout as DockLayout;
-    let target = event.target as HTMLElement;
-    let handle = find(layout.handles(), handle => handle.contains(target));
+    const layout = this.layout as DockLayout;
+    const target = event.target as HTMLElement;
+    const handle = find(layout.handles(), h => h.contains(target));
     if (!handle) {
       return;
     }
@@ -722,14 +722,34 @@ export class DockPanel extends Widget {
     this._document.addEventListener('contextmenu', this, true);
 
     // Compute the offset deltas for the handle press.
-    let rect = handle.getBoundingClientRect();
-    let deltaX = event.clientX - rect.left;
-    let deltaY = event.clientY - rect.top;
+    const rect = handle.getBoundingClientRect();
+    const deltaX = event.clientX - rect.left;
+    const deltaY = event.clientY - rect.top;
 
-    // Override the cursor and store the press data.
-    let style = window.getComputedStyle(handle);
-    let override = Drag.overrideCursor(style.cursor!, this._document);
-    this._pressData = { handle, deltaX, deltaY, override };
+    // Check for an orthogonal handle at the same intersection point.
+    const intersectHandle = layout.findIntersectingHandle(
+      handle,
+      event.clientX,
+      event.clientY
+    );
+
+    // Use 'all-scroll' at intersections; otherwise use the handle's default cursor.
+    const cursor = intersectHandle
+      ? 'all-scroll'
+      : window.getComputedStyle(handle).cursor!;
+    const override = Drag.overrideCursor(cursor, this._document);
+
+    let intersect: Private.IPressData['intersect'];
+    if (intersectHandle) {
+      const iRect = intersectHandle.getBoundingClientRect();
+      intersect = {
+        handle: intersectHandle,
+        deltaX: event.clientX - iRect.left,
+        deltaY: event.clientY - iRect.top
+      };
+    }
+
+    this._pressData = { handle, deltaX, deltaY, override, intersect };
   }
 
   /**
@@ -746,13 +766,27 @@ export class DockPanel extends Widget {
     event.stopPropagation();
 
     // Compute the desired offset position for the handle.
-    let rect = this.node.getBoundingClientRect();
-    let xPos = event.clientX - rect.left - this._pressData.deltaX;
-    let yPos = event.clientY - rect.top - this._pressData.deltaY;
+    const rect = this.node.getBoundingClientRect();
+    const xPos = event.clientX - rect.left - this._pressData.deltaX;
+    const yPos = event.clientY - rect.top - this._pressData.deltaY;
 
-    // Set the handle as close to the desired position as possible.
-    let layout = this.layout as DockLayout;
-    layout.moveHandle(this._pressData.handle, xPos, yPos);
+    // Set the handle(s) as close to the desired position as possible.
+    const layout = this.layout as DockLayout;
+    const { intersect } = this._pressData;
+    if (intersect) {
+      const xPos2 = event.clientX - rect.left - intersect.deltaX;
+      const yPos2 = event.clientY - rect.top - intersect.deltaY;
+      layout.moveHandles(
+        this._pressData.handle,
+        xPos,
+        yPos,
+        intersect.handle,
+        xPos2,
+        yPos2
+      );
+    } else {
+      layout.moveHandle(this._pressData.handle, xPos, yPos);
+    }
   }
 
   /**
@@ -1466,6 +1500,22 @@ namespace Private {
      * The disposable which will clear the override cursor.
      */
     override: IDisposable;
+
+    /**
+     * Data for two-axis resizing when the pressed handle intersects an
+     * orthogonal handle, or `undefined` if not applicable.
+     *
+     * When set, both `handle` and `intersect.handle` are moved together
+     * during pointermove, enabling simultaneous two-axis resizing.
+     */
+    intersect?: {
+      /** The orthogonally-intersecting handle. */
+      handle: HTMLDivElement;
+      /** The X offset of the press within the intersecting handle. */
+      deltaX: number;
+      /** The Y offset of the press within the intersecting handle. */
+      deltaY: number;
+    };
   }
 
   /**
