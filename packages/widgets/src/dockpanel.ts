@@ -453,7 +453,14 @@ export class DockPanel extends Widget {
         this._evtPointerDown(event as PointerEvent);
         break;
       case 'pointermove':
-        this._evtPointerMove(event as PointerEvent);
+        if (this._pressData) {
+          this._evtPointerMove(event as PointerEvent);
+        } else {
+          this._evtPointerHoverMove(event as PointerEvent);
+        }
+        break;
+      case 'pointerleave':
+        this._clearHoverCursor();
         break;
       case 'pointerup':
         this._evtPointerUp(event as PointerEvent);
@@ -477,6 +484,8 @@ export class DockPanel extends Widget {
     this.node.addEventListener('lm-dragover', this);
     this.node.addEventListener('lm-drop', this);
     this.node.addEventListener('pointerdown', this);
+    this.node.addEventListener('pointermove', this);
+    this.node.addEventListener('pointerleave', this);
   }
 
   /**
@@ -488,6 +497,8 @@ export class DockPanel extends Widget {
     this.node.removeEventListener('lm-dragover', this);
     this.node.removeEventListener('lm-drop', this);
     this.node.removeEventListener('pointerdown', this);
+    this.node.removeEventListener('pointermove', this);
+    this.node.removeEventListener('pointerleave', this);
     this._releaseMouse();
   }
 
@@ -726,10 +737,32 @@ export class DockPanel extends Widget {
     let deltaX = event.clientX - rect.left;
     let deltaY = event.clientY - rect.top;
 
-    // Override the cursor and store the press data.
-    let style = window.getComputedStyle(handle);
-    let override = Drag.overrideCursor(style.cursor!, this._document);
-    this._pressData = { handle, deltaX, deltaY, override };
+    // Check for an orthogonal handle at the same intersection point.
+    let intersectHandle = layout.findIntersectingHandle(
+      handle,
+      event.clientX,
+      event.clientY
+    );
+
+    // Use 'all-scroll' at intersections; otherwise use the handle's cursor.
+    let cursor = intersectHandle
+      ? 'all-scroll'
+      : window.getComputedStyle(handle).cursor!;
+    let override = Drag.overrideCursor(cursor, this._document);
+
+    let pressData: Private.IPressData = { handle, deltaX, deltaY, override };
+
+    if (intersectHandle) {
+      let iRect = intersectHandle.getBoundingClientRect();
+      pressData.intersectHandle = intersectHandle;
+      pressData.intersectDeltaX = event.clientX - iRect.left;
+      pressData.intersectDeltaY = event.clientY - iRect.top;
+    }
+
+    // Clear any hover cursor state — the drag override takes over.
+    this._clearHoverCursor();
+
+    this._pressData = pressData;
   }
 
   /**
@@ -750,9 +783,24 @@ export class DockPanel extends Widget {
     let xPos = event.clientX - rect.left - this._pressData.deltaX;
     let yPos = event.clientY - rect.top - this._pressData.deltaY;
 
-    // Set the handle as close to the desired position as possible.
+    // Set the handle(s) as close to the desired position as possible.
     let layout = this.layout as DockLayout;
-    layout.moveHandle(this._pressData.handle, xPos, yPos);
+    if (this._pressData.intersectHandle) {
+      let xPos2 =
+        event.clientX - rect.left - this._pressData.intersectDeltaX!;
+      let yPos2 =
+        event.clientY - rect.top - this._pressData.intersectDeltaY!;
+      layout.moveHandles(
+        this._pressData.handle,
+        xPos,
+        yPos,
+        this._pressData.intersectHandle,
+        xPos2,
+        yPos2
+      );
+    } else {
+      layout.moveHandle(this._pressData.handle, xPos, yPos);
+    }
   }
 
   /**
@@ -773,6 +821,50 @@ export class DockPanel extends Widget {
 
     // Schedule an emit of the layout modified signal.
     MessageLoop.postMessage(this, Private.LayoutModified);
+  }
+
+  /**
+   * Update the cursor on handles when the pointer hovers near an intersection.
+   *
+   * This fires on bubble-phase pointermove, which only reaches the panel node
+   * when no drag is in progress (drag captures at document level and calls
+   * stopPropagation before the event can bubble).
+   */
+  private _evtPointerHoverMove(event: PointerEvent): void {
+    if (this._pressData) {
+      return; // drag in progress — override cursor already active
+    }
+    const layout = this.layout as DockLayout;
+    const target = event.target as HTMLElement;
+    const handle = find(layout.handles(), h => h.contains(target));
+
+    if (handle) {
+      const intersect = layout.findIntersectingHandle(
+        handle,
+        event.clientX,
+        event.clientY
+      );
+      if (intersect) {
+        if (this._hoveredHandle !== handle) {
+          this._clearHoverCursor();
+          this._hoveredHandle = handle;
+          handle.style.cursor = 'all-scroll';
+        }
+        return;
+      }
+    }
+
+    this._clearHoverCursor();
+  }
+
+  /**
+   * Restore the cursor on whichever handle had the intersection hover cursor.
+   */
+  private _clearHoverCursor(): void {
+    if (this._hoveredHandle) {
+      this._hoveredHandle.style.cursor = '';
+      this._hoveredHandle = null;
+    }
   }
 
   /**
@@ -1072,6 +1164,7 @@ export class DockPanel extends Widget {
   private _tabsConstrained: boolean = false;
   private _addButtonEnabled: boolean = false;
   private _pressData: Private.IPressData | null = null;
+  private _hoveredHandle: HTMLDivElement | null = null;
   private _layoutModified = new Signal<this, void>(this);
 
   private _addRequested = new Signal<this, TabBar<Widget>>(this);
@@ -1466,6 +1559,24 @@ namespace Private {
      * The disposable which will clear the override cursor.
      */
     override: IDisposable;
+
+    /**
+     * The orthogonally-intersecting handle at the press point, if any.
+     *
+     * When set, both `handle` and `intersectHandle` are moved together
+     * during pointermove, enabling simultaneous two-axis resizing.
+     */
+    intersectHandle?: HTMLDivElement;
+
+    /**
+     * The X offset of the press in the intersecting handle's coordinates.
+     */
+    intersectDeltaX?: number;
+
+    /**
+     * The Y offset of the press in the intersecting handle's coordinates.
+     */
+    intersectDeltaY?: number;
   }
 
   /**
