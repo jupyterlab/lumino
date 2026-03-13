@@ -278,11 +278,8 @@ export class SplitPanel extends Panel {
 
     // Use 'all-scroll' at intersections; otherwise use the handle's cursor.
     const style = window.getComputedStyle(handle);
-    let override = Drag.overrideCursor(style.cursor!);
-    if (found) {
-      override.dispose();
-      override = Drag.overrideCursor('move');
-    }
+    const cursor = found ? 'all-scroll' : style.cursor!;
+    const override = Drag.overrideCursor(cursor);
 
     this._pressData = {
       index,
