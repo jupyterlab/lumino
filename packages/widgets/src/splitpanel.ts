@@ -170,14 +170,7 @@ export class SplitPanel extends Panel {
         this._evtPointerDown(event as PointerEvent);
         break;
       case 'pointermove':
-        if (this._pressData) {
-          this._evtPointerMove(event as PointerEvent);
-        } else {
-          this._evtPointerHoverMove(event as PointerEvent);
-        }
-        break;
-      case 'pointerleave':
-        this._clearHoverCursor();
+        this._evtPointerMove(event as PointerEvent);
         break;
       case 'pointerup':
         this._evtPointerUp(event as PointerEvent);
@@ -197,8 +190,6 @@ export class SplitPanel extends Panel {
    */
   protected onBeforeAttach(msg: Message): void {
     this.node.addEventListener('pointerdown', this);
-    this.node.addEventListener('pointermove', this);
-    this.node.addEventListener('pointerleave', this);
   }
 
   /**
@@ -206,8 +197,6 @@ export class SplitPanel extends Panel {
    */
   protected onAfterDetach(msg: Message): void {
     this.node.removeEventListener('pointerdown', this);
-    this.node.removeEventListener('pointermove', this);
-    this.node.removeEventListener('pointerleave', this);
     this._releaseMouse();
   }
 
@@ -294,9 +283,6 @@ export class SplitPanel extends Panel {
       override.dispose();
       override = Drag.overrideCursor('move');
     }
-
-    // Clear hover cursor — drag override takes over.
-    this._clearHoverCursor();
 
     this._pressData = {
       index,
@@ -420,49 +406,8 @@ export class SplitPanel extends Panel {
     return null;
   }
 
-  /**
-   * Update the cursor on a handle when the pointer hovers near an intersection
-   * with an orthogonal child SplitPanel's handle.
-   */
-  private _evtPointerHoverMove(event: PointerEvent): void {
-    const layout = this.layout as SplitLayout;
-    const target = event.target as HTMLElement;
-    const handleIndex = ArrayExt.findFirstIndex(layout.handles, h =>
-      h.contains(target)
-    );
-
-    if (handleIndex !== -1) {
-      const handle = layout.handles[handleIndex];
-      const crossPos =
-        layout.orientation === 'horizontal' ? event.clientY : event.clientX;
-      const intersect = this._findInnerIntersect(handleIndex, crossPos);
-
-      if (intersect) {
-        if (this._hoveredHandle !== handle) {
-          this._clearHoverCursor();
-          this._hoveredHandle = handle;
-          handle.style.cursor = 'all-scroll';
-        }
-        return;
-      }
-    }
-
-    this._clearHoverCursor();
-  }
-
-  /**
-   * Restore the cursor on whichever handle had the intersection hover cursor.
-   */
-  private _clearHoverCursor(): void {
-    if (this._hoveredHandle) {
-      this._hoveredHandle.style.cursor = '';
-      this._hoveredHandle = null;
-    }
-  }
-
   private _handleMoved = new Signal<any, void>(this);
   private _pressData: Private.IPressData | null = null;
-  private _hoveredHandle: HTMLDivElement | null = null;
 }
 
 /**

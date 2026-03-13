@@ -453,14 +453,7 @@ export class DockPanel extends Widget {
         this._evtPointerDown(event as PointerEvent);
         break;
       case 'pointermove':
-        if (this._pressData) {
-          this._evtPointerMove(event as PointerEvent);
-        } else {
-          this._evtPointerHoverMove(event as PointerEvent);
-        }
-        break;
-      case 'pointerleave':
-        this._clearHoverCursor();
+        this._evtPointerMove(event as PointerEvent);
         break;
       case 'pointerup':
         this._evtPointerUp(event as PointerEvent);
@@ -484,8 +477,6 @@ export class DockPanel extends Widget {
     this.node.addEventListener('lm-dragover', this);
     this.node.addEventListener('lm-drop', this);
     this.node.addEventListener('pointerdown', this);
-    this.node.addEventListener('pointermove', this);
-    this.node.addEventListener('pointerleave', this);
   }
 
   /**
@@ -497,8 +488,6 @@ export class DockPanel extends Widget {
     this.node.removeEventListener('lm-dragover', this);
     this.node.removeEventListener('lm-drop', this);
     this.node.removeEventListener('pointerdown', this);
-    this.node.removeEventListener('pointermove', this);
-    this.node.removeEventListener('pointerleave', this);
     this._releaseMouse();
   }
 
@@ -760,9 +749,6 @@ export class DockPanel extends Widget {
       };
     }
 
-    // Clear any hover cursor state — the drag override takes over.
-    this._clearHoverCursor();
-
     this._pressData = { handle, deltaX, deltaY, override, intersect };
   }
 
@@ -821,47 +807,6 @@ export class DockPanel extends Widget {
 
     // Schedule an emit of the layout modified signal.
     MessageLoop.postMessage(this, Private.LayoutModified);
-  }
-
-  /**
-   * Update the cursor on handles when the pointer hovers near an intersection.
-   *
-   * This fires on bubble-phase pointermove, which only reaches the panel node
-   * when no drag is in progress (drag captures at document level and calls
-   * stopPropagation before the event can bubble).
-   */
-  private _evtPointerHoverMove(event: PointerEvent): void {
-    const layout = this.layout as DockLayout;
-    const target = event.target as HTMLElement;
-    const handle = find(layout.handles(), h => h.contains(target));
-
-    if (handle) {
-      const intersect = layout.findIntersectingHandle(
-        handle,
-        event.clientX,
-        event.clientY
-      );
-      if (intersect) {
-        if (this._hoveredHandle !== handle) {
-          this._clearHoverCursor();
-          this._hoveredHandle = handle;
-          handle.style.cursor = 'all-scroll';
-        }
-        return;
-      }
-    }
-
-    this._clearHoverCursor();
-  }
-
-  /**
-   * Restore the cursor on whichever handle had the intersection hover cursor.
-   */
-  private _clearHoverCursor(): void {
-    if (this._hoveredHandle) {
-      this._hoveredHandle.style.cursor = '';
-      this._hoveredHandle = null;
-    }
   }
 
   /**
@@ -1161,7 +1106,6 @@ export class DockPanel extends Widget {
   private _tabsConstrained: boolean = false;
   private _addButtonEnabled: boolean = false;
   private _pressData: Private.IPressData | null = null;
-  private _hoveredHandle: HTMLDivElement | null = null;
   private _layoutModified = new Signal<this, void>(this);
 
   private _addRequested = new Signal<this, TabBar<Widget>>(this);
