@@ -394,8 +394,7 @@ export class SplitPanel extends Panel {
     crossPos: number
   ): { panel: SplitPanel; index: number; delta: number } | null {
     const layout = this.layout as SplitLayout;
-    const tolerance =
-      layout.spacing * INTERSECTION_TOLERANCE_MULTIPLIER;
+    const tolerance = layout.spacing * INTERSECTION_TOLERANCE_MULTIPLIER;
     for (const candidate of [
       this.widgets[handleIndex],
       this.widgets[handleIndex + 1]
@@ -447,8 +446,7 @@ export class SplitPanel extends Panel {
       layout.orientation === 'horizontal' ? event.clientY : event.clientX;
     const intersect = this._findInnerIntersect(index, crossPos);
     const peer = intersect
-      ? ((intersect.panel.layout as SplitLayout).handles[intersect.index] ??
-          null)
+      ? (intersect.panel.layout as SplitLayout).handles[intersect.index] ?? null
       : null;
     this._setIntersectionHoverHandle(intersect ? handle : null, peer);
   }

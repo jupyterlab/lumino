@@ -1630,7 +1630,7 @@ namespace Private {
 
   /**
    * An attached property used to track generated tab bars.
-  */
+   */
   export const isGeneratedTabBarProperty = new AttachedProperty<
     Widget,
     boolean
