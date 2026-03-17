@@ -19,6 +19,8 @@ import { Layout, LayoutItem } from './layout';
 
 import { TabBar } from './tabbar';
 
+import { INTERSECTION_TOLERANCE_MULTIPLIER } from './intersectionutils';
+
 import Utils from './utils';
 
 import { Widget } from './widget';
@@ -288,8 +290,9 @@ export class DockLayout extends Layout {
     // the parent handle's bounding rect — they don't overlap. For example, in
     // a 2×2 grid the horizontal child handles end at the top of the root
     // vertical handle, leaving a gap equal to the spacing. Expanding the
-    // candidate rect closes that gap.
-    const tol = this._spacing;
+    // candidate rect closes that gap. A multiplier of 4 gives a comfortable
+    // hit area without accidentally activating distant handles.
+    const tol = this._spacing * INTERSECTION_TOLERANCE_MULTIPLIER;
     for (const candidate of this.handles()) {
       if (candidate === handle) {
         continue;
