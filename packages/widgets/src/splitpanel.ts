@@ -17,6 +17,11 @@ import { Message } from '@lumino/messaging';
 
 import { ISignal, Signal } from '@lumino/signaling';
 
+import {
+  INTERSECTION_TOLERANCE_MULTIPLIER,
+  IntersectionHoverStyler
+} from './intersectionutils';
+
 import { Panel } from './panel';
 
 import { SplitLayout } from './splitlayout';
@@ -172,6 +177,9 @@ export class SplitPanel extends Panel {
       case 'pointermove':
         this._evtPointerMove(event as PointerEvent);
         break;
+      case 'pointerleave':
+        this._setIntersectionHoverHandle(null, null);
+        break;
       case 'pointerup':
         this._evtPointerUp(event as PointerEvent);
         break;
@@ -190,6 +198,8 @@ export class SplitPanel extends Panel {
    */
   protected onBeforeAttach(msg: Message): void {
     this.node.addEventListener('pointerdown', this);
+    this.node.addEventListener('pointermove', this);
+    this.node.addEventListener('pointerleave', this);
   }
 
   /**
@@ -197,6 +207,9 @@ export class SplitPanel extends Panel {
    */
   protected onAfterDetach(msg: Message): void {
     this.node.removeEventListener('pointerdown', this);
+    this.node.removeEventListener('pointermove', this);
+    this.node.removeEventListener('pointerleave', this);
+    this._setIntersectionHoverHandle(null, null);
     this._releaseMouse();
   }
 
@@ -276,9 +289,9 @@ export class SplitPanel extends Panel {
       layout.orientation === 'horizontal' ? event.clientY : event.clientX;
     const found = this._findInnerIntersect(index, crossPos);
 
-    // Use 'all-scroll' at intersections; otherwise use the handle's cursor.
+    // Use 'move' at intersections; otherwise use the handle's cursor.
     const style = window.getComputedStyle(handle);
-    const cursor = found ? 'all-scroll' : style.cursor!;
+    const cursor = found ? 'move' : style.cursor!;
     const override = Drag.overrideCursor(cursor);
 
     this._pressData = {
@@ -293,6 +306,12 @@ export class SplitPanel extends Panel {
    * Handle the `'pointermove'` event for the split panel.
    */
   private _evtPointerMove(event: PointerEvent): void {
+    // Update hover state when no drag is in progress.
+    if (!this._pressData) {
+      this._updateIntersectionHover(event);
+      return;
+    }
+
     // Stop the event when dragging a split handle.
     event.preventDefault();
     event.stopPropagation();
@@ -365,7 +384,7 @@ export class SplitPanel extends Panel {
    * Find an orthogonal inner SplitPanel handle that intersects with the
    * given outer handle index at the specified cross-axis position.
    *
-   * The search is tolerant by `layout.spacing` pixels to account for the
+   * The search is tolerant by `layout.spacing * 4` pixels to account for the
    * gap that separates child handles from the parent handle's boundary.
    *
    * @returns The intersecting handle descriptor, or `null` if none is found.
@@ -375,7 +394,8 @@ export class SplitPanel extends Panel {
     crossPos: number
   ): { panel: SplitPanel; index: number; delta: number } | null {
     const layout = this.layout as SplitLayout;
-    const tol = layout.spacing;
+    const tolerance =
+      layout.spacing * INTERSECTION_TOLERANCE_MULTIPLIER;
     for (const candidate of [
       this.widgets[handleIndex],
       this.widgets[handleIndex + 1]
@@ -395,7 +415,7 @@ export class SplitPanel extends Panel {
         const r = h.getBoundingClientRect();
         const lo = layout.orientation === 'horizontal' ? r.top : r.left;
         const hi = layout.orientation === 'horizontal' ? r.bottom : r.right;
-        if (crossPos >= lo - tol && crossPos <= hi + tol) {
+        if (crossPos >= lo - tolerance && crossPos <= hi + tolerance) {
           return {
             panel: candidate,
             index: i,
@@ -407,8 +427,45 @@ export class SplitPanel extends Panel {
     return null;
   }
 
+  /**
+   * Update the intersection hover style based on pointer position.
+   */
+  private _updateIntersectionHover(event: PointerEvent): void {
+    const layout = this.layout as SplitLayout;
+    const target = event.target as HTMLElement;
+    const index = ArrayExt.findFirstIndex(layout.handles, handle => {
+      return handle.contains(target);
+    });
+
+    if (index === -1) {
+      this._setIntersectionHoverHandle(null, null);
+      return;
+    }
+
+    const handle = layout.handles[index];
+    const crossPos =
+      layout.orientation === 'horizontal' ? event.clientY : event.clientX;
+    const intersect = this._findInnerIntersect(index, crossPos);
+    const peer = intersect
+      ? ((intersect.panel.layout as SplitLayout).handles[intersect.index] ??
+          null)
+      : null;
+    this._setIntersectionHoverHandle(intersect ? handle : null, peer);
+  }
+
+  /**
+   * Set the handle pair which should render as an intersection hover.
+   */
+  private _setIntersectionHoverHandle(
+    handle: HTMLDivElement | null,
+    peer: HTMLDivElement | null = null
+  ): void {
+    this._intersectionHoverStyler.set(handle, peer);
+  }
+
   private _handleMoved = new Signal<any, void>(this);
   private _pressData: Private.IPressData | null = null;
+  private _intersectionHoverStyler = new IntersectionHoverStyler();
 }
 
 /**

@@ -25,6 +25,8 @@ import { ISignal, Signal } from '@lumino/signaling';
 
 import { DockLayout } from './docklayout';
 
+import { IntersectionHoverStyler } from './intersectionutils';
+
 import { TabBar } from './tabbar';
 
 import { Widget } from './widget';
@@ -455,6 +457,9 @@ export class DockPanel extends Widget {
       case 'pointermove':
         this._evtPointerMove(event as PointerEvent);
         break;
+      case 'pointerleave':
+        this._setIntersectionHoverHandle(null);
+        break;
       case 'pointerup':
         this._evtPointerUp(event as PointerEvent);
         break;
@@ -477,6 +482,8 @@ export class DockPanel extends Widget {
     this.node.addEventListener('lm-dragover', this);
     this.node.addEventListener('lm-drop', this);
     this.node.addEventListener('pointerdown', this);
+    this.node.addEventListener('pointermove', this);
+    this.node.addEventListener('pointerleave', this);
   }
 
   /**
@@ -488,6 +495,9 @@ export class DockPanel extends Widget {
     this.node.removeEventListener('lm-dragover', this);
     this.node.removeEventListener('lm-drop', this);
     this.node.removeEventListener('pointerdown', this);
+    this.node.removeEventListener('pointermove', this);
+    this.node.removeEventListener('pointerleave', this);
+    this._setIntersectionHoverHandle(null, null);
     this._releaseMouse();
   }
 
@@ -733,9 +743,9 @@ export class DockPanel extends Widget {
       event.clientY
     );
 
-    // Use 'all-scroll' at intersections; otherwise use the handle's default cursor.
+    // Use 'move' at intersections; otherwise use the handle's default cursor.
     const cursor = intersectHandle
-      ? 'all-scroll'
+      ? 'move'
       : window.getComputedStyle(handle).cursor!;
     const override = Drag.overrideCursor(cursor, this._document);
 
@@ -756,8 +766,18 @@ export class DockPanel extends Widget {
    * Handle the `'pointermove'` event for the dock panel.
    */
   private _evtPointerMove(event: PointerEvent): void {
-    // Bail early if no drag is in progress.
+    // Update hover state when no drag is in progress.
     if (!this._pressData) {
+      const layout = this.layout as DockLayout;
+      const target = event.target as HTMLElement;
+      const handle = find(layout.handles(), h => h.contains(target)) ?? null;
+      const intersectHandle = handle
+        ? layout.findIntersectingHandle(handle, event.clientX, event.clientY)
+        : null;
+      this._setIntersectionHoverHandle(
+        intersectHandle ? handle : null,
+        intersectHandle
+      );
       return;
     }
 
@@ -827,6 +847,16 @@ export class DockPanel extends Widget {
     this._document.removeEventListener('pointerup', this, true);
     this._document.removeEventListener('pointermove', this, true);
     this._document.removeEventListener('contextmenu', this, true);
+  }
+
+  /**
+   * Set the handle pair which should render as an intersection hover.
+   */
+  private _setIntersectionHoverHandle(
+    handle: HTMLDivElement | null,
+    peer: HTMLDivElement | null = null
+  ): void {
+    this._intersectionHoverStyler.set(handle, peer);
   }
 
   /**
@@ -1106,6 +1136,7 @@ export class DockPanel extends Widget {
   private _tabsConstrained: boolean = false;
   private _addButtonEnabled: boolean = false;
   private _pressData: Private.IPressData | null = null;
+  private _intersectionHoverStyler = new IntersectionHoverStyler();
   private _layoutModified = new Signal<this, void>(this);
 
   private _addRequested = new Signal<this, TabBar<Widget>>(this);
@@ -1599,7 +1630,7 @@ namespace Private {
 
   /**
    * An attached property used to track generated tab bars.
-   */
+  */
   export const isGeneratedTabBarProperty = new AttachedProperty<
     Widget,
     boolean
@@ -1609,7 +1640,7 @@ namespace Private {
   });
 
   /**
-   * Create a single document config for the widgets in a dock panel.
+  as * Create a single document config for the widgets in a dock panel.
    */
   export function createSingleDocumentConfig(
     panel: DockPanel
