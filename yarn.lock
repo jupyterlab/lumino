@@ -7347,8 +7347,8 @@ __metadata:
   linkType: hard
 
 "koa@npm:^2.13.0":
-  version: 2.16.3
-  resolution: "koa@npm:2.16.3"
+  version: 2.16.4
+  resolution: "koa@npm:2.16.4"
   dependencies:
     accepts: ^1.3.5
     cache-content-type: ^1.0.0
@@ -7373,7 +7373,7 @@ __metadata:
     statuses: ^1.5.0
     type-is: ^1.6.16
     vary: ^1.1.2
-  checksum: 9a3c612ef6381b86a536da0b1818d2b718fab77e932ef19abd0a5465d1a547024b47d35fbcf2e7c38fe12bc9fa823e334adde55a2ac0bfbea9db54cd801d0819
+  checksum: 117cacd60e4a9816a0dc7bdf29bc4660fc95718182a12881f7863fe5a40b4e667c9d71891129d794f070f61f5417ffd90ae28cfc58f89f3b87e75351ba2ad201
   languageName: node
   linkType: hard
 
