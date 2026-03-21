@@ -697,6 +697,7 @@ __metadata:
   resolution: "@lumino/polling@workspace:packages/polling"
   dependencies:
     "@lumino/buildutils": ^2.0.3
+    "@lumino/collections": ^2.0.4
     "@lumino/coreutils": ^2.2.2
     "@lumino/disposable": ^2.1.5
     "@lumino/signaling": ^2.1.5

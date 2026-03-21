@@ -38,6 +38,7 @@
     "watch": "tsc --build --watch"
   },
   "dependencies": {
+    "@lumino/collections": "^2.0.4",
     "@lumino/coreutils": "^2.2.2",
     "@lumino/disposable": "^2.1.5",
     "@lumino/signaling": "^2.1.5"
