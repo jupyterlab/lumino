@@ -334,11 +334,11 @@ describe('Poll', () => {
       const tock = (poll: Poll): void => {
         tocker.push(poll.state.phase);
         expect(ticker.join(' ')).to.equal(tocker.join(' '));
-        poll.tick.then(tock);
+        poll.tick.then(tock).catch(_ => undefined);
       };
       // Kick off the promise listener, but void its settlement to verify that
       // the poll's internal sync of the promise and the signal is correct.
-      poll.tick.then(tock);
+      void poll.tick.then(tock);
       await poll.stop();
       await poll.start();
       await poll.tick;
