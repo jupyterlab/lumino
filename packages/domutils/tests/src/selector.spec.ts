@@ -176,6 +176,10 @@ describe('@lumino/domutils', () => {
         expect(Selector.hasTopLevelComma('.a:where(.b,.c)')).to.equal(false);
       });
 
+      it('allows commas inside nested :is()', () => {
+        expect(Selector.hasTopLevelComma('.a:is(:not(:is(.b,.c)))')).to.equal(false);
+      });
+
       it('rejects top-level commas', () => {
         expect(Selector.hasTopLevelComma('.a, .b')).to.equal(true);
       });
