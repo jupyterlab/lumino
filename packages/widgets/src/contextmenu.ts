@@ -328,7 +328,7 @@ namespace Private {
    * invalid or contains commas.
    */
   function validateSelector(selector: string): string {
-    if (selector.indexOf(',') !== -1) {
+    if (Selector.hasTopLevelComma(selector)) {
       throw new Error(`Selector cannot contain commas: ${selector}`);
     }
     if (!Selector.isValid(selector)) {
