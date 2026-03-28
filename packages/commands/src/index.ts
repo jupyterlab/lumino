@@ -1689,7 +1689,9 @@ namespace Private {
     options: CommandRegistry.IKeyBindingOptions
   ): string {
     if (Selector.hasTopLevelComma(options.selector)) {
-      throw new Error(`Selector cannot contain top-level commas: ${options.selector}`);
+      throw new Error(
+        `Selector cannot contain top-level commas: ${options.selector}`
+      );
     }
     if (!Selector.isValid(options.selector)) {
       throw new Error(`Invalid selector: ${options.selector}`);
