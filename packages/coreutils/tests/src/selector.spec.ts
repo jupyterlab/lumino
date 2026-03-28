@@ -3,7 +3,6 @@
  * Distributed under the terms of the Modified BSD License.
  */
 
-import { hasTopLevelComma } from '@lumino/coreutils/src/selector';
 import { expect } from 'chai';
 
 describe('selector validation', () => {
