@@ -1089,7 +1089,7 @@ export namespace CommandRegistry {
      * node on the propagation path of the keydown event. This allows
      * the key binding to be restricted to user-defined contexts.
      *
-     * The selector must not contain commas.
+     * The selector must not contain top-level commas.
      */
     selector: string;
 
@@ -1682,13 +1682,14 @@ namespace Private {
    * Validate the selector for an options object.
    *
    * This returns the validated selector, or throws if the selector is
-   * invalid or contains commas.
+   * invalid or contains top-level commas. Commas inside the :has()
+   * and :where() pseudoselectors are allowed.
    */
   function validateSelector(
     options: CommandRegistry.IKeyBindingOptions
   ): string {
     if (Selector.hasTopLevelComma(options.selector)) {
-      throw new Error(`Selector cannot contain commas: ${options.selector}`);
+      throw new Error(`Selector cannot contain top-level commas: ${options.selector}`);
     }
     if (!Selector.isValid(options.selector)) {
       throw new Error(`Invalid selector: ${options.selector}`);
