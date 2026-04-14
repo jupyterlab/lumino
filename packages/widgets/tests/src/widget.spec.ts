@@ -104,6 +104,16 @@ class TestLayout extends Layout {
   private _widgets = [new Widget(), new Widget()];
 }
 
+class ShadowDOMWidget extends Widget {
+  constructor(options?: Widget.IOptions) {
+    const attachmentNode = document.createElement('div');
+    super({ ...options, attachmentNode });
+    attachmentNode.classList.add('lm-customAttachmentNode');
+    const root = attachmentNode.attachShadow({ mode: 'open' });
+    root.appendChild(this.node);
+  }
+}
+
 describe('@lumino/widgets', () => {
   describe('Widget', () => {
     describe('#constructor()', () => {
@@ -121,6 +131,25 @@ describe('@lumino/widgets', () => {
       it('should add the `lm-Widget` class', () => {
         let widget = new Widget();
         expect(widget.hasClass('lm-Widget')).to.equal(true);
+      });
+    });
+
+    describe('#attachmentNode', () => {
+      it('should default to the main node', () => {
+        let widget = new Widget();
+        expect(widget.attachmentNode).to.equal(widget.node);
+      });
+
+      it('should be overridable in a subclass', () => {
+        let widget = new ShadowDOMWidget();
+        expect(widget.attachmentNode).to.not.equal(widget.node);
+        expect(
+          widget.attachmentNode.classList.contains('lm-customAttachmentNode')
+        ).to.equal(true);
+        expect(widget.attachmentNode.shadowRoot).to.not.equal(null);
+        expect(
+          widget.attachmentNode.shadowRoot!.contains(widget.node)
+        ).to.equal(true);
       });
     });
 
@@ -1180,6 +1209,19 @@ describe('@lumino/widgets', () => {
         widget.dispose();
       });
 
+      it('should attach a shadow DOM widget to a host using attachmentNode', () => {
+        let widget = new ShadowDOMWidget();
+        expect(widget.isAttached).to.equal(false);
+        expect(widget.attachmentNode).to.not.equal(widget.node);
+        Widget.attach(widget, document.body);
+        expect(widget.isAttached).to.equal(true);
+        expect(document.body.contains(widget.attachmentNode)).to.equal(true);
+        expect(
+          widget.attachmentNode.shadowRoot!.contains(widget.node)
+        ).to.equal(true);
+        widget.dispose();
+      });
+
       it('should throw if the widget is not a root', () => {
         let parent = new Widget();
         let child = new Widget();
@@ -1252,6 +1294,16 @@ describe('@lumino/widgets', () => {
         Widget.detach(widget);
         expect(widget.messages).to.contain('before-detach');
         widget.dispose();
+      });
+
+      it('should detach a shadow DOM widget from its host using attachmentNode', () => {
+        let widget = new ShadowDOMWidget();
+        Widget.attach(widget, document.body);
+        expect(widget.isAttached).to.equal(true);
+        expect(document.body.contains(widget.attachmentNode)).to.equal(true);
+        Widget.detach(widget);
+        expect(widget.isAttached).to.equal(false);
+        expect(document.body.contains(widget.attachmentNode)).to.equal(false);
       });
     });
   });
