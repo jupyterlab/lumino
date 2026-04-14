@@ -41,6 +41,8 @@ export class Widget implements IMessageHandler, IObservableDisposable {
    */
   constructor(options: Widget.IOptions = {}) {
     this.node = Private.createNode(options);
+    this.attachmentNode = options.attachmentNode ?? this.node;
+    this.attachmentNode.classList.add('lm-attachmentNode');
     this.addClass('lm-Widget');
   }
 
@@ -95,6 +97,11 @@ export class Widget implements IMessageHandler, IObservableDisposable {
    * Get the DOM node owned by the widget.
    */
   readonly node: HTMLElement;
+
+  /**
+   * Get the node which should be attached to the parent in order to attach the widget.
+   */
+  readonly attachmentNode: HTMLElement;
 
   /**
    * Test whether the widget has been disposed.
@@ -817,6 +824,16 @@ export namespace Widget {
     node?: HTMLElement;
 
     /**
+     * The optional wrapper node to use for attachement to the parent widget.
+     *
+     * If both `node` and `attachmentNode` are provided, the `node`
+     * has to be in the DOM subtree or shadow DOM subtree of the `attachmentNode`.
+     *
+     * By default the same node as for `node` will be used.
+     */
+    attachmentNode?: HTMLElement;
+
+    /**
      * The optional element tag, used for constructing the widget's node.
      *
      * If a pre-constructed node is provided via the `node` arg, this
@@ -1113,14 +1130,15 @@ export namespace Widget {
     if (widget.parent) {
       throw new Error('Cannot attach a child widget.');
     }
-    if (widget.isAttached || widget.node.isConnected) {
+    if (widget.isAttached || widget.attachmentNode.isConnected) {
       throw new Error('Widget is already attached.');
     }
     if (!host.isConnected) {
       throw new Error('Host is not attached.');
     }
+
     MessageLoop.sendMessage(widget, Widget.Msg.BeforeAttach);
-    host.insertBefore(widget.node, ref);
+    host.insertBefore(widget.attachmentNode, ref);
     MessageLoop.sendMessage(widget, Widget.Msg.AfterAttach);
   }
 
@@ -1137,11 +1155,11 @@ export namespace Widget {
     if (widget.parent) {
       throw new Error('Cannot detach a child widget.');
     }
-    if (!widget.isAttached || !widget.node.isConnected) {
+    if (!widget.isAttached || !widget.attachmentNode.isConnected) {
       throw new Error('Widget is not attached.');
     }
     MessageLoop.sendMessage(widget, Widget.Msg.BeforeDetach);
-    widget.node.parentNode!.removeChild(widget.node);
+    widget.attachmentNode.parentNode!.removeChild(widget.attachmentNode);
     MessageLoop.sendMessage(widget, Widget.Msg.AfterDetach);
   }
 }
