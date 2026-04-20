@@ -58,6 +58,9 @@ export class DockPanel extends Widget {
     if (options.addButtonEnabled !== undefined) {
       this._addButtonEnabled = options.addButtonEnabled;
     }
+    if (options.nodeCountThreshold !== undefined) {
+      this._nodeCountThreshold = options.nodeCountThreshold;
+    }
 
     // Toggle the CSS mode attribute.
     this.dataset['mode'] = this._mode;
@@ -730,6 +733,9 @@ export class DockPanel extends Widget {
     let style = window.getComputedStyle(handle);
     let override = Drag.overrideCursor(style.cursor!, this._document);
     this._pressData = { handle, deltaX, deltaY, override };
+
+    // Start observing for long tasks to reactively apply containment.
+    this._observeSlowLayout();
   }
 
   /**
@@ -750,7 +756,9 @@ export class DockPanel extends Widget {
     let xPos = event.clientX - rect.left - this._pressData.deltaX;
     let yPos = event.clientY - rect.top - this._pressData.deltaY;
 
-    // Set the handle as close to the desired position as possible.
+    // Move the handle. The actual layout update is deferred via
+    // the lumino message loop; the PerformanceObserver set up on
+    // pointerdown will detect if the resulting frame is slow.
     let layout = this.layout as DockLayout;
     layout.moveHandle(this._pressData.handle, xPos, yPos);
   }
@@ -783,6 +791,12 @@ export class DockPanel extends Widget {
     if (!this._pressData) {
       return;
     }
+
+    // Stop observing long tasks.
+    this._disconnectObserver();
+
+    // Unfreeze all contained elements.
+    this._unfreezeElements();
 
     // Clear the override cursor.
     this._pressData.override.dispose();
@@ -1075,6 +1089,151 @@ export class DockPanel extends Widget {
   private _layoutModified = new Signal<this, void>(this);
 
   private _addRequested = new Signal<this, TabBar<Widget>>(this);
+
+  /**
+   * Start a PerformanceObserver to detect slow frames during drag.
+   * Prefers `long-animation-frame` (includes rendering cost) and
+   * falls back to `longtask` (script-only, >50 ms threshold).
+   */
+  private _observeSlowLayout(): void {
+    if (typeof PerformanceObserver === 'undefined') {
+      return;
+    }
+    try {
+      this._performanceObserver = new PerformanceObserver(() => {
+        if (this._frozenElements.length === 0) {
+          console.log('[DockPanel] long task detected during drag, freezing heavy leaf widgets');
+          this._freezeHeavyLeaves();
+        }
+      });
+      try {
+        this._performanceObserver.observe({ type: 'long-animation-frame' });
+      } catch {
+        try {
+          this._performanceObserver.observe({ type: 'longtask' });
+        } catch {
+          this._performanceObserver = null;
+        }
+      }
+    } catch {
+      // PerformanceObserver not supported.
+    }
+  }
+
+  /**
+   * Disconnect the PerformanceObserver if active.
+   */
+  private _disconnectObserver(): void {
+    if (this._performanceObserver) {
+      this._performanceObserver.disconnect();
+      this._performanceObserver = null;
+    }
+  }
+
+  private _performanceObserver: PerformanceObserver | null = null;
+
+  /**
+   * Walk the widget tree to find leaf widgets, then apply
+   * `contain: strict` with pinned width/height on those whose
+   * subtree exceeds the node count threshold.
+   */
+  private _freezeHeavyLeaves(): void {
+    if (this._frozenElements.length > 0) {
+      return;
+    }
+
+    // Find deepest heavy widgets in the tree.
+    let targets: Widget[] = [];
+    for (let child of this.widgets()) {
+      Private.collectHeavyWidgets(child, this._nodeCountThreshold, targets);
+    }
+
+    // Pass 1: read all dimensions before mutations.
+    let entries: { el: HTMLElement; rect: DOMRect; prevContain: string; prevWidth: string; prevHeight: string }[] = [];
+    for (let target of targets) {
+      let el = target.node;
+      if (el.style.contain === 'strict') {
+        console.log(`[DockPanel] "${target.title.label}" already has contain:strict, skipping`);
+        continue;
+      }
+      console.log(`[DockPanel] freezing "${target.title.label}" (${el.querySelectorAll('*').length} nodes)`);
+      entries.push({
+        el,
+        rect: el.getBoundingClientRect(),
+        prevContain: el.style.contain,
+        prevWidth: el.style.width,
+        prevHeight: el.style.height
+      });
+    }
+
+    // Pass 2: apply containment and pinned sizes.
+    for (let entry of entries) {
+      this._frozenElements.push({
+        element: entry.el,
+        prevContain: entry.prevContain,
+        prevWidth: entry.prevWidth,
+        prevHeight: entry.prevHeight
+      });
+      entry.el.style.width = `${entry.rect.width}px`;
+      entry.el.style.height = `${entry.rect.height}px`;
+      entry.el.style.contain = 'strict';
+    }
+
+    console.log(`[DockPanel] froze ${this._frozenElements.length} heavy widget nodes`);
+
+    if (this._frozenElements.length > 0 && this._intervalId === 0) {
+      this._intervalId = window.setInterval(() => {
+        this._refreshFrozenElements();
+      }, Private.REFRESH_INTERVAL_MS);
+    }
+  }
+
+  /**
+   * Temporarily lift containment, let the browser reflow, then
+   * re-apply with updated sizes.
+   */
+  private _refreshFrozenElements(): void {
+    console.log(`[DockPanel] refreshing ${this._frozenElements.length} frozen elements`);
+    for (let entry of this._frozenElements) {
+      let el = entry.element;
+      el.style.contain = entry.prevContain;
+      el.style.width = '';
+      el.style.height = '';
+    }
+    for (let entry of this._frozenElements) {
+      entry.element.offsetHeight;
+    }
+    let rects = this._frozenElements.map(entry => entry.element.getBoundingClientRect());
+    for (let i = 0; i < this._frozenElements.length; i++) {
+      let el = this._frozenElements[i].element;
+      el.style.width = `${rects[i].width}px`;
+      el.style.height = `${rects[i].height}px`;
+      el.style.contain = 'strict';
+    }
+  }
+
+  /**
+   * Remove containment and restore original styles on all frozen
+   * elements.
+   */
+  private _unfreezeElements(): void {
+    console.log(`[DockPanel] unfreezing ${this._frozenElements.length} elements`);
+    if (this._intervalId !== 0) {
+      clearInterval(this._intervalId);
+      this._intervalId = 0;
+    }
+    for (let entry of this._frozenElements) {
+      let el = entry.element;
+      el.style.contain = entry.prevContain;
+      el.style.width = entry.prevWidth;
+      el.style.height = entry.prevHeight;
+    }
+    this._frozenElements = [];
+  }
+
+  private _nodeCountThreshold = Private.DEFAULT_NODE_COUNT_THRESHOLD;
+  private _frozenElements: Private.IFrozenElement[] = [];
+  private _intervalId = 0;
 }
 
 /**
@@ -1153,6 +1312,14 @@ export namespace DockPanel {
      * The default is `'false'`.
      */
     addButtonEnabled?: boolean;
+
+    /**
+     * The number of DOM nodes in a child widget above which the
+     * panel will throttle resize updates during handle dragging.
+     *
+     * The default is `5000`.
+     */
+    nodeCountThreshold?: number;
   }
 
   /**
@@ -1444,6 +1611,27 @@ namespace Private {
   export const LayoutModified = new ConflatableMessage('layout-modified');
 
   /**
+   * An object which holds the original styles for a frozen element.
+   */
+  export interface IFrozenElement {
+    element: HTMLElement;
+    prevContain: string;
+    prevWidth: string;
+    prevHeight: string;
+  }
+
+  /**
+   * The default node count threshold for content isolation.
+   */
+  export const DEFAULT_NODE_COUNT_THRESHOLD = 100;
+
+  /**
+   * The interval (in ms) at which frozen elements have their sizes
+   * refreshed during handle dragging.
+   */
+  export const REFRESH_INTERVAL_MS = 5000;
+
+  /**
    * An object which holds mouse press data.
    */
   export interface IPressData {
@@ -1580,6 +1768,47 @@ namespace Private {
 
     // Return the single document config.
     return { main: { type: 'tab-area', widgets, currentIndex } };
+  }
+
+  /**
+   * Recursively find the deepest widgets whose subtree is heavy
+   * (node count >= threshold) but whose child widgets are all
+   * individually light. This places containment as low in the
+   * DOM tree as possible.
+   */
+  export function collectHeavyWidgets(
+    widget: Widget,
+    threshold: number,
+    result: Widget[]
+  ): void {
+    let nodeCount = widget.node.querySelectorAll('*').length;
+    if (nodeCount < threshold) {
+      return;
+    }
+    let layout = widget.layout;
+    if (!layout) {
+      // Leaf widget that is heavy — freeze it.
+      result.push(widget);
+      return;
+    }
+    // Check if any child widget is individually heavy.
+    let anyChildHeavy = false;
+    for (let child of layout) {
+      if (child.node.querySelectorAll('*').length >= threshold) {
+        anyChildHeavy = true;
+        break;
+      }
+    }
+    if (anyChildHeavy) {
+      // Recurse into children — we can push containment deeper.
+      for (let child of layout) {
+        collectHeavyWidgets(child, threshold, result);
+      }
+    } else {
+      // No child is individually heavy, but this widget is.
+      // This is the deepest heavy boundary — freeze here.
+      result.push(widget);
+    }
   }
 
   /**
