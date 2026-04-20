@@ -1104,7 +1104,7 @@ export class DockPanel extends Widget {
     }
     try {
       this._performanceObserver = new PerformanceObserver(() => {
-        if (this._frozenElements.length === 0) {
+        if (this._frozenGroups.length === 0) {
           console.log('[DockPanel] long task detected during drag, freezing heavy leaf widgets');
           this._freezeHeavyLeaves();
         }
@@ -1141,7 +1141,7 @@ export class DockPanel extends Widget {
    * subtree exceeds the node count threshold.
    */
   private _freezeHeavyLeaves(): void {
-    if (this._frozenElements.length > 0) {
+    if (this._frozenGroups.length > 0) {
       return;
     }
 
@@ -1151,49 +1151,55 @@ export class DockPanel extends Widget {
       Private.collectHeavyWidgets(child, this._nodeCountThreshold, targets);
     }
 
-    // Collect widget nodes and their direct DOM children.
-    let elements: HTMLElement[] = [];
+    // Collect elements grouped by target widget.
+    let groups: { el: HTMLElement; rect: DOMRect; prevContain: string; prevWidth: string; prevHeight: string }[][] = [];
     for (let target of targets) {
       let el = target.node;
-      elements.push(el);
+      let elements: HTMLElement[] = [el];
       for (let i = 0; i < el.children.length; i++) {
         elements.push(el.children[i] as HTMLElement);
       }
-    }
-
-    // Pass 1: read all dimensions before mutations.
-    let entries: { el: HTMLElement; rect: DOMRect; prevContain: string; prevWidth: string; prevHeight: string }[] = [];
-    for (let el of elements) {
-      if (el.style.contain === 'strict') {
-        continue;
+      // Read dimensions for this group.
+      let group: { el: HTMLElement; rect: DOMRect; prevContain: string; prevWidth: string; prevHeight: string }[] = [];
+      for (let elem of elements) {
+        if (elem.style.contain === 'strict') {
+          continue;
+        }
+        group.push({
+          el: elem,
+          rect: elem.getBoundingClientRect(),
+          prevContain: elem.style.contain,
+          prevWidth: elem.style.width,
+          prevHeight: elem.style.height
+        });
       }
-      entries.push({
-        el,
-        rect: el.getBoundingClientRect(),
-        prevContain: el.style.contain,
-        prevWidth: el.style.width,
-        prevHeight: el.style.height
-      });
+      if (group.length > 0) {
+        groups.push(group);
+      }
     }
 
-    // Pass 2: apply containment and pinned sizes.
-    for (let entry of entries) {
-      this._frozenElements.push({
-        element: entry.el,
-        prevContain: entry.prevContain,
-        prevWidth: entry.prevWidth,
-        prevHeight: entry.prevHeight
-      });
-      entry.el.style.width = `${entry.rect.width}px`;
-      entry.el.style.height = `${entry.rect.height}px`;
-      entry.el.style.contain = 'strict';
+    // Apply containment and pinned sizes.
+    for (let group of groups) {
+      let frozenGroup: Private.IFrozenElement[] = [];
+      for (let entry of group) {
+        frozenGroup.push({
+          element: entry.el,
+          prevContain: entry.prevContain,
+          prevWidth: entry.prevWidth,
+          prevHeight: entry.prevHeight
+        });
+        entry.el.style.width = `${entry.rect.width}px`;
+        entry.el.style.height = `${entry.rect.height}px`;
+        entry.el.style.contain = 'strict';
+      }
+      this._frozenGroups.push(frozenGroup);
     }
 
-    console.log(`[DockPanel] froze ${this._frozenElements.length} heavy widget nodes`);
+    console.log(`[DockPanel] froze ${this._frozenGroups.length} groups`);
 
     // Start periodic interval to keep sizes roughly correct
     // during long continuous drags.
-    if (this._frozenElements.length > 0 && this._intervalId === 0) {
+    if (this._frozenGroups.length > 0 && this._intervalId === 0) {
       this._intervalId = window.setInterval(() => {
         this._refreshFrozenElements();
       }, Private.REFRESH_INTERVAL_MS);
@@ -1206,7 +1212,7 @@ export class DockPanel extends Widget {
    * moving the handle.
    */
   private _scheduleRefresh(): void {
-    if (this._frozenElements.length === 0) {
+    if (this._frozenGroups.length === 0) {
       return;
     }
     if (this._refreshTimerId !== 0) {
@@ -1219,27 +1225,35 @@ export class DockPanel extends Widget {
   }
 
   /**
-   * Temporarily lift containment, let the browser reflow, then
-   * re-apply with updated sizes.
+   * Refresh frozen groups one at a time, spreading the reflow
+   * cost across multiple animation frames.
    */
   private _refreshFrozenElements(): void {
-    console.log(`[DockPanel] refreshing ${this._frozenElements.length} frozen elements`);
-    for (let entry of this._frozenElements) {
-      let el = entry.element;
-      el.style.contain = entry.prevContain;
-      el.style.width = '';
-      el.style.height = '';
-    }
-    for (let entry of this._frozenElements) {
-      entry.element.offsetHeight;
-    }
-    let rects = this._frozenElements.map(entry => entry.element.getBoundingClientRect());
-    for (let i = 0; i < this._frozenElements.length; i++) {
-      let el = this._frozenElements[i].element;
-      el.style.width = `${rects[i].width}px`;
-      el.style.height = `${rects[i].height}px`;
-      el.style.contain = 'strict';
-    }
+    console.log(`[DockPanel] refreshing ${this._frozenGroups.length} frozen groups (staggered)`);
+    let g = 0;
+    const step = () => {
+      if (g >= this._frozenGroups.length) {
+        this._refreshRAFId = 0;
+        return;
+      }
+      let group = this._frozenGroups[g];
+      // Lift containment for all elements in this group.
+      for (let entry of group) {
+        entry.element.style.contain = entry.prevContain;
+        entry.element.style.width = '';
+        entry.element.style.height = '';
+      }
+      // Read all rects, then re-pin.
+      let rects = group.map(entry => entry.element.getBoundingClientRect());
+      for (let i = 0; i < group.length; i++) {
+        group[i].element.style.width = `${rects[i].width}px`;
+        group[i].element.style.height = `${rects[i].height}px`;
+        group[i].element.style.contain = 'strict';
+      }
+      g++;
+      this._refreshRAFId = requestAnimationFrame(step);
+    };
+    this._refreshRAFId = requestAnimationFrame(step);
   }
 
   /**
@@ -1247,27 +1261,33 @@ export class DockPanel extends Widget {
    * elements.
    */
   private _unfreezeElements(): void {
-    console.log(`[DockPanel] unfreezing ${this._frozenElements.length} elements`);
+    console.log(`[DockPanel] unfreezing ${this._frozenGroups.length} groups`);
     if (this._refreshTimerId !== 0) {
       clearTimeout(this._refreshTimerId);
       this._refreshTimerId = 0;
+    }
+    if (this._refreshRAFId !== 0) {
+      cancelAnimationFrame(this._refreshRAFId);
+      this._refreshRAFId = 0;
     }
     if (this._intervalId !== 0) {
       clearInterval(this._intervalId);
       this._intervalId = 0;
     }
-    for (let entry of this._frozenElements) {
-      let el = entry.element;
-      el.style.contain = entry.prevContain;
-      el.style.width = entry.prevWidth;
-      el.style.height = entry.prevHeight;
+    for (let group of this._frozenGroups) {
+      for (let entry of group) {
+        entry.element.style.contain = entry.prevContain;
+        entry.element.style.width = entry.prevWidth;
+        entry.element.style.height = entry.prevHeight;
+      }
     }
-    this._frozenElements = [];
+    this._frozenGroups = [];
   }
 
   private _nodeCountThreshold = Private.DEFAULT_NODE_COUNT_THRESHOLD;
-  private _frozenElements: Private.IFrozenElement[] = [];
+  private _frozenGroups: Private.IFrozenElement[][] = [];
   private _refreshTimerId = 0;
+  private _refreshRAFId = 0;
   private _intervalId = 0;
 }
 
