@@ -761,6 +761,9 @@ export class DockPanel extends Widget {
     // pointerdown will detect if the resulting frame is slow.
     let layout = this.layout as DockLayout;
     layout.moveHandle(this._pressData.handle, xPos, yPos);
+
+    // Debounce: refresh frozen elements after the user stops moving.
+    this._scheduleRefresh();
   }
 
   /**
@@ -1148,15 +1151,22 @@ export class DockPanel extends Widget {
       Private.collectHeavyWidgets(child, this._nodeCountThreshold, targets);
     }
 
-    // Pass 1: read all dimensions before mutations.
-    let entries: { el: HTMLElement; rect: DOMRect; prevContain: string; prevWidth: string; prevHeight: string }[] = [];
+    // Collect widget nodes and their direct DOM children.
+    let elements: HTMLElement[] = [];
     for (let target of targets) {
       let el = target.node;
+      elements.push(el);
+      for (let i = 0; i < el.children.length; i++) {
+        elements.push(el.children[i] as HTMLElement);
+      }
+    }
+
+    // Pass 1: read all dimensions before mutations.
+    let entries: { el: HTMLElement; rect: DOMRect; prevContain: string; prevWidth: string; prevHeight: string }[] = [];
+    for (let el of elements) {
       if (el.style.contain === 'strict') {
-        console.log(`[DockPanel] "${target.title.label}" already has contain:strict, skipping`);
         continue;
       }
-      console.log(`[DockPanel] freezing "${target.title.label}" (${el.querySelectorAll('*').length} nodes)`);
       entries.push({
         el,
         rect: el.getBoundingClientRect(),
@@ -1181,11 +1191,31 @@ export class DockPanel extends Widget {
 
     console.log(`[DockPanel] froze ${this._frozenElements.length} heavy widget nodes`);
 
+    // Start periodic interval to keep sizes roughly correct
+    // during long continuous drags.
     if (this._frozenElements.length > 0 && this._intervalId === 0) {
       this._intervalId = window.setInterval(() => {
         this._refreshFrozenElements();
       }, Private.REFRESH_INTERVAL_MS);
     }
+  }
+
+  /**
+   * Schedule a debounced refresh of frozen elements. Resets on
+   * each call so the refresh only fires after the user stops
+   * moving the handle.
+   */
+  private _scheduleRefresh(): void {
+    if (this._frozenElements.length === 0) {
+      return;
+    }
+    if (this._refreshTimerId !== 0) {
+      clearTimeout(this._refreshTimerId);
+    }
+    this._refreshTimerId = window.setTimeout(() => {
+      this._refreshTimerId = 0;
+      this._refreshFrozenElements();
+    }, Private.REFRESH_DEBOUNCE_MS);
   }
 
   /**
@@ -1218,6 +1248,10 @@ export class DockPanel extends Widget {
    */
   private _unfreezeElements(): void {
     console.log(`[DockPanel] unfreezing ${this._frozenElements.length} elements`);
+    if (this._refreshTimerId !== 0) {
+      clearTimeout(this._refreshTimerId);
+      this._refreshTimerId = 0;
+    }
     if (this._intervalId !== 0) {
       clearInterval(this._intervalId);
       this._intervalId = 0;
@@ -1233,6 +1267,7 @@ export class DockPanel extends Widget {
 
   private _nodeCountThreshold = Private.DEFAULT_NODE_COUNT_THRESHOLD;
   private _frozenElements: Private.IFrozenElement[] = [];
+  private _refreshTimerId = 0;
   private _intervalId = 0;
 }
 
@@ -1626,10 +1661,16 @@ namespace Private {
   export const DEFAULT_NODE_COUNT_THRESHOLD = 100;
 
   /**
-   * The interval (in ms) at which frozen elements have their sizes
-   * refreshed during handle dragging.
+   * The delay (in ms) after the last pointer move before refreshing
+   * frozen element sizes.
    */
-  export const REFRESH_INTERVAL_MS = 5000;
+  export const REFRESH_DEBOUNCE_MS = 300;
+
+  /**
+   * The periodic interval (in ms) for refreshing frozen element
+   * sizes during long continuous drags.
+   */
+  export const REFRESH_INTERVAL_MS = 2000;
 
   /**
    * An object which holds mouse press data.
@@ -1771,18 +1812,41 @@ namespace Private {
   }
 
   /**
+   * The minimum total text length in a widget's subtree to
+   * consider it heavy, independent of node count.
+   */
+  export const DEFAULT_TEXT_LENGTH_THRESHOLD = 25000;
+
+  /**
+   * Determine whether a DOM subtree is heavy enough to warrant
+   * containment. A subtree is heavy if it has many nodes or a
+   * large amount of text content.
+   */
+  export function isDOMHeavy(
+    el: HTMLElement,
+    nodeCountThreshold: number,
+    textLengthThreshold: number = DEFAULT_TEXT_LENGTH_THRESHOLD
+  ): boolean {
+    if (el.querySelectorAll('*').length >= nodeCountThreshold) {
+      return true;
+    }
+    if ((el.textContent?.length ?? 0) >= textLengthThreshold) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
    * Recursively find the deepest widgets whose subtree is heavy
-   * (node count >= threshold) but whose child widgets are all
-   * individually light. This places containment as low in the
-   * DOM tree as possible.
+   * but whose child widgets are all individually light. This
+   * places containment as low in the DOM tree as possible.
    */
   export function collectHeavyWidgets(
     widget: Widget,
     threshold: number,
     result: Widget[]
   ): void {
-    let nodeCount = widget.node.querySelectorAll('*').length;
-    if (nodeCount < threshold) {
+    if (!isDOMHeavy(widget.node, threshold)) {
       return;
     }
     let layout = widget.layout;
@@ -1794,7 +1858,7 @@ namespace Private {
     // Check if any child widget is individually heavy.
     let anyChildHeavy = false;
     for (let child of layout) {
-      if (child.node.querySelectorAll('*').length >= threshold) {
+      if (isDOMHeavy(child.node, threshold)) {
         anyChildHeavy = true;
         break;
       }
