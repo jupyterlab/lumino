@@ -363,7 +363,7 @@ export class SplitPanel extends Panel {
    * subtree exceeds the node count threshold.
    */
   private _freezeHeavyLeaves(): void {
-    if (this._frozenGroups.length > 0) {
+    if (this._frozenElements.length > 0) {
       return;
     }
 
@@ -373,55 +373,46 @@ export class SplitPanel extends Panel {
       Private.collectHeavyWidgets(this.widgets[i], this._nodeCountThreshold, targets);
     }
 
-    // Collect elements grouped by target widget.
-    let groups: { el: HTMLElement; rect: DOMRect; prevContain: string; prevWidth: string; prevHeight: string }[][] = [];
+    // Read dimensions before mutations.
+    let entries: { el: HTMLElement; rect: DOMRect; prevContain: string; prevWidth: string; prevMinWidth: string; prevHeight: string; prevMinHeight: string }[] = [];
     for (let target of targets) {
       let el = target.node;
-      let elements: HTMLElement[] = [el];
-      for (let i = 0; i < el.children.length; i++) {
-        elements.push(el.children[i] as HTMLElement);
+      if (el.style.contain === 'strict') {
+        continue;
       }
-      // Read dimensions for this group.
-      let group: { el: HTMLElement; rect: DOMRect; prevContain: string; prevWidth: string; prevHeight: string }[] = [];
-      for (let elem of elements) {
-        if (elem.style.contain === 'strict') {
-          continue;
-        }
-        group.push({
-          el: elem,
-          rect: elem.getBoundingClientRect(),
-          prevContain: elem.style.contain,
-          prevWidth: elem.style.width,
-          prevHeight: elem.style.height
-        });
-      }
-      if (group.length > 0) {
-        groups.push(group);
-      }
+      entries.push({
+        el,
+        rect: el.getBoundingClientRect(),
+        prevContain: el.style.contain,
+        prevWidth: el.style.width,
+        prevMinWidth: el.style.minWidth,
+        prevHeight: el.style.height,
+        prevMinHeight: el.style.minHeight
+      });
     }
 
     // Apply containment and pinned sizes.
-    for (let group of groups) {
-      let frozenGroup: Private.IFrozenElement[] = [];
-      for (let entry of group) {
-        frozenGroup.push({
-          element: entry.el,
-          prevContain: entry.prevContain,
-          prevWidth: entry.prevWidth,
-          prevHeight: entry.prevHeight
-        });
-        entry.el.style.width = `${entry.rect.width}px`;
-        entry.el.style.height = `${entry.rect.height}px`;
-        entry.el.style.contain = 'strict';
-      }
-      this._frozenGroups.push(frozenGroup);
+    for (let entry of entries) {
+      this._frozenElements.push({
+        element: entry.el,
+        prevContain: entry.prevContain,
+        prevWidth: entry.prevWidth,
+        prevMinWidth: entry.prevMinWidth,
+        prevHeight: entry.prevHeight,
+        prevMinHeight: entry.prevMinHeight
+      });
+      entry.el.style.width = `${entry.rect.width}px`;
+      entry.el.style.minWidth = `${entry.rect.width}px`;
+      entry.el.style.height = `${entry.rect.height}px`;
+      entry.el.style.minHeight = `${entry.rect.height}px`;
+      entry.el.style.contain = 'strict';
     }
 
-    console.log(`[SplitPanel] froze ${this._frozenGroups.length} groups`);
+    console.log(`[SplitPanel] froze ${this._frozenElements.length} elements`);
 
     // Start periodic interval to keep sizes roughly correct
     // during long continuous drags.
-    if (this._frozenGroups.length > 0 && this._intervalId === 0) {
+    if (this._frozenElements.length > 0 && this._intervalId === 0) {
       this._intervalId = window.setInterval(() => {
         this._refreshFrozenElements();
       }, Private.REFRESH_INTERVAL_MS);
@@ -434,7 +425,7 @@ export class SplitPanel extends Panel {
    * moving the handle.
    */
   private _scheduleRefresh(): void {
-    if (this._frozenGroups.length === 0) {
+    if (this._frozenElements.length === 0) {
       return;
     }
     if (this._refreshTimerId !== 0) {
@@ -447,33 +438,36 @@ export class SplitPanel extends Panel {
   }
 
   /**
-   * Refresh frozen groups one at a time, spreading the reflow
+   * Refresh frozen elements one at a time, spreading the reflow
    * cost across multiple animation frames.
    */
   private _refreshFrozenElements(): void {
-    console.log(`[SplitPanel] refreshing ${this._frozenGroups.length} frozen groups (staggered)`);
-    let g = 0;
+    console.log(`[SplitPanel] refreshing ${this._frozenElements.length} frozen elements (staggered)`);
+    let i = 0;
     const step = () => {
-      if (g >= this._frozenGroups.length) {
+      if (i >= this._frozenElements.length) {
         this._refreshRAFId = 0;
         return;
       }
-      let group = this._frozenGroups[g];
-      // Lift containment for all elements in this group.
-      for (let entry of group) {
-        entry.element.style.contain = entry.prevContain;
-        entry.element.style.width = '';
-        entry.element.style.height = '';
-      }
-      // Read all rects, then re-pin.
-      let rects = group.map(entry => entry.element.getBoundingClientRect());
-      for (let i = 0; i < group.length; i++) {
-        group[i].element.style.width = `${rects[i].width}px`;
-        group[i].element.style.height = `${rects[i].height}px`;
-        group[i].element.style.contain = 'strict';
-      }
-      g++;
-      this._refreshRAFId = requestAnimationFrame(step);
+      let entry = this._frozenElements[i];
+      let el = entry.element;
+      // Frame 1: lift containment to let the browser settle layout.
+      el.style.contain = entry.prevContain;
+      el.style.width = '';
+      el.style.minWidth = '';
+      el.style.height = '';
+      el.style.minHeight = '';
+      // Frame 2: read the settled rect and re-pin.
+      this._refreshRAFId = requestAnimationFrame(() => {
+        let rect = el.getBoundingClientRect();
+        el.style.width = `${rect.width}px`;
+        el.style.minWidth = `${rect.width}px`;
+        el.style.height = `${rect.height}px`;
+        el.style.minHeight = `${rect.height}px`;
+        el.style.contain = 'strict';
+        i++;
+        this._refreshRAFId = requestAnimationFrame(step);
+      });
     };
     this._refreshRAFId = requestAnimationFrame(step);
   }
@@ -483,7 +477,7 @@ export class SplitPanel extends Panel {
    * elements.
    */
   private _unfreezeElements(): void {
-    console.log(`[SplitPanel] unfreezing ${this._frozenGroups.length} groups`);
+    console.log(`[SplitPanel] unfreezing ${this._frozenElements.length} elements`);
     if (this._refreshTimerId !== 0) {
       clearTimeout(this._refreshTimerId);
       this._refreshTimerId = 0;
@@ -496,14 +490,14 @@ export class SplitPanel extends Panel {
       clearInterval(this._intervalId);
       this._intervalId = 0;
     }
-    for (let group of this._frozenGroups) {
-      for (let entry of group) {
-        entry.element.style.contain = entry.prevContain;
-        entry.element.style.width = entry.prevWidth;
-        entry.element.style.height = entry.prevHeight;
-      }
+    for (let entry of this._frozenElements) {
+      entry.element.style.contain = entry.prevContain;
+      entry.element.style.width = entry.prevWidth;
+      entry.element.style.minWidth = entry.prevMinWidth;
+      entry.element.style.height = entry.prevHeight;
+      entry.element.style.minHeight = entry.prevMinHeight;
     }
-    this._frozenGroups = [];
+    this._frozenElements = [];
   }
 
   /**
@@ -517,7 +511,7 @@ export class SplitPanel extends Panel {
     }
     try {
       this._performanceObserver = new PerformanceObserver(() => {
-        if (this._frozenGroups.length === 0) {
+        if (this._frozenElements.length === 0) {
           console.log('[SplitPanel] long task detected during drag, freezing heavy leaf widgets');
           this._freezeHeavyLeaves();
         }
@@ -550,7 +544,7 @@ export class SplitPanel extends Panel {
   private _pressData: Private.IPressData | null = null;
   private _performanceObserver: PerformanceObserver | null = null;
   private _nodeCountThreshold = Private.DEFAULT_NODE_COUNT_THRESHOLD;
-  private _frozenGroups: Private.IFrozenElement[][] = [];
+  private _frozenElements: Private.IFrozenElement[] = [];
   private _refreshTimerId = 0;
   private _refreshRAFId = 0;
   private _intervalId = 0;
@@ -719,9 +713,19 @@ namespace Private {
     prevWidth: string;
 
     /**
+     * The original `minWidth` style value.
+     */
+    prevMinWidth: string;
+
+    /**
      * The original `height` style value.
      */
     prevHeight: string;
+
+    /**
+     * The original `minHeight` style value.
+     */
+    prevMinHeight: string;
   }
 
   /**
