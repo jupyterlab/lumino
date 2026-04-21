@@ -734,8 +734,8 @@ export class DockPanel extends Widget {
     let override = Drag.overrideCursor(style.cursor!, this._document);
     this._pressData = { handle, deltaX, deltaY, override };
 
-    // Start observing for long tasks to reactively apply containment.
-    this._observeSlowLayout();
+    // Freeze heavy leaf widgets immediately when drag starts.
+    this._freezeHeavyLeaves();
   }
 
   /**
@@ -794,9 +794,6 @@ export class DockPanel extends Widget {
     if (!this._pressData) {
       return;
     }
-
-    // Stop observing long tasks.
-    this._disconnectObserver();
 
     // Unfreeze all contained elements.
     this._unfreezeElements();
@@ -1093,47 +1090,7 @@ export class DockPanel extends Widget {
 
   private _addRequested = new Signal<this, TabBar<Widget>>(this);
 
-  /**
-   * Start a PerformanceObserver to detect slow frames during drag.
-   * Prefers `long-animation-frame` (includes rendering cost) and
-   * falls back to `longtask` (script-only, >50 ms threshold).
-   */
-  private _observeSlowLayout(): void {
-    if (typeof PerformanceObserver === 'undefined') {
-      return;
-    }
-    try {
-      this._performanceObserver = new PerformanceObserver(() => {
-        if (this._frozenGroups.length === 0) {
-          console.log('[DockPanel] long task detected during drag, freezing heavy leaf widgets');
-          this._freezeHeavyLeaves();
-        }
-      });
-      try {
-        this._performanceObserver.observe({ type: 'long-animation-frame' });
-      } catch {
-        try {
-          this._performanceObserver.observe({ type: 'longtask' });
-        } catch {
-          this._performanceObserver = null;
-        }
-      }
-    } catch {
-      // PerformanceObserver not supported.
-    }
-  }
 
-  /**
-   * Disconnect the PerformanceObserver if active.
-   */
-  private _disconnectObserver(): void {
-    if (this._performanceObserver) {
-      this._performanceObserver.disconnect();
-      this._performanceObserver = null;
-    }
-  }
-
-  private _performanceObserver: PerformanceObserver | null = null;
 
   /**
    * Walk the widget tree to find leaf widgets, then apply

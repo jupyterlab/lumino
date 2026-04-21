@@ -280,8 +280,8 @@ export class SplitPanel extends Panel {
     let override = Drag.overrideCursor(style.cursor!);
     this._pressData = { index, delta, override };
 
-    // Start observing for long tasks to reactively apply containment.
-    this._observeSlowLayout();
+    // Freeze heavy leaf widgets immediately when drag starts.
+    this._freezeHeavyLeaves();
   }
 
   /**
@@ -336,9 +336,6 @@ export class SplitPanel extends Panel {
     if (!this._pressData) {
       return;
     }
-
-    // Stop observing long tasks.
-    this._disconnectObserver();
 
     // Unfreeze all contained elements.
     this._unfreezeElements();
@@ -608,49 +605,8 @@ export class SplitPanel extends Panel {
     this._frozenGroups = [];
   }
 
-  /**
-   * Start a PerformanceObserver to detect slow frames during drag.
-   * Prefers `long-animation-frame` (includes rendering cost) and
-   * falls back to `longtask` (script-only, >50 ms threshold).
-   */
-  private _observeSlowLayout(): void {
-    if (typeof PerformanceObserver === 'undefined') {
-      return;
-    }
-    try {
-      this._performanceObserver = new PerformanceObserver(() => {
-        if (this._frozenGroups.length === 0) {
-          console.log('[SplitPanel] long task detected during drag, freezing heavy leaf widgets');
-          this._freezeHeavyLeaves();
-        }
-      });
-      try {
-        this._performanceObserver.observe({ type: 'long-animation-frame' });
-      } catch {
-        try {
-          this._performanceObserver.observe({ type: 'longtask' });
-        } catch {
-          this._performanceObserver = null;
-        }
-      }
-    } catch {
-      // PerformanceObserver not supported.
-    }
-  }
-
-  /**
-   * Disconnect the PerformanceObserver if active.
-   */
-  private _disconnectObserver(): void {
-    if (this._performanceObserver) {
-      this._performanceObserver.disconnect();
-      this._performanceObserver = null;
-    }
-  }
-
   private _handleMoved = new Signal<any, void>(this);
   private _pressData: Private.IPressData | null = null;
-  private _performanceObserver: PerformanceObserver | null = null;
   private _nodeCountThreshold = Private.DEFAULT_NODE_COUNT_THRESHOLD;
   private _frozenGroups: Private.IFrozenElement[][] = [];
   private _refreshTimerId = 0;
