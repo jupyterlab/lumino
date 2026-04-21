@@ -406,6 +406,7 @@ export class SplitPanel extends Panel {
       entry.el.style.height = `${entry.rect.height}px`;
       entry.el.style.minHeight = `${entry.rect.height}px`;
       entry.el.style.contain = 'strict';
+      entry.el.classList.add('lm-layout-frozen');
     }
 
     console.log(`[SplitPanel] froze ${this._frozenElements.length} elements`);
@@ -496,6 +497,7 @@ export class SplitPanel extends Panel {
       entry.element.style.minWidth = entry.prevMinWidth;
       entry.element.style.height = entry.prevHeight;
       entry.element.style.minHeight = entry.prevMinHeight;
+      entry.element.classList.remove('lm-layout-frozen');
     }
     this._frozenElements = [];
   }
@@ -743,7 +745,7 @@ namespace Private {
    * The periodic interval (in ms) for refreshing frozen element
    * sizes during long continuous drags.
    */
-  export const REFRESH_INTERVAL_MS = 2000;
+  export const REFRESH_INTERVAL_MS = 5000;
 
   /**
    * The minimum total text length in a widget's subtree to
