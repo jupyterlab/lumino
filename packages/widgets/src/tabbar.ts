@@ -502,14 +502,19 @@ export class TabBar<T> extends Widget {
    * This is a no-op if the index is out of range.
    */
   removeTabAt(index: number): void {
+    let indexIsValid = index >= 0 && index < this._titles.length;
     if (this._tabSizeFrozen) {
-      // Capture the widths of all tabs that will remain.
-      let tabs = this.contentNode.children;
-      this._frozenTabWidths = [];
-      for (let i = 0, n = tabs.length; i < n; ++i) {
-        if (i !== index) {
-          this._frozenTabWidths.push((tabs[i] as HTMLElement).offsetWidth);
+      if (indexIsValid) {
+        // Capture the widths of all tabs that will remain.
+        let tabs = this.contentNode.children;
+        this._frozenTabWidths = [];
+        for (let i = 0, n = tabs.length; i < n; ++i) {
+          if (i !== index) {
+            this._frozenTabWidths.push((tabs[i] as HTMLElement).offsetWidth);
+          }
         }
+      } else {
+        this._frozenTabWidths = null;
       }
     }
 
@@ -653,6 +658,7 @@ export class TabBar<T> extends Widget {
     this.node.removeEventListener('pointerleave', this);
     this.node.removeEventListener('dblclick', this);
     this.node.removeEventListener('keydown', this);
+    this._clearUnfreezeTransitionState();
     this._releaseMouse();
   }
 
@@ -687,15 +693,17 @@ export class TabBar<T> extends Widget {
         this._frozenTabWidths.length === tabs.length
       ) {
         for (let i = 0, n = tabs.length; i < n; ++i) {
-          (
-            tabs[i] as HTMLElement
-          ).style.width = `${this._frozenTabWidths[i]}px`;
+          this._setFrozenTabSize(
+            tabs[i] as HTMLElement,
+            this._frozenTabWidths[i]
+          );
         }
         this._frozenTabWidths = null;
       } else {
+        this._frozenTabWidths = null;
         for (let i = 0, n = tabs.length; i < n; ++i) {
           let tab = tabs[i] as HTMLElement;
-          tab.style.width = `${tab.offsetWidth}px`;
+          this._setFrozenTabSize(tab, tab.offsetWidth);
         }
       }
     }
@@ -1401,29 +1409,85 @@ export class TabBar<T> extends Widget {
     this._tabSizeFrozen = false;
     this._frozenTabWidths = null;
 
+    // Start a new unfreeze run and clear stale listeners/timers.
+    this._unfreezeRunID++;
+    let runID = this._unfreezeRunID;
+    this._clearUnfreezeTransitionState();
+
     // Add the unfreezing class to enable a smooth width transition.
     this.addClass('lm-mod-unfreezing');
 
     // Clear the inline width on all tabs, triggering the CSS transition.
     let tabs = this.contentNode.children;
+    for (let i = 0, n = tabs.length; i < n; ++i) {
+      let tab = tabs[i] as HTMLElement;
+      tab.style.width = '';
+      tab.style.flexBasis = '';
+    }
+
     if (tabs.length === 0) {
       this.removeClass('lm-mod-unfreezing');
     } else {
-      const onTransitionEnd = (event: Event) => {
-        if ((event as TransitionEvent).propertyName === 'width') {
-          this.removeClass('lm-mod-unfreezing');
-          this.node.removeEventListener('transitionend', onTransitionEnd);
+      let onTransitionDone = (event: Event) => {
+        let propertyName = (event as TransitionEvent).propertyName;
+        if (propertyName === 'width' || propertyName === 'flex-basis') {
+          this._finalizeUnfreezeRun(runID);
         }
       };
-      this.node.addEventListener('transitionend', onTransitionEnd);
-    }
-
-    for (let i = 0, n = tabs.length; i < n; ++i) {
-      (tabs[i] as HTMLElement).style.width = '';
+      this._unfreezeTransitionListener = onTransitionDone;
+      this.node.addEventListener('transitionend', onTransitionDone);
+      this.node.addEventListener('transitioncancel', onTransitionDone);
+      this._unfreezeFallbackTimerID = window.setTimeout(() => {
+        this._finalizeUnfreezeRun(runID);
+      }, 2000);
     }
 
     // Schedule an update to re-render the tabs at natural size.
     this.update();
+  }
+
+  /**
+   * Apply a frozen size to a tab.
+   *
+   * The width is mirrored to `flex-basis` so frozen sizing works even when
+   * themes define tab sizing through flex rules.
+   */
+  private _setFrozenTabSize(tab: HTMLElement, width: number): void {
+    let size = `${width}px`;
+    tab.style.width = size;
+    tab.style.flexBasis = size;
+  }
+
+  /**
+   * Finish an in-flight unfreeze transition run.
+   */
+  private _finalizeUnfreezeRun(runID: number): void {
+    if (runID !== this._unfreezeRunID) {
+      return;
+    }
+    this._clearUnfreezeTransitionState();
+    this.removeClass('lm-mod-unfreezing');
+  }
+
+  /**
+   * Remove unfreeze listeners and timers.
+   */
+  private _clearUnfreezeTransitionState(): void {
+    if (this._unfreezeTransitionListener) {
+      this.node.removeEventListener(
+        'transitionend',
+        this._unfreezeTransitionListener
+      );
+      this.node.removeEventListener(
+        'transitioncancel',
+        this._unfreezeTransitionListener
+      );
+      this._unfreezeTransitionListener = null;
+    }
+    if (this._unfreezeFallbackTimerID !== 0) {
+      clearTimeout(this._unfreezeFallbackTimerID);
+      this._unfreezeFallbackTimerID = 0;
+    }
   }
 
   private _name: string;
@@ -1436,6 +1500,9 @@ export class TabBar<T> extends Widget {
   private _dragData: Private.IDragData | null = null;
   private _tabSizeFrozen = false;
   private _frozenTabWidths: number[] | null = null;
+  private _unfreezeRunID = 0;
+  private _unfreezeFallbackTimerID = 0;
+  private _unfreezeTransitionListener: ((event: Event) => void) | null = null;
   private _addButtonEnabled: boolean = false;
   private _tabMoved = new Signal<this, TabBar.ITabMovedArgs<T>>(this);
   private _currentChanged = new Signal<this, TabBar.ICurrentChangedArgs<T>>(

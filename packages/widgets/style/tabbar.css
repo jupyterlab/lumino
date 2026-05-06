@@ -98,7 +98,9 @@
 }
 
 .lm-TabBar.lm-mod-unfreezing .lm-TabBar-tab {
-  transition: width 150ms ease;
+  transition:
+    width 150ms ease,
+    flex-basis 150ms ease;
 }
 
 .lm-TabBar-tabLabel .lm-TabBar-tabInput {
