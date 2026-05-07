@@ -1058,14 +1058,13 @@ describe('@lumino/widgets', () => {
       it('should not freeze tab widths if closed programmatically (e.g., keyboard shortcut)', () => {
         populateBar(bar);
         MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
-        let tabs = bar.contentNode.children;
 
         bar.removeTabAt(0);
         MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
 
         // Since it was closed programmatically (no close-icon click),
         // widths should NOT be explicitly frozen.
-        tabs = bar.contentNode.children;
+        let tabs = bar.contentNode.children;
         for (let i = 0, n = tabs.length; i < n; ++i) {
           expect((tabs[i] as HTMLElement).style.width).to.equal('');
           expect((tabs[i] as HTMLElement).style.flexBasis).to.equal('');
