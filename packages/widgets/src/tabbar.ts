@@ -659,6 +659,7 @@ export class TabBar<T> extends Widget {
     this.node.removeEventListener('dblclick', this);
     this.node.removeEventListener('keydown', this);
     this._clearUnfreezeTransitionState();
+    this._clearTabSizeFreezeState();
     this._releaseMouse();
   }
 
@@ -1487,6 +1488,21 @@ export class TabBar<T> extends Widget {
     if (this._unfreezeFallbackTimerID !== 0) {
       clearTimeout(this._unfreezeFallbackTimerID);
       this._unfreezeFallbackTimerID = 0;
+    }
+  }
+
+  /**
+   * Clear transient tab-size freeze state and styles.
+   */
+  private _clearTabSizeFreezeState(): void {
+    this._tabSizeFrozen = false;
+    this._frozenTabWidths = null;
+    this.removeClass('lm-mod-unfreezing');
+    let tabs = this.contentNode.children;
+    for (let i = 0, n = tabs.length; i < n; ++i) {
+      let tab = tabs[i] as HTMLElement;
+      tab.style.width = '';
+      tab.style.flexBasis = '';
     }
   }
 
