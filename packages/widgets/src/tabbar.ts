@@ -502,6 +502,22 @@ export class TabBar<T> extends Widget {
    * This is a no-op if the index is out of range.
    */
   removeTabAt(index: number): void {
+    let indexIsValid = index >= 0 && index < this._titles.length;
+    if (this._tabSizeFrozen) {
+      if (indexIsValid) {
+        // Capture the widths of all tabs that will remain.
+        let tabs = this.contentNode.children;
+        this._frozenTabWidths = [];
+        for (let i = 0, n = tabs.length; i < n; ++i) {
+          if (i !== index) {
+            this._frozenTabWidths.push((tabs[i] as HTMLElement).offsetWidth);
+          }
+        }
+      } else {
+        this._frozenTabWidths = null;
+      }
+    }
+
     // Release the mouse before making any changes.
     this._releaseMouse();
 
@@ -606,6 +622,9 @@ export class TabBar<T> extends Widget {
       case 'pointerup':
         this._evtPointerUp(event as PointerEvent);
         break;
+      case 'pointerleave':
+        this._evtPointerLeave(event as PointerEvent);
+        break;
       case 'dblclick':
         this._evtDblClick(event as MouseEvent);
         break;
@@ -626,6 +645,7 @@ export class TabBar<T> extends Widget {
    */
   protected onBeforeAttach(msg: Message): void {
     this.node.addEventListener('pointerdown', this);
+    this.node.addEventListener('pointerleave', this);
     this.node.addEventListener('dblclick', this);
     this.node.addEventListener('keydown', this);
   }
@@ -635,8 +655,11 @@ export class TabBar<T> extends Widget {
    */
   protected onAfterDetach(msg: Message): void {
     this.node.removeEventListener('pointerdown', this);
+    this.node.removeEventListener('pointerleave', this);
     this.node.removeEventListener('dblclick', this);
     this.node.removeEventListener('keydown', this);
+    this._clearUnfreezeTransitionState();
+    this._clearTabSizeFreezeState();
     this._releaseMouse();
   }
 
@@ -664,6 +687,27 @@ export class TabBar<T> extends Widget {
       content[i] = renderer.renderTab({ title, current, zIndex, tabIndex });
     }
     VirtualDOM.render(content, this.contentNode);
+    if (this._tabSizeFrozen) {
+      let tabs = this.contentNode.children;
+      if (
+        this._frozenTabWidths &&
+        this._frozenTabWidths.length === tabs.length
+      ) {
+        for (let i = 0, n = tabs.length; i < n; ++i) {
+          this._setFrozenTabSize(
+            tabs[i] as HTMLElement,
+            this._frozenTabWidths[i]
+          );
+        }
+        this._frozenTabWidths = null;
+      } else {
+        this._frozenTabWidths = null;
+        for (let i = 0, n = tabs.length; i < n; ++i) {
+          let tab = tabs[i] as HTMLElement;
+          this._setFrozenTabSize(tab, tab.offsetWidth);
+        }
+      }
+    }
   }
 
   /**
@@ -1103,6 +1147,7 @@ export class TabBar<T> extends Widget {
       // Emit the close requested signal if the close icon was released.
       let icon = tabs[index].querySelector(this.renderer.closeIconSelector);
       if (icon && icon.contains(event.target as HTMLElement)) {
+        this._tabSizeFrozen = true;
         this._tabCloseRequested.emit({ index, title });
         return;
       }
@@ -1349,6 +1394,118 @@ export class TabBar<T> extends Widget {
     this.update();
   }
 
+  /**
+   * Handle the `'pointerleave'` event for the tab bar.
+   *
+   * This restores the natural tab sizing after tabs were frozen
+   * due to a close-icon click.
+   */
+  private _evtPointerLeave(event: PointerEvent): void {
+    // Do nothing if tab sizes are not currently frozen.
+    if (!this._tabSizeFrozen) {
+      return;
+    }
+
+    // Unfreeze tab sizes.
+    this._tabSizeFrozen = false;
+    this._frozenTabWidths = null;
+
+    // Start a new unfreeze run and clear stale listeners/timers.
+    this._unfreezeRunID++;
+    let runID = this._unfreezeRunID;
+    this._clearUnfreezeTransitionState();
+
+    // Add the unfreezing class to enable a smooth width transition.
+    this.addClass('lm-mod-unfreezing');
+
+    // Clear the inline width on all tabs, triggering the CSS transition.
+    let tabs = this.contentNode.children;
+    for (let i = 0, n = tabs.length; i < n; ++i) {
+      let tab = tabs[i] as HTMLElement;
+      tab.style.width = '';
+      tab.style.flexBasis = '';
+    }
+
+    if (tabs.length === 0) {
+      this.removeClass('lm-mod-unfreezing');
+    } else {
+      let onTransitionDone = (event: Event) => {
+        let propertyName = (event as TransitionEvent).propertyName;
+        if (propertyName === 'width' || propertyName === 'flex-basis') {
+          this._finalizeUnfreezeRun(runID);
+        }
+      };
+      this._unfreezeTransitionListener = onTransitionDone;
+      this.node.addEventListener('transitionend', onTransitionDone);
+      this.node.addEventListener('transitioncancel', onTransitionDone);
+      this._unfreezeFallbackTimerID = window.setTimeout(() => {
+        this._finalizeUnfreezeRun(runID);
+      }, 2000);
+    }
+
+    // Schedule an update to re-render the tabs at natural size.
+    this.update();
+  }
+
+  /**
+   * Apply a frozen size to a tab.
+   *
+   * The width is mirrored to `flex-basis` so frozen sizing works even when
+   * themes define tab sizing through flex rules.
+   */
+  private _setFrozenTabSize(tab: HTMLElement, width: number): void {
+    let size = `${width}px`;
+    tab.style.width = size;
+    tab.style.flexBasis = size;
+  }
+
+  /**
+   * Finish an in-flight unfreeze transition run.
+   */
+  private _finalizeUnfreezeRun(runID: number): void {
+    if (runID !== this._unfreezeRunID) {
+      return;
+    }
+    this._clearUnfreezeTransitionState();
+    this.removeClass('lm-mod-unfreezing');
+  }
+
+  /**
+   * Remove unfreeze listeners and timers.
+   */
+  private _clearUnfreezeTransitionState(): void {
+    if (this._unfreezeTransitionListener) {
+      this.node.removeEventListener(
+        'transitionend',
+        this._unfreezeTransitionListener
+      );
+      this.node.removeEventListener(
+        'transitioncancel',
+        this._unfreezeTransitionListener
+      );
+      this._unfreezeTransitionListener = null;
+    }
+    if (this._unfreezeFallbackTimerID !== 0) {
+      clearTimeout(this._unfreezeFallbackTimerID);
+      this._unfreezeFallbackTimerID = 0;
+    }
+  }
+
+  /**
+   * Clear transient tab-size freeze state and styles.
+   */
+  private _clearTabSizeFreezeState(): void {
+    this._tabSizeFrozen = false;
+    this._frozenTabWidths = null;
+    this.removeClass('lm-mod-unfreezing');
+    let tabs = this.contentNode.children;
+    for (let i = 0, n = tabs.length; i < n; ++i) {
+      let tab = tabs[i] as HTMLElement;
+      tab.style.width = '';
+      tab.style.flexBasis = '';
+    }
+  }
+
   private _name: string;
   private _currentIndex = -1;
   private _titles: Title<T>[] = [];
@@ -1357,6 +1514,11 @@ export class TabBar<T> extends Widget {
   private _titlesEditable: boolean = false;
   private _previousTitle: Title<T> | null = null;
   private _dragData: Private.IDragData | null = null;
+  private _tabSizeFrozen = false;
+  private _frozenTabWidths: number[] | null = null;
+  private _unfreezeRunID = 0;
+  private _unfreezeFallbackTimerID = 0;
+  private _unfreezeTransitionListener: ((event: Event) => void) | null = null;
   private _addButtonEnabled: boolean = false;
   private _tabMoved = new Signal<this, TabBar.ITabMovedArgs<T>>(this);
   private _currentChanged = new Signal<this, TabBar.ICurrentChangedArgs<T>>(
