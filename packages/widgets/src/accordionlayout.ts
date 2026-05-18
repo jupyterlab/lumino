@@ -114,7 +114,11 @@ export class AccordionLayout extends SplitLayout {
    * @param widget - The widget to attach to the parent.
    */
   protected attachWidget(index: number, widget: Widget): void {
-    const title = Private.createTitle(this.renderer, widget.title, !widget.isHidden);
+    const title = Private.createTitle(
+      this.renderer,
+      widget.title,
+      !widget.isHidden
+    );
 
     ArrayExt.insert(this._titles, index, title);
 
