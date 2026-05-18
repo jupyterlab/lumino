@@ -934,14 +934,14 @@ describe('@lumino/widgets', () => {
         });
       });
 
-      context('mousedown', () => {
+      context('pointerdown', () => {
         it('should not close the menu if on a child node', () => {
           menu.addItem({ command: 'test' });
           menu.open(0, 0);
           expect(menu.isAttached).to.equal(true);
           let rect = menu.node.getBoundingClientRect();
           menu.node.dispatchEvent(
-            new MouseEvent('mousedown', {
+            new MouseEvent('pointerdown', {
               bubbles,
               clientX: rect.left + 1,
               clientY: rect.top + 1
@@ -955,7 +955,7 @@ describe('@lumino/widgets', () => {
           menu.open(0, 0);
           expect(menu.isAttached).to.equal(true);
           menu.node.dispatchEvent(
-            new MouseEvent('mousedown', {
+            new MouseEvent('pointerdown', {
               bubbles,
               clientX: -10
             })
@@ -982,8 +982,8 @@ describe('@lumino/widgets', () => {
         expect(logMenu.events).to.contain('mouseleave');
         node.dispatchEvent(new MouseEvent('contextmenu', { bubbles }));
         expect(logMenu.events).to.contain('contextmenu');
-        document.body.dispatchEvent(new MouseEvent('mousedown', { bubbles }));
-        expect(logMenu.events).to.contain('mousedown');
+        document.body.dispatchEvent(new MouseEvent('pointerdown', { bubbles }));
+        expect(logMenu.events).to.contain('pointerdown');
       });
     });
 
@@ -1005,8 +1005,8 @@ describe('@lumino/widgets', () => {
         expect(logMenu.events).to.not.contain('mouseleave');
         node.dispatchEvent(new MouseEvent('contextmenu', { bubbles }));
         expect(logMenu.events).to.not.contain('contextmenu');
-        document.body.dispatchEvent(new MouseEvent('mousedown', { bubbles }));
-        expect(logMenu.events).to.not.contain('mousedown');
+        document.body.dispatchEvent(new MouseEvent('pointerdown', { bubbles }));
+        expect(logMenu.events).to.not.contain('pointerdown');
       });
     });
 
