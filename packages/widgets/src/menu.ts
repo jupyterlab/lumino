@@ -516,7 +516,7 @@ export class Menu extends Widget {
       case 'mouseleave':
         this._evtMouseLeave(event as MouseEvent);
         break;
-      case 'mousedown':
+      case 'pointerdown':
         this._evtMouseDown(event as MouseEvent);
         break;
       case 'contextmenu':
@@ -536,7 +536,7 @@ export class Menu extends Widget {
     this.node.addEventListener('mouseenter', this);
     this.node.addEventListener('mouseleave', this);
     this.node.addEventListener('contextmenu', this);
-    document.addEventListener('mousedown', this, true);
+    document.addEventListener('pointerdown', this, true);
   }
 
   /**
@@ -549,7 +549,7 @@ export class Menu extends Widget {
     this.node.removeEventListener('mouseenter', this);
     this.node.removeEventListener('mouseleave', this);
     this.node.removeEventListener('contextmenu', this);
-    document.removeEventListener('mousedown', this, true);
+    document.removeEventListener('pointerdown', this, true);
   }
 
   /**
