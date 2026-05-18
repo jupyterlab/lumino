@@ -719,7 +719,7 @@ describe('@lumino/widgets', () => {
         it('should close an open menu if the press was not on an item', () => {
           bar.openActiveMenu();
           let menu = bar.activeMenu!;
-          bar.node.dispatchEvent(new MouseEvent('mousedown', { bubbles }));
+          bar.node.dispatchEvent(new PointerEvent('pointerdown', { bubbles }));
           expect(bar.activeIndex).to.equal(-1);
           expect(menu.isAttached).to.equal(false);
         });
