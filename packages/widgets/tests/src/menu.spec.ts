@@ -982,7 +982,9 @@ describe('@lumino/widgets', () => {
         expect(logMenu.events).to.contain('pointerleave');
         node.dispatchEvent(new MouseEvent('contextmenu', { bubbles }));
         expect(logMenu.events).to.contain('contextmenu');
-        document.body.dispatchEvent(new PointerEvent('pointerdown', { bubbles }));
+        document.body.dispatchEvent(
+          new PointerEvent('pointerdown', { bubbles })
+        );
         expect(logMenu.events).to.contain('pointerdown');
       });
     });
@@ -1005,7 +1007,9 @@ describe('@lumino/widgets', () => {
         expect(logMenu.events).to.not.contain('pointerleave');
         node.dispatchEvent(new MouseEvent('contextmenu', { bubbles }));
         expect(logMenu.events).to.not.contain('contextmenu');
-        document.body.dispatchEvent(new PointerEvent('pointerdown', { bubbles }));
+        document.body.dispatchEvent(
+          new PointerEvent('pointerdown', { bubbles })
+        );
         expect(logMenu.events).to.not.contain('pointerdown');
       });
     });
