@@ -705,9 +705,9 @@ describe('@lumino/widgets', () => {
         });
       });
 
-      context('mousedown', () => {
+      context('pointerdown', () => {
         it('should bail if the mouse press was not on the menu bar', () => {
-          let event = new MouseEvent('mousedown', {
+          let event = new PointerEvent('pointerdown', {
             bubbles,
             cancelable: true,
             clientX: -10
@@ -731,7 +731,7 @@ describe('@lumino/widgets', () => {
             'lm-MenuBar-item'
           )[0] as HTMLElement;
           let rect = firstItemNode.getBoundingClientRect();
-          let mouseEvent = new MouseEvent('mousedown', {
+          let mouseEvent = new PointerEvent('pointerdown', {
             bubbles,
             cancelable: true,
             clientX: rect.left + 1,
@@ -741,7 +741,7 @@ describe('@lumino/widgets', () => {
           bar.node.dispatchEvent(mouseEvent);
           expect(bar.activeIndex).to.equal(0);
           expect(menu.isAttached).to.equal(false);
-          // Ensure that mousedown default is not prevented, to allow browser
+          // Ensure that pointerdown default is not prevented, to allow browser
           // focus to go to an item that a user clicks in the menu bar.
           expect(mouseEvent.defaultPrevented).to.equal(false);
         });
@@ -752,7 +752,7 @@ describe('@lumino/widgets', () => {
             'lm-MenuBar-item'
           )[0] as HTMLElement;
           let rect = node.getBoundingClientRect();
-          let mouseEvent = new MouseEvent('mousedown', {
+          let mouseEvent = new PointerEvent('pointerdown', {
             bubbles,
             cancelable: true,
             clientX: rect.left + 1,
@@ -762,7 +762,7 @@ describe('@lumino/widgets', () => {
           expect(bar.activeIndex).to.equal(0);
           expect(menu.isAttached).to.equal(true);
           // When opening a menu, be sure to prevent default during the
-          // mousedown so that the item being clicked in the menu bar does not
+          // pointerdown so that the item being clicked in the menu bar does not
           // "steal" focus from the menu being opened.
           mouseEvent.preventDefault();
           expect(mouseEvent.defaultPrevented).to.equal(true);
@@ -776,7 +776,7 @@ describe('@lumino/widgets', () => {
           )[0] as HTMLElement;
           let rect = node.getBoundingClientRect();
           bar.node.dispatchEvent(
-            new MouseEvent('mousedown', {
+            new PointerEvent('pointerdown', {
               bubbles,
               button: 1,
               clientX: rect.left + 1,
@@ -790,7 +790,7 @@ describe('@lumino/widgets', () => {
         it('should not work on a menu bar item whose menu is empty', () => {
           let emptyMenu = new Menu({ commands });
           // Add title to empty menu, otherwise it will have zero width in the
-          // menu bar, which makes it impossible to test with mousedown.
+          // menu bar, which makes it impossible to test with pointerdown.
           emptyMenu.title.label = 'Empty Menu';
           bar.insertMenu(0, emptyMenu);
           let node = bar.node.getElementsByClassName(
@@ -798,7 +798,7 @@ describe('@lumino/widgets', () => {
           )[0] as HTMLElement;
           let rect = node.getBoundingClientRect();
           bar.node.dispatchEvent(
-            new MouseEvent('mousedown', {
+            new PointerEvent('pointerdown', {
               bubbles,
               button: 0,
               clientX: rect.left + 1,
@@ -810,7 +810,7 @@ describe('@lumino/widgets', () => {
         });
       });
 
-      context('mousemove', () => {
+      context('pointermove', () => {
         it('should open a new menu if a menu is already open', () => {
           bar.openActiveMenu();
           let menu = bar.activeMenu!;
@@ -819,7 +819,7 @@ describe('@lumino/widgets', () => {
           )[1] as HTMLElement;
           let rect = node.getBoundingClientRect();
           bar.node.dispatchEvent(
-            new MouseEvent('mousemove', {
+            new PointerEvent('pointermove', {
               bubbles,
               clientX: rect.left + 1,
               clientY: rect.top + 1
@@ -838,7 +838,7 @@ describe('@lumino/widgets', () => {
           )[0] as HTMLElement;
           let rect = node.getBoundingClientRect();
           bar.node.dispatchEvent(
-            new MouseEvent('mousemove', {
+            new PointerEvent('pointermove', {
               bubbles,
               clientX: rect.left,
               clientY: rect.top + 1
@@ -851,7 +851,7 @@ describe('@lumino/widgets', () => {
         it('should be a no-op if the mouse is not over an item and there is a menu open', () => {
           bar.openActiveMenu();
           let menu = bar.activeMenu!;
-          bar.node.dispatchEvent(new MouseEvent('mousemove', { bubbles }));
+          bar.node.dispatchEvent(new PointerEvent('pointermove', { bubbles }));
           expect(bar.activeIndex).to.equal(0);
           expect(menu.isAttached).to.equal(true);
         });
@@ -921,10 +921,10 @@ describe('@lumino/widgets', () => {
         expect(bar.methods.indexOf('onBeforeAttach')).to.not.equal(-1);
         node.dispatchEvent(new KeyboardEvent('keydown', { bubbles }));
         expect(bar.events.indexOf('keydown')).to.not.equal(-1);
-        node.dispatchEvent(new MouseEvent('mousedown', { bubbles }));
-        expect(bar.events.indexOf('mousedown')).to.not.equal(-1);
-        node.dispatchEvent(new MouseEvent('mousemove', { bubbles }));
-        expect(bar.events.indexOf('mousemove')).to.not.equal(-1);
+        node.dispatchEvent(new PointerEvent('pointerdown', { bubbles }));
+        expect(bar.events.indexOf('pointerdown')).to.not.equal(-1);
+        node.dispatchEvent(new PointerEvent('pointermove', { bubbles }));
+        expect(bar.events.indexOf('pointermove')).to.not.equal(-1);
         node.dispatchEvent(new FocusEvent('focusout', { bubbles }));
         expect(bar.events.indexOf('focusout')).to.not.equal(-1);
         node.dispatchEvent(new MouseEvent('contextmenu', { bubbles }));
@@ -942,10 +942,10 @@ describe('@lumino/widgets', () => {
         expect(bar.methods.indexOf('onBeforeAttach')).to.not.equal(-1);
         node.dispatchEvent(new KeyboardEvent('keydown', { bubbles }));
         expect(bar.events.indexOf('keydown')).to.equal(-1);
-        node.dispatchEvent(new MouseEvent('mousedown', { bubbles }));
-        expect(bar.events.indexOf('mousedown')).to.equal(-1);
-        node.dispatchEvent(new MouseEvent('mousemove', { bubbles }));
-        expect(bar.events.indexOf('mousemove')).to.equal(-1);
+        node.dispatchEvent(new PointerEvent('pointerdown', { bubbles }));
+        expect(bar.events.indexOf('pointerdown')).to.equal(-1);
+        node.dispatchEvent(new PointerEvent('pointermove', { bubbles }));
+        expect(bar.events.indexOf('pointermove')).to.equal(-1);
         node.dispatchEvent(new FocusEvent('focusout', { bubbles }));
         expect(bar.events.indexOf('focusout')).to.equal(-1);
         node.dispatchEvent(new MouseEvent('contextmenu', { bubbles }));
