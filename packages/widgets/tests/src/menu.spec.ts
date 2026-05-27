@@ -95,6 +95,16 @@ describe('@lumino/widgets', () => {
       isToggled: (args: JSONObject) => true,
       mnemonic: 6
     });
+    commands.addCommand('test-toggleable', {
+      execute: (args: JSONObject) => {
+        executed = 'test-toggleable';
+      },
+      label: 'Test Toggleable Label',
+      icon: iconRenderer,
+      className: 'testClass',
+      isToggleable: true,
+      mnemonic: 5
+    });
     commands.addCommand('test-disabled', {
       execute: (args: JSONObject) => {
         executed = 'test-disabled';
@@ -1309,6 +1319,26 @@ describe('@lumino/widgets', () => {
         });
       });
 
+      describe('#isToggleable', () => {
+        it('should get whether the command is toggleable for a `command` type', () => {
+          let item = menu.addItem({ command: 'test-toggleable' });
+          expect(item.isToggleable).to.equal(true);
+          item = menu.addItem({ command: 'test-toggled' });
+          expect(item.isToggleable).to.equal(true);
+          item = menu.addItem({ command: 'test' });
+          expect(item.isToggleable).to.equal(false);
+          item = menu.addItem({ type: 'command' });
+          expect(item.isToggleable).to.equal(false);
+        });
+
+        it('should be `false` for other item types', () => {
+          let item = menu.addItem({ type: 'separator' });
+          expect(item.isToggleable).to.equal(false);
+          item = menu.addItem({ type: 'submenu' });
+          expect(item.isToggleable).to.equal(false);
+        });
+      });
+
       describe('#isVisible', () => {
         it('should get whether the command is visible for a `command` type', () => {
           let item = menu.addItem({ command: 'test-hidden' });
@@ -1587,6 +1617,59 @@ describe('@lumino/widgets', () => {
             collapsed: false
           });
           expect(dataset).to.deep.equal({ type: 'submenu' });
+        });
+      });
+
+      describe('#createItemARIA()', () => {
+        it('should create aria attributes for the item', () => {
+          let item = menu.addItem({ command: 'test' });
+          let aria = renderer.createItemARIA({
+            item,
+            active: false,
+            collapsed: false
+          });
+          expect(aria).to.deep.equal({ role: 'menuitem' });
+
+          item = menu.addItem({ command: 'test-toggleable' });
+          aria = renderer.createItemARIA({
+            item,
+            active: false,
+            collapsed: false
+          });
+          expect(aria).to.deep.equal({
+            role: 'menuitemcheckbox',
+            'aria-checked': 'false'
+          });
+
+          item = menu.addItem({ command: 'test-toggled' });
+          aria = renderer.createItemARIA({
+            item,
+            active: false,
+            collapsed: false
+          });
+          expect(aria).to.deep.equal({
+            role: 'menuitemcheckbox',
+            'aria-checked': 'true'
+          });
+
+          item = menu.addItem({ type: 'separator' });
+          aria = renderer.createItemARIA({
+            item,
+            active: false,
+            collapsed: false
+          });
+          expect(aria).to.deep.equal({ role: 'presentation' });
+
+          item = menu.addItem({ type: 'submenu' });
+          aria = renderer.createItemARIA({
+            item,
+            active: false,
+            collapsed: false
+          });
+          expect(aria).to.deep.equal({
+            'aria-haspopup': 'true',
+            'aria-disabled': 'true'
+          });
         });
       });
 
