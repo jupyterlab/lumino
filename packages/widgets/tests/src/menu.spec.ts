@@ -540,6 +540,17 @@ describe('@lumino/widgets', () => {
         menu.removeItem(item);
         expect(menu.isAttached).to.equal(false);
       });
+
+      it('should be a no-op if the item is not in the menu', () => {
+        let item1 = menu.addItem({ command: 'test1' });
+        let item2 = menu.addItem({ command: 'test2' });
+        menu.removeItem(item1);
+        expect(menu.items.length).to.equal(1);
+        expect(menu.items[0]).to.equal(item2);
+        menu.removeItem(item1); // should be no-op
+        expect(menu.items.length).to.equal(1);
+        expect(menu.items[0]).to.equal(item2);
+      });
     });
 
     describe('#removeItemAt()', () => {
@@ -615,7 +626,7 @@ describe('@lumino/widgets', () => {
         expect(menu.node.style.transform.endsWith('px, 300px)')).to.equal(true);
       });
 
-      it.only('horizontalAlignment should default to `right` if language direction is `rtl`', () => {
+      it('horizontalAlignment should default to `right` if language direction is `rtl`', () => {
         document.documentElement.setAttribute('dir', 'rtl');
         menu.addItem({ command: 'test' });
         menu.open(300, 300);
@@ -805,12 +816,12 @@ describe('@lumino/widgets', () => {
         });
       });
 
-      context('mouseup', () => {
+      context('pointerup', () => {
         it('should trigger the active item', () => {
           menu.addItem({ command: 'test' });
           menu.activeIndex = 0;
           menu.open(0, 0);
-          menu.node.dispatchEvent(new MouseEvent('mouseup', { bubbles }));
+          menu.node.dispatchEvent(new PointerEvent('pointerup', { bubbles }));
           expect(executed).to.equal('test');
         });
 
@@ -819,7 +830,7 @@ describe('@lumino/widgets', () => {
           menu.activeIndex = 0;
           menu.open(0, 0);
           menu.node.dispatchEvent(
-            new MouseEvent('mouseup', {
+            new PointerEvent('pointerup', {
               bubbles,
               button: 1
             })
@@ -828,14 +839,14 @@ describe('@lumino/widgets', () => {
         });
       });
 
-      context('mousemove', () => {
+      context('pointermove', () => {
         it('should set the active index', () => {
           menu.addItem({ command: 'test' });
           menu.open(0, 0);
           let node = menu.node.getElementsByClassName('lm-Menu-item')[0];
           let rect = node.getBoundingClientRect();
           menu.node.dispatchEvent(
-            new MouseEvent('mousemove', {
+            new PointerEvent('pointermove', {
               bubbles,
               clientX: rect.left + 1,
               clientY: rect.top + 1
@@ -853,7 +864,7 @@ describe('@lumino/widgets', () => {
           let node = menu.node.getElementsByClassName('lm-Menu-item')[0];
           let rect = node.getBoundingClientRect();
           menu.node.dispatchEvent(
-            new MouseEvent('mousemove', {
+            new PointerEvent('pointermove', {
               bubbles,
               clientX: rect.left + 1,
               clientY: rect.top + 1
@@ -879,7 +890,7 @@ describe('@lumino/widgets', () => {
           let node = menu.node.getElementsByClassName('lm-Menu-item')[0];
           let rect = node.getBoundingClientRect();
           menu.node.dispatchEvent(
-            new MouseEvent('mousemove', {
+            new PointerEvent('pointermove', {
               bubbles,
               clientX: rect.left,
               clientY: rect.top
@@ -894,7 +905,7 @@ describe('@lumino/widgets', () => {
         });
       });
 
-      context('mouseleave', () => {
+      context('pointerleave', () => {
         it('should reset the active index', () => {
           let submenu = new Menu({ commands });
           submenu.addItem({ command: 'test' });
@@ -904,7 +915,7 @@ describe('@lumino/widgets', () => {
           let node = menu.node.getElementsByClassName('lm-Menu-item')[0];
           let rect = node.getBoundingClientRect();
           menu.node.dispatchEvent(
-            new MouseEvent('mousemove', {
+            new PointerEvent('pointermove', {
               bubbles,
               clientX: rect.left + 1,
               clientY: rect.top + 1
@@ -912,7 +923,7 @@ describe('@lumino/widgets', () => {
           );
           expect(menu.activeIndex).to.equal(0);
           menu.node.dispatchEvent(
-            new MouseEvent('mouseleave', {
+            new PointerEvent('pointerleave', {
               bubbles,
               clientX: rect.left,
               clientY: rect.top
@@ -923,14 +934,14 @@ describe('@lumino/widgets', () => {
         });
       });
 
-      context('mousedown', () => {
+      context('pointerdown', () => {
         it('should not close the menu if on a child node', () => {
           menu.addItem({ command: 'test' });
           menu.open(0, 0);
           expect(menu.isAttached).to.equal(true);
           let rect = menu.node.getBoundingClientRect();
           menu.node.dispatchEvent(
-            new MouseEvent('mousedown', {
+            new PointerEvent('pointerdown', {
               bubbles,
               clientX: rect.left + 1,
               clientY: rect.top + 1
@@ -944,7 +955,7 @@ describe('@lumino/widgets', () => {
           menu.open(0, 0);
           expect(menu.isAttached).to.equal(true);
           menu.node.dispatchEvent(
-            new MouseEvent('mousedown', {
+            new PointerEvent('pointerdown', {
               bubbles,
               clientX: -10
             })
@@ -961,18 +972,20 @@ describe('@lumino/widgets', () => {
         expect(logMenu.methods).to.contain('onBeforeAttach');
         node.dispatchEvent(new KeyboardEvent('keydown', { bubbles }));
         expect(logMenu.events).to.contain('keydown');
-        node.dispatchEvent(new MouseEvent('mouseup', { bubbles }));
-        expect(logMenu.events).to.contain('mouseup');
-        node.dispatchEvent(new MouseEvent('mousemove', { bubbles }));
-        expect(logMenu.events).to.contain('mousemove');
-        node.dispatchEvent(new MouseEvent('mouseenter', { bubbles }));
-        expect(logMenu.events).to.contain('mouseenter');
-        node.dispatchEvent(new MouseEvent('mouseleave', { bubbles }));
-        expect(logMenu.events).to.contain('mouseleave');
+        node.dispatchEvent(new PointerEvent('pointerup', { bubbles }));
+        expect(logMenu.events).to.contain('pointerup');
+        node.dispatchEvent(new PointerEvent('pointermove', { bubbles }));
+        expect(logMenu.events).to.contain('pointermove');
+        node.dispatchEvent(new PointerEvent('pointerenter', { bubbles }));
+        expect(logMenu.events).to.contain('pointerenter');
+        node.dispatchEvent(new PointerEvent('pointerleave', { bubbles }));
+        expect(logMenu.events).to.contain('pointerleave');
         node.dispatchEvent(new MouseEvent('contextmenu', { bubbles }));
         expect(logMenu.events).to.contain('contextmenu');
-        document.body.dispatchEvent(new MouseEvent('mousedown', { bubbles }));
-        expect(logMenu.events).to.contain('mousedown');
+        document.body.dispatchEvent(
+          new PointerEvent('pointerdown', { bubbles })
+        );
+        expect(logMenu.events).to.contain('pointerdown');
       });
     });
 
@@ -984,18 +997,20 @@ describe('@lumino/widgets', () => {
         expect(logMenu.methods).to.contain('onAfterDetach');
         node.dispatchEvent(new KeyboardEvent('keydown', { bubbles }));
         expect(logMenu.events).to.not.contain('keydown');
-        node.dispatchEvent(new MouseEvent('mouseup', { bubbles }));
-        expect(logMenu.events).to.not.contain('mouseup');
-        node.dispatchEvent(new MouseEvent('mousemove', { bubbles }));
-        expect(logMenu.events).to.not.contain('mousemove');
-        node.dispatchEvent(new MouseEvent('mouseenter', { bubbles }));
-        expect(logMenu.events).to.not.contain('mouseenter');
-        node.dispatchEvent(new MouseEvent('mouseleave', { bubbles }));
-        expect(logMenu.events).to.not.contain('mouseleave');
+        node.dispatchEvent(new PointerEvent('pointerup', { bubbles }));
+        expect(logMenu.events).to.not.contain('pointerup');
+        node.dispatchEvent(new PointerEvent('pointermove', { bubbles }));
+        expect(logMenu.events).to.not.contain('pointermove');
+        node.dispatchEvent(new PointerEvent('pointerenter', { bubbles }));
+        expect(logMenu.events).to.not.contain('pointerenter');
+        node.dispatchEvent(new PointerEvent('pointerleave', { bubbles }));
+        expect(logMenu.events).to.not.contain('pointerleave');
         node.dispatchEvent(new MouseEvent('contextmenu', { bubbles }));
         expect(logMenu.events).to.not.contain('contextmenu');
-        document.body.dispatchEvent(new MouseEvent('mousedown', { bubbles }));
-        expect(logMenu.events).to.not.contain('mousedown');
+        document.body.dispatchEvent(
+          new PointerEvent('pointerdown', { bubbles })
+        );
+        expect(logMenu.events).to.not.contain('pointerdown');
       });
     });
 

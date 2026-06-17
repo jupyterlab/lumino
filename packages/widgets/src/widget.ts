@@ -112,6 +112,10 @@ export class Widget implements IMessageHandler, IObservableDisposable {
 
   /**
    * Test whether the widget is explicitly hidden.
+   *
+   * #### Notes
+   * You should prefer `!{@link isVisible}` over `{@link isHidden}` if you want to know if the
+   * widget is hidden as this does not test if the widget is hidden because one of its ancestors is hidden.
    */
   get isHidden(): boolean {
     return this.testFlag(Widget.Flag.IsHidden);
@@ -123,9 +127,20 @@ export class Widget implements IMessageHandler, IObservableDisposable {
    * #### Notes
    * A widget is visible when it is attached to the DOM, is not
    * explicitly hidden, and has no explicitly hidden ancestors.
+   *
+   * Since 2.7.0, this does not rely on the {@link Widget.Flag.IsVisible} flag.
+   * It recursively checks the visibility of all parent widgets.
    */
   get isVisible(): boolean {
-    return this.testFlag(Widget.Flag.IsVisible);
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    let parent: Widget | null = this;
+    do {
+      if (parent.isHidden || !parent.isAttached) {
+        return false;
+      }
+      parent = parent.parent;
+    } while (parent != null);
+    return true;
   }
 
   /**
@@ -482,6 +497,9 @@ export class Widget implements IMessageHandler, IObservableDisposable {
    *
    * #### Notes
    * This will not typically be called directly by user code.
+   *
+   * Since 2.7.0, {@link Widget.Flag.IsVisible} is deprecated.
+   * It will be removed in a future version.
    */
   testFlag(flag: Widget.Flag): boolean {
     return (this._flags & flag) !== 0;
@@ -492,6 +510,9 @@ export class Widget implements IMessageHandler, IObservableDisposable {
    *
    * #### Notes
    * This will not typically be called directly by user code.
+   *
+   * Since 2.7.0, {@link Widget.Flag.IsVisible} is deprecated.
+   * It will be removed in a future version.
    */
   setFlag(flag: Widget.Flag): void {
     this._flags |= flag;
@@ -502,6 +523,9 @@ export class Widget implements IMessageHandler, IObservableDisposable {
    *
    * #### Notes
    * This will not typically be called directly by user code.
+   *
+   * Since 2.7.0, {@link Widget.Flag.IsVisible} is deprecated.
+   * It will be removed in a future version.
    */
   clearFlag(flag: Widget.Flag): void {
     this._flags &= ~flag;
@@ -856,6 +880,9 @@ export namespace Widget {
 
     /**
      * The widget is visible.
+     *
+     * @deprecated since 2.7.0, apply that flag consistently was not reliable
+     * so it was dropped in favor of a recursive check of the visibility of all parents.
      */
     IsVisible = 0x8,
 

@@ -6,6 +6,264 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2026.5.25
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2026.2.5...45495a6d8cc7f6035e7cccbd7d26ec1671b3cd57))
+
+```
+@lumino/application: 2.4.8 => 2.4.9
+@lumino/datagrid: 2.5.6 => 2.5.7
+@lumino/default-theme: 2.1.14 => 2.1.15
+@lumino/widgets: 2.7.5 => 2.8.0
+```
+
+### Enhancements made
+
+- Keep tab widths frozen when closing tabs [#793](https://github.com/jupyterlab/lumino/pull/793) ([@MUFFANUJ](https://github.com/MUFFANUJ), [@krassowski](https://github.com/krassowski))
+
+### Bugs fixed
+
+- Fix incorrect accordion title state on widget move [#819](https://github.com/jupyterlab/lumino/pull/819) ([@Darshan808](https://github.com/Darshan808), [@krassowski](https://github.com/krassowski))
+- Fix menu not closing when clicking tabs [#818](https://github.com/jupyterlab/lumino/pull/818) ([@Darshan808](https://github.com/Darshan808), [@afshin](https://github.com/afshin), [@krassowski](https://github.com/krassowski))
+
+### Maintenance and upkeep improvements
+
+- Disable scripts and telemetry in `.yarnrc.yml` [#821](https://github.com/jupyterlab/lumino/pull/821) ([@krassowski](https://github.com/krassowski), [@jtpio](https://github.com/jtpio))
+- Bump rollup from 3.29.5 to 3.30.0 [#795](https://github.com/jupyterlab/lumino/pull/795) ([@krassowski](https://github.com/krassowski))
+- Update the default release version number to be the correct date [#791](https://github.com/jupyterlab/lumino/pull/791) ([@jasongrout](https://github.com/jasongrout), [@krassowski](https://github.com/krassowski))
+
+### Other merged PRs
+
+- Bump @tootallnate/once from 2.0.0 to 2.0.1 [#820](https://github.com/jupyterlab/lumino/pull/820) ([@krassowski](https://github.com/krassowski))
+- Bump postcss from 8.4.31 to 8.5.10 [#813](https://github.com/jupyterlab/lumino/pull/813) ([@krassowski](https://github.com/krassowski))
+- Bump follow-redirects from 1.15.9 to 1.16.0 [#809](https://github.com/jupyterlab/lumino/pull/809) ([@krassowski](https://github.com/krassowski))
+- Bump lodash-es from 4.17.23 to 4.18.1 [#804](https://github.com/jupyterlab/lumino/pull/804) ([@krassowski](https://github.com/krassowski))
+- Bump flatted from 3.2.7 to 3.4.2 [#800](https://github.com/jupyterlab/lumino/pull/800) ([@krassowski](https://github.com/krassowski))
+
+### Contributors to this release
+
+The following people contributed discussions, new ideas, code and documentation contributions, and review.
+See [our definition of contributors](https://github-activity.readthedocs.io/en/latest/use/#how-does-this-tool-define-contributions-in-the-reports).
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2026-02-05&to=2026-05-25&type=c))
+
+@afshin ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aafshin+updated%3A2026-02-05..2026-05-25&type=Issues)) | @Darshan808 ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3ADarshan808+updated%3A2026-02-05..2026-05-25&type=Issues)) | @jasongrout ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajasongrout+updated%3A2026-02-05..2026-05-25&type=Issues)) | @jtpio ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajtpio+updated%3A2026-02-05..2026-05-25&type=Issues)) | @KH-Coder865 ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3AKH-Coder865+updated%3A2026-02-05..2026-05-25&type=Issues)) | @krassowski ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2026-02-05..2026-05-25&type=Issues)) | @MUFFANUJ ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3AMUFFANUJ+updated%3A2026-02-05..2026-05-25&type=Issues))
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
+## 2026.2.5
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2025.1.30...4f31e56b15633e363c84322ca58414746bdd0140))
+
+```
+@lumino/application: 2.4.7 => 2.4.8
+@lumino/datagrid: 2.5.5 => 2.5.6
+@lumino/default-theme: 2.1.13 => 2.1.14
+@lumino/dragdrop: 2.1.7 => 2.1.8
+@lumino/widgets: 2.7.4 => 2.7.5
+```
+
+### Bugs fixed
+
+- Capture pointer events to the cursor override div instead of the dockpanel or splitpanel [#784](https://github.com/jupyterlab/lumino/pull/784) ([@jasongrout](https://github.com/jasongrout), [@krassowski](https://github.com/krassowski))
+
+### Maintenance and upkeep improvements
+
+- Fix more macos firefox tests [#787](https://github.com/jupyterlab/lumino/pull/787) ([@jasongrout](https://github.com/jasongrout), [@krassowski](https://github.com/krassowski))
+- Fix macos:firefox flaky tests [#786](https://github.com/jupyterlab/lumino/pull/786) ([@jasongrout](https://github.com/jasongrout), [@krassowski](https://github.com/krassowski))
+
+### Contributors to this release
+
+The following people contributed discussions, new ideas, code and documentation contributions, and review.
+See [our definition of contributors](https://github-activity.readthedocs.io/en/latest/use/#how-does-this-tool-define-contributions-in-the-reports).
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2026-01-30&to=2026-02-05&type=c))
+
+@jasongrout ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajasongrout+updated%3A2026-01-30..2026-02-05&type=Issues)) | @krassowski ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2026-01-30..2026-02-05&type=Issues))
+
+## 2025.1.30
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2026.1.15...58eebd4c824a46f7cf7d578aee508506513df1c1))
+
+```
+@lumino/application: 2.4.6 => 2.4.7
+@lumino/datagrid: 2.5.4 => 2.5.5
+@lumino/default-theme: 2.1.12 => 2.1.13
+@lumino/widgets: 2.7.3 => 2.7.4
+```
+
+### Bugs fixed
+
+- Capture the pointer for split panel drags [#782](https://github.com/jupyterlab/lumino/pull/782) ([@jasongrout](https://github.com/jasongrout), [@krassowski](https://github.com/krassowski), [@safisa](https://github.com/safisa), [@tsmaeder](https://github.com/tsmaeder))
+
+### Maintenance and upkeep improvements
+
+- Bump lodash-es from 4.17.21 to 4.17.23 [#781](https://github.com/jupyterlab/lumino/pull/781) ([@krassowski](https://github.com/krassowski))
+- Bump koa from 2.16.2 to 2.16.3 [#778](https://github.com/jupyterlab/lumino/pull/778) ([@krassowski](https://github.com/krassowski))
+
+### Documentation improvements
+
+- Correct a detail about actions in the releasing docs [#783](https://github.com/jupyterlab/lumino/pull/783) ([@krassowski](https://github.com/krassowski), [@jasongrout](https://github.com/jasongrout))
+
+### Contributors to this release
+
+The following people contributed discussions, new ideas, code and documentation contributions, and review.
+See [our definition of contributors](https://github-activity.readthedocs.io/en/latest/use/#how-does-this-tool-define-contributions-in-the-reports).
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2026-01-16&to=2026-01-30&type=c))
+
+@jasongrout ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajasongrout+updated%3A2026-01-16..2026-01-30&type=Issues)) | @krassowski ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2026-01-16..2026-01-30&type=Issues)) | @safisa ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Asafisa+updated%3A2026-01-16..2026-01-30&type=Issues)) | @tsmaeder ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Atsmaeder+updated%3A2026-01-16..2026-01-30&type=Issues))
+
+## 2026.1.15
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2025.11.13...f5a3f413c865abdb014aad1f348260b3bc7baef7))
+
+```
+@lumino/application: 2.4.5 => 2.4.6
+@lumino/datagrid: 2.5.3 => 2.5.4
+@lumino/default-theme: 2.1.11 => 2.1.12
+@lumino/widgets: 2.7.2 => 2.7.3
+```
+
+### Bugs fixed
+
+- Fix: removing a non-existent menu item should be a no-op [#777](https://github.com/jupyterlab/lumino/pull/777) ([@jasongrout](https://github.com/jasongrout), [@krassowski](https://github.com/krassowski))
+- Add top and left positioning [#772](https://github.com/jupyterlab/lumino/pull/772) ([@SylvainCorlay](https://github.com/SylvainCorlay), [@afshin](https://github.com/afshin), [@martinRenou](https://github.com/martinRenou))
+
+### Maintenance and upkeep improvements
+
+- Bump the actions group across 1 directory with 8 updates [#774](https://github.com/jupyterlab/lumino/pull/774) ([@krassowski](https://github.com/krassowski))
+- Bump jws from 3.2.2 to 3.2.3 [#771](https://github.com/jupyterlab/lumino/pull/771) ([@krassowski](https://github.com/krassowski))
+- Bump koa from 2.16.1 to 2.16.2 [#763](https://github.com/jupyterlab/lumino/pull/763) ([@krassowski](https://github.com/krassowski))
+
+### Contributors to this release
+
+The following people contributed discussions, new ideas, code and documentation contributions, and review.
+See [our definition of contributors](https://github-activity.readthedocs.io/en/latest/#how-does-this-tool-define-contributions-in-the-reports).
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2025-11-13&to=2026-01-15&type=c))
+
+@afshin ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aafshin+updated%3A2025-11-13..2026-01-15&type=Issues)) | @jasongrout ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajasongrout+updated%3A2025-11-13..2026-01-15&type=Issues)) | @krassowski ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2025-11-13..2026-01-15&type=Issues)) | @martinRenou ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3AmartinRenou+updated%3A2025-11-13..2026-01-15&type=Issues)) | @SylvainCorlay ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3ASylvainCorlay+updated%3A2025-11-13..2026-01-15&type=Issues))
+
+## 2025.11.13
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2025.4.30...c94af1758e75ffe807795d63722abbc39650a6e7))
+
+```
+@lumino/algorithm: 2.0.3 => 2.0.4
+@lumino/application: 2.4.4 => 2.4.5
+@lumino/collections: 2.0.3 => 2.0.4
+@lumino/commands: 2.3.2 => 2.3.3
+@lumino/coreutils: 2.2.1 => 2.2.2
+@lumino/datagrid: 2.5.2 => 2.5.3
+@lumino/default-theme: 2.1.10 => 2.1.11
+@lumino/disposable: 2.1.4 => 2.1.5
+@lumino/domutils: 2.0.3 => 2.0.4
+@lumino/dragdrop: 2.1.6 => 2.1.7
+@lumino/keyboard: 2.0.3 => 2.0.4
+@lumino/messaging: 2.0.3 => 2.0.4
+@lumino/polling: 2.1.4 => 2.1.5
+@lumino/properties: 2.0.3 => 2.0.4
+@lumino/signaling: 2.1.4 => 2.1.5
+@lumino/virtualdom: 2.0.3 => 2.0.4
+@lumino/widgets: 2.7.1 => 2.7.2
+```
+
+### Bugs fixed
+
+- menubar: reset active item on mouseleave [#770](https://github.com/jupyterlab/lumino/pull/770) ([@ndoschek](https://github.com/ndoschek))
+
+### Documentation improvements
+
+- array.ts: Fix typo of `from from` → `from` [#764](https://github.com/jupyterlab/lumino/pull/764) ([@schwehr](https://github.com/schwehr))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2025-04-30&to=2025-11-13&type=c))
+
+[@ndoschek](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Andoschek+updated%3A2025-04-30..2025-11-13&type=Issues) | [@schwehr](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aschwehr+updated%3A2025-04-30..2025-11-13&type=Issues)
+
+## 2025.4.30
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2025.3.31...3df3ab5a8e32b50edd26bed62f7ebd362e18b32e))
+
+```
+@lumino/application: 2.4.3 => 2.4.4
+@lumino/datagrid: 2.5.1 => 2.5.2
+@lumino/default-theme: 2.1.9 => 2.1.10
+@lumino/widgets: 2.7.0 => 2.7.1
+```
+
+### Bugs fixed
+
+- Improve accessibility for menu items with toggle state [#753](https://github.com/jupyterlab/lumino/pull/753) ([@nkn2022](https://github.com/nkn2022))
+
+### Maintenance and upkeep improvements
+
+- Bump versions for v2025.4.30 [#758](https://github.com/jupyterlab/lumino/pull/758) ([@krassowski](https://github.com/krassowski))
+- Fix test status badge [#757](https://github.com/jupyterlab/lumino/pull/757) ([@krassowski](https://github.com/krassowski))
+- Run workflows that were pinned to no-longer supported `ubuntu-20.04` on `ubuntu-latest` [#754](https://github.com/jupyterlab/lumino/pull/754) ([@krassowski](https://github.com/krassowski))
+- Bump koa from 2.15.4 to 2.16.1 [#752](https://github.com/jupyterlab/lumino/pull/752) ([@dependabot](https://github.com/dependabot))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2025-03-31&to=2025-04-30&type=c))
+
+[@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2025-03-31..2025-04-30&type=Issues) | [@krassowski](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2025-03-31..2025-04-30&type=Issues) | [@nkn2022](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ankn2022+updated%3A2025-03-31..2025-04-30&type=Issues)
+
+## 2025.3.31
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2025.2.1...80501aca210d9ed4b1fc9ffae3f8a609282549f1))
+
+```
+@lumino/algorithm: 2.0.2 => 2.0.3
+@lumino/application: 2.4.2 => 2.4.3
+@lumino/collections: 2.0.2 => 2.0.3
+@lumino/commands: 2.3.1 => 2.3.2
+@lumino/coreutils: 2.2.0 => 2.2.1
+@lumino/datagrid: 2.5.0 => 2.5.1
+@lumino/default-theme: 2.1.8 => 2.1.9
+@lumino/disposable: 2.1.3 => 2.1.4
+@lumino/domutils: 2.0.2 => 2.0.3
+@lumino/dragdrop: 2.1.5 => 2.1.6
+@lumino/keyboard: 2.0.2 => 2.0.3
+@lumino/messaging: 2.0.2 => 2.0.3
+@lumino/polling: 2.1.3 => 2.1.4
+@lumino/properties: 2.0.2 => 2.0.3
+@lumino/signaling: 2.1.3 => 2.1.4
+@lumino/virtualdom: 2.0.2 => 2.0.3
+@lumino/widgets: 2.6.0 => 2.7.0
+```
+
+> [!IMPORTANT]
+> This release changes the algorithm of `Widget.isVisible` to be more robust in case the widget is contained within a hidden parent.\
+> It also deprecates the flag `Widget.Flag.isVisible`.
+
+### Enhancements made
+
+- Don't refresh if palette is within a hidden branch [#746](https://github.com/jupyterlab/lumino/pull/746) ([@fcollonval](https://github.com/fcollonval))
+
+### Maintenance and upkeep improvements
+
+- Update versions [#751](https://github.com/jupyterlab/lumino/pull/751) ([@fcollonval](https://github.com/fcollonval))
+- Bump axios from 1.7.7 to 1.8.3 [#748](https://github.com/jupyterlab/lumino/pull/748) ([@dependabot](https://github.com/dependabot))
+- Remove use of `tj-actions/changed-files` [#747](https://github.com/jupyterlab/lumino/pull/747) ([@jtpio](https://github.com/jtpio))
+- Forbid .only and .skip on CI [#745](https://github.com/jupyterlab/lumino/pull/745) ([@fcollonval](https://github.com/fcollonval))
+- "npm run" -> yarn [#743](https://github.com/jupyterlab/lumino/pull/743) ([@vidartf](https://github.com/vidartf))
+- Bump the actions group with 2 updates [#742](https://github.com/jupyterlab/lumino/pull/742) ([@dependabot](https://github.com/dependabot))
+- Bump koa from 2.15.3 to 2.15.4 [#739](https://github.com/jupyterlab/lumino/pull/739) ([@dependabot](https://github.com/dependabot))
+- Bump tj-actions/changed-files from 45.0.5 to 45.0.6 in the actions group [#738](https://github.com/jupyterlab/lumino/pull/738) ([@dependabot](https://github.com/dependabot))
+
+### Documentation improvements
+
+- Add links to the examples and documentation contribution instructions [#741](https://github.com/jupyterlab/lumino/pull/741) ([@cmarmo](https://github.com/cmarmo))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2025-02-01&to=2025-03-31&type=c))
+
+[@cmarmo](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Acmarmo+updated%3A2025-02-01..2025-03-31&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2025-02-01..2025-03-31&type=Issues) | [@fcollonval](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2025-02-01..2025-03-31&type=Issues) | [@jtpio](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajtpio+updated%3A2025-02-01..2025-03-31&type=Issues) | [@vidartf](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Avidartf+updated%3A2025-02-01..2025-03-31&type=Issues)
+
 ## 2025.2.1
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2024.8.13...76e4a9044ae2937e20c867cd97b24e6bf7c119fe))
@@ -42,8 +300,6 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2024-08-13&to=2025-02-01&type=c))
 
 [@andrewfulton9](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aandrewfulton9+updated%3A2024-08-13..2025-02-01&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adependabot+updated%3A2024-08-13..2025-02-01&type=Issues) | [@hxrshxz](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ahxrshxz+updated%3A2024-08-13..2025-02-01&type=Issues) | [@i-aki-y](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ai-aki-y+updated%3A2024-08-13..2025-02-01&type=Issues) | [@krassowski](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2024-08-13..2025-02-01&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2024.8.13
 

@@ -5,13 +5,15 @@
 
 import nodeResolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
+import sourcemaps from 'rollup-plugin-sourcemaps';
 
 export function createRollupTestConfig(options) {
   return {
     input: './lib/index.spec.js',
     output: {
-      file: './lib/bundle.test.js'
+      file: './lib/bundle.test.js',
+      sourcemap: true
     },
-    plugins: [commonjs(), nodeResolve()]
+    plugins: [commonjs(), nodeResolve(), sourcemaps()]
   };
 }

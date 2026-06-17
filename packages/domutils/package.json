@@ -1,6 +1,6 @@
 {
   "name": "@lumino/domutils",
-  "version": "2.0.2",
+  "version": "2.0.4",
   "description": "Lumino DOM Utilities",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -38,14 +38,14 @@
     "watch": "tsc --build --watch"
   },
   "devDependencies": {
-    "@lumino/buildutils": "^2.0.1",
+    "@lumino/buildutils": "^2.0.3",
     "@microsoft/api-extractor": "^7.36.0",
     "@rollup/plugin-commonjs": "^24.0.0",
     "@rollup/plugin-node-resolve": "^15.0.1",
     "@types/chai": "^3.4.35",
     "@types/mocha": "^2.2.39",
     "@web/test-runner": "^0.18.2",
-    "@web/test-runner-playwright": "^0.11.0",
+    "@web/test-runner-playwright": "^0.11.1",
     "chai": "^4.3.4",
     "mocha": "^9.0.3",
     "postcss": "^8.4.24",

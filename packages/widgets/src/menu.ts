@@ -376,7 +376,11 @@ export class Menu extends Widget {
    * This is a no-op if the item is not in the menu.
    */
   removeItem(item: Menu.IItem): void {
-    this.removeItemAt(this._items.indexOf(item));
+    let index = this._items.indexOf(item);
+    if (index === -1) {
+      return;
+    }
+    this.removeItemAt(index);
   }
 
   /**
@@ -500,20 +504,20 @@ export class Menu extends Widget {
       case 'keydown':
         this._evtKeyDown(event as KeyboardEvent);
         break;
-      case 'mouseup':
-        this._evtMouseUp(event as MouseEvent);
+      case 'pointerup':
+        this._evtPointerUp(event as PointerEvent);
         break;
-      case 'mousemove':
-        this._evtMouseMove(event as MouseEvent);
+      case 'pointermove':
+        this._evtPointerMove(event as PointerEvent);
         break;
-      case 'mouseenter':
-        this._evtMouseEnter(event as MouseEvent);
+      case 'pointerenter':
+        this._evtPointerEnter(event as PointerEvent);
         break;
-      case 'mouseleave':
-        this._evtMouseLeave(event as MouseEvent);
+      case 'pointerleave':
+        this._evtPointerLeave(event as PointerEvent);
         break;
-      case 'mousedown':
-        this._evtMouseDown(event as MouseEvent);
+      case 'pointerdown':
+        this._evtPointerDown(event as PointerEvent);
         break;
       case 'contextmenu':
         event.preventDefault();
@@ -527,12 +531,12 @@ export class Menu extends Widget {
    */
   protected onBeforeAttach(msg: Message): void {
     this.node.addEventListener('keydown', this);
-    this.node.addEventListener('mouseup', this);
-    this.node.addEventListener('mousemove', this);
-    this.node.addEventListener('mouseenter', this);
-    this.node.addEventListener('mouseleave', this);
+    this.node.addEventListener('pointerup', this);
+    this.node.addEventListener('pointermove', this);
+    this.node.addEventListener('pointerenter', this);
+    this.node.addEventListener('pointerleave', this);
     this.node.addEventListener('contextmenu', this);
-    document.addEventListener('mousedown', this, true);
+    document.addEventListener('pointerdown', this, true);
   }
 
   /**
@@ -540,12 +544,12 @@ export class Menu extends Widget {
    */
   protected onAfterDetach(msg: Message): void {
     this.node.removeEventListener('keydown', this);
-    this.node.removeEventListener('mouseup', this);
-    this.node.removeEventListener('mousemove', this);
-    this.node.removeEventListener('mouseenter', this);
-    this.node.removeEventListener('mouseleave', this);
+    this.node.removeEventListener('pointerup', this);
+    this.node.removeEventListener('pointermove', this);
+    this.node.removeEventListener('pointerenter', this);
+    this.node.removeEventListener('pointerleave', this);
     this.node.removeEventListener('contextmenu', this);
-    document.removeEventListener('mousedown', this, true);
+    document.removeEventListener('pointerdown', this, true);
   }
 
   /**
@@ -706,12 +710,12 @@ export class Menu extends Widget {
   }
 
   /**
-   * Handle the `'mouseup'` event for the menu.
+   * Handle the `'pointerup'` event for the menu.
    *
    * #### Notes
    * This listener is attached to the menu node.
    */
-  private _evtMouseUp(event: MouseEvent): void {
+  private _evtPointerUp(event: PointerEvent): void {
     if (event.button !== 0) {
       return;
     }
@@ -721,12 +725,12 @@ export class Menu extends Widget {
   }
 
   /**
-   * Handle the `'mousemove'` event for the menu.
+   * Handle the `'pointermove'` event for the menu.
    *
    * #### Notes
    * This listener is attached to the menu node.
    */
-  private _evtMouseMove(event: MouseEvent): void {
+  private _evtPointerMove(event: PointerEvent): void {
     // Hit test the item nodes for the item under the mouse.
     let index = ArrayExt.findFirstIndex(this.contentNode.children, node => {
       return ElementExt.hitTest(node, event.clientX, event.clientY);
@@ -767,12 +771,12 @@ export class Menu extends Widget {
   }
 
   /**
-   * Handle the `'mouseenter'` event for the menu.
+   * Handle the `'pointerenter'` event for the menu.
    *
    * #### Notes
    * This listener is attached to the menu node.
    */
-  private _evtMouseEnter(event: MouseEvent): void {
+  private _evtPointerEnter(event: PointerEvent): void {
     // Synchronize the active ancestor items.
     for (let menu = this._parentMenu; menu; menu = menu._parentMenu) {
       menu._cancelOpenTimer();
@@ -782,12 +786,12 @@ export class Menu extends Widget {
   }
 
   /**
-   * Handle the `'mouseleave'` event for the menu.
+   * Handle the `'pointerleave'` event for the menu.
    *
    * #### Notes
    * This listener is attached to the menu node.
    */
-  private _evtMouseLeave(event: MouseEvent): void {
+  private _evtPointerLeave(event: PointerEvent): void {
     // Cancel any pending submenu opening.
     this._cancelOpenTimer();
 
@@ -810,12 +814,12 @@ export class Menu extends Widget {
   }
 
   /**
-   * Handle the `'mousedown'` event for the menu.
+   * Handle the `'pointerdown'` event for the menu.
    *
    * #### Notes
    * This listener is attached to the document node.
    */
-  private _evtMouseDown(event: MouseEvent): void {
+  private _evtPointerDown(event: PointerEvent): void {
     // Bail if the menu is not a root menu.
     if (this._parentMenu) {
       return;
@@ -1369,7 +1373,12 @@ export namespace Menu {
           if (!data.item.isEnabled) {
             aria['aria-disabled'] = 'true';
           }
-          aria.role = 'menuitem';
+          if (data.item.isToggled) {
+            aria.role = 'menuitemcheckbox';
+            aria['aria-checked'] = 'true';
+          } else {
+            aria.role = 'menuitem';
+          }
       }
       return aria;
     }

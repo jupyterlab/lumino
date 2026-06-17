@@ -3,8 +3,8 @@ on:
   workflow_dispatch:
     inputs:
       version_spec:
-        description: "New Version Specifier"
-        default: "next"
+        description: "New Version Specifier (defaults to today's date)"
+        default: ""
         required: false
       branch:
         description: "The branch to target"
@@ -31,12 +31,24 @@ jobs:
     steps:
       - uses: jupyterlab/maintainer-tools/.github/actions/base-setup@v1
 
+      - name: Get Version Spec
+        id: get-version
+        env:
+          INPUT_VERSION_SPEC: ${{ github.event.inputs.version_spec }}
+        run: |
+          if [ -z "$INPUT_VERSION_SPEC" ]; then
+            VERSION_SPEC=$(date -u +'%Y.%-m.%-d')
+          else
+            VERSION_SPEC="$INPUT_VERSION_SPEC"
+          fi
+          echo "version_spec=$VERSION_SPEC" >> "$GITHUB_OUTPUT"
+
       - name: Prep Release
         id: prep-release
         uses: jupyter-server/jupyter_releaser/.github/actions/prep-release@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          version_spec: ${{ github.event.inputs.version_spec }}
+          version_spec: ${{ steps.get-version.outputs.version_spec }}
           silent: ${{ github.event.inputs.silent }}
           post_version_spec: ${{ github.event.inputs.post_version_spec }}
           target: ${{ github.event.inputs.target }}

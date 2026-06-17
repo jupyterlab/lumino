@@ -819,7 +819,7 @@ export namespace ArrayExt {
    *
    * #### Example
    * ```typescript
-   * import { ArrayExt } from from '@lumino/algorithm';
+   * import { ArrayExt } from '@lumino/algorithm';
    *
    * let data = [0, 1, 2, 3, 4];
    * ArrayExt.move(data, 1, 2);  // [0, 2, 1, 3, 4]

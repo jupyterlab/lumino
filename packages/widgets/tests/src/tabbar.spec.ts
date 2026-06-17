@@ -111,11 +111,26 @@ function simulateOnNode(node: Element, action: Action): void {
   node.dispatchEvent(
     new PointerEvent(action, {
       clientX: rect.left + 1,
-      clientY: rect.top,
+      clientY: rect.top + 1,
       cancelable: true,
       bubbles: true
     })
   );
+}
+
+function createTransitionEvent(
+  type: 'transitionend' | 'transitioncancel',
+  propertyName: string
+): Event {
+  if (typeof TransitionEvent === 'function') {
+    return new TransitionEvent(type, {
+      bubbles: true,
+      propertyName
+    });
+  }
+  let event = new Event(type, { bubbles: true });
+  Object.defineProperty(event, 'propertyName', { value: propertyName });
+  return event;
 }
 
 describe('@lumino/widgets', () => {
@@ -341,16 +356,16 @@ describe('@lumino/widgets', () => {
         });
         closeIcon.dispatchEvent(
           new PointerEvent('pointerdown', {
-            clientX: rect.left,
-            clientY: rect.top,
+            clientX: rect.left + 1,
+            clientY: rect.top + 1,
             button: 0,
             bubbles: true
           })
         );
         closeIcon.dispatchEvent(
           new PointerEvent('pointerup', {
-            clientX: rect.left,
-            clientY: rect.top,
+            clientX: rect.left + 1,
+            clientY: rect.top + 1,
             button: 0
           })
         );
@@ -368,16 +383,16 @@ describe('@lumino/widgets', () => {
         });
         tab.dispatchEvent(
           new PointerEvent('pointerdown', {
-            clientX: rect.left,
-            clientY: rect.top,
+            clientX: rect.left + 1,
+            clientY: rect.top + 1,
             button: 1,
             bubbles: true
           })
         );
         tab.dispatchEvent(
           new PointerEvent('pointerup', {
-            clientX: rect.left,
-            clientY: rect.top,
+            clientX: rect.left + 1,
+            clientY: rect.top + 1,
             button: 1
           })
         );
@@ -398,32 +413,32 @@ describe('@lumino/widgets', () => {
         let rect2 = tab.getBoundingClientRect();
         closeIcon.dispatchEvent(
           new PointerEvent('pointerdown', {
-            clientX: rect1.left,
-            clientY: rect1.top,
+            clientX: rect1.left + 1,
+            clientY: rect1.top + 1,
             button: 0,
             cancelable: true
           })
         );
         closeIcon.dispatchEvent(
           new PointerEvent('pointerup', {
-            clientX: rect1.left,
-            clientY: rect1.top,
+            clientX: rect1.left + 1,
+            clientY: rect1.top + 1,
             button: 0,
             cancelable: true
           })
         );
         tab.dispatchEvent(
           new PointerEvent('pointerdown', {
-            clientX: rect2.left,
-            clientY: rect2.top,
+            clientX: rect2.left + 1,
+            clientY: rect2.top + 1,
             button: 1,
             cancelable: true
           })
         );
         tab.dispatchEvent(
-          new PointerEvent('pointereup', {
-            clientX: rect2.left,
-            clientY: rect2.top,
+          new PointerEvent('pointerup', {
+            clientX: rect2.left + 1,
+            clientY: rect2.top + 1,
             button: 1,
             cancelable: true
           })
@@ -452,16 +467,16 @@ describe('@lumino/widgets', () => {
         });
         addButton.dispatchEvent(
           new PointerEvent('pointerdown', {
-            clientX: rect.left,
-            clientY: rect.top,
+            clientX: rect.left + 1,
+            clientY: rect.top + 1,
             button: 0,
             bubbles: true
           })
         );
         addButton.dispatchEvent(
           new PointerEvent('pointerup', {
-            clientX: rect.left,
-            clientY: rect.top,
+            clientX: rect.left + 1,
+            clientY: rect.top + 1,
             button: 0
           })
         );
@@ -479,16 +494,16 @@ describe('@lumino/widgets', () => {
         });
         addButton.dispatchEvent(
           new PointerEvent('pointerdown', {
-            clientX: rect.left,
-            clientY: rect.top,
+            clientX: rect.left + 1,
+            clientY: rect.top + 1,
             button: 0,
             cancelable: true
           })
         );
         addButton.dispatchEvent(
           new PointerEvent('pointerup', {
-            clientX: rect.left,
-            clientY: rect.top,
+            clientX: rect.left + 1,
+            clientY: rect.top + 1,
             button: 0,
             cancelable: true
           })
@@ -514,14 +529,15 @@ describe('@lumino/widgets', () => {
           expect(args.index).to.equal(0);
           expect(args.title).to.equal(bar.titles[0]);
           expect(args.clientX).to.equal(rect.right + 200);
-          expect(args.clientY).to.equal(rect.top);
+          // Firefox on macos sometimes returns floats for rect.top
+          expect(args.clientY).to.equal(Math.round(rect.top));
           called = true;
         });
         let rect = bar.contentNode.getBoundingClientRect();
         document.body.dispatchEvent(
           new PointerEvent('pointermove', {
             clientX: rect.right + 200,
-            clientY: rect.top,
+            clientY: Math.round(rect.top),
             cancelable: true
           })
         );
@@ -1038,6 +1054,105 @@ describe('@lumino/widgets', () => {
           });
         });
       });
+
+      it('should not freeze tab widths if closed programmatically (e.g., keyboard shortcut)', () => {
+        populateBar(bar);
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+
+        bar.removeTabAt(0);
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+
+        // Since it was closed programmatically (no close-icon click),
+        // widths should NOT be explicitly frozen.
+        let tabs = bar.contentNode.children;
+        for (let i = 0, n = tabs.length; i < n; ++i) {
+          expect((tabs[i] as HTMLElement).style.width).to.equal('');
+          expect((tabs[i] as HTMLElement).style.flexBasis).to.equal('');
+        }
+      });
+
+      it('should freeze tab widths if closed via close icon and unfreeze on pointerleave', () => {
+        populateBar(bar);
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+
+        let tabs = bar.contentNode.children;
+        let closeIcon = tabs[0].querySelector(
+          bar.renderer.closeIconSelector
+        ) as HTMLElement;
+
+        bar.tabCloseRequested.connect((sender, args) => {
+          bar.removeTabAt(args.index);
+          MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        });
+
+        simulateOnNode(closeIcon, 'pointerdown');
+        simulateOnNode(closeIcon, 'pointerup');
+
+        let remainingTabs = bar.contentNode.children;
+        expect((remainingTabs[0] as HTMLElement).style.width).to.not.equal('');
+        expect((remainingTabs[0] as HTMLElement).style.flexBasis).to.not.equal(
+          ''
+        );
+
+        bar.node.dispatchEvent(
+          new PointerEvent('pointerleave', { bubbles: false })
+        );
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+
+        expect(bar.hasClass('lm-mod-unfreezing')).to.equal(true);
+        for (let i = 0, n = remainingTabs.length; i < n; ++i) {
+          expect((remainingTabs[i] as HTMLElement).style.width).to.equal('');
+          expect((remainingTabs[i] as HTMLElement).style.flexBasis).to.equal(
+            ''
+          );
+        }
+      });
+
+      it('should remove unfreezing class on transition cancel or end', () => {
+        populateBar(bar);
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+
+        let tabs = bar.contentNode.children;
+        let closeIcon = tabs[0].querySelector(
+          bar.renderer.closeIconSelector
+        ) as HTMLElement;
+
+        bar.tabCloseRequested.connect((sender, args) => {
+          bar.removeTabAt(args.index);
+          MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        });
+
+        simulateOnNode(closeIcon, 'pointerdown');
+        simulateOnNode(closeIcon, 'pointerup');
+
+        bar.node.dispatchEvent(
+          new PointerEvent('pointerleave', { bubbles: false })
+        );
+        expect(bar.hasClass('lm-mod-unfreezing')).to.equal(true);
+
+        let firstRemainingTab = bar.contentNode.children[0];
+        firstRemainingTab.dispatchEvent(
+          createTransitionEvent('transitioncancel', 'flex-basis')
+        );
+        expect(bar.hasClass('lm-mod-unfreezing')).to.equal(false);
+
+        // Start another freeze/unfreeze run and finish on transition end.
+        closeIcon = bar.contentNode.children[0].querySelector(
+          bar.renderer.closeIconSelector
+        ) as HTMLElement;
+        simulateOnNode(closeIcon, 'pointerdown');
+        simulateOnNode(closeIcon, 'pointerup');
+        bar.node.dispatchEvent(
+          new PointerEvent('pointerleave', { bubbles: false })
+        );
+        expect(bar.hasClass('lm-mod-unfreezing')).to.equal(true);
+
+        firstRemainingTab = bar.contentNode.children[0];
+        firstRemainingTab.dispatchEvent(
+          createTransitionEvent('transitionend', 'width')
+        );
+        expect(bar.hasClass('lm-mod-unfreezing')).to.equal(false);
+      });
     });
 
     describe('#clearTabs()', () => {
@@ -1112,16 +1227,16 @@ describe('@lumino/widgets', () => {
           });
           closeIcon.dispatchEvent(
             new PointerEvent('pointerdown', {
-              clientX: rect.left,
-              clientY: rect.top,
+              clientX: rect.left + 1,
+              clientY: rect.top + 1,
               button: 0,
               bubbles: true
             })
           );
           closeIcon.dispatchEvent(
             new PointerEvent('pointerup', {
-              clientX: rect.left,
-              clientY: rect.top,
+              clientX: rect.left + 1,
+              clientY: rect.top + 1,
               button: 0,
               cancelable: true
             })
@@ -1138,16 +1253,16 @@ describe('@lumino/widgets', () => {
           });
           closeIcon.dispatchEvent(
             new PointerEvent('pointerdown', {
-              clientX: rect.left,
-              clientY: rect.top,
+              clientX: rect.left + 1,
+              clientY: rect.top + 1,
               button: 0,
               cancelable: true
             })
           );
           closeIcon.dispatchEvent(
             new PointerEvent('pointerup', {
-              clientX: rect.left,
-              clientY: rect.top,
+              clientX: rect.left + 1,
+              clientY: rect.top + 1,
               button: 0,
               cancelable: true
             })
@@ -1163,8 +1278,8 @@ describe('@lumino/widgets', () => {
           });
           closeIcon.dispatchEvent(
             new PointerEvent('pointerdown', {
-              clientX: rect.left,
-              clientY: rect.top,
+              clientX: rect.left + 1,
+              clientY: rect.top + 1,
               button: 0,
               cancelable: true
             })
@@ -1190,16 +1305,16 @@ describe('@lumino/widgets', () => {
           });
           closeIcon.dispatchEvent(
             new PointerEvent('pointerdown', {
-              clientX: rect.left,
-              clientY: rect.top,
+              clientX: rect.left + 1,
+              clientY: rect.top + 1,
               button: 0,
               cancelable: true
             })
           );
           closeIcon.dispatchEvent(
             new PointerEvent('pointerup', {
-              clientX: rect.left,
-              clientY: rect.top,
+              clientX: rect.left + 1,
+              clientY: rect.top + 1,
               button: 0,
               cancelable: true
             })
@@ -1220,16 +1335,16 @@ describe('@lumino/widgets', () => {
           });
           tab.dispatchEvent(
             new PointerEvent('pointerdown', {
-              clientX: rect.left,
-              clientY: rect.top,
+              clientX: rect.left + 1,
+              clientY: rect.top + 1,
               button: 1,
               bubbles: true
             })
           );
           tab.dispatchEvent(
             new PointerEvent('pointerup', {
-              clientX: rect.left,
-              clientY: rect.top,
+              clientX: rect.left + 1,
+              clientY: rect.top + 1,
               button: 1,
               cancelable: true
             })
@@ -1246,16 +1361,16 @@ describe('@lumino/widgets', () => {
           });
           tab.dispatchEvent(
             new PointerEvent('pointerdown', {
-              clientX: rect.left,
-              clientY: rect.top,
+              clientX: rect.left + 1,
+              clientY: rect.top + 1,
               button: 1,
               cancelable: true
             })
           );
           tab.dispatchEvent(
             new PointerEvent('pointerup', {
-              clientX: rect.left,
-              clientY: rect.top,
+              clientX: rect.left + 1,
+              clientY: rect.top + 1,
               button: 1,
               cancelable: true
             })
@@ -1271,8 +1386,8 @@ describe('@lumino/widgets', () => {
           });
           tab.dispatchEvent(
             new PointerEvent('pointerdown', {
-              clientX: rect.left,
-              clientY: rect.top,
+              clientX: rect.left + 1,
+              clientY: rect.top + 1,
               button: 1,
               cancelable: true
             })
@@ -1298,16 +1413,16 @@ describe('@lumino/widgets', () => {
           });
           tab.dispatchEvent(
             new PointerEvent('pointerdown', {
-              clientX: rect.left,
-              clientY: rect.top,
+              clientX: rect.left + 1,
+              clientY: rect.top + 1,
               button: 1,
               cancelable: true
             })
           );
           tab.dispatchEvent(
             new PointerEvent('pointerup', {
-              clientX: rect.left,
-              clientY: rect.top,
+              clientX: rect.left + 1,
+              clientY: rect.top + 1,
               button: 1,
               cancelable: true
             })
@@ -1327,8 +1442,8 @@ describe('@lumino/widgets', () => {
           let rect = tab.getBoundingClientRect();
           tab.dispatchEvent(
             new PointerEvent('pointerdown', {
-              clientX: rect.left,
-              clientY: rect.top,
+              clientX: rect.left + 1,
+              clientY: rect.top + 1,
               button: 1,
               cancelable: true
             })
@@ -1367,8 +1482,8 @@ describe('@lumino/widgets', () => {
           startDrag(bar, 2, 'down');
           let rect = tab.getBoundingClientRect();
           let event = new PointerEvent('pointerdown', {
-            clientX: rect.left,
-            clientY: rect.top,
+            clientX: rect.left + 1,
+            clientY: rect.top + 1,
             cancelable: true
           });
           let cancelled = !tab.dispatchEvent(event);
@@ -1428,14 +1543,15 @@ describe('@lumino/widgets', () => {
             expect(args.index).to.equal(0);
             expect(args.title).to.equal(bar.titles[0]);
             expect(args.clientX).to.equal(rect.right + 200);
-            expect(args.clientY).to.equal(rect.top);
+            // Firefox on macos sometimes returns floats for rect.top
+            expect(args.clientY).to.equal(Math.round(rect.top));
             called = true;
           });
           let rect = bar.contentNode.getBoundingClientRect();
           document.body.dispatchEvent(
             new PointerEvent('pointermove', {
               clientX: rect.right + 200,
-              clientY: rect.top,
+              clientY: Math.round(rect.top),
               cancelable: true
             })
           );
@@ -1815,6 +1931,7 @@ describe('@lumino/widgets', () => {
          * TODO:
          * Find a way to trigger the change of focus.
          */
+        /*
         it.skip('should keep focus on the second tab on tabulation', () => {
           const node = document.createElement('div');
           node.setAttribute('tabindex', '0');
@@ -1844,6 +1961,7 @@ describe('@lumino/widgets', () => {
           );
           expect(document.activeElement).to.equal(secondTab);
         });
+        */
       });
 
       context('contextmenu', () => {
@@ -1972,8 +2090,8 @@ describe('@lumino/widgets', () => {
         let rect = tab.getBoundingClientRect();
         tab.dispatchEvent(
           new PointerEvent('pointerdown', {
-            clientX: rect.left,
-            clientY: rect.top,
+            clientX: rect.left + 1,
+            clientY: rect.top + 1,
             cancelable: true
           })
         );

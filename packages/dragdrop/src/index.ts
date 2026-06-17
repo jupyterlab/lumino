@@ -1280,6 +1280,8 @@ namespace Private {
           propagateBackdropScroll,
           true
         );
+
+        // Removing the element from the DOM also releases the pointer capture.
         body.removeChild(cursorBackdrop);
       }
     });
@@ -1293,6 +1295,21 @@ namespace Private {
       return;
     }
     cursorBackdrop.style.transform = `translate(${event.clientX}px, ${event.clientY}px)`;
+
+    // Capture the pointer to the cursor backdrop, ensuring that the cursor
+    // override and any other pointer listeners on the document are respected
+    // even if the pointer drifts over an iframe. When the backdrop element is
+    // removed from the DOM when the override dispose is called, any pointer
+    // capture is released.
+    try {
+      if (!cursorBackdrop.hasPointerCapture(event.pointerId)) {
+        cursorBackdrop.setPointerCapture(event.pointerId);
+      }
+    } catch (e) {
+      // Ignore errors in pointer capture to guard defensively against failures,
+      // e.g., older browsers or synthetic events in tests that don't have
+      // active pointers.
+    }
   }
 
   /**
