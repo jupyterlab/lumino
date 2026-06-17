@@ -8,7 +8,6 @@ import { IApp } from './tokens';
 
 /**
  * Run the Lumino `PluginRegistry` on the server.
- *
  */
 async function main(): Promise<void> {
   const registry = new PluginRegistry<IApp>();

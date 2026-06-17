@@ -6,7 +6,6 @@ import { IApp, IGreeting } from './tokens';
 
 /**
  * A plugin that *requires* the `IGreeting` service.
- *
  */
 const plugin: IPlugin<IApp, void> = {
   id: '@lumino/example-plugin-registry-server:greeter',
