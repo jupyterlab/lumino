@@ -12,7 +12,7 @@
     "target": "ES2018",
     "outDir": "./lib",
     "lib": ["ES2018"],
-    "types": ["node"]
+    "types": ["@types/node"]
   },
   "include": ["src/*"]
 }

@@ -7,7 +7,7 @@
     "build": "tsc",
     "clean": "rimraf lib",
     "start": "node lib/index.js",
-    "test": "tsc && node test/runner.js"
+    "test": "node --test test/runner.js"
   },
   "dependencies": {
     "@lumino/coreutils": "^2.2.2"
