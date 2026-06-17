@@ -10,7 +10,56 @@
 
 import { expect } from 'chai';
 
-import { DockPanel, TabBar, Widget } from '@lumino/widgets';
+import { MessageLoop } from '@lumino/messaging';
+
+import { DockLayout, DockPanel, TabBar, Widget } from '@lumino/widgets';
+
+const bubbles = true;
+
+/**
+ * Build a 2×2 grid `DockPanel`, sized and attached so its handles have real
+ * geometry (one middle vertical bar plus two side horizontal bars).
+ */
+function attachedGrid(): { panel: DockPanel; widgets: Widget[] } {
+  const panel = new DockPanel({ spacing: 4 });
+  const widgets = [new Widget(), new Widget(), new Widget(), new Widget()];
+  widgets.forEach(w => {
+    w.node.style.minWidth = '40px';
+    w.node.style.minHeight = '40px';
+  });
+  panel.addWidget(widgets[0]);
+  panel.addWidget(widgets[1], { mode: 'split-right', ref: widgets[0] });
+  panel.addWidget(widgets[2], { mode: 'split-bottom', ref: widgets[0] });
+  panel.addWidget(widgets[3], { mode: 'split-bottom', ref: widgets[1] });
+  panel.node.style.position = 'absolute';
+  panel.node.style.width = '600px';
+  panel.node.style.height = '600px';
+  Widget.attach(panel, document.body);
+  MessageLoop.flush();
+  return { panel, widgets };
+}
+
+/**
+ * The visible handles of a dock panel grouped by `data-orientation`.
+ */
+function visibleHandles(panel: DockPanel): {
+  horizontal: HTMLDivElement[];
+  vertical: HTMLDivElement[];
+} {
+  const horizontal: HTMLDivElement[] = [];
+  const vertical: HTMLDivElement[] = [];
+  for (const h of panel.handles()) {
+    if (h.classList.contains('lm-mod-hidden')) {
+      continue;
+    }
+    if (h.getAttribute('data-orientation') === 'horizontal') {
+      horizontal.push(h);
+    } else {
+      vertical.push(h);
+    }
+  }
+  return { horizontal, vertical };
+}
 
 describe('@lumino/widgets', () => {
   describe('DockPanel', () => {
@@ -147,6 +196,126 @@ describe('@lumino/widgets', () => {
         for (const tabBar of panel.tabBars()) {
           expect(tabBar.tabsMovable).to.equal(false);
         }
+      });
+    });
+
+    describe('group resizing', () => {
+      it('should highlight an intersecting handle pair on hover', () => {
+        const { panel } = attachedGrid();
+        const layout = panel.layout as DockLayout;
+        const { horizontal, vertical } = visibleHandles(panel);
+        const primary = horizontal[0];
+        const rH = primary.getBoundingClientRect();
+        const rV = vertical[0].getBoundingClientRect();
+        const x = (rH.left + rH.right) / 2;
+        const y = (rV.top + rV.bottom) / 2;
+        const peer = layout.findIntersectingHandle(primary, x, y);
+        expect(peer).to.not.equal(null);
+
+        primary.dispatchEvent(
+          new PointerEvent('pointermove', { bubbles, clientX: x, clientY: y })
+        );
+        expect(primary.classList.contains('lm-mod-intersection')).to.equal(
+          true
+        );
+        expect(peer!.classList.contains('lm-mod-intersection')).to.equal(true);
+        panel.dispose();
+      });
+
+      it('should clear the hover highlight on pointerleave', () => {
+        const { panel } = attachedGrid();
+        const layout = panel.layout as DockLayout;
+        const { horizontal, vertical } = visibleHandles(panel);
+        const primary = horizontal[0];
+        const rH = primary.getBoundingClientRect();
+        const rV = vertical[0].getBoundingClientRect();
+        const x = (rH.left + rH.right) / 2;
+        const y = (rV.top + rV.bottom) / 2;
+        const peer = layout.findIntersectingHandle(primary, x, y)!;
+
+        primary.dispatchEvent(
+          new PointerEvent('pointermove', { bubbles, clientX: x, clientY: y })
+        );
+        panel.node.dispatchEvent(new PointerEvent('pointerleave', { bubbles }));
+        expect(primary.classList.contains('lm-mod-intersection')).to.equal(
+          false
+        );
+        expect(peer.classList.contains('lm-mod-intersection')).to.equal(false);
+        panel.dispose();
+      });
+
+      it('should move both handles when dragging an intersection', () => {
+        const { panel } = attachedGrid();
+        const layout = panel.layout as DockLayout;
+        const { horizontal } = visibleHandles(panel);
+        const primary = horizontal[0];
+        const rH = primary.getBoundingClientRect();
+        // Pick an intersection point on the primary handle.
+        let x = (rH.left + rH.right) / 2;
+        let y = 0;
+        let peer: HTMLDivElement | null = null;
+        for (const v of visibleHandles(panel).vertical) {
+          const rV = v.getBoundingClientRect();
+          const cy = (rV.top + rV.bottom) / 2;
+          if (layout.findIntersectingHandle(primary, x, cy)) {
+            y = cy;
+            peer = layout.findIntersectingHandle(primary, x, cy);
+            break;
+          }
+        }
+        expect(peer).to.not.equal(null);
+
+        const hLeft = primary.offsetLeft;
+        const vTop = peer!.offsetTop;
+        primary.dispatchEvent(
+          new PointerEvent('pointerdown', { bubbles, clientX: x, clientY: y })
+        );
+        document.body.dispatchEvent(
+          new PointerEvent('pointermove', {
+            bubbles,
+            clientX: x - 30,
+            clientY: y + 30
+          })
+        );
+        MessageLoop.flush();
+        expect(primary.offsetLeft).to.not.equal(hLeft);
+        expect(peer!.offsetTop).to.not.equal(vTop);
+        document.body.dispatchEvent(new PointerEvent('pointerup', { bubbles }));
+        panel.dispose();
+      });
+
+      it('should move only one handle when there is no intersection', () => {
+        const { panel } = attachedGrid();
+        const layout = panel.layout as DockLayout;
+        const { horizontal, vertical } = visibleHandles(panel);
+        const primary = horizontal[0];
+        const rH = primary.getBoundingClientRect();
+        const x = (rH.left + rH.right) / 2;
+        // Near the top of the middle bar, away from any horizontal bar.
+        const y = rH.top + 3;
+        // Compare as a boolean so a failure never inspects a DOM node.
+        expect(layout.findIntersectingHandle(primary, x, y) === null).to.equal(
+          true
+        );
+
+        const peer = vertical[0];
+        const hLeft = primary.offsetLeft;
+        const vTop = peer.offsetTop;
+        primary.dispatchEvent(
+          new PointerEvent('pointerdown', { bubbles, clientX: x, clientY: y })
+        );
+        document.body.dispatchEvent(
+          new PointerEvent('pointermove', {
+            bubbles,
+            clientX: x - 30,
+            clientY: y
+          })
+        );
+        MessageLoop.flush();
+        expect(primary.offsetLeft).to.not.equal(hLeft);
+        expect(peer.offsetTop).to.equal(vTop);
+        document.body.dispatchEvent(new PointerEvent('pointerup', { bubbles }));
+        panel.dispose();
       });
     });
   });

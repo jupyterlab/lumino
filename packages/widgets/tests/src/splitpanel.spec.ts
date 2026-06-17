@@ -454,5 +454,143 @@ describe('@lumino/widgets', () => {
         expect(SplitPanel.getStretch(widget)).to.equal(10);
       });
     });
+
+    describe('group resizing', () => {
+      // An outer horizontal panel holding an orthogonal (vertical) inner
+      // SplitPanel, so the outer handle intersects the inner handle.
+      function attachedNested(): {
+        outer: SplitPanel;
+        inner: SplitPanel;
+        outerHandle: HTMLDivElement;
+        innerHandle: HTMLDivElement;
+      } {
+        const inner = new SplitPanel({ orientation: 'vertical', spacing: 4 });
+        [new Widget(), new Widget()].forEach(w => {
+          w.node.style.minWidth = '40px';
+          w.node.style.minHeight = '40px';
+          inner.addWidget(w);
+        });
+        const outer = new SplitPanel({ orientation: 'horizontal', spacing: 4 });
+        const plain = new Widget();
+        plain.node.style.minWidth = '40px';
+        plain.node.style.minHeight = '40px';
+        outer.addWidget(inner);
+        outer.addWidget(plain);
+        outer.node.style.position = 'absolute';
+        outer.node.style.width = '600px';
+        outer.node.style.height = '600px';
+        Widget.attach(outer, document.body);
+        MessageLoop.flush();
+        const outerHandle = (outer.layout as SplitLayout).handles[0];
+        const innerHandle = (inner.layout as SplitLayout).handles[0];
+        return { outer, inner, outerHandle, innerHandle };
+      }
+
+      it('should highlight an intersecting handle pair on hover', () => {
+        const { outer, outerHandle, innerHandle } = attachedNested();
+        const ro = outerHandle.getBoundingClientRect();
+        const ri = innerHandle.getBoundingClientRect();
+        const x = (ro.left + ro.right) / 2;
+        const y = (ri.top + ri.bottom) / 2;
+        outerHandle.dispatchEvent(
+          new PointerEvent('pointermove', { bubbles, clientX: x, clientY: y })
+        );
+        expect(outerHandle.classList.contains('lm-mod-intersection')).to.equal(
+          true
+        );
+        expect(innerHandle.classList.contains('lm-mod-intersection')).to.equal(
+          true
+        );
+        outer.dispose();
+      });
+
+      it('should not highlight away from an inner handle', () => {
+        const { outer, outerHandle, innerHandle } = attachedNested();
+        const ro = outerHandle.getBoundingClientRect();
+        const x = (ro.left + ro.right) / 2;
+        outerHandle.dispatchEvent(
+          new PointerEvent('pointermove', {
+            bubbles,
+            clientX: x,
+            clientY: ro.top + 3
+          })
+        );
+        expect(outerHandle.classList.contains('lm-mod-intersection')).to.equal(
+          false
+        );
+        expect(innerHandle.classList.contains('lm-mod-intersection')).to.equal(
+          false
+        );
+        outer.dispose();
+      });
+
+      it('should clear the hover highlight on pointerleave', () => {
+        const { outer, outerHandle, innerHandle } = attachedNested();
+        const ro = outerHandle.getBoundingClientRect();
+        const ri = innerHandle.getBoundingClientRect();
+        const x = (ro.left + ro.right) / 2;
+        const y = (ri.top + ri.bottom) / 2;
+        outerHandle.dispatchEvent(
+          new PointerEvent('pointermove', { bubbles, clientX: x, clientY: y })
+        );
+        outer.node.dispatchEvent(new PointerEvent('pointerleave', { bubbles }));
+        expect(outerHandle.classList.contains('lm-mod-intersection')).to.equal(
+          false
+        );
+        expect(innerHandle.classList.contains('lm-mod-intersection')).to.equal(
+          false
+        );
+        outer.dispose();
+      });
+
+      it('should move both handles when dragging an intersection', () => {
+        const { outer, outerHandle, innerHandle } = attachedNested();
+        const ro = outerHandle.getBoundingClientRect();
+        const ri = innerHandle.getBoundingClientRect();
+        const x = (ro.left + ro.right) / 2;
+        const y = (ri.top + ri.bottom) / 2;
+        const hLeft = outerHandle.offsetLeft;
+        const vTop = innerHandle.offsetTop;
+        outerHandle.dispatchEvent(
+          new PointerEvent('pointerdown', { bubbles, clientX: x, clientY: y })
+        );
+        document.body.dispatchEvent(
+          new PointerEvent('pointermove', {
+            bubbles,
+            clientX: x - 30,
+            clientY: y + 30
+          })
+        );
+        MessageLoop.flush();
+        expect(outerHandle.offsetLeft).to.not.equal(hLeft);
+        expect(innerHandle.offsetTop).to.not.equal(vTop);
+        document.body.dispatchEvent(new PointerEvent('pointerup', { bubbles }));
+        outer.dispose();
+      });
+
+      it('should move only the outer handle without an intersection', () => {
+        const { outer, outerHandle, innerHandle } = attachedNested();
+        const ro = outerHandle.getBoundingClientRect();
+        const x = (ro.left + ro.right) / 2;
+        const y = ro.top + 3;
+        const hLeft = outerHandle.offsetLeft;
+        const vTop = innerHandle.offsetTop;
+        outerHandle.dispatchEvent(
+          new PointerEvent('pointerdown', { bubbles, clientX: x, clientY: y })
+        );
+        document.body.dispatchEvent(
+          new PointerEvent('pointermove', {
+            bubbles,
+            clientX: x - 30,
+            clientY: y
+          })
+        );
+        MessageLoop.flush();
+        expect(outerHandle.offsetLeft).to.not.equal(hLeft);
+        expect(innerHandle.offsetTop).to.equal(vTop);
+        document.body.dispatchEvent(new PointerEvent('pointerup', { bubbles }));
+        outer.dispose();
+      });
+    });
   });
 });
