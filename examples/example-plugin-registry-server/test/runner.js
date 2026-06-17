@@ -19,6 +19,6 @@ test('runs the plugin registry on the server', () => {
   assert.strictEqual(result.stderr, '');
   assert.deepStrictEqual(result.stdout.trim().split(/\r?\n/), [
     '[hello] providing IGreeting',
-    '[greeter] Hello, Jupyter! (from the hello plugin)'
+    '[greeter] Hello! (from the hello plugin)'
   ]);
 });

@@ -12,7 +12,7 @@ const plugin: IPlugin<IApp, void> = {
   autoStart: true,
   requires: [IGreeting],
   activate: (app: IApp, greeting: IGreeting): void => {
-    app.log(`[greeter] ${greeting.greet('Jupyter')}`);
+    app.log(`[greeter] ${greeting.greet()}`);
   }
 };
 

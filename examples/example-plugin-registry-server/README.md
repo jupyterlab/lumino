@@ -1,7 +1,7 @@
 # example-plugin-registry-server
 
-Run the Lumino [`PluginRegistry`](../../packages/coreutils/src/plugins.ts) — the
-plugin system behind JupyterLab — on the server with Node.
+Run the Lumino [`PluginRegistry`](../../packages/coreutils/src/plugins.ts), the
+plugin system behind JupyterLab, on the server with Node.
 
 `PluginRegistry` lives in `@lumino/coreutils` and has no DOM dependency, so it
 runs in Node as-is: `@lumino/application` and `@lumino/widgets` are not needed.
@@ -30,9 +30,9 @@ yarn workspace @lumino/example-plugin-registry-server start
 
 ```text
 [hello] providing IGreeting
-[greeter] Hello, Jupyter! (from the hello plugin)
+[greeter] Hello! (from the hello plugin)
 ```
 
 The `[greeter]` line is produced by the consumer plugin calling the service the
-provider plugin returned — the two are connected only through the shared
+provider plugin returned. The two are connected only through the shared
 `IGreeting` token, never by importing each other.

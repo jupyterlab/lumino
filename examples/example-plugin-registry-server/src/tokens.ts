@@ -17,9 +17,9 @@ export interface IApp {
  */
 export interface IGreeting {
   /**
-   * Greet the given name.
+   * Return a greeting.
    */
-  greet(name: string): string;
+  greet(): string;
 }
 
 /**

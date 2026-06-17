@@ -14,7 +14,7 @@ const plugin: IPlugin<IApp, IGreeting> = {
   activate: (app: IApp): IGreeting => {
     app.log('[hello] providing IGreeting');
     return {
-      greet: (name: string) => `Hello, ${name}! (from the hello plugin)`
+      greet: () => 'Hello! (from the hello plugin)'
     };
   }
 };
