@@ -290,7 +290,7 @@ __metadata:
     "@types/chai": ^4.3.4
     "@types/mocha": ^2.2.39
     "@web/test-runner": ^0.18.2
-    "@web/test-runner-playwright": ^0.11.0
+    "@web/test-runner-playwright": ^0.11.1
     chai: ^4.3.4
     mocha: ^9.0.3
     postcss: ^8.4.24
@@ -318,7 +318,7 @@ __metadata:
     "@types/chai": ^3.4.35
     "@types/mocha": ^2.2.39
     "@web/test-runner": ^0.18.2
-    "@web/test-runner-playwright": ^0.11.0
+    "@web/test-runner-playwright": ^0.11.1
     chai: ^4.3.4
     mocha: ^9.0.3
     postcss: ^8.4.24
@@ -358,7 +358,7 @@ __metadata:
     "@types/chai": ^3.4.35
     "@types/mocha": ^2.2.39
     "@web/test-runner": ^0.18.2
-    "@web/test-runner-playwright": ^0.11.0
+    "@web/test-runner-playwright": ^0.11.1
     chai: ^4.3.4
     mocha: ^9.0.3
     postcss: ^8.4.24
@@ -390,7 +390,7 @@ __metadata:
     "@types/chai": ^3.4.35
     "@types/mocha": ^2.2.39
     "@web/test-runner": ^0.18.2
-    "@web/test-runner-playwright": ^0.11.0
+    "@web/test-runner-playwright": ^0.11.1
     chai: ^4.3.4
     mocha: ^9.0.3
     postcss: ^8.4.24
@@ -416,7 +416,7 @@ __metadata:
     "@types/chai": ^3.4.35
     "@types/mocha": ^2.2.39
     "@web/test-runner": ^0.18.2
-    "@web/test-runner-playwright": ^0.11.0
+    "@web/test-runner-playwright": ^0.11.1
     chai: ^4.3.4
     mocha: ^9.0.3
     postcss: ^8.4.24
@@ -450,7 +450,7 @@ __metadata:
     "@types/chai": ^3.4.35
     "@types/mocha": ^2.2.39
     "@web/test-runner": ^0.18.2
-    "@web/test-runner-playwright": ^0.11.0
+    "@web/test-runner-playwright": ^0.11.1
     chai: ^4.3.4
     mocha: ^9.0.3
     postcss: ^8.4.24
@@ -485,7 +485,7 @@ __metadata:
     "@types/chai": ^3.4.35
     "@types/mocha": ^2.2.39
     "@web/test-runner": ^0.18.2
-    "@web/test-runner-playwright": ^0.11.0
+    "@web/test-runner-playwright": ^0.11.1
     chai: ^4.3.4
     mocha: ^9.0.3
     postcss: ^8.4.24
@@ -510,7 +510,7 @@ __metadata:
     "@types/chai": ^3.4.35
     "@types/mocha": ^2.2.39
     "@web/test-runner": ^0.18.2
-    "@web/test-runner-playwright": ^0.11.0
+    "@web/test-runner-playwright": ^0.11.1
     chai: ^4.3.4
     mocha: ^9.0.3
     postcss: ^8.4.24
@@ -537,7 +537,7 @@ __metadata:
     "@types/chai": ^3.4.35
     "@types/mocha": ^2.2.39
     "@web/test-runner": ^0.18.2
-    "@web/test-runner-playwright": ^0.11.0
+    "@web/test-runner-playwright": ^0.11.1
     chai: ^4.3.4
     mocha: ^9.0.3
     postcss: ^8.4.24
@@ -587,7 +587,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@lumino/example-dockpanel-amd@workspace:examples/example-dockpanel-amd"
   dependencies:
-    "@playwright/test": ^1.44.0
+    "@playwright/test": ^1.61.0
   languageName: unknown
   linkType: soft
 
@@ -595,7 +595,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@lumino/example-dockpanel-iife@workspace:examples/example-dockpanel-iife"
   dependencies:
-    "@playwright/test": ^1.44.0
+    "@playwright/test": ^1.61.0
   languageName: unknown
   linkType: soft
 
@@ -635,7 +635,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@lumino/example-nested-dockpanel-amd@workspace:examples/example-nested-dockpanel-amd"
   dependencies:
-    "@playwright/test": ^1.44.0
+    "@playwright/test": ^1.61.0
   languageName: unknown
   linkType: soft
 
@@ -661,7 +661,7 @@ __metadata:
     "@types/chai": ^3.4.35
     "@types/mocha": ^2.2.39
     "@web/test-runner": ^0.18.2
-    "@web/test-runner-playwright": ^0.11.0
+    "@web/test-runner-playwright": ^0.11.1
     chai: ^4.3.4
     mocha: ^9.0.3
     postcss: ^8.4.24
@@ -689,7 +689,7 @@ __metadata:
     "@types/mocha": ^2.2.39
     "@types/node": ^12.12.17
     "@web/test-runner": ^0.18.2
-    "@web/test-runner-playwright": ^0.11.0
+    "@web/test-runner-playwright": ^0.11.1
     chai: ^4.3.4
     mocha: ^9.0.3
     postcss: ^8.4.24
@@ -718,7 +718,7 @@ __metadata:
     "@types/mocha": ^2.2.39
     "@types/node": ^12.12.17
     "@web/test-runner": ^0.18.2
-    "@web/test-runner-playwright": ^0.11.0
+    "@web/test-runner-playwright": ^0.11.1
     chai: ^4.3.4
     mocha: ^9.0.3
     postcss: ^8.4.24
@@ -743,7 +743,7 @@ __metadata:
     "@types/chai": ^3.4.35
     "@types/mocha": ^2.2.39
     "@web/test-runner": ^0.18.2
-    "@web/test-runner-playwright": ^0.11.0
+    "@web/test-runner-playwright": ^0.11.1
     chai: ^4.3.4
     mocha: ^9.0.3
     postcss: ^8.4.24
@@ -771,7 +771,7 @@ __metadata:
     "@types/mocha": ^2.2.39
     "@types/node": ^12.12.17
     "@web/test-runner": ^0.18.2
-    "@web/test-runner-playwright": ^0.11.0
+    "@web/test-runner-playwright": ^0.11.1
     chai: ^4.3.4
     mocha: ^9.0.3
     postcss: ^8.4.24
@@ -797,7 +797,7 @@ __metadata:
     "@types/chai": ^3.4.35
     "@types/mocha": ^2.2.39
     "@web/test-runner": ^0.18.2
-    "@web/test-runner-playwright": ^0.11.0
+    "@web/test-runner-playwright": ^0.11.1
     chai: ^4.3.4
     mocha: ^9.0.3
     postcss: ^8.4.24
@@ -833,7 +833,7 @@ __metadata:
     "@types/chai": ^3.4.35
     "@types/mocha": ^2.2.39
     "@web/test-runner": ^0.18.2
-    "@web/test-runner-playwright": ^0.11.0
+    "@web/test-runner-playwright": ^0.11.1
     chai: ^4.3.4
     mocha: ^9.0.3
     postcss: ^8.4.24
@@ -1321,14 +1321,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@playwright/test@npm:^1.44.0":
-  version: 1.44.0
-  resolution: "@playwright/test@npm:1.44.0"
+"@playwright/test@npm:^1.61.0":
+  version: 1.61.0
+  resolution: "@playwright/test@npm:1.61.0"
   dependencies:
-    playwright: 1.44.0
+    playwright: 1.61.0
   bin:
     playwright: cli.js
-  checksum: 64cb12e26156e0530d16cec629d82c228db7a57fe29096a6961a18fc8b7fc5f35e28f8905af7039fad5d3af0224d38e93dba479760db2ce16a63c5e2fbe2990c
+  checksum: d9aeb311a5ee81837e011f096aefc32f90925c9b78e8fe9415f10a47b3e1eb58c00259f07092475e68b00c0b99304f39073077e4c4645937773684548634d2b7
   languageName: node
   linkType: hard
 
@@ -2635,14 +2635,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/test-runner-playwright@npm:^0.11.0":
-  version: 0.11.0
-  resolution: "@web/test-runner-playwright@npm:0.11.0"
+"@web/test-runner-playwright@npm:^0.11.1":
+  version: 0.11.1
+  resolution: "@web/test-runner-playwright@npm:0.11.1"
   dependencies:
     "@web/test-runner-core": ^0.13.0
     "@web/test-runner-coverage-v8": ^0.8.0
-    playwright: ^1.22.2
-  checksum: 3618b0b559d865af1211b3d86ec57487b32722a0dd640c9a3faca6c692cceec75176d742d0db73c823d300fbe761e5c15b2fad0c5096c3dbfedab313ed1aa7fe
+    playwright: ^1.53.0
+  checksum: acbc872f1a1f841d38a20ee5ebbc75e2193cc51e1fc75254f6d9514d5bd80ac25ed2185f2aa206b25f752caef349462b4fd1552d5bf5df3b12ee7df99dc8a32b
   languageName: node
   linkType: hard
 
@@ -7871,7 +7871,7 @@ __metadata:
   resolution: "lumino-top-level@workspace:."
   dependencies:
     "@jupyterlab/buildutils": ^4.0.0
-    "@playwright/test": ^1.44.0
+    "@playwright/test": ^1.61.0
     "@typescript-eslint/eslint-plugin": ^6.0.0
     "@typescript-eslint/parser": ^6.0.0
     eslint: ^8.45.0
@@ -9543,27 +9543,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:1.44.0":
-  version: 1.44.0
-  resolution: "playwright-core@npm:1.44.0"
+"playwright-core@npm:1.61.0":
+  version: 1.61.0
+  resolution: "playwright-core@npm:1.61.0"
   bin:
     playwright-core: cli.js
-  checksum: 7bee257c830153578753a6dfb34b8216f8c552d750e24a0be6d3ba10baff013fb1320a1c3d487fbb0df9d1ce5d1f027ccf6e990d4514989da63691f177141ba4
+  checksum: 0ea4653c7594388bafa39209a1ec0353aeeb977a905da22cfe60497be03b717944ce6e749232af7bf894fca3c217e7a2b624d87dde15ede60dad3abbd00c7598
   languageName: node
   linkType: hard
 
-"playwright@npm:1.44.0, playwright@npm:^1.22.2":
-  version: 1.44.0
-  resolution: "playwright@npm:1.44.0"
+"playwright@npm:1.61.0, playwright@npm:^1.53.0":
+  version: 1.61.0
+  resolution: "playwright@npm:1.61.0"
   dependencies:
     fsevents: 2.3.2
-    playwright-core: 1.44.0
+    playwright-core: 1.61.0
   dependenciesMeta:
     fsevents:
       optional: true
   bin:
     playwright: cli.js
-  checksum: 22653ded652f436c1a837842009a175e8acb91ab340bb3deee87dbdb7205b439bd174f5f20591eb67f0171728c9f8f4bdfa3668a517da6bc7b45a4a79eabdbd5
+  checksum: e9b3225ced35f29dcda9829362434151eec9f9bf41be1416104107eea1b9ea499e512a8483a24c0cb7ad3efc9066bf45ed0a64407c7877afa2546c4561bb6bd5
   languageName: node
   linkType: hard
 
