@@ -345,7 +345,7 @@ describe('@lumino/widgets', () => {
             })
           );
           expect(panel.events).to.contain('keydown');
-          panel.node.dispatchEvent(
+          document.body.dispatchEvent(
             new PointerEvent('pointermove', { bubbles })
           );
           expect(panel.events).to.not.contain('pointermove');
