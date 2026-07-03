@@ -6,6 +6,64 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2026.7.3
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2026.5.25...5fa8050aa783c91eafacc29a533178375f0f8999))
+
+```
+@lumino/algorithm: 2.0.4 => 2.0.5
+@lumino/application: 2.4.9 => 2.4.10
+@lumino/collections: 2.0.4 => 2.0.5
+@lumino/commands: 2.3.3 => 2.3.4
+@lumino/coreutils: 2.2.2 => 2.2.3
+@lumino/datagrid: 2.5.7 => 2.5.8
+@lumino/default-theme: 2.1.15 => 2.1.16
+@lumino/disposable: 2.1.5 => 2.1.6
+@lumino/domutils: 2.0.4 => 2.0.5
+@lumino/dragdrop: 2.1.8 => 2.1.9
+@lumino/keyboard: 2.0.4 => 2.0.5
+@lumino/messaging: 2.0.4 => 2.0.5
+@lumino/polling: 2.1.5 => 2.1.6
+@lumino/properties: 2.0.4 => 2.0.5
+@lumino/signaling: 2.1.5 => 2.1.6
+@lumino/virtualdom: 2.0.4 => 2.0.5
+@lumino/widgets: 2.8.0 => 2.9.0
+```
+
+### Bugs fixed
+
+- Apply opacity together with content visibility if enabled via `hiddenMode` setting [#832](https://github.com/jupyterlab/lumino/pull/832) ([@krassowski](https://github.com/krassowski), [@Darshan808](https://github.com/Darshan808))
+
+### Maintenance and upkeep improvements
+
+- Update Playwright to fix CI [#828](https://github.com/jupyterlab/lumino/pull/828) ([@jtpio](https://github.com/jtpio), [@krassowski](https://github.com/krassowski))
+- Bump svgo from 2.8.0 to 2.8.2 [#797](https://github.com/jupyterlab/lumino/pull/797) ([@krassowski](https://github.com/krassowski))
+- Bump koa from 2.16.3 to 2.16.4 [#796](https://github.com/jupyterlab/lumino/pull/796) ([@krassowski](https://github.com/krassowski))
+
+### Documentation improvements
+
+- Document the use of `PluginRegistry` on the server [#827](https://github.com/jupyterlab/lumino/pull/827) ([@jtpio](https://github.com/jtpio), [@krassowski](https://github.com/krassowski))
+
+### Other merged PRs
+
+- Bump the actions group across 1 directory with 4 updates [#831](https://github.com/jupyterlab/lumino/pull/831) ([@krassowski](https://github.com/krassowski))
+- Bump axios from 1.8.3 to 1.18.0 [#830](https://github.com/jupyterlab/lumino/pull/830) ([@krassowski](https://github.com/krassowski))
+- Bump shell-quote from 1.7.4 to 1.8.4 [#826](https://github.com/jupyterlab/lumino/pull/826) ([@krassowski](https://github.com/krassowski))
+- Bump basic-ftp from 5.0.5 to 5.3.1 [#816](https://github.com/jupyterlab/lumino/pull/816) ([@krassowski](https://github.com/krassowski))
+- Bump picomatch from 2.3.1 to 2.3.2 [#802](https://github.com/jupyterlab/lumino/pull/802) ([@krassowski](https://github.com/krassowski))
+- Bump yaml from 1.10.2 to 1.10.3 [#801](https://github.com/jupyterlab/lumino/pull/801) ([@krassowski](https://github.com/krassowski))
+
+### Contributors to this release
+
+The following people contributed discussions, new ideas, code and documentation contributions, and review.
+See [our definition of contributors](https://github-activity.readthedocs.io/en/latest/use/#how-does-this-tool-define-contributions-in-the-reports).
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2026-05-25&to=2026-07-03&type=c))
+
+@Darshan808 ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3ADarshan808+updated%3A2026-05-25..2026-07-03&type=Issues)) | @jtpio ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajtpio+updated%3A2026-05-25..2026-07-03&type=Issues)) | @krassowski ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2026-05-25..2026-07-03&type=Issues))
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2026.5.25
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2026.2.5...45495a6d8cc7f6035e7cccbd7d26ec1671b3cd57))
@@ -48,8 +106,6 @@ See [our definition of contributors](https://github-activity.readthedocs.io/en/l
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2026-02-05&to=2026-05-25&type=c))
 
 @afshin ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aafshin+updated%3A2026-02-05..2026-05-25&type=Issues)) | @Darshan808 ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3ADarshan808+updated%3A2026-02-05..2026-05-25&type=Issues)) | @jasongrout ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajasongrout+updated%3A2026-02-05..2026-05-25&type=Issues)) | @jtpio ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajtpio+updated%3A2026-02-05..2026-05-25&type=Issues)) | @KH-Coder865 ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3AKH-Coder865+updated%3A2026-02-05..2026-05-25&type=Issues)) | @krassowski ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2026-02-05..2026-05-25&type=Issues)) | @MUFFANUJ ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3AMUFFANUJ+updated%3A2026-02-05..2026-05-25&type=Issues))
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2026.2.5
 
