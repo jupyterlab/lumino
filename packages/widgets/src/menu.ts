@@ -1152,7 +1152,7 @@ export namespace Menu {
     /**
      * Whether the menu item is toggleable.
      */
-    readonly isToggleable: boolean;
+    readonly isToggleable?: boolean;
 
     /**
      * Whether the menu item is visible.
@@ -1378,7 +1378,7 @@ export namespace Menu {
           if (!data.item.isEnabled) {
             aria['aria-disabled'] = 'true';
           }
-          if (data.item.isToggleable) {
+          if (data.item.isToggleable || data.item.isToggled) {
             aria.role = 'menuitemcheckbox';
             aria['aria-checked'] = `${data.item.isToggled}`;
           } else {
