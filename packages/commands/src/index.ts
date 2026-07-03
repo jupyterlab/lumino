@@ -511,8 +511,18 @@ export class CommandRegistry {
    * events will not invoke commands.
    */
   processKeydownEvent(event: KeyboardEvent): void {
-    // Bail immediately if playing back keystrokes.
-    if (event.defaultPrevented || this._replaying) {
+    const isCapturing = event.eventPhase === Event.CAPTURING_PHASE;
+
+    // Bail immediately when the handler should not proceed:
+    // - the event was already prevented, or
+    // - replaying is happening in a disallowed phase:
+    //     - capturing phase (always blocked)
+    //     - bubbling phase when replay is not allowed
+    if (
+      event.defaultPrevented ||
+      (this._replaying &&
+        (isCapturing || (!isCapturing && !this._allowReplayInBubbling)))
+    ) {
       return;
     }
 
@@ -547,21 +557,26 @@ export class CommandRegistry {
       return;
     }
 
-    // Add the keystroke to the current key sequence.
-    this._keystrokes.push(keystroke);
-
+    // Create a temporary sequence with the new keystroke to check for matches.
+    const newKeystrokes = [...this._keystrokes, keystroke];
     // Find the exact and partial matches for the key sequence.
     const { exact, partial } = Private.matchKeyBinding(
       this._keyBindings,
-      this._keystrokes,
+      newKeystrokes,
       event
     );
     // Whether there is any partial match.
     const hasPartial = partial.length !== 0;
 
-    // If there is no exact match and no partial match, replay
-    // any suppressed events and clear the pending state.
+    // If there is no exact match and no partial match
     if (!exact && !hasPartial) {
+      // If in capture phase, do nothing and let the event propagate to bubble phase.
+      if (isCapturing) {
+        this._replayKeydownEvents(true);
+        return;
+      }
+      // If in bubble phase and still no match,
+      // replay any suppressed events and clear the pending state.
       this._replayKeydownEvents();
       this._clearPendingState();
       return;
@@ -573,6 +588,9 @@ export class CommandRegistry {
       event.preventDefault();
       event.stopPropagation();
     }
+
+    // Save new keystrokes
+    this._keystrokes = newKeystrokes;
 
     // Store the event for possible playback in the future and for
     // the use in execution hold check.
@@ -667,13 +685,23 @@ export class CommandRegistry {
   /**
    * Replay the keydown events which were suppressed.
    */
-  private _replayKeydownEvents(): void {
+  private _replayKeydownEvents(allowInBubbing: boolean = false): void {
     if (this._keydownEvents.length === 0) {
       return;
     }
+
+    const replayEvents = [...this._keydownEvents];
+    this._allowReplayInBubbling = allowInBubbing;
+    if (this._allowReplayInBubbling) {
+      // The saved events will be reprocessed during the bubbling phase in a clean state.
+      this._clearPendingState();
+    }
     this._replaying = true;
-    this._keydownEvents.forEach(Private.replayKeyEvent);
+    replayEvents.forEach(event => {
+      Private.replayKeyEvent(event);
+    });
     this._replaying = false;
+    this._allowReplayInBubbling = false;
   }
 
   /**
@@ -755,6 +783,7 @@ export class CommandRegistry {
   private _timerID = 0;
   private _timerModifierID = 0;
   private _replaying = false;
+  private _allowReplayInBubbling = false;
   private _keystrokes: string[] = [];
   private _keydownEvents: KeyboardEvent[] = [];
   private _keyBindings: CommandRegistry.IKeyBinding[] = [];
@@ -1132,6 +1161,13 @@ export namespace CommandRegistry {
      * The default value is `true`.
      */
     preventDefault?: boolean;
+
+    /**
+     * Whether the key binding should be processed in the capturing phase.
+     *
+     * The default value is `false`.
+     */
+    capture?: boolean;
   }
 
   /**
@@ -1167,6 +1203,13 @@ export namespace CommandRegistry {
      * The default value is `true`.
      */
     readonly preventDefault?: boolean;
+
+    /**
+     * Whether the key binding should be processed in the capturing phase.
+     *
+     * The default value is `false`.
+     */
+    readonly capture: boolean;
   }
 
   /**
@@ -1498,7 +1541,8 @@ namespace Private {
       selector: validateSelector(options),
       command: options.command,
       args: options.args || JSONExt.emptyObject,
-      preventDefault: options.preventDefault ?? true
+      preventDefault: options.preventDefault ?? true,
+      capture: options.capture ?? false
     };
   }
 
@@ -1528,6 +1572,9 @@ namespace Private {
     keys: ReadonlyArray<string>,
     event: KeyboardEvent
   ): IMatchResult {
+    // Filter bindings according to their capture property.
+    const isCapturingPhase = event.eventPhase === Event.CAPTURING_PHASE;
+
     // The current best exact match.
     let exact: CommandRegistry.IKeyBinding | null = null;
 
@@ -1545,6 +1592,12 @@ namespace Private {
       // Lookup the current binding.
       let binding = bindings[i];
 
+      // Filter bindings based on the event phase.
+      // Only match capturing bindings in the capture phase, and
+      // non-capturing bindings in the bubble phase.
+      if (binding.capture !== isCapturingPhase) {
+        continue;
+      }
       // Check whether the key binding sequence is a match.
       let sqm = matchSequence(binding.keys, keys);
 
