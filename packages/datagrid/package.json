@@ -1,6 +1,6 @@
 {
   "name": "@lumino/datagrid",
-  "version": "2.5.7",
+  "version": "2.5.8",
   "description": "Lumino Tabular Data Grid",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -38,15 +38,15 @@
     "watch": "tsc --build --watch"
   },
   "dependencies": {
-    "@lumino/algorithm": "^2.0.4",
-    "@lumino/coreutils": "^2.2.2",
-    "@lumino/disposable": "^2.1.5",
-    "@lumino/domutils": "^2.0.4",
-    "@lumino/dragdrop": "^2.1.8",
-    "@lumino/keyboard": "^2.0.4",
-    "@lumino/messaging": "^2.0.4",
-    "@lumino/signaling": "^2.1.5",
-    "@lumino/widgets": "^2.8.0"
+    "@lumino/algorithm": "^2.0.5",
+    "@lumino/coreutils": "^2.2.3",
+    "@lumino/disposable": "^2.1.6",
+    "@lumino/domutils": "^2.0.5",
+    "@lumino/dragdrop": "^2.1.9",
+    "@lumino/keyboard": "^2.0.5",
+    "@lumino/messaging": "^2.0.5",
+    "@lumino/signaling": "^2.1.6",
+    "@lumino/widgets": "^2.9.0"
   },
   "devDependencies": {
     "@lumino/buildutils": "^2.0.3",
@@ -56,7 +56,7 @@
     "@types/chai": "^3.4.35",
     "@types/mocha": "^2.2.39",
     "@web/test-runner": "^0.18.2",
-    "@web/test-runner-playwright": "^0.11.0",
+    "@web/test-runner-playwright": "^0.11.1",
     "chai": "^4.3.4",
     "mocha": "^9.0.3",
     "postcss": "^8.4.24",
