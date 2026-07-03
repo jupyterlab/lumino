@@ -1,6 +1,6 @@
 {
   "name": "@lumino/coreutils",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "description": "Lumino Core Utilities",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -40,7 +40,7 @@
     "watch": "tsc --build --watch"
   },
   "dependencies": {
-    "@lumino/algorithm": "^2.0.4"
+    "@lumino/algorithm": "^2.0.5"
   },
   "devDependencies": {
     "@lumino/buildutils": "^2.0.3",

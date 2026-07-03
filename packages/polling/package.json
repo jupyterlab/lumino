@@ -1,6 +1,6 @@
 {
   "name": "@lumino/polling",
-  "version": "2.1.5",
+  "version": "2.1.6",
   "description": "Lumino Polling",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -38,9 +38,9 @@
     "watch": "tsc --build --watch"
   },
   "dependencies": {
-    "@lumino/coreutils": "^2.2.2",
-    "@lumino/disposable": "^2.1.5",
-    "@lumino/signaling": "^2.1.5"
+    "@lumino/coreutils": "^2.2.3",
+    "@lumino/disposable": "^2.1.6",
+    "@lumino/signaling": "^2.1.6"
   },
   "devDependencies": {
     "@lumino/buildutils": "^2.0.3",

@@ -1,6 +1,6 @@
 {
   "name": "@lumino/example-plugin-registry-server",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "private": true,
   "description": "Run the Lumino PluginRegistry on the server with Node.",
   "scripts": {
@@ -10,7 +10,7 @@
     "test": "node --test test/runner.js"
   },
   "dependencies": {
-    "@lumino/coreutils": "^2.2.2"
+    "@lumino/coreutils": "^2.2.3"
   },
   "devDependencies": {
     "@types/node": "^12.12.17",

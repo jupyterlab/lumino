@@ -1,6 +1,6 @@
 {
   "name": "@lumino/disposable",
-  "version": "2.1.5",
+  "version": "2.1.6",
   "description": "Lumino Disposable",
   "homepage": "https://github.com/jupyterlab/lumino",
   "bugs": {
@@ -38,7 +38,7 @@
     "watch": "tsc --build --watch"
   },
   "dependencies": {
-    "@lumino/signaling": "^2.1.5"
+    "@lumino/signaling": "^2.1.6"
   },
   "devDependencies": {
     "@lumino/buildutils": "^2.0.3",
