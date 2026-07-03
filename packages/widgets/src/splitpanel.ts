@@ -38,6 +38,9 @@ export class SplitPanel extends Panel {
   constructor(options: SplitPanel.IOptions = {}) {
     super({ layout: Private.createLayout(options) });
     this.addClass('lm-SplitPanel');
+    if (options.nodeCountThreshold !== undefined) {
+      this._nodeCountThreshold = options.nodeCountThreshold;
+    }
   }
 
   /**
@@ -276,6 +279,9 @@ export class SplitPanel extends Panel {
     let style = window.getComputedStyle(handle);
     let override = Drag.overrideCursor(style.cursor!);
     this._pressData = { index, delta, override };
+
+    // Freeze heavy leaf widgets immediately when drag starts.
+    this._freezeHeavyLeaves();
   }
 
   /**
@@ -296,8 +302,13 @@ export class SplitPanel extends Panel {
       pos = event.clientY - rect.top - this._pressData!.delta;
     }
 
-    // Move the handle as close to the desired position as possible.
+    // Move the handle. The actual layout update is deferred via
+    // the lumino message loop; the PerformanceObserver set up on
+    // pointerdown will detect if the resulting frame is slow.
     layout.moveHandle(this._pressData!.index, pos);
+
+    // Debounce: refresh frozen elements after the user stops moving.
+    this._scheduleRefresh();
   }
 
   /**
@@ -326,6 +337,9 @@ export class SplitPanel extends Panel {
       return;
     }
 
+    // Unfreeze all contained elements.
+    this._unfreezeElements();
+
     // Clear the override cursor.
     this._pressData.override.dispose();
     this._pressData = null;
@@ -340,8 +354,264 @@ export class SplitPanel extends Panel {
     document.removeEventListener('contextmenu', this, true);
   }
 
+  /**
+   * Walk the widget tree to find leaf widgets, then apply
+   * `contain: strict` with pinned width/height on those whose
+   * subtree exceeds the node count threshold.
+   */
+  private _freezeHeavyLeaves(): void {
+    if (this._frozenGroups.length > 0) {
+      return;
+    }
+
+    // Find deepest heavy widgets in the tree.
+    let targets: Widget[] = [];
+    for (let i = 0; i < this.widgets.length; i++) {
+      Private.collectHeavyWidgets(this.widgets[i], this._nodeCountThreshold, targets);
+    }
+
+    // Read dimensions before mutations.
+    let groups: {
+      el: HTMLElement;
+      rect: DOMRect;
+      isHead: boolean;
+      prevContain: string;
+      prevWidth: string;
+      prevMinWidth: string;
+      prevMaxWidth: string;
+      prevHeight: string;
+      prevMinHeight: string;
+      prevMaxHeight: string;
+      prevContentVisibility: string;
+      prevContainIntrinsicWidth: string;
+      prevContainIntrinsicHeight: string;
+    }[][] = [];
+    for (let target of targets) {
+      let head = target.node;
+      if (head.style.contain === 'strict') {
+        continue;
+      }
+      let group: {
+        el: HTMLElement;
+        rect: DOMRect;
+        isHead: boolean;
+        prevContain: string;
+        prevWidth: string;
+        prevMinWidth: string;
+        prevMaxWidth: string;
+        prevHeight: string;
+        prevMinHeight: string;
+        prevMaxHeight: string;
+        prevContentVisibility: string;
+        prevContainIntrinsicWidth: string;
+        prevContainIntrinsicHeight: string;
+      }[] = [];
+
+      group.push({
+        el: head,
+        rect: head.getBoundingClientRect(),
+        isHead: true,
+        prevContain: head.style.contain,
+        prevWidth: head.style.width,
+        prevMinWidth: head.style.minWidth,
+        prevMaxWidth: head.style.maxWidth,
+        prevHeight: head.style.height,
+        prevMinHeight: head.style.minHeight,
+        prevMaxHeight: head.style.maxHeight,
+        prevContentVisibility: head.style.getPropertyValue('content-visibility'),
+        prevContainIntrinsicWidth: head.style.containIntrinsicWidth,
+        prevContainIntrinsicHeight: head.style.containIntrinsicHeight
+      });
+
+      for (let i = 0; i < head.children.length; i++) {
+        let child = head.children[i] as HTMLElement;
+        group.push({
+          el: child,
+          rect: child.getBoundingClientRect(),
+          isHead: false,
+          prevContain: child.style.contain,
+          prevWidth: child.style.width,
+          prevMinWidth: child.style.minWidth,
+          prevMaxWidth: child.style.maxWidth,
+          prevHeight: child.style.height,
+          prevMinHeight: child.style.minHeight,
+          prevMaxHeight: child.style.maxHeight,
+          prevContentVisibility: child.style.getPropertyValue('content-visibility'),
+          prevContainIntrinsicWidth: child.style.containIntrinsicWidth,
+          prevContainIntrinsicHeight: child.style.containIntrinsicHeight
+        });
+      }
+
+      groups.push(group);
+    }
+
+    // Apply containment and pinned sizes.
+    for (let group of groups) {
+      let frozenGroup: Private.IFrozenElement[] = [];
+      for (let entry of group) {
+        frozenGroup.push({
+          element: entry.el,
+          isHead: entry.isHead,
+          prevContain: entry.prevContain,
+          prevWidth: entry.prevWidth,
+          prevMinWidth: entry.prevMinWidth,
+          prevMaxWidth: entry.prevMaxWidth,
+          prevHeight: entry.prevHeight,
+          prevMinHeight: entry.prevMinHeight,
+          prevMaxHeight: entry.prevMaxHeight,
+          prevContentVisibility: entry.prevContentVisibility,
+          prevContainIntrinsicWidth: entry.prevContainIntrinsicWidth,
+          prevContainIntrinsicHeight: entry.prevContainIntrinsicHeight
+        });
+
+        entry.el.style.width = `${entry.rect.width}px`;
+        entry.el.style.minWidth = `${entry.rect.width}px`;
+        entry.el.style.maxWidth = `${entry.rect.width}px`;
+        entry.el.style.maxHeight = `${entry.rect.height}px`;
+
+        if (entry.isHead) {
+          entry.el.style.height = `${entry.rect.height}px`;
+          entry.el.style.minHeight = `${entry.rect.height}px`;
+          entry.el.style.contain = 'strict';
+          entry.el.classList.add('lm-layout-frozen');
+        } else {
+          entry.el.style.setProperty('content-visibility', 'auto');
+          entry.el.style.containIntrinsicWidth = `${entry.rect.width}px`;
+          entry.el.style.containIntrinsicHeight = `${entry.rect.height}px`;
+        }
+      }
+      this._frozenGroups.push(frozenGroup);
+    }
+
+    console.log(`[SplitPanel] froze ${this._frozenGroups.length} groups`);
+
+    // Start periodic interval to keep sizes roughly correct
+    // during long continuous drags.
+    if (this._frozenGroups.length > 0 && this._intervalId === 0) {
+      this._intervalId = window.setInterval(() => {
+        this._refreshFrozenElements();
+      }, Private.REFRESH_INTERVAL_MS);
+    }
+  }
+
+  /**
+   * Schedule a debounced refresh of frozen elements. Resets on
+   * each call so the refresh only fires after the user stops
+   * moving the handle.
+   */
+  private _scheduleRefresh(): void {
+    if (this._frozenGroups.length === 0) {
+      return;
+    }
+    if (this._refreshTimerId !== 0) {
+      clearTimeout(this._refreshTimerId);
+    }
+    this._refreshTimerId = window.setTimeout(() => {
+      this._refreshTimerId = 0;
+      this._refreshFrozenElements();
+    }, Private.REFRESH_DEBOUNCE_MS);
+  }
+
+  /**
+   * Refresh frozen groups one at a time, spreading the reflow
+   * cost across multiple animation frames.
+   */
+  private _refreshFrozenElements(): void {
+    console.log(`[SplitPanel] refreshing ${this._frozenGroups.length} frozen groups (staggered)`);
+    let g = 0;
+    const step = () => {
+      if (g >= this._frozenGroups.length) {
+        this._refreshRAFId = 0;
+        return;
+      }
+      let group = this._frozenGroups[g];
+      // Frame 1: lift containment to let the browser settle layout.
+      for (let entry of group) {
+        let el = entry.element;
+        el.style.contain = entry.prevContain;
+        el.style.width = '';
+        el.style.minWidth = '';
+        el.style.maxWidth = '';
+        el.style.height = '';
+        el.style.minHeight = '';
+        el.style.maxHeight = '';
+        el.style.setProperty('content-visibility', entry.prevContentVisibility);
+        el.style.containIntrinsicWidth = entry.prevContainIntrinsicWidth;
+        el.style.containIntrinsicHeight = entry.prevContainIntrinsicHeight;
+      }
+      // Frame 2: read the settled rect and re-pin.
+      this._refreshRAFId = requestAnimationFrame(() => {
+        let rects = group.map(entry => entry.element.getBoundingClientRect());
+        for (let i = 0; i < group.length; i++) {
+          let entry = group[i];
+          let rect = rects[i];
+          let el = entry.element;
+          el.style.width = `${rect.width}px`;
+          el.style.minWidth = `${rect.width}px`;
+          el.style.maxWidth = `${rect.width}px`;
+          el.style.maxHeight = `${rect.height}px`;
+          if (entry.isHead) {
+            el.style.height = `${rect.height}px`;
+            el.style.minHeight = `${rect.height}px`;
+            el.style.contain = 'strict';
+          } else {
+            el.style.setProperty('content-visibility', 'auto');
+            el.style.containIntrinsicWidth = `${rect.width}px`;
+            el.style.containIntrinsicHeight = `${rect.height}px`;
+          }
+        }
+        g++;
+        this._refreshRAFId = requestAnimationFrame(step);
+      });
+    };
+    this._refreshRAFId = requestAnimationFrame(step);
+  }
+
+  /**
+   * Remove containment and restore original styles on all frozen
+   * elements.
+   */
+  private _unfreezeElements(): void {
+    console.log(`[SplitPanel] unfreezing ${this._frozenGroups.length} groups`);
+    if (this._refreshTimerId !== 0) {
+      clearTimeout(this._refreshTimerId);
+      this._refreshTimerId = 0;
+    }
+    if (this._refreshRAFId !== 0) {
+      cancelAnimationFrame(this._refreshRAFId);
+      this._refreshRAFId = 0;
+    }
+    if (this._intervalId !== 0) {
+      clearInterval(this._intervalId);
+      this._intervalId = 0;
+    }
+    for (let group of this._frozenGroups) {
+      for (let entry of group) {
+        entry.element.style.contain = entry.prevContain;
+        entry.element.style.width = entry.prevWidth;
+        entry.element.style.minWidth = entry.prevMinWidth;
+        entry.element.style.maxWidth = entry.prevMaxWidth;
+        entry.element.style.height = entry.prevHeight;
+        entry.element.style.minHeight = entry.prevMinHeight;
+        entry.element.style.maxHeight = entry.prevMaxHeight;
+        entry.element.style.setProperty('content-visibility', entry.prevContentVisibility);
+        entry.element.style.containIntrinsicWidth = entry.prevContainIntrinsicWidth;
+        entry.element.style.containIntrinsicHeight = entry.prevContainIntrinsicHeight;
+        if (entry.isHead) {
+          entry.element.classList.remove('lm-layout-frozen');
+        }
+      }
+    }
+    this._frozenGroups = [];
+  }
+
   private _handleMoved = new Signal<any, void>(this);
   private _pressData: Private.IPressData | null = null;
+  private _nodeCountThreshold = Private.DEFAULT_NODE_COUNT_THRESHOLD;
+  private _frozenGroups: Private.IFrozenElement[][] = [];
+  private _refreshTimerId = 0;
+  private _refreshRAFId = 0;
+  private _intervalId = 0;
 }
 
 /**
@@ -403,6 +673,19 @@ export namespace SplitPanel {
      * The default is a new `SplitLayout`.
      */
     layout?: SplitLayout;
+
+    /**
+     * The number of DOM nodes in a child widget above which the
+     * panel will apply CSS containment during handle dragging to
+     * prevent expensive child relayout.
+     *
+     * Additionally, if a layout update takes longer than 16ms,
+     * containment is applied reactively for all children regardless
+     * of this threshold.
+     *
+     * The default is `5000`.
+     */
+    nodeCountThreshold?: number;
   }
 
   /**
@@ -447,6 +730,7 @@ export namespace SplitPanel {
   export function setStretch(widget: Widget, value: number): void {
     SplitLayout.setStretch(widget, value);
   }
+
 }
 
 /**
@@ -471,6 +755,152 @@ namespace Private {
      * The disposable which will clear the override cursor.
      */
     override: IDisposable;
+  }
+
+  /**
+   * An object which holds the original styles for a frozen element.
+   */
+  export interface IFrozenElement {
+    /**
+     * The frozen DOM element.
+     */
+    element: HTMLElement;
+
+    /**
+     * Whether this entry is a frozen group head.
+     */
+    isHead: boolean;
+
+    /**
+     * The original `contain` style value.
+     */
+    prevContain: string;
+
+    /**
+     * The original `width` style value.
+     */
+    prevWidth: string;
+
+    /**
+     * The original `minWidth` style value.
+     */
+    prevMinWidth: string;
+
+    /**
+     * The original `maxWidth` style value.
+     */
+    prevMaxWidth: string;
+
+    /**
+     * The original `height` style value.
+     */
+    prevHeight: string;
+
+    /**
+     * The original `minHeight` style value.
+     */
+    prevMinHeight: string;
+
+    /**
+     * The original `maxHeight` style value.
+     */
+    prevMaxHeight: string;
+
+    /**
+     * The original `contentVisibility` style value.
+     */
+    prevContentVisibility: string;
+
+    /**
+     * The original `containIntrinsicWidth` style value.
+     */
+    prevContainIntrinsicWidth: string;
+
+    /**
+     * The original `containIntrinsicHeight` style value.
+     */
+    prevContainIntrinsicHeight: string;
+  }
+
+  /**
+   * The default node count threshold for content isolation.
+   */
+  export const DEFAULT_NODE_COUNT_THRESHOLD = 5000;
+
+  /**
+   * The delay (in ms) after the last pointer move before refreshing
+   * frozen element sizes.
+   */
+  export const REFRESH_DEBOUNCE_MS = 300;
+
+  /**
+   * The periodic interval (in ms) for refreshing frozen element
+   * sizes during long continuous drags.
+   */
+  export const REFRESH_INTERVAL_MS = 3000;
+
+  /**
+   * The minimum total text length in a widget's subtree to
+   * consider it heavy, independent of node count.
+   */
+  export const DEFAULT_TEXT_LENGTH_THRESHOLD = 25000;
+
+  /**
+   * Determine whether a DOM subtree is heavy enough to warrant
+   * containment. A subtree is heavy if it has many nodes or a
+   * large amount of text content.
+   */
+  export function isDOMHeavy(
+    el: HTMLElement,
+    nodeCountThreshold: number,
+    textLengthThreshold: number = DEFAULT_TEXT_LENGTH_THRESHOLD
+  ): boolean {
+    if (el.querySelectorAll('*').length >= nodeCountThreshold) {
+      return true;
+    }
+    if ((el.textContent?.length ?? 0) >= textLengthThreshold) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Recursively find the deepest widgets whose subtree is heavy
+   * but whose child widgets are all individually light. This
+   * places containment as low in the DOM tree as possible.
+   */
+  export function collectHeavyWidgets(
+    widget: Widget,
+    threshold: number,
+    result: Widget[]
+  ): void {
+    if (!isDOMHeavy(widget.node, threshold)) {
+      return;
+    }
+    let layout = widget.layout;
+    if (!layout) {
+      // Leaf widget that is heavy — freeze it.
+      result.push(widget);
+      return;
+    }
+    // Check if any child widget is individually heavy.
+    let anyChildHeavy = false;
+    for (let child of layout) {
+      if (isDOMHeavy(child.node, threshold)) {
+        anyChildHeavy = true;
+        break;
+      }
+    }
+    if (anyChildHeavy) {
+      // Recurse into children — we can push containment deeper.
+      for (let child of layout) {
+        collectHeavyWidgets(child, threshold, result);
+      }
+    } else {
+      // No child is individually heavy, but this widget is.
+      // This is the deepest heavy boundary — freeze here.
+      result.push(widget);
+    }
   }
 
   /**

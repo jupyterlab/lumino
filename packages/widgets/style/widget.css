@@ -20,3 +20,8 @@
 .lm-Widget.lm-mod-hidden {
   display: none !important;
 }
+
+.lm-layout-frozen * {
+  content-visibility: auto;
+  contain-intrinsic-size: auto none;
+}
