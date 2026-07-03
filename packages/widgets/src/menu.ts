@@ -1150,6 +1150,11 @@ export namespace Menu {
     readonly isToggled: boolean;
 
     /**
+     * Whether the menu item is toggleable.
+     */
+    readonly isToggleable?: boolean;
+
+    /**
      * Whether the menu item is visible.
      */
     readonly isVisible: boolean;
@@ -1373,9 +1378,9 @@ export namespace Menu {
           if (!data.item.isEnabled) {
             aria['aria-disabled'] = 'true';
           }
-          if (data.item.isToggled) {
+          if (data.item.isToggleable || data.item.isToggled) {
             aria.role = 'menuitemcheckbox';
-            aria['aria-checked'] = 'true';
+            aria['aria-checked'] = `${data.item.isToggled}`;
           } else {
             aria.role = 'menuitem';
           }
@@ -1944,6 +1949,16 @@ namespace Private {
     get isToggled(): boolean {
       if (this.type === 'command') {
         return this._commands.isToggled(this.command, this.args);
+      }
+      return false;
+    }
+
+    /**
+     * Whether the menu item is toggleable.
+     */
+    get isToggleable(): boolean {
+      if (this.type === 'command') {
+        return this._commands.isToggleable(this.command, this.args);
       }
       return false;
     }
