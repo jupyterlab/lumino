@@ -1,6 +1,8 @@
 // Copyright (c) Jupyter Development Team.
 // Distributed under the terms of the Modified BSD License.
 
+import { LinkedList } from '@lumino/collections';
+
 import { JSONExt, PromiseDelegate } from '@lumino/coreutils';
 
 import { IObservableDisposable } from '@lumino/disposable';
@@ -142,9 +144,25 @@ export class Poll<T = any, U = any, V extends string = 'standby'>
    * Return an async iterator that yields every tick.
    */
   async *[Symbol.asyncIterator](): AsyncIterableIterator<IPoll.State<T, U, V>> {
-    while (!this.isDisposed) {
-      yield this.state;
-      await this.tick.catch(() => undefined);
+    const queue = new LinkedList<IPoll.State<T, U, V>>();
+    const enqueue = (_: unknown, state: IPoll.State<T, U, V>) => {
+      if (queue.size >= Private.MAX_QUEUE_SIZE) {
+        queue.removeFirst();
+      }
+      queue.addLast(state);
+    };
+    queue.addLast(this.state);
+    this.ticked.connect(enqueue);
+    try {
+      while (!this.isDisposed) {
+        if (queue.isEmpty) {
+          await this.tick.catch(() => undefined);
+        } else {
+          yield queue.removeFirst()!;
+        }
+      }
+    } finally {
+      this.ticked.disconnect(enqueue);
     }
   }
 
@@ -492,6 +510,11 @@ namespace Private {
     phase: 'disposed',
     timestamp: new Date(0).getTime()
   };
+
+  /**
+   * The maximum size of the poll state queue for each iterator returned.
+   */
+  export const MAX_QUEUE_SIZE = 1000;
 
   /**
    * Returns the number of milliseconds to sleep before the next tick.

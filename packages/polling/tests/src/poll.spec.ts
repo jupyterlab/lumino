@@ -296,6 +296,114 @@ describe('Poll', () => {
       }
       expect(ticker.join(' ')).to.equal(expected);
     });
+
+    it('should not drop rapid schedule calls', async () => {
+      poll = new Poll<number>({
+        auto: false,
+        factory: () => Promise.resolve(-1),
+        frequency: { interval: Poll.NEVER },
+        name: '@lumino/polling:Poll#[Symbol.asyncIterator]-4'
+      });
+      void poll.start();
+      await poll.tick;
+
+      const payloads = [1, 2, 3, 4, 5];
+      const collected: number[] = [];
+      const consumption = (async () => {
+        for await (const state of poll!) {
+          if (state.payload === -1) continue;
+          collected.push(state.payload as number);
+          if (collected.length === payloads.length) break;
+        }
+      })();
+
+      for (const payload of payloads) {
+        void poll.schedule({ payload, phase: 'resolved' });
+      }
+
+      await consumption;
+      expect(collected).to.deep.equal(payloads);
+    });
+
+    it('should drop oldest states when buffer overflows', async () => {
+      poll = new Poll<number>({
+        auto: false,
+        factory: () => Promise.resolve(-1),
+        frequency: { interval: Poll.NEVER },
+        name: '@lumino/polling:Poll#[Symbol.asyncIterator]-7'
+      });
+      void poll.start();
+      await poll.tick;
+
+      const LIMIT = 1000;
+      const OVERFLOW = 10;
+
+      const collected: number[] = [];
+      const consumption = (async () => {
+        for await (const state of poll!) {
+          if (state.payload === -1) continue;
+          collected.push(state.payload as number);
+          if (collected.length === LIMIT) break;
+        }
+      })();
+
+      for (let i = 0; i < LIMIT + OVERFLOW; i++) {
+        void poll.schedule({ payload: i, phase: 'resolved' });
+      }
+
+      await consumption;
+
+      expect(collected.length).to.equal(LIMIT);
+      // Oldest items were dropped to stay within the buffer limit.
+      expect(collected[0]).to.equal(OVERFLOW);
+      expect(collected[LIMIT - 1]).to.equal(LIMIT + OVERFLOW - 1);
+    });
+
+    it('should stop yielding after disposal', async () => {
+      poll = new Poll({
+        auto: false,
+        factory: () => Promise.resolve(),
+        frequency: { interval: Poll.NEVER },
+        name: '@lumino/polling:Poll#[Symbol.asyncIterator]-5'
+      });
+      void poll.start();
+      await poll.tick;
+
+      void poll.schedule({ payload: 'a', phase: 'resolved' });
+      void poll.schedule({ payload: 'b', phase: 'resolved' });
+      void poll.schedule({ payload: 'c', phase: 'resolved' });
+      poll.dispose();
+
+      const collected: string[] = [];
+      for await (const state of poll) {
+        collected.push(state.phase);
+      }
+      expect(collected).to.deep.equal([]);
+    });
+
+    it('should work identically for one-tick-at-a-time polling', async () => {
+      const total = 5;
+      let i = 0;
+      poll = new Poll({
+        auto: false,
+        factory: async () => ++i,
+        frequency: { interval: Poll.IMMEDIATE },
+        name: '@lumino/polling:Poll#[Symbol.asyncIterator]-6'
+      });
+      const ticker: IPoll.Phase<any>[] = [];
+      void poll.start();
+      for await (const state of poll) {
+        ticker.push(state.phase);
+        if (i >= total) {
+          poll.dispose();
+          break;
+        }
+      }
+      // Should see started, then resolved for each factory call.
+      expect(ticker[0]).to.equal('started');
+      expect(ticker.slice(1).every(p => p === 'resolved')).to.equal(true);
+      expect(ticker.length).to.be.greaterThan(1);
+    });
   });
 
   describe('#tick', () => {
