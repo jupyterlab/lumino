@@ -6,6 +6,51 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2026.5.25
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2026.2.5...45495a6d8cc7f6035e7cccbd7d26ec1671b3cd57))
+
+```
+@lumino/application: 2.4.8 => 2.4.9
+@lumino/datagrid: 2.5.6 => 2.5.7
+@lumino/default-theme: 2.1.14 => 2.1.15
+@lumino/widgets: 2.7.5 => 2.8.0
+```
+
+### Enhancements made
+
+- Keep tab widths frozen when closing tabs [#793](https://github.com/jupyterlab/lumino/pull/793) ([@MUFFANUJ](https://github.com/MUFFANUJ), [@krassowski](https://github.com/krassowski))
+
+### Bugs fixed
+
+- Fix incorrect accordion title state on widget move [#819](https://github.com/jupyterlab/lumino/pull/819) ([@Darshan808](https://github.com/Darshan808), [@krassowski](https://github.com/krassowski))
+- Fix menu not closing when clicking tabs [#818](https://github.com/jupyterlab/lumino/pull/818) ([@Darshan808](https://github.com/Darshan808), [@afshin](https://github.com/afshin), [@krassowski](https://github.com/krassowski))
+
+### Maintenance and upkeep improvements
+
+- Disable scripts and telemetry in `.yarnrc.yml` [#821](https://github.com/jupyterlab/lumino/pull/821) ([@krassowski](https://github.com/krassowski), [@jtpio](https://github.com/jtpio))
+- Bump rollup from 3.29.5 to 3.30.0 [#795](https://github.com/jupyterlab/lumino/pull/795) ([@krassowski](https://github.com/krassowski))
+- Update the default release version number to be the correct date [#791](https://github.com/jupyterlab/lumino/pull/791) ([@jasongrout](https://github.com/jasongrout), [@krassowski](https://github.com/krassowski))
+
+### Other merged PRs
+
+- Bump @tootallnate/once from 2.0.0 to 2.0.1 [#820](https://github.com/jupyterlab/lumino/pull/820) ([@krassowski](https://github.com/krassowski))
+- Bump postcss from 8.4.31 to 8.5.10 [#813](https://github.com/jupyterlab/lumino/pull/813) ([@krassowski](https://github.com/krassowski))
+- Bump follow-redirects from 1.15.9 to 1.16.0 [#809](https://github.com/jupyterlab/lumino/pull/809) ([@krassowski](https://github.com/krassowski))
+- Bump lodash-es from 4.17.23 to 4.18.1 [#804](https://github.com/jupyterlab/lumino/pull/804) ([@krassowski](https://github.com/krassowski))
+- Bump flatted from 3.2.7 to 3.4.2 [#800](https://github.com/jupyterlab/lumino/pull/800) ([@krassowski](https://github.com/krassowski))
+
+### Contributors to this release
+
+The following people contributed discussions, new ideas, code and documentation contributions, and review.
+See [our definition of contributors](https://github-activity.readthedocs.io/en/latest/use/#how-does-this-tool-define-contributions-in-the-reports).
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2026-02-05&to=2026-05-25&type=c))
+
+@afshin ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aafshin+updated%3A2026-02-05..2026-05-25&type=Issues)) | @Darshan808 ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3ADarshan808+updated%3A2026-02-05..2026-05-25&type=Issues)) | @jasongrout ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajasongrout+updated%3A2026-02-05..2026-05-25&type=Issues)) | @jtpio ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajtpio+updated%3A2026-02-05..2026-05-25&type=Issues)) | @KH-Coder865 ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3AKH-Coder865+updated%3A2026-02-05..2026-05-25&type=Issues)) | @krassowski ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2026-02-05..2026-05-25&type=Issues)) | @MUFFANUJ ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3AMUFFANUJ+updated%3A2026-02-05..2026-05-25&type=Issues))
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2026.2.5
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2025.1.30...4f31e56b15633e363c84322ca58414746bdd0140))
@@ -35,8 +80,6 @@ See [our definition of contributors](https://github-activity.readthedocs.io/en/l
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2026-01-30&to=2026-02-05&type=c))
 
 @jasongrout ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajasongrout+updated%3A2026-01-30..2026-02-05&type=Issues)) | @krassowski ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2026-01-30..2026-02-05&type=Issues))
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2025.1.30
 

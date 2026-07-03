@@ -773,6 +773,8 @@ describe('@lumino/widgets', () => {
         expect(widget.hasClass('lm-mod-hidden')).to.equal(false);
         // @ts-expect-error content-visibility unknown by DOM lib types
         expect(widget.node.style.contentVisibility).to.equal('hidden');
+        expect(widget.node.style.zIndex).to.equal('-1');
+        expect(widget.node.style.opacity).to.equal('0');
         expect(widget.node.style.willChange).to.equal('auto');
         widget.dispose();
       });
@@ -785,6 +787,10 @@ describe('@lumino/widgets', () => {
         widget.hiddenMode = Widget.HiddenMode.Display;
         expect(widget.hasClass('lm-mod-hidden')).to.equal(true);
         expect(widget.node.style.transform).to.equal('');
+        // @ts-expect-error content-visibility unknown by DOM lib types
+        expect(widget.node.style.contentVisibility).to.equal('');
+        expect(widget.node.style.zIndex).to.equal('');
+        expect(widget.node.style.opacity).to.equal('');
         expect(widget.node.style.willChange).to.equal('auto');
         widget.dispose();
       });
