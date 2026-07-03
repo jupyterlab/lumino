@@ -360,12 +360,12 @@ export class MenuBar extends Widget {
       case 'keydown':
         this._evtKeyDown(event as KeyboardEvent);
         break;
-      case 'mousedown':
-        this._evtMouseDown(event as MouseEvent);
+      case 'pointerdown':
+        this._evtPointerDown(event as PointerEvent);
         break;
-      case 'mousemove':
-      case 'mouseleave':
-        this._evtMouseMove(event as MouseEvent);
+      case 'pointermove':
+      case 'pointerleave':
+        this._evtPointerMove(event as PointerEvent);
         break;
       case 'focusout':
         this._evtFocusOut(event as FocusEvent);
@@ -382,9 +382,9 @@ export class MenuBar extends Widget {
    */
   protected onBeforeAttach(msg: Message): void {
     this.node.addEventListener('keydown', this);
-    this.node.addEventListener('mousedown', this);
-    this.node.addEventListener('mousemove', this);
-    this.node.addEventListener('mouseleave', this);
+    this.node.addEventListener('pointerdown', this);
+    this.node.addEventListener('pointermove', this);
+    this.node.addEventListener('pointerleave', this);
     this.node.addEventListener('focusout', this);
     this.node.addEventListener('contextmenu', this);
   }
@@ -394,9 +394,9 @@ export class MenuBar extends Widget {
    */
   protected onAfterDetach(msg: Message): void {
     this.node.removeEventListener('keydown', this);
-    this.node.removeEventListener('mousedown', this);
-    this.node.removeEventListener('mousemove', this);
-    this.node.removeEventListener('mouseleave', this);
+    this.node.removeEventListener('pointerdown', this);
+    this.node.removeEventListener('pointermove', this);
+    this.node.removeEventListener('pointerleave', this);
     this.node.removeEventListener('focusout', this);
     this.node.removeEventListener('contextmenu', this);
     this._closeChildMenu();
@@ -651,9 +651,9 @@ export class MenuBar extends Widget {
   }
 
   /**
-   * Handle the `'mousedown'` event for the menu bar.
+   * Handle the `'pointerdown'` event for the menu bar.
    */
-  private _evtMouseDown(event: MouseEvent): void {
+  private _evtPointerDown(event: PointerEvent): void {
     // Bail if the mouse press was not on the menu bar. This can occur
     // when the document listener is installed for an active menu bar.
     if (!ElementExt.hitTest(this.node, event.clientX, event.clientY)) {
@@ -698,9 +698,9 @@ export class MenuBar extends Widget {
   }
 
   /**
-   * Handle the `'mousemove'` event for the menu bar.
+   * Handle the `'pointermove'` event for the menu bar.
    */
-  private _evtMouseMove(event: MouseEvent): void {
+  private _evtPointerMove(event: PointerEvent): void {
     // Check if the mouse is over one of the menu items.
     let index = ArrayExt.findFirstIndex(this.contentNode.children, node => {
       return ElementExt.hitTest(node, event.clientX, event.clientY);
@@ -802,7 +802,7 @@ export class MenuBar extends Widget {
     if (oldMenu) {
       oldMenu.close();
     } else {
-      document.addEventListener('mousedown', this, true);
+      document.addEventListener('pointerdown', this, true);
     }
 
     // Update the tab focus index and ensure the menu bar is updated.
@@ -841,7 +841,7 @@ export class MenuBar extends Widget {
     this.removeClass('lm-mod-active');
 
     // Remove the document listeners.
-    document.removeEventListener('mousedown', this, true);
+    document.removeEventListener('pointerdown', this, true);
 
     // Clear the internal menu reference.
     let menu = this._childMenu;
@@ -867,7 +867,7 @@ export class MenuBar extends Widget {
     this.removeClass('lm-mod-active');
 
     // Remove the document listeners.
-    document.removeEventListener('mousedown', this, true);
+    document.removeEventListener('pointerdown', this, true);
 
     // Clear the internal menu reference.
     this._childMenu = null;

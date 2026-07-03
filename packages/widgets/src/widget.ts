@@ -771,6 +771,10 @@ export class Widget implements IMessageHandler, IObservableDisposable {
           // @ts-expect-error content-visibility unknown by DOM lib types
           this.node.style.contentVisibility = 'hidden';
           this.node.style.zIndex = '-1';
+          // Set opacity to 0 so that the widget's box (e.g. borders or
+          // background) does not shine through despite the content being
+          // skipped by `content-visibility`.
+          this.node.style.opacity = '0';
           break;
       }
     } else {
@@ -786,6 +790,7 @@ export class Widget implements IMessageHandler, IObservableDisposable {
           // @ts-expect-error content-visibility unknown by DOM lib types
           this.node.style.contentVisibility = '';
           this.node.style.zIndex = '';
+          this.node.style.opacity = '';
           break;
       }
     }

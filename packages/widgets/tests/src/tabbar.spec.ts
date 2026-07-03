@@ -118,6 +118,21 @@ function simulateOnNode(node: Element, action: Action): void {
   );
 }
 
+function createTransitionEvent(
+  type: 'transitionend' | 'transitioncancel',
+  propertyName: string
+): Event {
+  if (typeof TransitionEvent === 'function') {
+    return new TransitionEvent(type, {
+      bubbles: true,
+      propertyName
+    });
+  }
+  let event = new Event(type, { bubbles: true });
+  Object.defineProperty(event, 'propertyName', { value: propertyName });
+  return event;
+}
+
 describe('@lumino/widgets', () => {
   describe('TabBar', () => {
     let bar: LogTabBar;
@@ -1038,6 +1053,105 @@ describe('@lumino/widgets', () => {
             done();
           });
         });
+      });
+
+      it('should not freeze tab widths if closed programmatically (e.g., keyboard shortcut)', () => {
+        populateBar(bar);
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+
+        bar.removeTabAt(0);
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+
+        // Since it was closed programmatically (no close-icon click),
+        // widths should NOT be explicitly frozen.
+        let tabs = bar.contentNode.children;
+        for (let i = 0, n = tabs.length; i < n; ++i) {
+          expect((tabs[i] as HTMLElement).style.width).to.equal('');
+          expect((tabs[i] as HTMLElement).style.flexBasis).to.equal('');
+        }
+      });
+
+      it('should freeze tab widths if closed via close icon and unfreeze on pointerleave', () => {
+        populateBar(bar);
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+
+        let tabs = bar.contentNode.children;
+        let closeIcon = tabs[0].querySelector(
+          bar.renderer.closeIconSelector
+        ) as HTMLElement;
+
+        bar.tabCloseRequested.connect((sender, args) => {
+          bar.removeTabAt(args.index);
+          MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        });
+
+        simulateOnNode(closeIcon, 'pointerdown');
+        simulateOnNode(closeIcon, 'pointerup');
+
+        let remainingTabs = bar.contentNode.children;
+        expect((remainingTabs[0] as HTMLElement).style.width).to.not.equal('');
+        expect((remainingTabs[0] as HTMLElement).style.flexBasis).to.not.equal(
+          ''
+        );
+
+        bar.node.dispatchEvent(
+          new PointerEvent('pointerleave', { bubbles: false })
+        );
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+
+        expect(bar.hasClass('lm-mod-unfreezing')).to.equal(true);
+        for (let i = 0, n = remainingTabs.length; i < n; ++i) {
+          expect((remainingTabs[i] as HTMLElement).style.width).to.equal('');
+          expect((remainingTabs[i] as HTMLElement).style.flexBasis).to.equal(
+            ''
+          );
+        }
+      });
+
+      it('should remove unfreezing class on transition cancel or end', () => {
+        populateBar(bar);
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+
+        let tabs = bar.contentNode.children;
+        let closeIcon = tabs[0].querySelector(
+          bar.renderer.closeIconSelector
+        ) as HTMLElement;
+
+        bar.tabCloseRequested.connect((sender, args) => {
+          bar.removeTabAt(args.index);
+          MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        });
+
+        simulateOnNode(closeIcon, 'pointerdown');
+        simulateOnNode(closeIcon, 'pointerup');
+
+        bar.node.dispatchEvent(
+          new PointerEvent('pointerleave', { bubbles: false })
+        );
+        expect(bar.hasClass('lm-mod-unfreezing')).to.equal(true);
+
+        let firstRemainingTab = bar.contentNode.children[0];
+        firstRemainingTab.dispatchEvent(
+          createTransitionEvent('transitioncancel', 'flex-basis')
+        );
+        expect(bar.hasClass('lm-mod-unfreezing')).to.equal(false);
+
+        // Start another freeze/unfreeze run and finish on transition end.
+        closeIcon = bar.contentNode.children[0].querySelector(
+          bar.renderer.closeIconSelector
+        ) as HTMLElement;
+        simulateOnNode(closeIcon, 'pointerdown');
+        simulateOnNode(closeIcon, 'pointerup');
+        bar.node.dispatchEvent(
+          new PointerEvent('pointerleave', { bubbles: false })
+        );
+        expect(bar.hasClass('lm-mod-unfreezing')).to.equal(true);
+
+        firstRemainingTab = bar.contentNode.children[0];
+        firstRemainingTab.dispatchEvent(
+          createTransitionEvent('transitionend', 'width')
+        );
+        expect(bar.hasClass('lm-mod-unfreezing')).to.equal(false);
       });
     });
 
