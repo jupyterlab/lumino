@@ -29,6 +29,8 @@ import { Menu } from './menu';
 
 import { Title } from './title';
 
+import Utils from './utils';
+
 import { Widget } from './widget';
 
 /**
@@ -701,6 +703,10 @@ export class MenuBar extends Widget {
    * Handle the `'pointermove'` event for the menu bar.
    */
   private _evtPointerMove(event: PointerEvent): void {
+    if (Utils.isTouchEvent(event)) {
+      return;
+    }
+
     // Check if the mouse is over one of the menu items.
     let index = ArrayExt.findFirstIndex(this.contentNode.children, node => {
       return ElementExt.hitTest(node, event.clientX, event.clientY);

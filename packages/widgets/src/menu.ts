@@ -30,6 +30,8 @@ import {
   VirtualElement
 } from '@lumino/virtualdom';
 
+import Utils from './utils';
+
 import { Widget } from './widget';
 
 interface IWindowData {
@@ -504,6 +506,9 @@ export class Menu extends Widget {
       case 'keydown':
         this._evtKeyDown(event as KeyboardEvent);
         break;
+      case 'click':
+        this._evtClick(event as MouseEvent);
+        break;
       case 'pointerup':
         this._evtPointerUp(event as PointerEvent);
         break;
@@ -531,6 +536,7 @@ export class Menu extends Widget {
    */
   protected onBeforeAttach(msg: Message): void {
     this.node.addEventListener('keydown', this);
+    this.node.addEventListener('click', this);
     this.node.addEventListener('pointerup', this);
     this.node.addEventListener('pointermove', this);
     this.node.addEventListener('pointerenter', this);
@@ -544,12 +550,14 @@ export class Menu extends Widget {
    */
   protected onAfterDetach(msg: Message): void {
     this.node.removeEventListener('keydown', this);
+    this.node.removeEventListener('click', this);
     this.node.removeEventListener('pointerup', this);
     this.node.removeEventListener('pointermove', this);
     this.node.removeEventListener('pointerenter', this);
     this.node.removeEventListener('pointerleave', this);
     this.node.removeEventListener('contextmenu', this);
     document.removeEventListener('pointerdown', this, true);
+    this._pendingTouchActivation = false;
   }
 
   /**
@@ -596,6 +604,7 @@ export class Menu extends Widget {
 
     // Reset the active index.
     this.activeIndex = -1;
+    this._pendingTouchActivation = false;
 
     // Close any open child menu.
     let childMenu = this._childMenu;
@@ -719,8 +728,36 @@ export class Menu extends Widget {
     if (event.button !== 0) {
       return;
     }
+
+    if (Utils.isTouchEvent(event)) {
+      this._pendingTouchActivation = this._activateItemFromEvent(event);
+      event.stopPropagation();
+      return;
+    }
+
     event.preventDefault();
     event.stopPropagation();
+    this._activateItemFromEvent(event);
+    this.triggerActiveItem();
+  }
+
+  /**
+   * Handle the `'click'` event for the menu.
+   *
+   * #### Notes
+   * This listener is attached to the menu node.
+   */
+  private _evtClick(event: MouseEvent): void {
+    if (!this._pendingTouchActivation) {
+      return;
+    }
+
+    this._pendingTouchActivation = false;
+    event.preventDefault();
+    event.stopPropagation();
+    if (!this._activateItemFromEvent(event)) {
+      return;
+    }
     this.triggerActiveItem();
   }
 
@@ -731,6 +768,10 @@ export class Menu extends Widget {
    * This listener is attached to the menu node.
    */
   private _evtPointerMove(event: PointerEvent): void {
+    if (Utils.isTouchEvent(event)) {
+      return;
+    }
+
     // Hit test the item nodes for the item under the mouse.
     let index = ArrayExt.findFirstIndex(this.contentNode.children, node => {
       return ElementExt.hitTest(node, event.clientX, event.clientY);
@@ -777,6 +818,10 @@ export class Menu extends Widget {
    * This listener is attached to the menu node.
    */
   private _evtPointerEnter(event: PointerEvent): void {
+    if (Utils.isTouchEvent(event)) {
+      return;
+    }
+
     // Synchronize the active ancestor items.
     for (let menu = this._parentMenu; menu; menu = menu._parentMenu) {
       menu._cancelOpenTimer();
@@ -792,6 +837,10 @@ export class Menu extends Widget {
    * This listener is attached to the menu node.
    */
   private _evtPointerLeave(event: PointerEvent): void {
+    if (Utils.isTouchEvent(event)) {
+      return;
+    }
+
     // Cancel any pending submenu opening.
     this._cancelOpenTimer();
 
@@ -820,6 +869,8 @@ export class Menu extends Widget {
    * This listener is attached to the document node.
    */
   private _evtPointerDown(event: PointerEvent): void {
+    this._pendingTouchActivation = false;
+
     // Bail if the menu is not a root menu.
     if (this._parentMenu) {
       return;
@@ -830,7 +881,9 @@ export class Menu extends Widget {
     // is allowed to propagate. This allows other code to act on the
     // event, such as focusing the clicked element.
     if (Private.hitTestMenus(this, event.clientX, event.clientY)) {
-      event.preventDefault();
+      if (!Utils.isTouchEvent(event)) {
+        event.preventDefault();
+      }
       event.stopPropagation();
     } else {
       this.close();
@@ -885,6 +938,20 @@ export class Menu extends Widget {
 
     // Activate the child menu.
     submenu.activate();
+  }
+
+  /**
+   * Activate the menu item under an event.
+   */
+  private _activateItemFromEvent(event: PointerEvent | MouseEvent): boolean {
+    let index = ArrayExt.findFirstIndex(this.contentNode.children, node => {
+      return ElementExt.hitTest(node, event.clientX, event.clientY);
+    });
+    if (index === -1) {
+      return false;
+    }
+    this.activeIndex = index;
+    return true;
   }
 
   /**
@@ -959,6 +1026,7 @@ export class Menu extends Widget {
   private _activeIndex = -1;
   private _openTimerID = 0;
   private _closeTimerID = 0;
+  private _pendingTouchActivation = false;
   private _items: Menu.IItem[] = [];
   private _childMenu: Menu | null = null;
   private _parentMenu: Menu | null = null;
