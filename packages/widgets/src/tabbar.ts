@@ -31,6 +31,8 @@ import {
 
 import { Title } from './title';
 
+import Utils from './utils';
+
 import { Widget } from './widget';
 
 const ARROW_KEYS = [
@@ -625,6 +627,9 @@ export class TabBar<T> extends Widget {
       case 'pointerleave':
         this._evtPointerLeave(event as PointerEvent);
         break;
+      case 'click':
+        this._evtClick(event as MouseEvent);
+        break;
       case 'dblclick':
         this._evtDblClick(event as MouseEvent);
         break;
@@ -646,6 +651,7 @@ export class TabBar<T> extends Widget {
   protected onBeforeAttach(msg: Message): void {
     this.node.addEventListener('pointerdown', this);
     this.node.addEventListener('pointerleave', this);
+    this.node.addEventListener('click', this);
     this.node.addEventListener('dblclick', this);
     this.node.addEventListener('keydown', this);
   }
@@ -656,10 +662,12 @@ export class TabBar<T> extends Widget {
   protected onAfterDetach(msg: Message): void {
     this.node.removeEventListener('pointerdown', this);
     this.node.removeEventListener('pointerleave', this);
+    this.node.removeEventListener('click', this);
     this.node.removeEventListener('dblclick', this);
     this.node.removeEventListener('keydown', this);
     this._clearUnfreezeTransitionState();
     this._clearTabSizeFreezeState();
+    this._pendingTouchCloseRequest = null;
     this._releaseMouse();
   }
 
@@ -900,6 +908,8 @@ export class TabBar<T> extends Widget {
    * Handle the `'pointerdown'` event for the tab bar.
    */
   private _evtPointerDown(event: PointerEvent | MouseEvent): void {
+    this._pendingTouchCloseRequest = null;
+
     // Do nothing if it's not a left or middle mouse press.
     if (event.button !== 0 && event.button !== 1) {
       return;
@@ -935,8 +945,17 @@ export class TabBar<T> extends Widget {
       return;
     }
 
+    // Check if the close icon was pressed.
+    let icon =
+      index !== -1
+        ? tabs[index].querySelector(this.renderer.closeIconSelector)
+        : null;
+    let closeIconPressed = !!icon && icon.contains(event.target as HTMLElement);
+
     // Pressing on a tab stops the event propagation.
-    event.preventDefault();
+    if (!closeIconPressed || !Utils.isTouchEvent(event)) {
+      event.preventDefault();
+    }
     event.stopPropagation();
 
     // Initialize the non-measured parts of the drag data.
@@ -966,8 +985,7 @@ export class TabBar<T> extends Widget {
     }
 
     // Do nothing else if the close icon is clicked.
-    let icon = tabs[index].querySelector(this.renderer.closeIconSelector);
-    if (icon && icon.contains(event.target as HTMLElement)) {
+    if (closeIconPressed) {
       return;
     }
 
@@ -1095,8 +1113,12 @@ export class TabBar<T> extends Widget {
       return;
     }
 
+    const isTouch = Utils.isTouchEvent(event);
+
     // Stop the event propagation.
-    event.preventDefault();
+    if (!isTouch) {
+      event.preventDefault();
+    }
     event.stopPropagation();
 
     // Remove the extra mouse event listeners.
@@ -1148,6 +1170,10 @@ export class TabBar<T> extends Widget {
       let icon = tabs[index].querySelector(this.renderer.closeIconSelector);
       if (icon && icon.contains(event.target as HTMLElement)) {
         this._tabSizeFrozen = true;
+        if (isTouch) {
+          this._pendingTouchCloseRequest = { index, title };
+          return;
+        }
         this._tabCloseRequested.emit({ index, title });
         return;
       }
@@ -1285,6 +1311,33 @@ export class TabBar<T> extends Widget {
     if (ci >= i) {
       this._currentIndex++;
     }
+  }
+
+  /**
+   * Handle the `'click'` event for the tab bar.
+   */
+  private _evtClick(event: MouseEvent): void {
+    const request = this._pendingTouchCloseRequest;
+    if (!request) {
+      return;
+    }
+
+    this._pendingTouchCloseRequest = null;
+    event.preventDefault();
+    event.stopPropagation();
+
+    const tab = this.contentNode.children[request.index];
+    const icon = tab?.querySelector(this.renderer.closeIconSelector);
+    if (
+      this._titles[request.index] !== request.title ||
+      !icon ||
+      !icon.contains(event.target as HTMLElement)
+    ) {
+      this._clearTabSizeFreezeState();
+      return;
+    }
+
+    this._tabCloseRequested.emit(request);
   }
 
   /**
@@ -1519,6 +1572,8 @@ export class TabBar<T> extends Widget {
   private _unfreezeRunID = 0;
   private _unfreezeFallbackTimerID = 0;
   private _unfreezeTransitionListener: ((event: Event) => void) | null = null;
+  private _pendingTouchCloseRequest: TabBar.ITabCloseRequestedArgs<T> | null =
+    null;
   private _addButtonEnabled: boolean = false;
   private _tabMoved = new Signal<this, TabBar.ITabMovedArgs<T>>(this);
   private _currentChanged = new Signal<this, TabBar.ICurrentChangedArgs<T>>(

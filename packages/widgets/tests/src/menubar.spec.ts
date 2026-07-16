@@ -855,6 +855,25 @@ describe('@lumino/widgets', () => {
           expect(bar.activeIndex).to.equal(0);
           expect(menu.isAttached).to.equal(true);
         });
+
+        it('should ignore touch pointer moves', () => {
+          bar.openActiveMenu();
+          let menu = bar.activeMenu!;
+          let node = bar.node.getElementsByClassName(
+            'lm-MenuBar-item'
+          )[1] as HTMLElement;
+          let rect = node.getBoundingClientRect();
+          bar.node.dispatchEvent(
+            new PointerEvent('pointermove', {
+              bubbles,
+              clientX: rect.left + 1,
+              clientY: rect.top + 1,
+              pointerType: 'touch'
+            })
+          );
+          expect(bar.activeIndex).to.equal(0);
+          expect(menu.isAttached).to.equal(true);
+        });
       });
 
       context('focusout', () => {

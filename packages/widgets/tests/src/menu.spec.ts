@@ -835,6 +835,42 @@ describe('@lumino/widgets', () => {
           expect(executed).to.equal('test');
         });
 
+        it('should trigger the touch item under the pointer on click', () => {
+          menu.addItem({ command: 'test' });
+          menu.open(0, 0);
+          let node = menu.node.getElementsByClassName('lm-Menu-item')[0];
+          let rect = node.getBoundingClientRect();
+          node.dispatchEvent(
+            new PointerEvent('pointerup', {
+              bubbles,
+              button: 0,
+              clientX: rect.left + 1,
+              clientY: rect.top + 1,
+              pointerType: 'touch'
+            })
+          );
+          expect(executed).to.equal('');
+          let bubbled = false;
+          let listener = () => {
+            bubbled = true;
+          };
+          document.body.addEventListener('click', listener);
+          try {
+            node.dispatchEvent(
+              new MouseEvent('click', {
+                bubbles,
+                button: 0,
+                clientX: rect.left + 1,
+                clientY: rect.top + 1
+              })
+            );
+            expect(executed).to.equal('test');
+            expect(bubbled).to.equal(false);
+          } finally {
+            document.body.removeEventListener('click', listener);
+          }
+        });
+
         it('should bail if not a left mouse button', () => {
           menu.addItem({ command: 'test' });
           menu.activeIndex = 0;
@@ -913,6 +949,38 @@ describe('@lumino/widgets', () => {
             done();
           }, 500);
         });
+
+        it('should ignore touch pointer moves', () => {
+          menu.addItem({ command: 'test' });
+          menu.open(0, 0);
+          let node = menu.node.getElementsByClassName('lm-Menu-item')[0];
+          let rect = node.getBoundingClientRect();
+          menu.node.dispatchEvent(
+            new PointerEvent('pointermove', {
+              bubbles,
+              clientX: rect.left + 1,
+              clientY: rect.top + 1,
+              pointerType: 'touch'
+            })
+          );
+          expect(menu.activeIndex).to.equal(-1);
+        });
+
+        it('should not ignore pen pointer moves', () => {
+          menu.addItem({ command: 'test' });
+          menu.open(0, 0);
+          let node = menu.node.getElementsByClassName('lm-Menu-item')[0];
+          let rect = node.getBoundingClientRect();
+          menu.node.dispatchEvent(
+            new PointerEvent('pointermove', {
+              bubbles,
+              clientX: rect.left + 1,
+              clientY: rect.top + 1,
+              pointerType: 'pen'
+            })
+          );
+          expect(menu.activeIndex).to.equal(0);
+        });
       });
 
       context('pointerleave', () => {
@@ -941,6 +1009,45 @@ describe('@lumino/widgets', () => {
           );
           expect(menu.activeIndex).to.equal(-1);
           menu.dispose();
+        });
+
+        it('should not close a submenu on touch leave', done => {
+          let submenu = new Menu({ commands });
+          submenu.addItem({ command: 'test' });
+          submenu.title.label = 'Test Label';
+          menu.addItem({ type: 'submenu', submenu });
+          menu.open(0, 0);
+          let node = menu.node.getElementsByClassName('lm-Menu-item')[0];
+          let rect = node.getBoundingClientRect();
+          node.dispatchEvent(
+            new PointerEvent('pointerup', {
+              bubbles,
+              button: 0,
+              clientX: rect.left + 1,
+              clientY: rect.top + 1,
+              pointerType: 'touch'
+            })
+          );
+          node.dispatchEvent(
+            new MouseEvent('click', {
+              bubbles,
+              button: 0,
+              clientX: rect.left + 1,
+              clientY: rect.top + 1
+            })
+          );
+          expect(submenu.isAttached).to.equal(true);
+          menu.node.dispatchEvent(
+            new PointerEvent('pointerleave', {
+              bubbles,
+              pointerType: 'touch'
+            })
+          );
+          setTimeout(() => {
+            expect(submenu.isAttached).to.equal(true);
+            submenu.dispose();
+            done();
+          }, 500);
         });
       });
 

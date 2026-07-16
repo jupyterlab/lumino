@@ -372,6 +372,55 @@ describe('@lumino/widgets', () => {
         expect(called).to.equal(true);
       });
 
+      it('should be emitted on click after touching a tab close icon', () => {
+        let called = false;
+        let rect = closeIcon.getBoundingClientRect();
+        bar.tabCloseRequested.connect((sender, args) => {
+          expect(sender).to.equal(bar);
+          expect(args.index).to.equal(0);
+          expect(args.title).to.equal(bar.titles[0]);
+          called = true;
+        });
+        closeIcon.dispatchEvent(
+          new PointerEvent('pointerdown', {
+            clientX: rect.left + 1,
+            clientY: rect.top + 1,
+            button: 0,
+            bubbles: true,
+            pointerType: 'touch'
+          })
+        );
+        closeIcon.dispatchEvent(
+          new PointerEvent('pointerup', {
+            clientX: rect.left + 1,
+            clientY: rect.top + 1,
+            button: 0,
+            bubbles: true,
+            pointerType: 'touch'
+          })
+        );
+        expect(called).to.equal(false);
+        let bubbled = false;
+        let listener = () => {
+          bubbled = true;
+        };
+        document.body.addEventListener('click', listener);
+        try {
+          closeIcon.dispatchEvent(
+            new MouseEvent('click', {
+              clientX: rect.left + 1,
+              clientY: rect.top + 1,
+              button: 0,
+              bubbles: true
+            })
+          );
+          expect(called).to.equal(true);
+          expect(bubbled).to.equal(false);
+        } finally {
+          document.body.removeEventListener('click', listener);
+        }
+      });
+
       it('should be emitted when a tab is middle clicked', () => {
         let called = false;
         let rect = tab.getBoundingClientRect();
