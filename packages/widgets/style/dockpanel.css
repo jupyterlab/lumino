@@ -26,6 +26,7 @@
 
 .lm-DockPanel-handle {
   z-index: 2;
+  touch-action: none;
 }
 
 .lm-DockPanel-handle.lm-mod-hidden {
