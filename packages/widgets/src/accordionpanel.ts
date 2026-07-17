@@ -26,9 +26,59 @@ export class AccordionPanel extends SplitPanel {
    * @param options - The options for initializing the accordion panel.
    *
    */
+  private _spacer: Widget;
+
   constructor(options: AccordionPanel.IOptions = {}) {
     super({ ...options, layout: Private.createLayout(options) });
     this.addClass('lm-AccordionPanel');
+    this._collapseMode = options.collapseMode || 'last-open';
+
+    // 1. Initialize the spacer
+    this._spacer = new Widget();
+    this._spacer.addClass('lm-AccordionPanel-spacer');
+
+    // 2. IMPORTANT: Always add the spacer if we are in in-place mode.
+    // We add it via super.addWidget so it doesn't trigger our overridden addWidget.
+    if (this._collapseMode === 'in-place') {
+      super.addWidget(this._spacer);
+    }
+  }
+
+  /**
+   * Ensure the spacer is at the end only when 'in-place' is active.
+   */
+  get collapseMode(): 'last-open' | 'in-place' {
+    return this._collapseMode;
+  }
+
+  set collapseMode(value: 'last-open' | 'in-place') {
+    if (this._collapseMode === value) {
+      return;
+    }
+    this._collapseMode = value;
+
+    if (value === 'in-place') {
+      super.addWidget(this._spacer);
+    } else {
+      this._spacer.parent = null;
+    }
+    this.update();
+  }
+
+  /**
+   * Filter titles dynamically based on the spacer's actual position.
+   */
+  get titles(): ReadonlyArray<HTMLElement> {
+    const allTitles = (this.layout as AccordionLayout).titles;
+    const widgets = (this.layout as AccordionLayout).widgets;
+    const spacerIndex = widgets.indexOf(this._spacer);
+
+    if (spacerIndex !== -1) {
+      const filtered = [...allTitles];
+      filtered.splice(spacerIndex, 1);
+      return filtered;
+    }
+    return allTitles;
   }
 
   /**
@@ -52,13 +102,6 @@ export class AccordionPanel extends SplitPanel {
   }
 
   /**
-   * A read-only array of the section titles in the panel.
-   */
-  get titles(): ReadonlyArray<HTMLElement> {
-    return (this.layout as AccordionLayout).titles;
-  }
-
-  /**
    * A signal emitted when a widget of the AccordionPanel is collapsed or expanded.
    */
   get expansionToggled(): ISignal<this, number> {
@@ -74,10 +117,16 @@ export class AccordionPanel extends SplitPanel {
    * If the widget is already contained in the panel, it will be moved.
    */
   addWidget(widget: Widget): void {
-    super.addWidget(widget);
-    widget.title.changed.connect(this._onTitleChanged, this);
-  }
+    const widgets = (this.layout as AccordionLayout).widgets;
+    const spacerIndex = widgets.indexOf(this._spacer);
 
+    if (this.collapseMode === 'in-place' && spacerIndex !== -1) {
+      this.insertWidget(spacerIndex, widget);
+    } else {
+      super.addWidget(widget);
+      widget.title.changed.connect(this._onTitleChanged, this);
+    }
+  }
   /**
    * Collapse the widget at position `index`.
    *
@@ -195,40 +244,81 @@ export class AccordionPanel extends SplitPanel {
    */
   private _computeWidgetSize(index: number): number[] | undefined {
     const layout = this.layout as AccordionLayout;
+    const widgets = layout.widgets;
+    const widget = widgets[index];
 
-    const widget = layout.widgets[index];
-    if (!widget) {
+    if (!widget || widget === this._spacer) {
       return undefined;
     }
+
     const isHidden = widget.isHidden;
     const widgetSizes = layout.absoluteSizes();
     const delta = (isHidden ? -1 : 1) * this.spacing;
-    const totalSize = widgetSizes.reduce(
-      (prev: number, curr: number) => prev + curr
-    );
+    const totalPanelSize = widgetSizes.reduce((acc, val) => acc + val, 0);
 
     let newSize = [...widgetSizes];
 
-    if (!isHidden) {
-      // Hide the widget
+    if (this._collapseMode === 'in-place') {
       const currentSize = widgetSizes[index];
 
+      if (!isHidden) {
+        // --- COLLAPSING ---
+        this._widgetSizesCache.set(widget, currentSize);
+        newSize[index] = 0;
+
+        // Find the next available "consumer" (could be a widget or our spacer)
+        let consumerIndex = -1;
+        for (let i = index + 1; i < newSize.length; i++) {
+          // The spacer is always at the end and is never hidden
+          if (widgets[i] === this._spacer || !widgets[i].isHidden) {
+            consumerIndex = i;
+            break;
+          }
+        }
+
+        if (consumerIndex !== -1) {
+          newSize[consumerIndex] += currentSize + delta;
+        }
+      } else {
+        // --- EXPANDING ---
+        const previousSize = this._widgetSizesCache.get(widget) || 0;
+        newSize[index] = previousSize;
+
+        let consumerIndex = -1;
+        for (let i = index + 1; i < newSize.length; i++) {
+          if (widgets[i] === this._spacer || !widgets[i].isHidden) {
+            consumerIndex = i;
+            break;
+          }
+        }
+
+        if (consumerIndex !== -1) {
+          // Take space back from the successor (or spacer)
+          newSize[consumerIndex] = Math.max(
+            0,
+            newSize[consumerIndex] - (previousSize - delta)
+          );
+        }
+      }
+
+      const denominator = totalPanelSize + delta;
+      return denominator <= 0 ? undefined : newSize.map(sz => sz / denominator);
+    }
+    // --- DEFAULT: 'last-open' behavior ---
+    if (!isHidden) {
+      const currentSize = widgetSizes[index];
       this._widgetSizesCache.set(widget, currentSize);
       newSize[index] = 0;
 
       const widgetToCollapse = newSize.map(sz => sz > 0).lastIndexOf(true);
       if (widgetToCollapse === -1) {
-        // All widget are closed, let the `SplitLayout` compute widget sizes.
         return undefined;
       }
-
       newSize[widgetToCollapse] =
         widgetSizes[widgetToCollapse] + currentSize + delta;
     } else {
-      // Show the widget
       const previousSize = this._widgetSizesCache.get(widget);
       if (!previousSize) {
-        // Previous size is unavailable, let the `SplitLayout` compute widget sizes.
         return undefined;
       }
       newSize[index] += previousSize;
@@ -237,20 +327,19 @@ export class AccordionPanel extends SplitPanel {
         .map(sz => sz - previousSize > 0)
         .lastIndexOf(true);
       if (widgetToCollapse === -1) {
-        // Can not reduce the size of one widget, reduce all opened widgets
-        // proportionally with its size.
         newSize.forEach((_, idx) => {
           if (idx !== index) {
             newSize[idx] -=
-              (widgetSizes[idx] / totalSize) * (previousSize - delta);
+              (widgetSizes[idx] / totalPanelSize) * (previousSize - delta);
           }
         });
       } else {
         newSize[widgetToCollapse] -= previousSize - delta;
       }
     }
-    return newSize.map(sz => sz / (totalSize + delta));
+    return newSize.map(sz => sz / (totalPanelSize + delta));
   }
+
   /**
    * Handle the `'click'` event for the accordion panel
    */
@@ -325,13 +414,16 @@ export class AccordionPanel extends SplitPanel {
   }
 
   private _toggleExpansion(index: number) {
-    const title = this.titles[index];
-    const widget = (this.layout as AccordionLayout).widgets[index];
+    const widgets = (this.layout as AccordionLayout).widgets;
+    const widget = widgets[index];
+    const titles = (this.layout as AccordionLayout).titles;
+    const title = titles[index];
+
+    if (!widget || widget === this._spacer) {
+      return;
+    }
 
     const newSize = this._computeWidgetSize(index);
-    if (newSize) {
-      this.setRelativeSizes(newSize, false);
-    }
 
     if (widget.isHidden) {
       title.classList.add('lm-mod-expanded');
@@ -343,10 +435,15 @@ export class AccordionPanel extends SplitPanel {
       widget.hide();
     }
 
-    // Emit the expansion state signal.
+    if (newSize) {
+      // Set sizes WITHOUT animation to prevent redistribution flicker
+      this.setRelativeSizes(newSize);
+    }
+
     this._expansionToggled.emit(index);
   }
 
+  private _collapseMode: 'last-open' | 'in-place';
   private _widgetSizesCache: WeakMap<Widget, number> = new WeakMap();
   private _expansionToggled = new Signal<this, number>(this);
 }
@@ -382,6 +479,24 @@ export namespace AccordionPanel {
      * The default is a new `AccordionLayout`.
      */
     layout?: AccordionLayout;
+
+    /**
+     * The collapse behavior mode for accordion sections.
+     *
+     * - `'last-open'` (default): When a section collapses, its space is redistributed
+     *   to the last open section. This is the original behavior.
+     * - `'in-place'`: Sections collapse and expand in place without affecting other
+     *   sections. The panel itself shrinks/grows accordingly.
+     *
+     * #### Example
+     * ```typescript
+     * const panel = new AccordionPanel({
+     *   collapseMode: 'in-place',
+     *   orientation: 'vertical'
+     * });
+     * ```
+     */
+    collapseMode?: 'last-open' | 'in-place';
   }
 
   /**
