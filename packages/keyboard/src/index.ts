@@ -12,6 +12,8 @@
  * @module keyboard
  */
 
+import { MODIFIER_KEYS, SPECIAL_KEYS } from './special-keys';
+
 /**
  * An object which represents an abstract keyboard layout.
  */
@@ -92,6 +94,11 @@ export function getKeyboardLayout(): IKeyboardLayout {
  * to a layout which is appropriate for the user's system.
  */
 export function setKeyboardLayout(layout: IKeyboardLayout): void {
+  try {
+    Private.unsubscribeBrowserUpdates();
+  } catch (e) {
+    // Ignore exceptions in experimental code
+  }
   Private.keyboardLayout = layout;
 }
 
@@ -112,18 +119,30 @@ export class KeycodeLayout implements IKeyboardLayout {
    *
    * @param name - The human readable name for the layout.
    *
-   * @param codes - A mapping of keycode to key value.
+   * @param keyCodes - A mapping of legacy keycodes to key values.
    *
    * @param modifierKeys - Array of modifier key names
+   *
+   * @param codes - A mapping of modern keycodes to key values.
+   *
+   * #### Notes
+   * The legacy mapping is from KeyboardEvent.keyCode values to key
+   * strings, while the modern mapping is from KeyboardEvent.code
+   * values to key strings. While `keyCodes` is required and `codes`
+   * is optional for API backwards-compatability, it is recommended
+   * to always pass the modern mapping, and it should then be safe to
+   * leave the `keyCodes` mapping empty.
    */
   constructor(
     name: string,
-    codes: KeycodeLayout.CodeMap,
-    modifierKeys: string[] = []
+    keyCodes: KeycodeLayout.CodeMap,
+    modifierKeys: string[] = [],
+    codes: KeycodeLayout.ModernCodeMap = {}
   ) {
     this.name = name;
-    this._codes = codes;
-    this._keys = KeycodeLayout.extractKeys(codes);
+    this._legacyCodes = keyCodes;
+    this._modernCodes = codes;
+    this._keys = KeycodeLayout.extractKeys(keyCodes, codes);
     this._modifierKeys = KeycodeLayout.convertToKeySet(modifierKeys);
   }
 
@@ -149,7 +168,8 @@ export class KeycodeLayout implements IKeyboardLayout {
    * @returns `true` if the key is valid, `false` otherwise.
    */
   isValidKey(key: string): boolean {
-    return key in this._keys;
+    key = Private.normalizeCtrl(key);
+    return key in this._keys || Private.isSpecialCharacter(key);
   }
 
   /**
@@ -160,6 +180,7 @@ export class KeycodeLayout implements IKeyboardLayout {
    * @returns `true` if the key is a modifier key, `false` otherwise.
    */
   isModifierKey(key: string): boolean {
+    key = Private.normalizeCtrl(key);
     return key in this._modifierKeys;
   }
 
@@ -172,11 +193,22 @@ export class KeycodeLayout implements IKeyboardLayout {
    *   the event does not represent a valid primary key.
    */
   keyForKeydownEvent(event: KeyboardEvent): string {
-    return this._codes[event.keyCode] || '';
+    if (
+      event.code !== '' &&
+      event.code !== 'Unidentified' &&
+      event.code in this._modernCodes
+    ) {
+      return this._modernCodes[event.code];
+    }
+    return (
+      this._legacyCodes[event.keyCode] ||
+      (Private.isSpecialCharacter(event.key) ? event.key : '')
+    );
   }
 
   private _keys: KeycodeLayout.KeySet;
-  private _codes: KeycodeLayout.CodeMap;
+  private _legacyCodes: KeycodeLayout.CodeMap;
+  private _modernCodes: KeycodeLayout.ModernCodeMap;
   private _modifierKeys: KeycodeLayout.KeySet;
 }
 
@@ -187,7 +219,12 @@ export namespace KeycodeLayout {
   /**
    * A type alias for a keycode map.
    */
-  export type CodeMap = { readonly [code: number]: string };
+  export type CodeMap = { readonly [keyCode: number]: string };
+
+  /**
+   * A type alias for a code map.
+   */
+  export type ModernCodeMap = { readonly [code: string]: string };
 
   /**
    * A type alias for a key set.
@@ -197,12 +234,19 @@ export namespace KeycodeLayout {
   /**
    * Extract the set of keys from a code map.
    *
-   * @param codes - The code map of interest.
+   * @param keyCodes - A legacy code map mapping form event.keyCode to key.
+   * @param codes - A modern code map mapping from event.code to key.
    *
    * @returns A set of the keys in the code map.
    */
-  export function extractKeys(codes: CodeMap): KeySet {
+  export function extractKeys(
+    keyCodes: CodeMap,
+    codes: ModernCodeMap = {}
+  ): KeySet {
     let keys: any = Object.create(null);
+    for (let c in keyCodes) {
+      keys[keyCodes[c]] = true;
+    }
     for (let c in codes) {
       keys[codes[c]] = true;
     }
@@ -253,7 +297,7 @@ export const EN_US: IKeyboardLayout = new KeycodeLayout(
     9: 'Tab',
     13: 'Enter',
     16: 'Shift',
-    17: 'Ctrl',
+    17: 'Control',
     18: 'Alt',
     19: 'Pause',
     27: 'Escape',
@@ -349,8 +393,138 @@ export const EN_US: IKeyboardLayout = new KeycodeLayout(
     222: "'",
     224: 'Meta' // firefox
   },
-  ['Shift', 'Ctrl', 'Alt', 'Meta'] // modifier keys
+  MODIFIER_KEYS,
+  {
+    AltLeft: 'Alt',
+    AltRight: 'Alt',
+    ArrowDown: 'ArrowDown',
+    ArrowLeft: 'ArrowLeft',
+    ArrowRight: 'ArrowRight',
+    ArrowUp: 'ArrowUp',
+    Backquote: '`',
+    Backslash: '\\',
+    Backspace: 'Backspace',
+    BracketLeft: '[',
+    BracketRight: ']',
+    CapsLock: 'CapsLock',
+    Comma: ',',
+    ControlLeft: 'Control',
+    ControlRight: 'Control',
+    Delete: 'Delete',
+    Digit0: '0',
+    Digit1: '1',
+    Digit2: '2',
+    Digit3: '3',
+    Digit4: '4',
+    Digit5: '5',
+    Digit6: '6',
+    Digit7: '7',
+    Digit8: '8',
+    Digit9: '9',
+    End: 'End',
+    Equal: '=',
+    Escape: 'Escape',
+    F1: 'F1',
+    F10: 'F10',
+    F11: 'F11',
+    F12: 'F12',
+    F2: 'F2',
+    F3: 'F3',
+    F4: 'F4',
+    F5: 'F5',
+    F6: 'F6',
+    F7: 'F7',
+    F8: 'F8',
+    F9: 'F9',
+    Home: 'Home',
+    Insert: 'Insert',
+    KeyA: 'A',
+    KeyB: 'B',
+    KeyC: 'C',
+    KeyD: 'D',
+    KeyE: 'E',
+    KeyF: 'F',
+    KeyG: 'G',
+    KeyH: 'H',
+    KeyI: 'I',
+    KeyJ: 'J',
+    KeyK: 'K',
+    KeyL: 'L',
+    KeyM: 'M',
+    KeyN: 'N',
+    KeyO: 'O',
+    KeyP: 'P',
+    KeyQ: 'Q',
+    KeyR: 'R',
+    KeyS: 'S',
+    KeyT: 'T',
+    KeyU: 'U',
+    KeyV: 'V',
+    KeyW: 'W',
+    KeyX: 'X',
+    KeyY: 'Y',
+    KeyZ: 'Z',
+    MetaLeft: 'Meta',
+    MetaRight: 'Meta',
+    Minus: '-',
+    NumLock: 'NumLock',
+    Numpad0: 'Insert',
+    Numpad1: 'End',
+    Numpad2: 'ArrowDown',
+    Numpad3: 'PageDown',
+    Numpad4: 'ArrowLeft',
+    Numpad5: 'Clear',
+    Numpad6: 'ArrowRight',
+    Numpad7: 'Home',
+    Numpad8: 'ArrowUp',
+    Numpad9: 'PageUp',
+    NumpadAdd: '+',
+    NumpadDecimal: 'Delete',
+    NumpadDivide: '/',
+    NumpadEnter: 'Enter',
+    NumpadMultiply: '*',
+    NumpadSubtract: '-',
+    OSLeft: 'OS', // firefox
+    OSRight: 'OS', // firefox
+    PageDown: 'PageDown',
+    PageUp: 'PageUp',
+    Pause: 'Pause',
+    Period: '.',
+    PrintScreen: 'PrintScreen',
+    Quote: "'",
+    Semicolon: ';',
+    ShiftLeft: 'Shift',
+    ShiftRight: 'Shift',
+    Slash: '/',
+    Tab: 'Tab'
+  }
 );
+
+/**
+ * Whether the browser supports inspecting the keyboard layout.
+ *
+ * @alpha
+ */
+export function hasBrowserLayout(): boolean {
+  return !!(navigator as any)?.keyboard?.getLayoutMap;
+}
+
+/**
+ * Use the keyboard layout of the browser if it supports it.
+ *
+ * @alpha
+ * @returns Whether the browser supports inspecting the keyboard layout.
+ */
+export async function useBrowserLayout(): Promise<boolean> {
+  // avoid updating if already set
+  if (Private.keyboardLayout.name !== Private.INTERNAL_BROWSER_LAYOUT_NAME) {
+    if (!(await Private.updateBrowserLayout())) {
+      return false;
+    }
+  }
+  Private.subscribeBrowserUpdates();
+  return true;
+}
 
 /**
  * The namespace for the module implementation details.
@@ -360,4 +534,104 @@ namespace Private {
    * The global keyboard layout instance.
    */
   export let keyboardLayout = EN_US;
+
+  /**
+   * Internal name for browser-based keyboard layout.
+   */
+  export const INTERNAL_BROWSER_LAYOUT_NAME = '__lumino-internal-browser';
+
+  /**
+   * Whether the key value can be considered a special character.
+   *
+   * @param key - The key value that is to be considered
+   */
+  export function isSpecialCharacter(key: string): boolean {
+    // If the value starts with an uppercase latin character and is followed by one
+    // or more alphanumeric basic latin characters, it is likely a special key.
+    return SPECIAL_KEYS.has(key);
+  }
+
+  /**
+   * Normalize Ctrl to Control for backwards compatability.
+   *
+   * @param key - The key value that is to be normalized
+   * @returns The normalized key string
+   */
+  export function normalizeCtrl(key: string): string {
+    return key === 'Ctrl' ? 'Control' : key;
+  }
+
+  /**
+   * Polyfill until Object.fromEntries is available.
+   */
+  function fromEntries<T>(entries: Iterable<[string, T]>) {
+    const ret = {} as { [key: string]: T };
+    for (const [key, value] of entries) {
+      ret[key] = value;
+    }
+    return ret;
+  }
+
+  /**
+   * Get the current browser keyboard layout, or null if unsupported.
+   *
+   * @returns The keyboard layout of the browser at this moment if supported, otherwise null.
+   */
+  export async function getBrowserKeyboardLayout(): Promise<
+    IKeyboardLayout | undefined
+  > {
+    const keyboardApi = (navigator as any)?.keyboard;
+    if (!keyboardApi) {
+      return undefined;
+    }
+    const browserMap = await keyboardApi.getLayoutMap();
+    if (!browserMap) {
+      return undefined;
+    }
+    return new KeycodeLayout(
+      INTERNAL_BROWSER_LAYOUT_NAME,
+      {},
+      MODIFIER_KEYS,
+      fromEntries(
+        browserMap
+          .entries()
+          .map(([k, v]: string[]) => [
+            k,
+            v.charAt(0).toUpperCase() + v.slice(1)
+          ])
+      )
+    );
+  }
+
+  /**
+   * Set the active layout to that of the browser at this moment.
+   */
+  export async function updateBrowserLayout(): Promise<boolean> {
+    const initial = await getBrowserKeyboardLayout();
+    if (!initial) {
+      return false;
+    }
+    keyboardLayout = initial;
+    return true;
+  }
+
+  /**
+   * Subscribe to any browser updates to keyboard layout
+   */
+  export function subscribeBrowserUpdates(): void {
+    const keyboardApi = (navigator as any)?.keyboard;
+    if (keyboardApi?.addEventListener) {
+      keyboardApi.addEventListener('layoutchange', Private.updateBrowserLayout);
+    }
+  }
+
+  /**
+   * Unsubscribe from any browser updates
+   */
+  export function unsubscribeBrowserUpdates(): void {
+    const keyboardApi = (navigator as any)?.keyboard;
+    if (keyboardApi?.removeEventListener) {
+      keyboardApi.removeEventListener(updateBrowserLayout);
+    }
+  }
 }
