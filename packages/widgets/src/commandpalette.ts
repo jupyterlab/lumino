@@ -41,6 +41,7 @@ export class CommandPalette extends Widget {
     this.setFlag(Widget.Flag.DisallowLayout);
     this.commands = options.commands;
     this.renderer = options.renderer || CommandPalette.defaultRenderer;
+    this.maxRecentCommands = options.maxRecentCommands ?? 0;
     this.commands.commandChanged.connect(this._onGenericChange, this);
     this.commands.keyBindingChanged.connect(this._onGenericChange, this);
   }
@@ -50,6 +51,7 @@ export class CommandPalette extends Widget {
    */
   dispose(): void {
     this._items.length = 0;
+    this._recentCommands.length = 0;
     this._results = null;
     super.dispose();
   }
@@ -107,6 +109,46 @@ export class CommandPalette extends Widget {
    */
   get items(): ReadonlyArray<CommandPalette.IItem> {
     return this._items;
+  }
+
+  /**
+   * The maximum number of recently executed commands to display.
+   *
+   * #### Notes
+   * When the limit is positive, the most recently executed commands
+   * are displayed at the top of the palette when the search query is
+   * empty. When searching, the results are ordered as usual and the
+   * recently executed commands are only marked as recent.
+   *
+   * Setting the limit to `0` disables the tracking and display of the
+   * recently executed commands, and clears the existing history.
+   *
+   * Setting the limit to a value smaller than the current history
+   * drops the oldest commands from the history.
+   */
+  get maxRecentCommands(): number {
+    return this._maxRecentCommands;
+  }
+
+  set maxRecentCommands(value: number) {
+    // Normalize the limit to a non-negative integer, coercing `NaN` to `0`.
+    value = Math.max(0, Math.floor(value)) || 0;
+
+    // Bail if the limit does not change.
+    if (this._maxRecentCommands === value) {
+      return;
+    }
+
+    // Update the limit.
+    this._maxRecentCommands = value;
+
+    // Drop the oldest commands which exceed the new limit.
+    if (this._recentCommands.length > value) {
+      this._recentCommands.length = value;
+    }
+
+    // Refresh the search results.
+    this.refresh();
   }
 
   /**
@@ -188,6 +230,22 @@ export class CommandPalette extends Widget {
 
     // Clear the array of items.
     this._items.length = 0;
+
+    // Refresh the search results.
+    this.refresh();
+  }
+
+  /**
+   * Clear the recently executed commands.
+   */
+  clearRecentCommands(): void {
+    // Bail if there is nothing to remove.
+    if (this._recentCommands.length === 0) {
+      return;
+    }
+
+    // Clear the array of recently executed commands.
+    this._recentCommands.length = 0;
 
     // Refresh the search results.
     this.refresh();
@@ -309,7 +367,11 @@ export class CommandPalette extends Widget {
     let results = this._results;
     if (!results) {
       // Generate and store the new search results.
-      results = this._results = Private.search(this._items, query);
+      results = this._results = Private.search(
+        this._items,
+        query,
+        this._recentCommands
+      );
 
       // Reset the active index.
       this._activeIndex = query
@@ -344,7 +406,8 @@ export class CommandPalette extends Widget {
         let item = result.item;
         let indices = result.indices;
         let active = i === activeIndex;
-        content[i] = renderer.renderItem({ item, indices, active });
+        let recent = result.recent;
+        content[i] = renderer.renderItem({ item, indices, active, recent });
       }
     }
 
@@ -502,11 +565,40 @@ export class CommandPalette extends Widget {
     // Execute the item.
     this.commands.execute(part.item.command, part.item.args);
 
+    // Add the item to the recently executed commands.
+    this._addRecentCommand(part.item);
+
     // Clear the query text.
     this.inputNode.value = '';
 
     // Refresh the search results.
     this.refresh();
+  }
+
+  /**
+   * Add a command item to the recently executed commands.
+   */
+  private _addRecentCommand(item: CommandPalette.IItem): void {
+    // Bail if recently executed commands are not tracked.
+    if (this._maxRecentCommands === 0) {
+      return;
+    }
+
+    // Remove any existing entry for the command.
+    ArrayExt.removeFirstWhere(this._recentCommands, recent => {
+      return (
+        recent.command === item.command &&
+        JSONExt.deepEqual(recent.args, item.args)
+      );
+    });
+
+    // Add the command to the front of the history.
+    this._recentCommands.unshift({ command: item.command, args: item.args });
+
+    // Drop the oldest command if the history exceeds the limit.
+    if (this._recentCommands.length > this._maxRecentCommands) {
+      this._recentCommands.length = this._maxRecentCommands;
+    }
   }
 
   /**
@@ -527,6 +619,8 @@ export class CommandPalette extends Widget {
   private _activeIndex = -1;
   private _items: CommandPalette.IItem[] = [];
   private _results: Private.SearchResult[] | null = null;
+  private _maxRecentCommands = 0;
+  private _recentCommands: Private.IRecentCommand[] = [];
 }
 
 /**
@@ -548,6 +642,22 @@ export namespace CommandPalette {
      * The default is a shared renderer instance.
      */
     renderer?: IRenderer;
+
+    /**
+     * The maximum number of recently executed commands to display.
+     *
+     * #### Notes
+     * When the limit is positive, the most recently executed commands
+     * are displayed at the top of the palette when the search query is
+     * empty. When searching, the results are ordered as usual and the
+     * recently executed commands are only marked as recent.
+     *
+     * When the limit is `0`, recently executed commands are neither
+     * tracked nor displayed.
+     *
+     * The default value is `0`.
+     */
+    maxRecentCommands?: number;
   }
 
   /**
@@ -707,6 +817,14 @@ export namespace CommandPalette {
      * Whether the item is the active item.
      */
     readonly active: boolean;
+
+    /**
+     * Whether the item is a recently executed command.
+     *
+     * #### Notes
+     * The default value is `false`.
+     */
+    readonly recent?: boolean;
   }
 
   /**
@@ -903,6 +1021,9 @@ export namespace CommandPalette {
       if (data.active) {
         name += ' lm-mod-active';
       }
+      if (data.recent) {
+        name += ' lm-mod-recent';
+      }
 
       // Add the extra class.
       let extra = data.item.className;
@@ -1048,6 +1169,21 @@ namespace Private {
   }
 
   /**
+   * An object which represents a recently executed command.
+   */
+  export interface IRecentCommand {
+    /**
+     * The command which was executed.
+     */
+    readonly command: string;
+
+    /**
+     * The arguments for the command.
+     */
+    readonly args: ReadonlyJSONObject;
+  }
+
+  /**
    * A search result object for a header label.
    */
   export interface IHeaderResult {
@@ -1085,6 +1221,11 @@ namespace Private {
      * The indices of the matched label characters.
      */
     readonly indices: ReadonlyArray<number> | null;
+
+    /**
+     * Whether the item is a recently executed command.
+     */
+    readonly recent?: boolean;
   }
 
   /**
@@ -1097,16 +1238,20 @@ namespace Private {
    */
   export function search(
     items: CommandPalette.IItem[],
-    query: string
+    query: string,
+    recentCommands: ReadonlyArray<IRecentCommand>
   ): SearchResult[] {
+    // Resolve the recently executed commands to their items.
+    let recentItems = resolveRecentItems(items, recentCommands);
+
     // Fuzzy match the items for the query.
-    let scores = matchItems(items, query);
+    let scores = matchItems(items, query, recentItems);
 
     // Sort the items based on their score.
     scores.sort(scoreCmp);
 
     // Create the results for the search.
-    return createResults(scores);
+    return createResults(scores, recentItems);
   }
 
   /**
@@ -1134,6 +1279,7 @@ namespace Private {
    * An enum of the supported match types.
    */
   const enum MatchType {
+    Recent,
     Label,
     Category,
     Split,
@@ -1171,14 +1317,66 @@ namespace Private {
   }
 
   /**
+   * Resolve recently executed commands to their command items.
+   */
+  function resolveRecentItems(
+    items: CommandPalette.IItem[],
+    recentCommands: ReadonlyArray<IRecentCommand>
+  ): CommandPalette.IItem[] {
+    // Set up the array of resolved items.
+    let recentItems: CommandPalette.IItem[] = [];
+
+    // Iterate over the recently executed commands.
+    for (let recent of recentCommands) {
+      // Find the item for the command, if any.
+      let item = ArrayExt.findFirstValue(items, candidate => {
+        return (
+          candidate.command === recent.command &&
+          JSONExt.deepEqual(candidate.args, recent.args)
+        );
+      });
+
+      // Ignore commands which do not resolve to a visible and enabled
+      // item. A disabled item cannot be executed again, so it is listed
+      // in its own category instead until it is enabled again.
+      if (item && item.isVisible && item.isEnabled) {
+        recentItems.push(item);
+      }
+    }
+
+    // Return the resolved items.
+    return recentItems;
+  }
+
+  /**
    * Perform a fuzzy match on an array of command items.
    */
-  function matchItems(items: CommandPalette.IItem[], query: string): IScore[] {
+  function matchItems(
+    items: CommandPalette.IItem[],
+    query: string,
+    recentItems: CommandPalette.IItem[]
+  ): IScore[] {
     // Normalize the query text to lower case with no whitespace.
     query = normalizeQuery(query);
 
     // Create the array to hold the scores.
     let scores: IScore[] = [];
+
+    // For an empty query, add a score for each of the recently executed
+    // commands, which are displayed before all other items. The score
+    // reflects the recency of the item, so that sorting the scores
+    // preserves the order of execution.
+    if (!query) {
+      for (let i = 0, n = recentItems.length; i < n; ++i) {
+        scores.push({
+          matchType: MatchType.Recent,
+          categoryIndices: null,
+          labelIndices: null,
+          score: i,
+          item: recentItems[i]
+        });
+      }
+    }
 
     // Iterate over the items and match against the query.
     for (let i = 0, n = items.length; i < n; ++i) {
@@ -1188,15 +1386,18 @@ namespace Private {
         continue;
       }
 
-      // If the query is empty, all items are matched by default.
+      // If the query is empty, all items are matched by default, except
+      // for the recently executed commands which are already scored.
       if (!query) {
-        scores.push({
-          matchType: MatchType.Default,
-          categoryIndices: null,
-          labelIndices: null,
-          score: 0,
-          item
-        });
+        if (recentItems.indexOf(item) === -1) {
+          scores.push({
+            matchType: MatchType.Default,
+            categoryIndices: null,
+            labelIndices: null,
+            score: 0,
+            item
+          });
+        }
         continue;
       }
 
@@ -1375,26 +1576,48 @@ namespace Private {
   /**
    * Create the results from an array of sorted scores.
    */
-  function createResults(scores: IScore[]): SearchResult[] {
+  function createResults(
+    scores: IScore[],
+    recentItems: CommandPalette.IItem[]
+  ): SearchResult[] {
     // Set up the search results array.
     let results: SearchResult[] = [];
 
     // Iterate over each score in the array.
     for (let i = 0, n = scores.length; i < n; ++i) {
       // Extract the current item and indices.
-      let { item, categoryIndices, labelIndices } = scores[i];
+      let { matchType, item, categoryIndices, labelIndices } = scores[i];
+
+      // Look up whether the item is a recently executed command.
+      let recent = recentItems.indexOf(item) !== -1;
+
+      // Handle the recently executed commands for an empty query, which
+      // sort before all other results and are displayed without a
+      // category header.
+      if (matchType === MatchType.Recent) {
+        // Create the item result for the score.
+        results.push({ type: 'item', item, indices: labelIndices, recent });
+        continue;
+      }
 
       // Extract the category for the current item.
       let category = item.category;
 
+      // Look up the preceding search result, if any.
+      let prev = i === 0 ? null : scores[i - 1];
+
       // Is this the same category as the preceding result?
-      if (i === 0 || category !== scores[i - 1].item.category) {
+      if (
+        !prev ||
+        prev.matchType === MatchType.Recent ||
+        category !== prev.item.category
+      ) {
         // Add the header result for the category.
         results.push({ type: 'header', category, indices: categoryIndices });
       }
 
       // Create the item result for the score.
-      results.push({ type: 'item', item, indices: labelIndices });
+      results.push({ type: 'item', item, indices: labelIndices, recent });
     }
 
     // Return the final results.

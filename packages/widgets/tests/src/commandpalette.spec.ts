@@ -115,6 +115,278 @@ describe('@lumino/widgets', () => {
       });
     });
 
+    describe('#maxRecentCommands', () => {
+      it('should default to `0`', () => {
+        expect(palette.maxRecentCommands).to.equal(0);
+      });
+
+      it('should be initialized from the palette options', () => {
+        let palette = new CommandPalette({ commands, maxRecentCommands: 5 });
+        expect(palette.maxRecentCommands).to.equal(5);
+        palette.dispose();
+      });
+
+      it('should normalize invalid values', () => {
+        palette.maxRecentCommands = 2.7;
+        expect(palette.maxRecentCommands).to.equal(2);
+        palette.maxRecentCommands = -1;
+        expect(palette.maxRecentCommands).to.equal(0);
+        palette.maxRecentCommands = NaN;
+        expect(palette.maxRecentCommands).to.equal(0);
+      });
+
+      context('recent commands', () => {
+        let visibleFlag = true;
+
+        const executeItem = (label: string): void => {
+          MessageLoop.flush();
+          let labels = Array.from(
+            palette.contentNode.querySelectorAll('.lm-CommandPalette-itemLabel')
+          );
+          let labelNode = labels.find(node => node.textContent === label)!;
+          let itemNode = labelNode.closest('.lm-CommandPalette-item')!;
+          itemNode.dispatchEvent(new MouseEvent('click', { bubbles }));
+          MessageLoop.flush();
+        };
+
+        const headerLabels = (): (string | null)[] => {
+          MessageLoop.flush();
+          return Array.from(
+            palette.contentNode.querySelectorAll('.lm-CommandPalette-header')
+          ).map(node => node.textContent);
+        };
+
+        const itemLabels = (): (string | null)[] => {
+          MessageLoop.flush();
+          return Array.from(
+            palette.contentNode.querySelectorAll('.lm-CommandPalette-itemLabel')
+          ).map(node => node.textContent);
+        };
+
+        const recentLabels = (): (string | null)[] => {
+          MessageLoop.flush();
+          return Array.from(
+            palette.contentNode.querySelectorAll(
+              '.lm-CommandPalette-item.lm-mod-recent .lm-CommandPalette-itemLabel'
+            )
+          ).map(node => node.textContent);
+        };
+
+        beforeEach(() => {
+          visibleFlag = true;
+          palette.maxRecentCommands = 3;
+          ['One', 'Two', 'Three', 'Four'].forEach(label => {
+            let command = `test:${label.toLowerCase()}`;
+            commands.addCommand(command, { execute: () => {}, label });
+            palette.addItem({ command, category: 'Numbers' });
+          });
+          commands.addCommand('test:hidden', {
+            execute: () => {},
+            isVisible: () => visibleFlag,
+            label: 'Hidden'
+          });
+          palette.addItem({ command: 'test:hidden', category: 'Numbers' });
+        });
+
+        it('should display the recently executed commands at the top', () => {
+          expect(recentLabels()).to.deep.equal([]);
+          executeItem('Two');
+          expect(recentLabels()).to.deep.equal(['Two']);
+          expect(itemLabels()).to.deep.equal([
+            'Two',
+            'Four',
+            'Hidden',
+            'One',
+            'Three'
+          ]);
+          // The recent items are displayed before the category headers.
+          expect(headerLabels()).to.deep.equal(['Numbers']);
+          let first = palette.contentNode.firstElementChild!;
+          expect(first.classList.contains('lm-CommandPalette-item')).to.equal(
+            true
+          );
+          expect(first.classList.contains('lm-mod-recent')).to.equal(true);
+        });
+
+        it('should navigate and execute the recent commands with the keyboard', () => {
+          executeItem('Three');
+          executeItem('One');
+          palette.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 40 // Down Arrow
+            })
+          );
+          palette.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 40 // Down Arrow
+            })
+          );
+          MessageLoop.flush();
+          let active = palette.contentNode.querySelector(
+            '.lm-CommandPalette-item.lm-mod-active'
+          )!;
+          expect(
+            active.querySelector('.lm-CommandPalette-itemLabel')!.textContent
+          ).to.equal('Three');
+          palette.node.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              bubbles,
+              keyCode: 13 // Enter
+            })
+          );
+          expect(recentLabels()).to.deep.equal(['Three', 'One']);
+        });
+
+        it('should order the recently executed commands by recency', () => {
+          executeItem('Three');
+          executeItem('One');
+          expect(recentLabels()).to.deep.equal(['One', 'Three']);
+          expect(itemLabels()).to.deep.equal([
+            'One',
+            'Three',
+            'Four',
+            'Hidden',
+            'Two'
+          ]);
+          executeItem('Three');
+          expect(recentLabels()).to.deep.equal(['Three', 'One']);
+          expect(itemLabels()).to.deep.equal([
+            'Three',
+            'One',
+            'Four',
+            'Hidden',
+            'Two'
+          ]);
+        });
+
+        it('should drop the oldest command when the history is full', () => {
+          executeItem('One');
+          executeItem('Two');
+          executeItem('Three');
+          executeItem('Four');
+          expect(recentLabels()).to.deep.equal(['Four', 'Three', 'Two']);
+          expect(itemLabels()).to.deep.equal([
+            'Four',
+            'Three',
+            'Two',
+            'Hidden',
+            'One'
+          ]);
+        });
+
+        it('should track items with distinct arguments separately', () => {
+          commands.addCommand('test:args', {
+            execute: () => {},
+            label: args => `Arg ${args.n}`
+          });
+          palette.addItem({
+            command: 'test:args',
+            args: { n: 1 },
+            category: 'Numbers'
+          });
+          palette.addItem({
+            command: 'test:args',
+            args: { n: 2 },
+            category: 'Numbers'
+          });
+          executeItem('Arg 1');
+          executeItem('Arg 2');
+          expect(recentLabels()).to.deep.equal(['Arg 2', 'Arg 1']);
+        });
+
+        it('should mark the recently executed commands when searching', () => {
+          executeItem('Four');
+          expect(recentLabels()).to.deep.equal(['Four']);
+          palette.inputNode.value = 'four';
+          palette.refresh();
+          expect(headerLabels()).to.deep.equal(['Numbers']);
+          expect(itemLabels()).to.deep.equal(['Four']);
+          expect(recentLabels()).to.deep.equal(['Four']);
+          palette.inputNode.value = 'three';
+          palette.refresh();
+          expect(itemLabels()).to.deep.equal(['Three']);
+          expect(recentLabels()).to.deep.equal([]);
+        });
+
+        it('should not change the order of the search results', () => {
+          executeItem('Two');
+          palette.inputNode.value = 't';
+          palette.refresh();
+          expect(itemLabels()).to.deep.equal(['Three', 'Two']);
+          expect(recentLabels()).to.deep.equal(['Two']);
+        });
+
+        it('should drop the oldest commands when the limit is lowered', () => {
+          executeItem('One');
+          executeItem('Two');
+          palette.maxRecentCommands = 1;
+          expect(recentLabels()).to.deep.equal(['Two']);
+          expect(itemLabels()).to.deep.equal([
+            'Two',
+            'Four',
+            'Hidden',
+            'One',
+            'Three'
+          ]);
+        });
+
+        it('should clear and disable the history when set to `0`', () => {
+          executeItem('One');
+          expect(recentLabels()).to.deep.equal(['One']);
+          palette.maxRecentCommands = 0;
+          expect(recentLabels()).to.deep.equal([]);
+          palette.maxRecentCommands = 3;
+          expect(recentLabels()).to.deep.equal([]);
+        });
+
+        it('should not display commands which were removed', () => {
+          executeItem('One');
+          palette.removeItemAt(0);
+          expect(recentLabels()).to.deep.equal([]);
+          expect(itemLabels()).to.deep.equal([
+            'Four',
+            'Hidden',
+            'Three',
+            'Two'
+          ]);
+        });
+
+        it('should not display commands which are not visible', () => {
+          executeItem('Hidden');
+          expect(recentLabels()).to.deep.equal(['Hidden']);
+          visibleFlag = false;
+          palette.refresh();
+          expect(recentLabels()).to.deep.equal([]);
+          expect(itemLabels()).to.deep.equal(['Four', 'One', 'Three', 'Two']);
+        });
+
+        it('should not display commands which are disabled', () => {
+          let enabled = true;
+          commands.addCommand('test:enabled', {
+            execute: () => {},
+            isEnabled: () => enabled,
+            label: 'Enabled'
+          });
+          palette.addItem({ command: 'test:enabled', category: 'Numbers' });
+          executeItem('Enabled');
+          expect(recentLabels()).to.deep.equal(['Enabled']);
+          enabled = false;
+          palette.refresh();
+          expect(recentLabels()).to.deep.equal([]);
+          expect(itemLabels()).to.deep.equal([
+            'Enabled',
+            'Four',
+            'Hidden',
+            'One',
+            'Three',
+            'Two'
+          ]);
+        });
+      });
+    });
+
     describe('#addItems()', () => {
       it('should add items to a command palette using options', () => {
         const item = {
@@ -300,6 +572,31 @@ describe('@lumino/widgets', () => {
         expect(palette.items.length).to.equal(2);
         palette.clearItems();
         expect(palette.items.length).to.equal(0);
+      });
+    });
+
+    describe('#clearRecentCommands()', () => {
+      it('should clear the recently executed commands', () => {
+        palette.maxRecentCommands = 3;
+        commands.addCommand('test', { execute: () => {}, label: 'test' });
+        palette.addItem(defaultOptions);
+        MessageLoop.flush();
+
+        let recents = () =>
+          palette.contentNode.querySelectorAll(
+            '.lm-CommandPalette-item.lm-mod-recent'
+          );
+        let item = palette.contentNode.querySelector(
+          '.lm-CommandPalette-item'
+        )!;
+
+        item.dispatchEvent(new MouseEvent('click', { bubbles }));
+        MessageLoop.flush();
+        expect(recents()).to.have.length(1);
+
+        palette.clearRecentCommands();
+        MessageLoop.flush();
+        expect(recents()).to.have.length(0);
       });
     });
 
@@ -928,6 +1225,17 @@ describe('@lumino/widgets', () => {
           let node = VirtualDOM.realize(vNode);
           expect(node.classList.contains('lm-mod-active')).to.equal(true);
         });
+
+        it('should handle the recent state', () => {
+          let vNode = renderer.renderItem({
+            item,
+            indices: null,
+            active: false,
+            recent: true
+          });
+          let node = VirtualDOM.realize(vNode);
+          expect(node.classList.contains('lm-mod-recent')).to.equal(true);
+        });
       });
 
       describe('#renderEmptyMessage()', () => {
@@ -1007,10 +1315,11 @@ describe('@lumino/widgets', () => {
           let name = renderer.createItemClass({
             item,
             indices: null,
-            active: true
+            active: true,
+            recent: true
           });
           let expected =
-            'lm-CommandPalette-item lm-mod-disabled lm-mod-toggled lm-mod-active testClass';
+            'lm-CommandPalette-item lm-mod-disabled lm-mod-toggled lm-mod-active lm-mod-recent testClass';
           expect(name).to.equal(expected);
         });
       });

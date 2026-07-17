@@ -174,12 +174,15 @@ export class CommandPalette extends Widget {
     addItem(options: CommandPalette.IItemOptions): CommandPalette.IItem;
     addItems(items: CommandPalette.IItemOptions[]): CommandPalette.IItem[];
     clearItems(): void;
+    clearRecentCommands(): void;
     readonly commands: CommandRegistry;
     get contentNode(): HTMLUListElement;
     dispose(): void;
     handleEvent(event: Event): void;
     get inputNode(): HTMLInputElement;
     get items(): ReadonlyArray<CommandPalette.IItem>;
+    get maxRecentCommands(): number;
+    set maxRecentCommands(value: number);
     protected onActivateRequest(msg: Message): void;
     protected onAfterDetach(msg: Message): void;
     protected onAfterShow(msg: Message): void;
@@ -229,9 +232,11 @@ export namespace CommandPalette {
         readonly active: boolean;
         readonly indices: ReadonlyArray<number> | null;
         readonly item: IItem;
+        readonly recent?: boolean;
     }
     export interface IOptions {
         commands: CommandRegistry;
+        maxRecentCommands?: number;
         renderer?: IRenderer;
     }
     export interface IRenderer {
