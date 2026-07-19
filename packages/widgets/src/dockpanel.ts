@@ -25,6 +25,8 @@ import { ISignal, Signal } from '@lumino/signaling';
 
 import { DockLayout } from './docklayout';
 
+import { IntersectionHoverStyler } from './intersectionutils';
+
 import { TabBar } from './tabbar';
 
 import { Widget } from './widget';
@@ -455,6 +457,9 @@ export class DockPanel extends Widget {
       case 'pointermove':
         this._evtPointerMove(event as PointerEvent);
         break;
+      case 'pointerleave':
+        this._setIntersectionHoverHandle(null);
+        break;
       case 'pointerup':
         this._evtPointerUp(event as PointerEvent);
         break;
@@ -477,6 +482,8 @@ export class DockPanel extends Widget {
     this.node.addEventListener('lm-dragover', this);
     this.node.addEventListener('lm-drop', this);
     this.node.addEventListener('pointerdown', this);
+    this.node.addEventListener('pointermove', this);
+    this.node.addEventListener('pointerleave', this);
   }
 
   /**
@@ -488,6 +495,9 @@ export class DockPanel extends Widget {
     this.node.removeEventListener('lm-dragover', this);
     this.node.removeEventListener('lm-drop', this);
     this.node.removeEventListener('pointerdown', this);
+    this.node.removeEventListener('pointermove', this);
+    this.node.removeEventListener('pointerleave', this);
+    this._setIntersectionHoverHandle(null, null);
     this._releaseMouse();
   }
 
@@ -704,9 +714,9 @@ export class DockPanel extends Widget {
     }
 
     // Find the handle which contains the mouse target, if any.
-    let layout = this.layout as DockLayout;
-    let target = event.target as HTMLElement;
-    let handle = find(layout.handles(), handle => handle.contains(target));
+    const layout = this.layout as DockLayout;
+    const target = event.target as HTMLElement;
+    const handle = find(layout.handles(), h => h.contains(target));
     if (!handle) {
       return;
     }
@@ -722,22 +732,52 @@ export class DockPanel extends Widget {
     this._document.addEventListener('contextmenu', this, true);
 
     // Compute the offset deltas for the handle press.
-    let rect = handle.getBoundingClientRect();
-    let deltaX = event.clientX - rect.left;
-    let deltaY = event.clientY - rect.top;
+    const rect = handle.getBoundingClientRect();
+    const deltaX = event.clientX - rect.left;
+    const deltaY = event.clientY - rect.top;
 
-    // Override the cursor and store the press data.
-    let style = window.getComputedStyle(handle);
-    let override = Drag.overrideCursor(style.cursor!, this._document);
-    this._pressData = { handle, deltaX, deltaY, override };
+    // Check for an orthogonal handle at the same intersection point.
+    const intersectHandle = layout.findIntersectingHandle(
+      handle,
+      event.clientX,
+      event.clientY
+    );
+
+    // Use 'move' at intersections; otherwise use the handle's default cursor.
+    const cursor = intersectHandle
+      ? 'move'
+      : window.getComputedStyle(handle).cursor!;
+    const override = Drag.overrideCursor(cursor, this._document);
+
+    let intersect: Private.IPressData['intersect'];
+    if (intersectHandle) {
+      const iRect = intersectHandle.getBoundingClientRect();
+      intersect = {
+        handle: intersectHandle,
+        deltaX: event.clientX - iRect.left,
+        deltaY: event.clientY - iRect.top
+      };
+    }
+
+    this._pressData = { handle, deltaX, deltaY, override, intersect };
   }
 
   /**
    * Handle the `'pointermove'` event for the dock panel.
    */
   private _evtPointerMove(event: PointerEvent): void {
-    // Bail early if no drag is in progress.
+    // Update hover state when no drag is in progress.
     if (!this._pressData) {
+      const layout = this.layout as DockLayout;
+      const target = event.target as HTMLElement;
+      const handle = find(layout.handles(), h => h.contains(target)) ?? null;
+      const intersectHandle = handle
+        ? layout.findIntersectingHandle(handle, event.clientX, event.clientY)
+        : null;
+      this._setIntersectionHoverHandle(
+        intersectHandle ? handle : null,
+        intersectHandle
+      );
       return;
     }
 
@@ -746,13 +786,27 @@ export class DockPanel extends Widget {
     event.stopPropagation();
 
     // Compute the desired offset position for the handle.
-    let rect = this.node.getBoundingClientRect();
-    let xPos = event.clientX - rect.left - this._pressData.deltaX;
-    let yPos = event.clientY - rect.top - this._pressData.deltaY;
+    const rect = this.node.getBoundingClientRect();
+    const xPos = event.clientX - rect.left - this._pressData.deltaX;
+    const yPos = event.clientY - rect.top - this._pressData.deltaY;
 
-    // Set the handle as close to the desired position as possible.
-    let layout = this.layout as DockLayout;
-    layout.moveHandle(this._pressData.handle, xPos, yPos);
+    // Set the handle(s) as close to the desired position as possible.
+    const layout = this.layout as DockLayout;
+    const { intersect } = this._pressData;
+    if (intersect) {
+      const xPos2 = event.clientX - rect.left - intersect.deltaX;
+      const yPos2 = event.clientY - rect.top - intersect.deltaY;
+      layout.moveHandles(
+        this._pressData.handle,
+        xPos,
+        yPos,
+        intersect.handle,
+        xPos2,
+        yPos2
+      );
+    } else {
+      layout.moveHandle(this._pressData.handle, xPos, yPos);
+    }
   }
 
   /**
@@ -793,6 +847,16 @@ export class DockPanel extends Widget {
     this._document.removeEventListener('pointerup', this, true);
     this._document.removeEventListener('pointermove', this, true);
     this._document.removeEventListener('contextmenu', this, true);
+  }
+
+  /**
+   * Set the handle pair which should render as an intersection hover.
+   */
+  private _setIntersectionHoverHandle(
+    handle: HTMLDivElement | null,
+    peer: HTMLDivElement | null = null
+  ): void {
+    this._intersectionHoverStyler.set(handle, peer);
   }
 
   /**
@@ -1072,6 +1136,7 @@ export class DockPanel extends Widget {
   private _tabsConstrained: boolean = false;
   private _addButtonEnabled: boolean = false;
   private _pressData: Private.IPressData | null = null;
+  private _intersectionHoverStyler = new IntersectionHoverStyler();
   private _layoutModified = new Signal<this, void>(this);
 
   private _addRequested = new Signal<this, TabBar<Widget>>(this);
@@ -1466,6 +1531,22 @@ namespace Private {
      * The disposable which will clear the override cursor.
      */
     override: IDisposable;
+
+    /**
+     * Data for two-axis resizing when the pressed handle intersects an
+     * orthogonal handle, or `undefined` if not applicable.
+     *
+     * When set, both `handle` and `intersect.handle` are moved together
+     * during pointermove, enabling simultaneous two-axis resizing.
+     */
+    intersect?: {
+      /** The orthogonally-intersecting handle. */
+      handle: HTMLDivElement;
+      /** The X offset of the press within the intersecting handle. */
+      deltaX: number;
+      /** The Y offset of the press within the intersecting handle. */
+      deltaY: number;
+    };
   }
 
   /**
@@ -1559,7 +1640,7 @@ namespace Private {
   });
 
   /**
-   * Create a single document config for the widgets in a dock panel.
+  as * Create a single document config for the widgets in a dock panel.
    */
   export function createSingleDocumentConfig(
     panel: DockPanel

@@ -41,6 +41,10 @@
   cursor: ns-resize;
 }
 
+.lm-SplitPanel-handle.lm-mod-intersection {
+  cursor: move;
+}
+
 .lm-SplitPanel[data-orientation='horizontal'] > .lm-SplitPanel-handle:after {
   left: 50%;
   min-width: 8px;

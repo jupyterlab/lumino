@@ -19,6 +19,8 @@ import { Layout, LayoutItem } from './layout';
 
 import { TabBar } from './tabbar';
 
+import { INTERSECTION_TOLERANCE_MULTIPLIER } from './intersectionutils';
+
 import Utils from './utils';
 
 import { Widget } from './widget';
@@ -248,6 +250,153 @@ export class DockLayout extends Layout {
     BoxEngine.adjust(data.node.sizers, data.index, delta);
 
     // Update the layout of the widgets.
+    if (this.parent) {
+      this.parent.update();
+    }
+  }
+
+  /**
+   * Find the handle that intersects orthogonally with the given handle at
+   * the specified client position.
+   *
+   * @param handle - The primary handle that was pressed.
+   *
+   * @param clientX - The clientX of the pointer event.
+   *
+   * @param clientY - The clientY of the pointer event.
+   *
+   * @returns The intersecting handle, or `null` if none exists.
+   *
+   * #### Notes
+   * This is used to detect intersection points where two orthogonal split
+   * handles meet, enabling simultaneous two-axis resizing.
+   */
+  findIntersectingHandle(
+    handle: HTMLDivElement,
+    clientX: number,
+    clientY: number
+  ): HTMLDivElement | null {
+    if (!this._root) {
+      return null;
+    }
+
+    // Determine the primary handle's orientation.
+    const primaryOrientation = handle.getAttribute('data-orientation');
+
+    // Iterate all handles looking for one with the opposite orientation
+    // whose bounding rect (expanded by spacing) contains the click point.
+    //
+    // We expand by spacing because child handles stop exactly at the edge of
+    // the parent handle's bounding rect — they don't overlap. For example, in
+    // a 2×2 grid the horizontal child handles end at the top of the root
+    // vertical handle, leaving a gap equal to the spacing. Expanding the
+    // candidate rect closes that gap. A multiplier of 4 gives a comfortable
+    // hit area without accidentally activating distant handles.
+    const tol = this._spacing * INTERSECTION_TOLERANCE_MULTIPLIER;
+    for (const candidate of this.handles()) {
+      if (candidate === handle) {
+        continue;
+      }
+      if (candidate.classList.contains('lm-mod-hidden')) {
+        continue;
+      }
+      if (candidate.getAttribute('data-orientation') === primaryOrientation) {
+        continue;
+      }
+      const rect = candidate.getBoundingClientRect();
+
+      // Expand the candidate rect in the primary handle's movement axis so
+      // the gap between handle regions is bridged:
+      //   'vertical'   primary (ns-resize, horizontal bar) → expand Y bounds
+      //   'horizontal' primary (ew-resize, vertical bar)   → expand X bounds
+      let left = rect.left,
+        right = rect.right;
+      let top = rect.top,
+        bottom = rect.bottom;
+      if (primaryOrientation === 'vertical') {
+        top -= tol;
+        bottom += tol;
+      } else {
+        left -= tol;
+        right += tol;
+      }
+
+      if (
+        clientX >= left &&
+        clientX <= right &&
+        clientY >= top &&
+        clientY <= bottom
+      ) {
+        return candidate;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Move two handles simultaneously to their given offset positions.
+   *
+   * @param handle1 - The first handle to move.
+   *
+   * @param offsetX1 - The desired offset X position for the first handle.
+   *
+   * @param offsetY1 - The desired offset Y position for the first handle.
+   *
+   * @param handle2 - The second handle to move.
+   *
+   * @param offsetX2 - The desired offset X position for the second handle.
+   *
+   * @param offsetY2 - The desired offset Y position for the second handle.
+   *
+   * #### Notes
+   * Both handles are adjusted before a single layout update is triggered,
+   * avoiding a double reflow. This is used for two-axis resizing at
+   * handle intersection points.
+   */
+  moveHandles(
+    handle1: HTMLDivElement,
+    offsetX1: number,
+    offsetY1: number,
+    handle2: HTMLDivElement,
+    offsetX2: number,
+    offsetY2: number
+  ): void {
+    if (!this._root) {
+      return;
+    }
+
+    // Adjust the first handle.
+    if (!handle1.classList.contains('lm-mod-hidden')) {
+      const data1 = this._root.findSplitNode(handle1);
+      if (data1) {
+        const delta1 =
+          data1.node.orientation === 'horizontal'
+            ? offsetX1 - handle1.offsetLeft
+            : offsetY1 - handle1.offsetTop;
+        if (delta1 !== 0) {
+          data1.node.holdSizes();
+          BoxEngine.adjust(data1.node.sizers, data1.index, delta1);
+        }
+      }
+    }
+
+    // Adjust the second handle.
+    if (!handle2.classList.contains('lm-mod-hidden')) {
+      const data2 = this._root.findSplitNode(handle2);
+      if (data2) {
+        const delta2 =
+          data2.node.orientation === 'horizontal'
+            ? offsetX2 - handle2.offsetLeft
+            : offsetY2 - handle2.offsetTop;
+        if (delta2 !== 0) {
+          data2.node.holdSizes();
+          BoxEngine.adjust(data2.node.sizers, data2.index, delta2);
+        }
+      }
+    }
+
+    // Trigger a single layout update for both adjustments.
     if (this.parent) {
       this.parent.update();
     }

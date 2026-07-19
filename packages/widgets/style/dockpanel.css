@@ -49,6 +49,10 @@
   cursor: ns-resize;
 }
 
+.lm-DockPanel-handle.lm-mod-intersection {
+  cursor: move;
+}
+
 .lm-DockPanel-handle[data-orientation='horizontal']:after {
   left: 50%;
   min-width: 8px;
