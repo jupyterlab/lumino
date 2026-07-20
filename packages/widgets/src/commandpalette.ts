@@ -57,10 +57,10 @@ export class CommandPalette extends Widget {
   }
 
   /**
-   * A signal emitted when a command item is executed from the palette.
+   * A signal emitted when a command item is triggered from the palette.
    *
    * #### Notes
-   * This signal is emitted when the user executes an item which is
+   * This signal is emitted when the user triggers an item which is
    * displayed in the palette, either by clicking the item or by
    * pressing `Enter` while the item is active.
    *
@@ -68,13 +68,14 @@ export class CommandPalette extends Widget {
    * such as a key binding, a menu, or a direct invocation of the
    * command registry.
    *
-   * The signal is emitted when the execution of the command has been
-   * requested. It does not wait for the command to complete, and it
-   * is emitted regardless of whether the command completes
-   * successfully.
+   * The signal is emitted before the execution of the item's command
+   * is requested, so a handler observes the state of the application
+   * as the user triggered the item. The signal does not report on the
+   * execution: the `commandExecuted` signal of the command registry
+   * can be used to observe the result of an execution.
    */
-  get itemExecuted(): ISignal<this, CommandPalette.IItem> {
-    return this._itemExecuted;
+  get itemTriggered(): ISignal<this, CommandPalette.IItem> {
+    return this._itemTriggered;
   }
 
   /**
@@ -552,11 +553,13 @@ export class CommandPalette extends Widget {
       return;
     }
 
+    // Emit the item triggered signal before requesting the execution,
+    // so that a handler observes the state of the application as the
+    // user triggered the item.
+    this._itemTriggered.emit(part.item);
+
     // Execute the item.
     this.commands.execute(part.item.command, part.item.args);
-
-    // Emit the item executed signal.
-    this._itemExecuted.emit(part.item);
 
     // Clear the query text.
     this.inputNode.value = '';
@@ -581,7 +584,7 @@ export class CommandPalette extends Widget {
   }
 
   private _activeIndex = -1;
-  private _itemExecuted = new Signal<this, CommandPalette.IItem>(this);
+  private _itemTriggered = new Signal<this, CommandPalette.IItem>(this);
   private _items: CommandPalette.IItem[] = [];
   private _results: CommandPalette.SearchResult[] | null = null;
 }
