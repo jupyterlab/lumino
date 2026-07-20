@@ -179,8 +179,8 @@ export class CommandPalette extends Widget {
     dispose(): void;
     handleEvent(event: Event): void;
     get inputNode(): HTMLInputElement;
-    get itemExecuted(): ISignal<this, CommandPalette.IItem>;
     get items(): ReadonlyArray<CommandPalette.IItem>;
+    get itemTriggered(): ISignal<this, CommandPalette.IItem>;
     protected onActivateRequest(msg: Message): void;
     protected onAfterDetach(msg: Message): void;
     protected onAfterShow(msg: Message): void;

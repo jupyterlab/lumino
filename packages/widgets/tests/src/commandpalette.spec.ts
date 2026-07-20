@@ -36,7 +36,7 @@ class LogPalette extends CommandPalette {
  *
  * #### Notes
  * This demonstrates how a downstream application can implement a
- * "recently used commands" feature with the `itemExecuted` signal
+ * "recently used commands" feature with the `itemTriggered` signal
  * and the protected `search()` method.
  */
 class RecentsPalette extends CommandPalette {
@@ -44,7 +44,7 @@ class RecentsPalette extends CommandPalette {
 
   constructor(options: CommandPalette.IOptions) {
     super(options);
-    this.itemExecuted.connect((sender, item) => {
+    this.itemTriggered.connect((sender, item) => {
       let index = this.recents.findIndex(recent => {
         return (
           recent.command === item.command &&
@@ -130,12 +130,12 @@ describe('@lumino/widgets', () => {
       });
     });
 
-    describe('#itemExecuted', () => {
+    describe('#itemTriggered', () => {
       it('should be emitted when an item is clicked', () => {
         commands.addCommand('test', { execute: () => {} });
 
         let executed: CommandPalette.IItem | null = null;
-        palette.itemExecuted.connect((sender, item) => {
+        palette.itemTriggered.connect((sender, item) => {
           expect(sender).to.equal(palette);
           executed = item;
         });
@@ -153,7 +153,7 @@ describe('@lumino/widgets', () => {
         commands.addCommand('test', { execute: () => {} });
 
         let executed: CommandPalette.IItem | null = null;
-        palette.itemExecuted.connect((sender, item) => {
+        palette.itemTriggered.connect((sender, item) => {
           executed = item;
         });
 
@@ -175,11 +175,31 @@ describe('@lumino/widgets', () => {
         expect(executed!.command).to.equal('test');
       });
 
+      it('should be emitted before the command is executed', () => {
+        let order: string[] = [];
+        commands.addCommand('test', {
+          execute: () => {
+            order.push('execute');
+          }
+        });
+
+        palette.itemTriggered.connect(() => {
+          order.push('triggered');
+        });
+
+        palette.addItem(defaultOptions);
+        MessageLoop.flush();
+
+        let node = palette.contentNode.querySelector('.lm-CommandPalette-item');
+        node!.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+        expect(order).to.deep.equal(['triggered', 'execute']);
+      });
+
       it('should not be emitted when a command is executed directly', () => {
         commands.addCommand('test', { execute: () => {} });
 
         let emitted = false;
-        palette.itemExecuted.connect(() => {
+        palette.itemTriggered.connect(() => {
           emitted = true;
         });
 
@@ -197,7 +217,7 @@ describe('@lumino/widgets', () => {
         });
 
         let emitted = false;
-        palette.itemExecuted.connect(() => {
+        palette.itemTriggered.connect(() => {
           emitted = true;
         });
 
@@ -213,7 +233,7 @@ describe('@lumino/widgets', () => {
         commands.addCommand('test', { execute: () => {} });
 
         let emitted = false;
-        palette.itemExecuted.connect(() => {
+        palette.itemTriggered.connect(() => {
           emitted = true;
         });
 
@@ -821,7 +841,7 @@ describe('@lumino/widgets', () => {
 
         // Activate and trigger the pinned item.
         let executed: CommandPalette.IItem | null = null;
-        palette.itemExecuted.connect((sender, item) => {
+        palette.itemTriggered.connect((sender, item) => {
           executed = item;
         });
         palette.node.dispatchEvent(
