@@ -301,7 +301,7 @@ function main(): void {
   bar.addMenu(emptyMenu);
   bar.id = 'menuBar';
 
-  let palette = new CommandPalette({ commands, maxRecentCommands: 3 });
+  let palette = new CommandPalette({ commands });
   palette.addItem({ command: 'example:cut', category: 'Edit' });
   palette.addItem({ command: 'example:copy', category: 'Edit' });
   palette.addItem({ command: 'example:paste', category: 'Edit' });
