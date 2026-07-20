@@ -17,6 +17,8 @@ import { ElementExt } from '@lumino/domutils';
 
 import { Message } from '@lumino/messaging';
 
+import { ISignal, Signal } from '@lumino/signaling';
+
 import {
   ElementDataset,
   h,
@@ -41,7 +43,6 @@ export class CommandPalette extends Widget {
     this.setFlag(Widget.Flag.DisallowLayout);
     this.commands = options.commands;
     this.renderer = options.renderer || CommandPalette.defaultRenderer;
-    this.maxRecentCommands = options.maxRecentCommands ?? 0;
     this.commands.commandChanged.connect(this._onGenericChange, this);
     this.commands.keyBindingChanged.connect(this._onGenericChange, this);
   }
@@ -51,9 +52,29 @@ export class CommandPalette extends Widget {
    */
   dispose(): void {
     this._items.length = 0;
-    this._recentCommands.length = 0;
     this._results = null;
     super.dispose();
+  }
+
+  /**
+   * A signal emitted when a command item is executed from the palette.
+   *
+   * #### Notes
+   * This signal is emitted when the user executes an item which is
+   * displayed in the palette, either by clicking the item or by
+   * pressing `Enter` while the item is active.
+   *
+   * It is not emitted when a command is executed by any other means,
+   * such as a key binding, a menu, or a direct invocation of the
+   * command registry.
+   *
+   * The signal is emitted when the execution of the command has been
+   * requested. It does not wait for the command to complete, and it
+   * is emitted regardless of whether the command completes
+   * successfully.
+   */
+  get itemExecuted(): ISignal<this, CommandPalette.IItem> {
+    return this._itemExecuted;
   }
 
   /**
@@ -109,46 +130,6 @@ export class CommandPalette extends Widget {
    */
   get items(): ReadonlyArray<CommandPalette.IItem> {
     return this._items;
-  }
-
-  /**
-   * The maximum number of recently executed commands to display.
-   *
-   * #### Notes
-   * When the limit is positive, the most recently executed commands
-   * are displayed at the top of the palette when the search query is
-   * empty. When searching, the results are ordered as usual and the
-   * recently executed commands are only marked as recent.
-   *
-   * Setting the limit to `0` disables the tracking and display of the
-   * recently executed commands, and clears the existing history.
-   *
-   * Setting the limit to a value smaller than the current history
-   * drops the oldest commands from the history.
-   */
-  get maxRecentCommands(): number {
-    return this._maxRecentCommands;
-  }
-
-  set maxRecentCommands(value: number) {
-    // Normalize the limit to a non-negative integer, coercing `NaN` to `0`.
-    value = Math.max(0, Math.floor(value)) || 0;
-
-    // Bail if the limit does not change.
-    if (this._maxRecentCommands === value) {
-      return;
-    }
-
-    // Update the limit.
-    this._maxRecentCommands = value;
-
-    // Drop the oldest commands which exceed the new limit.
-    if (this._recentCommands.length > value) {
-      this._recentCommands.length = value;
-    }
-
-    // Refresh the search results.
-    this.refresh();
   }
 
   /**
@@ -236,22 +217,6 @@ export class CommandPalette extends Widget {
   }
 
   /**
-   * Clear the recently executed commands.
-   */
-  clearRecentCommands(): void {
-    // Bail if there is nothing to remove.
-    if (this._recentCommands.length === 0) {
-      return;
-    }
-
-    // Clear the array of recently executed commands.
-    this._recentCommands.length = 0;
-
-    // Refresh the search results.
-    this.refresh();
-  }
-
-  /**
    * Clear the search results and schedule an update.
    *
    * #### Notes
@@ -306,6 +271,36 @@ export class CommandPalette extends Widget {
         this._toggleFocused();
         break;
     }
+  }
+
+  /**
+   * Generate the search results for the given query text.
+   *
+   * @param query - The query text of the palette search input.
+   *
+   * @returns The array of search results to display.
+   *
+   * #### Notes
+   * The results are displayed in the order they are returned. The
+   * mouse and keyboard interactions of the palette operate on that
+   * same order.
+   *
+   * The default implementation of this method fuzzy matches the
+   * palette items against the query using `CommandPalette.search()`.
+   *
+   * A subclass may reimplement this method as needed to customize
+   * which results are displayed and in what order. For example, a
+   * subclass could pin selected items to the top of the palette.
+   *
+   * The results should only include items which are visible.
+   *
+   * The results are generated when the palette is updated and are
+   * cached until the next call to `refresh()`. A subclass which
+   * generates results from state outside of the palette should call
+   * `refresh()` when that state changes.
+   */
+  protected search(query: string): CommandPalette.SearchResult[] {
+    return CommandPalette.search(this.items, query);
   }
 
   /**
@@ -367,11 +362,7 @@ export class CommandPalette extends Widget {
     let results = this._results;
     if (!results) {
       // Generate and store the new search results.
-      results = this._results = Private.search(
-        this._items,
-        query,
-        this._recentCommands
-      );
+      results = this._results = this.search(query);
 
       // Reset the active index.
       this._activeIndex = query
@@ -406,8 +397,7 @@ export class CommandPalette extends Widget {
         let item = result.item;
         let indices = result.indices;
         let active = i === activeIndex;
-        let recent = result.recent;
-        content[i] = renderer.renderItem({ item, indices, active, recent });
+        content[i] = renderer.renderItem({ item, indices, active });
       }
     }
 
@@ -565,40 +555,14 @@ export class CommandPalette extends Widget {
     // Execute the item.
     this.commands.execute(part.item.command, part.item.args);
 
-    // Add the item to the recently executed commands.
-    this._addRecentCommand(part.item);
+    // Emit the item executed signal.
+    this._itemExecuted.emit(part.item);
 
     // Clear the query text.
     this.inputNode.value = '';
 
     // Refresh the search results.
     this.refresh();
-  }
-
-  /**
-   * Add a command item to the recently executed commands.
-   */
-  private _addRecentCommand(item: CommandPalette.IItem): void {
-    // Bail if recently executed commands are not tracked.
-    if (this._maxRecentCommands === 0) {
-      return;
-    }
-
-    // Remove any existing entry for the command.
-    ArrayExt.removeFirstWhere(this._recentCommands, recent => {
-      return (
-        recent.command === item.command &&
-        JSONExt.deepEqual(recent.args, item.args)
-      );
-    });
-
-    // Add the command to the front of the history.
-    this._recentCommands.unshift({ command: item.command, args: item.args });
-
-    // Drop the oldest command if the history exceeds the limit.
-    if (this._recentCommands.length > this._maxRecentCommands) {
-      this._recentCommands.length = this._maxRecentCommands;
-    }
   }
 
   /**
@@ -617,10 +581,9 @@ export class CommandPalette extends Widget {
   }
 
   private _activeIndex = -1;
+  private _itemExecuted = new Signal<this, CommandPalette.IItem>(this);
   private _items: CommandPalette.IItem[] = [];
-  private _results: Private.SearchResult[] | null = null;
-  private _maxRecentCommands = 0;
-  private _recentCommands: Private.IRecentCommand[] = [];
+  private _results: CommandPalette.SearchResult[] | null = null;
 }
 
 /**
@@ -642,22 +605,6 @@ export namespace CommandPalette {
      * The default is a shared renderer instance.
      */
     renderer?: IRenderer;
-
-    /**
-     * The maximum number of recently executed commands to display.
-     *
-     * #### Notes
-     * When the limit is positive, the most recently executed commands
-     * are displayed at the top of the palette when the search query is
-     * empty. When searching, the results are ordered as usual and the
-     * recently executed commands are only marked as recent.
-     *
-     * When the limit is `0`, recently executed commands are neither
-     * tracked nor displayed.
-     *
-     * The default value is `0`.
-     */
-    maxRecentCommands?: number;
   }
 
   /**
@@ -785,6 +732,51 @@ export namespace CommandPalette {
   }
 
   /**
+   * A search result object for a header label.
+   */
+  export interface IHeaderResult {
+    /**
+     * The discriminated type of the object.
+     */
+    readonly type: 'header';
+
+    /**
+     * The category for the header.
+     */
+    readonly category: string;
+
+    /**
+     * The indices of the matched category characters.
+     */
+    readonly indices: ReadonlyArray<number> | null;
+  }
+
+  /**
+   * A search result object for a command item.
+   */
+  export interface IItemResult {
+    /**
+     * The discriminated type of the object.
+     */
+    readonly type: 'item';
+
+    /**
+     * The command item which was matched.
+     */
+    readonly item: IItem;
+
+    /**
+     * The indices of the matched label characters.
+     */
+    readonly indices: ReadonlyArray<number> | null;
+  }
+
+  /**
+   * A type alias for a command palette search result.
+   */
+  export type SearchResult = IHeaderResult | IItemResult;
+
+  /**
    * The render data for a command palette header.
    */
   export interface IHeaderRenderData {
@@ -817,14 +809,6 @@ export namespace CommandPalette {
      * Whether the item is the active item.
      */
     readonly active: boolean;
-
-    /**
-     * Whether the item is a recently executed command.
-     *
-     * #### Notes
-     * The default value is `false`.
-     */
-    readonly recent?: boolean;
   }
 
   /**
@@ -1021,9 +1005,6 @@ export namespace CommandPalette {
       if (data.active) {
         name += ' lm-mod-active';
       }
-      if (data.recent) {
-        name += ' lm-mod-recent';
-      }
 
       // Add the extra class.
       let extra = data.item.className;
@@ -1126,6 +1107,37 @@ export namespace CommandPalette {
    * The default `Renderer` instance.
    */
   export const defaultRenderer = new Renderer();
+
+  /**
+   * Search an array of command items for fuzzy matches.
+   *
+   * @param items - The command items to search.
+   *
+   * @param query - The query text to match against the items.
+   *
+   * @returns The array of search results for the query.
+   *
+   * #### Notes
+   * For an empty query, all visible items are included in the results,
+   * ordered by category, rank, and label.
+   *
+   * For a non-empty query, the visible items are fuzzy matched against
+   * the query text and ordered by match quality.
+   *
+   * Each contiguous run of items which share the same category is
+   * preceded by a header result for that category.
+   *
+   * This is the function used by the default implementation of the
+   * protected `search()` method of a command palette. It is provided
+   * so that a subclass which reimplements that method can compose the
+   * default search behavior with its own custom results.
+   */
+  export function search(
+    items: ReadonlyArray<IItem>,
+    query: string
+  ): SearchResult[] {
+    return Private.search(items, query);
+  }
 }
 
 /**
@@ -1169,89 +1181,25 @@ namespace Private {
   }
 
   /**
-   * An object which represents a recently executed command.
+   * A type alias for a command palette search result.
    */
-  export interface IRecentCommand {
-    /**
-     * The command which was executed.
-     */
-    readonly command: string;
-
-    /**
-     * The arguments for the command.
-     */
-    readonly args: ReadonlyJSONObject;
-  }
-
-  /**
-   * A search result object for a header label.
-   */
-  export interface IHeaderResult {
-    /**
-     * The discriminated type of the object.
-     */
-    readonly type: 'header';
-
-    /**
-     * The category for the header.
-     */
-    readonly category: string;
-
-    /**
-     * The indices of the matched category characters.
-     */
-    readonly indices: ReadonlyArray<number> | null;
-  }
-
-  /**
-   * A search result object for a command item.
-   */
-  export interface IItemResult {
-    /**
-     * The discriminated type of the object.
-     */
-    readonly type: 'item';
-
-    /**
-     * The command item which was matched.
-     */
-    readonly item: CommandPalette.IItem;
-
-    /**
-     * The indices of the matched label characters.
-     */
-    readonly indices: ReadonlyArray<number> | null;
-
-    /**
-     * Whether the item is a recently executed command.
-     */
-    readonly recent?: boolean;
-  }
-
-  /**
-   * A type alias for a search result item.
-   */
-  export type SearchResult = IHeaderResult | IItemResult;
+  export type SearchResult = CommandPalette.SearchResult;
 
   /**
    * Search an array of command items for fuzzy matches.
    */
   export function search(
-    items: CommandPalette.IItem[],
-    query: string,
-    recentCommands: ReadonlyArray<IRecentCommand>
+    items: ReadonlyArray<CommandPalette.IItem>,
+    query: string
   ): SearchResult[] {
-    // Resolve the recently executed commands to their items.
-    let recentItems = resolveRecentItems(items, recentCommands);
-
     // Fuzzy match the items for the query.
-    let scores = matchItems(items, query, recentItems);
+    let scores = matchItems(items, query);
 
     // Sort the items based on their score.
     scores.sort(scoreCmp);
 
     // Create the results for the search.
-    return createResults(scores, recentItems);
+    return createResults(scores);
   }
 
   /**
@@ -1279,7 +1227,6 @@ namespace Private {
    * An enum of the supported match types.
    */
   const enum MatchType {
-    Recent,
     Label,
     Category,
     Split,
@@ -1317,66 +1264,17 @@ namespace Private {
   }
 
   /**
-   * Resolve recently executed commands to their command items.
-   */
-  function resolveRecentItems(
-    items: CommandPalette.IItem[],
-    recentCommands: ReadonlyArray<IRecentCommand>
-  ): CommandPalette.IItem[] {
-    // Set up the array of resolved items.
-    let recentItems: CommandPalette.IItem[] = [];
-
-    // Iterate over the recently executed commands.
-    for (let recent of recentCommands) {
-      // Find the item for the command, if any.
-      let item = ArrayExt.findFirstValue(items, candidate => {
-        return (
-          candidate.command === recent.command &&
-          JSONExt.deepEqual(candidate.args, recent.args)
-        );
-      });
-
-      // Ignore commands which do not resolve to a visible and enabled
-      // item. A disabled item cannot be executed again, so it is listed
-      // in its own category instead until it is enabled again.
-      if (item && item.isVisible && item.isEnabled) {
-        recentItems.push(item);
-      }
-    }
-
-    // Return the resolved items.
-    return recentItems;
-  }
-
-  /**
    * Perform a fuzzy match on an array of command items.
    */
   function matchItems(
-    items: CommandPalette.IItem[],
-    query: string,
-    recentItems: CommandPalette.IItem[]
+    items: ReadonlyArray<CommandPalette.IItem>,
+    query: string
   ): IScore[] {
     // Normalize the query text to lower case with no whitespace.
     query = normalizeQuery(query);
 
     // Create the array to hold the scores.
     let scores: IScore[] = [];
-
-    // For an empty query, add a score for each of the recently executed
-    // commands, which are displayed before all other items. The score
-    // reflects the recency of the item, so that sorting the scores
-    // preserves the order of execution.
-    if (!query) {
-      for (let i = 0, n = recentItems.length; i < n; ++i) {
-        scores.push({
-          matchType: MatchType.Recent,
-          categoryIndices: null,
-          labelIndices: null,
-          score: i,
-          item: recentItems[i]
-        });
-      }
-    }
 
     // Iterate over the items and match against the query.
     for (let i = 0, n = items.length; i < n; ++i) {
@@ -1386,18 +1284,15 @@ namespace Private {
         continue;
       }
 
-      // If the query is empty, all items are matched by default, except
-      // for the recently executed commands which are already scored.
+      // If the query is empty, all items are matched by default.
       if (!query) {
-        if (recentItems.indexOf(item) === -1) {
-          scores.push({
-            matchType: MatchType.Default,
-            categoryIndices: null,
-            labelIndices: null,
-            score: 0,
-            item
-          });
-        }
+        scores.push({
+          matchType: MatchType.Default,
+          categoryIndices: null,
+          labelIndices: null,
+          score: 0,
+          item
+        });
         continue;
       }
 
@@ -1576,48 +1471,26 @@ namespace Private {
   /**
    * Create the results from an array of sorted scores.
    */
-  function createResults(
-    scores: IScore[],
-    recentItems: CommandPalette.IItem[]
-  ): SearchResult[] {
+  function createResults(scores: IScore[]): SearchResult[] {
     // Set up the search results array.
     let results: SearchResult[] = [];
 
     // Iterate over each score in the array.
     for (let i = 0, n = scores.length; i < n; ++i) {
       // Extract the current item and indices.
-      let { matchType, item, categoryIndices, labelIndices } = scores[i];
-
-      // Look up whether the item is a recently executed command.
-      let recent = recentItems.indexOf(item) !== -1;
-
-      // Handle the recently executed commands for an empty query, which
-      // sort before all other results and are displayed without a
-      // category header.
-      if (matchType === MatchType.Recent) {
-        // Create the item result for the score.
-        results.push({ type: 'item', item, indices: labelIndices, recent });
-        continue;
-      }
+      let { item, categoryIndices, labelIndices } = scores[i];
 
       // Extract the category for the current item.
       let category = item.category;
 
-      // Look up the preceding search result, if any.
-      let prev = i === 0 ? null : scores[i - 1];
-
       // Is this the same category as the preceding result?
-      if (
-        !prev ||
-        prev.matchType === MatchType.Recent ||
-        category !== prev.item.category
-      ) {
+      if (i === 0 || category !== scores[i - 1].item.category) {
         // Add the header result for the category.
         results.push({ type: 'header', category, indices: categoryIndices });
       }
 
       // Create the item result for the score.
-      results.push({ type: 'item', item, indices: labelIndices, recent });
+      results.push({ type: 'item', item, indices: labelIndices });
     }
 
     // Return the final results.

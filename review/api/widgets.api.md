@@ -174,15 +174,13 @@ export class CommandPalette extends Widget {
     addItem(options: CommandPalette.IItemOptions): CommandPalette.IItem;
     addItems(items: CommandPalette.IItemOptions[]): CommandPalette.IItem[];
     clearItems(): void;
-    clearRecentCommands(): void;
     readonly commands: CommandRegistry;
     get contentNode(): HTMLUListElement;
     dispose(): void;
     handleEvent(event: Event): void;
     get inputNode(): HTMLInputElement;
+    get itemExecuted(): ISignal<this, CommandPalette.IItem>;
     get items(): ReadonlyArray<CommandPalette.IItem>;
-    get maxRecentCommands(): number;
-    set maxRecentCommands(value: number);
     protected onActivateRequest(msg: Message): void;
     protected onAfterDetach(msg: Message): void;
     protected onAfterShow(msg: Message): void;
@@ -192,6 +190,7 @@ export class CommandPalette extends Widget {
     removeItem(item: CommandPalette.IItem): void;
     removeItemAt(index: number): void;
     readonly renderer: CommandPalette.IRenderer;
+    protected search(query: string): CommandPalette.SearchResult[];
     get searchNode(): HTMLDivElement;
 }
 
@@ -203,6 +202,11 @@ export namespace CommandPalette {
     export interface IHeaderRenderData {
         readonly category: string;
         readonly indices: ReadonlyArray<number> | null;
+    }
+    export interface IHeaderResult {
+        readonly category: string;
+        readonly indices: ReadonlyArray<number> | null;
+        readonly type: 'header';
     }
     export interface IItem {
         readonly args: ReadonlyJSONObject;
@@ -232,11 +236,14 @@ export namespace CommandPalette {
         readonly active: boolean;
         readonly indices: ReadonlyArray<number> | null;
         readonly item: IItem;
-        readonly recent?: boolean;
+    }
+    export interface IItemResult {
+        readonly indices: ReadonlyArray<number> | null;
+        readonly item: IItem;
+        readonly type: 'item';
     }
     export interface IOptions {
         commands: CommandRegistry;
-        maxRecentCommands?: number;
         renderer?: IRenderer;
     }
     export interface IRenderer {
@@ -262,7 +269,9 @@ export namespace CommandPalette {
         renderItemLabel(data: IItemRenderData): VirtualElement;
         renderItemShortcut(data: IItemRenderData): VirtualElement;
     }
+    export function search(items: ReadonlyArray<IItem>, query: string): SearchResult[];
     const defaultRenderer: Renderer;
+    export type SearchResult = IHeaderResult | IItemResult;
 }
 
 // @public
