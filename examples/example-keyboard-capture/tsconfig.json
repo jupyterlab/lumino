@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "declaration": false,
+    "noImplicitAny": true,
+    "noEmitOnError": true,
+    "noUnusedLocals": true,
+    "strictNullChecks": true,
+    "sourceMap": true,
+    "module": "ES6",
+    "moduleResolution": "node",
+    "target": "ES2018",
+    "outDir": "./build",
+    "lib": ["DOM", "ES2018"],
+    "types": []
+  },
+  "include": ["src/*"]
+}

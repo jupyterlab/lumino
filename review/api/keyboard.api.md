@@ -10,6 +10,9 @@ export const EN_US: IKeyboardLayout;
 // @public
 export function getKeyboardLayout(): IKeyboardLayout;
 
+// @alpha
+export function hasBrowserLayout(): boolean;
+
 // @public
 export interface IKeyboardLayout {
     isModifierKey(key: string): boolean;
@@ -21,7 +24,7 @@ export interface IKeyboardLayout {
 
 // @public
 export class KeycodeLayout implements IKeyboardLayout {
-    constructor(name: string, codes: KeycodeLayout.CodeMap, modifierKeys?: string[]);
+    constructor(name: string, keyCodes: KeycodeLayout.CodeMap, modifierKeys?: string[], codes?: KeycodeLayout.ModernCodeMap);
     isModifierKey(key: string): boolean;
     isValidKey(key: string): boolean;
     keyForKeydownEvent(event: KeyboardEvent): string;
@@ -32,16 +35,22 @@ export class KeycodeLayout implements IKeyboardLayout {
 // @public
 export namespace KeycodeLayout {
     export type CodeMap = {
-        readonly [code: number]: string;
+        readonly [keyCode: number]: string;
     };
     export function convertToKeySet(keys: string[]): KeySet;
-    export function extractKeys(codes: CodeMap): KeySet;
+    export function extractKeys(keyCodes: CodeMap, codes?: ModernCodeMap): KeySet;
     export type KeySet = {
         readonly [key: string]: boolean;
+    };
+    export type ModernCodeMap = {
+        readonly [code: string]: string;
     };
 }
 
 // @public
 export function setKeyboardLayout(layout: IKeyboardLayout): void;
+
+// @alpha
+export function useBrowserLayout(): Promise<boolean>;
 
 ```
