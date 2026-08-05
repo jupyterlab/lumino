@@ -122,6 +122,16 @@ describe('@lumino/widgets', () => {
         let widget = new Widget();
         expect(widget.hasClass('lm-Widget')).to.equal(true);
       });
+
+      it('should optionally proxy node via shadow DOM', () => {
+        let widget = new Widget({ shadowDOM: true });
+        expect(widget.node).to.not.equal(widget.attachmentNode);
+        expect(widget.attachmentNode.shadowRoot).to.not.equal(null);
+
+        widget = new Widget({ shadowDOM: false });
+        expect(widget.node).to.equal(widget.attachmentNode);
+        expect(widget.attachmentNode.shadowRoot).to.equal(null);
+      });
     });
 
     describe('#dispose()', () => {
@@ -563,6 +573,51 @@ describe('@lumino/widgets', () => {
         widget.node.classList.add('foo');
         expect(widget.toggleClass('foo')).to.equal(false);
         expect(widget.toggleClass('foo', false)).to.equal(false);
+      });
+    });
+
+    describe('#adoptStyleSheet()', () => {
+      it('should adopt style sheets for widgets with shadow DOM', () => {
+        const sheet = new CSSStyleSheet();
+        sheet.replaceSync('* { color: red; }');
+
+        let widget = new Widget({ shadowDOM: true });
+        Widget.attach(widget, document.body);
+
+        let div = document.createElement('div');
+        widget.node.appendChild(div);
+
+        expect(window.getComputedStyle(div).color).to.equal('rgb(0, 0, 0)');
+
+        let wasAdopted = widget.adoptStyleSheet(sheet);
+        expect(wasAdopted).to.equal(true);
+        expect(window.getComputedStyle(div).color).to.equal('rgb(255, 0, 0)');
+
+        wasAdopted = widget.adoptStyleSheet(sheet);
+        expect(wasAdopted).to.equal(false);
+      });
+    });
+
+    describe('#removeAdoptedStyleSheet()', () => {
+      it('should adopt style sheets for widgets with shadow DOM', () => {
+        const sheet = new CSSStyleSheet();
+        sheet.replaceSync('* { color: red; }');
+
+        let widget = new Widget({ shadowDOM: true });
+        Widget.attach(widget, document.body);
+
+        let div = document.createElement('div');
+        widget.node.appendChild(div);
+
+        widget.adoptStyleSheet(sheet);
+        expect(window.getComputedStyle(div).color).to.equal('rgb(255, 0, 0)');
+
+        let wasRemoved = widget.removeAdoptedStyleSheet(sheet);
+        expect(wasRemoved).to.equal(true);
+        expect(window.getComputedStyle(div).color).to.equal('rgb(0, 0, 0)');
+
+        wasRemoved = widget.removeAdoptedStyleSheet(sheet);
+        expect(wasRemoved).to.equal(false);
       });
     });
 

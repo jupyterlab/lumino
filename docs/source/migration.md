@@ -89,6 +89,15 @@ while (!(it = it.next()).done) {
 }
 ```
 
+### Replace `widget.node` with `widget.attachmentNode`
+
+Lumino 2 distinguishes between the contents node (`node`) and attachment node
+(`attachmentNode`) of widgets to enable attaching widgets via shadow DOM root.
+By default attachment and contents node are the same, but for widgets with
+shadow DOM enabled, they differ. Downstream layouts need to update methods
+attaching and detaching widgets to use attachment node if they want to support
+moving the widgets to shadow DOM.
+
 ## Public API changes
 
 ### `@lumino/algorithm`
