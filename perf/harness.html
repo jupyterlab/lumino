@@ -1,0 +1,744 @@
+<!--
+  ~ Copyright (c) Jupyter Development Team.
+  ~ Distributed under the terms of the Modified BSD License.
+  ~
+  ~ Drag/resize performance harness for SplitPanel / DockPanel.
+  ~ Loads the *built* UMD bundles from packages/*/dist, so run
+  ~   (cd packages/widgets && npx tsc --build && ../../node_modules/.bin/rollup -c)
+  ~ after changing widget sources.
+  ~
+  ~ Open directly in a browser (file:// is fine) or drive it with perf/run.mjs.
+  ~ Query params: mode=split|nested|dock|stress, n=<leaves>, dom=<nodes per leaf>
+  ~ `stress` is an application-shell scene (24 panes by default) meant for
+  ~ dragging by hand; the others are the focused measurement scenes.
+-->
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>lumino drag perf harness</title>
+
+    <script src="../packages/algorithm/dist/index.js"></script>
+    <script src="../packages/collections/dist/index.js"></script>
+    <script src="../packages/properties/dist/index.js"></script>
+    <script src="../packages/messaging/dist/index.js"></script>
+    <script src="../packages/signaling/dist/index.js"></script>
+    <script src="../packages/disposable/dist/index.js"></script>
+    <script src="../packages/domutils/dist/index.js"></script>
+    <script src="../packages/coreutils/dist/index.js"></script>
+    <script src="../packages/keyboard/dist/index.js"></script>
+    <script src="../packages/commands/dist/index.js"></script>
+    <script src="../packages/dragdrop/dist/index.js"></script>
+    <script src="../packages/virtualdom/dist/index.js"></script>
+    <script src="../packages/widgets/dist/index.js"></script>
+
+    <!-- default-theme/style/index.css uses bare @import specifiers that do not
+         resolve over file://, so the pieces are linked explicitly. -->
+    <link href="../packages/dragdrop/style/index.css" rel="stylesheet" />
+    <link href="../packages/widgets/style/index.css" rel="stylesheet" />
+    <link
+      href="../packages/default-theme/style/accordionpanel.css"
+      rel="stylesheet"
+    />
+    <link
+      href="../packages/default-theme/style/dockpanel.css"
+      rel="stylesheet"
+    />
+    <link href="../packages/default-theme/style/tabbar.css" rel="stylesheet" />
+    <link
+      href="../packages/default-theme/style/scrollbar.css"
+      rel="stylesheet"
+    />
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+        font: 13px sans-serif;
+      }
+      #perf-main {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+      }
+      .perf-content {
+        overflow: auto;
+        padding: 4px;
+      }
+      .perf-row {
+        display: flex;
+      }
+      .perf-cell {
+        flex: 1 1 auto;
+        min-width: 12px;
+        height: 14px;
+        border: 1px solid #ddd;
+        box-sizing: border-box;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      (function () {
+        'use strict';
+
+        const W = lumino_widgets;
+        const { MessageLoop } = lumino_messaging;
+        const {
+          BoxPanel,
+          DockPanel,
+          SplitPanel,
+          Widget,
+          SplitLayout,
+          DockLayout
+        } = W;
+
+        const params = new URLSearchParams(window.location.search);
+        const num = (k, d) => {
+          const v = parseInt(params.get(k) || '', 10);
+          return Number.isFinite(v) ? v : d;
+        };
+        const mode = params.get('mode') || 'nested';
+        const config = {
+          mode,
+          n: num('n', mode === 'stress' ? 24 : 8),
+          // The stress scene is meant to be felt by hand, so its panes carry
+          // enough DOM that a relayout is visible without CPU throttling.
+          dom: num('dom', mode === 'stress' ? 800 : 400)
+        };
+
+        // ---------------------------------------------------------------
+        // Content widget with a tunable amount of DOM (layout cost knob).
+        // ---------------------------------------------------------------
+        class Content extends Widget {
+          constructor(name, nodes) {
+            super({ node: Content.createNode(name, nodes) });
+            this.setFlag(Widget.Flag.DisallowLayout);
+            this.addClass('perf-content');
+            this.title.label = name;
+            this.title.closable = true;
+          }
+          static createNode(name, nodes) {
+            const node = document.createElement('div');
+            const frag = document.createDocumentFragment();
+            let row = null;
+            for (let i = 0; i < nodes; i++) {
+              if (i % 8 === 0) {
+                row = document.createElement('div');
+                row.className = 'perf-row';
+                frag.appendChild(row);
+              }
+              const cell = document.createElement('div');
+              cell.className = 'perf-cell';
+              cell.textContent = name + ':' + i;
+              row.appendChild(cell);
+            }
+            node.appendChild(frag);
+            return node;
+          }
+        }
+
+        // ---------------------------------------------------------------
+        // Layout builders.
+        // ---------------------------------------------------------------
+        function buildSplit() {
+          const p = new SplitPanel({ orientation: 'horizontal', spacing: 4 });
+          p.id = 'perf-root';
+          for (let i = 0; i < config.n; i++) {
+            p.addWidget(new Content('s' + i, config.dom));
+          }
+          return p;
+        }
+
+        // Outer horizontal SplitPanel of vertical SplitPanels: exercises the
+        // orthogonal handle-intersection code paths in SplitPanel.
+        function buildNested() {
+          const outer = new SplitPanel({
+            orientation: 'horizontal',
+            spacing: 4
+          });
+          outer.id = 'perf-root';
+          const cols = Math.max(2, Math.round(Math.sqrt(config.n)));
+          const rows = Math.max(2, Math.ceil(config.n / cols));
+          for (let c = 0; c < cols; c++) {
+            const inner = new SplitPanel({
+              orientation: 'vertical',
+              spacing: 4
+            });
+            for (let r = 0; r < rows; r++) {
+              inner.addWidget(new Content('n' + c + '-' + r, config.dom));
+            }
+            outer.addWidget(inner);
+          }
+          return outer;
+        }
+
+        function buildDock() {
+          const dock = new DockPanel({ spacing: 4 });
+          dock.id = 'perf-root';
+          const first = new Content('d0', config.dom);
+          dock.addWidget(first);
+          let ref = first;
+          for (let i = 1; i < config.n; i++) {
+            const w = new Content('d' + i, config.dom);
+            dock.addWidget(w, {
+              mode: i % 2 ? 'split-right' : 'split-bottom',
+              ref: ref
+            });
+            ref = w;
+          }
+          return dock;
+        }
+
+        // An application-shell shape: nested SplitPanel columns either side of
+        // a DockPanel, so SplitPanel handles, DockPanel handles and both kinds
+        // of orthogonal handle intersection are all reachable in one scene.
+        // This is the layout to drag by hand when judging how a resize feels.
+        function buildStress() {
+          const sides = Math.min(6, Math.max(2, Math.round(config.n / 8)));
+          const middle = Math.max(1, config.n - sides * 2);
+
+          function column(prefix, count) {
+            const col = new SplitPanel({
+              orientation: 'vertical',
+              spacing: 4
+            });
+            for (let i = 0; i < count; i++) {
+              col.addWidget(new Content(prefix + i, config.dom));
+            }
+            return col;
+          }
+
+          // Split against a breadth-first predecessor rather than always the
+          // widget just added: chaining off the previous one produces a
+          // staircase whose last panes are too small to grab by hand.
+          const dock = new DockPanel({ spacing: 4 });
+          const placed = [new Content('main0', config.dom)];
+          dock.addWidget(placed[0]);
+          for (let i = 1; i < middle; i++) {
+            const w = new Content('main' + i, config.dom);
+            dock.addWidget(w, {
+              mode:
+                i % 4 === 3
+                  ? 'tab-after'
+                  : i % 2
+                  ? 'split-right'
+                  : 'split-bottom',
+              ref: placed[(i - 1) >> 1]
+            });
+            placed.push(w);
+          }
+
+          const root = new SplitPanel({
+            orientation: 'horizontal',
+            spacing: 4
+          });
+          root.id = 'perf-root';
+          root.addWidget(column('left', sides));
+          root.addWidget(dock);
+          root.addWidget(column('right', sides));
+          root.setRelativeSizes([1, 3, 1]);
+          return root;
+        }
+
+        const root =
+          config.mode === 'dock'
+            ? buildDock()
+            : config.mode === 'split'
+            ? buildSplit()
+            : config.mode === 'stress'
+            ? buildStress()
+            : buildNested();
+
+        const main = new BoxPanel({ direction: 'top-to-bottom', spacing: 0 });
+        main.id = 'perf-main';
+        main.addWidget(root);
+        Widget.attach(main, document.body);
+        window.addEventListener('resize', () => main.update());
+
+        // ---------------------------------------------------------------
+        // Instrumentation.
+        // ---------------------------------------------------------------
+        const handlerTimings = { pointermove: [], other: [] };
+
+        function instrument(proto, label) {
+          if (!proto || proto.__perfWrapped) {
+            return;
+          }
+          const orig = proto.handleEvent;
+          proto.handleEvent = function (event) {
+            const t0 = performance.now();
+            try {
+              return orig.call(this, event);
+            } finally {
+              const dt = performance.now() - t0;
+              if (event.type === 'pointermove') {
+                handlerTimings.pointermove.push(dt);
+              } else {
+                handlerTimings.other.push({ type: event.type, ms: dt, label });
+              }
+            }
+          };
+          proto.__perfWrapped = true;
+        }
+        instrument(SplitPanel.prototype, 'SplitPanel');
+        instrument(DockPanel.prototype, 'DockPanel');
+
+        // Time the layout work triggered by a handle move. A handle move can
+        // reach the layout either as a conflated 'update-request' flushed on an
+        // animation frame, or as a directly sent 'resize' carrying known sizes,
+        // so both hooks are timed and reported separately.
+        const layoutTimings = [];
+        function instrumentLayout(proto, label) {
+          if (!proto || proto.__perfWrapped) {
+            return;
+          }
+          for (const hook of ['onUpdateRequest', 'onResize']) {
+            const orig = proto[hook];
+            if (typeof orig !== 'function') {
+              continue;
+            }
+            proto[hook] = function (msg) {
+              const t0 = performance.now();
+              try {
+                return orig.call(this, msg);
+              } finally {
+                layoutTimings.push({
+                  label: label,
+                  hook: hook,
+                  ms: performance.now() - t0
+                });
+              }
+            };
+          }
+          proto.__perfWrapped = true;
+        }
+        instrumentLayout(SplitLayout.prototype, 'SplitLayout');
+        instrumentLayout(DockLayout.prototype, 'DockLayout');
+
+        let frameData = null;
+        let longTasks = [];
+        let observer = null;
+
+        function stats(values) {
+          if (!values.length) {
+            return null;
+          }
+          const s = values.slice().sort((a, b) => a - b);
+          const sum = s.reduce((a, b) => a + b, 0);
+          const at = q => s[Math.min(s.length - 1, Math.floor(q * s.length))];
+          return {
+            count: s.length,
+            total: +sum.toFixed(2),
+            mean: +(sum / s.length).toFixed(3),
+            p50: +at(0.5).toFixed(3),
+            p95: +at(0.95).toFixed(3),
+            max: +s[s.length - 1].toFixed(3)
+          };
+        }
+
+        // Split the layout timings by the message that delivered the work.
+        function layoutByHook() {
+          const out = {};
+          for (const hook of ['onUpdateRequest', 'onResize']) {
+            const v = layoutTimings.filter(l => l.hook === hook).map(l => l.ms);
+            out[hook] = v.length ? stats(v) : null;
+          }
+          return out;
+        }
+
+        const perf = {
+          config: config,
+
+          reset() {
+            handlerTimings.pointermove.length = 0;
+            handlerTimings.other.length = 0;
+            layoutTimings.length = 0;
+            longTasks = [];
+          },
+
+          // Geometry of the visible handles, for driving a real gesture.
+          handles(selector) {
+            const sel =
+              selector || '.lm-SplitPanel-handle, .lm-DockPanel-handle';
+            return Array.from(document.querySelectorAll(sel))
+              .filter(
+                h =>
+                  !h.classList.contains('lm-mod-hidden') &&
+                  h.offsetWidth > 0 &&
+                  h.offsetHeight > 0
+              )
+              .map((h, i) => {
+                const r = h.getBoundingClientRect();
+                return {
+                  i: i,
+                  className: h.className,
+                  x: r.left + r.width / 2,
+                  y: r.top + r.height / 2,
+                  width: r.width,
+                  height: r.height,
+                  vertical: r.height > r.width
+                };
+              });
+          },
+
+          /**
+           * Hover sweep: pointermove events over pane *content* with no button
+           * pressed, entirely inside one leaf so the pointer never touches a
+           * handle. The event bubbles from the content node up through every
+           * ancestor panel, so nesting multiplies the handleEvent count.
+           */
+          hoverSweep(opts) {
+            const o = Object.assign({ steps: 120, leaf: -1 }, opts || {});
+            const leaves = Array.from(
+              document.querySelectorAll('.perf-content')
+            ).filter(n => n.offsetWidth > 20 && n.offsetHeight > 20);
+            if (!leaves.length) {
+              throw new Error('no visible leaf content found');
+            }
+            const leaf =
+              leaves[o.leaf >= 0 ? o.leaf : Math.floor(leaves.length / 2)];
+            const r = leaf.getBoundingClientRect();
+            const y = r.top + r.height / 2;
+            const x0 = r.left + 8;
+            const x1 = r.right - 8;
+            this.reset();
+            const perEvent = [];
+            let dispatched = 0;
+            const t0 = performance.now();
+            for (let i = 0; i < o.steps; i++) {
+              const x = x0 + ((x1 - x0) * i) / Math.max(1, o.steps - 1);
+              const target = document.elementFromPoint(x, y) || leaf;
+              const e0 = performance.now();
+              target.dispatchEvent(
+                new PointerEvent('pointermove', {
+                  bubbles: true,
+                  cancelable: true,
+                  composed: true,
+                  clientX: x,
+                  clientY: y,
+                  button: -1,
+                  buttons: 0,
+                  pointerType: 'mouse',
+                  isPrimary: true
+                })
+              );
+              MessageLoop.flush();
+              void document.body.offsetWidth;
+              perEvent.push(performance.now() - e0);
+              dispatched++;
+            }
+            const wall = performance.now() - t0;
+            const handler = handlerTimings.pointermove;
+            const handlerTotal = handler.reduce((a, b) => a + b, 0);
+            return {
+              leafRect: { x: r.left, y: r.top, w: r.width, h: r.height },
+              events: dispatched,
+              wallMs: +wall.toFixed(2),
+              perEventMs: stats(perEvent),
+              handlerCalls: handler.length,
+              handlerCallsPerEvent: +(handler.length / dispatched).toFixed(2),
+              handlerTotalMs: +handlerTotal.toFixed(2),
+              handlerPerEventMs: +(handlerTotal / dispatched).toFixed(4),
+              handlerMs: stats(handler),
+              layoutUpdates: layoutTimings.length
+            };
+          },
+
+          /**
+           * The corner where an outer (root) handle meets a handle of a nested
+           * orthogonal SplitPanel. Pressing there engages the group-resize /
+           * intersection path, which moves two handles per pointer move.
+           */
+          intersectPoint() {
+            const rootNode = root.node;
+            const outer = Array.from(rootNode.children).filter(
+              c =>
+                c.classList.contains('lm-SplitPanel-handle') &&
+                !c.classList.contains('lm-mod-hidden') &&
+                c.offsetWidth > 0
+            );
+            const inner = Array.from(
+              rootNode.querySelectorAll('.lm-SplitPanel-handle')
+            ).filter(h => !outer.includes(h) && h.offsetWidth > 0);
+            if (!outer.length || !inner.length) {
+              throw new Error('no outer/inner handle pair (use mode=nested)');
+            }
+            const o = outer[0].getBoundingClientRect();
+            const i =
+              inner[Math.floor(inner.length / 2)].getBoundingClientRect();
+            const x = o.left + o.width / 2;
+            const y = i.top + i.height / 2;
+            const hit = document.elementFromPoint(x, y);
+            return {
+              x: x,
+              y: y,
+              hitsOuterHandle: outer.includes(hit),
+              hitClassName: hit ? hit.className : null
+            };
+          },
+
+          startFrameMonitor() {
+            frameData = { times: [], stop: false, t0: performance.now() };
+            longTasks = [];
+            try {
+              observer = new PerformanceObserver(list => {
+                for (const e of list.getEntries()) {
+                  longTasks.push(+e.duration.toFixed(2));
+                }
+              });
+              observer.observe({ entryTypes: ['longtask'] });
+            } catch (e) {
+              observer = null;
+            }
+            const tick = t => {
+              if (!frameData || frameData.stop) {
+                return;
+              }
+              frameData.times.push(t);
+              requestAnimationFrame(tick);
+            };
+            requestAnimationFrame(tick);
+          },
+
+          stopFrameMonitor() {
+            if (!frameData) {
+              return null;
+            }
+            frameData.stop = true;
+            if (observer) {
+              observer.disconnect();
+              observer = null;
+            }
+            const intervals = [];
+            for (let i = 1; i < frameData.times.length; i++) {
+              intervals.push(frameData.times[i] - frameData.times[i - 1]);
+            }
+            const wall = performance.now() - frameData.t0;
+            const out = {
+              wallMs: +wall.toFixed(1),
+              frames: frameData.times.length,
+              fps: +((frameData.times.length / wall) * 1000).toFixed(1),
+              frameIntervalMs: stats(intervals),
+              slowFrames: intervals.filter(v => v > 20).length,
+              longTasks: longTasks,
+              pointermoveHandlerMs: stats(handlerTimings.pointermove),
+              layoutUpdateMs: stats(layoutTimings.map(l => l.ms)),
+              layoutUpdates: layoutTimings.length,
+              layoutByHook: layoutByHook()
+            };
+            frameData = null;
+            return out;
+          },
+
+          /**
+           * Synthetic drag: dispatch pointerdown / N x pointermove / pointerup
+           * and flush the message loop after every move so each move pays for
+           * its own relayout (no rAF conflation). Deterministic, headless-safe.
+           */
+          syntheticDrag(opts) {
+            const o = Object.assign(
+              {
+                index: 0,
+                dx: 160,
+                dy: 0,
+                steps: 60,
+                flush: true,
+                hover: false
+              },
+              opts || {}
+            );
+            const list = this.handles(o.selector);
+            // `at` presses an explicit point instead of a handle centre.
+            const h = o.at ? { x: o.at.x, y: o.at.y, at: true } : list[o.index];
+            if (!h) {
+              throw new Error('no handle at index ' + o.index);
+            }
+            this.reset();
+            const target = document.elementFromPoint(h.x, h.y);
+            const send = (type, x, y) => {
+              target.dispatchEvent(
+                new PointerEvent(type, {
+                  bubbles: true,
+                  cancelable: true,
+                  composed: true,
+                  clientX: x,
+                  clientY: y,
+                  button: 0,
+                  buttons: type === 'pointerup' ? 0 : 1,
+                  pointerType: 'mouse',
+                  isPrimary: true
+                })
+              );
+            };
+            const perMove = [];
+            const t0 = performance.now();
+            if (!o.hover) {
+              send('pointerdown', h.x, h.y);
+            }
+            for (let i = 1; i <= o.steps; i++) {
+              const x = h.x + (o.dx * i) / o.steps;
+              const y = h.y + (o.dy * i) / o.steps;
+              const m0 = performance.now();
+              send('pointermove', x, y);
+              if (o.flush) {
+                MessageLoop.flush();
+                // Force style/layout so the cost is attributed to this move.
+                void document.body.offsetWidth;
+              }
+              perMove.push(performance.now() - m0);
+            }
+            if (!o.hover) {
+              send('pointerup', h.x + o.dx, h.y + o.dy);
+            }
+            const wall = performance.now() - t0;
+            return {
+              handle: h,
+              mode: o.hover ? 'hover' : 'drag',
+              wallMs: +wall.toFixed(1),
+              perMoveMs: stats(perMove),
+              pointermoveHandlerMs: stats(handlerTimings.pointermove),
+              layoutUpdateMs: stats(layoutTimings.map(l => l.ms)),
+              layoutUpdates: layoutTimings.length,
+              layoutByHook: layoutByHook()
+            };
+          },
+
+          /**
+           * Real-world drag: exactly one synthetic pointermove per animation
+           * frame, so the browser performs style/layout/paint for every move
+           * just like it does for a user gesture. Runs entirely in-page (no
+           * CDP round trips), so the frame intervals are meaningful.
+           */
+          rafDrag(opts) {
+            const o = Object.assign(
+              { index: 0, dx: 200, dy: 0, steps: 60, hover: false },
+              opts || {}
+            );
+            const list = this.handles(o.selector);
+            // `at` presses an explicit point instead of a handle centre.
+            const h = o.at ? { x: o.at.x, y: o.at.y, at: true } : list[o.index];
+            if (!h) {
+              throw new Error('no handle at index ' + o.index);
+            }
+            this.reset();
+            const target = document.elementFromPoint(h.x, h.y);
+            const send = (type, x, y) => {
+              target.dispatchEvent(
+                new PointerEvent(type, {
+                  bubbles: true,
+                  cancelable: true,
+                  composed: true,
+                  clientX: x,
+                  clientY: y,
+                  button: 0,
+                  buttons: type === 'pointerup' ? 0 : 1,
+                  pointerType: 'mouse',
+                  isPrimary: true
+                })
+              );
+            };
+            this.startFrameMonitor();
+            if (!o.hover) {
+              send('pointerdown', h.x, h.y);
+            }
+            return new Promise(resolve => {
+              let i = 0;
+              const step = () => {
+                if (i >= o.steps) {
+                  if (!o.hover) {
+                    send('pointerup', h.x + o.dx, h.y + o.dy);
+                  }
+                  const out = this.stopFrameMonitor();
+                  out.handle = h;
+                  out.moves = o.steps;
+                  resolve(out);
+                  return;
+                }
+                i++;
+                send(
+                  'pointermove',
+                  h.x + (o.dx * i) / o.steps,
+                  h.y + (o.dy * i) / o.steps
+                );
+                requestAnimationFrame(step);
+              };
+              requestAnimationFrame(step);
+            });
+          },
+
+          /**
+           * Burst drag: dispatch `perFrame` pointermoves per animation frame,
+           * i.e. pointer events arriving faster than the display refreshes
+           * (high-rate pointers, or any time the main thread is behind). This
+           * is the case where per-event handle moves pile up forced reflows.
+           */
+          burstDrag(opts) {
+            const o = Object.assign(
+              { index: 0, dx: 200, dy: 0, steps: 60, perFrame: 5 },
+              opts || {}
+            );
+            const list = this.handles(o.selector);
+            // `at` presses an explicit point instead of a handle centre.
+            const h = o.at ? { x: o.at.x, y: o.at.y, at: true } : list[o.index];
+            if (!h) {
+              throw new Error('no handle at index ' + o.index);
+            }
+            this.reset();
+            const target = document.elementFromPoint(h.x, h.y);
+            const send = (type, x, y) => {
+              target.dispatchEvent(
+                new PointerEvent(type, {
+                  bubbles: true,
+                  cancelable: true,
+                  composed: true,
+                  clientX: x,
+                  clientY: y,
+                  button: 0,
+                  buttons: type === 'pointerup' ? 0 : 1,
+                  pointerType: 'mouse',
+                  isPrimary: true
+                })
+              );
+            };
+            this.startFrameMonitor();
+            send('pointerdown', h.x, h.y);
+            return new Promise(resolve => {
+              let i = 0;
+              const step = () => {
+                if (i >= o.steps) {
+                  send('pointerup', h.x + o.dx, h.y + o.dy);
+                  const out = this.stopFrameMonitor();
+                  out.handle = h;
+                  out.moves = o.steps;
+                  out.perFrame = o.perFrame;
+                  resolve(out);
+                  return;
+                }
+                for (let k = 0; k < o.perFrame && i < o.steps; k++) {
+                  i++;
+                  send(
+                    'pointermove',
+                    h.x + (o.dx * i) / o.steps,
+                    h.y + (o.dy * i) / o.steps
+                  );
+                }
+                requestAnimationFrame(step);
+              };
+              requestAnimationFrame(step);
+            });
+          },
+
+          stats: stats
+        };
+
+        window.__perf = perf;
+        window.__perfReady = true;
+      })();
+    </script>
+  </body>
+</html>
