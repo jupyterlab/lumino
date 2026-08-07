@@ -277,10 +277,12 @@ describe('@lumino/widgets', () => {
             clientY: y + 30
           })
         );
+        // Handle moves are coalesced onto an animation frame; releasing the
+        // pointer applies the pending move synchronously.
+        document.body.dispatchEvent(new PointerEvent('pointerup', { bubbles }));
         MessageLoop.flush();
         expect(primary.offsetLeft).to.not.equal(hLeft);
         expect(peer!.offsetTop).to.not.equal(vTop);
-        document.body.dispatchEvent(new PointerEvent('pointerup', { bubbles }));
         panel.dispose();
       });
 
@@ -311,10 +313,10 @@ describe('@lumino/widgets', () => {
             clientY: y
           })
         );
+        document.body.dispatchEvent(new PointerEvent('pointerup', { bubbles }));
         MessageLoop.flush();
         expect(primary.offsetLeft).to.not.equal(hLeft);
         expect(peer.offsetTop).to.equal(vTop);
-        document.body.dispatchEvent(new PointerEvent('pointerup', { bubbles }));
         panel.dispose();
       });
     });

@@ -366,34 +366,38 @@ export class DockLayout extends Layout {
       return;
     }
 
+    /**  
+     * Resolve both handles and measure both deltas before adjusting.
+     * The second handle belongs to a descendant of the split node which owns
+     * the first, so adjusting the first invalidates the offset the second is measured against.
+     */
+    const data1 = handle1.classList.contains('lm-mod-hidden')
+      ? null
+      : this._root.findSplitNode(handle1);
+    const data2 = handle2.classList.contains('lm-mod-hidden')
+      ? null
+      : this._root.findSplitNode(handle2);
+    const delta1 = data1
+      ? data1.node.orientation === 'horizontal'
+        ? offsetX1 - handle1.offsetLeft
+        : offsetY1 - handle1.offsetTop
+      : 0;
+    const delta2 = data2
+      ? data2.node.orientation === 'horizontal'
+        ? offsetX2 - handle2.offsetLeft
+        : offsetY2 - handle2.offsetTop
+      : 0;
+
     // Adjust the first handle.
-    if (!handle1.classList.contains('lm-mod-hidden')) {
-      const data1 = this._root.findSplitNode(handle1);
-      if (data1) {
-        const delta1 =
-          data1.node.orientation === 'horizontal'
-            ? offsetX1 - handle1.offsetLeft
-            : offsetY1 - handle1.offsetTop;
-        if (delta1 !== 0) {
-          data1.node.holdSizes();
-          BoxEngine.adjust(data1.node.sizers, data1.index, delta1);
-        }
-      }
+    if (data1 && delta1 !== 0) {
+      data1.node.holdSizes();
+      BoxEngine.adjust(data1.node.sizers, data1.index, delta1);
     }
 
     // Adjust the second handle.
-    if (!handle2.classList.contains('lm-mod-hidden')) {
-      const data2 = this._root.findSplitNode(handle2);
-      if (data2) {
-        const delta2 =
-          data2.node.orientation === 'horizontal'
-            ? offsetX2 - handle2.offsetLeft
-            : offsetY2 - handle2.offsetTop;
-        if (delta2 !== 0) {
-          data2.node.holdSizes();
-          BoxEngine.adjust(data2.node.sizers, data2.index, delta2);
-        }
-      }
+    if (data2 && delta2 !== 0) {
+      data2.node.holdSizes();
+      BoxEngine.adjust(data2.node.sizers, data2.index, delta2);
     }
 
     // Trigger a single layout update for both adjustments.
