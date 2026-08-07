@@ -285,13 +285,6 @@ export class DockLayout extends Layout {
 
     // Iterate all handles looking for one with the opposite orientation
     // whose bounding rect (expanded by spacing) contains the click point.
-    //
-    // We expand by spacing because child handles stop exactly at the edge of
-    // the parent handle's bounding rect — they don't overlap. For example, in
-    // a 2×2 grid the horizontal child handles end at the top of the root
-    // vertical handle, leaving a gap equal to the spacing. Expanding the
-    // candidate rect closes that gap. A multiplier of 4 gives a comfortable
-    // hit area without accidentally activating distant handles.
     const tol = this._spacing * INTERSECTION_TOLERANCE_MULTIPLIER;
     for (const candidate of this.handles()) {
       if (candidate === handle) {
@@ -307,8 +300,8 @@ export class DockLayout extends Layout {
 
       // Expand the candidate rect in the primary handle's movement axis so
       // the gap between handle regions is bridged:
-      //   'vertical'   primary (ns-resize, horizontal bar) → expand Y bounds
-      //   'horizontal' primary (ew-resize, vertical bar)   → expand X bounds
+      //   'vertical'   primary (ns-resize, horizontal bar) -> expand Y bounds
+      //   'horizontal' primary (ew-resize, vertical bar)   -> expand X bounds
       let left = rect.left,
         right = rect.right;
       let top = rect.top,

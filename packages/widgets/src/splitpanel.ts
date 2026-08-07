@@ -320,12 +320,8 @@ export class SplitPanel extends Panel {
     event.preventDefault();
     event.stopPropagation();
 
-    // Record the pointer position and apply it at most once per frame. A
-    // handle move relayouts every descendant of the resized widgets, which
-    // costs orders of magnitude more than handling the event. Pointers can
-    // report faster than the display refreshes - and do so especially when
-    // the main thread is already behind - so applying every event compounds
-    // the backlog instead of drawing an extra frame.
+    // Record the pointer position and apply it at most once per frame 
+    // instead of using handles which will cause a relayout of every child.
     this._pressData.clientX = event.clientX;
     this._pressData.clientY = event.clientY;
     if (this._pressData.frameId === -1) {
