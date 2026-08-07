@@ -320,7 +320,7 @@ export class SplitPanel extends Panel {
     event.preventDefault();
     event.stopPropagation();
 
-    // Record the pointer position and apply it at most once per frame 
+    // Record the pointer position and apply it at most once per frame
     // instead of using handles which will cause a relayout of every child.
     this._pressData.clientX = event.clientX;
     this._pressData.clientY = event.clientY;

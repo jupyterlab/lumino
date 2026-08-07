@@ -359,7 +359,7 @@ export class DockLayout extends Layout {
       return;
     }
 
-    /**  
+    /**
      * Resolve both handles and measure both deltas before adjusting.
      * The second handle belongs to a descendant of the split node which owns
      * the first, so adjusting the first invalidates the offset the second is measured against.
