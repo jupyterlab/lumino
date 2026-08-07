@@ -561,10 +561,12 @@ describe('@lumino/widgets', () => {
             clientY: y + 30
           })
         );
+        // Handle moves are coalesced onto an animation frame; releasing the
+        // pointer applies the pending move synchronously.
+        document.body.dispatchEvent(new PointerEvent('pointerup', { bubbles }));
         MessageLoop.flush();
         expect(outerHandle.offsetLeft).to.not.equal(hLeft);
         expect(innerHandle.offsetTop).to.not.equal(vTop);
-        document.body.dispatchEvent(new PointerEvent('pointerup', { bubbles }));
         outer.dispose();
       });
 
@@ -585,10 +587,71 @@ describe('@lumino/widgets', () => {
             clientY: y
           })
         );
+        document.body.dispatchEvent(new PointerEvent('pointerup', { bubbles }));
         MessageLoop.flush();
         expect(outerHandle.offsetLeft).to.not.equal(hLeft);
         expect(innerHandle.offsetTop).to.equal(vTop);
+        outer.dispose();
+      });
+
+      // The inner panel's handle is applied by an explicit resize rather than
+      // by the resize which the outer pass cascades into it, because that
+      // cascade only fires when the inner panel's own size changes. Dragging
+      // the outer handle into a sibling's minimum size is exactly the case
+      // where it does not.
+      it('should keep moving the cross-axis handle while the outer handle is clamped', () => {
+        const { outer, outerHandle, innerHandle } = attachedNested();
+
+        // Drag the outer handle hard against the inner panel's minimum width.
+        const r0 = outerHandle.getBoundingClientRect();
+        const i0 = innerHandle.getBoundingClientRect();
+        outerHandle.dispatchEvent(
+          new PointerEvent('pointerdown', {
+            bubbles,
+            clientX: (r0.left + r0.right) / 2,
+            clientY: (i0.top + i0.bottom) / 2
+          })
+        );
+        document.body.dispatchEvent(
+          new PointerEvent('pointermove', {
+            bubbles,
+            clientX: r0.left - 400,
+            clientY: (i0.top + i0.bottom) / 2
+          })
+        );
         document.body.dispatchEvent(new PointerEvent('pointerup', { bubbles }));
+        MessageLoop.flush();
+
+        // Press the intersection again and push further into the clamp while
+        // also moving along the cross-axis.
+        const r1 = outerHandle.getBoundingClientRect();
+        const i1 = innerHandle.getBoundingClientRect();
+        const x = (r1.left + r1.right) / 2;
+        const y = (i1.top + i1.bottom) / 2;
+        const clampedLeft = outerHandle.offsetLeft;
+        const vTop = innerHandle.offsetTop;
+        const preSizes = outer.relativeSizes();
+
+        outerHandle.dispatchEvent(
+          new PointerEvent('pointerdown', { bubbles, clientX: x, clientY: y })
+        );
+        document.body.dispatchEvent(
+          new PointerEvent('pointermove', {
+            bubbles,
+            clientX: x - 200,
+            clientY: y + 40
+          })
+        );
+        document.body.dispatchEvent(new PointerEvent('pointerup', { bubbles }));
+        MessageLoop.flush();
+
+        // The outer sizers cannot move, which is what makes this the clamped
+        // case, and is why no resize cascades into the inner panel.
+        expect(outerHandle.offsetLeft).to.equal(clampedLeft);
+        expect(outer.relativeSizes()).to.deep.equal(preSizes);
+
+        // The cross-axis handle must move regardless.
+        expect(innerHandle.offsetTop).to.not.equal(vTop);
         outer.dispose();
       });
     });

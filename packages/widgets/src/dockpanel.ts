@@ -25,7 +25,7 @@ import { ISignal, Signal } from '@lumino/signaling';
 
 import { DockLayout } from './docklayout';
 
-import { IntersectionHoverStyler } from './intersectionutils';
+import { findDirectChild, IntersectionHoverStyler } from './intersectionutils';
 
 import { TabBar } from './tabbar';
 
@@ -498,6 +498,8 @@ export class DockPanel extends Widget {
     this.node.removeEventListener('pointermove', this);
     this.node.removeEventListener('pointerleave', this);
     this._setIntersectionHoverHandle(null, null);
+    this._hoverChild = null;
+    this._hoverHandle = null;
     this._releaseMouse();
   }
 
@@ -759,7 +761,16 @@ export class DockPanel extends Widget {
       };
     }
 
-    this._pressData = { handle, deltaX, deltaY, override, intersect };
+    this._pressData = {
+      handle,
+      deltaX,
+      deltaY,
+      override,
+      intersect,
+      clientX: event.clientX,
+      clientY: event.clientY,
+      frameId: -1
+    };
   }
 
   /**
@@ -768,16 +779,7 @@ export class DockPanel extends Widget {
   private _evtPointerMove(event: PointerEvent): void {
     // Update hover state when no drag is in progress.
     if (!this._pressData) {
-      const layout = this.layout as DockLayout;
-      const target = event.target as HTMLElement;
-      const handle = find(layout.handles(), h => h.contains(target)) ?? null;
-      const intersectHandle = handle
-        ? layout.findIntersectingHandle(handle, event.clientX, event.clientY)
-        : null;
-      this._setIntersectionHoverHandle(
-        intersectHandle ? handle : null,
-        intersectHandle
-      );
+      this._updateIntersectionHover(event);
       return;
     }
 
@@ -785,28 +787,100 @@ export class DockPanel extends Widget {
     event.preventDefault();
     event.stopPropagation();
 
-    // Compute the desired offset position for the handle.
+    /** 
+     * Record the pointer position and apply it at most once per frame, 
+     * instead of once per pointer event to reduce DOM load.
+     */
+    this._pressData.clientX = event.clientX;
+    this._pressData.clientY = event.clientY;
+    if (this._pressData.frameId === -1) {
+      this._pressData.frameId = this._view.requestAnimationFrame(
+        this._applyDrag
+      );
+    }
+  }
+
+  /**
+   * Move the pressed handle(s) to the last recorded pointer position.
+   */
+  private _applyDrag = (): void => {
+    // Bail early if the grab was released before the frame was served.
+    const pressData = this._pressData;
+    if (!pressData) {
+      return;
+    }
+    pressData.frameId = -1;
+
+    // Get the desired offset position for the handle from the last recorded pointer position.
+    const { handle, deltaX, deltaY, intersect, clientX, clientY } = pressData;
     const rect = this.node.getBoundingClientRect();
-    const xPos = event.clientX - rect.left - this._pressData.deltaX;
-    const yPos = event.clientY - rect.top - this._pressData.deltaY;
+    const xPos = clientX - rect.left - deltaX;
+    const yPos = clientY - rect.top - deltaY;
 
     // Set the handle(s) as close to the desired position as possible.
     const layout = this.layout as DockLayout;
-    const { intersect } = this._pressData;
     if (intersect) {
-      const xPos2 = event.clientX - rect.left - intersect.deltaX;
-      const yPos2 = event.clientY - rect.top - intersect.deltaY;
-      layout.moveHandles(
-        this._pressData.handle,
-        xPos,
-        yPos,
-        intersect.handle,
-        xPos2,
-        yPos2
-      );
+      const xPos2 = clientX - rect.left - intersect.deltaX;
+      const yPos2 = clientY - rect.top - intersect.deltaY;
+      layout.moveHandles(handle, xPos, yPos, intersect.handle, xPos2, yPos2);
     } else {
-      layout.moveHandle(this._pressData.handle, xPos, yPos);
+      layout.moveHandle(handle, xPos, yPos);
     }
+  };
+
+  /**
+   * The window which hosts the panel.
+   *
+   * #### Notes
+   * The panel may be rendered into a document other than the one which hosts
+   * the script, so animation frames must be scheduled against that document's
+   * window in order to be paced by its refresh rate.
+   */
+  private get _view(): Window {
+    // Duck-type rather than use `instanceof`, since a document belonging to
+    // another window does not share this realm's `Document` constructor.
+    const doc =
+      'defaultView' in this._document
+        ? (this._document as Document)
+        : this._document.ownerDocument;
+    return doc.defaultView ?? window;
+  }
+
+  /**
+   * Update the intersection hover style based on pointer position.
+   */
+  private _updateIntersectionHover(event: PointerEvent): void {
+    const handle = this._hitTestHandle(event.target);
+    const peer = handle
+      ? (this.layout as DockLayout).findIntersectingHandle(
+        handle,
+        event.clientX,
+        event.clientY
+      )
+      : null;
+    this._setIntersectionHoverHandle(peer ? handle : null, peer);
+  }
+
+  /**
+   * Resolve the layout handle under the pointer, if any.
+   *
+   * #### Notes
+   * Handles are direct children of the panel node, so the target is first
+   * resolved to a direct child with a single walk up from the target. That
+   * rejects almost every pointer move before the handles are enumerated. The
+   * resolution is then cached, since the pointer stays over the same element
+   * for many consecutive events.
+   */
+  private _hitTestHandle(target: EventTarget | null): HTMLDivElement | null {
+    const child = findDirectChild(this.node, target);
+    if (child !== this._hoverChild) {
+      const layout = this.layout as DockLayout;
+      this._hoverChild = child;
+      this._hoverHandle = child
+        ? find(layout.handles(), h => h === child) ?? null
+        : null;
+    }
+    return this._hoverHandle;
   }
 
   /**
@@ -822,6 +896,12 @@ export class DockPanel extends Widget {
     event.preventDefault();
     event.stopPropagation();
 
+    // Apply the final pointer position before the grab is released.
+    if (this._pressData && this._pressData.frameId !== -1) {
+      this._view.cancelAnimationFrame(this._pressData.frameId);
+      this._applyDrag();
+    }
+
     // Finalize the mouse release.
     this._releaseMouse();
 
@@ -836,6 +916,11 @@ export class DockPanel extends Widget {
     // Bail early if no drag is in progress.
     if (!this._pressData) {
       return;
+    }
+
+    // Discard any pending handle move.
+    if (this._pressData.frameId !== -1) {
+      this._view.cancelAnimationFrame(this._pressData.frameId);
     }
 
     // Clear the override cursor.
@@ -1137,6 +1222,8 @@ export class DockPanel extends Widget {
   private _addButtonEnabled: boolean = false;
   private _pressData: Private.IPressData | null = null;
   private _intersectionHoverStyler = new IntersectionHoverStyler();
+  private _hoverChild: HTMLElement | null = null;
+  private _hoverHandle: HTMLDivElement | null = null;
   private _layoutModified = new Signal<this, void>(this);
 
   private _addRequested = new Signal<this, TabBar<Widget>>(this);
@@ -1547,6 +1634,21 @@ namespace Private {
       /** The Y offset of the press within the intersecting handle. */
       deltaY: number;
     };
+
+    /**
+     * The client X position of the most recent pointer event.
+     */
+    clientX: number;
+
+    /**
+     * The client Y position of the most recent pointer event.
+     */
+    clientY: number;
+
+    /**
+     * The id of the pending animation frame, or `-1` if none is pending.
+     */
+    frameId: number;
   }
 
   /**
@@ -1640,7 +1742,7 @@ namespace Private {
   });
 
   /**
-  as * Create a single document config for the widgets in a dock panel.
+   * Create a single document config for the widgets in a dock panel.
    */
   export function createSingleDocumentConfig(
     panel: DockPanel

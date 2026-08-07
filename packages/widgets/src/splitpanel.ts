@@ -13,11 +13,12 @@ import { IDisposable } from '@lumino/disposable';
 
 import { Drag } from '@lumino/dragdrop';
 
-import { Message } from '@lumino/messaging';
+import { Message, MessageLoop } from '@lumino/messaging';
 
 import { ISignal, Signal } from '@lumino/signaling';
 
 import {
+  findDirectChild,
   INTERSECTION_TOLERANCE_MULTIPLIER,
   IntersectionHoverStyler
 } from './intersectionutils';
@@ -298,7 +299,10 @@ export class SplitPanel extends Panel {
       index,
       delta,
       override,
-      innerIntersect: found ?? undefined
+      innerIntersect: found ?? undefined,
+      clientX: event.clientX,
+      clientY: event.clientY,
+      frameId: -1
     };
   }
 
@@ -316,29 +320,89 @@ export class SplitPanel extends Panel {
     event.preventDefault();
     event.stopPropagation();
 
-    // Compute the desired offset position for the handle.
-    const layout = this.layout as SplitLayout;
-    const rect = this.node.getBoundingClientRect();
-    const { index, delta, innerIntersect } = this._pressData!;
-    const pos =
-      layout.orientation === 'horizontal'
-        ? event.clientX - rect.left - delta
-        : event.clientY - rect.top - delta;
-
-    // Move the handle as close to the desired position as possible.
-    layout.moveHandle(index, pos);
-
-    // Also move the inner panel's intersecting handle in the cross-axis.
-    if (innerIntersect) {
-      const innerLayout = innerIntersect.panel.layout as SplitLayout;
-      const innerRect = innerIntersect.panel.node.getBoundingClientRect();
-      const innerPos =
-        layout.orientation === 'horizontal'
-          ? event.clientY - innerRect.top - innerIntersect.delta
-          : event.clientX - innerRect.left - innerIntersect.delta;
-      innerLayout.moveHandle(innerIntersect.index, innerPos);
+    // Record the pointer position and apply it at most once per frame. A
+    // handle move relayouts every descendant of the resized widgets, which
+    // costs orders of magnitude more than handling the event. Pointers can
+    // report faster than the display refreshes - and do so especially when
+    // the main thread is already behind - so applying every event compounds
+    // the backlog instead of drawing an extra frame.
+    this._pressData.clientX = event.clientX;
+    this._pressData.clientY = event.clientY;
+    if (this._pressData.frameId === -1) {
+      this._pressData.frameId = requestAnimationFrame(this._applyDrag);
     }
   }
+
+  /**
+   * Move the pressed handle(s) to the last recorded pointer position.
+   */
+  private _applyDrag = (): void => {
+    // Bail early if the grab was released before the frame was served.
+    const pressData = this._pressData;
+    if (!pressData) {
+      return;
+    }
+    pressData.frameId = -1;
+
+    const layout = this.layout as SplitLayout;
+    const horizontal = layout.orientation === 'horizontal';
+    const { index, delta, innerIntersect, clientX, clientY } = pressData;
+
+    // Measure first, then write. This runs at the top of an animation frame,
+    // immediately after a paint, so the layout is clean and every measurement
+    // below is free. Once the first style is written, any further measurement
+    // would force a synchronous layout of the whole document.
+    const rect = this.node.getBoundingClientRect();
+    const width = this.node.offsetWidth;
+    const height = this.node.offsetHeight;
+
+    // Adjust the intersecting handle of the orthogonal child panel, if any.
+    let inner: { panel: SplitPanel; width: number; height: number } | null =
+      null;
+    if (innerIntersect) {
+      const panel = innerIntersect.panel;
+      const innerRect = panel.node.getBoundingClientRect();
+      const innerPos = horizontal
+        ? clientY - innerRect.top - innerIntersect.delta
+        : clientX - innerRect.left - innerIntersect.delta;
+      const innerLayout = panel.layout as SplitLayout;
+      if (innerLayout.adjustHandle(innerIntersect.index, innerPos)) {
+        inner = {
+          panel,
+          width: panel.node.offsetWidth,
+          height: panel.node.offsetHeight
+        };
+      }
+    }
+
+    // Adjust the pressed handle as close to the desired position as possible.
+    const pos = horizontal
+      ? clientX - rect.left - delta
+      : clientY - rect.top - delta;
+    const moved = layout.adjustHandle(index, pos);
+
+    // Apply both adjustments in one write pass. Each layout is handed the size
+    // measured above rather than being sent an `update-request`, which would
+    // make it re-read `offsetWidth` - and the second such read would land
+    // behind the first layout's writes and force a synchronous reflow. That is
+    // what made a two-axis drag cost two document layouts per frame instead
+    // of one.
+    //
+    // The inner panel is applied explicitly rather than left to the resize
+    // that the outer pass cascades into it, because that cascade only fires
+    // when the inner panel's own size changes. When the outer handle is
+    // clamped at a sibling's minimum size it does not, and the cross-axis
+    // would stop responding for as long as the drag stayed against the limit.
+    if (inner) {
+      MessageLoop.sendMessage(
+        inner.panel,
+        new Widget.ResizeMessage(inner.width, inner.height)
+      );
+    }
+    if (moved) {
+      MessageLoop.sendMessage(this, new Widget.ResizeMessage(width, height));
+    }
+  };
 
   /**
    * Handle the `'pointerup'` event for the split panel.
@@ -353,6 +417,12 @@ export class SplitPanel extends Panel {
     event.preventDefault();
     event.stopPropagation();
 
+    // Apply the final pointer position before the grab is released.
+    if (this._pressData && this._pressData.frameId !== -1) {
+      cancelAnimationFrame(this._pressData.frameId);
+      this._applyDrag();
+    }
+
     // Finalize the mouse release.
     this._releaseMouse();
   }
@@ -364,6 +434,11 @@ export class SplitPanel extends Panel {
     // Bail early if no drag is in progress.
     if (!this._pressData) {
       return;
+    }
+
+    // Discard any pending handle move.
+    if (this._pressData.frameId !== -1) {
+      cancelAnimationFrame(this._pressData.frameId);
     }
 
     // Clear the override cursor.
@@ -430,11 +505,13 @@ export class SplitPanel extends Panel {
    * Update the intersection hover style based on pointer position.
    */
   private _updateIntersectionHover(event: PointerEvent): void {
+    // Reject the pointer moves which are not over a handle before doing any
+    // geometry work. Handles are direct children of the panel node, so this
+    // costs a single walk up from the target rather than a `contains` test
+    // against every handle. Almost every pointer move lands here.
     const layout = this.layout as SplitLayout;
-    const target = event.target as HTMLElement;
-    const index = ArrayExt.findFirstIndex(layout.handles, handle => {
-      return handle.contains(target);
-    });
+    const child = findDirectChild(this.node, event.target);
+    const index = child ? layout.handles.indexOf(child as HTMLDivElement) : -1;
 
     if (index === -1) {
       this._setIntersectionHoverHandle(null, null);
@@ -609,6 +686,21 @@ namespace Private {
       /** The press offset within the inner handle's cross-axis coordinate. */
       delta: number;
     };
+
+    /**
+     * The client X position of the most recent pointer event.
+     */
+    clientX: number;
+
+    /**
+     * The client Y position of the most recent pointer event.
+     */
+    clientY: number;
+
+    /**
+     * The id of the pending animation frame, or `-1` if none is pending.
+     */
+    frameId: number;
   }
 
   /**
