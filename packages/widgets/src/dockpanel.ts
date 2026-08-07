@@ -787,8 +787,8 @@ export class DockPanel extends Widget {
     event.preventDefault();
     event.stopPropagation();
 
-    /** 
-     * Record the pointer position and apply it at most once per frame, 
+    /**
+     * Record the pointer position and apply it at most once per frame,
      * instead of once per pointer event to reduce DOM load.
      */
     this._pressData.clientX = event.clientX;
@@ -853,10 +853,10 @@ export class DockPanel extends Widget {
     const handle = this._hitTestHandle(event.target);
     const peer = handle
       ? (this.layout as DockLayout).findIntersectingHandle(
-        handle,
-        event.clientX,
-        event.clientY
-      )
+          handle,
+          event.clientX,
+          event.clientY
+        )
       : null;
     this._setIntersectionHoverHandle(peer ? handle : null, peer);
   }
