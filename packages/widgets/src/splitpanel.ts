@@ -179,6 +179,10 @@ export class SplitPanel extends Panel {
         this._evtPointerMove(event as PointerEvent);
         break;
       case 'pointerleave':
+        if (this._hoverFrameId !== -1) {
+          cancelAnimationFrame(this._hoverFrameId);
+          this._hoverFrameId = -1;
+        }
         this._setIntersectionHoverHandle(null, null);
         break;
       case 'pointerup':
@@ -210,6 +214,10 @@ export class SplitPanel extends Panel {
     this.node.removeEventListener('pointerdown', this);
     this.node.removeEventListener('pointermove', this);
     this.node.removeEventListener('pointerleave', this);
+    if (this._hoverFrameId !== -1) {
+      cancelAnimationFrame(this._hoverFrameId);
+      this._hoverFrameId = -1;
+    }
     this._setIntersectionHoverHandle(null, null);
     this._releaseMouse();
   }
@@ -270,6 +278,13 @@ export class SplitPanel extends Panel {
     event.preventDefault();
     event.stopPropagation();
 
+    // Drop any pending hover frame so it can't overwrite the intersection
+    // style with a stale pointer position once the drag is under way.
+    if (this._hoverFrameId !== -1) {
+      cancelAnimationFrame(this._hoverFrameId);
+      this._hoverFrameId = -1;
+    }
+
     // Add the extra document listeners.
     document.addEventListener('pointerup', this, true);
     document.addEventListener('pointermove', this, true);
@@ -310,9 +325,18 @@ export class SplitPanel extends Panel {
    * Handle the `'pointermove'` event for the split panel.
    */
   private _evtPointerMove(event: PointerEvent): void {
-    // Update hover state when no drag is in progress.
+    // Update hover state when no drag is in progress. Coalesced onto an
+    // animation frame, like `_applyDrag`, since the intersection search
+    // reads handle geometry (`getBoundingClientRect`) and doing that at
+    // pointer-event rate forces a synchronous layout on every move
+    // whenever anything else has dirtied the document.
     if (!this._pressData) {
-      this._updateIntersectionHover(event);
+      this._hoverTarget = event.target;
+      this._hoverClientX = event.clientX;
+      this._hoverClientY = event.clientY;
+      if (this._hoverFrameId === -1) {
+        this._hoverFrameId = requestAnimationFrame(this._applyHover);
+      }
       return;
     }
 
@@ -498,15 +522,32 @@ export class SplitPanel extends Panel {
   }
 
   /**
+   * Recompute and apply the intersection hover style for the last recorded
+   * pointer position.
+   */
+  private _applyHover = (): void => {
+    this._hoverFrameId = -1;
+    this._updateIntersectionHover(
+      this._hoverTarget,
+      this._hoverClientX,
+      this._hoverClientY
+    );
+  };
+
+  /**
    * Update the intersection hover style based on pointer position.
    */
-  private _updateIntersectionHover(event: PointerEvent): void {
+  private _updateIntersectionHover(
+    target: EventTarget | null,
+    clientX: number,
+    clientY: number
+  ): void {
     // Reject the pointer moves which are not over a handle before doing any
     // geometry work. Handles are direct children of the panel node, so this
     // costs a single walk up from the target rather than a `contains` test
     // against every handle. Almost every pointer move lands here.
     const layout = this.layout as SplitLayout;
-    const child = findDirectChild(this.node, event.target);
+    const child = findDirectChild(this.node, target);
     const index = child ? layout.handles.indexOf(child as HTMLDivElement) : -1;
 
     if (index === -1) {
@@ -515,8 +556,7 @@ export class SplitPanel extends Panel {
     }
 
     const handle = layout.handles[index];
-    const crossPos =
-      layout.orientation === 'horizontal' ? event.clientY : event.clientX;
+    const crossPos = layout.orientation === 'horizontal' ? clientY : clientX;
     const intersect = this._findInnerIntersect(index, crossPos);
     const peer = intersect
       ? (intersect.panel.layout as SplitLayout).handles[intersect.index] ?? null
@@ -537,6 +577,10 @@ export class SplitPanel extends Panel {
   private _handleMoved = new Signal<any, void>(this);
   private _pressData: Private.IPressData | null = null;
   private _intersectionHoverStyler = new IntersectionHoverStyler();
+  private _hoverFrameId = -1;
+  private _hoverTarget: EventTarget | null = null;
+  private _hoverClientX = 0;
+  private _hoverClientY = 0;
 }
 
 /**

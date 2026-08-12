@@ -17,6 +17,14 @@ import { DockLayout, DockPanel, TabBar, Widget } from '@lumino/widgets';
 const bubbles = true;
 
 /**
+ * Wait for the next animation frame, since hover intersection updates are
+ * coalesced onto one.
+ */
+function nextFrame(): Promise<void> {
+  return new Promise(resolve => requestAnimationFrame(() => resolve()));
+}
+
+/**
  * Build a 2×2 grid `DockPanel`, sized and attached so its handles have real
  * geometry (one middle vertical bar plus two side horizontal bars).
  */
@@ -200,7 +208,7 @@ describe('@lumino/widgets', () => {
     });
 
     describe('group resizing', () => {
-      it('should highlight an intersecting handle pair on hover', () => {
+      it('should highlight an intersecting handle pair on hover', async () => {
         const { panel } = attachedGrid();
         const layout = panel.layout as DockLayout;
         const { horizontal, vertical } = visibleHandles(panel);
@@ -215,6 +223,8 @@ describe('@lumino/widgets', () => {
         primary.dispatchEvent(
           new PointerEvent('pointermove', { bubbles, clientX: x, clientY: y })
         );
+        // The hover search is coalesced onto an animation frame.
+        await nextFrame();
         expect(primary.classList.contains('lm-mod-intersection')).to.equal(
           true
         );
@@ -238,7 +248,7 @@ describe('@lumino/widgets', () => {
         panel.dispose();
       });
 
-      it('should clear the hover highlight on pointerleave', () => {
+      it('should clear the hover highlight on pointerleave', async () => {
         const { panel } = attachedGrid();
         const layout = panel.layout as DockLayout;
         const { horizontal, vertical } = visibleHandles(panel);
@@ -251,6 +261,10 @@ describe('@lumino/widgets', () => {
 
         primary.dispatchEvent(
           new PointerEvent('pointermove', { bubbles, clientX: x, clientY: y })
+        );
+        await nextFrame();
+        expect(primary.classList.contains('lm-mod-intersection')).to.equal(
+          true
         );
         panel.node.dispatchEvent(new PointerEvent('pointerleave', { bubbles }));
         expect(primary.classList.contains('lm-mod-intersection')).to.equal(

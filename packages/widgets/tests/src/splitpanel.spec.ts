@@ -20,6 +20,14 @@ const renderer: SplitPanel.IRenderer = {
   createHandle: () => document.createElement('div')
 };
 
+/**
+ * Wait for the next animation frame, since hover intersection updates are
+ * coalesced onto one.
+ */
+function nextFrame(): Promise<void> {
+  return new Promise(resolve => requestAnimationFrame(() => resolve()));
+}
+
 function dragHandle(panel: LogSplitPanel): void {
   MessageLoop.sendMessage(panel, Widget.Msg.UpdateRequest);
   let handle = panel.handles[0];
@@ -486,7 +494,7 @@ describe('@lumino/widgets', () => {
         return { outer, inner, outerHandle, innerHandle };
       }
 
-      it('should highlight an intersecting handle pair on hover', () => {
+      it('should highlight an intersecting handle pair on hover', async () => {
         const { outer, outerHandle, innerHandle } = attachedNested();
         const ro = outerHandle.getBoundingClientRect();
         const ri = innerHandle.getBoundingClientRect();
@@ -495,6 +503,8 @@ describe('@lumino/widgets', () => {
         outerHandle.dispatchEvent(
           new PointerEvent('pointermove', { bubbles, clientX: x, clientY: y })
         );
+        // The hover search is coalesced onto an animation frame.
+        await nextFrame();
         expect(outerHandle.classList.contains('lm-mod-intersection')).to.equal(
           true
         );
@@ -504,7 +514,7 @@ describe('@lumino/widgets', () => {
         outer.dispose();
       });
 
-      it('should not highlight away from an inner handle', () => {
+      it('should not highlight away from an inner handle', async () => {
         const { outer, outerHandle, innerHandle } = attachedNested();
         const ro = outerHandle.getBoundingClientRect();
         const x = (ro.left + ro.right) / 2;
@@ -515,6 +525,7 @@ describe('@lumino/widgets', () => {
             clientY: ro.top + 3
           })
         );
+        await nextFrame();
         expect(outerHandle.classList.contains('lm-mod-intersection')).to.equal(
           false
         );
@@ -524,7 +535,7 @@ describe('@lumino/widgets', () => {
         outer.dispose();
       });
 
-      it('should clear the hover highlight on pointerleave', () => {
+      it('should clear the hover highlight on pointerleave', async () => {
         const { outer, outerHandle, innerHandle } = attachedNested();
         const ro = outerHandle.getBoundingClientRect();
         const ri = innerHandle.getBoundingClientRect();
@@ -532,6 +543,10 @@ describe('@lumino/widgets', () => {
         const y = (ri.top + ri.bottom) / 2;
         outerHandle.dispatchEvent(
           new PointerEvent('pointermove', { bubbles, clientX: x, clientY: y })
+        );
+        await nextFrame();
+        expect(outerHandle.classList.contains('lm-mod-intersection')).to.equal(
+          true
         );
         outer.node.dispatchEvent(new PointerEvent('pointerleave', { bubbles }));
         expect(outerHandle.classList.contains('lm-mod-intersection')).to.equal(
