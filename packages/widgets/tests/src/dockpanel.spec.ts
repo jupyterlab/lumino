@@ -222,6 +222,22 @@ describe('@lumino/widgets', () => {
         panel.dispose();
       });
 
+      it('should find an intersection within tolerance of the peer handle thickness', () => {
+        const { panel } = attachedGrid();
+        const layout = panel.layout as DockLayout;
+        const { horizontal, vertical } = visibleHandles(panel);
+        const primary = horizontal[0];
+        const rH = primary.getBoundingClientRect();
+        const rV = vertical[0].getBoundingClientRect();
+        const x = (rH.left + rH.right) / 2;
+        // A few pixels above the peer handle's own thin band, but still
+        // within the intersection tolerance.
+        const y = rV.top - 8;
+        const peer = layout.findIntersectingHandle(primary, x, y);
+        expect(peer).to.not.equal(null);
+        panel.dispose();
+      });
+
       it('should clear the hover highlight on pointerleave', () => {
         const { panel } = attachedGrid();
         const layout = panel.layout as DockLayout;
