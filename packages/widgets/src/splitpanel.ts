@@ -489,7 +489,7 @@ export class SplitPanel extends Panel {
           return {
             panel: candidate,
             index: i,
-            delta: Math.max(0, crossPos - lo)
+            delta: crossPos - lo
           };
         }
       }
