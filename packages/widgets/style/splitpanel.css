@@ -42,7 +42,7 @@
   cursor: ns-resize;
 }
 
-.lm-SplitPanel-handle.lm-mod-intersection {
+.lm-SplitPanel > .lm-SplitPanel-handle.lm-mod-intersection {
   cursor: move;
 }
 

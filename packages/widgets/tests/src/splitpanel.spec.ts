@@ -570,6 +570,31 @@ describe('@lumino/widgets', () => {
         outer.dispose();
       });
 
+      it('should not snap the inner handle when the press lands above its top edge', () => {
+        const { outer, outerHandle, innerHandle } = attachedNested();
+        const ro = outerHandle.getBoundingClientRect();
+        const ri = innerHandle.getBoundingClientRect();
+        const x = (ro.left + ro.right) / 2;
+        // Within the intersection tolerance, but above the inner handle's
+        // top edge, so the cross-axis offset from press to handle is
+        // negative.
+        const y = ri.top - 5;
+        const vTop = innerHandle.offsetTop;
+        outerHandle.dispatchEvent(
+          new PointerEvent('pointerdown', { bubbles, clientX: x, clientY: y })
+        );
+        // A move back to the press position should leave the inner handle
+        // where it was: the pointer hasn't displaced relative to where it
+        // grabbed.
+        document.body.dispatchEvent(
+          new PointerEvent('pointermove', { bubbles, clientX: x, clientY: y })
+        );
+        document.body.dispatchEvent(new PointerEvent('pointerup', { bubbles }));
+        MessageLoop.flush();
+        expect(innerHandle.offsetTop).to.equal(vTop);
+        outer.dispose();
+      });
+
       it('should move only the outer handle without an intersection', () => {
         const { outer, outerHandle, innerHandle } = attachedNested();
         const ro = outerHandle.getBoundingClientRect();
