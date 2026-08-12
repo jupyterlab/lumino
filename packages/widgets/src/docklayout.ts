@@ -298,21 +298,17 @@ export class DockLayout extends Layout {
       }
       const rect = candidate.getBoundingClientRect();
 
-      // Expand the candidate rect in the primary handle's movement axis so
-      // the gap between handle regions is bridged:
-      //   'vertical'   primary (ns-resize, horizontal bar) -> expand Y bounds
-      //   'horizontal' primary (ew-resize, vertical bar)   -> expand X bounds
-      let left = rect.left,
-        right = rect.right;
-      let top = rect.top,
-        bottom = rect.bottom;
-      if (primaryOrientation === 'vertical') {
-        top -= tol;
-        bottom += tol;
-      } else {
-        left -= tol;
-        right += tol;
-      }
+      // Expand the candidate rect on both axes: in the primary handle's
+      // movement axis this bridges the gap between handle regions (child
+      // handles stop exactly at the edge of the parent handle's bounding
+      // rect, they don't overlap); on the candidate's own thin axis it
+      // gives the same click-grab tolerance SplitPanel's inner-intersect
+      // search gives, since that axis is otherwise only as wide as the
+      // handle itself.
+      const left = rect.left - tol;
+      const right = rect.right + tol;
+      const top = rect.top - tol;
+      const bottom = rect.bottom + tol;
 
       if (
         clientX >= left &&
