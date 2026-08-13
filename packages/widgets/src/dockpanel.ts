@@ -802,9 +802,7 @@ export class DockPanel extends Widget {
       this._hoverClientX = event.clientX;
       this._hoverClientY = event.clientY;
       if (this._hoverFrameId === -1) {
-        this._hoverFrameId = this._view.requestAnimationFrame(
-          this._applyHover
-        );
+        this._hoverFrameId = this._view.requestAnimationFrame(this._applyHover);
       }
       return;
     }
