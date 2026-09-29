@@ -178,6 +178,7 @@ export class CommandPalette extends Widget {
     get contentNode(): HTMLUListElement;
     dispose(): void;
     handleEvent(event: Event): void;
+    protected initialActiveIndex(query: string, results: ReadonlyArray<CommandPalette.SearchResult>): number;
     get inputNode(): HTMLInputElement;
     get items(): ReadonlyArray<CommandPalette.IItem>;
     get itemTriggered(): ISignal<this, CommandPalette.IItem>;

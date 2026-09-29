@@ -27,6 +27,10 @@ class LogPalette extends CommandPalette {
 
   customResults: CommandPalette.SearchResult[] | null = null;
 
+  activeIndexResults: ReadonlyArray<CommandPalette.SearchResult>[] = [];
+
+  customActiveIndex: number | null = null;
+
   handleEvent(event: Event): void {
     super.handleEvent(event);
     this.events.push(event.type);
@@ -35,6 +39,16 @@ class LogPalette extends CommandPalette {
   protected search(query: string): CommandPalette.SearchResult[] {
     this.queries.push(query);
     return this.customResults || super.search(query);
+  }
+
+  protected initialActiveIndex(
+    query: string,
+    results: ReadonlyArray<CommandPalette.SearchResult>
+  ): number {
+    this.activeIndexResults.push(results);
+    return this.customActiveIndex !== null
+      ? this.customActiveIndex
+      : super.initialActiveIndex(query, results);
   }
 }
 
@@ -1057,6 +1071,77 @@ describe('@lumino/widgets', () => {
         let node = palette.contentNode.firstElementChild!;
         node.dispatchEvent(new MouseEvent('click', { bubbles }));
         expect(called).to.equal(true);
+      });
+    });
+
+    describe('#initialActiveIndex()', () => {
+      let palette: LogPalette;
+      let a: CommandPalette.IItem;
+      let b: CommandPalette.IItem;
+
+      let active = () => {
+        let node = palette.contentNode.querySelector('.lm-mod-active');
+        return node ? node.getAttribute('data-command') : null;
+      };
+
+      beforeEach(() => {
+        commands.addCommand('a', { label: 'A', execute: () => {} });
+        commands.addCommand('b', { label: 'B', execute: () => {} });
+        palette = new LogPalette({ commands });
+        a = palette.addItem({ command: 'a', category: 'One' });
+        b = palette.addItem({ command: 'b', category: 'Two' });
+        palette.customResults = [
+          { type: 'item', item: b, indices: null },
+          { type: 'item', item: a, indices: null }
+        ];
+        Widget.attach(palette, document.body);
+        MessageLoop.flush();
+        palette.activeIndexResults.length = 0;
+      });
+
+      afterEach(() => {
+        palette.dispose();
+      });
+
+      it('should be invoked once with the new search results', () => {
+        palette.refresh();
+        palette.refresh();
+        MessageLoop.flush();
+        expect(palette.activeIndexResults).to.have.length(1);
+        expect(
+          palette.activeIndexResults[0] === palette.customResults
+        ).to.equal(true);
+      });
+
+      it('should not activate an item for an empty query by default', () => {
+        palette.refresh();
+        MessageLoop.flush();
+        expect(active()).to.equal(null);
+      });
+
+      it('should activate the returned index', () => {
+        palette.customActiveIndex = 1;
+        palette.refresh();
+        MessageLoop.flush();
+        expect(active()).to.equal('a');
+      });
+
+      it('should trigger the returned index when enter is pressed', () => {
+        palette.customActiveIndex = 1;
+        palette.refresh();
+        MessageLoop.flush();
+
+        let triggered: string | null = null;
+        palette.itemTriggered.connect((sender, args) => {
+          triggered = args.command;
+        });
+        palette.node.dispatchEvent(
+          new KeyboardEvent('keydown', {
+            bubbles,
+            keyCode: 13 // Enter
+          })
+        );
+        expect(triggered).to.equal('a');
       });
     });
 

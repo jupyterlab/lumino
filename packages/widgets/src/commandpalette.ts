@@ -294,6 +294,30 @@ export class CommandPalette extends Widget {
   }
 
   /**
+   * Get the index of the result to activate for new search results.
+   *
+   * @param query - The raw text of the search input.
+   *
+   * @param results - The search results returned by `search()`.
+   *
+   * @returns The index of the result to activate, or `-1` for none.
+   *
+   * #### Notes
+   * The default implementation of this method returns the index of the
+   * first enabled item when the query is not empty, and `-1` otherwise.
+   *
+   * The returned index should refer to an enabled item result.
+   *
+   * A subclass may reimplement this method as needed.
+   */
+  protected initialActiveIndex(
+    query: string,
+    results: ReadonlyArray<CommandPalette.SearchResult>
+  ): number {
+    return query ? ArrayExt.findFirstIndex(results, Private.canActivate) : -1;
+  }
+
+  /**
    * A message handler invoked on a `'before-attach'` message.
    */
   protected onBeforeAttach(msg: Message): void {
@@ -355,9 +379,7 @@ export class CommandPalette extends Widget {
       results = this._results = this.search(query);
 
       // Reset the active index.
-      this._activeIndex = query
-        ? ArrayExt.findFirstIndex(results, Private.canActivate)
-        : -1;
+      this._activeIndex = this.initialActiveIndex(query, results);
     }
 
     // If there is no query and no results, clear the content.
