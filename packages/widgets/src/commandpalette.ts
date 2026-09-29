@@ -57,22 +57,16 @@ export class CommandPalette extends Widget {
   }
 
   /**
-   * A signal emitted when a command item is triggered from the palette.
+   * A signal emitted when the user triggers a command item.
    *
    * #### Notes
-   * This signal is emitted when the user triggers an item which is
-   * displayed in the palette, either by clicking the item or by
-   * pressing `Enter` while the item is active.
+   * This signal is emitted when an enabled item is clicked, or when
+   * `Enter` is pressed while an enabled item is active. It is not
+   * emitted for a header, or for a command which is executed by other
+   * means, such as a key binding or a menu.
    *
-   * It is not emitted when a command is executed by any other means,
-   * such as a key binding, a menu, or a direct invocation of the
-   * command registry.
-   *
-   * The signal is emitted before the execution of the item's command
-   * is requested, so a handler observes the state of the application
-   * as the user triggered the item. The signal does not report on the
-   * execution: the `commandExecuted` signal of the command registry
-   * can be used to observe the result of an execution.
+   * The signal is emitted before the command is executed and before
+   * the query text is cleared.
    */
   get itemTriggered(): ISignal<this, CommandPalette.IItem> {
     return this._itemTriggered;
@@ -275,30 +269,25 @@ export class CommandPalette extends Widget {
   }
 
   /**
-   * Generate the search results for the given query text.
+   * Create the search results for a query.
    *
-   * @param query - The query text of the palette search input.
+   * @param query - The raw text of the search input.
    *
-   * @returns The array of search results to display.
+   * @returns The search results, in display order.
    *
    * #### Notes
-   * The results are displayed in the order they are returned. The
-   * mouse and keyboard interactions of the palette operate on that
-   * same order.
+   * The default implementation of this method returns the results of
+   * `CommandPalette.search()` for the palette items.
    *
-   * The default implementation of this method fuzzy matches the
-   * palette items against the query using `CommandPalette.search()`.
+   * The palette renders every returned result, so the results should
+   * not include items which are not visible. Triggering a header result
+   * replaces the query with the header category.
    *
-   * A subclass may reimplement this method as needed to customize
-   * which results are displayed and in what order. For example, a
-   * subclass could pin selected items to the top of the palette.
+   * The results are cached until `refresh()` is called. A subclass
+   * which uses external state should call `refresh()` when that state
+   * changes.
    *
-   * The results should only include items which are visible.
-   *
-   * The results are generated when the palette is updated and are
-   * cached until the next call to `refresh()`. A subclass which
-   * generates results from state outside of the palette should call
-   * `refresh()` when that state changes.
+   * A subclass may reimplement this method as needed.
    */
   protected search(query: string): CommandPalette.SearchResult[] {
     return CommandPalette.search(this.items, query);
@@ -553,9 +542,7 @@ export class CommandPalette extends Widget {
       return;
     }
 
-    // Emit the item triggered signal before requesting the execution,
-    // so that a handler observes the state of the application as the
-    // user triggered the item.
+    // Emit the item triggered signal before the execution.
     this._itemTriggered.emit(part.item);
 
     // Execute the item.
@@ -1118,22 +1105,20 @@ export namespace CommandPalette {
    *
    * @param query - The query text to match against the items.
    *
-   * @returns The array of search results for the query.
+   * @returns The search results for the query.
    *
    * #### Notes
-   * For an empty query, all visible items are included in the results,
-   * ordered by category, rank, and label.
+   * Items which are not visible are excluded. Whitespace in the query
+   * is ignored. An empty query matches all items, ordered by category,
+   * rank, and label. Otherwise, the matched items are ordered by match
+   * quality.
    *
-   * For a non-empty query, the visible items are fuzzy matched against
-   * the query text and ordered by match quality.
+   * Each run of items which share a category is preceded by a header
+   * result for that category.
    *
-   * Each contiguous run of items which share the same category is
-   * preceded by a header result for that category.
-   *
-   * This is the function used by the default implementation of the
-   * protected `search()` method of a command palette. It is provided
-   * so that a subclass which reimplements that method can compose the
-   * default search behavior with its own custom results.
+   * This function is used by the default implementation of the protected
+   * `search()` method of a command palette. A subclass can use it to
+   * compose the default results with custom results.
    */
   export function search(
     items: ReadonlyArray<IItem>,
@@ -1184,7 +1169,7 @@ namespace Private {
   }
 
   /**
-   * A type alias for a command palette search result.
+   * A convenience type alias for a command palette search result.
    */
   export type SearchResult = CommandPalette.SearchResult;
 

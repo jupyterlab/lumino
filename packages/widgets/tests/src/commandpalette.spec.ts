@@ -12,8 +12,6 @@ import { expect } from 'chai';
 
 import { CommandRegistry } from '@lumino/commands';
 
-import { JSONExt, ReadonlyJSONObject } from '@lumino/coreutils';
-
 import { Platform } from '@lumino/domutils';
 
 import { MessageLoop } from '@lumino/messaging';
@@ -25,67 +23,18 @@ import { CommandPalette, Widget } from '@lumino/widgets';
 class LogPalette extends CommandPalette {
   events: string[] = [];
 
+  queries: string[] = [];
+
+  customResults: CommandPalette.SearchResult[] | null = null;
+
   handleEvent(event: Event): void {
     super.handleEvent(event);
     this.events.push(event.type);
   }
-}
-
-/**
- * A command palette which pins recently executed items to the top.
- *
- * #### Notes
- * This demonstrates how a downstream application can implement a
- * "recently used commands" feature with the `itemTriggered` signal
- * and the protected `search()` method.
- */
-class RecentsPalette extends CommandPalette {
-  readonly recents: { command: string; args: ReadonlyJSONObject }[] = [];
-
-  constructor(options: CommandPalette.IOptions) {
-    super(options);
-    this.itemTriggered.connect((sender, item) => {
-      let index = this.recents.findIndex(recent => {
-        return (
-          recent.command === item.command &&
-          JSONExt.deepEqual(recent.args, item.args)
-        );
-      });
-      if (index !== -1) {
-        this.recents.splice(index, 1);
-      }
-      this.recents.unshift({ command: item.command, args: item.args });
-    }, this);
-  }
 
   protected search(query: string): CommandPalette.SearchResult[] {
-    // Use the default search behavior when there is a query.
-    if (query.replace(/\s+/g, '')) {
-      return super.search(query);
-    }
-
-    // Resolve the recently executed commands to their palette items,
-    // keeping only the items which can be displayed and executed.
-    let resolved: CommandPalette.IItem[] = [];
-    for (let recent of this.recents) {
-      let item = this.items.find(candidate => {
-        return (
-          candidate.command === recent.command &&
-          JSONExt.deepEqual(candidate.args, recent.args)
-        );
-      });
-      if (item && item.isVisible && item.isEnabled) {
-        resolved.push(item);
-      }
-    }
-
-    // Pin the recent items to the top of the palette, without a
-    // category header, followed by the remaining items.
-    let pinned: CommandPalette.SearchResult[] = resolved.map(item => {
-      return { type: 'item', item, indices: null };
-    });
-    let others = this.items.filter(item => resolved.indexOf(item) === -1);
-    return [...pinned, ...CommandPalette.search(others, query)];
+    this.queries.push(query);
+    return this.customResults || super.search(query);
   }
 }
 
@@ -133,81 +82,81 @@ describe('@lumino/widgets', () => {
     describe('#itemTriggered', () => {
       it('should be emitted when an item is clicked', () => {
         commands.addCommand('test', { execute: () => {} });
-
-        let executed: CommandPalette.IItem | null = null;
-        palette.itemTriggered.connect((sender, item) => {
-          expect(sender).to.equal(palette);
-          executed = item;
-        });
-
-        palette.addItem(defaultOptions);
+        let item = palette.addItem(defaultOptions);
         MessageLoop.flush();
 
-        let node = palette.contentNode.querySelector('.lm-CommandPalette-item');
-        node!.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-        expect(executed!.command).to.equal('test');
-        expect(executed!.args).to.deep.equal({ foo: 'bar' });
+        let called = false;
+        palette.itemTriggered.connect((sender, args) => {
+          expect(sender).to.equal(palette);
+          expect(args).to.equal(item);
+          called = true;
+        });
+
+        let node = palette.contentNode.querySelector(
+          '.lm-CommandPalette-item'
+        )!;
+        node.dispatchEvent(new MouseEvent('click', { bubbles }));
+        expect(called).to.equal(true);
       });
 
-      it('should be emitted when the active item is triggered with enter', () => {
-        commands.addCommand('test', { execute: () => {} });
-
-        let executed: CommandPalette.IItem | null = null;
-        palette.itemTriggered.connect((sender, item) => {
-          executed = item;
-        });
-
-        palette.addItem(defaultOptions);
+      it('should be emitted when enter is pressed on the active item', () => {
+        commands.addCommand('test', { label: 'Test', execute: () => {} });
+        let item = palette.addItem(defaultOptions);
+        palette.inputNode.value = 'test';
+        palette.refresh();
         MessageLoop.flush();
 
+        let called = false;
+        palette.itemTriggered.connect((sender, args) => {
+          expect(args).to.equal(item);
+          called = true;
+        });
+
         palette.node.dispatchEvent(
           new KeyboardEvent('keydown', {
-            bubbles: true,
-            keyCode: 40 // Down arrow
-          })
-        );
-        palette.node.dispatchEvent(
-          new KeyboardEvent('keydown', {
-            bubbles: true,
+            bubbles,
             keyCode: 13 // Enter
           })
         );
-        expect(executed!.command).to.equal('test');
+        expect(called).to.equal(true);
       });
 
       it('should be emitted before the command is executed', () => {
         let order: string[] = [];
         commands.addCommand('test', {
+          label: 'Test',
           execute: () => {
             order.push('execute');
           }
         });
-
-        palette.itemTriggered.connect(() => {
-          order.push('triggered');
-        });
-
         palette.addItem(defaultOptions);
+        palette.inputNode.value = 'test';
+        palette.refresh();
         MessageLoop.flush();
 
-        let node = palette.contentNode.querySelector('.lm-CommandPalette-item');
-        node!.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-        expect(order).to.deep.equal(['triggered', 'execute']);
+        palette.itemTriggered.connect(() => {
+          order.push(`triggered: ${palette.inputNode.value}`);
+        });
+
+        let node = palette.contentNode.querySelector(
+          '.lm-CommandPalette-item'
+        )!;
+        node.dispatchEvent(new MouseEvent('click', { bubbles }));
+        expect(order).to.deep.equal(['triggered: test', 'execute']);
       });
 
       it('should not be emitted when a command is executed directly', () => {
         commands.addCommand('test', { execute: () => {} });
-
-        let emitted = false;
-        palette.itemTriggered.connect(() => {
-          emitted = true;
-        });
-
         palette.addItem(defaultOptions);
         MessageLoop.flush();
 
+        let called = false;
+        palette.itemTriggered.connect(() => {
+          called = true;
+        });
+
         commands.execute('test', { foo: 'bar' });
-        expect(emitted).to.equal(false);
+        expect(called).to.equal(false);
       });
 
       it('should not be emitted when a disabled item is clicked', () => {
@@ -215,36 +164,37 @@ describe('@lumino/widgets', () => {
           execute: () => {},
           isEnabled: () => false
         });
-
-        let emitted = false;
-        palette.itemTriggered.connect(() => {
-          emitted = true;
-        });
-
         palette.addItem(defaultOptions);
         MessageLoop.flush();
 
-        let node = palette.contentNode.querySelector('.lm-CommandPalette-item');
-        node!.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-        expect(emitted).to.equal(false);
+        let called = false;
+        palette.itemTriggered.connect(() => {
+          called = true;
+        });
+
+        let node = palette.contentNode.querySelector(
+          '.lm-CommandPalette-item'
+        )!;
+        node.dispatchEvent(new MouseEvent('click', { bubbles }));
+        expect(called).to.equal(false);
       });
 
       it('should not be emitted when a header is clicked', () => {
         commands.addCommand('test', { execute: () => {} });
-
-        let emitted = false;
-        palette.itemTriggered.connect(() => {
-          emitted = true;
-        });
-
         palette.addItem(defaultOptions);
         MessageLoop.flush();
 
+        let called = false;
+        palette.itemTriggered.connect(() => {
+          called = true;
+        });
+
         let node = palette.contentNode.querySelector(
           '.lm-CommandPalette-header'
-        );
-        node!.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-        expect(emitted).to.equal(false);
+        )!;
+        node.dispatchEvent(new MouseEvent('click', { bubbles }));
+        expect(called).to.equal(false);
+        expect(palette.inputNode.value).to.equal('test category ');
       });
     });
 
@@ -788,82 +738,6 @@ describe('@lumino/widgets', () => {
       });
     });
 
-    describe('#search()', () => {
-      let palette: RecentsPalette;
-
-      beforeEach(() => {
-        commands.addCommand('a', { label: 'A', execute: () => {} });
-        commands.addCommand('b', { label: 'B', execute: () => {} });
-        palette = new RecentsPalette({ commands });
-        palette.addItem({ command: 'a', category: 'One' });
-        palette.addItem({ command: 'b', category: 'Two' });
-        Widget.attach(palette, document.body);
-        MessageLoop.flush();
-      });
-
-      afterEach(() => {
-        palette.dispose();
-      });
-
-      it('should allow a subclass to customize the search results', () => {
-        // The default results start with a category header.
-        let first = palette.contentNode.firstElementChild!;
-        expect(first.classList.contains('lm-CommandPalette-header')).to.equal(
-          true
-        );
-
-        // Execute the last item in the palette.
-        let node = palette.contentNode.querySelector('[data-command="b"]')!;
-        node.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-        MessageLoop.flush();
-
-        // The executed item is now pinned to the top, without a header.
-        first = palette.contentNode.firstElementChild!;
-        expect(first.classList.contains('lm-CommandPalette-item')).to.equal(
-          true
-        );
-        expect(first.getAttribute('data-command')).to.equal('b');
-      });
-
-      it('should not duplicate items excluded from the default results', () => {
-        let node = palette.contentNode.querySelector('[data-command="b"]')!;
-        node.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-        MessageLoop.flush();
-
-        let nodes = palette.contentNode.querySelectorAll('[data-command="b"]');
-        expect(nodes.length).to.equal(1);
-      });
-
-      it('should support keyboard interaction with the custom results', () => {
-        let node = palette.contentNode.querySelector('[data-command="b"]')!;
-        node.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-        MessageLoop.flush();
-
-        // Activate and trigger the pinned item.
-        let executed: CommandPalette.IItem | null = null;
-        palette.itemTriggered.connect((sender, item) => {
-          executed = item;
-        });
-        palette.node.dispatchEvent(
-          new KeyboardEvent('keydown', {
-            bubbles: true,
-            keyCode: 40 // Down arrow
-          })
-        );
-        MessageLoop.flush();
-
-        let active = palette.contentNode.querySelector('.lm-mod-active')!;
-        expect(active.getAttribute('data-command')).to.equal('b');
-        palette.node.dispatchEvent(
-          new KeyboardEvent('keydown', {
-            bubbles: true,
-            keyCode: 13 // Enter
-          })
-        );
-        expect(executed!.command).to.equal('b');
-      });
-    });
-
     describe('#handleEvent()', () => {
       it('should handle click, keydown, and input events', () => {
         let palette = new LogPalette({ commands });
@@ -1065,6 +939,124 @@ describe('@lumino/widgets', () => {
           expect(headers()).to.have.length(2);
           expect(items()).to.have.length(2);
         });
+      });
+    });
+
+    describe('#search()', () => {
+      let palette: LogPalette;
+      let a: CommandPalette.IItem;
+      let b: CommandPalette.IItem;
+
+      let press = (keyCode: number) => {
+        palette.node.dispatchEvent(
+          new KeyboardEvent('keydown', { bubbles, keyCode })
+        );
+        MessageLoop.flush();
+      };
+
+      let active = () => {
+        let node = palette.contentNode.querySelector('.lm-mod-active');
+        return node ? node.getAttribute('data-command') : null;
+      };
+
+      beforeEach(() => {
+        commands.addCommand('a', { label: 'A', execute: () => {} });
+        commands.addCommand('b', { label: 'B', execute: () => {} });
+        palette = new LogPalette({ commands });
+        a = palette.addItem({ command: 'a', category: 'One' });
+        b = palette.addItem({ command: 'b', category: 'Two' });
+        Widget.attach(palette, document.body);
+        MessageLoop.flush();
+        palette.queries.length = 0;
+      });
+
+      afterEach(() => {
+        palette.dispose();
+      });
+
+      it('should be invoked once with the raw query text on refresh', () => {
+        palette.inputNode.value = ' Foo ';
+        palette.refresh();
+        palette.refresh();
+        MessageLoop.flush();
+        expect(palette.queries).to.deep.equal([' Foo ']);
+      });
+
+      it('should not be invoked when the active item changes', () => {
+        press(40); // Down arrow
+        expect(active()).to.equal('a');
+        expect(palette.queries).to.deep.equal([]);
+      });
+
+      it('should render the results in the returned order', () => {
+        palette.customResults = [
+          { type: 'item', item: b, indices: null },
+          { type: 'header', category: 'One', indices: null },
+          { type: 'item', item: a, indices: null }
+        ];
+        palette.refresh();
+        MessageLoop.flush();
+        let children = palette.contentNode.children;
+        expect(children).to.have.length(3);
+        expect(children[0].getAttribute('data-command')).to.equal('b');
+        expect(children[1].textContent).to.equal('One');
+        expect(children[2].getAttribute('data-command')).to.equal('a');
+      });
+
+      it('should navigate the returned results with the keyboard', () => {
+        palette.customResults = [
+          { type: 'item', item: b, indices: null },
+          { type: 'header', category: 'One', indices: null },
+          { type: 'item', item: a, indices: null }
+        ];
+        palette.refresh();
+        MessageLoop.flush();
+        press(40); // Down arrow
+        expect(active()).to.equal('b');
+        press(40); // Down arrow
+        expect(active()).to.equal('a');
+        press(40); // Down arrow
+        expect(active()).to.equal('b');
+        press(38); // Up arrow
+        expect(active()).to.equal('a');
+      });
+
+      it('should activate the first returned item for a query', () => {
+        palette.customResults = [
+          { type: 'item', item: b, indices: null },
+          { type: 'item', item: a, indices: null }
+        ];
+        palette.inputNode.value = 'a';
+        palette.refresh();
+        MessageLoop.flush();
+        expect(active()).to.equal('b');
+      });
+
+      it('should render the empty message if there are no results', () => {
+        palette.customResults = [];
+        palette.inputNode.value = 'a';
+        palette.refresh();
+        MessageLoop.flush();
+        let node = palette.contentNode.querySelector(
+          '.lm-CommandPalette-emptyMessage'
+        );
+        expect(node).to.not.equal(null);
+      });
+
+      it('should trigger the clicked result', () => {
+        palette.customResults = [{ type: 'item', item: b, indices: null }];
+        palette.refresh();
+        MessageLoop.flush();
+
+        let called = false;
+        palette.itemTriggered.connect((sender, args) => {
+          expect(args).to.equal(b);
+          called = true;
+        });
+
+        let node = palette.contentNode.firstElementChild!;
+        node.dispatchEvent(new MouseEvent('click', { bubbles }));
+        expect(called).to.equal(true);
       });
     });
 
@@ -1368,32 +1360,58 @@ describe('@lumino/widgets', () => {
     });
 
     describe('.search()', () => {
+      let a: CommandPalette.IItem;
+      let b: CommandPalette.IItem;
+
       beforeEach(() => {
         commands.addCommand('a', { label: 'Apple', execute: () => {} });
         commands.addCommand('b', { label: 'Banana', execute: () => {} });
-        palette.addItem({ command: 'a', category: 'One' });
-        palette.addItem({ command: 'b', category: 'Two' });
+        a = palette.addItem({ command: 'a', category: 'One' });
+        b = palette.addItem({ command: 'b', category: 'Two' });
       });
 
       it('should include all visible items for an empty query', () => {
-        let results = CommandPalette.search(palette.items, '');
-        expect(results.length).to.equal(4);
-        expect(results[0].type).to.equal('header');
-        expect(results[1].type).to.equal('item');
-        expect(results[2].type).to.equal('header');
-        expect(results[3].type).to.equal('item');
-        let result = results[1] as CommandPalette.IItemResult;
-        expect(result.item.command).to.equal('a');
-        expect(result.indices).to.equal(null);
+        expect(CommandPalette.search(palette.items, '')).to.deep.equal([
+          { type: 'header', category: 'One', indices: null },
+          { type: 'item', item: a, indices: null },
+          { type: 'header', category: 'Two', indices: null },
+          { type: 'item', item: b, indices: null }
+        ]);
+      });
+
+      it('should ignore whitespace in the query', () => {
+        expect(CommandPalette.search(palette.items, '  ')).to.deep.equal(
+          CommandPalette.search(palette.items, '')
+        );
+        expect(CommandPalette.search(palette.items, ' b a n ')).to.deep.equal(
+          CommandPalette.search(palette.items, 'ban')
+        );
       });
 
       it('should fuzzy match the items against the query', () => {
-        let results = CommandPalette.search(palette.items, 'ban');
-        expect(results.length).to.equal(2);
-        expect(results[0].type).to.equal('header');
-        let result = results[1] as CommandPalette.IItemResult;
-        expect(result.item.command).to.equal('b');
-        expect(result.indices).to.not.equal(null);
+        expect(CommandPalette.search(palette.items, 'ban')).to.deep.equal([
+          { type: 'header', category: 'Two', indices: null },
+          { type: 'item', item: b, indices: [0, 1, 2] }
+        ]);
+      });
+
+      it('should order the items of a category by rank', () => {
+        commands.addCommand('c', { label: 'Cherry', execute: () => {} });
+        let c = palette.addItem({ command: 'c', category: 'One', rank: 0 });
+        expect(CommandPalette.search(palette.items, '')).to.deep.equal([
+          { type: 'header', category: 'One', indices: null },
+          { type: 'item', item: c, indices: null },
+          { type: 'item', item: a, indices: null },
+          { type: 'header', category: 'Two', indices: null },
+          { type: 'item', item: b, indices: null }
+        ]);
+      });
+
+      it('should only search the given items', () => {
+        expect(CommandPalette.search([b], '')).to.deep.equal([
+          { type: 'header', category: 'Two', indices: null },
+          { type: 'item', item: b, indices: null }
+        ]);
       });
 
       it('should ignore items which are not visible', () => {
@@ -1402,10 +1420,8 @@ describe('@lumino/widgets', () => {
           execute: () => {},
           isVisible: () => false
         });
-        palette.addItem({ command: 'c', category: 'One' });
-        let results = CommandPalette.search(palette.items, '');
-        let items = results.filter(result => result.type === 'item');
-        expect(items.length).to.equal(2);
+        let c = palette.addItem({ command: 'c', category: 'One' });
+        expect(CommandPalette.search([c], '')).to.deep.equal([]);
       });
     });
   });
