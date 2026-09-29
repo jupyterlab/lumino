@@ -458,6 +458,9 @@ export class DockPanel extends Widget {
       case 'pointerup':
         this._evtPointerUp(event as PointerEvent);
         break;
+      case 'pointercancel':
+        this._evtPointerCancel(event as PointerEvent);
+        break;
       case 'keydown':
         this._evtKeyDown(event as KeyboardEvent);
         break;
@@ -719,6 +722,7 @@ export class DockPanel extends Widget {
     this._document.addEventListener('keydown', this, true);
     this._document.addEventListener('pointerup', this, true);
     this._document.addEventListener('pointermove', this, true);
+    this._document.addEventListener('pointercancel', this, true);
     this._document.addEventListener('contextmenu', this, true);
 
     // Compute the offset deltas for the handle press.
@@ -776,6 +780,22 @@ export class DockPanel extends Widget {
   }
 
   /**
+   * Handle the `'pointercancel'` event for the dock panel.
+   */
+  private _evtPointerCancel(event: PointerEvent): void {
+    // Bail early if no drag is in progress.
+    if (!this._pressData) {
+      return;
+    }
+
+    // Finalize the mouse release.
+    this._releaseMouse();
+
+    // Schedule an emit of the layout modified signal.
+    MessageLoop.postMessage(this, Private.LayoutModified);
+  }
+
+  /**
    * Release the mouse grab for the dock panel.
    */
   private _releaseMouse(): void {
@@ -792,6 +812,7 @@ export class DockPanel extends Widget {
     this._document.removeEventListener('keydown', this, true);
     this._document.removeEventListener('pointerup', this, true);
     this._document.removeEventListener('pointermove', this, true);
+    this._document.removeEventListener('pointercancel', this, true);
     this._document.removeEventListener('contextmenu', this, true);
   }
 
