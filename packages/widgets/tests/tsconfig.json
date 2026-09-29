@@ -4,7 +4,10 @@
     "lib": ["DOM", "ES2018"],
     "outDir": "lib",
     "rootDir": "src",
-    "types": ["chai", "mocha"]
+    "types": ["chai", "mocha"],
+    "paths": {
+      "@lumino/widgets/lib/*": ["../types/*"]
+    }
   },
   "include": ["src/*"],
   "references": [
