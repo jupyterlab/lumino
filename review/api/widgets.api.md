@@ -178,8 +178,10 @@ export class CommandPalette extends Widget {
     get contentNode(): HTMLUListElement;
     dispose(): void;
     handleEvent(event: Event): void;
+    protected initialActiveIndex(query: string, results: ReadonlyArray<CommandPalette.SearchResult>): number;
     get inputNode(): HTMLInputElement;
     get items(): ReadonlyArray<CommandPalette.IItem>;
+    get itemTriggered(): ISignal<this, CommandPalette.IItem>;
     protected onActivateRequest(msg: Message): void;
     protected onAfterDetach(msg: Message): void;
     protected onAfterShow(msg: Message): void;
@@ -189,6 +191,7 @@ export class CommandPalette extends Widget {
     removeItem(item: CommandPalette.IItem): void;
     removeItemAt(index: number): void;
     readonly renderer: CommandPalette.IRenderer;
+    protected search(query: string): CommandPalette.SearchResult[];
     get searchNode(): HTMLDivElement;
 }
 
@@ -200,6 +203,11 @@ export namespace CommandPalette {
     export interface IHeaderRenderData {
         readonly category: string;
         readonly indices: ReadonlyArray<number> | null;
+    }
+    export interface IHeaderResult {
+        readonly category: string;
+        readonly indices: ReadonlyArray<number> | null;
+        readonly type: 'header';
     }
     export interface IItem {
         readonly args: ReadonlyJSONObject;
@@ -230,6 +238,11 @@ export namespace CommandPalette {
         readonly indices: ReadonlyArray<number> | null;
         readonly item: IItem;
     }
+    export interface IItemResult {
+        readonly indices: ReadonlyArray<number> | null;
+        readonly item: IItem;
+        readonly type: 'item';
+    }
     export interface IOptions {
         commands: CommandRegistry;
         renderer?: IRenderer;
@@ -257,7 +270,9 @@ export namespace CommandPalette {
         renderItemLabel(data: IItemRenderData): VirtualElement;
         renderItemShortcut(data: IItemRenderData): VirtualElement;
     }
+    export function search(items: ReadonlyArray<IItem>, query: string): SearchResult[];
     const defaultRenderer: Renderer;
+    export type SearchResult = IHeaderResult | IItemResult;
 }
 
 // @public

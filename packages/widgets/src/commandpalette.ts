@@ -17,6 +17,8 @@ import { ElementExt } from '@lumino/domutils';
 
 import { Message } from '@lumino/messaging';
 
+import { ISignal, Signal } from '@lumino/signaling';
+
 import {
   ElementDataset,
   h,
@@ -52,6 +54,22 @@ export class CommandPalette extends Widget {
     this._items.length = 0;
     this._results = null;
     super.dispose();
+  }
+
+  /**
+   * A signal emitted when the user triggers a command item.
+   *
+   * #### Notes
+   * This signal is emitted when an enabled item is clicked, or when
+   * `Enter` is pressed while an enabled item is active. It is not
+   * emitted for a header, or for a command which is executed by other
+   * means, such as a key binding or a menu.
+   *
+   * The signal is emitted before the command is executed and before
+   * the query text is cleared.
+   */
+  get itemTriggered(): ISignal<this, CommandPalette.IItem> {
+    return this._itemTriggered;
   }
 
   /**
@@ -251,6 +269,55 @@ export class CommandPalette extends Widget {
   }
 
   /**
+   * Create the search results for a query.
+   *
+   * @param query - The raw text of the search input.
+   *
+   * @returns The search results, in display order.
+   *
+   * #### Notes
+   * The default implementation of this method returns the results of
+   * `CommandPalette.search()` for the palette items.
+   *
+   * The palette renders every returned result, so the results should
+   * not include items which are not visible. Triggering a header result
+   * replaces the query with the header category.
+   *
+   * The results are cached until `refresh()` is called. A subclass
+   * which uses external state should call `refresh()` when that state
+   * changes.
+   *
+   * A subclass may reimplement this method as needed.
+   */
+  protected search(query: string): CommandPalette.SearchResult[] {
+    return CommandPalette.search(this.items, query);
+  }
+
+  /**
+   * Get the index of the result to activate for new search results.
+   *
+   * @param query - The raw text of the search input.
+   *
+   * @param results - The search results returned by `search()`.
+   *
+   * @returns The index of the result to activate, or `-1` for none.
+   *
+   * #### Notes
+   * The default implementation of this method returns the index of the
+   * first enabled item when the query is not empty, and `-1` otherwise.
+   *
+   * The returned index should refer to an enabled item result.
+   *
+   * A subclass may reimplement this method as needed.
+   */
+  protected initialActiveIndex(
+    query: string,
+    results: ReadonlyArray<CommandPalette.SearchResult>
+  ): number {
+    return query ? ArrayExt.findFirstIndex(results, Private.canActivate) : -1;
+  }
+
+  /**
    * A message handler invoked on a `'before-attach'` message.
    */
   protected onBeforeAttach(msg: Message): void {
@@ -309,12 +376,10 @@ export class CommandPalette extends Widget {
     let results = this._results;
     if (!results) {
       // Generate and store the new search results.
-      results = this._results = Private.search(this._items, query);
+      results = this._results = this.search(query);
 
       // Reset the active index.
-      this._activeIndex = query
-        ? ArrayExt.findFirstIndex(results, Private.canActivate)
-        : -1;
+      this._activeIndex = this.initialActiveIndex(query, results);
     }
 
     // If there is no query and no results, clear the content.
@@ -499,6 +564,9 @@ export class CommandPalette extends Widget {
       return;
     }
 
+    // Emit the item triggered signal before the execution.
+    this._itemTriggered.emit(part.item);
+
     // Execute the item.
     this.commands.execute(part.item.command, part.item.args);
 
@@ -525,8 +593,9 @@ export class CommandPalette extends Widget {
   }
 
   private _activeIndex = -1;
+  private _itemTriggered = new Signal<this, CommandPalette.IItem>(this);
   private _items: CommandPalette.IItem[] = [];
-  private _results: Private.SearchResult[] | null = null;
+  private _results: CommandPalette.SearchResult[] | null = null;
 }
 
 /**
@@ -673,6 +742,51 @@ export namespace CommandPalette {
      */
     readonly keyBinding: CommandRegistry.IKeyBinding | null;
   }
+
+  /**
+   * A search result object for a header label.
+   */
+  export interface IHeaderResult {
+    /**
+     * The discriminated type of the object.
+     */
+    readonly type: 'header';
+
+    /**
+     * The category for the header.
+     */
+    readonly category: string;
+
+    /**
+     * The indices of the matched category characters.
+     */
+    readonly indices: ReadonlyArray<number> | null;
+  }
+
+  /**
+   * A search result object for a command item.
+   */
+  export interface IItemResult {
+    /**
+     * The discriminated type of the object.
+     */
+    readonly type: 'item';
+
+    /**
+     * The command item which was matched.
+     */
+    readonly item: IItem;
+
+    /**
+     * The indices of the matched label characters.
+     */
+    readonly indices: ReadonlyArray<number> | null;
+  }
+
+  /**
+   * A type alias for a command palette search result.
+   */
+  export type SearchResult = IHeaderResult | IItemResult;
 
   /**
    * The render data for a command palette header.
@@ -1005,6 +1119,35 @@ export namespace CommandPalette {
    * The default `Renderer` instance.
    */
   export const defaultRenderer = new Renderer();
+
+  /**
+   * Search an array of command items for fuzzy matches.
+   *
+   * @param items - The command items to search.
+   *
+   * @param query - The query text to match against the items.
+   *
+   * @returns The search results for the query.
+   *
+   * #### Notes
+   * Items which are not visible are excluded. Whitespace in the query
+   * is ignored. An empty query matches all items, ordered by category,
+   * rank, and label. Otherwise, the matched items are ordered by match
+   * quality.
+   *
+   * Each run of items which share a category is preceded by a header
+   * result for that category.
+   *
+   * This function is used by the default implementation of the protected
+   * `search()` method of a command palette. A subclass can use it to
+   * compose the default results with custom results.
+   */
+  export function search(
+    items: ReadonlyArray<IItem>,
+    query: string
+  ): SearchResult[] {
+    return Private.search(items, query);
+  }
 }
 
 /**
@@ -1048,55 +1191,15 @@ namespace Private {
   }
 
   /**
-   * A search result object for a header label.
+   * A convenience type alias for a command palette search result.
    */
-  export interface IHeaderResult {
-    /**
-     * The discriminated type of the object.
-     */
-    readonly type: 'header';
-
-    /**
-     * The category for the header.
-     */
-    readonly category: string;
-
-    /**
-     * The indices of the matched category characters.
-     */
-    readonly indices: ReadonlyArray<number> | null;
-  }
-
-  /**
-   * A search result object for a command item.
-   */
-  export interface IItemResult {
-    /**
-     * The discriminated type of the object.
-     */
-    readonly type: 'item';
-
-    /**
-     * The command item which was matched.
-     */
-    readonly item: CommandPalette.IItem;
-
-    /**
-     * The indices of the matched label characters.
-     */
-    readonly indices: ReadonlyArray<number> | null;
-  }
-
-  /**
-   * A type alias for a search result item.
-   */
-  export type SearchResult = IHeaderResult | IItemResult;
+  export type SearchResult = CommandPalette.SearchResult;
 
   /**
    * Search an array of command items for fuzzy matches.
    */
   export function search(
-    items: CommandPalette.IItem[],
+    items: ReadonlyArray<CommandPalette.IItem>,
     query: string
   ): SearchResult[] {
     // Fuzzy match the items for the query.
@@ -1173,7 +1276,10 @@ namespace Private {
   /**
    * Perform a fuzzy match on an array of command items.
    */
-  function matchItems(items: CommandPalette.IItem[], query: string): IScore[] {
+  function matchItems(
+    items: ReadonlyArray<CommandPalette.IItem>,
+    query: string
+  ): IScore[] {
     // Normalize the query text to lower case with no whitespace.
     query = normalizeQuery(query);
 
