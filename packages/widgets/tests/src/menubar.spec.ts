@@ -1058,6 +1058,31 @@ describe('@lumino/widgets', () => {
         expect(bar.overflowMenu).to.equal(null);
         bar.dispose();
       });
+
+      it('should not throw when overflowIndex is 0 and the overflow menu is set', () => {
+        let bar = createMenuBar();
+        bar.node.style.maxWidth = '70px';
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        MessageLoop.flush();
+        expect(bar.overflowMenu).to.not.equal(null);
+        bar.node.style.maxWidth = '5px';
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        expect(bar.overflowIndex).to.equal(0);
+        expect(bar.overflowMenu).to.not.equal(null);
+        let caught: Error | null = null;
+        let previousHandler = MessageLoop.getExceptionHandler();
+        MessageLoop.setExceptionHandler(err => {
+          caught = err;
+        });
+        try {
+          MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+          MessageLoop.flush();
+        } finally {
+          MessageLoop.setExceptionHandler(previousHandler);
+        }
+        expect(caught).to.equal(null);
+        bar.dispose();
+      });
     });
 
     context('`menuRequested` signal', () => {

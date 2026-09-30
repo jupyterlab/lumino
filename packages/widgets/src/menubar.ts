@@ -437,7 +437,7 @@ export class MenuBar extends Widget {
     let isVisible = false;
 
     // Check that the overflow menu doesn't count
-    length = this._overflowMenu !== null ? length - 1 : length;
+    length = this._overflowMenu !== null ? Math.max(length - 1, 0) : length;
     let content = new Array<VirtualElement>(length);
 
     // Render visible menus
