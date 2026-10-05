@@ -3111,14 +3111,14 @@ __metadata:
   linkType: hard
 
 "axios@npm:^1.0.0":
-  version: 1.18.0
-  resolution: "axios@npm:1.18.0"
+  version: 1.20.0
+  resolution: "axios@npm:1.20.0"
   dependencies:
     follow-redirects: ^1.16.0
-    form-data: ^4.0.5
+    form-data: ^4.0.6
     https-proxy-agent: ^5.0.1
     proxy-from-env: ^2.1.0
-  checksum: 87e66c8583f69f3aec2d03d2840e4074d71c67d0e06a5c33de8926b0f11c9d31a8509adc6814167cc1fc470bc3f24f99a10fcb6632843192126567340dd1a8ce
+  checksum: 58ff916938e317352e0c3483496a4609fd528da4823a8580969821748284bea2add069a39f2285a161020ce0886f33a982a162ebb49b5403c51a6977a1d50627
   languageName: node
   linkType: hard
 
@@ -5721,7 +5721,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"form-data@npm:^4.0.5":
+"form-data@npm:^4.0.6":
   version: 4.0.6
   resolution: "form-data@npm:4.0.6"
   dependencies:
