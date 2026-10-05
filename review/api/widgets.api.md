@@ -724,6 +724,7 @@ export namespace Menu {
         readonly iconClass: string;
         readonly iconLabel: string;
         readonly isEnabled: boolean;
+        readonly isToggleable?: boolean;
         readonly isToggled: boolean;
         readonly isVisible: boolean;
         readonly keyBinding: CommandRegistry.IKeyBinding | null;

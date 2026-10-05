@@ -30,6 +30,8 @@ import {
   VirtualElement
 } from '@lumino/virtualdom';
 
+import Utils from './utils';
+
 import { Widget } from './widget';
 
 interface IWindowData {
@@ -504,20 +506,23 @@ export class Menu extends Widget {
       case 'keydown':
         this._evtKeyDown(event as KeyboardEvent);
         break;
-      case 'mouseup':
-        this._evtMouseUp(event as MouseEvent);
+      case 'click':
+        this._evtClick(event as MouseEvent);
         break;
-      case 'mousemove':
-        this._evtMouseMove(event as MouseEvent);
+      case 'pointerup':
+        this._evtPointerUp(event as PointerEvent);
         break;
-      case 'mouseenter':
-        this._evtMouseEnter(event as MouseEvent);
+      case 'pointermove':
+        this._evtPointerMove(event as PointerEvent);
         break;
-      case 'mouseleave':
-        this._evtMouseLeave(event as MouseEvent);
+      case 'pointerenter':
+        this._evtPointerEnter(event as PointerEvent);
         break;
-      case 'mousedown':
-        this._evtMouseDown(event as MouseEvent);
+      case 'pointerleave':
+        this._evtPointerLeave(event as PointerEvent);
+        break;
+      case 'pointerdown':
+        this._evtPointerDown(event as PointerEvent);
         break;
       case 'contextmenu':
         event.preventDefault();
@@ -531,12 +536,13 @@ export class Menu extends Widget {
    */
   protected onBeforeAttach(msg: Message): void {
     this.node.addEventListener('keydown', this);
-    this.node.addEventListener('mouseup', this);
-    this.node.addEventListener('mousemove', this);
-    this.node.addEventListener('mouseenter', this);
-    this.node.addEventListener('mouseleave', this);
+    this.node.addEventListener('click', this);
+    this.node.addEventListener('pointerup', this);
+    this.node.addEventListener('pointermove', this);
+    this.node.addEventListener('pointerenter', this);
+    this.node.addEventListener('pointerleave', this);
     this.node.addEventListener('contextmenu', this);
-    document.addEventListener('mousedown', this, true);
+    document.addEventListener('pointerdown', this, true);
   }
 
   /**
@@ -544,12 +550,14 @@ export class Menu extends Widget {
    */
   protected onAfterDetach(msg: Message): void {
     this.node.removeEventListener('keydown', this);
-    this.node.removeEventListener('mouseup', this);
-    this.node.removeEventListener('mousemove', this);
-    this.node.removeEventListener('mouseenter', this);
-    this.node.removeEventListener('mouseleave', this);
+    this.node.removeEventListener('click', this);
+    this.node.removeEventListener('pointerup', this);
+    this.node.removeEventListener('pointermove', this);
+    this.node.removeEventListener('pointerenter', this);
+    this.node.removeEventListener('pointerleave', this);
     this.node.removeEventListener('contextmenu', this);
-    document.removeEventListener('mousedown', this, true);
+    document.removeEventListener('pointerdown', this, true);
+    this._pendingTouchActivation = false;
   }
 
   /**
@@ -596,6 +604,7 @@ export class Menu extends Widget {
 
     // Reset the active index.
     this.activeIndex = -1;
+    this._pendingTouchActivation = false;
 
     // Close any open child menu.
     let childMenu = this._childMenu;
@@ -710,27 +719,59 @@ export class Menu extends Widget {
   }
 
   /**
-   * Handle the `'mouseup'` event for the menu.
+   * Handle the `'pointerup'` event for the menu.
    *
    * #### Notes
    * This listener is attached to the menu node.
    */
-  private _evtMouseUp(event: MouseEvent): void {
+  private _evtPointerUp(event: PointerEvent): void {
     if (event.button !== 0) {
       return;
     }
+
+    if (Utils.isTouchEvent(event)) {
+      this._pendingTouchActivation = this._activateItemFromEvent(event);
+      event.stopPropagation();
+      return;
+    }
+
     event.preventDefault();
     event.stopPropagation();
+    this._activateItemFromEvent(event);
     this.triggerActiveItem();
   }
 
   /**
-   * Handle the `'mousemove'` event for the menu.
+   * Handle the `'click'` event for the menu.
    *
    * #### Notes
    * This listener is attached to the menu node.
    */
-  private _evtMouseMove(event: MouseEvent): void {
+  private _evtClick(event: MouseEvent): void {
+    if (!this._pendingTouchActivation) {
+      return;
+    }
+
+    this._pendingTouchActivation = false;
+    event.preventDefault();
+    event.stopPropagation();
+    if (!this._activateItemFromEvent(event)) {
+      return;
+    }
+    this.triggerActiveItem();
+  }
+
+  /**
+   * Handle the `'pointermove'` event for the menu.
+   *
+   * #### Notes
+   * This listener is attached to the menu node.
+   */
+  private _evtPointerMove(event: PointerEvent): void {
+    if (Utils.isTouchEvent(event)) {
+      return;
+    }
+
     // Hit test the item nodes for the item under the mouse.
     let index = ArrayExt.findFirstIndex(this.contentNode.children, node => {
       return ElementExt.hitTest(node, event.clientX, event.clientY);
@@ -771,12 +812,16 @@ export class Menu extends Widget {
   }
 
   /**
-   * Handle the `'mouseenter'` event for the menu.
+   * Handle the `'pointerenter'` event for the menu.
    *
    * #### Notes
    * This listener is attached to the menu node.
    */
-  private _evtMouseEnter(event: MouseEvent): void {
+  private _evtPointerEnter(event: PointerEvent): void {
+    if (Utils.isTouchEvent(event)) {
+      return;
+    }
+
     // Synchronize the active ancestor items.
     for (let menu = this._parentMenu; menu; menu = menu._parentMenu) {
       menu._cancelOpenTimer();
@@ -786,12 +831,16 @@ export class Menu extends Widget {
   }
 
   /**
-   * Handle the `'mouseleave'` event for the menu.
+   * Handle the `'pointerleave'` event for the menu.
    *
    * #### Notes
    * This listener is attached to the menu node.
    */
-  private _evtMouseLeave(event: MouseEvent): void {
+  private _evtPointerLeave(event: PointerEvent): void {
+    if (Utils.isTouchEvent(event)) {
+      return;
+    }
+
     // Cancel any pending submenu opening.
     this._cancelOpenTimer();
 
@@ -814,12 +863,14 @@ export class Menu extends Widget {
   }
 
   /**
-   * Handle the `'mousedown'` event for the menu.
+   * Handle the `'pointerdown'` event for the menu.
    *
    * #### Notes
    * This listener is attached to the document node.
    */
-  private _evtMouseDown(event: MouseEvent): void {
+  private _evtPointerDown(event: PointerEvent): void {
+    this._pendingTouchActivation = false;
+
     // Bail if the menu is not a root menu.
     if (this._parentMenu) {
       return;
@@ -830,7 +881,9 @@ export class Menu extends Widget {
     // is allowed to propagate. This allows other code to act on the
     // event, such as focusing the clicked element.
     if (Private.hitTestMenus(this, event.clientX, event.clientY)) {
-      event.preventDefault();
+      if (!Utils.isTouchEvent(event)) {
+        event.preventDefault();
+      }
       event.stopPropagation();
     } else {
       this.close();
@@ -885,6 +938,20 @@ export class Menu extends Widget {
 
     // Activate the child menu.
     submenu.activate();
+  }
+
+  /**
+   * Activate the menu item under an event.
+   */
+  private _activateItemFromEvent(event: PointerEvent | MouseEvent): boolean {
+    let index = ArrayExt.findFirstIndex(this.contentNode.children, node => {
+      return ElementExt.hitTest(node, event.clientX, event.clientY);
+    });
+    if (index === -1) {
+      return false;
+    }
+    this.activeIndex = index;
+    return true;
   }
 
   /**
@@ -959,6 +1026,7 @@ export class Menu extends Widget {
   private _activeIndex = -1;
   private _openTimerID = 0;
   private _closeTimerID = 0;
+  private _pendingTouchActivation = false;
   private _items: Menu.IItem[] = [];
   private _childMenu: Menu | null = null;
   private _parentMenu: Menu | null = null;
@@ -1148,6 +1216,11 @@ export namespace Menu {
      * Whether the menu item is toggled.
      */
     readonly isToggled: boolean;
+
+    /**
+     * Whether the menu item is toggleable.
+     */
+    readonly isToggleable?: boolean;
 
     /**
      * Whether the menu item is visible.
@@ -1373,9 +1446,9 @@ export namespace Menu {
           if (!data.item.isEnabled) {
             aria['aria-disabled'] = 'true';
           }
-          if (data.item.isToggled) {
+          if (data.item.isToggleable || data.item.isToggled) {
             aria.role = 'menuitemcheckbox';
-            aria['aria-checked'] = 'true';
+            aria['aria-checked'] = `${data.item.isToggled}`;
           } else {
             aria.role = 'menuitem';
           }
@@ -1944,6 +2017,16 @@ namespace Private {
     get isToggled(): boolean {
       if (this.type === 'command') {
         return this._commands.isToggled(this.command, this.args);
+      }
+      return false;
+    }
+
+    /**
+     * Whether the menu item is toggleable.
+     */
+    get isToggleable(): boolean {
+      if (this.type === 'command') {
+        return this._commands.isToggleable(this.command, this.args);
       }
       return false;
     }
