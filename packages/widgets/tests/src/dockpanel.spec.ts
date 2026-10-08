@@ -12,6 +12,20 @@ import { expect } from 'chai';
 
 import { DockPanel, TabBar, Widget } from '@lumino/widgets';
 
+class TestOverlay implements DockPanel.IOverlay {
+  readonly node = document.createElement('div');
+
+  hidden = true;
+
+  show(): void {
+    this.hidden = false;
+  }
+
+  hide(): void {
+    this.hidden = true;
+  }
+}
+
 describe('@lumino/widgets', () => {
   describe('DockPanel', () => {
     describe('#constructor()', () => {
@@ -64,6 +78,30 @@ describe('@lumino/widgets', () => {
         expect(panel.isDisposed).to.equal(true);
         panel.dispose();
         expect(panel.isDisposed).to.equal(true);
+      });
+    });
+
+    describe('drag-drop overlay', () => {
+      it('should hide when a descendant handles the drop', () => {
+        let overlay = new TestOverlay();
+        let panel = new DockPanel({ overlay });
+        let descendant = document.createElement('div');
+
+        descendant.addEventListener('lm-drop', event => {
+          event.preventDefault();
+          event.stopPropagation();
+        });
+
+        Widget.attach(panel, document.body);
+        panel.node.appendChild(descendant);
+        overlay.show();
+
+        descendant.dispatchEvent(
+          new Event('lm-drop', { bubbles: true, cancelable: true })
+        );
+
+        expect(overlay.hidden).to.equal(true);
+        panel.dispose();
       });
     });
 
