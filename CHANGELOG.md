@@ -6,6 +6,47 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2026.10.8
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2026.7.3...91fe59ec76670f84db07ef6f408798df2fd887e0))
+
+```
+@lumino/application: 2.4.10 => 2.4.11
+@lumino/datagrid: 2.5.8 => 2.5.9
+@lumino/default-theme: 2.1.16 => 2.1.17
+@lumino/widgets: 2.9.0 => 2.10.0
+```
+
+### Enhancements made
+
+- Add extension points for customizing command palette search results [#836](https://github.com/jupyterlab/lumino/pull/836) ([@jtpio](https://github.com/jtpio), [@krassowski](https://github.com/krassowski))
+
+### Bugs fixed
+
+- Fix touch resizing for split and dock panel handles [#835](https://github.com/jupyterlab/lumino/pull/835) ([@MUFFANUJ](https://github.com/MUFFANUJ), [@emilkrebs](https://github.com/emilkrebs), [@krassowski](https://github.com/krassowski))
+- Fix touch click handling for menus and tab close actions [#834](https://github.com/jupyterlab/lumino/pull/834) ([@MUFFANUJ](https://github.com/MUFFANUJ), [@krassowski](https://github.com/krassowski))
+- Assign `menuitemcheckbox` role to toggleable menu items [#823](https://github.com/jupyterlab/lumino/pull/823) ([@MUFFANUJ](https://github.com/MUFFANUJ), [@krassowski](https://github.com/krassowski))
+
+### Maintenance and upkeep improvements
+
+- Update versions [#854](https://github.com/jupyterlab/lumino/pull/854) ([@jtpio](https://github.com/jtpio))
+- Fix broken HPCC link in the README [#851](https://github.com/jupyterlab/lumino/pull/851) ([@jtpio](https://github.com/jtpio), [@krassowski](https://github.com/krassowski))
+
+### Other merged PRs
+
+- Bump axios from 1.18.0 to 1.20.0 [#853](https://github.com/jupyterlab/lumino/pull/853) ([@jtpio](https://github.com/jtpio))
+
+### Contributors to this release
+
+The following people contributed discussions, new ideas, code and documentation contributions, and review.
+See [our definition of contributors](https://github-activity.readthedocs.io/en/latest/use/#how-does-this-tool-define-contributions-in-the-reports).
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2026-07-03&to=2026-10-08&type=c))
+
+@emilkrebs ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aemilkrebs+updated%3A2026-07-03..2026-10-08&type=Issues)) | @jtpio ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajtpio+updated%3A2026-07-03..2026-10-08&type=Issues)) | @krassowski ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2026-07-03..2026-10-08&type=Issues)) | @MUFFANUJ ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3AMUFFANUJ+updated%3A2026-07-03..2026-10-08&type=Issues))
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2026.7.3
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2026.5.25...5fa8050aa783c91eafacc29a533178375f0f8999))
@@ -61,8 +102,6 @@ See [our definition of contributors](https://github-activity.readthedocs.io/en/l
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2026-05-25&to=2026-07-03&type=c))
 
 @Darshan808 ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3ADarshan808+updated%3A2026-05-25..2026-07-03&type=Issues)) | @jtpio ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajtpio+updated%3A2026-05-25..2026-07-03&type=Issues)) | @krassowski ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2026-05-25..2026-07-03&type=Issues))
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2026.5.25
 
