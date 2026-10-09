@@ -20,6 +20,14 @@ const renderer: SplitPanel.IRenderer = {
   createHandle: () => document.createElement('div')
 };
 
+/**
+ * Wait for the next animation frame, since hover intersection updates are
+ * coalesced onto one.
+ */
+function nextFrame(): Promise<void> {
+  return new Promise(resolve => requestAnimationFrame(() => resolve()));
+}
+
 function dragHandle(panel: LogSplitPanel): void {
   MessageLoop.sendMessage(panel, Widget.Msg.UpdateRequest);
   let handle = panel.handles[0];
@@ -345,7 +353,7 @@ describe('@lumino/widgets', () => {
             })
           );
           expect(panel.events).to.contain('keydown');
-          panel.node.dispatchEvent(
+          document.body.dispatchEvent(
             new PointerEvent('pointermove', { bubbles })
           );
           expect(panel.events).to.not.contain('pointermove');
@@ -452,6 +460,239 @@ describe('@lumino/widgets', () => {
         let widget = new Widget();
         SplitPanel.setStretch(widget, 10);
         expect(SplitPanel.getStretch(widget)).to.equal(10);
+      });
+    });
+
+    describe('group resizing', () => {
+      // An outer horizontal panel holding an orthogonal (vertical) inner
+      // SplitPanel, so the outer handle intersects the inner handle.
+      function attachedNested(): {
+        outer: SplitPanel;
+        inner: SplitPanel;
+        outerHandle: HTMLDivElement;
+        innerHandle: HTMLDivElement;
+      } {
+        const inner = new SplitPanel({ orientation: 'vertical', spacing: 4 });
+        [new Widget(), new Widget()].forEach(w => {
+          w.node.style.minWidth = '40px';
+          w.node.style.minHeight = '40px';
+          inner.addWidget(w);
+        });
+        const outer = new SplitPanel({ orientation: 'horizontal', spacing: 4 });
+        const plain = new Widget();
+        plain.node.style.minWidth = '40px';
+        plain.node.style.minHeight = '40px';
+        outer.addWidget(inner);
+        outer.addWidget(plain);
+        outer.node.style.position = 'absolute';
+        outer.node.style.width = '600px';
+        outer.node.style.height = '600px';
+        Widget.attach(outer, document.body);
+        MessageLoop.flush();
+        const outerHandle = (outer.layout as SplitLayout).handles[0];
+        const innerHandle = (inner.layout as SplitLayout).handles[0];
+        return { outer, inner, outerHandle, innerHandle };
+      }
+
+      it('should highlight an intersecting handle pair on hover', async () => {
+        const { outer, outerHandle, innerHandle } = attachedNested();
+        const ro = outerHandle.getBoundingClientRect();
+        const ri = innerHandle.getBoundingClientRect();
+        const x = (ro.left + ro.right) / 2;
+        const y = (ri.top + ri.bottom) / 2;
+        outerHandle.dispatchEvent(
+          new PointerEvent('pointermove', { bubbles, clientX: x, clientY: y })
+        );
+        // The hover search is coalesced onto an animation frame.
+        await nextFrame();
+        expect(outerHandle.classList.contains('lm-mod-intersection')).to.equal(
+          true
+        );
+        expect(innerHandle.classList.contains('lm-mod-intersection')).to.equal(
+          true
+        );
+        outer.dispose();
+      });
+
+      it('should not highlight away from an inner handle', async () => {
+        const { outer, outerHandle, innerHandle } = attachedNested();
+        const ro = outerHandle.getBoundingClientRect();
+        const x = (ro.left + ro.right) / 2;
+        outerHandle.dispatchEvent(
+          new PointerEvent('pointermove', {
+            bubbles,
+            clientX: x,
+            clientY: ro.top + 3
+          })
+        );
+        await nextFrame();
+        expect(outerHandle.classList.contains('lm-mod-intersection')).to.equal(
+          false
+        );
+        expect(innerHandle.classList.contains('lm-mod-intersection')).to.equal(
+          false
+        );
+        outer.dispose();
+      });
+
+      it('should clear the hover highlight on pointerleave', async () => {
+        const { outer, outerHandle, innerHandle } = attachedNested();
+        const ro = outerHandle.getBoundingClientRect();
+        const ri = innerHandle.getBoundingClientRect();
+        const x = (ro.left + ro.right) / 2;
+        const y = (ri.top + ri.bottom) / 2;
+        outerHandle.dispatchEvent(
+          new PointerEvent('pointermove', { bubbles, clientX: x, clientY: y })
+        );
+        await nextFrame();
+        expect(outerHandle.classList.contains('lm-mod-intersection')).to.equal(
+          true
+        );
+        outer.node.dispatchEvent(new PointerEvent('pointerleave', { bubbles }));
+        expect(outerHandle.classList.contains('lm-mod-intersection')).to.equal(
+          false
+        );
+        expect(innerHandle.classList.contains('lm-mod-intersection')).to.equal(
+          false
+        );
+        outer.dispose();
+      });
+
+      it('should move both handles when dragging an intersection', () => {
+        const { outer, outerHandle, innerHandle } = attachedNested();
+        const ro = outerHandle.getBoundingClientRect();
+        const ri = innerHandle.getBoundingClientRect();
+        const x = (ro.left + ro.right) / 2;
+        const y = (ri.top + ri.bottom) / 2;
+        const hLeft = outerHandle.offsetLeft;
+        const vTop = innerHandle.offsetTop;
+        outerHandle.dispatchEvent(
+          new PointerEvent('pointerdown', { bubbles, clientX: x, clientY: y })
+        );
+        document.body.dispatchEvent(
+          new PointerEvent('pointermove', {
+            bubbles,
+            clientX: x - 30,
+            clientY: y + 30
+          })
+        );
+        // Handle moves are coalesced onto an animation frame; releasing the
+        // pointer applies the pending move synchronously.
+        document.body.dispatchEvent(new PointerEvent('pointerup', { bubbles }));
+        MessageLoop.flush();
+        expect(outerHandle.offsetLeft).to.not.equal(hLeft);
+        expect(innerHandle.offsetTop).to.not.equal(vTop);
+        outer.dispose();
+      });
+
+      it('should not snap the inner handle when the press lands above its top edge', () => {
+        const { outer, outerHandle, innerHandle } = attachedNested();
+        const ro = outerHandle.getBoundingClientRect();
+        const ri = innerHandle.getBoundingClientRect();
+        const x = (ro.left + ro.right) / 2;
+        // Within the intersection tolerance, but above the inner handle's
+        // top edge, so the cross-axis offset from press to handle is
+        // negative.
+        const y = ri.top - 5;
+        const vTop = innerHandle.offsetTop;
+        outerHandle.dispatchEvent(
+          new PointerEvent('pointerdown', { bubbles, clientX: x, clientY: y })
+        );
+        // A move back to the press position should leave the inner handle
+        // where it was: the pointer hasn't displaced relative to where it
+        // grabbed.
+        document.body.dispatchEvent(
+          new PointerEvent('pointermove', { bubbles, clientX: x, clientY: y })
+        );
+        document.body.dispatchEvent(new PointerEvent('pointerup', { bubbles }));
+        MessageLoop.flush();
+        expect(innerHandle.offsetTop).to.equal(vTop);
+        outer.dispose();
+      });
+
+      it('should move only the outer handle without an intersection', () => {
+        const { outer, outerHandle, innerHandle } = attachedNested();
+        const ro = outerHandle.getBoundingClientRect();
+        const x = (ro.left + ro.right) / 2;
+        const y = ro.top + 3;
+        const hLeft = outerHandle.offsetLeft;
+        const vTop = innerHandle.offsetTop;
+        outerHandle.dispatchEvent(
+          new PointerEvent('pointerdown', { bubbles, clientX: x, clientY: y })
+        );
+        document.body.dispatchEvent(
+          new PointerEvent('pointermove', {
+            bubbles,
+            clientX: x - 30,
+            clientY: y
+          })
+        );
+        document.body.dispatchEvent(new PointerEvent('pointerup', { bubbles }));
+        MessageLoop.flush();
+        expect(outerHandle.offsetLeft).to.not.equal(hLeft);
+        expect(innerHandle.offsetTop).to.equal(vTop);
+        outer.dispose();
+      });
+
+      // The inner panel's handle is applied by an explicit resize rather than
+      // by the resize which the outer pass cascades into it, because that
+      // cascade only fires when the inner panel's own size changes. Dragging
+      // the outer handle into a sibling's minimum size is exactly the case
+      // where it does not.
+      it('should keep moving the cross-axis handle while the outer handle is clamped', () => {
+        const { outer, outerHandle, innerHandle } = attachedNested();
+
+        // Drag the outer handle hard against the inner panel's minimum width.
+        const r0 = outerHandle.getBoundingClientRect();
+        const i0 = innerHandle.getBoundingClientRect();
+        outerHandle.dispatchEvent(
+          new PointerEvent('pointerdown', {
+            bubbles,
+            clientX: (r0.left + r0.right) / 2,
+            clientY: (i0.top + i0.bottom) / 2
+          })
+        );
+        document.body.dispatchEvent(
+          new PointerEvent('pointermove', {
+            bubbles,
+            clientX: r0.left - 400,
+            clientY: (i0.top + i0.bottom) / 2
+          })
+        );
+        document.body.dispatchEvent(new PointerEvent('pointerup', { bubbles }));
+        MessageLoop.flush();
+
+        // Press the intersection again and push further into the clamp while
+        // also moving along the cross-axis.
+        const r1 = outerHandle.getBoundingClientRect();
+        const i1 = innerHandle.getBoundingClientRect();
+        const x = (r1.left + r1.right) / 2;
+        const y = (i1.top + i1.bottom) / 2;
+        const clampedLeft = outerHandle.offsetLeft;
+        const vTop = innerHandle.offsetTop;
+        const preSizes = outer.relativeSizes();
+
+        outerHandle.dispatchEvent(
+          new PointerEvent('pointerdown', { bubbles, clientX: x, clientY: y })
+        );
+        document.body.dispatchEvent(
+          new PointerEvent('pointermove', {
+            bubbles,
+            clientX: x - 200,
+            clientY: y + 40
+          })
+        );
+        document.body.dispatchEvent(new PointerEvent('pointerup', { bubbles }));
+        MessageLoop.flush();
+
+        // The outer sizers cannot move, which is what makes this the clamped
+        // case, and is why no resize cascades into the inner panel.
+        expect(outerHandle.offsetLeft).to.equal(clampedLeft);
+        expect(outer.relativeSizes()).to.deep.equal(preSizes);
+
+        // The cross-axis handle must move regardless.
+        expect(innerHandle.offsetTop).to.not.equal(vTop);
+        outer.dispose();
       });
     });
   });

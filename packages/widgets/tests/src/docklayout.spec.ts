@@ -21,6 +21,77 @@ const renderer: DockLayout.IRenderer = {
   }
 };
 
+const SPACING = 4;
+
+/**
+ * Build a `DockLayout` on a sized, attached parent and lay it out so the
+ * handles have real geometry. The caller chooses the widget arrangement.
+ */
+function attachLayout(
+  build: (layout: DockLayout, w: Widget[]) => void,
+  widgetCount: number
+): { parent: Widget; layout: DockLayout; widgets: Widget[] } {
+  const layout = new DockLayout({ renderer, spacing: SPACING });
+  const widgets: Widget[] = [];
+  for (let i = 0; i < widgetCount; ++i) {
+    const w = new Widget();
+    w.node.style.minWidth = '40px';
+    w.node.style.minHeight = '40px';
+    widgets.push(w);
+  }
+  build(layout, widgets);
+  const parent = new Widget();
+  parent.layout = layout;
+  parent.node.style.position = 'absolute';
+  parent.node.style.width = '600px';
+  parent.node.style.height = '600px';
+  Widget.attach(parent, document.body);
+  MessageLoop.flush();
+  return { parent, layout, widgets };
+}
+
+/**
+ * Return the visible handles of a layout grouped by `data-orientation`.
+ */
+function visibleHandles(layout: DockLayout): {
+  horizontal: HTMLDivElement[];
+  vertical: HTMLDivElement[];
+} {
+  const horizontal: HTMLDivElement[] = [];
+  const vertical: HTMLDivElement[] = [];
+  for (const h of layout.handles()) {
+    if (h.classList.contains('lm-mod-hidden')) {
+      continue;
+    }
+    if (h.getAttribute('data-orientation') === 'horizontal') {
+      horizontal.push(h);
+    } else {
+      vertical.push(h);
+    }
+  }
+  return { horizontal, vertical };
+}
+
+function center(handle: HTMLDivElement): { x: number; y: number } {
+  const r = handle.getBoundingClientRect();
+  return { x: (r.left + r.right) / 2, y: (r.top + r.bottom) / 2 };
+}
+
+/**
+ * Assert handle identity without letting chai inspect DOM nodes on failure.
+ *
+ * Comparing against an attached element with `expect(...).to.equal(node)` makes
+ * chai serialize the element (and its subtree) when the assertion fails, which
+ * can hang or crash the test renderer. Comparing booleans avoids that.
+ */
+function expectSame(
+  actual: HTMLDivElement | null,
+  expected: HTMLDivElement | null,
+  msg: string
+): void {
+  expect(actual === expected, msg).to.equal(true);
+}
+
 class LogDockLayout extends DockLayout {
   methods: string[] = [];
 
@@ -221,6 +292,196 @@ describe('@lumino/widgets', () => {
         const layout = new DockLayout({ renderer });
         layout.addWidget(new Widget());
         expect(layout.isEmpty).to.equal(false);
+      });
+    });
+
+    describe('#findIntersectingHandle()', () => {
+      // This 3-widget arrangement (a left column split above/below, beside a
+      // right widget) yields exactly one visible horizontal-split handle (the
+      // middle vertical bar) and one visible vertical-split handle (the left
+      // horizontal bar) — a single, unambiguous orthogonal pair.
+      function cross() {
+        return attachLayout((layout, w) => {
+          layout.addWidget(w[0]);
+          layout.addWidget(w[1], { mode: 'split-right', ref: w[0] });
+          layout.addWidget(w[2], { mode: 'split-bottom', ref: w[0] });
+        }, 3);
+      }
+
+      it('should return null when the layout has no root', () => {
+        const layout = new DockLayout({ renderer });
+        const handle = document.createElement('div');
+        expectSame(
+          layout.findIntersectingHandle(handle, 0, 0),
+          null,
+          'no root → null'
+        );
+      });
+
+      it('should return null when the handle has no orthogonal peer', () => {
+        // A single split yields one visible handle and no orthogonal peer.
+        const { parent, layout } = attachLayout((layout, w) => {
+          layout.addWidget(w[0]);
+          layout.addWidget(w[1], { mode: 'split-right', ref: w[0] });
+        }, 2);
+        const { horizontal } = visibleHandles(layout);
+        const handle = horizontal[0];
+        const c = center(handle);
+        // Aiming at the handle itself must not return the handle (identity skip)
+        // and there is no other candidate, so the result is null.
+        expectSame(
+          layout.findIntersectingHandle(handle, c.x, c.y),
+          null,
+          'self only → null'
+        );
+        parent.dispose();
+      });
+
+      it('should return the orthogonal handle under the point', () => {
+        const { parent, layout } = cross();
+        const { horizontal, vertical } = visibleHandles(layout);
+        const primary = horizontal[0];
+        const peer = vertical[0];
+        const c = center(peer);
+        const found = layout.findIntersectingHandle(primary, c.x, c.y);
+        expectSame(found, peer, 'orthogonal peer under point');
+        parent.dispose();
+      });
+
+      it('should skip a hidden candidate', () => {
+        const { parent, layout } = cross();
+        const { horizontal, vertical } = visibleHandles(layout);
+        const primary = horizontal[0];
+        const peer = vertical[0];
+        const c = center(peer);
+        // Sanity: the peer is found before being hidden.
+        expectSame(
+          layout.findIntersectingHandle(primary, c.x, c.y),
+          peer,
+          'peer found before hiding'
+        );
+        // Hiding the orthogonal candidate removes the match.
+        vertical.forEach(h => h.classList.add('lm-mod-hidden'));
+        expectSame(
+          layout.findIntersectingHandle(primary, c.x, c.y),
+          null,
+          'hidden peer skipped'
+        );
+        parent.dispose();
+      });
+
+      it('should skip a candidate with the same orientation', () => {
+        const { parent, layout } = cross();
+        const { horizontal, vertical } = visibleHandles(layout);
+        const primary = horizontal[0];
+        const peer = vertical[0];
+        const c = center(peer);
+        expectSame(
+          layout.findIntersectingHandle(primary, c.x, c.y),
+          peer,
+          'peer found before re-tagging'
+        );
+        // Re-tagging the orthogonal candidate to match the primary's
+        // orientation makes it ineligible.
+        vertical.forEach(h => h.setAttribute('data-orientation', 'horizontal'));
+        expectSame(
+          layout.findIntersectingHandle(primary, c.x, c.y),
+          null,
+          'same-orientation peer skipped'
+        );
+        parent.dispose();
+      });
+
+      it('should honor the cross-axis tolerance band', () => {
+        const { parent, layout } = cross();
+        const { horizontal, vertical } = visibleHandles(layout);
+        // Use a vertical-bar primary (orientation 'horizontal'); the candidate
+        // rect is expanded on the X axis by `spacing * 4`.
+        const primary = horizontal[0];
+        const peer = vertical[0];
+        const r = peer.getBoundingClientRect();
+        const y = (r.top + r.bottom) / 2;
+        const tol = SPACING * 4;
+        // Just inside the expanded right edge → match.
+        expectSame(
+          layout.findIntersectingHandle(primary, r.right + tol - 2, y),
+          peer,
+          'within tolerance → match'
+        );
+        // Just beyond the expanded right edge → no match.
+        expectSame(
+          layout.findIntersectingHandle(primary, r.right + tol + 5, y),
+          null,
+          'beyond tolerance → null'
+        );
+        parent.dispose();
+      });
+    });
+
+    describe('#moveHandles()', () => {
+      function cross() {
+        return attachLayout((layout, w) => {
+          layout.addWidget(w[0]);
+          layout.addWidget(w[1], { mode: 'split-right', ref: w[0] });
+          layout.addWidget(w[2], { mode: 'split-bottom', ref: w[0] });
+        }, 3);
+      }
+
+      it('should be a no-op when the layout has no root', () => {
+        const layout = new DockLayout({ renderer });
+        const h1 = document.createElement('div');
+        const h2 = document.createElement('div');
+        expect(() => layout.moveHandles(h1, 10, 10, h2, 10, 10)).to.not.throw();
+      });
+
+      it('should move both handles on their respective axes', () => {
+        const { parent, layout } = cross();
+        const { horizontal, vertical } = visibleHandles(layout);
+        const hH = horizontal[0];
+        const hV = vertical[0];
+        const left = hH.offsetLeft;
+        const top = hV.offsetTop;
+        layout.moveHandles(hH, left - 30, 0, hV, 0, top + 30);
+        MessageLoop.flush();
+        expect(hH.offsetLeft).to.not.equal(left);
+        expect(hV.offsetTop).to.not.equal(top);
+        parent.dispose();
+      });
+
+      it('should leave an axis unchanged when its delta is zero', () => {
+        const { parent, layout } = cross();
+        const { horizontal, vertical } = visibleHandles(layout);
+        const hH = horizontal[0];
+        const hV = vertical[0];
+        const left = hH.offsetLeft;
+        const top = hV.offsetTop;
+        // Passing the current positions yields a zero delta for both handles.
+        layout.moveHandles(hH, left, 0, hV, 0, top);
+        MessageLoop.flush();
+        expect(hH.offsetLeft).to.equal(left);
+        expect(hV.offsetTop).to.equal(top);
+        parent.dispose();
+      });
+
+      it('should skip hidden handles', () => {
+        const { parent, layout, widgets } = cross();
+        const hidden: HTMLDivElement[] = [];
+        for (const h of layout.handles()) {
+          if (h.classList.contains('lm-mod-hidden')) {
+            hidden.push(h);
+          }
+        }
+        expect(hidden.length).to.be.greaterThan(0);
+        const before = widgets[0].node.getBoundingClientRect();
+        // Driving only hidden handles must not change the layout.
+        const a = hidden[0];
+        const b = hidden[1] ?? hidden[0];
+        layout.moveHandles(a, a.offsetLeft + 50, 0, b, 0, b.offsetTop + 50);
+        MessageLoop.flush();
+        const after = widgets[0].node.getBoundingClientRect();
+        expect(after.width).to.equal(before.width);
+        expect(after.height).to.equal(before.height);
+        parent.dispose();
       });
     });
 

@@ -305,6 +305,7 @@ export class DockLayout extends Layout {
     protected attachWidget(widget: Widget): void;
     protected detachWidget(widget: Widget): void;
     dispose(): void;
+    findIntersectingHandle(handle: HTMLDivElement, clientX: number, clientY: number): HTMLDivElement | null;
     handles(): IterableIterator<HTMLDivElement>;
     get hiddenMode(): Widget.HiddenMode;
     set hiddenMode(v: Widget.HiddenMode);
@@ -312,6 +313,7 @@ export class DockLayout extends Layout {
     protected init(): void;
     get isEmpty(): boolean;
     moveHandle(handle: HTMLDivElement, offsetX: number, offsetY: number): void;
+    moveHandles(handle1: HTMLDivElement, offsetX1: number, offsetY1: number, handle2: HTMLDivElement, offsetX2: number, offsetY2: number): void;
     protected onBeforeAttach(msg: Message): void;
     protected onBeforeShow(msg: Message): void;
     protected onChildHidden(msg: Widget.ChildMessage): void;
@@ -931,6 +933,7 @@ export class SingletonLayout extends Layout {
 export class SplitLayout extends PanelLayout {
     constructor(options: SplitLayout.IOptions);
     absoluteSizes(): number[];
+    adjustHandle(index: number, position: number): boolean;
     get alignment(): SplitLayout.Alignment;
     set alignment(value: SplitLayout.Alignment);
     protected attachWidget(index: number, widget: Widget): void;
