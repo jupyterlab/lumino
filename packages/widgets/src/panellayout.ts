@@ -212,7 +212,7 @@ export class PanelLayout extends Layout {
     }
 
     // Insert the widget's node before the sibling.
-    this.parent!.node.insertBefore(widget.node, ref);
+    this.parent!.node.insertBefore(widget.attachmentNode, ref);
 
     // Send an `'after-attach'` message if the parent is attached.
     if (this.parent!.isAttached) {
@@ -251,7 +251,7 @@ export class PanelLayout extends Layout {
     }
 
     // Remove the widget's node from the parent.
-    this.parent!.node.removeChild(widget.node);
+    this.parent!.node.removeChild(widget.attachmentNode);
 
     // Send an `'after-detach'` and  message if the parent is attached.
     if (this.parent!.isAttached) {
@@ -267,7 +267,7 @@ export class PanelLayout extends Layout {
     }
 
     // Insert the widget's node before the sibling.
-    this.parent!.node.insertBefore(widget.node, ref);
+    this.parent!.node.insertBefore(widget.attachmentNode, ref);
 
     // Send an `'after-attach'` message if the parent is attached.
     if (this.parent!.isAttached) {
@@ -300,7 +300,7 @@ export class PanelLayout extends Layout {
     }
 
     // Remove the widget's node from the parent.
-    this.parent!.node.removeChild(widget.node);
+    this.parent!.node.removeChild(widget.attachmentNode);
 
     // Send an `'after-detach'` message if the parent is attached.
     if (this.parent!.isAttached) {
