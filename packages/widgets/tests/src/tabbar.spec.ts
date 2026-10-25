@@ -1953,7 +1953,7 @@ describe('@lumino/widgets', () => {
           expect(document.activeElement).to.equal(lastTab);
         });
 
-        it('should not change the tabindex values when focusing another element', () => {
+        it('should restore the selected tab as the entry point when focus leaves', () => {
           const node = document.createElement('div');
           node.setAttribute('tabindex', '0');
           document.body.append(node);
@@ -1970,7 +1970,9 @@ describe('@lumino/widgets', () => {
           node.focus();
           const secondTab = bar.contentNode.children[1] as HTMLElement;
           expect(document.activeElement).not.to.equal(secondTab);
-          expect(secondTab.getAttribute('tabindex')).to.equal('0');
+          expect(secondTab.getAttribute('tabindex')).to.equal('-1');
+          expect(firstTab.getAttribute('tabindex')).to.equal('0');
+          node.remove();
         });
 
         /**
@@ -2020,6 +2022,101 @@ describe('@lumino/widgets', () => {
           let cancelled = !document.body.dispatchEvent(event);
           expect(cancelled).to.equal(true);
         });
+      });
+    });
+
+    describe('keyboard entry point', () => {
+      let outside: HTMLButtonElement;
+
+      beforeEach(() => {
+        populateBar(bar);
+        outside = document.createElement('button');
+        document.body.appendChild(outside);
+        outside.focus();
+      });
+
+      afterEach(() => {
+        outside.remove();
+      });
+
+      const entryPoints = () =>
+        [...Array.from(bar.contentNode.children), bar.addButtonNode].filter(
+          node => node.getAttribute('tabindex') === '0'
+        );
+
+      it('should follow selection changes without moving focus', () => {
+        bar.currentIndex = 2;
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        expect(entryPoints()).to.deep.equal([bar.contentNode.children[2]]);
+        expect(document.activeElement).to.equal(outside);
+      });
+
+      it('should follow the selected title when tabs are reordered', () => {
+        const selected = bar.currentTitle!;
+        bar.insertTab(2, selected);
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        expect(bar.currentTitle).to.equal(selected);
+        expect(entryPoints()).to.deep.equal([bar.contentNode.children[2]]);
+      });
+
+      it('should use the replacement selection after a tab is removed', () => {
+        bar.currentIndex = 2;
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        bar.removeTabAt(2);
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        expect(entryPoints()).to.deep.equal([bar.contentNode.children[1]]);
+      });
+
+      it('should preserve arrow-key focus through an update without selecting it', () => {
+        const first = bar.contentNode.children[0] as HTMLElement;
+        const second = bar.contentNode.children[1] as HTMLElement;
+        first.focus();
+        first.dispatchEvent(
+          new KeyboardEvent('keydown', {
+            key: 'ArrowRight',
+            bubbles: true,
+            cancelable: true
+          })
+        );
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        expect(document.activeElement).to.equal(second);
+        expect(bar.currentIndex).to.equal(0);
+        expect(entryPoints()).to.deep.equal([second]);
+      });
+
+      it('should restore the selected entry point after leaving the add button', () => {
+        bar.addButtonEnabled = true;
+        const first = bar.contentNode.children[0] as HTMLElement;
+        first.focus();
+        first.dispatchEvent(
+          new KeyboardEvent('keydown', {
+            key: 'ArrowLeft',
+            bubbles: true,
+            cancelable: true
+          })
+        );
+        expect(document.activeElement).to.equal(bar.addButtonNode);
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        expect(entryPoints()).to.deep.equal([bar.addButtonNode]);
+        outside.focus();
+        expect(entryPoints()).to.deep.equal([first]);
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        expect(entryPoints()).to.deep.equal([first]);
+      });
+
+      it('should use the first tab when no tab is selected', () => {
+        bar.currentIndex = -1;
+        (bar.contentNode.children[2] as HTMLElement).focus();
+        outside.focus();
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        expect(entryPoints()).to.deep.equal([bar.contentNode.children[0]]);
+      });
+
+      it('should keep an empty tab bar with an add button reachable', () => {
+        bar.addButtonEnabled = true;
+        bar.clearTabs();
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        expect(entryPoints()).to.deep.equal([bar.addButtonNode]);
       });
     });
 
