@@ -1221,6 +1221,53 @@ describe('@lumino/widgets', () => {
         });
       });
 
+      it('should return the focus to the element focused before opening', done => {
+        let button = document.createElement('button');
+        document.body.appendChild(button);
+        button.focus();
+        menu.addItem({ command: 'test' });
+        menu.open(0, 0);
+        requestAnimationFrame(() => {
+          expect(document.activeElement).to.equal(menu.node);
+          menu.close();
+          expect(document.activeElement).to.equal(button);
+          button.remove();
+          done();
+        });
+      });
+
+      it('should not move the focus if it is no longer on the body', done => {
+        let first = document.createElement('button');
+        let second = document.createElement('button');
+        document.body.appendChild(first);
+        document.body.appendChild(second);
+        first.focus();
+        menu.addItem({ command: 'test' });
+        menu.open(0, 0);
+        requestAnimationFrame(() => {
+          second.focus();
+          menu.close();
+          expect(document.activeElement).to.equal(second);
+          first.remove();
+          second.remove();
+          done();
+        });
+      });
+
+      it('should not focus an element which was removed from the page', done => {
+        let button = document.createElement('button');
+        document.body.appendChild(button);
+        button.focus();
+        menu.addItem({ command: 'test' });
+        menu.open(0, 0);
+        requestAnimationFrame(() => {
+          button.remove();
+          menu.close();
+          expect(document.activeElement).to.equal(document.body);
+          done();
+        });
+      });
+
       it('should emit the `aboutToClose` signal if attached', () => {
         let called = false;
         menu.open(0, 0);
