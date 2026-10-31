@@ -810,6 +810,10 @@ export class DockLayout extends Layout {
     let tabNode = new Private.TabLayoutNode(this._createTabBar());
     tabNode.tabBar.addTab(widget.title);
     Private.addAria(widget, tabNode.tabBar);
+    widget.hiddenMode =
+      this._hiddenMode === Widget.HiddenMode.Scale
+        ? Widget.HiddenMode.Display
+        : this._hiddenMode;
     return tabNode;
   }
 
@@ -832,10 +836,7 @@ export class DockLayout extends Layout {
 
     // Create the root if it does not exist.
     if (!this._root) {
-      let tabNode = new Private.TabLayoutNode(this._createTabBar());
-      tabNode.tabBar.addTab(widget.title);
-      this._root = tabNode;
-      Private.addAria(widget, tabNode.tabBar);
+      this._root = this._createTabNode(widget);
       return;
     }
 
@@ -869,6 +870,7 @@ export class DockLayout extends Layout {
         // If we are adding a second tab, switch the existing tab back to scale.
         const existingWidget = refNode.tabBar.titles[0].owner;
         existingWidget.hiddenMode = Widget.HiddenMode.Scale;
+        widget.hiddenMode = Widget.HiddenMode.Scale;
       } else {
         // For the third and subsequent tabs no special action is needed.
         widget.hiddenMode = Widget.HiddenMode.Scale;
