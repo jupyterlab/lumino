@@ -22,12 +22,24 @@ const NULL_COMMAND = {
   }
 };
 
+const keyCodes = {
+  Ctrl: 17,
+  K: 75,
+  L: 76,
+  M: 77
+};
+
 describe('@lumino/commands', () => {
   describe('CommandRegistry', () => {
     let registry: CommandRegistry = null!;
 
     beforeEach(() => {
       registry = new CommandRegistry();
+    });
+
+    afterEach(() => {
+      // Ensure the timer is canceled
+      registry['_clearPendingState']();
     });
 
     describe('#constructor()', () => {
@@ -613,15 +625,25 @@ describe('@lumino/commands', () => {
     let elemID = 0;
     let elem: HTMLElement = null!;
     let parent: HTMLElement = null!;
-
     beforeEach(() => {
       parent = document.createElement('div') as HTMLElement;
       elem = document.createElement('div') as HTMLElement;
       parent.classList.add('lm-test-parent');
       elem.id = `test${elemID++}`;
-      elem.addEventListener('keydown', event => {
-        registry.processKeydownEvent(event);
-      });
+      elem.addEventListener(
+        'keydown',
+        event => {
+          registry.processKeydownEvent(event);
+        },
+        true
+      );
+      elem.addEventListener(
+        'keydown',
+        event => {
+          registry.processKeydownEvent(event);
+        },
+        false
+      );
       parent.appendChild(elem);
       document.body.appendChild(parent);
     });
@@ -1319,6 +1341,406 @@ describe('@lumino/commands', () => {
         expect(count).to.equal(0);
         elem.dispatchEvent(eventL);
         expect(count).to.equal(1);
+      });
+
+      describe('should correctly handle keybindings across capturing and bubbling phases', () => {
+        let keyInputBuffer: number[] = [];
+        // Event handler that mimics an external component with its own keybinding system, such as CodeMirror.
+        let externalHandler = (
+          event: KeyboardEvent,
+          keymaps: { command: string; codes: number[] }[]
+        ) => {
+          if (event.ctrlKey) {
+            keyInputBuffer.push(keyCodes.Ctrl);
+          }
+          keyInputBuffer.push(event.keyCode);
+          // Compress consecutive ctrl keys: [17, 17, 75, 75] --> [17, 75, 75]
+          keyInputBuffer = keyInputBuffer.filter(
+            (v, i) =>
+              i === 0 || v !== keyCodes.Ctrl || v !== keyInputBuffer[i - 1]
+          );
+          let partialMatch = false;
+          for (const keymap of keymaps) {
+            if (
+              keymap.codes.length === keyInputBuffer.length &&
+              keymap.codes.every((code, i) => code === keyInputBuffer[i])
+            ) {
+              callCounts[keymap.command]++;
+              keyInputBuffer = [];
+              event.preventDefault();
+              event.stopPropagation();
+              return;
+            } else if (
+              keymap.codes.length > keyInputBuffer.length &&
+              keyInputBuffer.every((code, i) => code === keymap.codes[i])
+            ) {
+              partialMatch = true;
+              if (event.keyCode !== keyCodes.Ctrl) {
+                event.preventDefault();
+                event.stopPropagation();
+              }
+            }
+          }
+          if (!partialMatch) {
+            keyInputBuffer.length = 0;
+          }
+        };
+
+        let innerElem: HTMLElement = null!;
+        let callCounts: Record<string, number> = {};
+        // define common keydown events
+        const keydownEvents = {
+          Ctrl: () =>
+            new KeyboardEvent('keydown', {
+              keyCode: keyCodes.Ctrl,
+              ctrlKey: true,
+              bubbles: true
+            }),
+          K: () =>
+            new KeyboardEvent('keydown', {
+              keyCode: keyCodes.K,
+              ctrlKey: true,
+              bubbles: true
+            }),
+          L: () =>
+            new KeyboardEvent('keydown', {
+              keyCode: keyCodes.L,
+              ctrlKey: true,
+              bubbles: true
+            }),
+          M: () =>
+            new KeyboardEvent('keydown', {
+              keyCode: keyCodes.M,
+              ctrlKey: true,
+              bubbles: true
+            })
+        };
+
+        function setKeyBindHelper(ctrlKeys: string[], type: string) {
+          // ["Ctrl K", "Ctrl L"] -> "KL"
+          const chars = ctrlKeys.map(s => s.slice(-1)).join('');
+          // "KL" -> [keyCodes.Ctrl, keyCodes.K, keyCodes.Ctrl, keyCodes.L]
+          const codes = chars.split('').reduce<number[]>((acc, ch) => {
+            acc.push(keyCodes.Ctrl);
+            acc.push(keyCodes[ch as keyof typeof keyCodes]);
+            return acc;
+          }, []);
+          switch (type) {
+            case 'cap':
+              registry.addKeyBinding({
+                keys: ctrlKeys,
+                selector: `#${innerElem.id}`,
+                command: type + chars,
+                capture: true
+              });
+              break;
+            case 'bub':
+              registry.addKeyBinding({
+                keys: ctrlKeys,
+                selector: `#${innerElem.id}`,
+                command: type + chars,
+                capture: false
+              });
+              break;
+            case 'ext':
+              innerElem.addEventListener('keydown', event => {
+                externalHandler(event, [
+                  { command: type + chars, codes: codes }
+                ]);
+              });
+              break;
+            default:
+              throw new Error(`Invalid type: ${type}`);
+          }
+        }
+        beforeEach(() => {
+          // ensure `event.target !== event.currentTarget`
+          innerElem = document.createElement('div') as HTMLElement;
+          innerElem.id = `inner${elemID}`;
+          elem.appendChild(innerElem);
+          callCounts = {
+            capK: 0,
+            capL: 0,
+            capKL: 0,
+            capKM: 0,
+            bubK: 0,
+            bubKL: 0,
+            extK: 0,
+            extL: 0,
+            extKL: 0,
+            extKM: 0
+          };
+          registry.addCommand('capK', {
+            execute: () => {
+              callCounts.capK++;
+            }
+          });
+          registry.addCommand('capL', {
+            execute: () => {
+              callCounts.capL++;
+            }
+          });
+          registry.addCommand('capKL', {
+            execute: () => {
+              callCounts.capKL++;
+            }
+          });
+          registry.addCommand('capKM', {
+            execute: () => {
+              callCounts.capKM++;
+            }
+          });
+          registry.addCommand('bubK', {
+            execute: () => {
+              callCounts.bubK++;
+            }
+          });
+          registry.addCommand('bubKL', {
+            execute: () => {
+              callCounts.bubKL++;
+            }
+          });
+          keyInputBuffer.length = 0;
+        });
+        it('should prioritize capturing bindings over bubbling bindings', done => {
+          /*
+          // Case 1
+          // lumino capturing
+          {"keys": ["Ctrl K", "Ctrl L"], "command": "capKL", "capture": true}
+          {"keys": ["Ctrl K"],           "command": "capK", "capture": true}
+          // lumino bubbling
+          {"keys": ["Ctrl K"], "command": "bubK", "capture": false}
+          // external component's bindings (codemirror)
+          {"keys": ["Ctrl K"], "command": "extK"}
+
+          // user input -> command to be executed
+          ["Ctrl K", "Ctrl L"] -> "capKL"
+          ["Ctrl K"]           -> "capK" # after timeout
+           */
+
+          setKeyBindHelper(['Ctrl K', 'Ctrl L'], 'cap');
+          setKeyBindHelper(['Ctrl K'], 'cap');
+          setKeyBindHelper(['Ctrl K'], 'bub');
+          setKeyBindHelper(['Ctrl K'], 'ext');
+
+          innerElem.dispatchEvent(keydownEvents.Ctrl());
+          innerElem.dispatchEvent(keydownEvents.K());
+          innerElem.dispatchEvent(keydownEvents.Ctrl());
+          innerElem.dispatchEvent(keydownEvents.L());
+          expect([
+            callCounts.capKL,
+            callCounts.capK,
+            callCounts.bubK,
+            callCounts.extK
+          ]).to.deep.equal([1, 0, 0, 0]);
+          // Reset input buffer in the externalHandler
+          keyInputBuffer.length = 0;
+          innerElem.dispatchEvent(keydownEvents.Ctrl());
+          innerElem.dispatchEvent(keydownEvents.K());
+          setTimeout(() => {
+            expect([
+              callCounts.capKL,
+              callCounts.capK,
+              callCounts.bubK,
+              callCounts.extK
+            ]).to.deep.equal([1, 1, 0, 0]);
+            done();
+          }, 1300);
+        });
+
+        it('should allow an external handler to consume an event, masking a bubbling binding', () => {
+          /*
+          // Case 2
+          // lumino capturing
+	  {}
+          // lumino bubbling
+	  {"keys": ["Ctrl K"], "command": "bubK", "capture": false}
+          // external component's bindings (codemirror)
+	  {"keys": ["Ctrl K"], "command": "extK"}
+	  // user input -> command to be executed
+	  ["Ctrl K"] -> "extK"
+           */
+          setKeyBindHelper(['Ctrl K'], 'bub');
+          setKeyBindHelper(['Ctrl K'], 'ext');
+
+          innerElem.dispatchEvent(keydownEvents.Ctrl());
+          innerElem.dispatchEvent(keydownEvents.K());
+          expect([callCounts.bubK, callCounts.extK]).to.deep.equal([0, 1]);
+        });
+
+        it('should correctly process distinct chords starting with the same prefix', () => {
+          /*
+          // Case 3
+          // lumino capturing
+          {"keys": ["Ctrl K", "Ctrl M"], "command": "capKM", "capture": true}
+          // lumino bubbling
+          {}
+          // external
+          {"keys": ["Ctrl K", "Ctrl L"], "command": "extKL"}
+          // user input -> command to be executed
+          ["Ctrl K", "Ctrl L"] -> "extKL"
+           */
+          setKeyBindHelper(['Ctrl K', 'Ctrl M'], 'cap');
+          setKeyBindHelper(['Ctrl K', 'Ctrl L'], 'ext');
+
+          innerElem.dispatchEvent(keydownEvents.Ctrl());
+          innerElem.dispatchEvent(keydownEvents.K());
+          innerElem.dispatchEvent(keydownEvents.Ctrl());
+          innerElem.dispatchEvent(keydownEvents.L());
+          expect([callCounts.capKM, callCounts.extKL]).to.deep.equal([0, 1]);
+        });
+
+        it('should allow an external handler to match the second stroke of a bubbling-phase chord', done => {
+          /*
+          // Case 4
+          // lumino capturing
+          {}
+          // lumino bubbling
+          {"keys": ["Ctrl K", "Ctrl L"], "command": "bubKL", "capture": false}
+          {"keys": ["Ctrl K"], "command": "bubK", "capture": false}
+          // external
+          {"keys": ["Ctrl L"], "command": "extL", "capture": true}
+          // user input -> command to be executed
+          ["Ctrl K", "Ctrl L"] -> "extL", "bubK"
+           */
+          setKeyBindHelper(['Ctrl K', 'Ctrl L'], 'bub');
+          setKeyBindHelper(['Ctrl K'], 'bub');
+          setKeyBindHelper(['Ctrl L'], 'ext');
+
+          innerElem.dispatchEvent(keydownEvents.Ctrl());
+          innerElem.dispatchEvent(keydownEvents.K());
+          innerElem.dispatchEvent(keydownEvents.Ctrl());
+          innerElem.dispatchEvent(keydownEvents.L());
+          expect([
+            callCounts.bubK,
+            callCounts.bubKL,
+            callCounts.extL
+          ]).to.deep.equal([0, 0, 1]);
+
+          setTimeout(() => {
+            expect([
+              callCounts.bubK,
+              callCounts.bubKL,
+              callCounts.extL
+            ]).to.deep.equal([1, 0, 1]);
+            done();
+          }, 1300);
+        });
+        it('should greedily execute a single-stroke capturing binding, masking all other bubbling-phase same-prefix bindings', () => {
+          /*
+          // Case 5
+          // lumino capturing
+          {"keys": ["Ctrl K"], "command": "capK", "capture": true}
+          // lumino bubbling
+          {"keys": ["Ctrl K", "Ctrl L"], "command": "bubKL", "capture": false}
+          // external
+          {"keys": ["Ctrl K", "Ctrl L"], "command": "extKL"}
+          // user input -> command to be executed
+          ["Ctrl K", "Ctrl L"] -> "capK" # Ctrl-K is greedy
+           */
+          setKeyBindHelper(['Ctrl K'], 'cap');
+          setKeyBindHelper(['Ctrl K', 'Ctrl L'], 'bub');
+          setKeyBindHelper(['Ctrl K', 'Ctrl L'], 'ext');
+
+          innerElem.dispatchEvent(keydownEvents.Ctrl());
+          innerElem.dispatchEvent(keydownEvents.K());
+          innerElem.dispatchEvent(keydownEvents.Ctrl());
+          innerElem.dispatchEvent(keydownEvents.L());
+          expect([
+            callCounts.capK,
+            callCounts.bubKL,
+            callCounts.extKL
+          ]).to.deep.equal([1, 0, 0]);
+        });
+        it('should not be greedy if other capturing chords share the same prefix', () => {
+          /*
+          // Case 6
+          // lumino capturing
+          {"keys": ["Ctrl K"], "command": "capK", "capture": true}
+          {"keys": ["Ctrl K", "Ctrl M"], "command": "capKM", "capture": true}
+          // lumino bubbling
+          {"keys": ["Ctrl K", "Ctrl L"], "command": "bubKL", "capture": false}
+          // external
+          {"keys": ["Ctrl K", "Ctrl L"], "command": "extKL"}
+          // user input -> command to be executed
+          ["Ctrl K", "Ctrl L"] -> "extKL"  # Ctrl-K is not greedy
+           */
+          setKeyBindHelper(['Ctrl K'], 'cap');
+          setKeyBindHelper(['Ctrl K', 'Ctrl M'], 'cap');
+          setKeyBindHelper(['Ctrl K', 'Ctrl L'], 'bub');
+          setKeyBindHelper(['Ctrl K', 'Ctrl L'], 'ext');
+
+          innerElem.dispatchEvent(keydownEvents.Ctrl());
+          innerElem.dispatchEvent(keydownEvents.K());
+          innerElem.dispatchEvent(keydownEvents.Ctrl());
+          innerElem.dispatchEvent(keydownEvents.L());
+          expect([
+            callCounts.capK,
+            callCounts.capKM,
+            callCounts.bubKL,
+            callCounts.extKL
+          ]).to.deep.equal([0, 0, 0, 1]);
+        });
+
+        it('should not have its sequence interrupted by an unrelated capturing binding', done => {
+          /*
+          // Case 7
+          // lumino capturing
+          {"keys": ["Ctrl L"], "command": "capL", "capture": true}
+          // lumino bubbling
+          {"keys": ["Ctrl K", "Ctrl L"], "command": "bubKL", "capture": false}
+          {"keys": ["Ctrl K"], "command": "bubK", "capture": false}
+          // external
+          {}
+          // user input -> command to be executed
+          ["Ctrl K", "Ctrl L"] -> "bubKL"
+           */
+          setKeyBindHelper(['Ctrl L'], 'cap');
+          setKeyBindHelper(['Ctrl K', 'Ctrl L'], 'bub');
+          setKeyBindHelper(['Ctrl K'], 'bub');
+
+          innerElem.dispatchEvent(keydownEvents.Ctrl());
+          innerElem.dispatchEvent(keydownEvents.K());
+          innerElem.dispatchEvent(keydownEvents.Ctrl());
+          innerElem.dispatchEvent(keydownEvents.L());
+          expect([
+            callCounts.capL,
+            callCounts.bubK,
+            callCounts.bubKL
+          ]).to.deep.equal([0, 0, 1]);
+
+          setTimeout(() => {
+            // No timer exist.
+            expect([
+              callCounts.capL,
+              callCounts.bubK,
+              callCounts.bubKL
+            ]).to.deep.equal([0, 0, 1]);
+            done();
+          }, 1300);
+        });
+
+        it('should have its sequence canceled by a partially matching external binding', () => {
+          /*
+          // Case 8
+          // lumino capturing
+          {}
+          // lumino bubbling
+          {"keys": ["Ctrl K", "Ctrl L"], "command": "bubKL", "capture": false}
+          // external
+          {"keys": ["Ctrl K", "Ctrl M"], "command": "extKM"}
+          // user input -> command to be executed
+          ["Ctrl K", "Ctrl L"] -> ""
+           */
+          setKeyBindHelper(['Ctrl K', 'Ctrl L'], 'bub');
+          setKeyBindHelper(['Ctrl K', 'Ctrl M'], 'ext');
+
+          innerElem.dispatchEvent(keydownEvents.Ctrl());
+          innerElem.dispatchEvent(keydownEvents.K());
+          innerElem.dispatchEvent(keydownEvents.Ctrl());
+          innerElem.dispatchEvent(keydownEvents.L());
+          expect([callCounts.bubKL, callCounts.extKM]).to.deep.equal([0, 0]);
+        });
       });
     });
 
