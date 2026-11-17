@@ -712,6 +712,14 @@ export class BasicMouseHandler implements DataGrid.IMouseHandler {
     let dx = event.deltaX;
     let dy = event.deltaY;
 
+    // Scroll horizontally when Shift is held with a vertical-only wheel.
+    // Some platforms (e.g. macOS) already report Shift + wheel as a
+    // horizontal delta, in which case `dx` is non-zero and nothing changes.
+    if (event.shiftKey && dx === 0) {
+      dx = dy;
+      dy = 0;
+    }
+
     // Convert the delta values to pixel values.
     switch (event.deltaMode) {
       case 0: // DOM_DELTA_PIXEL
