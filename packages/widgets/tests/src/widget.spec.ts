@@ -13,7 +13,14 @@ import { ArrayExt } from '@lumino/algorithm';
 
 import { Message, MessageLoop } from '@lumino/messaging';
 
-import { Layout, Title, Widget } from '@lumino/widgets';
+import { Layout, Panel, Title, Widget } from '@lumino/widgets';
+
+import {
+  createSecondaryDocument,
+  DocumentWidget,
+  expectSame,
+  ISecondaryDocument
+} from './secondarydocument';
 
 export class LogWidget extends Widget {
   messages: string[] = [];
@@ -1219,6 +1226,63 @@ describe('@lumino/widgets', () => {
         Widget.attach(widget, document.body);
         expect(widget.isAttached).to.equal(true);
         expect(widget.messages).to.contain('after-attach');
+        widget.dispose();
+      });
+
+      context('with a host in another document', () => {
+        let secondary: ISecondaryDocument;
+
+        beforeEach(() => {
+          secondary = createSecondaryDocument();
+        });
+
+        afterEach(() => {
+          secondary.dispose();
+        });
+
+        it('should adopt the node before `before-attach`', () => {
+          let widget = new DocumentWidget();
+          Widget.attach(widget, secondary.document.body);
+          expectSame(widget.beforeAttachDocument, secondary.document);
+          expectSame(widget.node.ownerDocument, secondary.document);
+          expectSame(widget.node.parentNode, secondary.document.body);
+          widget.dispose();
+        });
+
+        it('should adopt the node back into the main document', () => {
+          let widget = new DocumentWidget();
+          Widget.attach(widget, secondary.document.body);
+          Widget.detach(widget);
+          Widget.attach(widget, document.body);
+          expectSame(widget.beforeAttachDocument, document);
+          expectSame(widget.node.ownerDocument, document);
+          widget.dispose();
+        });
+
+        it('should adopt the child widget nodes', () => {
+          let parent = new Panel();
+          let child = new DocumentWidget();
+          parent.addWidget(child);
+          Widget.attach(parent, secondary.document.body);
+          expectSame(child.beforeAttachDocument, secondary.document);
+          parent.dispose();
+        });
+      });
+
+      it('should not adopt the node within the same document', () => {
+        let widget = new Widget();
+        let adoptNode = document.adoptNode;
+        let calls = 0;
+        document.adoptNode = <T extends Node>(node: T): T => {
+          calls++;
+          return adoptNode.call(document, node) as T;
+        };
+        try {
+          Widget.attach(widget, document.body);
+        } finally {
+          document.adoptNode = adoptNode;
+        }
+        expect(calls).to.equal(0);
         widget.dispose();
       });
     });
