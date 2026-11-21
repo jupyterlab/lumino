@@ -527,7 +527,7 @@ export class GridLayout extends Layout {
 
     // If no size constraint is needed, just update the parent.
     if (this.fitPolicy === 'set-no-constraint') {
-      this._box = ElementExt.boxSizing(this.parent!.node);
+      this._box = null;
       MessageLoop.sendMessage(this.parent!, Widget.Msg.UpdateRequest);
       return;
     }
