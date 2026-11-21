@@ -1481,6 +1481,38 @@ describe('@lumino/widgets', () => {
       });
 
       context('pointerdown', () => {
+        it('should let tab presses reach pointer and mouse listeners', () => {
+          let events: string[] = [];
+          let listener = (event: Event) => {
+            events.push(event.type);
+          };
+          document.body.addEventListener('pointerdown', listener);
+          document.body.addEventListener('mousedown', listener);
+          try {
+            let rect = tab.getBoundingClientRect();
+            let pointerDown = new PointerEvent('pointerdown', {
+              pointerType: 'mouse',
+              clientX: rect.left + 1,
+              clientY: rect.top + 1,
+              bubbles: true,
+              cancelable: true
+            });
+            tab.dispatchEvent(pointerDown);
+            expect(pointerDown.defaultPrevented).to.equal(false);
+            let mouseDown = new MouseEvent('mousedown', {
+              bubbles: true,
+              cancelable: true
+            });
+            tab.dispatchEvent(mouseDown);
+            expect(events).to.deep.equal(['pointerdown', 'mousedown']);
+            expect(mouseDown.defaultPrevented).to.equal(true);
+          } finally {
+            document.body.removeEventListener('pointerdown', listener);
+            document.body.removeEventListener('mousedown', listener);
+            bar.releaseMouse();
+          }
+        });
+
         it('should add event listeners if the tabs are movable', () => {
           simulateOnNode(tab, 'pointerdown');
           document.body.dispatchEvent(new PointerEvent('pointermove'));
@@ -1650,6 +1682,38 @@ describe('@lumino/widgets', () => {
       });
 
       context('pointerup', () => {
+        it('should suppress release propagation during a tab drag', () => {
+          let called = false;
+          let listener = () => {
+            called = true;
+          };
+          document.body.addEventListener('pointerup', listener);
+          try {
+            startDrag(bar);
+            simulateOnNode(tab, 'pointerup');
+            expect(called).to.equal(false);
+          } finally {
+            document.body.removeEventListener('pointerup', listener);
+            bar.releaseMouse();
+          }
+        });
+
+        it('should let a simple tab release reach ancestor listeners', () => {
+          let called = false;
+          let listener = () => {
+            called = true;
+          };
+          document.body.addEventListener('pointerup', listener);
+          try {
+            simulateOnNode(tab, 'pointerdown');
+            simulateOnNode(tab, 'pointerup');
+            expect(called).to.equal(true);
+          } finally {
+            document.body.removeEventListener('pointerup', listener);
+            bar.releaseMouse();
+          }
+        });
+
         it('should emit the `tabMoved` signal', done => {
           startDrag(bar);
           document.body.dispatchEvent(new PointerEvent('pointerup'));

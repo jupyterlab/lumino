@@ -618,6 +618,12 @@ export class TabBar<T> extends Widget {
       case 'pointerdown':
         this._evtPointerDown(event as PointerEvent);
         break;
+      case 'mousedown':
+        // Keep the press visible to mouse-based listeners, but avoid focus changes.
+        if (this._dragData) {
+          event.preventDefault();
+        }
+        break;
       case 'pointermove':
         this._evtPointerMove(event as PointerEvent);
         break;
@@ -650,6 +656,7 @@ export class TabBar<T> extends Widget {
    */
   protected onBeforeAttach(msg: Message): void {
     this.node.addEventListener('pointerdown', this);
+    this.node.addEventListener('mousedown', this);
     this.node.addEventListener('pointerleave', this);
     this.node.addEventListener('click', this);
     this.node.addEventListener('dblclick', this);
@@ -661,6 +668,7 @@ export class TabBar<T> extends Widget {
    */
   protected onAfterDetach(msg: Message): void {
     this.node.removeEventListener('pointerdown', this);
+    this.node.removeEventListener('mousedown', this);
     this.node.removeEventListener('pointerleave', this);
     this.node.removeEventListener('click', this);
     this.node.removeEventListener('dblclick', this);
@@ -952,11 +960,10 @@ export class TabBar<T> extends Widget {
         : null;
     let closeIconPressed = !!icon && icon.contains(event.target as HTMLElement);
 
-    // Pressing on a tab stops the event propagation.
-    if (!closeIconPressed || !Utils.isTouchEvent(event)) {
+    // Cancel touch compatibility events, but let mouse presses reach ancestors.
+    if (Utils.isTouchEvent(event) && !closeIconPressed) {
       event.preventDefault();
     }
-    event.stopPropagation();
 
     // Initialize the non-measured parts of the drag data.
     this._dragData = {
@@ -1115,11 +1122,13 @@ export class TabBar<T> extends Widget {
 
     const isTouch = Utils.isTouchEvent(event);
 
-    // Stop the event propagation.
-    if (!isTouch) {
-      event.preventDefault();
+    // Suppress the release only when a tab is actually being dragged.
+    if (data.dragActive) {
+      if (!isTouch) {
+        event.preventDefault();
+      }
+      event.stopPropagation();
     }
-    event.stopPropagation();
 
     // Remove the extra mouse event listeners.
     this.document.removeEventListener('pointermove', this, true);
