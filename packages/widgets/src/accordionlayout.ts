@@ -122,13 +122,17 @@ export class AccordionLayout extends SplitLayout {
 
     ArrayExt.insert(this._titles, index, title);
 
-    // Add the title node to the parent before the widget.
+    // Add the title node to the parent.
     this.parent!.node.appendChild(title);
 
     widget.node.setAttribute('role', 'region');
     widget.node.setAttribute('aria-labelledby', title.id);
 
     super.attachWidget(index, widget);
+
+    // Put the title before the widget, which the split layout placed
+    // after the previous section.
+    this.parent!.node.insertBefore(title, widget.node);
   }
 
   /**
@@ -147,6 +151,9 @@ export class AccordionLayout extends SplitLayout {
   ): void {
     ArrayExt.move(this._titles, fromIndex, toIndex);
     super.moveWidget(fromIndex, toIndex, widget);
+
+    // Put the title back before the widget the split layout moved.
+    this.parent!.node.insertBefore(this._titles[toIndex], widget.node);
   }
 
   /**

@@ -307,9 +307,11 @@ export class SplitLayout extends PanelLayout {
       MessageLoop.sendMessage(widget, Widget.Msg.BeforeAttach);
     }
 
-    // Add the widget and handle nodes to the parent.
-    this.parent!.node.appendChild(widget.node);
-    this.parent!.node.appendChild(handle);
+    // Add the widget and handle nodes to the parent, after the previous
+    // section, so the DOM order (followed by Tab and screen readers) is
+    // the layout order.
+    this.parent!.node.insertBefore(widget.node, this._sectionReference(index));
+    this.parent!.node.insertBefore(handle, widget.node.nextSibling);
 
     // Send an `'after-attach'` message if the parent is attached.
     if (this.parent!.isAttached) {
@@ -341,6 +343,40 @@ export class SplitLayout extends PanelLayout {
     ArrayExt.move(this._items, fromIndex, toIndex);
     ArrayExt.move(this._sizers, fromIndex, toIndex);
     ArrayExt.move(this._handles, fromIndex, toIndex);
+
+    // Send a `'before-detach'` message if the parent is attached.
+    if (this.parent!.isAttached) {
+      MessageLoop.sendMessage(widget, Widget.Msg.BeforeDetach);
+    }
+
+    // Remove the widget's node from the parent.
+    this.parent!.node.removeChild(widget.node);
+
+    // Send an `'after-detach'` message if the parent is attached.
+    if (this.parent!.isAttached) {
+      MessageLoop.sendMessage(widget, Widget.Msg.AfterDetach);
+    }
+
+    // Send a `'before-attach'` message if the parent is attached.
+    if (this.parent!.isAttached) {
+      MessageLoop.sendMessage(widget, Widget.Msg.BeforeAttach);
+    }
+
+    // Insert the widget and handle nodes after the previous section, so
+    // the DOM order is the layout order.
+    this.parent!.node.insertBefore(
+      widget.node,
+      this._sectionReference(toIndex)
+    );
+    this.parent!.node.insertBefore(
+      this._handles[toIndex],
+      widget.node.nextSibling
+    );
+
+    // Send an `'after-attach'` message if the parent is attached.
+    if (this.parent!.isAttached) {
+      MessageLoop.sendMessage(widget, Widget.Msg.AfterAttach);
+    }
 
     // Post a fit request to the parent to show/hide last handle.
     this.parent!.fit();
@@ -703,6 +739,16 @@ export class SplitLayout extends PanelLayout {
         top += size + fullOffset;
       }
     }
+  }
+
+  /**
+   * Get the node the section at the given index goes before: the node
+   * after the previous section's handle, or the parent's first node.
+   */
+  private _sectionReference(index: number): Node | null {
+    return index > 0
+      ? this._handles[index - 1].nextSibling
+      : this.parent!.node.firstChild;
   }
 
   protected widgetOffset = 0;

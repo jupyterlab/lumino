@@ -96,6 +96,20 @@ class LogHook implements IMessageHook {
   }
 }
 
+/**
+ * Where each node of the parent is in the layout order of the sections'
+ * widget and handle nodes: ascending when the DOM follows the layout.
+ */
+function domOrder(layout: SplitLayout): number[] {
+  let nodes: Element[] = [];
+  layout.widgets.forEach((widget, i) => {
+    nodes.push(widget.node, layout.handles[i]);
+  });
+  return Array.from(layout.parent!.node.children).map(node =>
+    nodes.indexOf(node)
+  );
+}
+
 describe('@lumino/widgets', () => {
   describe('SplitLayout', () => {
     describe('#constructor()', () => {
@@ -330,9 +344,56 @@ describe('@lumino/widgets', () => {
         MessageLoop.flush();
         expect(layout.methods).to.contain('onFitRequest');
       });
+
+      it('should insert the widget and handle nodes in layout order', () => {
+        let layout = new LogSplitLayout({ renderer });
+        let parent = new Widget();
+        parent.layout = layout;
+        layout.addWidget(new Widget());
+        layout.addWidget(new Widget());
+        layout.insertWidget(1, new Widget());
+        layout.insertWidget(0, new Widget());
+        expect(domOrder(layout)).to.deep.equal([0, 1, 2, 3, 4, 5, 6, 7]);
+      });
     });
 
     describe('#moveWidget()', () => {
+      it('should move the widget and handle nodes in layout order', () => {
+        let layout = new LogSplitLayout({ renderer });
+        let widgets = [new Widget(), new Widget(), new Widget(), new Widget()];
+        let parent = new Widget();
+        parent.layout = layout;
+        widgets.forEach(w => {
+          layout.addWidget(w);
+        });
+        layout.insertWidget(0, widgets[3]);
+        expect(domOrder(layout)).to.deep.equal([0, 1, 2, 3, 4, 5, 6, 7]);
+        layout.insertWidget(3, widgets[0]);
+        expect(domOrder(layout)).to.deep.equal([0, 1, 2, 3, 4, 5, 6, 7]);
+      });
+
+      it('should send before/after detach/attach messages if the parent is attached', () => {
+        let layout = new LogSplitLayout({ renderer });
+        let widgets = [new Widget(), new Widget(), new Widget()];
+        let parent = new Widget();
+        parent.layout = layout;
+        widgets.forEach(w => {
+          layout.addWidget(w);
+        });
+        Widget.attach(parent, document.body);
+        let hook = new LogHook();
+        MessageLoop.installMessageHook(widgets[0], hook);
+        layout.insertWidget(2, widgets[0]);
+        expect(hook.messages).to.deep.equal([
+          'before-detach',
+          'after-detach',
+          'before-attach',
+          'after-attach'
+        ]);
+        expect(document.body.contains(widgets[0].node)).to.equal(true);
+        Widget.detach(parent);
+      });
+
       it("should move a widget in the parent's DOM node", () => {
         let layout = new LogSplitLayout({ renderer });
         let widgets = [new Widget(), new Widget(), new Widget()];
