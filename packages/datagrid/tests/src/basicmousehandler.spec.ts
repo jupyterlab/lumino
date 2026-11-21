@@ -4,6 +4,8 @@ import { expect } from 'chai';
 
 import { BasicMouseHandler, DataGrid } from '@lumino/datagrid';
 
+import { Platform } from '@lumino/domutils';
+
 /**
  * A minimal stand-in for a data grid which records `scrollBy` calls.
  */
@@ -46,16 +48,20 @@ describe('@lumino/datagrid', () => {
         expect(calls).to.deep.equal([[0, 50]]);
       });
 
-      it('should scroll horizontally when Shift is held', () => {
+      it('should scroll horizontally when Shift is held outside macOS', () => {
         const { grid, calls } = createFakeGrid();
         handler.onWheel(
           grid,
           new WheelEvent('wheel', { deltaY: 50, shiftKey: true })
         );
-        expect(calls).to.deep.equal([[50, 0]]);
+        if (Platform.IS_MAC) {
+          expect(calls).to.deep.equal([[0, 50]]);
+        } else {
+          expect(calls).to.deep.equal([[50, 0]]);
+        }
       });
 
-      it('should use the column width for line-mode Shift + wheel', () => {
+      it('should use the column width for line-mode Shift + wheel outside macOS', () => {
         const { grid, calls } = createFakeGrid();
         handler.onWheel(
           grid,
@@ -65,7 +71,11 @@ describe('@lumino/datagrid', () => {
             shiftKey: true
           })
         );
-        expect(calls).to.deep.equal([[-3 * 64, 0]]);
+        if (Platform.IS_MAC) {
+          expect(calls).to.deep.equal([[0, -3 * 20]]);
+        } else {
+          expect(calls).to.deep.equal([[-3 * 64, 0]]);
+        }
       });
 
       it('should not swap when the browser already reports a horizontal delta', () => {
