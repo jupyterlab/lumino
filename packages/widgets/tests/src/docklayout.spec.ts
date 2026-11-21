@@ -165,6 +165,31 @@ describe('@lumino/widgets', () => {
         expect(widgets[0].hiddenMode).to.equal(Widget.HiddenMode.Display);
       });
 
+      it("should switch a single widget to 'content-visibility'", () => {
+        layout.removeWidget(widgets[1]);
+
+        layout.hiddenMode = Widget.HiddenMode.ContentVisibility;
+
+        expect(widgets[0].hiddenMode).to.equal(
+          Widget.HiddenMode.ContentVisibility
+        );
+      });
+
+      it("should switch a single widget from 'content-visibility' to 'display'", () => {
+        const layout = new DockLayout({
+          renderer,
+          hiddenMode: Widget.HiddenMode.ContentVisibility
+        });
+        const widget = new Widget();
+        layout.addWidget(widget);
+
+        layout.hiddenMode = Widget.HiddenMode.Display;
+
+        expect(widget.hiddenMode).to.equal(Widget.HiddenMode.Display);
+
+        layout.dispose();
+      });
+
       it("should apply 'content-visibility' to the first widget", () => {
         const layout = new DockLayout({
           renderer,
