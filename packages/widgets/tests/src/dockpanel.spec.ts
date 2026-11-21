@@ -182,6 +182,27 @@ describe('@lumino/widgets', () => {
           document.dispatchEvent(event);
           expect(event.defaultPrevented).to.equal(false);
         });
+
+        it('should not release the handle drag for another pointer', () => {
+          let handle = Array.from(panel.handles())[0];
+          let rect = handle.getBoundingClientRect();
+          handle.dispatchEvent(
+            new PointerEvent('pointerdown', {
+              bubbles,
+              pointerId: 1,
+              clientX: rect.left + 1,
+              clientY: rect.top + 1
+            })
+          );
+
+          document.dispatchEvent(
+            new PointerEvent('pointercancel', { bubbles, pointerId: 2 })
+          );
+
+          expect(!!document.body.querySelector('.lm-cursor-backdrop')).to.equal(
+            true
+          );
+        });
       });
     });
 

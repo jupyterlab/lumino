@@ -733,7 +733,8 @@ export class DockPanel extends Widget {
     // Override the cursor and store the press data.
     let style = window.getComputedStyle(handle);
     let override = Drag.overrideCursor(style.cursor!, this._document);
-    this._pressData = { handle, deltaX, deltaY, override };
+    let pointerId = event.pointerId;
+    this._pressData = { handle, deltaX, deltaY, override, pointerId };
   }
 
   /**
@@ -785,6 +786,11 @@ export class DockPanel extends Widget {
   private _evtPointerCancel(event: PointerEvent): void {
     // Bail early if no drag is in progress.
     if (!this._pressData) {
+      return;
+    }
+
+    // A palm or a second finger that the system cancels must not end the drag.
+    if (event.pointerId !== this._pressData.pointerId) {
       return;
     }
 
@@ -1487,6 +1493,11 @@ namespace Private {
      * The disposable which will clear the override cursor.
      */
     override: IDisposable;
+
+    /**
+     * The ID of the pointer which pressed the handle.
+     */
+    pointerId: number;
   }
 
   /**
