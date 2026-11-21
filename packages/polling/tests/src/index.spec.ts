@@ -3,3 +3,4 @@
 
 import './poll.spec';
 import './ratelimiter.spec';
+import './socketstream.spec';
