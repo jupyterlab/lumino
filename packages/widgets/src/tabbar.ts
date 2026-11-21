@@ -633,6 +633,12 @@ export class TabBar<T> extends Widget {
       case 'dblclick':
         this._evtDblClick(event as MouseEvent);
         break;
+      case 'focusin':
+        this._updateTabIndex(event.target);
+        break;
+      case 'focusout':
+        this._updateTabIndex((event as FocusEvent).relatedTarget);
+        break;
       case 'keydown':
         event.eventPhase === Event.CAPTURING_PHASE
           ? this._evtKeyDownCapturing(event as KeyboardEvent)
@@ -653,6 +659,8 @@ export class TabBar<T> extends Widget {
     this.node.addEventListener('pointerleave', this);
     this.node.addEventListener('click', this);
     this.node.addEventListener('dblclick', this);
+    this.node.addEventListener('focusin', this);
+    this.node.addEventListener('focusout', this);
     this.node.addEventListener('keydown', this);
   }
 
@@ -664,6 +672,8 @@ export class TabBar<T> extends Widget {
     this.node.removeEventListener('pointerleave', this);
     this.node.removeEventListener('click', this);
     this.node.removeEventListener('dblclick', this);
+    this.node.removeEventListener('focusin', this);
+    this.node.removeEventListener('focusout', this);
     this.node.removeEventListener('keydown', this);
     this._clearUnfreezeTransitionState();
     this._clearTabSizeFreezeState();
@@ -679,13 +689,8 @@ export class TabBar<T> extends Widget {
     let renderer = this.renderer;
     let currentTitle = this.currentTitle;
     let content = new Array<VirtualElement>(titles.length);
-    // Keep the tabindex="0" attribute to the tab which handled it before the update.
-    // If the add button handles it, no need to do anything. If no element of the tab
-    // bar handles it, set it on the current or the first tab to ensure one element
-    // handles it after update.
-    const tabHandlingTabindex =
-      this._getCurrentTabindex() ??
-      (this._currentIndex > -1 ? this._currentIndex : 0);
+    // The selected tab is the entry point when focus is outside the bar.
+    const tabHandlingTabindex = Math.max(0, this._currentIndex);
 
     for (let i = 0, n = titles.length; i < n; ++i) {
       let title = titles[i];
@@ -695,6 +700,9 @@ export class TabBar<T> extends Widget {
       content[i] = renderer.renderTab({ title, current, zIndex, tabIndex });
     }
     VirtualDOM.render(content, this.contentNode);
+    // Synchronize after rendering: keyboard navigation also changes the DOM
+    // tabindex values, and keyed tab nodes may have moved during this update.
+    this._updateTabIndex();
     if (this._tabSizeFrozen) {
       let tabs = this.contentNode.children;
       if (
@@ -719,22 +727,30 @@ export class TabBar<T> extends Widget {
   }
 
   /**
-   * Get the index of the tab which handles tabindex="0".
-   * If the add button handles tabindex="0", -1 is returned.
-   * If none of the previous handles tabindex="0", null is returned.
+   * Keep one keyboard entry point, preserving focus within the tab bar.
    */
-  private _getCurrentTabindex(): number | null {
-    let index = null;
-    const elemTabindex = this.contentNode.querySelector('li[tabindex="0"]');
-    if (elemTabindex) {
-      index = [...this.contentNode.children].indexOf(elemTabindex);
-    } else if (
-      this._addButtonEnabled &&
-      this.addButtonNode.getAttribute('tabindex') === '0'
-    ) {
-      index = -1;
+  private _updateTabIndex(
+    focused: EventTarget | null = document.activeElement
+  ): void {
+    const tabs = this.contentNode.children;
+    const focusedNode = focused instanceof Node ? focused : null;
+    const addFocused =
+      this._addButtonEnabled && this.addButtonNode.contains(focusedNode);
+    const focusedIndex = ArrayExt.findFirstIndex(tabs, tab =>
+      tab.contains(focusedNode)
+    );
+    const index = addFocused
+      ? -1
+      : focusedIndex >= 0
+      ? focusedIndex
+      : Math.max(0, this._currentIndex);
+    for (let i = 0; i < tabs.length; ++i) {
+      tabs[i].setAttribute('tabindex', i === index ? '0' : '-1');
     }
-    return index;
+    this.addButtonNode.setAttribute(
+      'tabindex',
+      this._addButtonEnabled && (addFocused || tabs.length === 0) ? '0' : '-1'
+    );
   }
 
   /**
