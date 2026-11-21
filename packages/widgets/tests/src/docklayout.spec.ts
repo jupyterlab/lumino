@@ -531,6 +531,23 @@ describe('@lumino/widgets', () => {
         );
         parent.dispose();
       });
+
+      it('should match a peer 3 px away at zero spacing', () => {
+        const { parent, layout } = cross();
+        layout.spacing = 0;
+        MessageLoop.flush();
+        const { horizontal, vertical } = visibleHandles(layout);
+        const primary = horizontal[0];
+        const peer = vertical[0];
+        const x = primary.getBoundingClientRect().left;
+        const y = peer.getBoundingClientRect().top + 3;
+        expectSame(
+          layout.findIntersectingHandle(primary, x, y),
+          peer,
+          'peer 3 px away → match'
+        );
+        parent.dispose();
+      });
     });
 
     describe('#moveHandles()', () => {

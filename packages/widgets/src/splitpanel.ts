@@ -19,8 +19,8 @@ import { ISignal, Signal } from '@lumino/signaling';
 
 import {
   findDirectChild,
-  INTERSECTION_TOLERANCE_MULTIPLIER,
-  IntersectionHoverStyler
+  IntersectionHoverStyler,
+  intersectionTolerance
 } from './intersectionutils';
 
 import { Panel } from './panel';
@@ -482,8 +482,9 @@ export class SplitPanel extends Panel {
    * Find an orthogonal inner SplitPanel handle that intersects with the
    * given outer handle index at the specified cross-axis position.
    *
-   * The search is tolerant by `layout.spacing * 4` pixels to account for the
-   * gap that separates child handles from the parent handle's boundary.
+   * The search is tolerant by `intersectionTolerance(layout.spacing)` pixels
+   * to account for the gap that separates child handles from the parent
+   * handle's boundary.
    *
    * @returns The intersecting handle descriptor, or `null` if none is found.
    */
@@ -492,7 +493,7 @@ export class SplitPanel extends Panel {
     crossPos: number
   ): { panel: SplitPanel; index: number; delta: number } | null {
     const layout = this.layout as SplitLayout;
-    const tolerance = layout.spacing * INTERSECTION_TOLERANCE_MULTIPLIER;
+    const tolerance = intersectionTolerance(layout.spacing);
     for (const candidate of [
       this.widgets[handleIndex],
       this.widgets[handleIndex + 1]

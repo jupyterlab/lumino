@@ -7,6 +7,27 @@
 export const INTERSECTION_TOLERANCE_MULTIPLIER = 4;
 
 /**
+ * The smallest intersection hit testing tolerance, in pixels.
+ */
+export const MIN_INTERSECTION_TOLERANCE = 8;
+
+/**
+ * Get the intersection hit testing tolerance for a layout spacing.
+ *
+ * @param spacing - The spacing of the layout which owns the handles.
+ *
+ * @returns The distance from a handle, in pixels, within which a press on an
+ *   orthogonal handle starts a two-axis drag.
+ */
+export function intersectionTolerance(spacing: number): number {
+  // Zero spacing, as in Theia, would otherwise leave a one pixel target.
+  return Math.max(
+    spacing * INTERSECTION_TOLERANCE_MULTIPLIER,
+    MIN_INTERSECTION_TOLERANCE
+  );
+}
+
+/**
  * Resolve the direct child of `node` which contains the given event target.
  *
  * @param node - The panel node which owns the split handles.

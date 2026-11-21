@@ -19,7 +19,7 @@ import { Layout, LayoutItem } from './layout';
 
 import { TabBar } from './tabbar';
 
-import { INTERSECTION_TOLERANCE_MULTIPLIER } from './intersectionutils';
+import { intersectionTolerance } from './intersectionutils';
 
 import Utils from './utils';
 
@@ -281,7 +281,7 @@ export class DockLayout extends Layout {
 
     // Iterate all handles looking for one with the opposite orientation
     // whose bounding rect (expanded by spacing) contains the click point.
-    const tol = this._spacing * INTERSECTION_TOLERANCE_MULTIPLIER;
+    const tol = intersectionTolerance(this._spacing);
     for (const candidate of this.handles()) {
       if (candidate === handle) {
         continue;

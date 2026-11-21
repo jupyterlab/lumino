@@ -641,6 +641,30 @@ describe('@lumino/widgets', () => {
         outer.dispose();
       });
 
+      it('should move the inner handle from a press 3 px away at zero spacing', () => {
+        const { outer, inner, outerHandle, innerHandle } = attachedNested();
+        outer.spacing = 0;
+        inner.spacing = 0;
+        MessageLoop.flush();
+        const x = outerHandle.getBoundingClientRect().left;
+        const y = innerHandle.getBoundingClientRect().top + 3;
+        const vTop = innerHandle.offsetTop;
+        outerHandle.dispatchEvent(
+          new PointerEvent('pointerdown', { bubbles, clientX: x, clientY: y })
+        );
+        document.body.dispatchEvent(
+          new PointerEvent('pointermove', {
+            bubbles,
+            clientX: x - 30,
+            clientY: y + 30
+          })
+        );
+        document.body.dispatchEvent(new PointerEvent('pointerup', { bubbles }));
+        MessageLoop.flush();
+        expect(innerHandle.offsetTop).to.not.equal(vTop);
+        outer.dispose();
+      });
+
       it('should move only the outer handle without an intersection', () => {
         const { outer, outerHandle, innerHandle } = attachedNested();
         const ro = outerHandle.getBoundingClientRect();
