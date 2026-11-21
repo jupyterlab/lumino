@@ -1419,6 +1419,8 @@ export namespace DockPanel {
     createHandle(): HTMLDivElement {
       let handle = document.createElement('div');
       handle.className = 'lm-DockPanel-handle';
+      // Keep Chromium touch targeting on the handle beside clickable content.
+      handle.addEventListener('click', () => undefined);
       return handle;
     }
   }
