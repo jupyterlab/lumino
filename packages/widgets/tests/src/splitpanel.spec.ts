@@ -616,6 +616,31 @@ describe('@lumino/widgets', () => {
         outer.dispose();
       });
 
+      it('should emit `handleMoved` of the inner panel after dragging an intersection', () => {
+        const { outer, inner, outerHandle, innerHandle } = attachedNested();
+        let emitted = false;
+        inner.handleMoved.connect(() => {
+          emitted = true;
+        });
+        const ro = outerHandle.getBoundingClientRect();
+        const ri = innerHandle.getBoundingClientRect();
+        const x = (ro.left + ro.right) / 2;
+        const y = (ri.top + ri.bottom) / 2;
+        outerHandle.dispatchEvent(
+          new PointerEvent('pointerdown', { bubbles, clientX: x, clientY: y })
+        );
+        document.body.dispatchEvent(
+          new PointerEvent('pointermove', {
+            bubbles,
+            clientX: x - 30,
+            clientY: y + 30
+          })
+        );
+        document.body.dispatchEvent(new PointerEvent('pointerup', { bubbles }));
+        expect(emitted).to.equal(true);
+        outer.dispose();
+      });
+
       it('should not snap the inner handle when the press lands above its top edge', () => {
         const { outer, outerHandle, innerHandle } = attachedNested();
         const ro = outerHandle.getBoundingClientRect();

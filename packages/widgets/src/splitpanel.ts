@@ -463,6 +463,7 @@ export class SplitPanel extends Panel {
 
     // Clear the override cursor.
     this._pressData.override.dispose();
+    const inner = this._pressData.innerIntersect?.panel;
     this._pressData = null;
 
     // The drag frames skip the update request that subclasses listen for.
@@ -470,6 +471,9 @@ export class SplitPanel extends Panel {
 
     // Emit the handle moved signal.
     this._handleMoved.emit();
+
+    // A two-axis drag also moved a handle of the inner panel.
+    inner?._handleMoved.emit();
 
     // Remove the extra document listeners.
     document.removeEventListener('keydown', this, true);
