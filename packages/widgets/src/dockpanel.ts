@@ -476,6 +476,7 @@ export class DockPanel extends Widget {
    */
   protected onBeforeAttach(msg: Message): void {
     this.node.addEventListener('lm-dragenter', this);
+    this.node.addEventListener('lm-dragleave', this._evtDragLeaveCapture, true);
     this.node.addEventListener('lm-dragleave', this);
     this.node.addEventListener('lm-dragover', this);
     this.node.addEventListener('lm-drop', this._evtDropCapture, true);
@@ -488,6 +489,11 @@ export class DockPanel extends Widget {
    */
   protected onAfterDetach(msg: Message): void {
     this.node.removeEventListener('lm-dragenter', this);
+    this.node.removeEventListener(
+      'lm-dragleave',
+      this._evtDragLeaveCapture,
+      true
+    );
     this.node.removeEventListener('lm-dragleave', this);
     this.node.removeEventListener('lm-dragover', this);
     this.node.removeEventListener('lm-drop', this._evtDropCapture, true);
@@ -536,6 +542,14 @@ export class DockPanel extends Widget {
       event.stopPropagation();
     }
   }
+
+  /**
+   * Handle the capture phase of the `'lm-dragleave'` event for the dock panel.
+   */
+  private _evtDragLeaveCapture = (): void => {
+    // A nested dock panel stops the bubbling event before it reaches us.
+    this.overlay.hide(1);
+  };
 
   /**
    * Handle the `'lm-dragleave'` event for the dock panel.
