@@ -166,5 +166,35 @@ describe('@lumino/domutils', () => {
         expect(Selector.matches(text, 'ol div + .text')).to.equal(false);
       });
     });
+
+    describe('hasTopLevelComma()', () => {
+      it('allows commas inside :is()', () => {
+        expect(Selector.hasTopLevelComma('.a:is(.b,.c)')).to.equal(false);
+      });
+
+      it('allows commas inside :where()', () => {
+        expect(Selector.hasTopLevelComma('.a:where(.b,.c)')).to.equal(false);
+      });
+
+      it('allows commas inside nested :is()', () => {
+        expect(Selector.hasTopLevelComma('.a:is(:not(:is(.b,.c)))')).to.equal(
+          false
+        );
+      });
+
+      it('allows commas inside top-level :is() with nesting', () => {
+        expect(Selector.hasTopLevelComma('.a:is(:not(:is(.b,.c)), .d)')).to.equal(
+          false
+        );
+      });
+
+      it('rejects top-level commas', () => {
+        expect(Selector.hasTopLevelComma('.a, .b')).to.equal(true);
+      });
+
+      it('rejects mixed selectors', () => {
+        expect(Selector.hasTopLevelComma('.a:is(.b,.c), .d')).to.equal(true);
+      });
+    });
   });
 });
