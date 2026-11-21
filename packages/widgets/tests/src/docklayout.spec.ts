@@ -259,6 +259,26 @@ describe('@lumino/widgets', () => {
 
         layout.dispose();
       });
+
+      it("should apply 'scale' to single widgets which a restored layout puts in one tab area", () => {
+        const layout = new DockLayout({
+          renderer,
+          hiddenMode: Widget.HiddenMode.Scale
+        });
+        const first = new Widget();
+        const second = new Widget();
+        layout.addWidget(first);
+        layout.addWidget(second, { ref: first, mode: 'split-right' });
+
+        layout.restoreLayout({
+          main: { type: 'tab-area', widgets: [first, second], currentIndex: 0 }
+        });
+
+        expect(first.hiddenMode).to.equal(Widget.HiddenMode.Scale);
+        expect(second.hiddenMode).to.equal(Widget.HiddenMode.Scale);
+
+        layout.dispose();
+      });
     });
 
     describe('#spacing', () => {

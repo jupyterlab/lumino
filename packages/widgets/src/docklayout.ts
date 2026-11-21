@@ -340,6 +340,10 @@ export class DockLayout extends Layout {
       this._root = null;
     }
 
+    for (const tabBar of this.tabBars()) {
+      this._applyHiddenMode(tabBar);
+    }
+
     // If there is no parent, there is nothing more to do.
     if (!this.parent) {
       return;
