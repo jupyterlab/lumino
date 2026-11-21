@@ -803,12 +803,18 @@ export class MenuBar extends Widget {
 
     // Swap the internal menu reference.
     this._childMenu = newMenu;
+    let index = this._activeIndex;
 
     // Close the current menu, or setup for the new menu.
     if (oldMenu) {
       oldMenu.close();
     } else {
       document.addEventListener('pointerdown', this, true);
+    }
+
+    // Closing a menu can focus its item; keep the focus on the new item.
+    if (this.contentNode.contains(document.activeElement)) {
+      this._focusItemAt(index);
     }
 
     // Update the tab focus index and ensure the menu bar is updated.
