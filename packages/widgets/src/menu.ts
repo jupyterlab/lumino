@@ -466,6 +466,13 @@ export class Menu extends Widget {
       return;
     }
 
+    // Remember the focused element, to restore focus when the menu closes.
+    const focused = document.activeElement;
+    this._focusOnClose =
+      focused instanceof HTMLElement && focused !== document.body
+        ? focused
+        : null;
+
     // Extract the menu options.
     let forceX = options.forceX || false;
     let forceY = options.forceY || false;
@@ -631,6 +638,15 @@ export class Menu extends Widget {
 
     // Finish closing the menu.
     super.onCloseRequest(msg);
+
+    // Return the focus to the element which had it before the menu opened,
+    // unless the focus has already moved somewhere other than the body.
+    const target = this._focusOnClose;
+    this._focusOnClose = null;
+    const active = document.activeElement;
+    if (target?.isConnected && (!active || active === document.body)) {
+      target.focus();
+    }
   }
 
   /**
@@ -1030,6 +1046,7 @@ export class Menu extends Widget {
   private _items: Menu.IItem[] = [];
   private _childMenu: Menu | null = null;
   private _parentMenu: Menu | null = null;
+  private _focusOnClose: HTMLElement | null = null;
   private _aboutToClose = new Signal<this, void>(this);
   private _menuRequested = new Signal<this, 'next' | 'previous'>(this);
 }
