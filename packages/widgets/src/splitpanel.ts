@@ -465,6 +465,9 @@ export class SplitPanel extends Panel {
     this._pressData.override.dispose();
     this._pressData = null;
 
+    // The drag frames skip the update request that subclasses listen for.
+    this.update();
+
     // Emit the handle moved signal.
     this._handleMoved.emit();
 

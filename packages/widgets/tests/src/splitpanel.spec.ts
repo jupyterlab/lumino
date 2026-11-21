@@ -340,6 +340,37 @@ describe('@lumino/widgets', () => {
           body.dispatchEvent(new PointerEvent('pointermove', { bubbles }));
           expect(panel.events).to.contain('pointermove');
         });
+
+        it('should post an update request after a handle drag', () => {
+          let handle = layout.handles[0];
+          let rect = handle.getBoundingClientRect();
+          let updates = 0;
+          MessageLoop.installMessageHook(panel, (handler, msg) => {
+            if (msg.type === 'update-request') {
+              updates++;
+            }
+            return true;
+          });
+          handle.dispatchEvent(
+            new PointerEvent('pointerdown', {
+              bubbles,
+              clientX: rect.left + 1,
+              clientY: rect.top + 1
+            })
+          );
+          document.body.dispatchEvent(
+            new PointerEvent('pointermove', {
+              bubbles,
+              clientX: rect.left + 10,
+              clientY: rect.top + 1
+            })
+          );
+          document.body.dispatchEvent(
+            new PointerEvent('pointerup', { bubbles })
+          );
+          MessageLoop.flush();
+          expect(updates).to.equal(1);
+        });
       });
 
       context('keydown', () => {
