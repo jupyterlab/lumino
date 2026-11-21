@@ -57,8 +57,10 @@ export class DockLayout extends Layout {
    * This will clear and dispose all widgets in the layout.
    */
   dispose(): void {
-    // Get an iterator over the widgets in the layout.
-    let widgets = this[Symbol.iterator]();
+    // Collect the widgets in the layout. The tab bars are disposed along
+    // with the other widgets and empty their titles, so a lazy iterator
+    // would stop before reaching the user widgets.
+    const widgets = Array.from(this);
 
     // Dispose of the layout items.
     this._items.forEach(item => {
