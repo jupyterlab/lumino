@@ -40,7 +40,7 @@ The example can be interacted with live in the browser by following this link:
 
 - [Using Lumino in a Vue.js application](https://github.com/kinow/vue-lumino)
 - [wasmboy: Game Boy / Game Boy Color Emulator Library, written for WebAssembly using AssemblyScript](https://github.com/torch2424/wasmboy)
-- [Web Components (Docking, Split and Tab Panels)](http://hpcc-systems.github.io/Visualization/components/README.html)
+- [HPCC Visualization Framework (Docking, Split and Tab Panels)](https://github.com/hpcc-systems/Visualization/tree/main/packages/phosphor)
 - [Using Lumino in Vue3](https://github.com/novrain/vue3-lumino-widget)
 
 ## Usage
