@@ -1236,6 +1236,31 @@ describe('@lumino/widgets', () => {
         });
       });
 
+      it('should not scroll to the element it returns the focus to', done => {
+        let scroller = document.createElement('div');
+        scroller.style.height = '100px';
+        scroller.style.overflow = 'auto';
+        let button = document.createElement('button');
+        let spacer = document.createElement('div');
+        spacer.style.height = '2000px';
+        scroller.append(button, spacer);
+        document.body.appendChild(scroller);
+        button.focus();
+        menu.addItem({ command: 'test' });
+        // Firefox scrolls the focused button into view on the next frame.
+        requestAnimationFrame(() => {
+          scroller.scrollTop = 1000;
+          menu.open(0, 0);
+          requestAnimationFrame(() => {
+            menu.close();
+            expect(document.activeElement).to.equal(button);
+            expect(scroller.scrollTop).to.equal(1000);
+            scroller.remove();
+            done();
+          });
+        });
+      });
+
       it('should not move the focus if it is no longer on the body', done => {
         let first = document.createElement('button');
         let second = document.createElement('button');

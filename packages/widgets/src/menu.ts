@@ -645,7 +645,8 @@ export class Menu extends Widget {
     this._focusOnClose = null;
     const active = document.activeElement;
     if (target?.isConnected && (!active || active === document.body)) {
-      target.focus();
+      // Do not scroll back to an element that the user scrolled out of view.
+      target.focus({ preventScroll: true });
     }
   }
 
