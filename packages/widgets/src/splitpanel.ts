@@ -490,7 +490,8 @@ export class SplitPanel extends Panel {
    * to account for the gap that separates child handles from the parent
    * handle's boundary.
    *
-   * @returns The intersecting handle descriptor, or `null` if none is found.
+   * @returns The descriptor of the intersecting handle nearest to the
+   *   position, or `null` if none is found.
    */
   private _findInnerIntersect(
     handleIndex: number,
@@ -498,6 +499,9 @@ export class SplitPanel extends Panel {
   ): { panel: SplitPanel; index: number; delta: number } | null {
     const layout = this.layout as SplitLayout;
     const tolerance = intersectionTolerance(layout.spacing);
+    let nearest: { panel: SplitPanel; index: number; delta: number } | null =
+      null;
+    let nearestDistance = Infinity;
     for (const candidate of [
       this.widgets[handleIndex],
       this.widgets[handleIndex + 1]
@@ -517,16 +521,14 @@ export class SplitPanel extends Panel {
         const r = h.getBoundingClientRect();
         const lo = layout.orientation === 'horizontal' ? r.top : r.left;
         const hi = layout.orientation === 'horizontal' ? r.bottom : r.right;
-        if (crossPos >= lo - tolerance && crossPos <= hi + tolerance) {
-          return {
-            panel: candidate,
-            index: i,
-            delta: crossPos - lo
-          };
+        const distance = Math.max(lo - crossPos, 0, crossPos - hi);
+        if (distance <= tolerance && distance < nearestDistance) {
+          nearest = { panel: candidate, index: i, delta: crossPos - lo };
+          nearestDistance = distance;
         }
       }
     }
-    return null;
+    return nearest;
   }
 
   /**

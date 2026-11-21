@@ -566,6 +566,37 @@ describe('@lumino/widgets', () => {
         outer.dispose();
       });
 
+      it('should highlight the nearer of two inner handles on hover', async () => {
+        const inner = new SplitPanel({ orientation: 'vertical', spacing: 4 });
+        [new Widget(), new Widget(), new Widget()].forEach(w =>
+          inner.addWidget(w)
+        );
+        const outer = new SplitPanel({ orientation: 'horizontal', spacing: 4 });
+        outer.addWidget(inner);
+        outer.addWidget(new Widget());
+        outer.node.style.position = 'absolute';
+        outer.node.style.width = '600px';
+        outer.node.style.height = '600px';
+        Widget.attach(outer, document.body);
+        // The two inner handles end up about 10 px apart.
+        inner.setRelativeSizes([290, 10, 300]);
+        MessageLoop.flush();
+        const outerHandle = (outer.layout as SplitLayout).handles[0];
+        const second = (inner.layout as SplitLayout).handles[1];
+        const ro = outerHandle.getBoundingClientRect();
+        const r2 = second.getBoundingClientRect();
+        outerHandle.dispatchEvent(
+          new PointerEvent('pointermove', {
+            bubbles,
+            clientX: (ro.left + ro.right) / 2,
+            clientY: (r2.top + r2.bottom) / 2
+          })
+        );
+        await nextFrame();
+        expect(second.classList.contains('lm-mod-intersection')).to.equal(true);
+        outer.dispose();
+      });
+
       it('should clear the hover highlight on pointerleave', async () => {
         const { outer, outerHandle, innerHandle } = attachedNested();
         const ro = outerHandle.getBoundingClientRect();

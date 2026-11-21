@@ -261,7 +261,8 @@ export class DockLayout extends Layout {
    *
    * @param clientY - The clientY of the pointer event.
    *
-   * @returns The intersecting handle, or `null` if none exists.
+   * @returns The intersecting handle nearest to the position, or `null` if
+   *   none exists.
    *
    * #### Notes
    * This is used to detect intersection points where two orthogonal split
@@ -279,9 +280,12 @@ export class DockLayout extends Layout {
     // Determine the primary handle's orientation.
     const primaryOrientation = handle.getAttribute('data-orientation');
 
-    // Iterate all handles looking for one with the opposite orientation
-    // whose bounding rect (expanded by spacing) contains the click point.
+    // Iterate all handles looking for the nearest one with the opposite
+    // orientation whose bounding rect (expanded by spacing) contains the
+    // click point.
     const tol = intersectionTolerance(this._spacing);
+    let nearest: HTMLDivElement | null = null;
+    let nearestDistance = Infinity;
     for (const candidate of this.handles()) {
       if (candidate === handle) {
         continue;
@@ -301,22 +305,21 @@ export class DockLayout extends Layout {
       // gives the same click-grab tolerance SplitPanel's inner-intersect
       // search gives, since that axis is otherwise only as wide as the
       // handle itself.
-      const left = rect.left - tol;
-      const right = rect.right + tol;
-      const top = rect.top - tol;
-      const bottom = rect.bottom + tol;
+      const dx = Math.max(rect.left - clientX, 0, clientX - rect.right);
+      const dy = Math.max(rect.top - clientY, 0, clientY - rect.bottom);
+      if (dx > tol || dy > tol) {
+        continue;
+      }
 
-      if (
-        clientX >= left &&
-        clientX <= right &&
-        clientY >= top &&
-        clientY <= bottom
-      ) {
-        return candidate;
+      // Handles closer together than the tolerance compete for the point.
+      const distance = Math.hypot(dx, dy);
+      if (distance < nearestDistance) {
+        nearest = candidate;
+        nearestDistance = distance;
       }
     }
 
-    return null;
+    return nearest;
   }
 
   /**

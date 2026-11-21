@@ -548,6 +548,31 @@ describe('@lumino/widgets', () => {
         );
         parent.dispose();
       });
+
+      it('should return the nearer of two orthogonal handles', () => {
+        const { parent, layout } = attachLayout((layout, w) => {
+          layout.addWidget(w[0]);
+          layout.addWidget(w[1], { mode: 'split-right', ref: w[0] });
+          layout.addWidget(w[2], { mode: 'split-bottom', ref: w[0] });
+          layout.addWidget(w[3], { mode: 'split-bottom', ref: w[1] });
+        }, 4);
+        const { horizontal, vertical } = visibleHandles(layout);
+        const primary = horizontal[0];
+        const right = vertical.find(h => h.offsetLeft > primary.offsetLeft)!;
+        // Both bars stay within the tolerance of the vertical bar.
+        layout.moveHandle(right, right.offsetLeft, right.offsetTop + 10);
+        MessageLoop.flush();
+        expectSame(
+          layout.findIntersectingHandle(
+            primary,
+            center(primary).x,
+            center(right).y
+          ),
+          right,
+          'nearer peer → match'
+        );
+        parent.dispose();
+      });
     });
 
     describe('#moveHandles()', () => {
