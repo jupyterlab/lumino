@@ -316,33 +316,28 @@ export class TextRenderer extends CellRenderer {
     // Elide text that is too long
     const elide = '\u2026';
 
-    // Loop until text width fits box or only one character remains
-    while (textWidth > boxWidth && text.length > 1) {
-      // Convert text string to array for dealing with astral symbols
-      const textArr = [...text];
+    if (textWidth > boxWidth && text.length > 1) {
+      // Search by code point so eliding does not split surrogate pairs.
+      const characters = [...text];
+      let lower = 0;
+      let upper = characters.length - 1;
+      text = elide;
 
-      if (elideDirection === 'right') {
-        // If text width is substantially bigger, take half the string
-        if (textArr.length > 4 && textWidth >= 2 * boxWidth) {
-          text =
-            textArr.slice(0, Math.floor(textArr.length / 2 + 1)).join('') +
-            elide;
+      // Find the longest fitting prefix or suffix in logarithmic measurements.
+      // Keep the ellipsis even if the box is too narrow to fit it.
+      while (lower < upper) {
+        const length = Math.ceil((lower + upper) / 2);
+        const candidate =
+          elideDirection === 'right'
+            ? characters.slice(0, length).join('') + elide
+            : elide + characters.slice(-length).join('');
+        if (gc.measureText(candidate).width <= boxWidth) {
+          lower = length;
+          text = candidate;
         } else {
-          // Otherwise incrementally remove the last character
-          text = textArr.slice(0, textArr.length - 2).join('') + elide;
-        }
-      } else {
-        // If text width is substantially bigger, take half the string
-        if (textArr.length > 4 && textWidth >= 2 * boxWidth) {
-          text = elide + textArr.slice(Math.floor(textArr.length / 2)).join('');
-        } else {
-          // Otherwise incrementally remove the last character
-          text = elide + textArr.slice(2).join('');
+          upper = length - 1;
         }
       }
-
-      // Measure new text width
-      textWidth = gc.measureText(text).width;
     }
 
     // Draw the text for the cell.
