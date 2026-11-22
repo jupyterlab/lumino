@@ -355,10 +355,12 @@ export class BasicMouseHandler implements DataGrid.IMouseHandler {
       r1 = accel ? row : shift ? model.cursorRow : row;
       r2 = row;
 
+      // A row header selects its rows, joined only with the merged row
+      // headers, not with the body's merged cells.
       const selectionGroup: CellGroup = { r1: r1, c1: 0, r2: r2, c2: 0 };
       const joinedGroup = CellGroup.joinCellGroupsIntersectingAtAxis(
         grid.dataModel!,
-        ['row-header', 'body'],
+        ['row-header'],
         'row',
         selectionGroup
       );
@@ -379,10 +381,12 @@ export class BasicMouseHandler implements DataGrid.IMouseHandler {
       c1 = accel ? column : shift ? model.cursorColumn : column;
       c2 = column;
 
+      // A column header selects its columns, joined only with the merged
+      // column headers, not with the body's merged cells.
       const selectionGroup: CellGroup = { r1: 0, c1: c1, r2: 0, c2: c2 };
       const joinedGroup = CellGroup.joinCellGroupsIntersectingAtAxis(
         grid.dataModel!,
-        ['column-header', 'body'],
+        ['column-header'],
         'column',
         selectionGroup
       );
@@ -539,10 +543,11 @@ export class BasicMouseHandler implements DataGrid.IMouseHandler {
       r1 = data.row;
       r2 = grid.rowAt('body', vy);
 
+      // A drag from a row header joins only the merged row headers.
       const selectionGroup: CellGroup = { r1: r1, c1: 0, r2: r2, c2: 0 };
       const joinedGroup = CellGroup.joinCellGroupsIntersectingAtAxis(
         grid.dataModel!,
-        ['row-header', 'body'],
+        data.region === 'row-header' ? ['row-header'] : ['row-header', 'body'],
         'row',
         selectionGroup
       );
@@ -560,10 +565,13 @@ export class BasicMouseHandler implements DataGrid.IMouseHandler {
       c1 = data.column;
       c2 = grid.columnAt('body', vx);
 
+      // A drag from a column header joins only the merged column headers.
       const selectionGroup: CellGroup = { r1: 0, c1: c1, r2: 0, c2: c2 };
       const joinedGroup = CellGroup.joinCellGroupsIntersectingAtAxis(
         grid.dataModel!,
-        ['column-header', 'body'],
+        data.region === 'column-header'
+          ? ['column-header']
+          : ['column-header', 'body'],
         'column',
         selectionGroup
       );
