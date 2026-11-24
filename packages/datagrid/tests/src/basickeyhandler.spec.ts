@@ -19,6 +19,9 @@ import { Widget } from '@lumino/widgets';
  * across all columns.
  */
 class MergedModel extends DataModel {
+  constructor(private widenSelections = true) {
+    super();
+  }
   rowCount(region: DataModel.RowRegion): number {
     return region === 'body' ? 6 : 1;
   }
@@ -32,7 +35,13 @@ class MergedModel extends DataModel {
     return region === 'body' ? 1 : 0;
   }
   group(region: DataModel.CellRegion, index: number) {
-    return { r1: 3, r2: 3, c1: 0, c2: 3 };
+    return {
+      r1: 3,
+      r2: 3,
+      c1: 0,
+      c2: 3,
+      widenSelections: this.widenSelections
+    };
   }
 }
 
@@ -66,6 +75,15 @@ describe('@lumino/datagrid', () => {
         grid,
         new KeyboardEvent('keydown', { keyCode: keyCodes[key], shiftKey })
       );
+    }
+
+    /**
+     * Use a grid whose row 3 does not widen selections.
+     */
+    function useNonWideningRow(): void {
+      const model = new MergedModel(false);
+      grid.dataModel = model;
+      grid.selectionModel = new BasicSelectionModel({ dataModel: model });
     }
 
     beforeEach(() => {
@@ -161,6 +179,19 @@ describe('@lumino/datagrid', () => {
           c1: 1,
           r2: 5,
           c2: 2
+        });
+      });
+
+      it('should not widen a range across a group that does not widen selections', () => {
+        useNonWideningRow();
+        selectCell(2, 1);
+        press('ArrowDown');
+        press('ArrowDown');
+        expect(grid.selectionModel!.currentSelection()).to.deep.equal({
+          r1: 2,
+          c1: 1,
+          r2: 4,
+          c2: 1
         });
       });
 

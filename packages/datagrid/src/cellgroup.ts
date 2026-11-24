@@ -17,6 +17,19 @@ export interface CellGroup {
   r2: number;
   c1: number;
   c2: number;
+
+  /**
+   * Whether a range selected across part of the group widens to cover the
+   * whole group, as a range across a merged cell does in a spreadsheet.
+   * The default is `true`.
+   *
+   * #### Notes
+   * Set it to `false` for a group that lays its content out across cells
+   * without being one cell of the data, such as a comment line in a CSV
+   * file, so that a range in one column can cross it. The group is still
+   * drawn, covered by the cursor and edited as one cell.
+   */
+  widenSelections?: boolean;
 }
 
 /**
@@ -169,6 +182,8 @@ export namespace CellGroup {
    * @param dataModel the data model of the grid.
    * @param group the target cell group.
    * @param region the region of the cell group.
+   * @param filter which merged cell groups to join; all of them if it is
+   * not given.
    * @returns a new cell group after merging has happened.
    *
    * #### Notes
@@ -180,7 +195,8 @@ export namespace CellGroup {
   export function joinCellGroupWithMergedCellGroups(
     dataModel: DataModel,
     group: CellGroup,
-    region: DataModel.CellRegion
+    region: DataModel.CellRegion,
+    filter?: (group: CellGroup) => boolean
   ): CellGroup {
     let joinedGroup: CellGroup = {
       r1: Math.min(group.r1, group.r2),
@@ -189,10 +205,13 @@ export namespace CellGroup {
       c2: Math.max(group.c1, group.c2)
     };
 
-    const mergedCellGroups: CellGroup[] = getCellGroupsAtRegion(
+    let mergedCellGroups: CellGroup[] = getCellGroupsAtRegion(
       dataModel,
       region
     );
+    if (filter) {
+      mergedCellGroups = mergedCellGroups.filter(filter);
+    }
 
     // Join until nothing changes, since a joined merged cell can reach
     // another one.

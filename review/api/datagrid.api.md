@@ -153,6 +153,7 @@ export interface CellGroup {
     r1: number;
     // (undocumented)
     r2: number;
+    widenSelections?: boolean;
 }
 
 // @public
@@ -166,7 +167,7 @@ export namespace CellGroup {
     export function getGroupIndex(dataModel: DataModel, rgn: DataModel.CellRegion, row: number, column: number): number;
     export function joinCellGroups(groups: CellGroup[]): CellGroup;
     export function joinCellGroupsIntersectingAtAxis(dataModel: DataModel, regions: DataModel.CellRegion[], axis: 'row' | 'column', group: CellGroup): CellGroup;
-    export function joinCellGroupWithMergedCellGroups(dataModel: DataModel, group: CellGroup, region: DataModel.CellRegion): CellGroup;
+    export function joinCellGroupWithMergedCellGroups(dataModel: DataModel, group: CellGroup, region: DataModel.CellRegion, filter?: (group: CellGroup) => boolean): CellGroup;
 }
 
 // @public

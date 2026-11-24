@@ -29,7 +29,8 @@ export namespace BodyRange {
    *
    * #### Notes
    * A single cell is selected as is, since the cursor already covers its
-   * merged cell.
+   * merged cell. Merged cells whose `widenSelections` is `false` are not
+   * joined.
    */
   export function select(
     dataModel: DataModel,
@@ -40,7 +41,12 @@ export namespace BodyRange {
     const joined =
       made.r1 === made.r2 && made.c1 === made.c2
         ? made
-        : CellGroup.joinCellGroupWithMergedCellGroups(dataModel, made, 'body');
+        : CellGroup.joinCellGroupWithMergedCellGroups(
+            dataModel,
+            made,
+            'body',
+            widensSelections
+          );
     model.select({ ...args, ...joined });
     const stored = model.currentSelection();
     if (stored) {
@@ -96,6 +102,13 @@ export namespace BodyRange {
     SelectionModel,
     { made: SelectionModel.Selection; stored: SelectionModel.Selection }
   >();
+
+  /**
+   * Whether a range across part of a merged cell group widens to cover it.
+   */
+  function widensSelections(group: CellGroup): boolean {
+    return group.widenSelections !== false;
+  }
 
   /**
    * Clamp a selection to the body of a data model.

@@ -49,6 +49,17 @@ describe('@lumino/datagrid', () => {
         ).to.deep.equal({ r1: 0, r2: 2, c1: 0, c2: 1 });
       });
 
+      it('should join only the merged cells that pass the filter', () => {
+        expect(
+          CellGroup.joinCellGroupWithMergedCellGroups(
+            new ChainModel(),
+            { r1: 2, r2: 2, c1: 0, c2: 1 },
+            'body',
+            group => group.c1 === 1
+          )
+        ).to.deep.equal({ r1: 2, r2: 2, c1: 0, c2: 1 });
+      });
+
       it('should keep the order of corners given in reverse', () => {
         expect(
           CellGroup.joinCellGroupWithMergedCellGroups(

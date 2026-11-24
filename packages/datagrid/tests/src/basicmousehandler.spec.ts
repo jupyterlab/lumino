@@ -44,7 +44,10 @@ function createFakeGrid(): {
  * headers 2 and 3 merged.
  */
 class MergedModel extends DataModel {
-  constructor(private headerGroup = false) {
+  constructor(
+    private headerGroup = false,
+    private widenSelections = true
+  ) {
     super();
   }
   rowCount(region: DataModel.RowRegion): number {
@@ -65,7 +68,13 @@ class MergedModel extends DataModel {
   group(region: DataModel.CellRegion, index: number) {
     if (region === 'body') {
       return index === 0
-        ? { r1: 3, r2: 3, c1: 0, c2: 3 }
+        ? {
+            r1: 3,
+            r2: 3,
+            c1: 0,
+            c2: 3,
+            widenSelections: this.widenSelections
+          }
         : { r1: 1, r2: 2, c1: 0, c2: 0 };
     }
     return { r1: 0, r2: 0, c1: 2, c2: 3 };
@@ -77,9 +86,10 @@ class MergedModel extends DataModel {
  */
 function createMergedGrid(
   headerGroup = false,
-  selectionMode: 'cell' | 'row' | 'column' = 'cell'
+  selectionMode: 'cell' | 'row' | 'column' = 'cell',
+  widenSelections = true
 ): DataGrid {
-  const model = new MergedModel(headerGroup);
+  const model = new MergedModel(headerGroup, widenSelections);
   const grid = new DataGrid();
   grid.dataModel = model;
   grid.selectionModel = new BasicSelectionModel({
@@ -270,6 +280,17 @@ describe('@lumino/datagrid', () => {
           c2: 3
         });
         expect(overlayAlpha(grid, 4, 3)).to.be.above(0);
+      });
+
+      it('should not widen a dragged range across a group that does not widen selections', () => {
+        grid = createMergedGrid(false, 'cell', false);
+        dragBody(handler, grid, [1, 1], [5, 1]);
+        expect(grid.selectionModel!.currentSelection()).to.deep.equal({
+          r1: 1,
+          c1: 1,
+          r2: 5,
+          c2: 1
+        });
       });
 
       it('should keep the corner order of a range dragged up and left', () => {
