@@ -102,6 +102,17 @@ class LogWidget extends Widget {
   }
 }
 
+/**
+ * Where each node of the parent is in the layout order of the widgets:
+ * ascending when the DOM follows the layout.
+ */
+function domOrder(layout: BoxLayout): number[] {
+  let nodes: Element[] = layout.widgets.map(widget => widget.node);
+  return Array.from(layout.parent!.node.children).map(node =>
+    nodes.indexOf(node)
+  );
+}
+
 describe('@lumino/widgets', () => {
   describe('BoxLayout', () => {
     describe('constructor()', () => {
@@ -236,6 +247,18 @@ describe('@lumino/widgets', () => {
     });
 
     describe('#attachWidget()', () => {
+      it('should insert the widget node in layout order', () => {
+        let panel = new Widget();
+        let layout = new LogBoxLayout();
+        panel.layout = layout;
+        layout.addWidget(new Widget());
+        layout.addWidget(new Widget());
+        layout.insertWidget(1, new Widget());
+        layout.insertWidget(0, new Widget());
+        expect(domOrder(layout)).to.deep.equal([0, 1, 2, 3]);
+        panel.dispose();
+      });
+
       it("should attach a widget to the parent's DOM node", () => {
         let panel = new Widget();
         let layout = new LogBoxLayout();
@@ -274,6 +297,48 @@ describe('@lumino/widgets', () => {
     });
 
     describe('#moveWidget()', () => {
+      it('should move the widget nodes in layout order', () => {
+        let panel = new Widget();
+        let layout = new LogBoxLayout();
+        panel.layout = layout;
+        let widgets = [new Widget(), new Widget(), new Widget(), new Widget()];
+        widgets.forEach(w => {
+          layout.addWidget(w);
+        });
+        layout.insertWidget(0, widgets[3]);
+        expect(domOrder(layout)).to.deep.equal([0, 1, 2, 3]);
+        layout.insertWidget(3, widgets[3]);
+        expect(domOrder(layout)).to.deep.equal([0, 1, 2, 3]);
+        layout.insertWidget(1, widgets[0]);
+        expect(domOrder(layout)).to.deep.equal([0, 1, 2, 3]);
+        panel.dispose();
+      });
+
+      it('should send before/after detach/attach messages if the parent is attached', () => {
+        let panel = new Widget();
+        let layout = new LogBoxLayout();
+        panel.layout = layout;
+        let widgets = [new Widget(), new Widget(), new Widget()];
+        widgets.forEach(w => {
+          layout.addWidget(w);
+        });
+        Widget.attach(panel, document.body);
+        let messages: string[] = [];
+        MessageLoop.installMessageHook(widgets[0], (handler, msg) => {
+          messages.push(msg.type);
+          return true;
+        });
+        layout.insertWidget(2, widgets[0]);
+        expect(messages).to.deep.equal([
+          'before-detach',
+          'after-detach',
+          'before-attach',
+          'after-attach'
+        ]);
+        expect(document.body.contains(widgets[0].node)).to.equal(true);
+        panel.dispose();
+      });
+
       it('should post an update request for the parent widget', done => {
         let panel = new Widget();
         let layout = new LogBoxLayout();
