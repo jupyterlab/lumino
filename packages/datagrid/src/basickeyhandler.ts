@@ -19,7 +19,7 @@ import { SelectionModel } from './selectionmodel';
 
 import { CellEditor } from './celleditor';
 
-import { MutableDataModel } from './datamodel';
+import { DataModel, MutableDataModel } from './datamodel';
 
 /**
  * A basic implementation of a data grid key handler.
@@ -847,9 +847,9 @@ namespace Private {
    * Make a selection for a key press.
    *
    * #### Notes
-   * With Shift, in the cell selection mode, the selection is a range that
-   * joins the merged cells it covers. Whole rows or columns, as a header
-   * press selects them, stay whole rows or columns.
+   * In the cell selection mode, a range extended with Shift joins the
+   * merged cells it covers, while whole rows or columns, as a header press
+   * selects them, are extended as whole rows or columns.
    */
   export function select(
     grid: DataGrid,
@@ -858,19 +858,31 @@ namespace Private {
   ): void {
     const model = grid.selectionModel!;
     const dataModel = grid.dataModel;
-    if (!shift || model.selectionMode !== 'cell' || !dataModel) {
+    if (model.selectionMode !== 'cell' || !dataModel) {
       model.select(args);
       return;
     }
     const cs = model.currentSelection();
-    if (
-      cs &&
-      !BodyRange.isRange(model, cs) &&
-      BodyRange.isWholeRowsOrColumns(dataModel, cs)
-    ) {
-      model.select(args);
+    if (shift && cs && isLines(model, dataModel, cs)) {
+      BodyRange.selectLines(model, args);
       return;
     }
     BodyRange.select(dataModel, model, args);
+  }
+
+  /**
+   * Whether a selection is whole rows or columns: made from a header, or,
+   * if it was not made by the handlers, spanning every row or column.
+   */
+  function isLines(
+    model: SelectionModel,
+    dataModel: DataModel,
+    selection: SelectionModel.Selection
+  ): boolean {
+    const kind = BodyRange.kindOf(model, selection);
+    return (
+      kind === 'lines' ||
+      (kind === null && BodyRange.isWholeRowsOrColumns(dataModel, selection))
+    );
   }
 }

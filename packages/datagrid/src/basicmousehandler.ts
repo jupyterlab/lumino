@@ -245,10 +245,10 @@ export class BasicMouseHandler implements DataGrid.IMouseHandler {
         clear = 'all';
       }
 
-      // Make the selection. A range made with Shift joins the merged
-      // cells it covers.
+      // Make the selection. In the cell selection mode, a range made with
+      // Shift joins the merged cells it covers.
       const args = { r1, c1, r2, c2, cursorRow, cursorColumn, clear };
-      if (shift && !accel && model.selectionMode === 'cell') {
+      if (model.selectionMode === 'cell') {
         BodyRange.select(grid.dataModel!, model, args);
       } else {
         model.select(args);
@@ -360,23 +360,14 @@ export class BasicMouseHandler implements DataGrid.IMouseHandler {
       cursorColumn = accel ? 0 : shift ? model.cursorColumn : 0;
       clear = accel ? 'none' : shift ? 'current' : 'all';
     } else if (region === 'row-header') {
-      r1 = accel ? row : shift ? model.cursorRow : row;
-      r2 = row;
-
-      // A row header selects its rows, joined only with the merged row
-      // headers, not with the body's merged cells.
-      const selectionGroup: CellGroup = { r1: r1, c1: 0, r2: r2, c2: 0 };
-      const joinedGroup = CellGroup.joinCellGroupsIntersectingAtAxis(
+      // A row header selects whole rows, joined only with the merged row
+      // headers they cross, not with the body's merged cells.
+      [r1, r2] = Private.joinHeaderGroups(
         grid.dataModel!,
-        ['row-header'],
-        'row',
-        selectionGroup
+        'row-header',
+        accel ? row : shift ? model.cursorRow : row,
+        row
       );
-      // Check if there are any merges
-      if (joinedGroup.r1 != Number.MAX_VALUE) {
-        r1 = joinedGroup.r1;
-        r2 = joinedGroup.r2;
-      }
 
       c1 = 0;
       c2 = Infinity;
@@ -386,23 +377,14 @@ export class BasicMouseHandler implements DataGrid.IMouseHandler {
     } else if (region === 'column-header') {
       r1 = 0;
       r2 = Infinity;
-      c1 = accel ? column : shift ? model.cursorColumn : column;
-      c2 = column;
-
-      // A column header selects its columns, joined only with the merged
-      // column headers, not with the body's merged cells.
-      const selectionGroup: CellGroup = { r1: 0, c1: c1, r2: 0, c2: c2 };
-      const joinedGroup = CellGroup.joinCellGroupsIntersectingAtAxis(
+      // A column header selects whole columns, joined only with the merged
+      // column headers they cross, not with the body's merged cells.
+      [c1, c2] = Private.joinHeaderGroups(
         grid.dataModel!,
-        ['column-header'],
-        'column',
-        selectionGroup
+        'column-header',
+        accel ? column : shift ? model.cursorColumn : column,
+        column
       );
-      // Check if there are any merges
-      if (joinedGroup.c1 != Number.MAX_VALUE) {
-        c1 = joinedGroup.c1;
-        c2 = joinedGroup.c2;
-      }
 
       cursorRow = accel ? 0 : shift ? model.cursorRow : 0;
       cursorColumn = accel ? column : shift ? model.cursorColumn : column;
@@ -418,7 +400,15 @@ export class BasicMouseHandler implements DataGrid.IMouseHandler {
     }
 
     // Make the selection.
-    model.select({ r1, c1, r2, c2, cursorRow, cursorColumn, clear });
+    BodyRange.selectLines(model, {
+      r1,
+      c1,
+      r2,
+      c2,
+      cursorRow,
+      cursorColumn,
+      clear
+    });
   }
 
   /**
@@ -548,46 +538,29 @@ export class BasicMouseHandler implements DataGrid.IMouseHandler {
 
     // Compute the selection based pressed region.
     if (data.region === 'row-header' || mode === 'row') {
-      r1 = data.row;
-      r2 = grid.rowAt('body', vy);
-
-      // Whole rows join only the merged row headers, not the body's
-      // merged cells, as a row header press does.
-      const selectionGroup: CellGroup = { r1: r1, c1: 0, r2: r2, c2: 0 };
-      const joinedGroup = CellGroup.joinCellGroupsIntersectingAtAxis(
+      // Whole rows join only the merged row headers they cross, not the
+      // body's merged cells, as a row header press does.
+      [r1, r2] = Private.joinHeaderGroups(
         grid.dataModel!,
-        ['row-header'],
-        'row',
-        selectionGroup
+        'row-header',
+        data.row,
+        grid.rowAt('body', vy)
       );
-      // Check if there are any merges
-      if (joinedGroup.r1 != Number.MAX_VALUE) {
-        r1 = Math.min(r1, joinedGroup.r1);
-        r2 = Math.max(r2, joinedGroup.r2);
-      }
 
       c1 = 0;
       c2 = Infinity;
     } else if (data.region === 'column-header' || mode === 'column') {
       r1 = 0;
       r2 = Infinity;
-      c1 = data.column;
-      c2 = grid.columnAt('body', vx);
 
-      // Whole columns join only the merged column headers, not the body's
-      // merged cells, as a column header press does.
-      const selectionGroup: CellGroup = { r1: 0, c1: c1, r2: 0, c2: c2 };
-      const joinedGroup = CellGroup.joinCellGroupsIntersectingAtAxis(
+      // Whole columns join only the merged column headers they cross, not
+      // the body's merged cells, as a column header press does.
+      [c1, c2] = Private.joinHeaderGroups(
         grid.dataModel!,
-        ['column-header'],
-        'column',
-        selectionGroup
+        'column-header',
+        data.column,
+        grid.columnAt('body', vx)
       );
-      // Check if there are any merges
-      if (joinedGroup.c1 != Number.MAX_VALUE) {
-        c1 = joinedGroup.c1;
-        c2 = joinedGroup.c2;
-      }
     } else {
       r1 = cursorRow;
       r2 = grid.rowAt('body', vy);
@@ -608,7 +581,15 @@ export class BasicMouseHandler implements DataGrid.IMouseHandler {
     }
 
     // Make the selection.
-    model.select({ r1, c1, r2, c2, cursorRow, cursorColumn, clear });
+    BodyRange.selectLines(model, {
+      r1,
+      c1,
+      r2,
+      c2,
+      cursorRow,
+      cursorColumn,
+      clear
+    });
   }
 
   /**
@@ -945,6 +926,46 @@ export namespace PressData {
  */
 namespace Private {
   /**
+   * Join a range of header rows or columns with the merged cells of that
+   * header which it crosses.
+   *
+   * @param dataModel - The data model of the grid.
+   *
+   * @param region - The header region.
+   *
+   * @param first - The row or column the range starts at.
+   *
+   * @param last - The row or column the range ends at.
+   *
+   * @returns The first and last index of the joined range, in the order of
+   * `first` and `last`.
+   */
+  export function joinHeaderGroups(
+    dataModel: DataModel,
+    region: 'row-header' | 'column-header',
+    first: number,
+    last: number
+  ): [number, number] {
+    let start = Math.min(first, last);
+    let end = Math.max(first, last);
+    const rows = region === 'row-header';
+    const joined = CellGroup.joinCellGroupsIntersectingAtAxis(
+      dataModel,
+      [region],
+      rows ? 'row' : 'column',
+      rows
+        ? { r1: start, r2: end, c1: 0, c2: 0 }
+        : { r1: 0, r2: 0, c1: start, c2: end }
+    );
+    // The result covers the merged cells found, if there are any.
+    if ((rows ? joined.r1 : joined.c1) !== Number.MAX_VALUE) {
+      start = Math.min(start, rows ? joined.r1 : joined.c1);
+      end = Math.max(end, rows ? joined.r2 : joined.c2);
+    }
+    return first <= last ? [start, end] : [end, start];
+  }
+
+  /**
    * Creates a CellConfig object from a hit region.
    */
   export function createCellConfigObject(
@@ -1119,7 +1140,7 @@ namespace Private {
     if (range) {
       BodyRange.select(grid.dataModel!, model, args);
     } else {
-      model.select(args);
+      BodyRange.selectLines(model, args);
     }
 
     // Re-fetch the current selection.

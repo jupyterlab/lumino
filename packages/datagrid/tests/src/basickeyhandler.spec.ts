@@ -10,6 +10,8 @@ import {
   DataModel
 } from '@lumino/datagrid';
 
+import { Platform } from '@lumino/domutils';
+
 import { MessageLoop } from '@lumino/messaging';
 
 import { Widget } from '@lumino/widgets';
@@ -23,7 +25,7 @@ class MergedModel extends DataModel {
     super();
   }
   rowCount(region: DataModel.RowRegion): number {
-    return region === 'body' ? 6 : 1;
+    return region === 'body' ? this.rows : 1;
   }
   columnCount(region: DataModel.ColumnRegion): number {
     return region === 'body' ? 4 : 1;
@@ -43,9 +45,46 @@ class MergedModel extends DataModel {
       widenSelections: this.widenSelections
     };
   }
+  addRow(): void {
+    this.rows += 1;
+    this.emitChanged({
+      type: 'rows-inserted',
+      region: 'body',
+      index: this.rows - 1,
+      span: 1
+    });
+  }
+  private rows = 6;
 }
 
-const keyCodes = { ArrowLeft: 37, ArrowUp: 38, ArrowRight: 39, ArrowDown: 40 };
+/**
+ * One row of four columns, with columns 1 and 2 merged.
+ */
+class OneRowModel extends DataModel {
+  rowCount(region: DataModel.RowRegion): number {
+    return 1;
+  }
+  columnCount(region: DataModel.ColumnRegion): number {
+    return region === 'body' ? 4 : 1;
+  }
+  data(region: DataModel.CellRegion, row: number, column: number): string {
+    return `${region} ${row},${column}`;
+  }
+  groupCount(region: DataModel.CellRegion): number {
+    return region === 'body' ? 1 : 0;
+  }
+  group(region: DataModel.CellRegion, index: number) {
+    return { r1: 0, r2: 0, c1: 1, c2: 2 };
+  }
+}
+
+const keyCodes = {
+  PageDown: 34,
+  ArrowLeft: 37,
+  ArrowUp: 38,
+  ArrowRight: 39,
+  ArrowDown: 40
+};
 
 describe('@lumino/datagrid', () => {
   describe('BasicKeyHandler', () => {
@@ -68,22 +107,38 @@ describe('@lumino/datagrid', () => {
     }
 
     /**
-     * Press an arrow key, with Shift unless told otherwise.
+     * Press a key, with Shift unless told otherwise, and optionally with
+     * the accel key.
      */
-    function press(key: keyof typeof keyCodes, shiftKey = true): void {
+    function press(
+      key: keyof typeof keyCodes,
+      shiftKey = true,
+      accel = false
+    ): void {
       handler.onKeyDown(
         grid,
-        new KeyboardEvent('keydown', { keyCode: keyCodes[key], shiftKey })
+        new KeyboardEvent('keydown', {
+          keyCode: keyCodes[key],
+          shiftKey,
+          metaKey: accel && Platform.IS_MAC,
+          ctrlKey: accel && !Platform.IS_MAC
+        })
       );
+    }
+
+    /**
+     * Use another data model for the grid.
+     */
+    function useModel(model: DataModel): void {
+      grid.dataModel = model;
+      grid.selectionModel = new BasicSelectionModel({ dataModel: model });
     }
 
     /**
      * Use a grid whose row 3 does not widen selections.
      */
     function useNonWideningRow(): void {
-      const model = new MergedModel(false);
-      grid.dataModel = model;
-      grid.selectionModel = new BasicSelectionModel({ dataModel: model });
+      useModel(new MergedModel(false));
     }
 
     beforeEach(() => {
@@ -192,6 +247,82 @@ describe('@lumino/datagrid', () => {
           c1: 1,
           r2: 4,
           c2: 1
+        });
+      });
+
+      it('should join a range from a cell in a grid of one row', () => {
+        useModel(new OneRowModel());
+        selectCell(0, 0);
+        press('ArrowRight');
+        expect(grid.selectionModel!.currentSelection()).to.deep.equal({
+          r1: 0,
+          c1: 0,
+          r2: 0,
+          c2: 2
+        });
+      });
+
+      it('should shrink columns selected from a header without joining', () => {
+        const mouse = new BasicMouseHandler();
+        const rect = grid.viewport.node.getBoundingClientRect();
+        mouse.onMouseDown(
+          grid,
+          new MouseEvent('mousedown', {
+            clientX: rect.left + grid.headerWidth + 64 + 32,
+            clientY: rect.top + grid.headerHeight / 2
+          })
+        );
+        mouse.onMouseUp(grid, new MouseEvent('mouseup'));
+        mouse.dispose();
+        press('ArrowUp');
+        expect(grid.selectionModel!.currentSelection()).to.deep.equal({
+          r1: 0,
+          c1: 1,
+          r2: 4,
+          c2: 1
+        });
+        press('ArrowUp');
+        expect(grid.selectionModel!.currentSelection()).to.deep.equal({
+          r1: 0,
+          c1: 1,
+          r2: 3,
+          c2: 1
+        });
+      });
+
+      it('should extend a range as it was made after rows are added', () => {
+        const model = grid.dataModel as MergedModel;
+        selectCell(2, 1);
+        press('ArrowDown');
+        model.addRow();
+        press('ArrowUp');
+        expect(grid.selectionModel!.currentSelection()).to.deep.equal({
+          r1: 2,
+          c1: 1,
+          r2: 2,
+          c2: 1
+        });
+      });
+
+      it('should join a range extended with Shift+PageDown', () => {
+        selectCell(2, 1);
+        press('PageDown');
+        expect(grid.selectionModel!.currentSelection()).to.deep.equal({
+          r1: 2,
+          c1: 0,
+          r2: 5,
+          c2: 3
+        });
+      });
+
+      it('should join a range extended to the end with Accel+Shift+ArrowDown', () => {
+        selectCell(2, 1);
+        press('ArrowDown', true, true);
+        expect(grid.selectionModel!.currentSelection()).to.deep.equal({
+          r1: 2,
+          c1: 0,
+          r2: 5,
+          c2: 3
         });
       });
 

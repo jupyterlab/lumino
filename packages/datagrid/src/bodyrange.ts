@@ -7,17 +7,27 @@ import { DataModel } from './datamodel';
 import { SelectionModel } from './selectionmodel';
 
 /**
- * Ranges of cells selected in the body by the mouse or the keys.
+ * Selections made by the mouse and key handlers.
  *
  * #### Notes
- * A range is stored joined with the merged cells it covers, so that it is
- * drawn and copied as it is stored. The range as it was made is kept as
- * well, and the handlers extend that one: Shift and an arrow key can then
- * shrink a range back out of a merged cell.
+ * A range of cells made in the body is stored joined with the merged cells
+ * it covers, so that it is drawn and copied as it is stored. Whole rows or
+ * columns, as a header press selects them, are not joined with the body's
+ * merged cells.
+ *
+ * The last selection made here is remembered, with how it was made, so that
+ * the handlers extend a range as it was made rather than as it was joined:
+ * Shift and an arrow key can then shrink a range back out of a merged cell.
  *
  * This module is internal to the package.
  */
 export namespace BodyRange {
+  /**
+   * How a selection was made: a range of cells in the body, or whole rows
+   * or columns from a header.
+   */
+  export type Kind = 'range' | 'lines';
+
   /**
    * Select a range of body cells, joined with the merged cells it covers.
    *
@@ -48,44 +58,61 @@ export namespace BodyRange {
             widensSelections
           );
     model.select({ ...args, ...joined });
-    const stored = model.currentSelection();
-    if (stored) {
-      ranges.set(model, { made, stored });
-    }
+    remember(model, 'range', made);
   }
 
   /**
-   * Whether a selection is the last range selected with `select`.
+   * Select whole rows or columns, as a header press does, without joining
+   * the body's merged cells.
+   *
+   * @param model - The selection model of the grid.
+   *
+   * @param args - The selection, and the cursor and clear mode.
    */
-  export function isRange(
+  export function selectLines(
+    model: SelectionModel,
+    args: SelectionModel.SelectArgs
+  ): void {
+    model.select(args);
+    remember(model, 'lines', null);
+  }
+
+  /**
+   * Get how a selection was made, if it is the last selection made here,
+   * or `null`.
+   */
+  export function kindOf(
     model: SelectionModel,
     selection: SelectionModel.Selection
-  ): boolean {
-    const entry = ranges.get(model);
-    return !!entry && entry.stored === selection;
+  ): Kind | null {
+    const entry = entries.get(model);
+    return entry && sameCells(entry.stored, selection) ? entry.kind : null;
   }
 
   /**
-   * Get a selection as it was made, if it is the last range selected
-   * with `select`, or else the selection itself.
+   * Get a selection as it was made, if it is the last selection made here,
+   * or else the selection itself.
    */
   export function asMade(
     model: SelectionModel,
     selection: SelectionModel.Selection
   ): SelectionModel.Selection {
-    const entry = ranges.get(model);
-    return entry && entry.stored === selection ? entry.made : selection;
+    const entry = entries.get(model);
+    return entry && sameCells(entry.stored, selection) ? entry.made : selection;
   }
 
   /**
-   * Whether a selection spans every row or every column of the body, as a
-   * header press selects them.
+   * Whether a selection of more than one cell spans every row or every
+   * column of the body, as a header press selects them.
    */
   export function isWholeRowsOrColumns(
     dataModel: DataModel,
     selection: SelectionModel.Selection
   ): boolean {
     const { r1, c1, r2, c2 } = selection;
+    if (r1 === r2 && c1 === c2) {
+      return false;
+    }
     const maxRow = dataModel.rowCount('body') - 1;
     const maxColumn = dataModel.columnCount('body') - 1;
     return (
@@ -95,13 +122,55 @@ export namespace BodyRange {
   }
 
   /**
-   * The last range selected with `select`, as made and as stored, by
-   * selection model.
+   * The last selection made here, by selection model: how it was made, the
+   * cells as made, and the cells as stored.
+   *
+   * #### Notes
+   * The cells are compared rather than the selection objects, because a
+   * selection model may replace its objects, for example when rows are
+   * added, and may return copies.
    */
-  const ranges = new WeakMap<
+  const entries = new WeakMap<
     SelectionModel,
-    { made: SelectionModel.Selection; stored: SelectionModel.Selection }
+    {
+      kind: Kind;
+      made: SelectionModel.Selection;
+      stored: SelectionModel.Selection;
+    }
   >();
+
+  /**
+   * Remember the current selection of a selection model as the last one
+   * made here.
+   */
+  function remember(
+    model: SelectionModel,
+    kind: Kind,
+    made: SelectionModel.Selection | null
+  ): void {
+    const current = model.currentSelection();
+    if (!current) {
+      entries.delete(model);
+      return;
+    }
+    const stored = {
+      r1: current.r1,
+      c1: current.c1,
+      r2: current.r2,
+      c2: current.c2
+    };
+    entries.set(model, { kind, made: made || stored, stored });
+  }
+
+  /**
+   * Whether two selections cover the same cells with the same corners.
+   */
+  function sameCells(
+    a: SelectionModel.Selection,
+    b: SelectionModel.Selection
+  ): boolean {
+    return a.r1 === b.r1 && a.c1 === b.c1 && a.r2 === b.r2 && a.c2 === b.c2;
+  }
 
   /**
    * Whether a range across part of a merged cell group widens to cover it.

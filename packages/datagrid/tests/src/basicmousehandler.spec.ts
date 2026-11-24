@@ -110,7 +110,8 @@ function pressHeader(
   handler: BasicMouseHandler,
   grid: DataGrid,
   region: 'column-header' | 'row-header',
-  index: number
+  index: number,
+  shiftKey = false
 ): void {
   const rect = grid.viewport.node.getBoundingClientRect();
   const clientX =
@@ -121,7 +122,11 @@ function pressHeader(
     region === 'column-header'
       ? rect.top + grid.headerHeight / 2
       : rect.top + grid.headerHeight + 20 * index + 10;
-  handler.onMouseDown(grid, new MouseEvent('mousedown', { clientX, clientY }));
+  handler.onMouseDown(
+    grid,
+    new MouseEvent('mousedown', { clientX, clientY, shiftKey })
+  );
+  handler.onMouseUp(grid, new MouseEvent('mouseup'));
 }
 
 /**
@@ -233,12 +238,49 @@ describe('@lumino/datagrid', () => {
         });
       });
 
+      it('should join a header range with the whole merged header it crosses', () => {
+        grid = createMergedGrid(true);
+        pressHeader(handler, grid, 'column-header', 0);
+        pressHeader(handler, grid, 'column-header', 3, true);
+        expect(grid.selectionModel!.currentSelection()).to.deep.equal({
+          r1: 0,
+          c1: 0,
+          r2: 5,
+          c2: 3
+        });
+      });
+
+      it('should keep the order of a header range made backwards', () => {
+        grid = createMergedGrid(true);
+        pressHeader(handler, grid, 'column-header', 2);
+        pressHeader(handler, grid, 'column-header', 0, true);
+        expect(grid.selectionModel!.currentSelection()).to.deep.equal({
+          r1: 0,
+          c1: 3,
+          r2: 5,
+          c2: 0
+        });
+      });
+
       it('should highlight only the pressed column', () => {
         grid = createMergedGrid();
         pressHeader(handler, grid, 'column-header', 1);
         expect(overlayAlpha(grid, 1, 1)).to.be.above(0);
         expect(overlayAlpha(grid, 1, 2)).to.equal(0);
         expect(overlayAlpha(grid, 3, 2)).to.equal(0);
+      });
+
+      it('should not widen a Shift+click range across a group that does not widen selections', () => {
+        grid = createMergedGrid(false, 'cell', false);
+        pressBody(handler, grid, 1, 1);
+        handler.onMouseUp(grid, new MouseEvent('mouseup'));
+        pressBody(handler, grid, 5, 1, true);
+        expect(grid.selectionModel!.currentSelection()).to.deep.equal({
+          r1: 1,
+          c1: 1,
+          r2: 5,
+          c2: 1
+        });
       });
 
       it('should join a Shift+click range with the merged cells it covers', () => {
@@ -323,6 +365,17 @@ describe('@lumino/datagrid', () => {
           r1: 3,
           c1: 1,
           r2: 3,
+          c2: 1
+        });
+      });
+
+      it('should select whole columns without the body merged cells in column mode', () => {
+        grid = createMergedGrid(false, 'column');
+        dragBody(handler, grid, [2, 0], [2, 1]);
+        expect(grid.selectionModel!.currentSelection()).to.deep.equal({
+          r1: 0,
+          c1: 0,
+          r2: 5,
           c2: 1
         });
       });
