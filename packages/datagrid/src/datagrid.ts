@@ -5625,16 +5625,8 @@ export class DataGrid extends Widget {
         sc2 = tmp;
       }
 
-      const joinedGroup = CellGroup.joinCellGroupWithMergedCellGroups(
-        this.dataModel!,
-        { r1: sr1, r2: sr2, c1: sc1, c2: sc2 },
-        'body'
-      );
-
-      sr1 = joinedGroup.r1;
-      sr2 = joinedGroup.r2;
-      sc1 = joinedGroup.c1;
-      sc2 = joinedGroup.c2;
+      // Draw the selection as stored. A range made in the body was joined
+      // with the merged cells it covers when it was made.
 
       // Convert to pixel coordinates.
       let x1 = this._columnSections.offsetOf(sc1) - sx + hw;

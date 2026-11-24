@@ -75,11 +75,17 @@ class MergedModel extends DataModel {
 /**
  * A grid of a merged model, attached, with a basic selection model.
  */
-function createMergedGrid(headerGroup = false): DataGrid {
+function createMergedGrid(
+  headerGroup = false,
+  selectionMode: 'cell' | 'row' | 'column' = 'cell'
+): DataGrid {
   const model = new MergedModel(headerGroup);
   const grid = new DataGrid();
   grid.dataModel = model;
-  grid.selectionModel = new BasicSelectionModel({ dataModel: model });
+  grid.selectionModel = new BasicSelectionModel({
+    dataModel: model,
+    selectionMode
+  });
   grid.node.style.width = '500px';
   grid.node.style.height = '300px';
   Widget.attach(grid, document.body);
@@ -106,6 +112,67 @@ function pressHeader(
       ? rect.top + grid.headerHeight / 2
       : rect.top + grid.headerHeight + 20 * index + 10;
   handler.onMouseDown(grid, new MouseEvent('mousedown', { clientX, clientY }));
+}
+
+/**
+ * The client position of the middle of a body cell.
+ */
+function bodyPoint(
+  grid: DataGrid,
+  row: number,
+  column: number
+): MouseEventInit {
+  const rect = grid.viewport.node.getBoundingClientRect();
+  return {
+    clientX: rect.left + grid.headerWidth + 64 * column + 32,
+    clientY: rect.top + grid.headerHeight + 20 * row + 10
+  };
+}
+
+/**
+ * Press a body cell, optionally with Shift.
+ */
+function pressBody(
+  handler: BasicMouseHandler,
+  grid: DataGrid,
+  row: number,
+  column: number,
+  shiftKey = false
+): void {
+  handler.onMouseDown(
+    grid,
+    new MouseEvent('mousedown', { ...bodyPoint(grid, row, column), shiftKey })
+  );
+}
+
+/**
+ * Drag from one body cell to another.
+ */
+function dragBody(
+  handler: BasicMouseHandler,
+  grid: DataGrid,
+  from: [number, number],
+  to: [number, number]
+): void {
+  pressBody(handler, grid, from[0], from[1]);
+  handler.onMouseMove(
+    grid,
+    new MouseEvent('mousemove', bodyPoint(grid, to[0], to[1]))
+  );
+  handler.onMouseUp(grid, new MouseEvent('mouseup', bodyPoint(grid, ...to)));
+}
+
+/**
+ * The alpha of the selection overlay in the middle of a body cell.
+ */
+function overlayAlpha(grid: DataGrid, row: number, column: number): number {
+  MessageLoop.flush();
+  const canvases = grid.viewport.node.querySelectorAll('canvas');
+  const overlay = canvases[canvases.length - 1];
+  const ratio = overlay.width / overlay.getBoundingClientRect().width;
+  const x = (grid.headerWidth + 64 * column + 32) * ratio;
+  const y = (grid.headerHeight + 20 * row + 10) * ratio;
+  return overlay.getContext('2d')!.getImageData(x, y, 1, 1).data[3];
 }
 
 describe('@lumino/datagrid', () => {
@@ -152,6 +219,100 @@ describe('@lumino/datagrid', () => {
           r1: 0,
           c1: 2,
           r2: 5,
+          c2: 3
+        });
+      });
+
+      it('should highlight only the pressed column', () => {
+        grid = createMergedGrid();
+        pressHeader(handler, grid, 'column-header', 1);
+        expect(overlayAlpha(grid, 1, 1)).to.be.above(0);
+        expect(overlayAlpha(grid, 1, 2)).to.equal(0);
+        expect(overlayAlpha(grid, 3, 2)).to.equal(0);
+      });
+
+      it('should join a Shift+click range with the merged cells it covers', () => {
+        grid = createMergedGrid();
+        pressBody(handler, grid, 1, 1);
+        handler.onMouseUp(grid, new MouseEvent('mouseup'));
+        pressBody(handler, grid, 5, 1, true);
+        expect(grid.selectionModel!.currentSelection()).to.deep.equal({
+          r1: 1,
+          c1: 0,
+          r2: 5,
+          c2: 3
+        });
+        expect(grid.selectionModel!.cursorRow).to.equal(1);
+        expect(grid.selectionModel!.cursorColumn).to.equal(1);
+      });
+    });
+
+    describe('#onMouseMove()', () => {
+      let handler: BasicMouseHandler;
+      let grid: DataGrid;
+
+      beforeEach(() => {
+        handler = new BasicMouseHandler();
+      });
+
+      afterEach(() => {
+        handler.dispose();
+        grid.dispose();
+      });
+
+      it('should join a dragged range with the merged cells it covers', () => {
+        grid = createMergedGrid();
+        dragBody(handler, grid, [1, 1], [5, 1]);
+        expect(grid.selectionModel!.currentSelection()).to.deep.equal({
+          r1: 1,
+          c1: 0,
+          r2: 5,
+          c2: 3
+        });
+        expect(overlayAlpha(grid, 4, 3)).to.be.above(0);
+      });
+
+      it('should keep the corner order of a range dragged up and left', () => {
+        grid = createMergedGrid();
+        // Row 3 widens the range to column 0, whose merged cell reaches row 1.
+        dragBody(handler, grid, [5, 2], [2, 1]);
+        expect(grid.selectionModel!.currentSelection()).to.deep.equal({
+          r1: 5,
+          c1: 3,
+          r2: 1,
+          c2: 0
+        });
+      });
+
+      it('should end a joined range at row or column 0', () => {
+        grid = createMergedGrid();
+        dragBody(handler, grid, [0, 0], [1, 0]);
+        expect(grid.selectionModel!.currentSelection()).to.deep.equal({
+          r1: 0,
+          c1: 0,
+          r2: 2,
+          c2: 0
+        });
+      });
+
+      it('should keep a drag within a merged cell a single cell', () => {
+        grid = createMergedGrid();
+        dragBody(handler, grid, [3, 1], [3, 1]);
+        expect(grid.selectionModel!.currentSelection()).to.deep.equal({
+          r1: 3,
+          c1: 1,
+          r2: 3,
+          c2: 1
+        });
+      });
+
+      it('should select whole rows without the body merged cells in row mode', () => {
+        grid = createMergedGrid(false, 'row');
+        dragBody(handler, grid, [2, 1], [2, 2]);
+        expect(grid.selectionModel!.currentSelection()).to.deep.equal({
+          r1: 2,
+          c1: 0,
+          r2: 2,
           c2: 3
         });
       });

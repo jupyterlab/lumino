@@ -23,6 +23,8 @@ import { SelectionModel } from './selectionmodel';
 
 import { CellEditor } from './celleditor';
 
+import { BodyRange } from './bodyrange';
+
 import { CellGroup } from './cellgroup';
 
 import { CellRenderer } from './cellrenderer';
@@ -243,8 +245,14 @@ export class BasicMouseHandler implements DataGrid.IMouseHandler {
         clear = 'all';
       }
 
-      // Make the selection.
-      model.select({ r1, c1, r2, c2, cursorRow, cursorColumn, clear });
+      // Make the selection. A range made with Shift joins the merged
+      // cells it covers.
+      const args = { r1, c1, r2, c2, cursorRow, cursorColumn, clear };
+      if (shift && !accel && model.selectionMode === 'cell') {
+        BodyRange.select(grid.dataModel!, model, args);
+      } else {
+        model.select(args);
+      }
 
       // Done.
       return;
@@ -543,11 +551,12 @@ export class BasicMouseHandler implements DataGrid.IMouseHandler {
       r1 = data.row;
       r2 = grid.rowAt('body', vy);
 
-      // A drag from a row header joins only the merged row headers.
+      // Whole rows join only the merged row headers, not the body's
+      // merged cells, as a row header press does.
       const selectionGroup: CellGroup = { r1: r1, c1: 0, r2: r2, c2: 0 };
       const joinedGroup = CellGroup.joinCellGroupsIntersectingAtAxis(
         grid.dataModel!,
-        data.region === 'row-header' ? ['row-header'] : ['row-header', 'body'],
+        ['row-header'],
         'row',
         selectionGroup
       );
@@ -565,13 +574,12 @@ export class BasicMouseHandler implements DataGrid.IMouseHandler {
       c1 = data.column;
       c2 = grid.columnAt('body', vx);
 
-      // A drag from a column header joins only the merged column headers.
+      // Whole columns join only the merged column headers, not the body's
+      // merged cells, as a column header press does.
       const selectionGroup: CellGroup = { r1: 0, c1: c1, r2: 0, c2: c2 };
       const joinedGroup = CellGroup.joinCellGroupsIntersectingAtAxis(
         grid.dataModel!,
-        data.region === 'column-header'
-          ? ['column-header']
-          : ['column-header', 'body'],
+        ['column-header'],
         'column',
         selectionGroup
       );
@@ -585,6 +593,18 @@ export class BasicMouseHandler implements DataGrid.IMouseHandler {
       r2 = grid.rowAt('body', vy);
       c1 = cursorColumn;
       c2 = grid.columnAt('body', vx);
+
+      // A range dragged in the body joins the merged cells it covers.
+      BodyRange.select(grid.dataModel!, model, {
+        r1,
+        c1,
+        r2,
+        c2,
+        cursorRow,
+        cursorColumn,
+        clear
+      });
+      return;
     }
 
     // Make the selection.
@@ -1055,6 +1075,10 @@ namespace Private {
       return;
     }
 
+    // Extend a range as it was made, not as it was joined with merged
+    // cells, so that the loop can also shrink it out of a merged cell.
+    cs = BodyRange.asMade(model, cs);
+
     // Fetch local X and Y coordinates of the mouse.
     let lx = data.localX;
     let ly = data.localY;
@@ -1078,6 +1102,7 @@ namespace Private {
     let mode = model.selectionMode;
 
     // Update the selection based on the hit region.
+    let range = false;
     if (data.region === 'row-header' || mode === 'row') {
       r2 += ly <= hh ? -1 : ly >= vph ? 1 : 0;
     } else if (data.region === 'column-header' || mode === 'column') {
@@ -1085,10 +1110,17 @@ namespace Private {
     } else {
       r2 += ly <= hh ? -1 : ly >= vph ? 1 : 0;
       c2 += lx <= hw ? -1 : lx >= vpw ? 1 : 0;
+      range = true;
     }
 
-    // Update the current selection.
-    model.select({ r1, c1, r2, c2, cursorRow, cursorColumn, clear });
+    // Update the current selection. A range in the body joins the merged
+    // cells it covers.
+    const args = { r1, c1, r2, c2, cursorRow, cursorColumn, clear };
+    if (range) {
+      BodyRange.select(grid.dataModel!, model, args);
+    } else {
+      model.select(args);
+    }
 
     // Re-fetch the current selection.
     cs = model.currentSelection();
@@ -1097,6 +1129,9 @@ namespace Private {
     if (!cs) {
       return;
     }
+
+    // Scroll to the range as made.
+    cs = BodyRange.asMade(model, cs);
 
     // Scroll the grid based on the hit region.
     if (data.region === 'row-header' || mode === 'row') {

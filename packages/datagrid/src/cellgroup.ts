@@ -149,9 +149,9 @@ export namespace CellGroup {
    */
   export function joinCellGroups(groups: CellGroup[]): CellGroup {
     let startRow = Number.MAX_VALUE;
-    let endRow = Number.MIN_VALUE;
+    let endRow = -Number.MAX_VALUE;
     let startColumn = Number.MAX_VALUE;
-    let endColumn = Number.MIN_VALUE;
+    let endColumn = -Number.MAX_VALUE;
 
     for (const group of groups) {
       startRow = Math.min(startRow, group.r1);
@@ -170,27 +170,61 @@ export namespace CellGroup {
    * @param group the target cell group.
    * @param region the region of the cell group.
    * @returns a new cell group after merging has happened.
+   *
+   * #### Notes
+   * The corners of the target group may be in either order, as in a
+   * selection made upward or to the left, and the result keeps that
+   * order. A merged cell that the group reaches only through another
+   * merged cell is joined too.
    */
   export function joinCellGroupWithMergedCellGroups(
     dataModel: DataModel,
     group: CellGroup,
     region: DataModel.CellRegion
   ): CellGroup {
-    let joinedGroup: CellGroup = { ...group };
+    let joinedGroup: CellGroup = {
+      r1: Math.min(group.r1, group.r2),
+      r2: Math.max(group.r1, group.r2),
+      c1: Math.min(group.c1, group.c2),
+      c2: Math.max(group.c1, group.c2)
+    };
 
     const mergedCellGroups: CellGroup[] = getCellGroupsAtRegion(
       dataModel,
       region
     );
 
-    for (let g = 0; g < mergedCellGroups.length; g++) {
-      const mergedGroup = mergedCellGroups[g];
-      if (areCellGroupsIntersecting(joinedGroup, mergedGroup)) {
-        joinedGroup = joinCellGroups([joinedGroup, mergedGroup]);
+    // Join until nothing changes, since a joined merged cell can reach
+    // another one.
+    let changed = true;
+    while (changed) {
+      changed = false;
+      for (const mergedGroup of mergedCellGroups) {
+        if (!areCellGroupsIntersecting(joinedGroup, mergedGroup)) {
+          continue;
+        }
+        const next = joinCellGroups([joinedGroup, mergedGroup]);
+        if (
+          next.r1 !== joinedGroup.r1 ||
+          next.r2 !== joinedGroup.r2 ||
+          next.c1 !== joinedGroup.c1 ||
+          next.c2 !== joinedGroup.c2
+        ) {
+          joinedGroup = next;
+          changed = true;
+        }
       }
     }
 
-    return joinedGroup;
+    // Keep the order of the target group's corners.
+    const down = group.r1 <= group.r2;
+    const right = group.c1 <= group.c2;
+    return {
+      r1: down ? joinedGroup.r1 : joinedGroup.r2,
+      r2: down ? joinedGroup.r2 : joinedGroup.r1,
+      c1: right ? joinedGroup.c1 : joinedGroup.c2,
+      c2: right ? joinedGroup.c2 : joinedGroup.c1
+    };
   }
 
   /**
