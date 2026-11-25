@@ -142,6 +142,22 @@ class ChainModel extends DataModel {
 }
 
 /**
+ * Three rows and forty columns: every row fits in view, the columns do not
+ * (#881).
+ */
+class WideModel extends DataModel {
+  rowCount(region: DataModel.RowRegion): number {
+    return region === 'body' ? 3 : 1;
+  }
+  columnCount(region: DataModel.ColumnRegion): number {
+    return region === 'body' ? 40 : 1;
+  }
+  data(region: DataModel.CellRegion, row: number, column: number): string {
+    return `${region} ${row},${column}`;
+  }
+}
+
+/**
  * Attach a grid of a model, with a basic selection model.
  */
 function attachGrid(
@@ -568,6 +584,27 @@ describe('@lumino/datagrid', () => {
           r2: 5,
           c2: 1
         });
+      });
+
+      it('should scroll right to the last column while the pointer is held past the right edge', async function () {
+        this.timeout(20000);
+        grid = attachGrid(new WideModel());
+        pressBody(handler, grid, 1, 1);
+        const rect = grid.viewport.node.getBoundingClientRect();
+        handler.onMouseMove(
+          grid,
+          new MouseEvent('mousemove', {
+            clientX: rect.left + grid.viewportWidth + 200,
+            clientY: rect.top + grid.headerHeight + 30
+          })
+        );
+        const start = Date.now();
+        while (grid.scrollX < grid.maxScrollX && Date.now() - start < 8000) {
+          await new Promise(resolve => setTimeout(resolve, 50));
+        }
+        handler.onMouseUp(grid, new MouseEvent('mouseup'));
+        expect(grid.scrollX).to.equal(grid.maxScrollX);
+        expect(grid.selectionModel!.currentSelection()!.c2).to.equal(39);
       });
 
       it('should select whole rows without the body merged cells in row mode', () => {

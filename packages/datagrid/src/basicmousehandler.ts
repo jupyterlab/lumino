@@ -470,7 +470,7 @@ export class BasicMouseHandler implements DataGrid.IMouseHandler {
     let vph = grid.viewportHeight;
     let sx = grid.scrollX;
     let sy = grid.scrollY;
-    let msx = grid.maxScrollY;
+    let msx = grid.maxScrollX;
     let msy = grid.maxScrollY;
 
     // Fetch the selection mode.
