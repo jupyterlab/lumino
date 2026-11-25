@@ -5635,17 +5635,6 @@ export class DataGrid extends Widget {
         sc2 = tmp;
       }
 
-      const joinedGroup = CellGroup.joinCellGroupWithMergedCellGroups(
-        this.dataModel!,
-        { r1: sr1, r2: sr2, c1: sc1, c2: sc2 },
-        'body'
-      );
-
-      sr1 = joinedGroup.r1;
-      sr2 = joinedGroup.r2;
-      sc1 = joinedGroup.c1;
-      sc2 = joinedGroup.c2;
-
       // Convert to pixel coordinates.
       let x1 = this._columnSections.offsetOf(sc1) - sx + hw;
       let y1 = this._rowSections.offsetOf(sr1) - sy + hh;

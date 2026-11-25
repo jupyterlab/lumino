@@ -17,6 +17,19 @@ export interface CellGroup {
   r2: number;
   c1: number;
   c2: number;
+
+  /**
+   * Whether a selection across part of the group widens to cover the whole
+   * group, as a selection across a merged cell does in a spreadsheet. The
+   * default is `true`.
+   *
+   * #### Notes
+   * Set it to `false` for a group that lays its content out across cells
+   * without being one cell of the data, such as a comment line in a CSV
+   * file, so that a range in one column can cross it. The group is still
+   * drawn, covered by the cursor and edited as one cell.
+   */
+  readonly widenSelections?: boolean;
 }
 
 /**
