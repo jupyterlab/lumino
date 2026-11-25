@@ -2560,6 +2560,16 @@ export class DataGrid extends Widget {
     // Unpack the message data.
     let { region, r1, c1, r2, c2 } = msg;
 
+    // A merged cell is painted as a whole, so repaint the whole of every
+    // merged cell that a dirty cell belongs to.
+    if (region !== 'all' && this._dataModel && r1 <= r2 && c1 <= c2) {
+      ({ r1, c1, r2, c2 } = CellGroup.joinCellGroupWithMergedCellGroups(
+        this._dataModel,
+        { r1, c1, r2, c2 },
+        region
+      ));
+    }
+
     // Set up the paint variables.
     let x1: number;
     let y1: number;
