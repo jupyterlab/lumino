@@ -420,7 +420,9 @@ describe('@lumino/datagrid', () => {
         });
       });
 
-      it('should highlight only the pressed column', () => {
+      it('should highlight only the pressed column', function () {
+        // Reading canvas pixels can take over 2 s in WebKit on macOS.
+        this.timeout(10000);
         grid = createMergedGrid();
         pressHeader(handler, grid, 'column-header', 1);
         expect(overlayAlpha(grid, 1, 1)).to.be.above(0);
@@ -470,7 +472,9 @@ describe('@lumino/datagrid', () => {
         grid.dispose();
       });
 
-      it('should join a dragged range with the merged cells it covers', () => {
+      it('should join a dragged range with the merged cells it covers', function () {
+        // Reading canvas pixels can take over 2 s in WebKit on macOS.
+        this.timeout(10000);
         grid = createMergedGrid();
         dragBody(handler, grid, [1, 1], [5, 1]);
         expect(grid.selectionModel!.currentSelection()).to.deep.equal({
