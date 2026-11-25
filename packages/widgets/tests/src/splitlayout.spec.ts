@@ -372,7 +372,7 @@ describe('@lumino/widgets', () => {
         expect(domOrder(layout)).to.deep.equal([0, 1, 2, 3, 4, 5, 6, 7]);
       });
 
-      it('should send before/after detach/attach messages if the parent is attached', () => {
+      it('should not send detach messages to a moved widget', () => {
         let layout = new LogSplitLayout({ renderer });
         let widgets = [new Widget(), new Widget(), new Widget()];
         let parent = new Widget();
@@ -384,13 +384,8 @@ describe('@lumino/widgets', () => {
         let hook = new LogHook();
         MessageLoop.installMessageHook(widgets[0], hook);
         layout.insertWidget(2, widgets[0]);
-        expect(hook.messages).to.deep.equal([
-          'before-detach',
-          'after-detach',
-          'before-attach',
-          'after-attach'
-        ]);
-        expect(document.body.contains(widgets[0].node)).to.equal(true);
+        expect(hook.messages).to.not.contain('before-detach');
+        expect(hook.messages).to.not.contain('after-detach');
         Widget.detach(parent);
       });
 

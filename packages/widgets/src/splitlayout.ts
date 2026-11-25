@@ -344,26 +344,9 @@ export class SplitLayout extends PanelLayout {
     ArrayExt.move(this._sizers, fromIndex, toIndex);
     ArrayExt.move(this._handles, fromIndex, toIndex);
 
-    // Send a `'before-detach'` message if the parent is attached.
-    if (this.parent!.isAttached) {
-      MessageLoop.sendMessage(widget, Widget.Msg.BeforeDetach);
-    }
-
-    // Remove the widget's node from the parent.
-    this.parent!.node.removeChild(widget.node);
-
-    // Send an `'after-detach'` message if the parent is attached.
-    if (this.parent!.isAttached) {
-      MessageLoop.sendMessage(widget, Widget.Msg.AfterDetach);
-    }
-
-    // Send a `'before-attach'` message if the parent is attached.
-    if (this.parent!.isAttached) {
-      MessageLoop.sendMessage(widget, Widget.Msg.BeforeAttach);
-    }
-
-    // Insert the widget and handle nodes after the previous section, so
-    // the DOM order is the layout order.
+    // Move the widget and handle nodes after the previous section, so the
+    // DOM order is the layout order. The widget stays attached, because a
+    // widget may drop state on detach, such as a React tree it unmounts.
     this.parent!.node.insertBefore(
       widget.node,
       this._sectionReference(toIndex)
@@ -372,11 +355,6 @@ export class SplitLayout extends PanelLayout {
       this._handles[toIndex],
       widget.node.nextSibling
     );
-
-    // Send an `'after-attach'` message if the parent is attached.
-    if (this.parent!.isAttached) {
-      MessageLoop.sendMessage(widget, Widget.Msg.AfterAttach);
-    }
 
     // Post a fit request to the parent to show/hide last handle.
     this.parent!.fit();
