@@ -567,8 +567,9 @@ export class BasicMouseHandler implements DataGrid.IMouseHandler {
       c1 = cursorColumn;
       c2 = grid.columnAt('body', vx);
 
-      // A range dragged in the body joins the merged cells it covers.
-      HandlerSelection.selectRange(grid, {
+      // A range dragged in the body extends the selection that the press
+      // made, so that a Shift+click keeps whole rows or columns as it moves.
+      HandlerSelection.extend(grid, {
         r1,
         c1,
         r2,
@@ -1137,11 +1138,11 @@ namespace Private {
       range = true;
     }
 
-    // Update the current selection. A range in the body joins the merged
-    // cells it covers.
+    // Update the current selection. A range in the body extends the
+    // selection that the press made, as a drag does.
     const args = { r1, c1, r2, c2, cursorRow, cursorColumn, clear };
     if (range) {
-      HandlerSelection.selectRange(grid, args);
+      HandlerSelection.extend(grid, args);
     } else {
       HandlerSelection.selectLines(grid, args);
     }

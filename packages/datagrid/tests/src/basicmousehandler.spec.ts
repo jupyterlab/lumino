@@ -527,6 +527,23 @@ describe('@lumino/datagrid', () => {
         });
       });
 
+      it('should keep columns from a header whole when a Shift+click moves within its cell', () => {
+        grid = createMergedGrid();
+        pressHeader(handler, grid, 'column-header', 1);
+        pressBody(handler, grid, 5, 2, true);
+        const point = bodyPoint(grid, 5, 2);
+        handler.onMouseMove(
+          grid,
+          new MouseEvent('mousemove', { ...point, clientX: point.clientX! + 1 })
+        );
+        expect(grid.selectionModel!.currentSelection()).to.deep.equal({
+          r1: 0,
+          c1: 1,
+          r2: 5,
+          c2: 2
+        });
+      });
+
       it('should join a merged cell reached through another one', () => {
         grid = attachGrid(new ChainModel());
         dragBody(handler, grid, [2, 0], [2, 1]);

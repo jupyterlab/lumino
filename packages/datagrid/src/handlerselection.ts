@@ -66,7 +66,7 @@ export namespace HandlerSelection {
 
   /**
    * Extend the current selection to a new range, as Shift does with a key
-   * or a click.
+   * or a click, and as a drag does.
    *
    * @param grid - The data grid of interest.
    *
