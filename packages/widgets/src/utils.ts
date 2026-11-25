@@ -41,6 +41,19 @@ export namespace Utils {
       parent.insertBefore(node, child);
     }
   }
+
+  /**
+   * Whether moving a child of the parent keeps its focus, its scroll
+   * positions and the documents of its iframes.
+   *
+   * #### Notes
+   * A node outside the document has none of these to lose. In the document,
+   * only the browser's `moveBefore` keeps them, and Safari lacks it.
+   */
+  export function moveKeepsState(parent: HTMLElement): boolean {
+    const target = parent as HTMLElement & { moveBefore?: unknown };
+    return !parent.isConnected || typeof target.moveBefore === 'function';
+  }
 }
 
 export default Utils;

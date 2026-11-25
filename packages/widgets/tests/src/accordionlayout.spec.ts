@@ -209,10 +209,7 @@ describe('@lumino/widgets', () => {
         parent.dispose();
       });
 
-      it('should keep the focus on a moved title', function () {
-        if (!('moveBefore' in Element.prototype)) {
-          this.skip();
-        }
+      it('should keep the focus on a moved title', () => {
         let layout = new LogAccordionLayout({ renderer });
         let widgets = [new Widget(), new Widget(), new Widget()];
         let parent = new Widget();

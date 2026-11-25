@@ -152,8 +152,10 @@ export class AccordionLayout extends SplitLayout {
     ArrayExt.move(this._titles, fromIndex, toIndex);
     super.moveWidget(fromIndex, toIndex, widget);
 
-    // Put the title back before the widget the split layout moved.
-    Utils.moveBefore(this.parent!.node, this._titles[toIndex], widget.node);
+    // Put the title back before the widget, if the split layout moved it.
+    if (Utils.moveKeepsState(this.parent!.node)) {
+      Utils.moveBefore(this.parent!.node, this._titles[toIndex], widget.node);
+    }
   }
 
   /**

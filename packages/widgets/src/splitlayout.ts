@@ -347,16 +347,19 @@ export class SplitLayout extends PanelLayout {
     // Move the widget and handle nodes after the previous section, so the
     // DOM order is the layout order. The widget stays attached, because a
     // widget may drop state on detach, such as a React tree it unmounts.
-    Utils.moveBefore(
-      this.parent!.node,
-      widget.node,
-      this._sectionReference(toIndex)
-    );
-    Utils.moveBefore(
-      this.parent!.node,
-      this._handles[toIndex],
-      widget.node.nextSibling
-    );
+    // So nothing restores what a move without `moveBefore` would drop.
+    if (Utils.moveKeepsState(this.parent!.node)) {
+      Utils.moveBefore(
+        this.parent!.node,
+        widget.node,
+        this._sectionReference(toIndex)
+      );
+      Utils.moveBefore(
+        this.parent!.node,
+        this._handles[toIndex],
+        widget.node.nextSibling
+      );
+    }
 
     // Post a fit request to the parent to show/hide last handle.
     this.parent!.fit();

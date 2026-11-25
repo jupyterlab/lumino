@@ -389,10 +389,7 @@ describe('@lumino/widgets', () => {
         Widget.detach(parent);
       });
 
-      it('should keep the focus in a moved widget', function () {
-        if (!('moveBefore' in Element.prototype)) {
-          this.skip();
-        }
+      it('should keep the focus in a moved widget', () => {
         let layout = new LogSplitLayout({ renderer });
         let widgets = [new Widget(), new Widget(), new Widget()];
         let parent = new Widget();
@@ -406,6 +403,25 @@ describe('@lumino/widgets', () => {
         input.focus();
         layout.insertWidget(2, widgets[0]);
         expect(document.activeElement).to.equal(input);
+        Widget.detach(parent);
+      });
+
+      it('should keep the iframe documents of a widget moved without moveBefore', () => {
+        let layout = new LogSplitLayout({ renderer });
+        let widgets = [new Widget(), new Widget(), new Widget()];
+        let parent = new Widget();
+        parent.layout = layout;
+        widgets.forEach(w => {
+          layout.addWidget(w);
+        });
+        let iframe = document.createElement('iframe');
+        widgets[0].node.appendChild(iframe);
+        Widget.attach(parent, document.body);
+        let frame = iframe.contentWindow;
+        // As in a browser without `moveBefore`, such as Safari.
+        (parent.node as any).moveBefore = undefined;
+        layout.insertWidget(2, widgets[0]);
+        expect(iframe.contentWindow === frame).to.equal(true);
         Widget.detach(parent);
       });
 
