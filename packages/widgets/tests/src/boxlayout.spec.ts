@@ -346,6 +346,42 @@ describe('@lumino/widgets', () => {
         panel.dispose();
       });
 
+      it('should keep the focus in a moved widget', () => {
+        let panel = new Widget();
+        let layout = new LogBoxLayout();
+        panel.layout = layout;
+        let widgets = [new Widget(), new Widget(), new Widget()];
+        widgets.forEach(w => {
+          layout.addWidget(w);
+        });
+        let input = document.createElement('input');
+        widgets[0].node.appendChild(input);
+        Widget.attach(panel, document.body);
+        input.focus();
+        layout.insertWidget(2, widgets[0]);
+        expect(document.activeElement).to.equal(input);
+        panel.dispose();
+      });
+
+      it('should keep the iframe documents of a widget moved without moveBefore', () => {
+        let panel = new Widget();
+        let layout = new LogBoxLayout();
+        panel.layout = layout;
+        let widgets = [new Widget(), new Widget(), new Widget()];
+        widgets.forEach(w => {
+          layout.addWidget(w);
+        });
+        let iframe = document.createElement('iframe');
+        widgets[0].node.appendChild(iframe);
+        Widget.attach(panel, document.body);
+        let frame = iframe.contentWindow;
+        // As in a browser without `moveBefore`, such as Safari.
+        (panel.node as any).moveBefore = undefined;
+        layout.insertWidget(2, widgets[0]);
+        expect(iframe.contentWindow === frame).to.equal(true);
+        panel.dispose();
+      });
+
       it('should post an update request for the parent widget', done => {
         let panel = new Widget();
         let layout = new LogBoxLayout();

@@ -214,8 +214,15 @@ export class BoxLayout extends PanelLayout {
     // Move the widget's node before the next widget's, so the DOM order is
     // the layout order. The widget stays attached, because a widget may drop
     // state on detach, such as a React tree it unmounts.
-    const next = this._items[toIndex + 1];
-    this.parent!.node.insertBefore(widget.node, next ? next.widget.node : null);
+    // So nothing restores what a move without `moveBefore` would drop.
+    if (Utils.moveKeepsState(this.parent!.node)) {
+      const next = this._items[toIndex + 1];
+      Utils.moveBefore(
+        this.parent!.node,
+        widget.node,
+        next ? next.widget.node : null
+      );
+    }
 
     // Post an update request for the parent widget.
     this.parent!.update();
