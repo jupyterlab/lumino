@@ -208,6 +208,26 @@ describe('@lumino/widgets', () => {
         ]);
         parent.dispose();
       });
+
+      it('should keep the focus on a moved title', function () {
+        if (!('moveBefore' in Element.prototype)) {
+          this.skip();
+        }
+        let layout = new LogAccordionLayout({ renderer });
+        let widgets = [new Widget(), new Widget(), new Widget()];
+        let parent = new Widget();
+        parent.layout = layout;
+        widgets.forEach(w => {
+          layout.addWidget(w);
+        });
+        Widget.attach(parent, document.body);
+        let title = layout.titles[0];
+        title.tabIndex = 0;
+        title.focus();
+        layout.insertWidget(2, widgets[0]);
+        expect(document.activeElement).to.equal(title);
+        parent.dispose();
+      });
     });
 
     describe('#detachWidget()', () => {

@@ -389,6 +389,26 @@ describe('@lumino/widgets', () => {
         Widget.detach(parent);
       });
 
+      it('should keep the focus in a moved widget', function () {
+        if (!('moveBefore' in Element.prototype)) {
+          this.skip();
+        }
+        let layout = new LogSplitLayout({ renderer });
+        let widgets = [new Widget(), new Widget(), new Widget()];
+        let parent = new Widget();
+        parent.layout = layout;
+        widgets.forEach(w => {
+          layout.addWidget(w);
+        });
+        let input = document.createElement('input');
+        widgets[0].node.appendChild(input);
+        Widget.attach(parent, document.body);
+        input.focus();
+        layout.insertWidget(2, widgets[0]);
+        expect(document.activeElement).to.equal(input);
+        Widget.detach(parent);
+      });
+
       it("should move a widget in the parent's DOM node", () => {
         let layout = new LogSplitLayout({ renderer });
         let widgets = [new Widget(), new Widget(), new Widget()];
