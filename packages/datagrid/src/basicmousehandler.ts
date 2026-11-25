@@ -23,9 +23,7 @@ import { SelectionModel } from './selectionmodel';
 
 import { CellEditor } from './celleditor';
 
-import { BodyRange } from './bodyrange';
-
-import { CellGroup } from './cellgroup';
+import { HandlerSelection } from './handlerselection';
 
 import { CellRenderer } from './cellrenderer';
 
@@ -249,7 +247,7 @@ export class BasicMouseHandler implements DataGrid.IMouseHandler {
       // Shift joins the merged cells it covers.
       const args = { r1, c1, r2, c2, cursorRow, cursorColumn, clear };
       if (model.selectionMode === 'cell') {
-        BodyRange.select(grid.dataModel!, model, args);
+        HandlerSelection.selectRange(grid, args);
       } else {
         model.select(args);
       }
@@ -362,7 +360,7 @@ export class BasicMouseHandler implements DataGrid.IMouseHandler {
     } else if (region === 'row-header') {
       // A row header selects whole rows, joined only with the merged row
       // headers they cross, not with the body's merged cells.
-      [r1, r2] = Private.joinHeaderGroups(
+      [r1, r2] = Private.joinHeaderRange(
         grid.dataModel!,
         'row-header',
         accel ? row : shift ? model.cursorRow : row,
@@ -379,7 +377,7 @@ export class BasicMouseHandler implements DataGrid.IMouseHandler {
       r2 = Infinity;
       // A column header selects whole columns, joined only with the merged
       // column headers they cross, not with the body's merged cells.
-      [c1, c2] = Private.joinHeaderGroups(
+      [c1, c2] = Private.joinHeaderRange(
         grid.dataModel!,
         'column-header',
         accel ? column : shift ? model.cursorColumn : column,
@@ -400,7 +398,7 @@ export class BasicMouseHandler implements DataGrid.IMouseHandler {
     }
 
     // Make the selection.
-    BodyRange.selectLines(model, {
+    HandlerSelection.selectLines(grid, {
       r1,
       c1,
       r2,
@@ -540,7 +538,7 @@ export class BasicMouseHandler implements DataGrid.IMouseHandler {
     if (data.region === 'row-header' || mode === 'row') {
       // Whole rows join only the merged row headers they cross, not the
       // body's merged cells, as a row header press does.
-      [r1, r2] = Private.joinHeaderGroups(
+      [r1, r2] = Private.joinHeaderRange(
         grid.dataModel!,
         'row-header',
         data.row,
@@ -555,7 +553,7 @@ export class BasicMouseHandler implements DataGrid.IMouseHandler {
 
       // Whole columns join only the merged column headers they cross, not
       // the body's merged cells, as a column header press does.
-      [c1, c2] = Private.joinHeaderGroups(
+      [c1, c2] = Private.joinHeaderRange(
         grid.dataModel!,
         'column-header',
         data.column,
@@ -568,7 +566,7 @@ export class BasicMouseHandler implements DataGrid.IMouseHandler {
       c2 = grid.columnAt('body', vx);
 
       // A range dragged in the body joins the merged cells it covers.
-      BodyRange.select(grid.dataModel!, model, {
+      HandlerSelection.selectRange(grid, {
         r1,
         c1,
         r2,
@@ -581,7 +579,7 @@ export class BasicMouseHandler implements DataGrid.IMouseHandler {
     }
 
     // Make the selection.
-    BodyRange.selectLines(model, {
+    HandlerSelection.selectLines(grid, {
       r1,
       c1,
       r2,
@@ -940,29 +938,32 @@ namespace Private {
    * @returns The first and last index of the joined range, in the order of
    * `first` and `last`.
    */
-  export function joinHeaderGroups(
+  export function joinHeaderRange(
     dataModel: DataModel,
     region: 'row-header' | 'column-header',
     first: number,
     last: number
   ): [number, number] {
-    let start = Math.min(first, last);
-    let end = Math.max(first, last);
-    const rows = region === 'row-header';
-    const joined = CellGroup.joinCellGroupsIntersectingAtAxis(
-      dataModel,
-      [region],
-      rows ? 'row' : 'column',
-      rows
-        ? { r1: start, r2: end, c1: 0, c2: 0 }
-        : { r1: 0, r2: 0, c1: start, c2: end }
-    );
-    // The result covers the merged cells found, if there are any.
-    if ((rows ? joined.r1 : joined.c1) !== Number.MAX_VALUE) {
-      start = Math.min(start, rows ? joined.r1 : joined.c1);
-      end = Math.max(end, rows ? joined.r2 : joined.c2);
+    // The range spans the whole header across, so it crosses every merged
+    // header cell that a row or column in the range belongs to.
+    if (region === 'row-header') {
+      const columns = dataModel.columnCount('row-header');
+      const joined = HandlerSelection.joinMergedCells(dataModel, region, {
+        r1: first,
+        c1: 0,
+        r2: last,
+        c2: columns - 1
+      });
+      return [joined.r1, joined.r2];
     }
-    return first <= last ? [start, end] : [end, start];
+    const rows = dataModel.rowCount('column-header');
+    const joined = HandlerSelection.joinMergedCells(dataModel, region, {
+      r1: 0,
+      c1: first,
+      r2: rows - 1,
+      c2: last
+    });
+    return [joined.c1, joined.c2];
   }
 
   /**
@@ -1098,7 +1099,7 @@ namespace Private {
 
     // Extend a range as it was made, not as it was joined with merged
     // cells, so that the loop can also shrink it out of a merged cell.
-    cs = BodyRange.asMade(model, cs);
+    cs = HandlerSelection.asMade(model, cs);
 
     // Fetch local X and Y coordinates of the mouse.
     let lx = data.localX;
@@ -1138,9 +1139,9 @@ namespace Private {
     // cells it covers.
     const args = { r1, c1, r2, c2, cursorRow, cursorColumn, clear };
     if (range) {
-      BodyRange.select(grid.dataModel!, model, args);
+      HandlerSelection.selectRange(grid, args);
     } else {
-      BodyRange.selectLines(model, args);
+      HandlerSelection.selectLines(grid, args);
     }
 
     // Re-fetch the current selection.
@@ -1152,7 +1153,7 @@ namespace Private {
     }
 
     // Scroll to the range as made.
-    cs = BodyRange.asMade(model, cs);
+    cs = HandlerSelection.asMade(model, cs);
 
     // Scroll the grid based on the hit region.
     if (data.region === 'row-header' || mode === 'row') {

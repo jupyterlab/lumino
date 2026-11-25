@@ -11,7 +11,7 @@ import { Platform } from '@lumino/domutils';
 
 import { getKeyboardLayout } from '@lumino/keyboard';
 
-import { BodyRange } from './bodyrange';
+import { HandlerSelection } from './handlerselection';
 
 import { DataGrid } from './datagrid';
 
@@ -840,7 +840,7 @@ namespace Private {
     model: SelectionModel
   ): SelectionModel.Selection | null {
     const cs = model.currentSelection();
-    return cs && BodyRange.asMade(model, cs);
+    return cs && HandlerSelection.asMade(model, cs);
   }
 
   /**
@@ -864,10 +864,10 @@ namespace Private {
     }
     const cs = model.currentSelection();
     if (shift && cs && isLines(model, dataModel, cs)) {
-      BodyRange.selectLines(model, args);
+      HandlerSelection.selectLines(grid, args);
       return;
     }
-    BodyRange.select(dataModel, model, args);
+    HandlerSelection.selectRange(grid, args);
   }
 
   /**
@@ -879,10 +879,11 @@ namespace Private {
     dataModel: DataModel,
     selection: SelectionModel.Selection
   ): boolean {
-    const kind = BodyRange.kindOf(model, selection);
+    const kind = HandlerSelection.kindOf(model, selection);
     return (
       kind === 'lines' ||
-      (kind === null && BodyRange.isWholeRowsOrColumns(dataModel, selection))
+      (kind === null &&
+        HandlerSelection.isWholeRowsOrColumns(dataModel, selection))
     );
   }
 }

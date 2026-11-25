@@ -82,14 +82,47 @@ class MergedModel extends DataModel {
 }
 
 /**
- * A grid of a merged model, attached, with a basic selection model.
+ * Six rows and four columns with two rows of column headers: column
+ * headers 0 to 1 are merged in the first header row and 1 to 2 in the
+ * second, and row headers 1 to 2 are merged.
  */
-function createMergedGrid(
-  headerGroup = false,
-  selectionMode: 'cell' | 'row' | 'column' = 'cell',
-  widenSelections = true
+class HeaderModel extends DataModel {
+  constructor(private widenSelections = true) {
+    super();
+  }
+  rowCount(region: DataModel.RowRegion): number {
+    return region === 'body' ? 6 : 2;
+  }
+  columnCount(region: DataModel.ColumnRegion): number {
+    return region === 'body' ? 4 : 1;
+  }
+  data(region: DataModel.CellRegion, row: number, column: number): string {
+    return `${region} ${row},${column}`;
+  }
+  groupCount(region: DataModel.CellRegion): number {
+    return region === 'column-header' ? 2 : region === 'row-header' ? 1 : 0;
+  }
+  group(region: DataModel.CellRegion, index: number) {
+    if (region === 'row-header') {
+      return { r1: 1, r2: 2, c1: 0, c2: 0 };
+    }
+    return {
+      r1: index,
+      r2: index,
+      c1: index,
+      c2: index + 1,
+      widenSelections: this.widenSelections
+    };
+  }
+}
+
+/**
+ * Attach a grid of a model, with a basic selection model.
+ */
+function attachGrid(
+  model: DataModel,
+  selectionMode: 'cell' | 'row' | 'column' = 'cell'
 ): DataGrid {
-  const model = new MergedModel(headerGroup, widenSelections);
   const grid = new DataGrid();
   grid.dataModel = model;
   grid.selectionModel = new BasicSelectionModel({
@@ -101,6 +134,20 @@ function createMergedGrid(
   Widget.attach(grid, document.body);
   MessageLoop.flush();
   return grid;
+}
+
+/**
+ * A grid of a merged model, attached, with a basic selection model.
+ */
+function createMergedGrid(
+  headerGroup = false,
+  selectionMode: 'cell' | 'row' | 'column' = 'cell',
+  widenSelections = true
+): DataGrid {
+  return attachGrid(
+    new MergedModel(headerGroup, widenSelections),
+    selectionMode
+  );
 }
 
 /**
@@ -120,7 +167,7 @@ function pressHeader(
       : rect.left + grid.headerWidth / 2;
   const clientY =
     region === 'column-header'
-      ? rect.top + grid.headerHeight / 2
+      ? rect.top + grid.defaultSizes.columnHeaderHeight / 2
       : rect.top + grid.headerHeight + 20 * index + 10;
   handler.onMouseDown(
     grid,
@@ -247,6 +294,39 @@ describe('@lumino/datagrid', () => {
           c1: 0,
           r2: 5,
           c2: 3
+        });
+      });
+
+      it('should join the merged headers that a merged header reaches', () => {
+        grid = attachGrid(new HeaderModel());
+        pressHeader(handler, grid, 'column-header', 0);
+        expect(grid.selectionModel!.currentSelection()).to.deep.equal({
+          r1: 0,
+          c1: 0,
+          r2: 5,
+          c2: 2
+        });
+      });
+
+      it('should select both rows of a merged row header', () => {
+        grid = attachGrid(new HeaderModel());
+        pressHeader(handler, grid, 'row-header', 1);
+        expect(grid.selectionModel!.currentSelection()).to.deep.equal({
+          r1: 1,
+          c1: 0,
+          r2: 2,
+          c2: 3
+        });
+      });
+
+      it('should not join merged headers that do not widen selections', () => {
+        grid = attachGrid(new HeaderModel(false));
+        pressHeader(handler, grid, 'column-header', 0);
+        expect(grid.selectionModel!.currentSelection()).to.deep.equal({
+          r1: 0,
+          c1: 0,
+          r2: 5,
+          c2: 0
         });
       });
 
