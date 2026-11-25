@@ -25,6 +25,7 @@ import './menu.spec';
 import './menubar.spec';
 import './panel.spec';
 import './panellayout.spec';
+import './secondarywindow.spec';
 import './splitlayout.spec';
 import './splitpanel.spec';
 import './stackedlayout.spec';

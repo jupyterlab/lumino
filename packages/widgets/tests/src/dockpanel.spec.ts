@@ -14,6 +14,20 @@ import { MessageLoop } from '@lumino/messaging';
 
 import { DockPanel, TabBar, Widget } from '@lumino/widgets';
 
+class TestOverlay implements DockPanel.IOverlay {
+  readonly node = document.createElement('div');
+
+  hidden = true;
+
+  show(): void {
+    this.hidden = false;
+  }
+
+  hide(): void {
+    this.hidden = true;
+  }
+}
+
 const bubbles = true;
 
 describe('@lumino/widgets', () => {
@@ -68,6 +82,51 @@ describe('@lumino/widgets', () => {
         expect(panel.isDisposed).to.equal(true);
         panel.dispose();
         expect(panel.isDisposed).to.equal(true);
+      });
+    });
+
+    describe('drag-drop overlay', () => {
+      let overlay: TestOverlay;
+      let panel: DockPanel;
+      let descendant: HTMLElement;
+
+      beforeEach(() => {
+        overlay = new TestOverlay();
+        panel = new DockPanel({ overlay });
+        descendant = document.createElement('div');
+        Widget.attach(panel, document.body);
+        panel.node.appendChild(descendant);
+        overlay.show();
+      });
+
+      afterEach(() => {
+        panel.dispose();
+      });
+
+      it('should hide when a descendant handles the drop', () => {
+        descendant.addEventListener('lm-drop', event => {
+          event.preventDefault();
+          event.stopPropagation();
+        });
+
+        descendant.dispatchEvent(
+          new Event('lm-drop', { bubbles: true, cancelable: true })
+        );
+
+        expect(overlay.hidden).to.equal(true);
+      });
+
+      it('should hide when a descendant handles the drag leave', () => {
+        descendant.addEventListener('lm-dragleave', event => {
+          event.preventDefault();
+          event.stopPropagation();
+        });
+
+        descendant.dispatchEvent(
+          new Event('lm-dragleave', { bubbles: true, cancelable: true })
+        );
+
+        expect(overlay.hidden).to.equal(true);
       });
     });
 

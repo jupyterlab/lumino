@@ -723,7 +723,7 @@ export class Menu extends Widget {
     removeItemAt(index: number): void;
     readonly renderer: Menu.IRenderer;
     get rootMenu(): Menu;
-    static saveWindowData(): void;
+    static saveWindowData(doc?: Document): void;
     triggerActiveItem(): void;
 }
 
