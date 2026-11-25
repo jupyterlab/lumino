@@ -4,6 +4,10 @@ import { expect } from 'chai';
 
 import { DataGrid, DataModel } from '@lumino/datagrid';
 
+import { MessageLoop } from '@lumino/messaging';
+
+import { Widget } from '@lumino/widgets';
+
 class LargeDataModel extends DataModel {
   rowCount(region: DataModel.RowRegion): number {
     return region === 'body' ? 1_000_000_000_000 : 2;
@@ -68,21 +72,30 @@ class MergedModel extends DataModel {
 }
 
 /**
- * A data grid which records the regions it is asked to repaint.
+ * A data grid which records the rectangles that it paints.
  */
-class RepaintRecordingGrid extends DataGrid {
-  regions: Array<[DataModel.CellRegion, number, number, number, number]> = [];
+class PaintRecordingGrid extends DataGrid {
+  painted: Array<[number, number, number, number]> = [];
 
-  protected repaintRegion(
-    region: DataModel.CellRegion,
-    r1: number,
-    c1: number,
-    r2: number,
-    c2: number
-  ): void {
-    this.regions.push([region, r1, c1, r2, c2]);
-    super.repaintRegion(region, r1, c1, r2, c2);
+  protected paintContent(rx: number, ry: number, rw: number, rh: number): void {
+    this.painted.push([rx, ry, rw, rh]);
+    super.paintContent(rx, ry, rw, rh);
   }
+}
+
+/**
+ * The rectangle of a cell range on the viewport, with the default sizes: a
+ * 64 px row header, a 20 px column header and cells of 64 by 20 px.
+ */
+function cellRect(
+  region: 'body' | 'column-header',
+  r1: number,
+  c1: number,
+  r2: number,
+  c2: number
+): [number, number, number, number] {
+  const top = region === 'body' ? 20 : 0;
+  return [64 + 64 * c1, top + 20 * r1, 64 * (c2 - c1 + 1), 20 * (r2 - r1 + 1)];
 }
 
 describe('@lumino/datagrid', () => {
@@ -117,13 +130,18 @@ describe('@lumino/datagrid', () => {
 
   describe('MergedModel', () => {
     describe('changeCell()', () => {
-      let grid: RepaintRecordingGrid;
+      let grid: PaintRecordingGrid;
       let merged: MergedModel;
 
       beforeEach(() => {
         merged = new MergedModel();
-        grid = new RepaintRecordingGrid();
+        grid = new PaintRecordingGrid();
         grid.dataModel = merged;
+        grid.node.style.width = '400px';
+        grid.node.style.height = '200px';
+        Widget.attach(grid, document.body);
+        MessageLoop.flush();
+        grid.painted = [];
       });
 
       afterEach(() => {
@@ -132,22 +150,28 @@ describe('@lumino/datagrid', () => {
 
       it('should repaint the whole merged cell of a changed cell', () => {
         merged.changeCell(3, 2);
-        expect(grid.regions).to.deep.equal([['body', 3, 0, 3, 3]]);
+        MessageLoop.flush();
+        expect(grid.painted).to.deep.equal([cellRect('body', 3, 0, 3, 3)]);
       });
 
       it('should repaint the whole merged cell in row 0', () => {
         merged.changeCell(0, 1);
-        expect(grid.regions).to.deep.equal([['body', 0, 0, 0, 3]]);
+        MessageLoop.flush();
+        expect(grid.painted).to.deep.equal([cellRect('body', 0, 0, 0, 3)]);
       });
 
       it('should repaint the whole merged cell of a changed header cell', () => {
         merged.changeCell(0, 2, 'column-header');
-        expect(grid.regions).to.deep.equal([['column-header', 0, 1, 0, 2]]);
+        MessageLoop.flush();
+        expect(grid.painted).to.deep.equal([
+          cellRect('column-header', 0, 1, 0, 2)
+        ]);
       });
 
       it('should repaint only a changed cell outside merged cells', () => {
         merged.changeCell(1, 1);
-        expect(grid.regions).to.deep.equal([['body', 1, 1, 1, 1]]);
+        MessageLoop.flush();
+        expect(grid.painted).to.deep.equal([cellRect('body', 1, 1, 1, 1)]);
       });
     });
   });
