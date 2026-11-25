@@ -1097,6 +1097,26 @@ describe('@lumino/widgets', () => {
         ]);
         bar.dispose();
       });
+
+      it('should move menus back from the overflow menu when the menu bar gets wider', () => {
+        let bar = createMenuBar();
+        let sizes = Array.from(bar.contentNode.children).map(
+          item => (item as HTMLElement).offsetWidth
+        );
+        bar.node.style.maxWidth = '5px';
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        // Room for two menus, so for one menu and the overflow menu
+        let width = sizes[0] + sizes[1] + Math.floor(sizes[2] / 2);
+        bar.node.style.maxWidth = `${width}px`;
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        expect(bar.menus.map(menu => menu.title.label)).to.deep.equal([
+          'Menu0',
+          '...'
+        ]);
+        bar.dispose();
+      });
     });
 
     context('`menuRequested` signal', () => {

@@ -438,6 +438,17 @@ export class MenuBar extends Widget {
 
     // Check that the overflow menu doesn't count
     length = this._overflowMenu !== null ? Math.max(length - 1, 0) : length;
+
+    if (this._overflowMenu !== null) {
+      // The menu bar got wider: take menus back from the overflow menu
+      while (menus.length - 1 < length && this._overflowMenu.items.length > 0) {
+        let menu = this._overflowMenu.items[0].submenu as Menu;
+        this._overflowMenu.removeItemAt(0);
+        this.insertMenu(menus.length - 1, menu, false);
+      }
+      // The overflow menu itself is rendered after the loop below
+      length = Math.min(length, menus.length - 1);
+    }
     let content = new Array<VirtualElement>(length);
 
     // Render visible menus
