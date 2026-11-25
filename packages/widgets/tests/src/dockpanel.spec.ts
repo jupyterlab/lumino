@@ -10,7 +10,25 @@
 
 import { expect } from 'chai';
 
+import { MessageLoop } from '@lumino/messaging';
+
 import { DockPanel, TabBar, Widget } from '@lumino/widgets';
+
+class TestOverlay implements DockPanel.IOverlay {
+  readonly node = document.createElement('div');
+
+  hidden = true;
+
+  show(): void {
+    this.hidden = false;
+  }
+
+  hide(): void {
+    this.hidden = true;
+  }
+}
+
+const bubbles = true;
 
 describe('@lumino/widgets', () => {
   describe('DockPanel', () => {
@@ -64,6 +82,51 @@ describe('@lumino/widgets', () => {
         expect(panel.isDisposed).to.equal(true);
         panel.dispose();
         expect(panel.isDisposed).to.equal(true);
+      });
+    });
+
+    describe('drag-drop overlay', () => {
+      let overlay: TestOverlay;
+      let panel: DockPanel;
+      let descendant: HTMLElement;
+
+      beforeEach(() => {
+        overlay = new TestOverlay();
+        panel = new DockPanel({ overlay });
+        descendant = document.createElement('div');
+        Widget.attach(panel, document.body);
+        panel.node.appendChild(descendant);
+        overlay.show();
+      });
+
+      afterEach(() => {
+        panel.dispose();
+      });
+
+      it('should hide when a descendant handles the drop', () => {
+        descendant.addEventListener('lm-drop', event => {
+          event.preventDefault();
+          event.stopPropagation();
+        });
+
+        descendant.dispatchEvent(
+          new Event('lm-drop', { bubbles: true, cancelable: true })
+        );
+
+        expect(overlay.hidden).to.equal(true);
+      });
+
+      it('should hide when a descendant handles the drag leave', () => {
+        descendant.addEventListener('lm-dragleave', event => {
+          event.preventDefault();
+          event.stopPropagation();
+        });
+
+        descendant.dispatchEvent(
+          new Event('lm-dragleave', { bubbles: true, cancelable: true })
+        );
+
+        expect(overlay.hidden).to.equal(true);
       });
     });
 
@@ -124,6 +187,81 @@ describe('@lumino/widgets', () => {
         panel.hiddenMode = Widget.HiddenMode.Scale;
 
         expect(widgets[0].hiddenMode).to.equal(Widget.HiddenMode.Display);
+      });
+    });
+
+    describe('#handleEvent()', () => {
+      let panel: DockPanel;
+
+      beforeEach(() => {
+        panel = new DockPanel();
+        let w1 = new Widget();
+        let w2 = new Widget();
+        panel.addWidget(w1);
+        panel.addWidget(w2, { mode: 'split-right', ref: w1 });
+        Widget.attach(panel, document.body);
+        MessageLoop.flush();
+      });
+
+      afterEach(() => {
+        Widget.detach(panel);
+      });
+
+      context('pointercancel', () => {
+        it('should release the handle drag', () => {
+          let handle = Array.from(panel.handles())[0];
+          let rect = handle.getBoundingClientRect();
+          handle.dispatchEvent(
+            new PointerEvent('pointerdown', {
+              bubbles,
+              clientX: rect.left + 1,
+              clientY: rect.top + 1
+            })
+          );
+
+          // The cursor override backdrop is attached while the drag is live.
+          expect(!!document.body.querySelector('.lm-cursor-backdrop')).to.equal(
+            true
+          );
+
+          document.dispatchEvent(
+            new PointerEvent('pointercancel', { bubbles })
+          );
+
+          // The overlay should be gone once the drag is released.
+          expect(!!document.body.querySelector('.lm-cursor-backdrop')).to.equal(
+            false
+          );
+
+          // The captured keydown listener should no longer be installed.
+          let event = new KeyboardEvent('keydown', {
+            bubbles,
+            cancelable: true
+          });
+          document.dispatchEvent(event);
+          expect(event.defaultPrevented).to.equal(false);
+        });
+
+        it('should not release the handle drag for another pointer', () => {
+          let handle = Array.from(panel.handles())[0];
+          let rect = handle.getBoundingClientRect();
+          handle.dispatchEvent(
+            new PointerEvent('pointerdown', {
+              bubbles,
+              pointerId: 1,
+              clientX: rect.left + 1,
+              clientY: rect.top + 1
+            })
+          );
+
+          document.dispatchEvent(
+            new PointerEvent('pointercancel', { bubbles, pointerId: 2 })
+          );
+
+          expect(!!document.body.querySelector('.lm-cursor-backdrop')).to.equal(
+            true
+          );
+        });
       });
     });
 
