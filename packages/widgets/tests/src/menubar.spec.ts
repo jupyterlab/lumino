@@ -1083,6 +1083,20 @@ describe('@lumino/widgets', () => {
         expect(caught).to.equal(null);
         bar.dispose();
       });
+
+      it('should keep the menus in the menu bar after it is hidden and shown', () => {
+        let bar = createMenuBar();
+        bar.hide();
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        bar.show();
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        expect(bar.menus.map(menu => menu.title.label)).to.deep.equal([
+          'Menu0',
+          'Menu1',
+          'Menu2'
+        ]);
+        bar.dispose();
+      });
     });
 
     context('`menuRequested` signal', () => {

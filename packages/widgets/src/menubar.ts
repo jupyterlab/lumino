@@ -564,7 +564,10 @@ export class MenuBar extends Widget {
         }
       }
     }
-    this._overflowIndex = index;
+    // A hidden menu bar has no width, so keep the index from its last layout
+    if (screenSize > 0) {
+      this._overflowIndex = index;
+    }
   }
 
   /**
