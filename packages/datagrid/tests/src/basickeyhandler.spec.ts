@@ -127,6 +127,23 @@ describe('@lumino/datagrid', () => {
     }
 
     /**
+     * Press a column header, as a click does.
+     */
+    function pressHeaderOfColumn(column: number): void {
+      const mouse = new BasicMouseHandler();
+      const rect = grid.viewport.node.getBoundingClientRect();
+      mouse.onMouseDown(
+        grid,
+        new MouseEvent('mousedown', {
+          clientX: rect.left + grid.headerWidth + 64 * column + 32,
+          clientY: rect.top + grid.headerHeight / 2
+        })
+      );
+      mouse.onMouseUp(grid, new MouseEvent('mouseup'));
+      mouse.dispose();
+    }
+
+    /**
      * Use another data model for the grid.
      */
     function useModel(model: DataModel): void {
@@ -262,30 +279,31 @@ describe('@lumino/datagrid', () => {
         });
       });
 
-      it('should shrink columns selected from a header without joining', () => {
-        const mouse = new BasicMouseHandler();
-        const rect = grid.viewport.node.getBoundingClientRect();
-        mouse.onMouseDown(
-          grid,
-          new MouseEvent('mousedown', {
-            clientX: rect.left + grid.headerWidth + 64 + 32,
-            clientY: rect.top + grid.headerHeight / 2
-          })
-        );
-        mouse.onMouseUp(grid, new MouseEvent('mouseup'));
-        mouse.dispose();
-        press('ArrowUp');
+      it('should extend columns from a header as whole columns', () => {
+        pressHeaderOfColumn(1);
+        press('ArrowRight');
         expect(grid.selectionModel!.currentSelection()).to.deep.equal({
           r1: 0,
           c1: 1,
-          r2: 4,
-          c2: 1
+          r2: 5,
+          c2: 2
         });
+      });
+
+      it('should join columns from a header once Shift+Up makes them a range of cells', () => {
+        pressHeaderOfColumn(1);
         press('ArrowUp');
         expect(grid.selectionModel!.currentSelection()).to.deep.equal({
           r1: 0,
+          c1: 0,
+          r2: 4,
+          c2: 3
+        });
+        press('ArrowDown');
+        expect(grid.selectionModel!.currentSelection()).to.deep.equal({
+          r1: 0,
           c1: 1,
-          r2: 3,
+          r2: 5,
           c2: 1
         });
       });

@@ -5625,9 +5625,6 @@ export class DataGrid extends Widget {
         sc2 = tmp;
       }
 
-      // Draw the selection as stored. A range made in the body was joined
-      // with the merged cells it covers when it was made.
-
       // Convert to pixel coordinates.
       let x1 = this._columnSections.offsetOf(sc1) - sx + hw;
       let y1 = this._rowSections.offsetOf(sr1) - sy + hh;

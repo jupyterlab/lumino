@@ -117,6 +117,31 @@ class HeaderModel extends DataModel {
 }
 
 /**
+ * Six rows and four columns, with row 3 merged over columns 1 to 3, and
+ * rows 2 and 3 merged in column 0: a range that reaches the second only
+ * reaches the first through it.
+ */
+class ChainModel extends DataModel {
+  rowCount(region: DataModel.RowRegion): number {
+    return region === 'body' ? 6 : 1;
+  }
+  columnCount(region: DataModel.ColumnRegion): number {
+    return region === 'body' ? 4 : 1;
+  }
+  data(region: DataModel.CellRegion, row: number, column: number): string {
+    return `${region} ${row},${column}`;
+  }
+  groupCount(region: DataModel.CellRegion): number {
+    return region === 'body' ? 2 : 0;
+  }
+  group(region: DataModel.CellRegion, index: number) {
+    return index === 0
+      ? { r1: 3, r2: 3, c1: 1, c2: 3 }
+      : { r1: 2, r2: 3, c1: 0, c2: 0 };
+  }
+}
+
+/**
  * Attach a grid of a model, with a basic selection model.
  */
 function attachGrid(
@@ -288,7 +313,7 @@ describe('@lumino/datagrid', () => {
       it('should join a header range with the whole merged header it crosses', () => {
         grid = createMergedGrid(true);
         pressHeader(handler, grid, 'column-header', 0);
-        pressHeader(handler, grid, 'column-header', 3, true);
+        pressHeader(handler, grid, 'column-header', 2, true);
         expect(grid.selectionModel!.currentSelection()).to.deep.equal({
           r1: 0,
           c1: 0,
@@ -339,6 +364,59 @@ describe('@lumino/datagrid', () => {
           c1: 3,
           r2: 5,
           c2: 0
+        });
+      });
+
+      it('should select the whole merged cell for a press inside it', () => {
+        grid = createMergedGrid();
+        pressBody(handler, grid, 3, 1);
+        expect(grid.selectionModel!.currentSelection()).to.deep.equal({
+          r1: 3,
+          c1: 0,
+          r2: 3,
+          c2: 3
+        });
+      });
+
+      it('should join a cell added with the accel key with its merged cell', () => {
+        grid = createMergedGrid();
+        pressBody(handler, grid, 3, 1);
+        handler.onMouseUp(grid, new MouseEvent('mouseup'));
+        handler.onMouseDown(
+          grid,
+          new MouseEvent('mousedown', {
+            ...bodyPoint(grid, 1, 1),
+            metaKey: Platform.IS_MAC,
+            ctrlKey: !Platform.IS_MAC
+          })
+        );
+        expect(Array.from(grid.selectionModel!.selections())).to.deep.equal([
+          { r1: 3, c1: 0, r2: 3, c2: 3 },
+          { r1: 1, c1: 1, r2: 1, c2: 1 }
+        ]);
+      });
+
+      it('should keep columns from a header whole when a Shift+click spans every row', () => {
+        grid = createMergedGrid();
+        pressHeader(handler, grid, 'column-header', 1);
+        pressBody(handler, grid, 5, 2, true);
+        expect(grid.selectionModel!.currentSelection()).to.deep.equal({
+          r1: 0,
+          c1: 1,
+          r2: 5,
+          c2: 2
+        });
+      });
+
+      it('should join a range made with Shift+click from columns selected by a header', () => {
+        grid = createMergedGrid();
+        pressHeader(handler, grid, 'column-header', 1);
+        pressBody(handler, grid, 3, 1, true);
+        expect(grid.selectionModel!.currentSelection()).to.deep.equal({
+          r1: 0,
+          c1: 0,
+          r2: 3,
+          c2: 3
         });
       });
 
@@ -438,14 +516,25 @@ describe('@lumino/datagrid', () => {
         });
       });
 
-      it('should keep a drag within a merged cell a single cell', () => {
+      it('should select the whole merged cell for a drag inside it', () => {
         grid = createMergedGrid();
-        dragBody(handler, grid, [3, 1], [3, 1]);
+        dragBody(handler, grid, [3, 1], [3, 2]);
         expect(grid.selectionModel!.currentSelection()).to.deep.equal({
           r1: 3,
-          c1: 1,
+          c1: 0,
           r2: 3,
-          c2: 1
+          c2: 3
+        });
+      });
+
+      it('should join a merged cell reached through another one', () => {
+        grid = attachGrid(new ChainModel());
+        dragBody(handler, grid, [2, 0], [2, 1]);
+        expect(grid.selectionModel!.currentSelection()).to.deep.equal({
+          r1: 2,
+          c1: 0,
+          r2: 3,
+          c2: 3
         });
       });
 

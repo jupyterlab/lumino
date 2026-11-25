@@ -12,25 +12,20 @@ import { SelectionModel } from './selectionmodel';
  * The selections made by the mouse and key handlers.
  *
  * #### Notes
- * A range of body cells is stored joined with the merged cells it covers,
- * so that it is drawn and copied as it is stored. Whole rows or columns,
- * as a header press selects them, are not joined with the body's merged
- * cells.
+ * A selection of body cells is stored joined with the merged cells it
+ * covers, so that it is drawn and copied as it is stored. Whole rows or
+ * columns from a header are not joined with the body's merged cells: a
+ * selection that starts from a header stays whole rows or columns while
+ * it spans every row or column, and joins like any range once Shift makes
+ * it a range of cells.
  *
- * The last selection made here is remembered with how it was made, so
- * that the handlers extend a range as it was made rather than as it was
- * joined: Shift and an arrow key can then shrink a range back out of a
- * merged cell.
+ * The last selection made here is remembered, so that the handlers extend
+ * a range as it was made rather than as it was joined: Shift and an arrow
+ * key can then shrink a range back out of a merged cell.
  *
  * This module is internal to the package.
  */
 export namespace HandlerSelection {
-  /**
-   * How a selection was made: a range of cells in the body, or whole rows
-   * or columns from a header.
-   */
-  export type Kind = 'range' | 'lines';
-
   /**
    * Select a range of body cells, joined with the merged cells it covers.
    *
@@ -39,25 +34,14 @@ export namespace HandlerSelection {
    * @param args - The range as made, and the cursor and clear mode.
    *
    * #### Notes
-   * A single cell is selected as is, since the cursor already covers its
-   * merged cell.
+   * A cell of a merged cell selects the whole merged cell, which the cursor
+   * covers.
    */
   export function selectRange(
     grid: DataGrid,
     args: SelectionModel.SelectArgs
   ): void {
-    const model = grid.selectionModel;
-    const dataModel = grid.dataModel;
-    if (!model || !dataModel) {
-      return;
-    }
-    const made = clampToBody(dataModel, args);
-    const joined =
-      made.r1 === made.r2 && made.c1 === made.c2
-        ? made
-        : joinMergedCells(dataModel, 'body', made);
-    model.select({ ...args, ...joined });
-    remember(model, 'range', made);
+    joinAndSelect(grid, args, false);
   }
 
   /**
@@ -77,19 +61,39 @@ export namespace HandlerSelection {
       return;
     }
     model.select(args);
-    remember(model, 'lines', null);
+    remember(model, null, true);
   }
 
   /**
-   * Get how a selection was made, if it is the last selection made here,
-   * or `null`.
+   * Extend the current selection to a new range, as Shift does with a key
+   * or a click.
+   *
+   * @param grid - The data grid of interest.
+   *
+   * @param args - The new range as made, and the cursor and clear mode.
+   *
+   * #### Notes
+   * A selection that started from a header stays whole rows or columns
+   * while the new range spans every row or column. Any other range joins
+   * the merged cells it covers.
    */
-  export function kindOf(
-    model: SelectionModel,
-    selection: SelectionModel.Selection
-  ): Kind | null {
-    const entry = entries.get(model);
-    return entry && sameCells(entry.stored, selection) ? entry.kind : null;
+  export function extend(
+    grid: DataGrid,
+    args: SelectionModel.SelectArgs
+  ): void {
+    const model = grid.selectionModel;
+    const dataModel = grid.dataModel;
+    if (!model || !dataModel) {
+      return;
+    }
+    const current = model.currentSelection();
+    const fromHeader =
+      !!current && startedFromHeader(model, dataModel, current);
+    if (fromHeader && isWholeRowsOrColumns(dataModel, args)) {
+      selectLines(grid, args);
+    } else {
+      joinAndSelect(grid, args, fromHeader);
+    }
   }
 
   /**
@@ -102,26 +106,6 @@ export namespace HandlerSelection {
   ): SelectionModel.Selection {
     const entry = entries.get(model);
     return entry && sameCells(entry.stored, selection) ? entry.made : selection;
-  }
-
-  /**
-   * Whether a selection of more than one cell spans every row or every
-   * column of the body, as a header press selects them.
-   */
-  export function isWholeRowsOrColumns(
-    dataModel: DataModel,
-    selection: SelectionModel.Selection
-  ): boolean {
-    const { r1, c1, r2, c2 } = selection;
-    if (r1 === r2 && c1 === c2) {
-      return false;
-    }
-    const maxRow = dataModel.rowCount('body') - 1;
-    const maxColumn = dataModel.columnCount('body') - 1;
-    return (
-      (Math.min(r1, r2) <= 0 && Math.max(r1, r2) >= maxRow) ||
-      (Math.min(c1, c2) <= 0 && Math.max(c1, c2) >= maxColumn)
-    );
   }
 
   /**
@@ -185,8 +169,63 @@ export namespace HandlerSelection {
   }
 
   /**
-   * The last selection made here, by selection model: how it was made, the
-   * cells as made, and the cells as stored.
+   * Select a range of body cells joined with the merged cells it covers,
+   * and remember it as made.
+   */
+  function joinAndSelect(
+    grid: DataGrid,
+    args: SelectionModel.SelectArgs,
+    fromHeader: boolean
+  ): void {
+    const model = grid.selectionModel;
+    const dataModel = grid.dataModel;
+    if (!model || !dataModel) {
+      return;
+    }
+    const made = clampToBody(dataModel, args);
+    model.select({ ...args, ...joinMergedCells(dataModel, 'body', made) });
+    remember(model, made, fromHeader);
+  }
+
+  /**
+   * Whether a selection started from a header: as remembered if it is the
+   * last selection made here, or else if it spans every row or column.
+   */
+  function startedFromHeader(
+    model: SelectionModel,
+    dataModel: DataModel,
+    selection: SelectionModel.Selection
+  ): boolean {
+    const entry = entries.get(model);
+    if (entry && sameCells(entry.stored, selection)) {
+      return entry.fromHeader;
+    }
+    return isWholeRowsOrColumns(dataModel, selection);
+  }
+
+  /**
+   * Whether a selection of more than one cell spans every row or every
+   * column of the body.
+   */
+  function isWholeRowsOrColumns(
+    dataModel: DataModel,
+    selection: SelectionModel.Selection
+  ): boolean {
+    const { r1, c1, r2, c2 } = selection;
+    if (r1 === r2 && c1 === c2) {
+      return false;
+    }
+    const maxRow = dataModel.rowCount('body') - 1;
+    const maxColumn = dataModel.columnCount('body') - 1;
+    return (
+      (Math.min(r1, r2) <= 0 && Math.max(r1, r2) >= maxRow) ||
+      (Math.min(c1, c2) <= 0 && Math.max(c1, c2) >= maxColumn)
+    );
+  }
+
+  /**
+   * The last selection made here, by selection model: the cells as made,
+   * the cells as stored, and whether it started from a header.
    *
    * #### Notes
    * The cells are compared rather than the selection objects, because a
@@ -196,9 +235,9 @@ export namespace HandlerSelection {
   const entries = new WeakMap<
     SelectionModel,
     {
-      kind: Kind;
       made: SelectionModel.Selection;
       stored: SelectionModel.Selection;
+      fromHeader: boolean;
     }
   >();
 
@@ -208,8 +247,8 @@ export namespace HandlerSelection {
    */
   function remember(
     model: SelectionModel,
-    kind: Kind,
-    made: SelectionModel.Selection | null
+    made: SelectionModel.Selection | null,
+    fromHeader: boolean
   ): void {
     const current = model.currentSelection();
     if (!current) {
@@ -222,7 +261,7 @@ export namespace HandlerSelection {
       r2: current.r2,
       c2: current.c2
     };
-    entries.set(model, { kind, made: made || stored, stored });
+    entries.set(model, { made: made || stored, stored, fromHeader });
   }
 
   /**

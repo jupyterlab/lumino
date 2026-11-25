@@ -243,13 +243,15 @@ export class BasicMouseHandler implements DataGrid.IMouseHandler {
         clear = 'all';
       }
 
-      // Make the selection. In the cell selection mode, a range made with
-      // Shift joins the merged cells it covers.
+      // Make the selection. In the cell selection mode, it joins the
+      // merged cells it covers, and Shift extends the current selection.
       const args = { r1, c1, r2, c2, cursorRow, cursorColumn, clear };
-      if (model.selectionMode === 'cell') {
-        HandlerSelection.selectRange(grid, args);
-      } else {
+      if (model.selectionMode !== 'cell') {
         model.select(args);
+      } else if (shift && !accel) {
+        HandlerSelection.extend(grid, args);
+      } else {
+        HandlerSelection.selectRange(grid, args);
       }
 
       // Done.
