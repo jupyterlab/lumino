@@ -29,7 +29,7 @@ class LargeDataModel extends DataModel {
 
 /**
  * Six rows and four columns, with body rows 0 and 3 each merged across all
- * columns.
+ * columns, and column headers 1 and 2 merged.
  */
 class MergedModel extends DataModel {
   rowCount(region: DataModel.RowRegion): number {
@@ -42,16 +42,23 @@ class MergedModel extends DataModel {
     return `${row},${column}`;
   }
   groupCount(region: DataModel.CellRegion): number {
-    return region === 'body' ? 2 : 0;
+    return region === 'body' ? 2 : region === 'column-header' ? 1 : 0;
   }
   group(region: DataModel.CellRegion, index: number) {
+    if (region === 'column-header') {
+      return { r1: 0, r2: 0, c1: 1, c2: 2 };
+    }
     const row = index === 0 ? 0 : 3;
     return { r1: row, r2: row, c1: 0, c2: 3 };
   }
-  changeCell(row: number, column: number): void {
+  changeCell(
+    row: number,
+    column: number,
+    region: DataModel.CellRegion = 'body'
+  ): void {
     this.emitChanged({
       type: 'cells-changed',
-      region: 'body',
+      region,
       row,
       column,
       rowSpan: 1,
@@ -131,6 +138,11 @@ describe('@lumino/datagrid', () => {
       it('should repaint the whole merged cell in row 0', () => {
         merged.changeCell(0, 1);
         expect(grid.regions).to.deep.equal([['body', 0, 0, 0, 3]]);
+      });
+
+      it('should repaint the whole merged cell of a changed header cell', () => {
+        merged.changeCell(0, 2, 'column-header');
+        expect(grid.regions).to.deep.equal([['column-header', 0, 1, 0, 2]]);
       });
 
       it('should repaint only a changed cell outside merged cells', () => {
