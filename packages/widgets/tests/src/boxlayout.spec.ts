@@ -259,6 +259,18 @@ describe('@lumino/widgets', () => {
         panel.dispose();
       });
 
+      it('should leave other nodes of the parent in place', () => {
+        let panel = new Widget();
+        panel.node.appendChild(document.createElement('div'));
+        let layout = new LogBoxLayout();
+        panel.layout = layout;
+        layout.addWidget(new Widget());
+        layout.addWidget(new Widget());
+        layout.insertWidget(1, new Widget());
+        expect(domOrder(layout)).to.deep.equal([-1, 0, 1, 2]);
+        panel.dispose();
+      });
+
       it("should attach a widget to the parent's DOM node", () => {
         let panel = new Widget();
         let layout = new LogBoxLayout();
