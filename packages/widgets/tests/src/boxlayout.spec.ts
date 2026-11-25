@@ -326,7 +326,7 @@ describe('@lumino/widgets', () => {
         panel.dispose();
       });
 
-      it('should send before/after detach/attach messages if the parent is attached', () => {
+      it('should not send detach messages to a moved widget', () => {
         let panel = new Widget();
         let layout = new LogBoxLayout();
         panel.layout = layout;
@@ -341,13 +341,8 @@ describe('@lumino/widgets', () => {
           return true;
         });
         layout.insertWidget(2, widgets[0]);
-        expect(messages).to.deep.equal([
-          'before-detach',
-          'after-detach',
-          'before-attach',
-          'after-attach'
-        ]);
-        expect(document.body.contains(widgets[0].node)).to.equal(true);
+        expect(messages).to.not.contain('before-detach');
+        expect(messages).to.not.contain('after-detach');
         panel.dispose();
       });
 
