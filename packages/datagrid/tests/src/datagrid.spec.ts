@@ -106,8 +106,10 @@ describe('@lumino/datagrid', () => {
         expect(viewport.lastColumn).to.be.eq(4);
       });
     });
+  });
 
-    describe('cells-changed', () => {
+  describe('MergedModel', () => {
+    describe('changeCell()', () => {
       let grid: RepaintRecordingGrid;
       let merged: MergedModel;
 
