@@ -149,9 +149,9 @@ export namespace CellGroup {
    */
   export function joinCellGroups(groups: CellGroup[]): CellGroup {
     let startRow = Number.MAX_VALUE;
-    let endRow = Number.MIN_VALUE;
+    let endRow = -Number.MAX_VALUE;
     let startColumn = Number.MAX_VALUE;
-    let endColumn = Number.MIN_VALUE;
+    let endColumn = -Number.MAX_VALUE;
 
     for (const group of groups) {
       startRow = Math.min(startRow, group.r1);
