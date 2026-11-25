@@ -1117,6 +1117,22 @@ describe('@lumino/widgets', () => {
         ]);
         bar.dispose();
       });
+
+      it('should render every menu when the menu bar gets wide enough for all of them', () => {
+        let bar = createMenuBar();
+        bar.node.style.maxWidth = '70px';
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        expect(bar.overflowMenu).to.not.equal(null);
+        bar.node.style.maxWidth = '';
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        let labels = Array.from(bar.contentNode.children).map(
+          item => item.textContent
+        );
+        expect(labels).to.deep.equal(['Menu0', 'Menu1', 'Menu2']);
+        bar.dispose();
+      });
     });
 
     context('`menuRequested` signal', () => {

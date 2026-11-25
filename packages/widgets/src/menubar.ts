@@ -529,7 +529,6 @@ export class MenuBar extends Widget {
         }
         if (this._overflowMenu.items.length === 0) {
           this.removeMenu(this._overflowMenu, false);
-          content.pop();
           this._overflowMenu = null;
           this._overflowIndex = -1;
         }
