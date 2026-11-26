@@ -313,7 +313,6 @@ export class DockLayout extends Layout {
     protected init(): void;
     get isEmpty(): boolean;
     moveHandle(handle: HTMLDivElement, offsetX: number, offsetY: number): void;
-    moveHandles(handle1: HTMLDivElement, offsetX1: number, offsetY1: number, handle2: HTMLDivElement, offsetX2: number, offsetY2: number): void;
     protected onBeforeAttach(msg: Message): void;
     protected onBeforeShow(msg: Message): void;
     protected onChildHidden(msg: Widget.ChildMessage): void;

@@ -877,12 +877,12 @@ export class DockPanel extends Widget {
 
     // Set the handle(s) as close to the desired position as possible.
     const layout = this.layout as DockLayout;
+    layout.moveHandle(handle, xPos, yPos);
     if (intersect) {
       const xPos2 = clientX - rect.left - intersect.deltaX;
       const yPos2 = clientY - rect.top - intersect.deltaY;
-      layout.moveHandles(handle, xPos, yPos, intersect.handle, xPos2, yPos2);
-    } else {
-      layout.moveHandle(handle, xPos, yPos);
+      // The update requests of the two moves merge into one layout pass.
+      layout.moveHandle(intersect.handle, xPos2, yPos2);
     }
   };
 
