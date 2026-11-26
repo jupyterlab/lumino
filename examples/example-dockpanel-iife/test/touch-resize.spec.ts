@@ -87,12 +87,13 @@ for (const kind of ['dock', 'split'] as const) {
       page
     }) => {
       await loadWidgets(page);
+      // Only the second pane overflows: overflow under the handle keeps the touch there without the fix.
       await page.addStyleTag({
         content: `
           body { margin: 0; }
           #panel { position: absolute; left: 100px; top: 50px; width: 800px; height: 600px; }
           .content { height: 100%; overflow: auto; }
-          .content > div { height: 1800px; }
+          #pane-1 .content > div { height: 1800px; }
         `
       });
       await page.evaluate(
@@ -146,12 +147,12 @@ for (const kind of ['dock', 'split'] as const) {
       await dragTouch(page, start, end);
       await expect.poll(size).toBeGreaterThan(before + 100);
 
-      const scroll = pane.locator('.content');
+      const scroll = page.locator('#pane-1 .content');
       const rect = (await scroll.boundingBox())!;
       await dragTouch(
         page,
-        { x: rect.x + 50, y: rect.y + 200 },
-        { x: rect.x + 50, y: rect.y + 50 }
+        { x: rect.x + 50, y: rect.y + rect.height - 20 },
+        { x: rect.x + 50, y: rect.y + 20 }
       );
       await expect
         .poll(() => scroll.evaluate(node => node.scrollTop))
