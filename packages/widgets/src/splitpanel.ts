@@ -537,8 +537,11 @@ export class SplitPanel extends Panel {
    */
   private _applyHover = (): void => {
     this._hoverFrameId = -1;
+    const target = this._hoverTarget;
+    // The target can be in a widget which is closed before the next move.
+    this._hoverTarget = null;
     this._updateIntersectionHover(
-      this._hoverTarget,
+      target,
       this._hoverClientX,
       this._hoverClientY
     );

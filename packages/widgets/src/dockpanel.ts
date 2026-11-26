@@ -539,6 +539,12 @@ export class DockPanel extends Widget {
    * A message handler invoked on a `'child-removed'` message.
    */
   protected onChildRemoved(msg: Widget.ChildMessage): void {
+    // A removed widget would otherwise stay in memory through the hover cache.
+    if (this._hoverChild === msg.child.node) {
+      this._hoverChild = null;
+      this._hoverHandle = null;
+    }
+
     // Ignore the generated tab bars.
     if (Private.isGeneratedTabBarProperty.get(msg.child)) {
       return;
@@ -905,6 +911,8 @@ export class DockPanel extends Widget {
   private _applyHover = (): void => {
     this._hoverFrameId = -1;
     const handle = this._hitTestHandle(this._hoverTarget);
+    // The target can be in a widget which is closed before the next move.
+    this._hoverTarget = null;
     const peer = handle
       ? (this.layout as DockLayout).findIntersectingHandle(
           handle,

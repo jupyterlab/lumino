@@ -805,6 +805,21 @@ describe('@lumino/widgets', () => {
         expect(innerHandle.offsetTop).to.not.equal(vTop);
         outer.dispose();
       });
+
+      it('should not keep the nodes of a closed widget after a hover', async () => {
+        const { outer, inner } = attachedNested();
+        const widget = inner.widgets[0];
+        const content = document.createElement('div');
+        widget.node.appendChild(content);
+        content.dispatchEvent(new PointerEvent('pointermove', { bubbles }));
+        await nextFrame();
+        widget.dispose();
+        const kept = [outer['_hoverTarget'], inner['_hoverTarget']];
+        expect(
+          kept.some(node => widget.node.contains(node as Node | null))
+        ).to.equal(false);
+        outer.dispose();
+      });
     });
   });
 });
