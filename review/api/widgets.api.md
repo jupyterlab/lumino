@@ -1317,6 +1317,7 @@ export class Widget implements IMessageHandler, IObservableDisposable {
     constructor(options?: Widget.IOptions);
     activate(): void;
     addClass(name: string): void;
+    readonly attachmentNode: HTMLElement;
     children(): IterableIterator<Widget>;
     clearFlag(flag: Widget.Flag): void;
     close(): void;
@@ -1389,6 +1390,7 @@ export namespace Widget {
         Scale = 1
     }
     export interface IOptions {
+        attachmentNode?: HTMLElement;
         node?: HTMLElement;
         tag?: keyof HTMLElementTagNameMap;
     }
