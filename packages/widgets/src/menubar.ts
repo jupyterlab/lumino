@@ -430,6 +430,10 @@ export class MenuBar extends Widget {
    * A message handler invoked on an `'update-request'` message.
    */
   protected onUpdateRequest(msg: Message): void {
+    // The width can have changed since the last update
+    if (this._menuItemSizes.length > 0) {
+      this._updateOverflowIndex();
+    }
     let menus = this._menus;
     let renderer = this.renderer;
     let activeIndex = this._activeIndex;
