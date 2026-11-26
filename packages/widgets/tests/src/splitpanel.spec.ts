@@ -820,6 +820,45 @@ describe('@lumino/widgets', () => {
         ).to.equal(false);
         outer.dispose();
       });
+
+      it('should move the inner handle past a hidden widget', () => {
+        const inner = new SplitPanel({ orientation: 'vertical', spacing: 4 });
+        inner.addWidget(new Widget());
+        inner.addWidget(new Widget());
+        const hidden = new Widget();
+        const outer = new SplitPanel({ orientation: 'horizontal', spacing: 4 });
+        outer.addWidget(new Widget());
+        outer.addWidget(hidden);
+        outer.addWidget(inner);
+        hidden.hide();
+        outer.node.style.position = 'absolute';
+        outer.node.style.width = '600px';
+        outer.node.style.height = '600px';
+        Widget.attach(outer, document.body);
+        MessageLoop.flush();
+        // Handle 0 sits between the first widget and the inner panel.
+        const outerHandle = (outer.layout as SplitLayout).handles[0];
+        const innerHandle = (inner.layout as SplitLayout).handles[0];
+        const ro = outerHandle.getBoundingClientRect();
+        const ri = innerHandle.getBoundingClientRect();
+        const x = (ro.left + ro.right) / 2;
+        const y = (ri.top + ri.bottom) / 2;
+        const vTop = innerHandle.offsetTop;
+        outerHandle.dispatchEvent(
+          new PointerEvent('pointerdown', { bubbles, clientX: x, clientY: y })
+        );
+        document.body.dispatchEvent(
+          new PointerEvent('pointermove', {
+            bubbles,
+            clientX: x - 30,
+            clientY: y + 30
+          })
+        );
+        document.body.dispatchEvent(new PointerEvent('pointerup', { bubbles }));
+        MessageLoop.flush();
+        expect(innerHandle.offsetTop).to.not.equal(vTop);
+        outer.dispose();
+      });
     });
   });
 });

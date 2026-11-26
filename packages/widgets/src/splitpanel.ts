@@ -502,10 +502,9 @@ export class SplitPanel extends Panel {
     let nearest: { panel: SplitPanel; index: number; delta: number } | null =
       null;
     let nearestDistance = Infinity;
-    for (const candidate of [
-      this.widgets[handleIndex],
-      this.widgets[handleIndex + 1]
-    ]) {
+    // The handle sits between its widget and the next visible widget.
+    const next = this.widgets.find((w, i) => i > handleIndex && !w.isHidden);
+    for (const candidate of [this.widgets[handleIndex], next]) {
       if (!(candidate instanceof SplitPanel)) {
         continue;
       }
