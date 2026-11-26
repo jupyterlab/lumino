@@ -69,6 +69,26 @@ function visibleHandles(panel: DockPanel): {
   return { horizontal, vertical };
 }
 
+function center(handle: HTMLDivElement): { x: number; y: number } {
+  const r = handle.getBoundingClientRect();
+  return { x: (r.left + r.right) / 2, y: (r.top + r.bottom) / 2 };
+}
+
+/**
+ * Assert handle identity without letting chai inspect DOM nodes on failure.
+ *
+ * Comparing against an attached element with `expect(...).to.equal(node)` makes
+ * chai serialize the element (and its subtree) when the assertion fails, which
+ * can hang or crash the test renderer. Comparing booleans avoids that.
+ */
+function expectSame(
+  actual: HTMLDivElement | null,
+  expected: HTMLDivElement | null,
+  msg: string
+): void {
+  expect(actual === expected, msg).to.equal(true);
+}
+
 class TestOverlay implements DockPanel.IOverlay {
   readonly node = document.createElement('div');
 
@@ -341,17 +361,210 @@ describe('@lumino/widgets', () => {
       });
     });
 
+    describe('#_findIntersectingHandle()', () => {
+      /**
+       * Build a `DockPanel` on a sized, attached node and lay it out so the
+       * handles have real geometry. The caller chooses the widget arrangement.
+       */
+      function attached(
+        build: (dock: DockPanel, w: Widget[]) => void,
+        widgetCount: number
+      ): DockPanel {
+        const panel = new DockPanel({ spacing: 4 });
+        const widgets: Widget[] = [];
+        for (let i = 0; i < widgetCount; ++i) {
+          const w = new Widget();
+          w.node.style.minWidth = '40px';
+          w.node.style.minHeight = '40px';
+          widgets.push(w);
+        }
+        build(panel, widgets);
+        panel.node.style.position = 'absolute';
+        panel.node.style.width = '600px';
+        panel.node.style.height = '600px';
+        Widget.attach(panel, document.body);
+        MessageLoop.flush();
+        return panel;
+      }
+
+      // This 3-widget arrangement (a left column split above/below, beside a
+      // right widget) yields exactly one visible horizontal-split handle (the
+      // middle vertical bar) and one visible vertical-split handle (the left
+      // horizontal bar) — a single, unambiguous orthogonal pair.
+      function cross(): DockPanel {
+        return attached((dock, w) => {
+          dock.addWidget(w[0]);
+          dock.addWidget(w[1], { mode: 'split-right', ref: w[0] });
+          dock.addWidget(w[2], { mode: 'split-bottom', ref: w[0] });
+        }, 3);
+      }
+
+      it('should return null when the panel has no handles', () => {
+        const panel = new DockPanel();
+        const handle = document.createElement('div');
+        expectSame(
+          panel['_findIntersectingHandle'](handle, 0, 0),
+          null,
+          'no handles → null'
+        );
+      });
+
+      it('should return null when the handle has no orthogonal peer', () => {
+        // A single split yields one visible handle and no orthogonal peer.
+        const panel = attached((dock, w) => {
+          dock.addWidget(w[0]);
+          dock.addWidget(w[1], { mode: 'split-right', ref: w[0] });
+        }, 2);
+        const { horizontal } = visibleHandles(panel);
+        const handle = horizontal[0];
+        const c = center(handle);
+        // Aiming at the handle itself must not return the handle (identity skip)
+        // and there is no other candidate, so the result is null.
+        expectSame(
+          panel['_findIntersectingHandle'](handle, c.x, c.y),
+          null,
+          'self only → null'
+        );
+        panel.dispose();
+      });
+
+      it('should return the orthogonal handle under the point', () => {
+        const panel = cross();
+        const { horizontal, vertical } = visibleHandles(panel);
+        const primary = horizontal[0];
+        const peer = vertical[0];
+        const c = center(peer);
+        const found = panel['_findIntersectingHandle'](primary, c.x, c.y);
+        expectSame(found, peer, 'orthogonal peer under point');
+        panel.dispose();
+      });
+
+      it('should skip a hidden candidate', () => {
+        const panel = cross();
+        const { horizontal, vertical } = visibleHandles(panel);
+        const primary = horizontal[0];
+        const peer = vertical[0];
+        const c = center(peer);
+        // Sanity: the peer is found before being hidden.
+        expectSame(
+          panel['_findIntersectingHandle'](primary, c.x, c.y),
+          peer,
+          'peer found before hiding'
+        );
+        // Hiding the orthogonal candidate removes the match.
+        vertical.forEach(h => h.classList.add('lm-mod-hidden'));
+        expectSame(
+          panel['_findIntersectingHandle'](primary, c.x, c.y),
+          null,
+          'hidden peer skipped'
+        );
+        panel.dispose();
+      });
+
+      it('should skip a candidate with the same orientation', () => {
+        const panel = cross();
+        const { horizontal, vertical } = visibleHandles(panel);
+        const primary = horizontal[0];
+        const peer = vertical[0];
+        const c = center(peer);
+        expectSame(
+          panel['_findIntersectingHandle'](primary, c.x, c.y),
+          peer,
+          'peer found before re-tagging'
+        );
+        // Re-tagging the orthogonal candidate to match the primary's
+        // orientation makes it ineligible.
+        vertical.forEach(h => h.setAttribute('data-orientation', 'horizontal'));
+        expectSame(
+          panel['_findIntersectingHandle'](primary, c.x, c.y),
+          null,
+          'same-orientation peer skipped'
+        );
+        panel.dispose();
+      });
+
+      it('should honor the cross-axis tolerance band', () => {
+        const panel = cross();
+        const { horizontal, vertical } = visibleHandles(panel);
+        // Use a vertical-bar primary (orientation 'horizontal'); the candidate
+        // rect is expanded on the X axis by `spacing * 4`.
+        const primary = horizontal[0];
+        const peer = vertical[0];
+        const r = peer.getBoundingClientRect();
+        const y = (r.top + r.bottom) / 2;
+        const tol = panel.spacing * 4;
+        // Just inside the expanded right edge → match.
+        expectSame(
+          panel['_findIntersectingHandle'](primary, r.right + tol - 2, y),
+          peer,
+          'within tolerance → match'
+        );
+        // Just beyond the expanded right edge → no match.
+        expectSame(
+          panel['_findIntersectingHandle'](primary, r.right + tol + 5, y),
+          null,
+          'beyond tolerance → null'
+        );
+        panel.dispose();
+      });
+
+      it('should match a peer 3 px away at zero spacing', () => {
+        const panel = cross();
+        panel.spacing = 0;
+        MessageLoop.flush();
+        const { horizontal, vertical } = visibleHandles(panel);
+        const primary = horizontal[0];
+        const peer = vertical[0];
+        const x = primary.getBoundingClientRect().left;
+        const y = peer.getBoundingClientRect().top + 3;
+        expectSame(
+          panel['_findIntersectingHandle'](primary, x, y),
+          peer,
+          'peer 3 px away → match'
+        );
+        panel.dispose();
+      });
+
+      it('should return the nearer of two orthogonal handles', () => {
+        const panel = attached((dock, w) => {
+          dock.addWidget(w[0]);
+          dock.addWidget(w[1], { mode: 'split-right', ref: w[0] });
+          dock.addWidget(w[2], { mode: 'split-bottom', ref: w[0] });
+          dock.addWidget(w[3], { mode: 'split-bottom', ref: w[1] });
+        }, 4);
+        const { horizontal, vertical } = visibleHandles(panel);
+        const primary = horizontal[0];
+        const right = vertical.find(h => h.offsetLeft > primary.offsetLeft)!;
+        // Both bars stay within the tolerance of the vertical bar.
+        (panel.layout as DockLayout).moveHandle(
+          right,
+          right.offsetLeft,
+          right.offsetTop + 10
+        );
+        MessageLoop.flush();
+        expectSame(
+          panel['_findIntersectingHandle'](
+            primary,
+            center(primary).x,
+            center(right).y
+          ),
+          right,
+          'nearer peer → match'
+        );
+        panel.dispose();
+      });
+    });
+
     describe('group resizing', () => {
       it('should highlight an intersecting handle pair on hover', async () => {
         const { panel } = attachedGrid();
-        const layout = panel.layout as DockLayout;
         const { horizontal, vertical } = visibleHandles(panel);
         const primary = horizontal[0];
         const rH = primary.getBoundingClientRect();
         const rV = vertical[0].getBoundingClientRect();
         const x = (rH.left + rH.right) / 2;
         const y = (rV.top + rV.bottom) / 2;
-        const peer = layout.findIntersectingHandle(primary, x, y);
+        const peer = panel['_findIntersectingHandle'](primary, x, y);
         expect(peer).to.not.equal(null);
 
         primary.dispatchEvent(
@@ -368,7 +581,6 @@ describe('@lumino/widgets', () => {
 
       it('should find an intersection within tolerance of the peer handle thickness', () => {
         const { panel } = attachedGrid();
-        const layout = panel.layout as DockLayout;
         const { horizontal, vertical } = visibleHandles(panel);
         const primary = horizontal[0];
         const rH = primary.getBoundingClientRect();
@@ -377,21 +589,20 @@ describe('@lumino/widgets', () => {
         // A few pixels above the peer handle's own thin band, but still
         // within the intersection tolerance.
         const y = rV.top - 8;
-        const peer = layout.findIntersectingHandle(primary, x, y);
+        const peer = panel['_findIntersectingHandle'](primary, x, y);
         expect(peer).to.not.equal(null);
         panel.dispose();
       });
 
       it('should clear the hover highlight on pointerleave', async () => {
         const { panel } = attachedGrid();
-        const layout = panel.layout as DockLayout;
         const { horizontal, vertical } = visibleHandles(panel);
         const primary = horizontal[0];
         const rH = primary.getBoundingClientRect();
         const rV = vertical[0].getBoundingClientRect();
         const x = (rH.left + rH.right) / 2;
         const y = (rV.top + rV.bottom) / 2;
-        const peer = layout.findIntersectingHandle(primary, x, y)!;
+        const peer = panel['_findIntersectingHandle'](primary, x, y)!;
 
         primary.dispatchEvent(
           new PointerEvent('pointermove', { bubbles, clientX: x, clientY: y })
@@ -410,7 +621,6 @@ describe('@lumino/widgets', () => {
 
       it('should move both handles when dragging an intersection', () => {
         const { panel } = attachedGrid();
-        const layout = panel.layout as DockLayout;
         const { horizontal } = visibleHandles(panel);
         const primary = horizontal[0];
         const rH = primary.getBoundingClientRect();
@@ -421,9 +631,9 @@ describe('@lumino/widgets', () => {
         for (const v of visibleHandles(panel).vertical) {
           const rV = v.getBoundingClientRect();
           const cy = (rV.top + rV.bottom) / 2;
-          if (layout.findIntersectingHandle(primary, x, cy)) {
+          if (panel['_findIntersectingHandle'](primary, x, cy)) {
             y = cy;
-            peer = layout.findIntersectingHandle(primary, x, cy);
+            peer = panel['_findIntersectingHandle'](primary, x, cy);
             break;
           }
         }
@@ -452,7 +662,6 @@ describe('@lumino/widgets', () => {
 
       it('should move only one handle when there is no intersection', () => {
         const { panel } = attachedGrid();
-        const layout = panel.layout as DockLayout;
         const { horizontal, vertical } = visibleHandles(panel);
         const primary = horizontal[0];
         const rH = primary.getBoundingClientRect();
@@ -460,9 +669,9 @@ describe('@lumino/widgets', () => {
         // Near the top of the middle bar, away from any horizontal bar.
         const y = rH.top + 3;
         // Compare as a boolean so a failure never inspects a DOM node.
-        expect(layout.findIntersectingHandle(primary, x, y) === null).to.equal(
-          true
-        );
+        expect(
+          panel['_findIntersectingHandle'](primary, x, y) === null
+        ).to.equal(true);
 
         const peer = vertical[0];
         const hLeft = primary.offsetLeft;

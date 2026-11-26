@@ -305,7 +305,6 @@ export class DockLayout extends Layout {
     protected attachWidget(widget: Widget): void;
     protected detachWidget(widget: Widget): void;
     dispose(): void;
-    findIntersectingHandle(handle: HTMLDivElement, clientX: number, clientY: number): HTMLDivElement | null;
     handles(): IterableIterator<HTMLDivElement>;
     get hiddenMode(): Widget.HiddenMode;
     set hiddenMode(v: Widget.HiddenMode);

@@ -25,7 +25,11 @@ import { ISignal, Signal } from '@lumino/signaling';
 
 import { DockLayout } from './docklayout';
 
-import { findDirectChild, IntersectionHoverStyler } from './intersectionutils';
+import {
+  findDirectChild,
+  IntersectionHoverStyler,
+  intersectionTolerance
+} from './intersectionutils';
 
 import { TabBar } from './tabbar';
 
@@ -787,7 +791,7 @@ export class DockPanel extends Widget {
     const deltaY = event.clientY - rect.top;
 
     // Check for an orthogonal handle at the same intersection point.
-    const intersectHandle = layout.findIntersectingHandle(
+    const intersectHandle = this._findIntersectingHandle(
       handle,
       event.clientX,
       event.clientY
@@ -914,7 +918,7 @@ export class DockPanel extends Widget {
     // The target can be in a widget which is closed before the next move.
     this._hoverTarget = null;
     const peer = handle
-      ? (this.layout as DockLayout).findIntersectingHandle(
+      ? this._findIntersectingHandle(
           handle,
           this._hoverClientX,
           this._hoverClientY
@@ -922,6 +926,73 @@ export class DockPanel extends Widget {
       : null;
     this._setIntersectionHoverHandle(peer ? handle : null, peer);
   };
+
+  /**
+   * Find the handle that intersects orthogonally with the given handle at
+   * the specified client position.
+   *
+   * @param handle - The primary handle that was pressed.
+   *
+   * @param clientX - The clientX of the pointer event.
+   *
+   * @param clientY - The clientY of the pointer event.
+   *
+   * @returns The intersecting handle nearest to the position, or `null` if
+   *   none exists.
+   *
+   * #### Notes
+   * This is used to detect intersection points where two orthogonal split
+   * handles meet, enabling simultaneous two-axis resizing.
+   */
+  private _findIntersectingHandle(
+    handle: HTMLDivElement,
+    clientX: number,
+    clientY: number
+  ): HTMLDivElement | null {
+    // Determine the primary handle's orientation.
+    const primaryOrientation = handle.getAttribute('data-orientation');
+
+    // Iterate all handles looking for the nearest one with the opposite
+    // orientation whose bounding rect (expanded by spacing) contains the
+    // click point.
+    const tol = intersectionTolerance(this.spacing);
+    let nearest: HTMLDivElement | null = null;
+    let nearestDistance = Infinity;
+    for (const candidate of this.handles()) {
+      if (candidate === handle) {
+        continue;
+      }
+      if (candidate.classList.contains('lm-mod-hidden')) {
+        continue;
+      }
+      if (candidate.getAttribute('data-orientation') === primaryOrientation) {
+        continue;
+      }
+      const rect = candidate.getBoundingClientRect();
+
+      // Expand the candidate rect on both axes: in the primary handle's
+      // movement axis this bridges the gap between handle regions (child
+      // handles stop exactly at the edge of the parent handle's bounding
+      // rect, they don't overlap); on the candidate's own thin axis it
+      // gives the same click-grab tolerance SplitPanel's inner-intersect
+      // search gives, since that axis is otherwise only as wide as the
+      // handle itself.
+      const dx = Math.max(rect.left - clientX, 0, clientX - rect.right);
+      const dy = Math.max(rect.top - clientY, 0, clientY - rect.bottom);
+      if (dx > tol || dy > tol) {
+        continue;
+      }
+
+      // Handles closer together than the tolerance compete for the point.
+      const distance = Math.hypot(dx, dy);
+      if (distance < nearestDistance) {
+        nearest = candidate;
+        nearestDistance = distance;
+      }
+    }
+
+    return nearest;
+  }
 
   /**
    * Resolve the layout handle under the pointer, if any.
