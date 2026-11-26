@@ -328,9 +328,11 @@ export class SplitLayout extends PanelLayout {
       MessageLoop.sendMessage(widget, Widget.Msg.BeforeAttach);
     }
 
-    // Add the widget and handle nodes to the parent.
-    this.parent!.node.appendChild(widget.node);
-    this.parent!.node.appendChild(handle);
+    // Add the widget and handle nodes to the parent, after the previous
+    // section, so the DOM order (followed by Tab and screen readers) is
+    // the layout order.
+    this.parent!.node.insertBefore(widget.node, this._sectionReference(index));
+    this.parent!.node.insertBefore(handle, widget.node.nextSibling);
 
     // Send an `'after-attach'` message if the parent is attached.
     if (this.parent!.isAttached) {
@@ -362,6 +364,23 @@ export class SplitLayout extends PanelLayout {
     ArrayExt.move(this._items, fromIndex, toIndex);
     ArrayExt.move(this._sizers, fromIndex, toIndex);
     ArrayExt.move(this._handles, fromIndex, toIndex);
+
+    // Move the widget and handle nodes after the previous section, so the
+    // DOM order is the layout order. The widget stays attached, because a
+    // widget may drop state on detach, such as a React tree it unmounts.
+    // So nothing restores what a move without `moveBefore` would drop.
+    if (Utils.moveKeepsState(this.parent!.node)) {
+      Utils.moveBefore(
+        this.parent!.node,
+        widget.node,
+        this._sectionReference(toIndex)
+      );
+      Utils.moveBefore(
+        this.parent!.node,
+        this._handles[toIndex],
+        widget.node.nextSibling
+      );
+    }
 
     // Post a fit request to the parent to show/hide last handle.
     this.parent!.fit();
@@ -724,6 +743,16 @@ export class SplitLayout extends PanelLayout {
         top += size + fullOffset;
       }
     }
+  }
+
+  /**
+   * Get the node the section at the given index goes before: the node
+   * after the previous section's handle, or the parent's first node.
+   */
+  private _sectionReference(index: number): Node | null {
+    return index > 0
+      ? this._handles[index - 1].nextSibling
+      : this.parent!.node.firstChild;
   }
 
   protected widgetOffset = 0;

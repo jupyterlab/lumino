@@ -467,6 +467,9 @@ export class DockPanel extends Widget {
       case 'pointerup':
         this._evtPointerUp(event as PointerEvent);
         break;
+      case 'pointercancel':
+        this._evtPointerCancel(event as PointerEvent);
+        break;
       case 'keydown':
         this._evtKeyDown(event as KeyboardEvent);
         break;
@@ -482,8 +485,10 @@ export class DockPanel extends Widget {
    */
   protected onBeforeAttach(msg: Message): void {
     this.node.addEventListener('lm-dragenter', this);
+    this.node.addEventListener('lm-dragleave', this._evtDragLeaveCapture, true);
     this.node.addEventListener('lm-dragleave', this);
     this.node.addEventListener('lm-dragover', this);
+    this.node.addEventListener('lm-drop', this._evtDropCapture, true);
     this.node.addEventListener('lm-drop', this);
     this.node.addEventListener('pointerdown', this);
     this.node.addEventListener('pointermove', this);
@@ -495,8 +500,14 @@ export class DockPanel extends Widget {
    */
   protected onAfterDetach(msg: Message): void {
     this.node.removeEventListener('lm-dragenter', this);
+    this.node.removeEventListener(
+      'lm-dragleave',
+      this._evtDragLeaveCapture,
+      true
+    );
     this.node.removeEventListener('lm-dragleave', this);
     this.node.removeEventListener('lm-dragover', this);
+    this.node.removeEventListener('lm-drop', this._evtDropCapture, true);
     this.node.removeEventListener('lm-drop', this);
     this.node.removeEventListener('pointerdown', this);
     this.node.removeEventListener('pointermove', this);
@@ -553,6 +564,14 @@ export class DockPanel extends Widget {
   }
 
   /**
+   * Handle the capture phase of the `'lm-dragleave'` event for the dock panel.
+   */
+  private _evtDragLeaveCapture = (): void => {
+    // A nested dock panel stops the bubbling event before it reaches us.
+    this.overlay.hide(1);
+  };
+
+  /**
    * Handle the `'lm-dragleave'` event for the dock panel.
    */
   private _evtDragLeave(event: Drag.Event): void {
@@ -588,6 +607,13 @@ export class DockPanel extends Widget {
       event.dropAction = event.proposedAction;
     }
   }
+
+  /**
+   * Handle the capture phase of the `'lm-drop'` event for the dock panel.
+   */
+  private _evtDropCapture = (): void => {
+    this.overlay.hide(0);
+  };
 
   /**
    * Handle the `'lm-drop'` event for the dock panel.
@@ -746,6 +772,7 @@ export class DockPanel extends Widget {
     this._document.addEventListener('keydown', this, true);
     this._document.addEventListener('pointerup', this, true);
     this._document.addEventListener('pointermove', this, true);
+    this._document.addEventListener('pointercancel', this, true);
     this._document.addEventListener('contextmenu', this, true);
 
     // Compute the offset deltas for the handle press.
@@ -781,6 +808,7 @@ export class DockPanel extends Widget {
       deltaX,
       deltaY,
       override,
+      pointerId: event.pointerId,
       intersect,
       clientX: event.clientX,
       clientY: event.clientY,
@@ -936,6 +964,27 @@ export class DockPanel extends Widget {
   }
 
   /**
+   * Handle the `'pointercancel'` event for the dock panel.
+   */
+  private _evtPointerCancel(event: PointerEvent): void {
+    // Bail early if no drag is in progress.
+    if (!this._pressData) {
+      return;
+    }
+
+    // A palm or a second finger that the system cancels must not end the drag.
+    if (event.pointerId !== this._pressData.pointerId) {
+      return;
+    }
+
+    // Finalize the mouse release.
+    this._releaseMouse();
+
+    // Schedule an emit of the layout modified signal.
+    MessageLoop.postMessage(this, Private.LayoutModified);
+  }
+
+  /**
    * Release the mouse grab for the dock panel.
    */
   private _releaseMouse(): void {
@@ -957,6 +1006,7 @@ export class DockPanel extends Widget {
     this._document.removeEventListener('keydown', this, true);
     this._document.removeEventListener('pointerup', this, true);
     this._document.removeEventListener('pointermove', this, true);
+    this._document.removeEventListener('pointercancel', this, true);
     this._document.removeEventListener('contextmenu', this, true);
   }
 
@@ -1648,6 +1698,11 @@ namespace Private {
      * The disposable which will clear the override cursor.
      */
     override: IDisposable;
+
+    /**
+     * The ID of the pointer which pressed the handle.
+     */
+    pointerId: number;
 
     /**
      * Data for two-axis resizing when the pressed handle intersects an

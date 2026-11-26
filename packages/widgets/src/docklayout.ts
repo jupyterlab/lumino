@@ -90,8 +90,8 @@ export class DockLayout extends Layout {
    * The method for hiding child widgets.
    *
    * #### Notes
-   * If there is only one child widget, `Display` hiding mode will be used
-   * regardless of this setting.
+   * In `Scale` mode, a widget which is the only tab of its tab area
+   * uses the `Display` hiding mode.
    */
   get hiddenMode(): Widget.HiddenMode {
     return this._hiddenMode;
@@ -102,11 +102,7 @@ export class DockLayout extends Layout {
     }
     this._hiddenMode = v;
     for (const bar of this.tabBars()) {
-      if (bar.titles.length > 1) {
-        for (const title of bar.titles) {
-          title.owner.hiddenMode = this._hiddenMode;
-        }
-      }
+      this._applyHiddenMode(bar);
     }
   }
 
@@ -484,6 +480,10 @@ export class DockLayout extends Layout {
       );
     } else {
       this._root = null;
+    }
+
+    for (const tabBar of this.tabBars()) {
+      this._applyHiddenMode(tabBar);
     }
 
     // If there is no parent, there is nothing more to do.
@@ -952,7 +952,22 @@ export class DockLayout extends Layout {
     let tabNode = new Private.TabLayoutNode(this._createTabBar());
     tabNode.tabBar.addTab(widget.title);
     Private.addAria(widget, tabNode.tabBar);
+    this._applyHiddenMode(tabNode.tabBar);
     return tabNode;
+  }
+
+  /**
+   * Set the hidden mode of the widgets in a tab bar.
+   */
+  private _applyHiddenMode(tabBar: TabBar<Widget>): void {
+    // A single tab does not need the extra composition layer of `Scale`.
+    const mode =
+      this._hiddenMode === Widget.HiddenMode.Scale && tabBar.titles.length === 1
+        ? Widget.HiddenMode.Display
+        : this._hiddenMode;
+    for (const title of tabBar.titles) {
+      title.owner.hiddenMode = mode;
+    }
   }
 
   /**
@@ -974,10 +989,7 @@ export class DockLayout extends Layout {
 
     // Create the root if it does not exist.
     if (!this._root) {
-      let tabNode = new Private.TabLayoutNode(this._createTabBar());
-      tabNode.tabBar.addTab(widget.title);
-      this._root = tabNode;
-      Private.addAria(widget, tabNode.tabBar);
+      this._root = this._createTabNode(widget);
       return;
     }
 
@@ -1011,6 +1023,7 @@ export class DockLayout extends Layout {
         // If we are adding a second tab, switch the existing tab back to scale.
         const existingWidget = refNode.tabBar.titles[0].owner;
         existingWidget.hiddenMode = Widget.HiddenMode.Scale;
+        widget.hiddenMode = Widget.HiddenMode.Scale;
       } else {
         // For the third and subsequent tabs no special action is needed.
         widget.hiddenMode = Widget.HiddenMode.Scale;
