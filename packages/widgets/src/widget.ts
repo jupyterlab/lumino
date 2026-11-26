@@ -1130,9 +1130,9 @@ export namespace Widget {
    * to the DOM.
    *
    * If the host belongs to a different document than the widget node,
-   * for example a secondary window, the node is adopted into the host
-   * document before the `'before-attach'` message is sent. This allows
-   * `onBeforeAttach` handlers to rely on `this.node.ownerDocument`.
+   * for example a secondary window, the attachment node is adopted into
+   * the host document before the `'before-attach'` message is sent. This
+   * allows `onBeforeAttach` handlers to rely on `this.node.ownerDocument`.
    */
   export function attach(
     widget: Widget,
@@ -1148,7 +1148,7 @@ export namespace Widget {
     if (!host.isConnected) {
       throw new Error('Host is not attached.');
     }
-    Utils.adoptNode(widget.node, host);
+    Utils.adoptNode(widget.attachmentNode, host);
     MessageLoop.sendMessage(widget, Widget.Msg.BeforeAttach);
     host.insertBefore(widget.attachmentNode, ref);
     MessageLoop.sendMessage(widget, Widget.Msg.AfterAttach);

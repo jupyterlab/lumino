@@ -1309,6 +1309,13 @@ describe('@lumino/widgets', () => {
           expectSame(child.beforeAttachDocument, secondary.document);
           parent.dispose();
         });
+
+        it('should keep the node of a shadow DOM widget in its shadow root', () => {
+          let widget = new ShadowDOMWidget();
+          Widget.attach(widget, secondary.document.body);
+          expectSame(widget.node.parentNode, widget.attachmentNode.shadowRoot);
+          widget.dispose();
+        });
       });
 
       it('should not adopt the node within the same document', () => {
