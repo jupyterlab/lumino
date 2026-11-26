@@ -931,6 +931,7 @@ export class SingletonLayout extends Layout {
 export class SplitLayout extends PanelLayout {
     constructor(options: SplitLayout.IOptions);
     absoluteSizes(): number[];
+    adjustHandle(index: number, position: number): boolean;
     get alignment(): SplitLayout.Alignment;
     set alignment(value: SplitLayout.Alignment);
     protected attachWidget(index: number, widget: Widget): void;

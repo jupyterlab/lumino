@@ -236,10 +236,34 @@ export class SplitLayout extends PanelLayout {
    * position. The sibling widgets will be adjusted as necessary.
    */
   moveHandle(index: number, position: number): void {
+    if (this.adjustHandle(index, position) && this.parent) {
+      this.parent.update();
+    }
+  }
+
+  /**
+   * Adjust the sizers to reflect a handle move, without updating the layout.
+   *
+   * @param index - The index of the handle of the interest.
+   *
+   * @param position - The desired offset position of the handle.
+   *
+   * @returns `true` if the sizers were adjusted, `false` if the handle is
+   *   missing, hidden, or already at the desired position.
+   *
+   * #### Notes
+   * The position is relative to the offset parent.
+   *
+   * This is the measure-and-adjust half of {@link moveHandle}; the caller
+   * becomes responsible for updating the layout. Use it to batch several
+   * handle moves - potentially across nested panels - into a single layout
+   * pass, which avoids laying the same widgets out more than once per frame.
+   */
+  adjustHandle(index: number, position: number): boolean {
     // Bail if the index is invalid or the handle is hidden.
     let handle = this._handles[index];
     if (!handle || handle.classList.contains('lm-mod-hidden')) {
-      return;
+      return false;
     }
 
     // Compute the desired delta movement for the handle.
@@ -252,7 +276,7 @@ export class SplitLayout extends PanelLayout {
 
     // Bail if there is no handle movement.
     if (delta === 0) {
-      return;
+      return false;
     }
 
     // Prevent widget resizing unless needed.
@@ -265,10 +289,7 @@ export class SplitLayout extends PanelLayout {
     // Adjust the sizers to reflect the handle movement.
     BoxEngine.adjust(this._sizers, index, delta);
 
-    // Update the layout of the widgets.
-    if (this.parent) {
-      this.parent.update();
-    }
+    return true;
   }
 
   /**

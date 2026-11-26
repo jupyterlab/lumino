@@ -20,6 +20,7 @@ import './docklayout.spec';
 import './dockpanel.spec';
 import './focustracker.spec';
 import './gridlayout.spec';
+import './intersectionutils.spec';
 import './layout.spec';
 import './menu.spec';
 import './menubar.spec';
