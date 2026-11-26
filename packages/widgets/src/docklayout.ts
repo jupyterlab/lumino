@@ -57,8 +57,10 @@ export class DockLayout extends Layout {
    * This will clear and dispose all widgets in the layout.
    */
   dispose(): void {
-    // Get an iterator over the widgets in the layout.
-    let widgets = this[Symbol.iterator]();
+    // Collect the widgets in the layout. The tab bars are disposed along
+    // with the other widgets and empty their titles, so a lazy iterator
+    // would stop before reaching the user widgets.
+    const widgets = Array.from(this);
 
     // Dispose of the layout items.
     this._items.forEach(item => {
@@ -1163,7 +1165,8 @@ export class DockLayout extends Layout {
     // Initialize the handle layout behavior.
     let style = handle.style;
     style.position = 'absolute';
-    style.contain = 'strict';
+    // Paint containment would clip the 8 px hit area that ::after gives the handle
+    style.contain = 'size layout style';
     style.top = '0';
     style.left = '0';
     style.width = '0';

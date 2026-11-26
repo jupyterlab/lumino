@@ -21,6 +21,12 @@
   touch-action: none;
 }
 
+/* Chromium sends a touch to a nearby element with a click listener unless the handle has an :active style:
+   https://issues.chromium.org/issues/41262068 */
+.lm-SplitPanel-handle:active {
+  touch-action: none;
+}
+
 .lm-SplitPanel-handle.lm-mod-hidden {
   display: none !important;
 }
