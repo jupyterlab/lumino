@@ -1,3 +1,14 @@
+# 2026-04-XX
+
+## Replace `widget.node` with `widget.attachmentNode`
+
+Lumino 2026-04-XX distinguishes between the widget contents node (`node`)
+and attachment node (`attachmentNode`) to enable shadow DOM support.
+By default attachment and contents node are the same, but subclasses
+may override the attachment node to represent a wrapper owning the shadow DOM root.
+Downstream layouts are encouraged to update methods attaching and detaching widgets
+to use attachment node to support moving the widgets to shadow DOM.
+
 # Migration guide for Lumino 1 to Lumino 2
 
 ## Iterables, iterators, and generators
