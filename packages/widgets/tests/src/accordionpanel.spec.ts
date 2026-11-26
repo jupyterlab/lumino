@@ -105,6 +105,28 @@ describe('@lumino/widgets', () => {
           layout.titles[0].id
         );
       });
+
+      it('should keep the titles in the DOM in the order they are shown', () => {
+        let panel = new AccordionPanel();
+        for (const label of ['A', 'B', 'D']) {
+          let widget = new Widget();
+          widget.title.label = label;
+          panel.addWidget(widget);
+        }
+        let c = new Widget();
+        c.title.label = 'C';
+        const shown = () => panel.widgets.map(w => w.title.label).join(' ');
+        const inDom = () =>
+          Array.from(panel.node.querySelectorAll('.lm-AccordionPanel-title'))
+            .map(title => title.textContent)
+            .join(' ');
+
+        panel.insertWidget(2, c);
+        expect(inDom()).to.equal(shown());
+        panel.insertWidget(0, panel.widgets[3]);
+        expect(inDom()).to.equal(shown());
+        panel.dispose();
+      });
     });
 
     describe('#dispose()', () => {

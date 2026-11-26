@@ -311,7 +311,7 @@ __metadata:
     "@lumino/buildutils": ^2.0.3
     "@lumino/commands": ^2.3.4
     "@lumino/coreutils": ^2.2.3
-    "@lumino/widgets": ^2.9.0
+    "@lumino/widgets": ^2.10.0
     "@microsoft/api-extractor": ^7.36.0
     "@rollup/plugin-commonjs": ^24.0.0
     "@rollup/plugin-node-resolve": ^15.0.1
@@ -430,7 +430,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lumino/datagrid@^2.5.8, @lumino/datagrid@workspace:packages/datagrid":
+"@lumino/datagrid@^2.5.9, @lumino/datagrid@workspace:packages/datagrid":
   version: 0.0.0-use.local
   resolution: "@lumino/datagrid@workspace:packages/datagrid"
   dependencies:
@@ -443,7 +443,7 @@ __metadata:
     "@lumino/keyboard": ^2.0.5
     "@lumino/messaging": ^2.0.5
     "@lumino/signaling": ^2.1.6
-    "@lumino/widgets": ^2.9.0
+    "@lumino/widgets": ^2.10.0
     "@microsoft/api-extractor": ^7.36.0
     "@rollup/plugin-commonjs": ^24.0.0
     "@rollup/plugin-node-resolve": ^15.0.1
@@ -464,12 +464,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lumino/default-theme@^2.1.16, @lumino/default-theme@workspace:packages/default-theme":
+"@lumino/default-theme@^2.1.17, @lumino/default-theme@workspace:packages/default-theme":
   version: 0.0.0-use.local
   resolution: "@lumino/default-theme@workspace:packages/default-theme"
   dependencies:
     "@lumino/dragdrop": ^2.1.9
-    "@lumino/widgets": ^2.9.0
+    "@lumino/widgets": ^2.10.0
   languageName: unknown
   linkType: soft
 
@@ -556,9 +556,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@lumino/example-accordionpanel@workspace:examples/example-accordionpanel"
   dependencies:
-    "@lumino/default-theme": ^2.1.16
+    "@lumino/default-theme": ^2.1.17
     "@lumino/messaging": ^2.0.5
-    "@lumino/widgets": ^2.9.0
+    "@lumino/widgets": ^2.10.0
     "@rollup/plugin-node-resolve": ^15.0.1
     rimraf: ^5.0.1
     rollup: ^3.25.1
@@ -571,10 +571,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@lumino/example-datagrid@workspace:examples/example-datagrid"
   dependencies:
-    "@lumino/datagrid": ^2.5.8
-    "@lumino/default-theme": ^2.1.16
+    "@lumino/datagrid": ^2.5.9
+    "@lumino/default-theme": ^2.1.17
     "@lumino/dragdrop": ^2.1.9
-    "@lumino/widgets": ^2.9.0
+    "@lumino/widgets": ^2.10.0
     "@rollup/plugin-node-resolve": ^15.0.1
     rimraf: ^5.0.1
     rollup: ^3.25.1
@@ -604,10 +604,10 @@ __metadata:
   resolution: "@lumino/example-dockpanel@workspace:examples/example-dockpanel"
   dependencies:
     "@lumino/commands": ^2.3.4
-    "@lumino/default-theme": ^2.1.16
+    "@lumino/default-theme": ^2.1.17
     "@lumino/dragdrop": ^2.1.9
     "@lumino/messaging": ^2.0.5
-    "@lumino/widgets": ^2.9.0
+    "@lumino/widgets": ^2.10.0
     "@rollup/plugin-node-resolve": ^15.0.1
     rimraf: ^5.0.1
     rollup: ^3.25.1
@@ -620,9 +620,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@lumino/example-menubar@workspace:examples/example-menubar"
   dependencies:
-    "@lumino/default-theme": ^2.1.16
+    "@lumino/default-theme": ^2.1.17
     "@lumino/messaging": ^2.0.5
-    "@lumino/widgets": ^2.9.0
+    "@lumino/widgets": ^2.10.0
     "@rollup/plugin-node-resolve": ^15.0.1
     rimraf: ^5.0.1
     rollup: ^3.25.1
@@ -811,7 +811,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lumino/widgets@^2.9.0, @lumino/widgets@workspace:packages/widgets":
+"@lumino/widgets@^2.10.0, @lumino/widgets@workspace:packages/widgets":
   version: 0.0.0-use.local
   resolution: "@lumino/widgets@workspace:packages/widgets"
   dependencies:
@@ -3111,14 +3111,14 @@ __metadata:
   linkType: hard
 
 "axios@npm:^1.0.0":
-  version: 1.18.0
-  resolution: "axios@npm:1.18.0"
+  version: 1.20.0
+  resolution: "axios@npm:1.20.0"
   dependencies:
     follow-redirects: ^1.16.0
-    form-data: ^4.0.5
+    form-data: ^4.0.6
     https-proxy-agent: ^5.0.1
     proxy-from-env: ^2.1.0
-  checksum: 87e66c8583f69f3aec2d03d2840e4074d71c67d0e06a5c33de8926b0f11c9d31a8509adc6814167cc1fc470bc3f24f99a10fcb6632843192126567340dd1a8ce
+  checksum: 58ff916938e317352e0c3483496a4609fd528da4823a8580969821748284bea2add069a39f2285a161020ce0886f33a982a162ebb49b5403c51a6977a1d50627
   languageName: node
   linkType: hard
 
@@ -3307,12 +3307,12 @@ __metadata:
   linkType: hard
 
 "brace-expansion@npm:^1.1.7":
-  version: 1.1.11
-  resolution: "brace-expansion@npm:1.1.11"
+  version: 1.1.21
+  resolution: "brace-expansion@npm:1.1.21"
   dependencies:
     balanced-match: ^1.0.0
     concat-map: 0.0.1
-  checksum: faf34a7bb0c3fcf4b59c7808bc5d2a96a40988addf2e7e09dfbb67a2251800e0d14cd2bfc1aa79174f2f5095c54ff27f46fb1289fe2d77dac755b5eb3434cc07
+  checksum: b841b4198a0ab8a1b433920ed65b46a9b4368c0ad1f95b2ed229a682c7d7d5b5839620204b5644a05c967d29e66bdf0a59b1115e74e0f27761d0dc02f5e0d835
   languageName: node
   linkType: hard
 
@@ -5719,12 +5719,12 @@ __metadata:
   linkType: hard
 
 "follow-redirects@npm:^1.16.0":
-  version: 1.16.0
-  resolution: "follow-redirects@npm:1.16.0"
+  version: 1.16.1
+  resolution: "follow-redirects@npm:1.16.1"
   peerDependenciesMeta:
     debug:
       optional: true
-  checksum: e90dce4607b1f6b8b9883287f912585573c19088209ad82341d550a795b4ba514522b73b1b340cf618279df27975cd46504d09149be60291ba6767384c1fd8f8
+  checksum: d42ff9158fe6c66692567b712fd4bba25ef8736253c1436439642884f9c218df05fe946928d1944367b1b72f7ca5e5d277c26608159e2adf1bad9e42b12d2c30
   languageName: node
   linkType: hard
 
@@ -5745,7 +5745,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"form-data@npm:^4.0.5":
+"form-data@npm:^4.0.6":
   version: 4.0.6
   resolution: "form-data@npm:4.0.6"
   dependencies:
@@ -8650,12 +8650,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanoid@npm:^3.3.11":
-  version: 3.3.11
-  resolution: "nanoid@npm:3.3.11"
+"nanoid@npm:^3.3.17":
+  version: 3.3.18
+  resolution: "nanoid@npm:3.3.18"
   bin:
     nanoid: bin/nanoid.cjs
-  checksum: 3be20d8866a57a6b6d218e82549711c8352ed969f9ab3c45379da28f405363ad4c9aeb0b39e9abc101a529ca65a72ff9502b00bf74a912c4b64a9d62dfd26c29
+  checksum: db804317d337b41602666f23014e399d1263033d13a903955c246378256fd4e002519e87199ca40b19aff52274965ac7cc6e70c13a63e194e15c4664724602d3
   languageName: node
   linkType: hard
 
@@ -10132,13 +10132,13 @@ __metadata:
   linkType: hard
 
 "postcss@npm:^8.4.24, postcss@npm:^8.4.5":
-  version: 8.5.10
-  resolution: "postcss@npm:8.5.10"
+  version: 8.5.26
+  resolution: "postcss@npm:8.5.26"
   dependencies:
-    nanoid: ^3.3.11
+    nanoid: ^3.3.17
     picocolors: ^1.1.1
     source-map-js: ^1.2.1
-  checksum: 9af9cd7f2f0d4b8456f6710e48d586328433509b695911fda942c24ac4db4e62c6fed8c6c6d8c8258326285f669494c2c36a4ff84aa160f0586eb545e5258bf5
+  checksum: 719b1acd7db117cffa1514a6ed47e71ba4159ebddd1be2616b65dc1580a6bb9289abb8a78d26e08b45ab5a03277662483a6413e4b08325df0260831f4c2bc11b
   languageName: node
   linkType: hard
 
@@ -10270,12 +10270,12 @@ __metadata:
   linkType: hard
 
 "proxy-addr@npm:~2.0.7":
-  version: 2.0.7
-  resolution: "proxy-addr@npm:2.0.7"
+  version: 2.0.8
+  resolution: "proxy-addr@npm:2.0.8"
   dependencies:
     forwarded: 0.2.0
     ipaddr.js: 1.9.1
-  checksum: 29c6990ce9364648255454842f06f8c46fcd124d3e6d7c5066df44662de63cdc0bad032e9bf5a3d653ff72141cc7b6019873d685708ac8210c30458ad99f2b74
+  checksum: 1878fa24a104ac3833f55583918964fbdcc6eedc076450548633dc1b4321e89947a9e93fc61d0c931712d3c46197de18855bc96a4feb73ba7bd4890a45508649
   languageName: node
   linkType: hard
 
@@ -11292,9 +11292,9 @@ __metadata:
   linkType: hard
 
 "shell-quote@npm:^1.7.2":
-  version: 1.8.4
-  resolution: "shell-quote@npm:1.8.4"
-  checksum: 082dc836baa8ade01144ee3068af487ea45ba570ea6ab13a5eddc11ab16a976b8857b51ef2caf7dc9a1e173ff0aea685b8f78b4f6f5a0a1ef24c7b17c51350e2
+  version: 1.12.0
+  resolution: "shell-quote@npm:1.12.0"
+  checksum: bbb3b6b244069da4114c5c0d2192786ff146123e1c29c298348871a3b8219cf45bdc9540c2f948e8874e2f7309186480a7ac0097159d0958aaafec25c5074731
   languageName: node
   linkType: hard
 
@@ -11478,17 +11478,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"source-map-js@npm:^1.0.1":
-  version: 1.0.2
-  resolution: "source-map-js@npm:1.0.2"
-  checksum: c049a7fc4deb9a7e9b481ae3d424cc793cb4845daa690bc5a05d428bf41bf231ced49b4cf0c9e77f9d42fdb3d20d6187619fc586605f5eabe995a316da8d377c
-  languageName: node
-  linkType: hard
-
-"source-map-js@npm:^1.2.1":
-  version: 1.2.1
-  resolution: "source-map-js@npm:1.2.1"
-  checksum: 4eb0cd997cdf228bc253bcaff9340afeb706176e64868ecd20efbe6efea931465f43955612346d6b7318789e5265bdc419bc7669c1cebe3db0eb255f57efa76b
+"source-map-js@npm:^1.0.1, source-map-js@npm:^1.2.1":
+  version: 1.2.2
+  resolution: "source-map-js@npm:1.2.2"
+  checksum: d4f3adc1921e145fe84574b5852d7f5bf11e93d6c008a250ffe66a3e698331f066008cc3ba63e720dde07fe74871f1610d2e74532d33b27126e82e57c00df3bf
   languageName: node
   linkType: hard
 

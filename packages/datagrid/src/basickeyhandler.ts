@@ -11,6 +11,8 @@ import { Platform } from '@lumino/domutils';
 
 import { getKeyboardLayout } from '@lumino/keyboard';
 
+import { HandlerSelection } from './handlerselection';
+
 import { DataGrid } from './datagrid';
 
 import { SelectionModel } from './selectionmodel';
@@ -170,7 +172,7 @@ export class BasicKeyHandler implements DataGrid.IKeyHandler {
     // Fetch the cursor and selection.
     let r = model.cursorRow;
     let c = model.cursorColumn;
-    let cs = model.currentSelection();
+    let cs = Private.currentSelection(model);
 
     // Set up the selection variables.
     let r1: number;
@@ -217,10 +219,14 @@ export class BasicKeyHandler implements DataGrid.IKeyHandler {
     }
 
     // Create the new selection.
-    model.select({ r1, c1, r2, c2, cursorRow: cr, cursorColumn: cc, clear });
+    Private.select(
+      grid,
+      { r1, c1, r2, c2, cursorRow: cr, cursorColumn: cc, clear },
+      event.shiftKey
+    );
 
     // Re-fetch the current selection.
-    cs = model.currentSelection();
+    cs = Private.currentSelection(model);
 
     // Bail if there is no selection.
     if (!cs) {
@@ -284,7 +290,7 @@ export class BasicKeyHandler implements DataGrid.IKeyHandler {
     // Fetch the cursor and selection.
     let r = model.cursorRow;
     let c = model.cursorColumn;
-    let cs = model.currentSelection();
+    let cs = Private.currentSelection(model);
 
     // Set up the selection variables.
     let r1: number;
@@ -331,10 +337,14 @@ export class BasicKeyHandler implements DataGrid.IKeyHandler {
     }
 
     // Create the new selection.
-    model.select({ r1, c1, r2, c2, cursorRow: cr, cursorColumn: cc, clear });
+    Private.select(
+      grid,
+      { r1, c1, r2, c2, cursorRow: cr, cursorColumn: cc, clear },
+      event.shiftKey
+    );
 
     // Re-fetch the current selection.
-    cs = model.currentSelection();
+    cs = Private.currentSelection(model);
 
     // Bail if there is no selection.
     if (!cs) {
@@ -398,7 +408,7 @@ export class BasicKeyHandler implements DataGrid.IKeyHandler {
     // Fetch the cursor and selection.
     let r = model.cursorRow;
     let c = model.cursorColumn;
-    let cs = model.currentSelection();
+    let cs = Private.currentSelection(model);
 
     // Set up the selection variables.
     let r1: number;
@@ -445,10 +455,14 @@ export class BasicKeyHandler implements DataGrid.IKeyHandler {
     }
 
     // Create the new selection.
-    model.select({ r1, c1, r2, c2, cursorRow: cr, cursorColumn: cc, clear });
+    Private.select(
+      grid,
+      { r1, c1, r2, c2, cursorRow: cr, cursorColumn: cc, clear },
+      event.shiftKey
+    );
 
     // Re-fetch the current selection.
-    cs = model.currentSelection();
+    cs = Private.currentSelection(model);
 
     // Bail if there is no selection.
     if (!cs) {
@@ -512,7 +526,7 @@ export class BasicKeyHandler implements DataGrid.IKeyHandler {
     // Fetch the cursor and selection.
     let r = model.cursorRow;
     let c = model.cursorColumn;
-    let cs = model.currentSelection();
+    let cs = Private.currentSelection(model);
 
     // Set up the selection variables.
     let r1: number;
@@ -559,10 +573,14 @@ export class BasicKeyHandler implements DataGrid.IKeyHandler {
     }
 
     // Create the new selection.
-    model.select({ r1, c1, r2, c2, cursorRow: cr, cursorColumn: cc, clear });
+    Private.select(
+      grid,
+      { r1, c1, r2, c2, cursorRow: cr, cursorColumn: cc, clear },
+      event.shiftKey
+    );
 
     // Re-fetch the current selection.
-    cs = model.currentSelection();
+    cs = Private.currentSelection(model);
 
     // Bail if there is no selection.
     if (!cs) {
@@ -609,7 +627,7 @@ export class BasicKeyHandler implements DataGrid.IKeyHandler {
     // Fetch the cursor and selection.
     let r = model.cursorRow;
     let c = model.cursorColumn;
-    let cs = model.currentSelection();
+    let cs = Private.currentSelection(model);
 
     // Set up the selection variables.
     let r1: number;
@@ -640,10 +658,14 @@ export class BasicKeyHandler implements DataGrid.IKeyHandler {
     }
 
     // Create the new selection.
-    model.select({ r1, c1, r2, c2, cursorRow: cr, cursorColumn: cc, clear });
+    Private.select(
+      grid,
+      { r1, c1, r2, c2, cursorRow: cr, cursorColumn: cc, clear },
+      event.shiftKey
+    );
 
     // Re-fetch the current selection.
-    cs = model.currentSelection();
+    cs = Private.currentSelection(model);
 
     // Bail if there is no selection.
     if (!cs) {
@@ -686,7 +708,7 @@ export class BasicKeyHandler implements DataGrid.IKeyHandler {
     // Fetch the cursor and selection.
     let r = model.cursorRow;
     let c = model.cursorColumn;
-    let cs = model.currentSelection();
+    let cs = Private.currentSelection(model);
 
     // Set up the selection variables.
     let r1: number;
@@ -717,10 +739,14 @@ export class BasicKeyHandler implements DataGrid.IKeyHandler {
     }
 
     // Create the new selection.
-    model.select({ r1, c1, r2, c2, cursorRow: cr, cursorColumn: cc, clear });
+    Private.select(
+      grid,
+      { r1, c1, r2, c2, cursorRow: cr, cursorColumn: cc, clear },
+      event.shiftKey
+    );
 
     // Re-fetch the current selection.
-    cs = model.currentSelection();
+    cs = Private.currentSelection(model);
 
     // Bail if there is no selection.
     if (!cs) {
@@ -796,4 +822,47 @@ export class BasicKeyHandler implements DataGrid.IKeyHandler {
   }
 
   private _disposed = false;
+}
+
+/**
+ * The namespace for the module implementation details.
+ */
+namespace Private {
+  /**
+   * Get the current selection, with a range as it was made.
+   *
+   * #### Notes
+   * A range is stored joined with the merged cells it covers. The keys
+   * extend it as made, so that Shift and an arrow key can shrink it back
+   * out of a merged cell.
+   */
+  export function currentSelection(
+    model: SelectionModel
+  ): SelectionModel.Selection | null {
+    const cs = model.currentSelection();
+    return cs && HandlerSelection.asMade(model, cs);
+  }
+
+  /**
+   * Make a selection for a key press.
+   *
+   * #### Notes
+   * In the cell selection mode, the selection joins the merged cells it
+   * covers, and Shift extends the current selection as
+   * `HandlerSelection.extend` describes.
+   */
+  export function select(
+    grid: DataGrid,
+    args: SelectionModel.SelectArgs,
+    shift: boolean
+  ): void {
+    const model = grid.selectionModel!;
+    if (model.selectionMode !== 'cell' || !grid.dataModel) {
+      model.select(args);
+    } else if (shift) {
+      HandlerSelection.extend(grid, args);
+    } else {
+      HandlerSelection.selectRange(grid, args);
+    }
+  }
 }

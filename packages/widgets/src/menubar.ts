@@ -343,6 +343,11 @@ export class MenuBar extends Widget {
     // Clear the menus array.
     this._menus.length = 0;
 
+    // The overflow menu and the item sizes belong to the cleared menus
+    this._overflowMenu = null;
+    this._overflowIndex = -1;
+    this._menuItemSizes.length = 0;
+
     // Schedule an update of the items.
     this.update();
   }
@@ -425,6 +430,10 @@ export class MenuBar extends Widget {
    * A message handler invoked on an `'update-request'` message.
    */
   protected onUpdateRequest(msg: Message): void {
+    // The width can have changed since the last update
+    if (this._menuItemSizes.length > 0) {
+      this._updateOverflowIndex();
+    }
     let menus = this._menus;
     let renderer = this.renderer;
     let activeIndex = this._activeIndex;
@@ -437,7 +446,21 @@ export class MenuBar extends Widget {
     let isVisible = false;
 
     // Check that the overflow menu doesn't count
-    length = this._overflowMenu !== null ? length - 1 : length;
+    length = this._overflowMenu !== null ? Math.max(length - 1, 0) : length;
+
+    if (this._overflowMenu !== null) {
+      // The menu bar got wider: take menus back from the overflow menu
+      while (menus.length - 1 < length && this._overflowMenu.items.length > 0) {
+        let menu = this._overflowMenu.items[0].submenu as Menu;
+        this._overflowMenu.removeItemAt(0);
+        this.insertMenu(menus.length - 1, menu, false);
+      }
+      // The overflow menu itself is rendered after the loop below
+      length = Math.min(length, menus.length - 1);
+    } else {
+      // The item sizes can include menus removed since they were measured
+      length = Math.min(length, menus.length);
+    }
     let content = new Array<VirtualElement>(length);
 
     // Render visible menus
@@ -518,7 +541,6 @@ export class MenuBar extends Widget {
         }
         if (this._overflowMenu.items.length === 0) {
           this.removeMenu(this._overflowMenu, false);
-          content.pop();
           this._overflowMenu = null;
           this._overflowIndex = -1;
         }
@@ -564,7 +586,10 @@ export class MenuBar extends Widget {
         }
       }
     }
-    this._overflowIndex = index;
+    // A hidden menu bar has no width, so keep the index from its last layout
+    if (screenSize > 0) {
+      this._overflowIndex = index;
+    }
   }
 
   /**
