@@ -1165,7 +1165,8 @@ export class DockLayout extends Layout {
     // Initialize the handle layout behavior.
     let style = handle.style;
     style.position = 'absolute';
-    style.contain = 'strict';
+    // Paint containment would clip the 8 px hit area that ::after gives the handle
+    style.contain = 'size layout style';
     style.top = '0';
     style.left = '0';
     style.width = '0';
