@@ -368,10 +368,8 @@ export class SplitPanel extends Panel {
     const horizontal = layout.orientation === 'horizontal';
     const { index, delta, innerIntersect, clientX, clientY } = pressData;
 
-    // Measure first, then write. This runs at the top of an animation frame,
-    // immediately after a paint, so the layout is clean and every measurement
-    // below is free. Once the first style is written, any further measurement
-    // would force a synchronous layout of the whole document.
+    // Measure first, then write: once the first style is written, any further
+    // measurement would force a synchronous layout of the whole document.
     const rect = this.node.getBoundingClientRect();
     const width = this.node.offsetWidth;
     const height = this.node.offsetHeight;
