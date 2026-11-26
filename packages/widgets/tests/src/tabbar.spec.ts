@@ -2084,6 +2084,13 @@ describe('@lumino/widgets', () => {
         expect(entryPoints()).to.deep.equal([second]);
       });
 
+      it('should move the entry point to a tab that receives focus', () => {
+        // A right-click, or a menu returning the focus, focuses a tab directly.
+        const third = bar.contentNode.children[2] as HTMLElement;
+        third.focus();
+        expect(entryPoints()).to.deep.equal([third]);
+      });
+
       it('should restore the selected entry point after leaving the add button', () => {
         bar.addButtonEnabled = true;
         const first = bar.contentNode.children[0] as HTMLElement;
