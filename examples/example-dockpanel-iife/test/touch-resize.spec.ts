@@ -13,10 +13,13 @@ declare global {
 
 interface IPackage {
   main: string;
+  browser?: string | Record<string, string | false>;
   dependencies?: Record<string, string>;
 }
 
 async function loadWidgets(page: Page): Promise<void> {
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
   const loaded = new Set<string>();
   async function load(name: string): Promise<void> {
     if (loaded.has(name)) {
@@ -30,7 +33,9 @@ async function loadWidgets(page: Page): Promise<void> {
         await load(dependency);
       }
     }
-    await page.addScriptTag({ path: join(dirname(packagePath), pkg.main) });
+    // The main entry of @lumino/coreutils is a Node build that throws in a page.
+    const entry = typeof pkg.browser === 'string' ? pkg.browser : pkg.main;
+    await page.addScriptTag({ path: join(dirname(packagePath), entry) });
   }
   await load('@lumino/widgets');
   const style = join(
@@ -40,6 +45,7 @@ async function loadWidgets(page: Page): Promise<void> {
   for (const file of ['widget', 'dockpanel', 'splitpanel', 'tabbar']) {
     await page.addStyleTag({ path: join(style, `${file}.css`) });
   }
+  expect(errors).toEqual([]);
 }
 
 async function dragTouch(
