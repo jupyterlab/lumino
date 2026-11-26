@@ -2,7 +2,14 @@
 // Distributed under the terms of the Modified BSD License.
 import { expect } from 'chai';
 
-import { DataGrid, DataModel } from '@lumino/datagrid';
+import {
+  AsyncCellRenderer,
+  CellRenderer,
+  DataGrid,
+  DataModel,
+  GraphicsContext,
+  TextRenderer
+} from '@lumino/datagrid';
 
 import { MessageLoop } from '@lumino/messaging';
 
@@ -69,6 +76,40 @@ class MergedModel extends DataModel {
       columnSpan: 1
     });
   }
+}
+
+/**
+ * Six rows and four columns, without merged cells.
+ */
+class SmallModel extends DataModel {
+  rowCount(region: DataModel.RowRegion): number {
+    return region === 'body' ? 6 : 1;
+  }
+  columnCount(region: DataModel.ColumnRegion): number {
+    return region === 'body' ? 4 : 1;
+  }
+  data(region: DataModel.CellRegion, row: number, column: number): string {
+    return `${row},${column}`;
+  }
+}
+
+/**
+ * A renderer whose cells are ready once loaded, like an `ImageRenderer`.
+ */
+class LoadingRenderer extends AsyncCellRenderer {
+  isReady(config: CellRenderer.CellConfig): boolean {
+    return this._loaded.has(`${config.row},${config.column}`);
+  }
+  async load(config: CellRenderer.CellConfig): Promise<void> {
+    this._loaded.add(`${config.row},${config.column}`);
+  }
+  paintPlaceholder(gc: GraphicsContext, config: CellRenderer.CellConfig): void {
+    // no-op
+  }
+  paint(gc: GraphicsContext, config: CellRenderer.CellConfig): void {
+    // no-op
+  }
+  private _loaded = new Set<string>();
 }
 
 /**
@@ -173,6 +214,53 @@ describe('@lumino/datagrid', () => {
         MessageLoop.flush();
         expect(grid.painted).to.deep.equal([cellRect('body', 1, 1, 1, 1)]);
       });
+    });
+  });
+
+  describe('SmallModel', () => {
+    let grid: PaintRecordingGrid;
+    let small: SmallModel;
+
+    beforeEach(() => {
+      small = new SmallModel();
+      grid = new PaintRecordingGrid();
+      grid.dataModel = small;
+      grid.node.style.width = '400px';
+      grid.node.style.height = '200px';
+      Widget.attach(grid, document.body);
+      MessageLoop.flush();
+      grid.painted = [];
+    });
+
+    afterEach(() => {
+      grid.dispose();
+    });
+
+    /**
+     * Use a loading renderer for one body column, paint the grid so that its
+     * cells start loading, and wait for the repaints that the loads ask for.
+     */
+    async function loadColumn(column: number): Promise<void> {
+      const loading = new LoadingRenderer();
+      const text = new TextRenderer();
+      grid.cellRenderers.update({
+        body: (config: CellRenderer.CellConfig) =>
+          config.column === column ? loading : text
+      });
+      MessageLoop.flush();
+      grid.painted = [];
+      await new Promise(resolve => setTimeout(resolve, 0));
+      MessageLoop.flush();
+    }
+
+    it('should repaint the loaded cells of the last column', async () => {
+      await loadColumn(3);
+      expect(grid.painted).to.deep.equal([cellRect('body', 0, 3, 5, 3)]);
+    });
+
+    it('should repaint the loaded cells of a column down to the last row', async () => {
+      await loadColumn(1);
+      expect(grid.painted).to.deep.equal([cellRect('body', 0, 1, 5, 2)]);
     });
   });
 });
