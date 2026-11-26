@@ -488,6 +488,30 @@ describe('@lumino/widgets', () => {
         expect(bar.menus).to.eql([]);
         bar.dispose();
       });
+
+      it('should render only the menus added after clearing overflowing menus', () => {
+        let bar = createMenuBar();
+        let sizes = Array.from(bar.contentNode.children).map(
+          item => (item as HTMLElement).offsetWidth
+        );
+        // Room for two menus, so for one menu and the overflow menu
+        let width = sizes[0] + sizes[1] + Math.floor(sizes[2] / 2);
+        bar.node.style.maxWidth = `${width}px`;
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        expect(bar.overflowMenu).to.not.equal(null);
+        bar.clearMenus();
+        let menu = createMenu();
+        menu.title.label = 'New';
+        bar.addMenu(menu);
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        let labels = Array.from(bar.contentNode.children).map(
+          item => item.textContent
+        );
+        expect(labels).to.deep.equal(['New']);
+        bar.dispose();
+      });
     });
 
     describe('#handleEvent()', () => {
@@ -1056,6 +1080,122 @@ describe('@lumino/widgets', () => {
         MessageLoop.flush();
         expect(bar.overflowIndex).to.equal(-1);
         expect(bar.overflowMenu).to.equal(null);
+        bar.dispose();
+      });
+
+      it('should not throw when overflowIndex is 0 and the overflow menu is set', () => {
+        let bar = createMenuBar();
+        bar.node.style.maxWidth = '70px';
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        MessageLoop.flush();
+        expect(bar.overflowMenu).to.not.equal(null);
+        bar.node.style.maxWidth = '5px';
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        expect(bar.overflowIndex).to.equal(0);
+        expect(bar.overflowMenu).to.not.equal(null);
+        let caught: Error | null = null;
+        let previousHandler = MessageLoop.getExceptionHandler();
+        MessageLoop.setExceptionHandler(err => {
+          caught = err;
+        });
+        try {
+          MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+          MessageLoop.flush();
+        } finally {
+          MessageLoop.setExceptionHandler(previousHandler);
+        }
+        expect(caught).to.equal(null);
+        bar.dispose();
+      });
+
+      it('should keep the menus in the menu bar after it is hidden and shown', () => {
+        let bar = createMenuBar();
+        bar.hide();
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        bar.show();
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        expect(bar.menus.map(menu => menu.title.label)).to.deep.equal([
+          'Menu0',
+          'Menu1',
+          'Menu2'
+        ]);
+        bar.dispose();
+      });
+
+      it('should move menus back from the overflow menu when the menu bar gets wider', () => {
+        let bar = createMenuBar();
+        let sizes = Array.from(bar.contentNode.children).map(
+          item => (item as HTMLElement).offsetWidth
+        );
+        bar.node.style.maxWidth = '5px';
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        // Room for two menus, so for one menu and the overflow menu
+        let width = sizes[0] + sizes[1] + Math.floor(sizes[2] / 2);
+        bar.node.style.maxWidth = `${width}px`;
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        expect(bar.menus.map(menu => menu.title.label)).to.deep.equal([
+          'Menu0',
+          '...'
+        ]);
+        bar.dispose();
+      });
+
+      it('should render every menu when the menu bar gets wide enough for all of them', () => {
+        let bar = createMenuBar();
+        bar.node.style.maxWidth = '70px';
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        expect(bar.overflowMenu).to.not.equal(null);
+        bar.node.style.maxWidth = '';
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        let labels = Array.from(bar.contentNode.children).map(
+          item => item.textContent
+        );
+        expect(labels).to.deep.equal(['Menu0', 'Menu1', 'Menu2']);
+        bar.dispose();
+      });
+
+      it('should not throw when the menu bar gets narrower after menus are removed', () => {
+        let bar = createMenuBar();
+        let sizes = Array.from(bar.contentNode.children).map(
+          item => (item as HTMLElement).offsetWidth
+        );
+        bar.removeMenuAt(0);
+        bar.removeMenuAt(0);
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        // Narrower than the three menus measured before the removal
+        let width = sizes[0] + sizes[1] + Math.floor(sizes[2] / 2);
+        bar.node.style.maxWidth = `${width}px`;
+        let caught: Error | null = null;
+        let previousHandler = MessageLoop.getExceptionHandler();
+        MessageLoop.setExceptionHandler(err => {
+          caught = err;
+        });
+        try {
+          MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+          MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        } finally {
+          MessageLoop.setExceptionHandler(previousHandler);
+        }
+        expect(caught).to.equal(null);
+        bar.dispose();
+      });
+
+      it('should render every menu in the first update after the menu bar gets wide enough', () => {
+        let bar = createMenuBar();
+        bar.node.style.maxWidth = '70px';
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        expect(bar.overflowMenu).to.not.equal(null);
+        bar.node.style.maxWidth = '';
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        let labels = Array.from(bar.contentNode.children).map(
+          item => item.textContent
+        );
+        expect(labels).to.deep.equal(['Menu0', 'Menu1', 'Menu2']);
         bar.dispose();
       });
     });

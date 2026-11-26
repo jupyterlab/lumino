@@ -45,6 +45,20 @@ class LogAccordionLayout extends AccordionLayout {
   }
 }
 
+/**
+ * Where each node of the parent is in the layout order of the sections'
+ * title, widget and handle nodes: ascending when the DOM follows the layout.
+ */
+function domOrder(layout: AccordionLayout): number[] {
+  let nodes: Element[] = [];
+  layout.widgets.forEach((widget, i) => {
+    nodes.push(layout.titles[i], widget.node, layout.handles[i]);
+  });
+  return Array.from(layout.parent!.node.children).map(node =>
+    nodes.indexOf(node)
+  );
+}
+
 describe('@lumino/widgets', () => {
   describe('AccordionLayout', () => {
     describe('#constructor()', () => {
@@ -141,6 +155,20 @@ describe('@lumino/widgets', () => {
         expect(widget.node.getAttribute('aria-labelledby')).to.equal(title.id);
         parent.dispose();
       });
+
+      it('should insert the title, widget and handle nodes in layout order', () => {
+        let layout = new LogAccordionLayout({ renderer });
+        let parent = new Widget();
+        parent.layout = layout;
+        layout.addWidget(new Widget());
+        layout.addWidget(new Widget());
+        layout.insertWidget(1, new Widget());
+        layout.insertWidget(0, new Widget());
+        expect(domOrder(layout)).to.deep.equal([
+          0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+        ]);
+        parent.dispose();
+      });
     });
 
     describe('#moveWidget()', () => {
@@ -159,6 +187,42 @@ describe('@lumino/widgets', () => {
 
         expect(layout.methods).to.contain('moveWidget');
         expect(layout.titles[2]).to.equal(title);
+        parent.dispose();
+      });
+
+      it('should move the title, widget and handle nodes in layout order', () => {
+        let layout = new LogAccordionLayout({ renderer });
+        let widgets = [new Widget(), new Widget(), new Widget(), new Widget()];
+        let parent = new Widget();
+        parent.layout = layout;
+        widgets.forEach(w => {
+          layout.addWidget(w);
+        });
+        layout.insertWidget(0, widgets[3]);
+        expect(domOrder(layout)).to.deep.equal([
+          0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+        ]);
+        layout.insertWidget(3, widgets[0]);
+        expect(domOrder(layout)).to.deep.equal([
+          0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+        ]);
+        parent.dispose();
+      });
+
+      it('should keep the focus on a moved title', () => {
+        let layout = new LogAccordionLayout({ renderer });
+        let widgets = [new Widget(), new Widget(), new Widget()];
+        let parent = new Widget();
+        parent.layout = layout;
+        widgets.forEach(w => {
+          layout.addWidget(w);
+        });
+        Widget.attach(parent, document.body);
+        let title = layout.titles[0];
+        title.tabIndex = 0;
+        title.focus();
+        layout.insertWidget(2, widgets[0]);
+        expect(document.activeElement).to.equal(title);
         parent.dispose();
       });
     });
