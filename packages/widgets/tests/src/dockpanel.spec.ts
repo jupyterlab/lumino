@@ -508,12 +508,12 @@ describe('@lumino/widgets', () => {
         const panel = cross();
         const { horizontal, vertical } = visibleHandles(panel);
         // Use a vertical-bar primary (orientation 'horizontal'); the candidate
-        // rect is expanded on the X axis by `spacing * 4`.
+        // rect is expanded on the X axis by 8 px.
         const primary = horizontal[0];
         const peer = vertical[0];
         const r = peer.getBoundingClientRect();
         const y = (r.top + r.bottom) / 2;
-        const tol = panel.spacing * 4;
+        const tol = 8;
         // Just inside the expanded right edge → match.
         expectSame(
           panel['_findIntersectingHandle'](primary, r.right + tol - 2, y),
@@ -711,6 +711,31 @@ describe('@lumino/widgets', () => {
         MessageLoop.flush();
         expect(primary.offsetLeft).to.not.equal(hLeft);
         expect(peer.offsetTop).to.equal(vTop);
+        panel.dispose();
+      });
+
+      it('should not move the crossing handles from a press 12 px from a junction', () => {
+        const { panel } = attachedGrid();
+        const { horizontal, vertical } = visibleHandles(panel);
+        const primary = horizontal[0];
+        const rH = primary.getBoundingClientRect();
+        const rV = vertical[0].getBoundingClientRect();
+        const x = (rH.left + rH.right) / 2;
+        const y = rV.top - 12;
+        const tops = vertical.map(h => h.offsetTop);
+        primary.dispatchEvent(
+          new PointerEvent('pointerdown', { bubbles, clientX: x, clientY: y })
+        );
+        document.body.dispatchEvent(
+          new PointerEvent('pointermove', {
+            bubbles,
+            clientX: x - 30,
+            clientY: y + 30
+          })
+        );
+        document.body.dispatchEvent(new PointerEvent('pointerup', { bubbles }));
+        MessageLoop.flush();
+        expect(vertical.map(h => h.offsetTop)).to.deep.equal(tops);
         panel.dispose();
       });
 

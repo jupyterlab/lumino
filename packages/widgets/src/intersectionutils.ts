@@ -2,11 +2,6 @@
 // Distributed under the terms of the Modified BSD License.
 
 /**
- * Shared multiplier for intersection hit testing tolerance.
- */
-export const INTERSECTION_TOLERANCE_MULTIPLIER = 4;
-
-/**
  * The smallest intersection hit testing tolerance, in pixels.
  */
 export const MIN_INTERSECTION_TOLERANCE = 8;
@@ -20,11 +15,8 @@ export const MIN_INTERSECTION_TOLERANCE = 8;
  *   orthogonal handle starts a two-axis drag.
  */
 export function intersectionTolerance(spacing: number): number {
-  // Zero spacing, as in Theia, would otherwise leave a one pixel target.
-  return Math.max(
-    spacing * INTERSECTION_TOLERANCE_MULTIPLIER,
-    MIN_INTERSECTION_TOLERANCE
-  );
+  // A press on the near edge of a handle is a spacing away from the crossing one.
+  return Math.max(spacing, MIN_INTERSECTION_TOLERANCE);
 }
 
 /**

@@ -745,6 +745,29 @@ describe('@lumino/widgets', () => {
         outer.dispose();
       });
 
+      it('should not move an inner handle from a press 12 px from it', () => {
+        const { outer, outerHandle, innerHandle } = attachedNested();
+        const ro = outerHandle.getBoundingClientRect();
+        const ri = innerHandle.getBoundingClientRect();
+        const x = (ro.left + ro.right) / 2;
+        const y = ri.top - 12;
+        const vTop = innerHandle.offsetTop;
+        outerHandle.dispatchEvent(
+          new PointerEvent('pointerdown', { bubbles, clientX: x, clientY: y })
+        );
+        document.body.dispatchEvent(
+          new PointerEvent('pointermove', {
+            bubbles,
+            clientX: x - 30,
+            clientY: y + 30
+          })
+        );
+        document.body.dispatchEvent(new PointerEvent('pointerup', { bubbles }));
+        MessageLoop.flush();
+        expect(innerHandle.offsetTop).to.equal(vTop);
+        outer.dispose();
+      });
+
       // The inner panel's handle is applied by an explicit resize rather than
       // by the resize which the outer pass cascades into it, because that
       // cascade only fires when the inner panel's own size changes. Dragging

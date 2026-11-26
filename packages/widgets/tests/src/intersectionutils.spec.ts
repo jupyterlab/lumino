@@ -6,10 +6,7 @@ import { expect } from 'chai';
 // Deep import: `intersectionutils` is an internal module and is intentionally
 // not re-exported from the package index. A test-only `paths` mapping in
 // `tests/tsconfig.json` points this specifier at the emitted declarations.
-import {
-  INTERSECTION_TOLERANCE_MULTIPLIER,
-  IntersectionHoverStyler
-} from '@lumino/widgets/lib/intersectionutils';
+import { IntersectionHoverStyler } from '@lumino/widgets/lib/intersectionutils';
 
 const CLASS = 'lm-mod-intersection';
 
@@ -18,12 +15,6 @@ function div(): HTMLDivElement {
 }
 
 describe('@lumino/widgets', () => {
-  describe('INTERSECTION_TOLERANCE_MULTIPLIER', () => {
-    it('should be 4', () => {
-      expect(INTERSECTION_TOLERANCE_MULTIPLIER).to.equal(4);
-    });
-  });
-
   describe('IntersectionHoverStyler', () => {
     describe('#set()', () => {
       it('should add the intersection class to both handles', () => {
