@@ -2,7 +2,14 @@
 // Distributed under the terms of the Modified BSD License.
 import { expect } from 'chai';
 
-import { DataGrid, DataModel } from '@lumino/datagrid';
+import {
+  CellGroup,
+  CellRenderer,
+  DataGrid,
+  DataModel,
+  GraphicsContext,
+  TextRenderer
+} from '@lumino/datagrid';
 
 import { MessageLoop } from '@lumino/messaging';
 
@@ -98,6 +105,59 @@ function cellRect(
   return [64 + 64 * c1, top + 20 * r1, 64 * (c2 - c1 + 1), 20 * (r2 - r1 + 1)];
 }
 
+/**
+ * Two header rows and two header columns, with a merged cell in each header
+ * region: column header row 1 over columns 1 and 2, row header column 1 over
+ * rows 1 and 2, and corner header row 1 over both header columns.
+ */
+class MergedHeaderModel extends DataModel {
+  rowCount(region: DataModel.RowRegion): number {
+    return region === 'body' ? 3 : 2;
+  }
+  columnCount(region: DataModel.ColumnRegion): number {
+    return region === 'body' ? 4 : 2;
+  }
+  data(region: DataModel.CellRegion, row: number, column: number): string {
+    return `${row},${column}`;
+  }
+  groupCount(region: DataModel.CellRegion): number {
+    return region === 'body' ? 0 : 1;
+  }
+  group(region: DataModel.CellRegion, index: number): CellGroup | null {
+    switch (region) {
+      case 'column-header':
+        return { r1: 1, r2: 1, c1: 1, c2: 2 };
+      case 'row-header':
+        return { r1: 1, r2: 2, c1: 1, c2: 1 };
+      case 'corner-header':
+        return { r1: 1, r2: 1, c1: 0, c2: 1 };
+      default:
+        return null;
+    }
+  }
+}
+
+/**
+ * A text renderer which records where it paints each cell.
+ */
+class CellRecordingRenderer extends TextRenderer {
+  painted: Array<{
+    region: DataModel.CellRegion;
+    row: number;
+    column: number;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }> = [];
+
+  paint(gc: GraphicsContext, config: CellRenderer.CellConfig): void {
+    const { region, row, column, x, y, width, height } = config;
+    this.painted.push({ region, row, column, x, y, width, height });
+    super.paint(gc, config);
+  }
+}
+
 describe('@lumino/datagrid', () => {
   let datagrid: DataGrid;
   let model: LargeDataModel;
@@ -124,6 +184,75 @@ describe('@lumino/datagrid', () => {
         expect(viewport.firstColumn).to.be.eq(0);
         expect(viewport.lastRow).to.be.eq(22);
         expect(viewport.lastColumn).to.be.eq(4);
+      });
+    });
+  });
+
+  describe('MergedHeaderModel', () => {
+    let grid: DataGrid;
+    let renderer: CellRecordingRenderer;
+
+    beforeEach(() => {
+      // Body sections larger than the header ones: 40 px rows and 90 px
+      // columns, with 24 px header rows and 60 px header columns.
+      grid = new DataGrid({
+        defaultSizes: {
+          rowHeight: 40,
+          columnWidth: 90,
+          rowHeaderWidth: 60,
+          columnHeaderHeight: 24
+        }
+      });
+      renderer = new CellRecordingRenderer();
+      grid.cellRenderers.update({
+        'column-header': renderer,
+        'row-header': renderer,
+        'corner-header': renderer
+      });
+      grid.dataModel = new MergedHeaderModel();
+      grid.node.style.width = '520px';
+      grid.node.style.height = '220px';
+      Widget.attach(grid, document.body);
+      MessageLoop.flush();
+    });
+
+    afterEach(() => {
+      grid.dispose();
+    });
+
+    it('should place a merged column header cell by the column header rows', () => {
+      expect(renderer.painted).to.deep.include({
+        region: 'column-header',
+        row: 1,
+        column: 1,
+        x: 120 + 90,
+        y: 24,
+        width: 180,
+        height: 24
+      });
+    });
+
+    it('should place a merged row header cell by the row header columns', () => {
+      expect(renderer.painted).to.deep.include({
+        region: 'row-header',
+        row: 1,
+        column: 1,
+        x: 60,
+        y: 48 + 40,
+        width: 60,
+        height: 80
+      });
+    });
+
+    it('should place a merged corner header cell by the header sections', () => {
+      expect(renderer.painted).to.deep.include({
+        region: 'corner-header',
+        row: 1,
+        column: 0,
+        x: 0,
+        y: 24,
+        width: 120,
+        height: 24
       });
     });
   });
