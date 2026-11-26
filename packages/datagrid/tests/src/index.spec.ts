@@ -4,3 +4,6 @@
 import './textrenderer.spec';
 import './imagerenderer.spec';
 import './datagrid.spec';
+import './basicmousehandler.spec';
+import './basickeyhandler.spec';
+import './cellgroup.spec';

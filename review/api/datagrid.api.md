@@ -153,6 +153,7 @@ export interface CellGroup {
     r1: number;
     // (undocumented)
     r2: number;
+    readonly widenSelections?: boolean;
 }
 
 // @public

@@ -15,3 +15,12 @@ Rendered static examples
 `DockPanel <examples/dockpanel/index.html>`_
 
 `MenuBar <examples/menubar/index.html>`_
+
+.. seealso::
+
+   Not every example renders to a page: the :doc:`server-side plugin registry example <plugin-registry-server>` runs the Lumino plugin system in Node.
+
+.. toctree::
+   :hidden:
+
+   plugin-registry-server

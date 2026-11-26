@@ -95,6 +95,16 @@ describe('@lumino/widgets', () => {
       isToggled: (args: JSONObject) => true,
       mnemonic: 6
     });
+    commands.addCommand('test-toggleable', {
+      execute: (args: JSONObject) => {
+        executed = 'test-toggleable';
+      },
+      label: 'Test Toggleable Label',
+      icon: iconRenderer,
+      className: 'testClass',
+      isToggleable: true,
+      mnemonic: 5
+    });
     commands.addCommand('test-disabled', {
       execute: (args: JSONObject) => {
         executed = 'test-disabled';
@@ -816,13 +826,49 @@ describe('@lumino/widgets', () => {
         });
       });
 
-      context('mouseup', () => {
+      context('pointerup', () => {
         it('should trigger the active item', () => {
           menu.addItem({ command: 'test' });
           menu.activeIndex = 0;
           menu.open(0, 0);
-          menu.node.dispatchEvent(new MouseEvent('mouseup', { bubbles }));
+          menu.node.dispatchEvent(new PointerEvent('pointerup', { bubbles }));
           expect(executed).to.equal('test');
+        });
+
+        it('should trigger the touch item under the pointer on click', () => {
+          menu.addItem({ command: 'test' });
+          menu.open(0, 0);
+          let node = menu.node.getElementsByClassName('lm-Menu-item')[0];
+          let rect = node.getBoundingClientRect();
+          node.dispatchEvent(
+            new PointerEvent('pointerup', {
+              bubbles,
+              button: 0,
+              clientX: rect.left + 1,
+              clientY: rect.top + 1,
+              pointerType: 'touch'
+            })
+          );
+          expect(executed).to.equal('');
+          let bubbled = false;
+          let listener = () => {
+            bubbled = true;
+          };
+          document.body.addEventListener('click', listener);
+          try {
+            node.dispatchEvent(
+              new MouseEvent('click', {
+                bubbles,
+                button: 0,
+                clientX: rect.left + 1,
+                clientY: rect.top + 1
+              })
+            );
+            expect(executed).to.equal('test');
+            expect(bubbled).to.equal(false);
+          } finally {
+            document.body.removeEventListener('click', listener);
+          }
         });
 
         it('should bail if not a left mouse button', () => {
@@ -830,7 +876,7 @@ describe('@lumino/widgets', () => {
           menu.activeIndex = 0;
           menu.open(0, 0);
           menu.node.dispatchEvent(
-            new MouseEvent('mouseup', {
+            new PointerEvent('pointerup', {
               bubbles,
               button: 1
             })
@@ -839,14 +885,14 @@ describe('@lumino/widgets', () => {
         });
       });
 
-      context('mousemove', () => {
+      context('pointermove', () => {
         it('should set the active index', () => {
           menu.addItem({ command: 'test' });
           menu.open(0, 0);
           let node = menu.node.getElementsByClassName('lm-Menu-item')[0];
           let rect = node.getBoundingClientRect();
           menu.node.dispatchEvent(
-            new MouseEvent('mousemove', {
+            new PointerEvent('pointermove', {
               bubbles,
               clientX: rect.left + 1,
               clientY: rect.top + 1
@@ -864,7 +910,7 @@ describe('@lumino/widgets', () => {
           let node = menu.node.getElementsByClassName('lm-Menu-item')[0];
           let rect = node.getBoundingClientRect();
           menu.node.dispatchEvent(
-            new MouseEvent('mousemove', {
+            new PointerEvent('pointermove', {
               bubbles,
               clientX: rect.left + 1,
               clientY: rect.top + 1
@@ -890,7 +936,7 @@ describe('@lumino/widgets', () => {
           let node = menu.node.getElementsByClassName('lm-Menu-item')[0];
           let rect = node.getBoundingClientRect();
           menu.node.dispatchEvent(
-            new MouseEvent('mousemove', {
+            new PointerEvent('pointermove', {
               bubbles,
               clientX: rect.left,
               clientY: rect.top
@@ -903,9 +949,41 @@ describe('@lumino/widgets', () => {
             done();
           }, 500);
         });
+
+        it('should ignore touch pointer moves', () => {
+          menu.addItem({ command: 'test' });
+          menu.open(0, 0);
+          let node = menu.node.getElementsByClassName('lm-Menu-item')[0];
+          let rect = node.getBoundingClientRect();
+          menu.node.dispatchEvent(
+            new PointerEvent('pointermove', {
+              bubbles,
+              clientX: rect.left + 1,
+              clientY: rect.top + 1,
+              pointerType: 'touch'
+            })
+          );
+          expect(menu.activeIndex).to.equal(-1);
+        });
+
+        it('should not ignore pen pointer moves', () => {
+          menu.addItem({ command: 'test' });
+          menu.open(0, 0);
+          let node = menu.node.getElementsByClassName('lm-Menu-item')[0];
+          let rect = node.getBoundingClientRect();
+          menu.node.dispatchEvent(
+            new PointerEvent('pointermove', {
+              bubbles,
+              clientX: rect.left + 1,
+              clientY: rect.top + 1,
+              pointerType: 'pen'
+            })
+          );
+          expect(menu.activeIndex).to.equal(0);
+        });
       });
 
-      context('mouseleave', () => {
+      context('pointerleave', () => {
         it('should reset the active index', () => {
           let submenu = new Menu({ commands });
           submenu.addItem({ command: 'test' });
@@ -915,7 +993,7 @@ describe('@lumino/widgets', () => {
           let node = menu.node.getElementsByClassName('lm-Menu-item')[0];
           let rect = node.getBoundingClientRect();
           menu.node.dispatchEvent(
-            new MouseEvent('mousemove', {
+            new PointerEvent('pointermove', {
               bubbles,
               clientX: rect.left + 1,
               clientY: rect.top + 1
@@ -923,7 +1001,7 @@ describe('@lumino/widgets', () => {
           );
           expect(menu.activeIndex).to.equal(0);
           menu.node.dispatchEvent(
-            new MouseEvent('mouseleave', {
+            new PointerEvent('pointerleave', {
               bubbles,
               clientX: rect.left,
               clientY: rect.top
@@ -932,16 +1010,55 @@ describe('@lumino/widgets', () => {
           expect(menu.activeIndex).to.equal(-1);
           menu.dispose();
         });
+
+        it('should not close a submenu on touch leave', done => {
+          let submenu = new Menu({ commands });
+          submenu.addItem({ command: 'test' });
+          submenu.title.label = 'Test Label';
+          menu.addItem({ type: 'submenu', submenu });
+          menu.open(0, 0);
+          let node = menu.node.getElementsByClassName('lm-Menu-item')[0];
+          let rect = node.getBoundingClientRect();
+          node.dispatchEvent(
+            new PointerEvent('pointerup', {
+              bubbles,
+              button: 0,
+              clientX: rect.left + 1,
+              clientY: rect.top + 1,
+              pointerType: 'touch'
+            })
+          );
+          node.dispatchEvent(
+            new MouseEvent('click', {
+              bubbles,
+              button: 0,
+              clientX: rect.left + 1,
+              clientY: rect.top + 1
+            })
+          );
+          expect(submenu.isAttached).to.equal(true);
+          menu.node.dispatchEvent(
+            new PointerEvent('pointerleave', {
+              bubbles,
+              pointerType: 'touch'
+            })
+          );
+          setTimeout(() => {
+            expect(submenu.isAttached).to.equal(true);
+            submenu.dispose();
+            done();
+          }, 500);
+        });
       });
 
-      context('mousedown', () => {
+      context('pointerdown', () => {
         it('should not close the menu if on a child node', () => {
           menu.addItem({ command: 'test' });
           menu.open(0, 0);
           expect(menu.isAttached).to.equal(true);
           let rect = menu.node.getBoundingClientRect();
           menu.node.dispatchEvent(
-            new MouseEvent('mousedown', {
+            new PointerEvent('pointerdown', {
               bubbles,
               clientX: rect.left + 1,
               clientY: rect.top + 1
@@ -955,7 +1072,7 @@ describe('@lumino/widgets', () => {
           menu.open(0, 0);
           expect(menu.isAttached).to.equal(true);
           menu.node.dispatchEvent(
-            new MouseEvent('mousedown', {
+            new PointerEvent('pointerdown', {
               bubbles,
               clientX: -10
             })
@@ -972,18 +1089,20 @@ describe('@lumino/widgets', () => {
         expect(logMenu.methods).to.contain('onBeforeAttach');
         node.dispatchEvent(new KeyboardEvent('keydown', { bubbles }));
         expect(logMenu.events).to.contain('keydown');
-        node.dispatchEvent(new MouseEvent('mouseup', { bubbles }));
-        expect(logMenu.events).to.contain('mouseup');
-        node.dispatchEvent(new MouseEvent('mousemove', { bubbles }));
-        expect(logMenu.events).to.contain('mousemove');
-        node.dispatchEvent(new MouseEvent('mouseenter', { bubbles }));
-        expect(logMenu.events).to.contain('mouseenter');
-        node.dispatchEvent(new MouseEvent('mouseleave', { bubbles }));
-        expect(logMenu.events).to.contain('mouseleave');
+        node.dispatchEvent(new PointerEvent('pointerup', { bubbles }));
+        expect(logMenu.events).to.contain('pointerup');
+        node.dispatchEvent(new PointerEvent('pointermove', { bubbles }));
+        expect(logMenu.events).to.contain('pointermove');
+        node.dispatchEvent(new PointerEvent('pointerenter', { bubbles }));
+        expect(logMenu.events).to.contain('pointerenter');
+        node.dispatchEvent(new PointerEvent('pointerleave', { bubbles }));
+        expect(logMenu.events).to.contain('pointerleave');
         node.dispatchEvent(new MouseEvent('contextmenu', { bubbles }));
         expect(logMenu.events).to.contain('contextmenu');
-        document.body.dispatchEvent(new MouseEvent('mousedown', { bubbles }));
-        expect(logMenu.events).to.contain('mousedown');
+        document.body.dispatchEvent(
+          new PointerEvent('pointerdown', { bubbles })
+        );
+        expect(logMenu.events).to.contain('pointerdown');
       });
     });
 
@@ -995,18 +1114,20 @@ describe('@lumino/widgets', () => {
         expect(logMenu.methods).to.contain('onAfterDetach');
         node.dispatchEvent(new KeyboardEvent('keydown', { bubbles }));
         expect(logMenu.events).to.not.contain('keydown');
-        node.dispatchEvent(new MouseEvent('mouseup', { bubbles }));
-        expect(logMenu.events).to.not.contain('mouseup');
-        node.dispatchEvent(new MouseEvent('mousemove', { bubbles }));
-        expect(logMenu.events).to.not.contain('mousemove');
-        node.dispatchEvent(new MouseEvent('mouseenter', { bubbles }));
-        expect(logMenu.events).to.not.contain('mouseenter');
-        node.dispatchEvent(new MouseEvent('mouseleave', { bubbles }));
-        expect(logMenu.events).to.not.contain('mouseleave');
+        node.dispatchEvent(new PointerEvent('pointerup', { bubbles }));
+        expect(logMenu.events).to.not.contain('pointerup');
+        node.dispatchEvent(new PointerEvent('pointermove', { bubbles }));
+        expect(logMenu.events).to.not.contain('pointermove');
+        node.dispatchEvent(new PointerEvent('pointerenter', { bubbles }));
+        expect(logMenu.events).to.not.contain('pointerenter');
+        node.dispatchEvent(new PointerEvent('pointerleave', { bubbles }));
+        expect(logMenu.events).to.not.contain('pointerleave');
         node.dispatchEvent(new MouseEvent('contextmenu', { bubbles }));
         expect(logMenu.events).to.not.contain('contextmenu');
-        document.body.dispatchEvent(new MouseEvent('mousedown', { bubbles }));
-        expect(logMenu.events).to.not.contain('mousedown');
+        document.body.dispatchEvent(
+          new PointerEvent('pointerdown', { bubbles })
+        );
+        expect(logMenu.events).to.not.contain('pointerdown');
       });
     });
 
@@ -1305,6 +1426,26 @@ describe('@lumino/widgets', () => {
         });
       });
 
+      describe('#isToggleable', () => {
+        it('should get whether the command is toggleable for a `command` type', () => {
+          let item = menu.addItem({ command: 'test-toggleable' });
+          expect(item.isToggleable).to.equal(true);
+          item = menu.addItem({ command: 'test-toggled' });
+          expect(item.isToggleable).to.equal(true);
+          item = menu.addItem({ command: 'test' });
+          expect(item.isToggleable).to.equal(false);
+          item = menu.addItem({ type: 'command' });
+          expect(item.isToggleable).to.equal(false);
+        });
+
+        it('should be `false` for other item types', () => {
+          let item = menu.addItem({ type: 'separator' });
+          expect(item.isToggleable).to.equal(false);
+          item = menu.addItem({ type: 'submenu' });
+          expect(item.isToggleable).to.equal(false);
+        });
+      });
+
       describe('#isVisible', () => {
         it('should get whether the command is visible for a `command` type', () => {
           let item = menu.addItem({ command: 'test-hidden' });
@@ -1583,6 +1724,59 @@ describe('@lumino/widgets', () => {
             collapsed: false
           });
           expect(dataset).to.deep.equal({ type: 'submenu' });
+        });
+      });
+
+      describe('#createItemARIA()', () => {
+        it('should create aria attributes for the item', () => {
+          let item = menu.addItem({ command: 'test' });
+          let aria = renderer.createItemARIA({
+            item,
+            active: false,
+            collapsed: false
+          });
+          expect(aria).to.deep.equal({ role: 'menuitem' });
+
+          item = menu.addItem({ command: 'test-toggleable' });
+          aria = renderer.createItemARIA({
+            item,
+            active: false,
+            collapsed: false
+          });
+          expect(aria).to.deep.equal({
+            role: 'menuitemcheckbox',
+            'aria-checked': 'false'
+          });
+
+          item = menu.addItem({ command: 'test-toggled' });
+          aria = renderer.createItemARIA({
+            item,
+            active: false,
+            collapsed: false
+          });
+          expect(aria).to.deep.equal({
+            role: 'menuitemcheckbox',
+            'aria-checked': 'true'
+          });
+
+          item = menu.addItem({ type: 'separator' });
+          aria = renderer.createItemARIA({
+            item,
+            active: false,
+            collapsed: false
+          });
+          expect(aria).to.deep.equal({ role: 'presentation' });
+
+          item = menu.addItem({ type: 'submenu' });
+          aria = renderer.createItemARIA({
+            item,
+            active: false,
+            collapsed: false
+          });
+          expect(aria).to.deep.equal({
+            'aria-haspopup': 'true',
+            'aria-disabled': 'true'
+          });
         });
       });
 

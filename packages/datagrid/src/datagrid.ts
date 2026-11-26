@@ -2560,6 +2560,16 @@ export class DataGrid extends Widget {
     // Unpack the message data.
     let { region, r1, c1, r2, c2 } = msg;
 
+    // A merged cell is painted as a whole, so repaint the whole of every
+    // merged cell that a dirty cell belongs to.
+    if (region !== 'all' && this._dataModel && r1 <= r2 && c1 <= c2) {
+      ({ r1, c1, r2, c2 } = CellGroup.joinCellGroupWithMergedCellGroups(
+        this._dataModel,
+        { r1, c1, r2, c2 },
+        region
+      ));
+    }
+
     // Set up the paint variables.
     let x1: number;
     let y1: number;
@@ -5624,17 +5634,6 @@ export class DataGrid extends Widget {
         sc1 = sc2;
         sc2 = tmp;
       }
-
-      const joinedGroup = CellGroup.joinCellGroupWithMergedCellGroups(
-        this.dataModel!,
-        { r1: sr1, r2: sr2, c1: sc1, c2: sc2 },
-        'body'
-      );
-
-      sr1 = joinedGroup.r1;
-      sr2 = joinedGroup.r2;
-      sc1 = joinedGroup.c1;
-      sc2 = joinedGroup.c2;
 
       // Convert to pixel coordinates.
       let x1 = this._columnSections.offsetOf(sc1) - sx + hw;

@@ -114,17 +114,25 @@ export class AccordionLayout extends SplitLayout {
    * @param widget - The widget to attach to the parent.
    */
   protected attachWidget(index: number, widget: Widget): void {
-    const title = Private.createTitle(this.renderer, widget.title);
+    const title = Private.createTitle(
+      this.renderer,
+      widget.title,
+      !widget.isHidden
+    );
 
     ArrayExt.insert(this._titles, index, title);
 
-    // Add the title node to the parent before the widget.
+    // Add the title node to the parent.
     this.parent!.node.appendChild(title);
 
     widget.node.setAttribute('role', 'region');
     widget.node.setAttribute('aria-labelledby', title.id);
 
     super.attachWidget(index, widget);
+
+    // Put the title before the widget, which the split layout placed
+    // after the previous section.
+    this.parent!.node.insertBefore(title, widget.node);
   }
 
   /**
@@ -143,6 +151,11 @@ export class AccordionLayout extends SplitLayout {
   ): void {
     ArrayExt.move(this._titles, fromIndex, toIndex);
     super.moveWidget(fromIndex, toIndex, widget);
+
+    // Put the title back before the widget, if the split layout moved it.
+    if (Utils.moveKeepsState(this.parent!.node)) {
+      Utils.moveBefore(this.parent!.node, this._titles[toIndex], widget.node);
+    }
   }
 
   /**

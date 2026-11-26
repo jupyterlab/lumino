@@ -25,6 +25,8 @@ import { Layout } from './layout';
 
 import { Title } from './title';
 
+import { Utils } from './utils';
+
 /**
  * The base class of the lumino widget hierarchy.
  *
@@ -778,6 +780,10 @@ export class Widget implements IMessageHandler, IObservableDisposable {
           // @ts-expect-error content-visibility unknown by DOM lib types
           this.node.style.contentVisibility = 'hidden';
           this.node.style.zIndex = '-1';
+          // Set opacity to 0 so that the widget's box (e.g. borders or
+          // background) does not shine through despite the content being
+          // skipped by `content-visibility`.
+          this.node.style.opacity = '0';
           break;
       }
     } else {
@@ -793,6 +799,7 @@ export class Widget implements IMessageHandler, IObservableDisposable {
           // @ts-expect-error content-visibility unknown by DOM lib types
           this.node.style.contentVisibility = '';
           this.node.style.zIndex = '';
+          this.node.style.opacity = '';
           break;
       }
     }
@@ -1121,6 +1128,11 @@ export namespace Widget {
    * This will throw an error if the widget is not a root widget, if
    * the widget is already attached, or if the host is not attached
    * to the DOM.
+   *
+   * If the host belongs to a different document than the widget node,
+   * for example a secondary window, the node is adopted into the host
+   * document before the `'before-attach'` message is sent. This allows
+   * `onBeforeAttach` handlers to rely on `this.node.ownerDocument`.
    */
   export function attach(
     widget: Widget,
@@ -1136,7 +1148,7 @@ export namespace Widget {
     if (!host.isConnected) {
       throw new Error('Host is not attached.');
     }
-
+    Utils.adoptNode(widget.node, host);
     MessageLoop.sendMessage(widget, Widget.Msg.BeforeAttach);
     host.insertBefore(widget.attachmentNode, ref);
     MessageLoop.sendMessage(widget, Widget.Msg.AfterAttach);
