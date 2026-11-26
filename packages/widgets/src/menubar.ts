@@ -453,6 +453,9 @@ export class MenuBar extends Widget {
       }
       // The overflow menu itself is rendered after the loop below
       length = Math.min(length, menus.length - 1);
+    } else {
+      // The item sizes can include menus removed since they were measured
+      length = Math.min(length, menus.length);
     }
     let content = new Array<VirtualElement>(length);
 

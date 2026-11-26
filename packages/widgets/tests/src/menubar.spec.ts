@@ -1157,6 +1157,32 @@ describe('@lumino/widgets', () => {
         expect(labels).to.deep.equal(['Menu0', 'Menu1', 'Menu2']);
         bar.dispose();
       });
+
+      it('should not throw when the menu bar gets narrower after menus are removed', () => {
+        let bar = createMenuBar();
+        let sizes = Array.from(bar.contentNode.children).map(
+          item => (item as HTMLElement).offsetWidth
+        );
+        bar.removeMenuAt(0);
+        bar.removeMenuAt(0);
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        // Narrower than the three menus measured before the removal
+        let width = sizes[0] + sizes[1] + Math.floor(sizes[2] / 2);
+        bar.node.style.maxWidth = `${width}px`;
+        let caught: Error | null = null;
+        let previousHandler = MessageLoop.getExceptionHandler();
+        MessageLoop.setExceptionHandler(err => {
+          caught = err;
+        });
+        try {
+          MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+          MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        } finally {
+          MessageLoop.setExceptionHandler(previousHandler);
+        }
+        expect(caught).to.equal(null);
+        bar.dispose();
+      });
     });
 
     context('`menuRequested` signal', () => {
