@@ -76,13 +76,6 @@ export class IntersectionHoverStyler {
   }
 
   /**
-   * Clear intersection hover styling.
-   */
-  clear(): void {
-    this.set(null, null);
-  }
-
-  /**
    * Apply or remove the managed class from up to two distinct handles.
    */
   private _applyClass(

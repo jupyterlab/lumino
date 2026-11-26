@@ -77,22 +77,5 @@ describe('@lumino/widgets', () => {
         expect(b.classList.contains(CLASS)).to.equal(true);
       });
     });
-
-    describe('#clear()', () => {
-      it('should remove the class from both handles', () => {
-        const styler = new IntersectionHoverStyler();
-        const a = div();
-        const b = div();
-        styler.set(a, b);
-        styler.clear();
-        expect(a.classList.contains(CLASS)).to.equal(false);
-        expect(b.classList.contains(CLASS)).to.equal(false);
-      });
-
-      it('should be safe to call when nothing is set', () => {
-        const styler = new IntersectionHoverStyler();
-        expect(() => styler.clear()).to.not.throw();
-      });
-    });
   });
 });
