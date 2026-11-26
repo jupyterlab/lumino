@@ -2126,6 +2126,12 @@ describe('@lumino/widgets', () => {
         expect(entryPoints()).to.deep.equal([bar.addButtonNode]);
       });
 
+      it('should make the add button of a new empty tab bar the entry point', () => {
+        const emptyBar = new TabBar<Widget>({ addButtonEnabled: true });
+        expect(emptyBar.addButtonNode.getAttribute('tabindex')).to.equal('0');
+        emptyBar.dispose();
+      });
+
       it('should keep a focused tab in a shadow root as the entry point', () => {
         const host = document.createElement('div');
         document.body.appendChild(host);

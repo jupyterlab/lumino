@@ -360,6 +360,7 @@ export class TabBar<T> extends Widget {
     } else {
       this.addButtonNode.classList.add('lm-mod-hidden');
     }
+    this._updateTabIndex();
   }
 
   /**
