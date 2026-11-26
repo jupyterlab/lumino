@@ -343,6 +343,11 @@ export class MenuBar extends Widget {
     // Clear the menus array.
     this._menus.length = 0;
 
+    // The overflow menu and the item sizes belong to the cleared menus
+    this._overflowMenu = null;
+    this._overflowIndex = -1;
+    this._menuItemSizes.length = 0;
+
     // Schedule an update of the items.
     this.update();
   }

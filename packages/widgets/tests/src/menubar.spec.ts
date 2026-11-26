@@ -488,6 +488,30 @@ describe('@lumino/widgets', () => {
         expect(bar.menus).to.eql([]);
         bar.dispose();
       });
+
+      it('should render only the menus added after clearing overflowing menus', () => {
+        let bar = createMenuBar();
+        let sizes = Array.from(bar.contentNode.children).map(
+          item => (item as HTMLElement).offsetWidth
+        );
+        // Room for two menus, so for one menu and the overflow menu
+        let width = sizes[0] + sizes[1] + Math.floor(sizes[2] / 2);
+        bar.node.style.maxWidth = `${width}px`;
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        expect(bar.overflowMenu).to.not.equal(null);
+        bar.clearMenus();
+        let menu = createMenu();
+        menu.title.label = 'New';
+        bar.addMenu(menu);
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        let labels = Array.from(bar.contentNode.children).map(
+          item => item.textContent
+        );
+        expect(labels).to.deep.equal(['New']);
+        bar.dispose();
+      });
     });
 
     describe('#handleEvent()', () => {
