@@ -326,6 +326,23 @@ describe('@lumino/widgets', () => {
         panel.dispose();
       });
 
+      it('should move the widget node in an attached panel', function () {
+        if (!('moveBefore' in Element.prototype)) {
+          this.skip();
+        }
+        let panel = new Widget();
+        let layout = new LogBoxLayout();
+        panel.layout = layout;
+        let widgets = [new Widget(), new Widget(), new Widget()];
+        widgets.forEach(w => {
+          layout.addWidget(w);
+        });
+        Widget.attach(panel, document.body);
+        layout.insertWidget(2, widgets[0]);
+        expect(domOrder(layout)).to.deep.equal([0, 1, 2]);
+        panel.dispose();
+      });
+
       it('should not send detach messages to a moved widget', () => {
         let panel = new Widget();
         let layout = new LogBoxLayout();
