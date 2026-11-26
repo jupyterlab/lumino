@@ -2585,40 +2585,40 @@ export class DataGrid extends Widget {
         y2 = yMax;
         break;
       case 'body':
-        r1 = Math.max(0, Math.min(r1, rs.count));
-        c1 = Math.max(0, Math.min(c1, cs.count));
-        r2 = Math.max(0, Math.min(r2, rs.count));
-        c2 = Math.max(0, Math.min(c2, cs.count));
+        r1 = Math.max(0, Math.min(r1, rs.count - 1));
+        c1 = Math.max(0, Math.min(c1, cs.count - 1));
+        r2 = Math.max(0, Math.min(r2, rs.count - 1));
+        c2 = Math.max(0, Math.min(c2, cs.count - 1));
         x1 = cs.offsetOf(c1) - sx + hw;
         y1 = rs.offsetOf(r1) - sy + hh;
         x2 = cs.extentOf(c2) - sx + hw;
         y2 = rs.extentOf(r2) - sy + hh;
         break;
       case 'row-header':
-        r1 = Math.max(0, Math.min(r1, rs.count));
-        c1 = Math.max(0, Math.min(c1, rhs.count));
-        r2 = Math.max(0, Math.min(r2, rs.count));
-        c2 = Math.max(0, Math.min(c2, rhs.count));
+        r1 = Math.max(0, Math.min(r1, rs.count - 1));
+        c1 = Math.max(0, Math.min(c1, rhs.count - 1));
+        r2 = Math.max(0, Math.min(r2, rs.count - 1));
+        c2 = Math.max(0, Math.min(c2, rhs.count - 1));
         x1 = rhs.offsetOf(c1);
         y1 = rs.offsetOf(r1) - sy + hh;
         x2 = rhs.extentOf(c2);
         y2 = rs.extentOf(r2) - sy + hh;
         break;
       case 'column-header':
-        r1 = Math.max(0, Math.min(r1, chs.count));
-        c1 = Math.max(0, Math.min(c1, cs.count));
-        r2 = Math.max(0, Math.min(r2, chs.count));
-        c2 = Math.max(0, Math.min(c2, cs.count));
+        r1 = Math.max(0, Math.min(r1, chs.count - 1));
+        c1 = Math.max(0, Math.min(c1, cs.count - 1));
+        r2 = Math.max(0, Math.min(r2, chs.count - 1));
+        c2 = Math.max(0, Math.min(c2, cs.count - 1));
         x1 = cs.offsetOf(c1) - sx + hw;
         y1 = chs.offsetOf(r1);
         x2 = cs.extentOf(c2) - sx + hw;
         y2 = chs.extentOf(r2);
         break;
       case 'corner-header':
-        r1 = Math.max(0, Math.min(r1, chs.count));
-        c1 = Math.max(0, Math.min(c1, rhs.count));
-        r2 = Math.max(0, Math.min(r2, chs.count));
-        c2 = Math.max(0, Math.min(c2, rhs.count));
+        r1 = Math.max(0, Math.min(r1, chs.count - 1));
+        c1 = Math.max(0, Math.min(c1, rhs.count - 1));
+        r2 = Math.max(0, Math.min(r2, chs.count - 1));
+        c2 = Math.max(0, Math.min(c2, rhs.count - 1));
         x1 = rhs.offsetOf(c1);
         y1 = chs.offsetOf(r1);
         x2 = rhs.extentOf(c2);
