@@ -2118,6 +2118,23 @@ describe('@lumino/widgets', () => {
         MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
         expect(entryPoints()).to.deep.equal([bar.addButtonNode]);
       });
+
+      it('should keep a focused tab in a shadow root as the entry point', () => {
+        const host = document.createElement('div');
+        document.body.appendChild(host);
+        const root = host.attachShadow({ mode: 'open' });
+        const container = document.createElement('div');
+        root.appendChild(container);
+        const shadowBar = new TabBar<Widget>({ document: root });
+        populateBar(shadowBar);
+        Widget.attach(shadowBar, container);
+        const second = shadowBar.contentNode.children[1] as HTMLElement;
+        second.focus();
+        MessageLoop.sendMessage(shadowBar, Widget.Msg.UpdateRequest);
+        expect(second.getAttribute('tabindex')).to.equal('0');
+        shadowBar.dispose();
+        host.remove();
+      });
     });
 
     describe('editable title', () => {

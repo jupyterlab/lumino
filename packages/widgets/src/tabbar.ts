@@ -730,7 +730,7 @@ export class TabBar<T> extends Widget {
    * Keep one keyboard entry point, preserving focus within the tab bar.
    */
   private _updateTabIndex(
-    focused: EventTarget | null = document.activeElement
+    focused: EventTarget | null = this._document.activeElement
   ): void {
     const tabs = this.contentNode.children;
     const focusedNode = focused instanceof Node ? focused : null;
