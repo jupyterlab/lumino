@@ -1221,6 +1221,78 @@ describe('@lumino/widgets', () => {
         });
       });
 
+      it('should return the focus to the element focused before opening', done => {
+        let button = document.createElement('button');
+        document.body.appendChild(button);
+        button.focus();
+        menu.addItem({ command: 'test' });
+        menu.open(0, 0);
+        requestAnimationFrame(() => {
+          expect(document.activeElement).to.equal(menu.node);
+          menu.close();
+          expect(document.activeElement).to.equal(button);
+          button.remove();
+          done();
+        });
+      });
+
+      it('should not scroll to the element it returns the focus to', done => {
+        let scroller = document.createElement('div');
+        scroller.style.height = '100px';
+        scroller.style.overflow = 'auto';
+        let button = document.createElement('button');
+        let spacer = document.createElement('div');
+        spacer.style.height = '2000px';
+        scroller.append(button, spacer);
+        document.body.appendChild(scroller);
+        button.focus();
+        menu.addItem({ command: 'test' });
+        // Firefox scrolls the focused button into view on the next frame.
+        requestAnimationFrame(() => {
+          scroller.scrollTop = 1000;
+          menu.open(0, 0);
+          requestAnimationFrame(() => {
+            menu.close();
+            expect(document.activeElement).to.equal(button);
+            expect(scroller.scrollTop).to.equal(1000);
+            scroller.remove();
+            done();
+          });
+        });
+      });
+
+      it('should not move the focus if it is no longer on the body', done => {
+        let first = document.createElement('button');
+        let second = document.createElement('button');
+        document.body.appendChild(first);
+        document.body.appendChild(second);
+        first.focus();
+        menu.addItem({ command: 'test' });
+        menu.open(0, 0);
+        requestAnimationFrame(() => {
+          second.focus();
+          menu.close();
+          expect(document.activeElement).to.equal(second);
+          first.remove();
+          second.remove();
+          done();
+        });
+      });
+
+      it('should not focus an element which was removed from the page', done => {
+        let button = document.createElement('button');
+        document.body.appendChild(button);
+        button.focus();
+        menu.addItem({ command: 'test' });
+        menu.open(0, 0);
+        requestAnimationFrame(() => {
+          button.remove();
+          menu.close();
+          expect(document.activeElement).to.equal(document.body);
+          done();
+        });
+      });
+
       it('should emit the `aboutToClose` signal if attached', () => {
         let called = false;
         menu.open(0, 0);

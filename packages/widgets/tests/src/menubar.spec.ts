@@ -1077,6 +1077,25 @@ describe('@lumino/widgets', () => {
         bar.dispose();
       });
 
+      it('should activate the next menu when the focus is on the menu bar', () => {
+        let bar = createMenuBar();
+        (bar.contentNode.children[0] as HTMLElement).focus();
+        bar.openActiveMenu();
+        (bar.activeMenu!.menuRequested as any).emit('next');
+        expect(bar.activeIndex).to.equal(1);
+        bar.dispose();
+      });
+
+      it('should return the focus to the item of the next menu when it closes', () => {
+        let bar = createMenuBar();
+        (bar.contentNode.children[0] as HTMLElement).focus();
+        bar.openActiveMenu();
+        (bar.activeMenu!.menuRequested as any).emit('next');
+        bar.menus[1].close();
+        expect(document.activeElement).to.equal(bar.contentNode.children[1]);
+        bar.dispose();
+      });
+
       it('should be a no-op if the sender is not the open menu', () => {
         let bar = createMenuBar();
         (bar.activeMenu!.menuRequested as any).emit('next');
