@@ -6,6 +6,66 @@ github_url: 'https://github.com/jupyterlab/lumino/blob/main/CHANGELOG.md'
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 2026.11.26
+
+([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2026.10.8...f0b63e599992113aba8f6bea443dc661bda252e4))
+
+```
+@lumino/application: 2.4.11 => 2.4.12
+@lumino/datagrid: 2.5.9 => 2.6.0
+@lumino/default-theme: 2.1.17 => 2.1.18
+@lumino/widgets: 2.10.0 => 2.11.0
+```
+
+### Enhancements made
+
+- Support menus in secondary windows [#883](https://github.com/jupyterlab/lumino/pull/883) ([@sdirix](https://github.com/sdirix), [@krassowski](https://github.com/krassowski))
+- Scroll datagrid horizontally with Shift + mouse wheel [#869](https://github.com/jupyterlab/lumino/pull/869) ([@Naingzwehtut](https://github.com/Naingzwehtut), [@krassowski](https://github.com/krassowski))
+- Focus the selected tab when keyboard focus moves into a tab bar [#860](https://github.com/jupyterlab/lumino/pull/860) ([@obaseyi2](https://github.com/obaseyi2), [@krassowski](https://github.com/krassowski))
+- Support resizing three panels at corners (resizable groups) [#799](https://github.com/jupyterlab/lumino/pull/799) ([@emilkrebs](https://github.com/emilkrebs), [@Copilot](https://github.com/Copilot), [@krassowski](https://github.com/krassowski))
+
+### Bugs fixed
+
+- Fix `DataGrid` autoscroll that stops before the last column [#884](https://github.com/jupyterlab/lumino/pull/884) ([@MikeFTV](https://github.com/MikeFTV), [@krassowski](https://github.com/krassowski))
+- Keep `BoxLayout` widgets in DOM order [#878](https://github.com/jupyterlab/lumino/pull/878) ([@r0c0y](https://github.com/r0c0y), [@krassowski](https://github.com/krassowski))
+- Fix stale text in merged `DataGrid` cells after a cell change [#877](https://github.com/jupyterlab/lumino/pull/877) ([@r0c0y](https://github.com/r0c0y), [@krassowski](https://github.com/krassowski))
+- Fix `DataGrid` selections across merged cells [#876](https://github.com/jupyterlab/lumino/pull/876) ([@r0c0y](https://github.com/r0c0y), [@krassowski](https://github.com/krassowski))
+- Fix widgets left undisposed by `DockPanel.dispose()` [#875](https://github.com/jupyterlab/lumino/pull/875) ([@JayPokale](https://github.com/JayPokale), [@krassowski](https://github.com/krassowski), [@r0c0y](https://github.com/r0c0y))
+- Keep accordion and split panel sections in DOM order [#874](https://github.com/jupyterlab/lumino/pull/874) ([@r0c0y](https://github.com/r0c0y), [@krassowski](https://github.com/krassowski))
+- Fix `DataGrid` ignoring border and padding changes after first layout [#872](https://github.com/jupyterlab/lumino/pull/872) ([@krassowski](https://github.com/krassowski), [@MUFFANUJ](https://github.com/MUFFANUJ))
+- Fix `DockPanel`'s `hiddenMode` for first tab [#867](https://github.com/jupyterlab/lumino/pull/867) ([@divya-git03](https://github.com/divya-git03), [@krassowski](https://github.com/krassowski))
+- Fix panel resize handles not responding to touch in Chromium [#866](https://github.com/jupyterlab/lumino/pull/866) ([@MUFFANUJ](https://github.com/MUFFANUJ), [@BryanOnKeys](https://github.com/BryanOnKeys), [@krassowski](https://github.com/krassowski))
+- Fix `DataGrid` lag when eliding long text in wide columns [#861](https://github.com/jupyterlab/lumino/pull/861) ([@obaseyi2](https://github.com/obaseyi2), [@krassowski](https://github.com/krassowski))
+- Fix menus stuck in the overflow menu when the menu bar grows [#850](https://github.com/jupyterlab/lumino/pull/850) ([@taekop](https://github.com/taekop), [@krassowski](https://github.com/krassowski))
+- Release `DockPanel` handle drag on `pointercancel` [#849](https://github.com/jupyterlab/lumino/pull/849) ([@taekop](https://github.com/taekop), [@krassowski](https://github.com/krassowski))
+- Fix leftover overlay when dragging tabs in nested dock panels [#843](https://github.com/jupyterlab/lumino/pull/843) ([@MUFFANUJ](https://github.com/MUFFANUJ), [@krassowski](https://github.com/krassowski))
+
+### Other merged PRs
+
+- Bump follow-redirects from 1.16.1 to 1.16.3 [#886](https://github.com/jupyterlab/lumino/pull/886) ([@krassowski](https://github.com/krassowski))
+- Bump postcss-selector-parser from 6.0.10 to 6.1.5 [#868](https://github.com/jupyterlab/lumino/pull/868) ([@krassowski](https://github.com/krassowski))
+- Bump follow-redirects from 1.16.0 to 1.16.1 [#858](https://github.com/jupyterlab/lumino/pull/858) ([@krassowski](https://github.com/krassowski))
+- Bump shell-quote from 1.8.4 to 1.11.0 [#857](https://github.com/jupyterlab/lumino/pull/857) ([@jtpio](https://github.com/jtpio))
+- Bump source-map-js from 1.0.2 to 1.2.2 [#856](https://github.com/jupyterlab/lumino/pull/856) ([@jtpio](https://github.com/jtpio))
+- Bump proxy-addr from 2.0.7 to 2.0.8 [#855](https://github.com/jupyterlab/lumino/pull/855) ([@jtpio](https://github.com/jtpio))
+- Bump brace-expansion from 1.1.11 to 1.1.21 [#852](https://github.com/jupyterlab/lumino/pull/852) ([@krassowski](https://github.com/krassowski))
+- Bump svgo from 2.8.2 to 2.8.4 [#848](https://github.com/jupyterlab/lumino/pull/848) ([@krassowski](https://github.com/krassowski))
+- Bump colord from 2.9.3 to 2.10.0 [#846](https://github.com/jupyterlab/lumino/pull/846) ([@krassowski](https://github.com/krassowski))
+- Bump browserslist from 4.21.4 to 4.28.8 [#845](https://github.com/jupyterlab/lumino/pull/845) ([@krassowski](https://github.com/krassowski))
+- Bump the actions group across 1 directory with 3 updates [#844](https://github.com/jupyterlab/lumino/pull/844) ([@krassowski](https://github.com/krassowski))
+- Bump postcss from 8.5.10 to 8.5.23 [#841](https://github.com/jupyterlab/lumino/pull/841) ([@krassowski](https://github.com/krassowski))
+
+### Contributors to this release
+
+The following people contributed discussions, new ideas, code and documentation contributions, and review.
+See [our definition of contributors](https://github-activity.readthedocs.io/en/latest/use/#how-does-this-tool-define-contributions-in-the-reports).
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2026-10-08&to=2026-11-26&type=c))
+
+@ajbozarth ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aajbozarth+updated%3A2026-10-08..2026-11-26&type=Issues)) | @BryanOnKeys ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3ABryanOnKeys+updated%3A2026-10-08..2026-11-26&type=Issues)) | @Copilot ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3ACopilot+updated%3A2026-10-08..2026-11-26&type=Issues)) | @divya-git03 ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Adivya-git03+updated%3A2026-10-08..2026-11-26&type=Issues)) | @emilkrebs ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aemilkrebs+updated%3A2026-10-08..2026-11-26&type=Issues)) | @fcollonval ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Afcollonval+updated%3A2026-10-08..2026-11-26&type=Issues)) | @JayPokale ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3AJayPokale+updated%3A2026-10-08..2026-11-26&type=Issues)) | @jtpio ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajtpio+updated%3A2026-10-08..2026-11-26&type=Issues)) | @krassowski ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2026-10-08..2026-11-26&type=Issues)) | @MikeFTV ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3AMikeFTV+updated%3A2026-10-08..2026-11-26&type=Issues)) | @MUFFANUJ ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3AMUFFANUJ+updated%3A2026-10-08..2026-11-26&type=Issues)) | @Naingzwehtut ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3ANaingzwehtut+updated%3A2026-10-08..2026-11-26&type=Issues)) | @obaseyi2 ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aobaseyi2+updated%3A2026-10-08..2026-11-26&type=Issues)) | @r0c0y ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ar0c0y+updated%3A2026-10-08..2026-11-26&type=Issues)) | @sdirix ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Asdirix+updated%3A2026-10-08..2026-11-26&type=Issues)) | @taekop ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ataekop+updated%3A2026-10-08..2026-11-26&type=Issues))
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 2026.10.8
 
 ([Full Changelog](https://github.com/jupyterlab/lumino/compare/v2026.7.3...91fe59ec76670f84db07ef6f408798df2fd887e0))
@@ -44,8 +104,6 @@ See [our definition of contributors](https://github-activity.readthedocs.io/en/l
 ([GitHub contributors page for this release](https://github.com/jupyterlab/lumino/graphs/contributors?from=2026-07-03&to=2026-10-08&type=c))
 
 @emilkrebs ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Aemilkrebs+updated%3A2026-07-03..2026-10-08&type=Issues)) | @jtpio ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Ajtpio+updated%3A2026-07-03..2026-10-08&type=Issues)) | @krassowski ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3Akrassowski+updated%3A2026-07-03..2026-10-08&type=Issues)) | @MUFFANUJ ([activity](https://github.com/search?q=repo%3Ajupyterlab%2Flumino+involves%3AMUFFANUJ+updated%3A2026-07-03..2026-10-08&type=Issues))
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 2026.7.3
 
