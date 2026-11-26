@@ -174,8 +174,10 @@ export class BoxLayout extends PanelLayout {
       MessageLoop.sendMessage(widget, Widget.Msg.BeforeAttach);
     }
 
-    // Add the widget's node to the parent.
-    this.parent!.node.appendChild(widget.node);
+    // Add the widget's node to the parent, before the next widget's, so the
+    // DOM order (followed by Tab and screen readers) is the layout order.
+    const next = this._items[index + 1];
+    this.parent!.node.insertBefore(widget.node, next ? next.widget.node : null);
 
     // Send an `'after-attach'` message if the parent is attached.
     if (this.parent!.isAttached) {
@@ -208,6 +210,19 @@ export class BoxLayout extends PanelLayout {
 
     // Move the sizer for the widget.
     ArrayExt.move(this._sizers, fromIndex, toIndex);
+
+    // Move the widget's node before the next widget's, so the DOM order is
+    // the layout order. The widget stays attached, because a widget may drop
+    // state on detach, such as a React tree it unmounts.
+    // So nothing restores what a move without `moveBefore` would drop.
+    if (Utils.moveKeepsState(this.parent!.node)) {
+      const next = this._items[toIndex + 1];
+      Utils.moveBefore(
+        this.parent!.node,
+        widget.node,
+        next ? next.widget.node : null
+      );
+    }
 
     // Post an update request for the parent widget.
     this.parent!.update();
