@@ -458,6 +458,9 @@ export class Menu extends Widget {
    * The menu may be displayed outside of the `host` element
    * following the rules of CSS absolute positioning.
    *
+   * The menu is positioned within the viewport of the document which
+   * owns the `host` element. Submenus open in the same document.
+   *
    * This is a no-op if the menu is already attached to the DOM.
    */
   open(x: number, y: number, options: Menu.IOpenOptions = {}): void {
@@ -471,9 +474,10 @@ export class Menu extends Widget {
     let forceY = options.forceY || false;
     const host = options.host ?? null;
     const ref = options.ref ?? null;
+    const doc = host?.ownerDocument ?? document;
     const horizontalAlignment =
       options.horizontalAlignment ??
-      (document.documentElement.dir === 'rtl' ? 'right' : 'left');
+      (doc.documentElement.dir === 'rtl' ? 'right' : 'left');
 
     // Open the menu as a root menu.
     Private.openRootMenu(
@@ -542,7 +546,7 @@ export class Menu extends Widget {
     this.node.addEventListener('pointerenter', this);
     this.node.addEventListener('pointerleave', this);
     this.node.addEventListener('contextmenu', this);
-    document.addEventListener('pointerdown', this, true);
+    this.node.ownerDocument.addEventListener('pointerdown', this, true);
   }
 
   /**
@@ -556,7 +560,7 @@ export class Menu extends Widget {
     this.node.removeEventListener('pointerenter', this);
     this.node.removeEventListener('pointerleave', this);
     this.node.removeEventListener('contextmenu', this);
-    document.removeEventListener('pointerdown', this, true);
+    this.node.ownerDocument.removeEventListener('pointerdown', this, true);
     this._pendingTouchActivation = false;
   }
 
@@ -911,7 +915,7 @@ export class Menu extends Widget {
     }
 
     // Prior to any DOM modifications save window data
-    Menu.saveWindowData();
+    Menu.saveWindowData(this.node.ownerDocument);
 
     // Ensure the current child menu is closed.
     this._closeChildMenu();
@@ -1012,14 +1016,18 @@ export class Menu extends Widget {
   /**
    * Save window data used for menu positioning in transient cache.
    *
+   * @param doc - The document the menu will be opened in.
+   *   The default is the global `document`.
+   *
    * In order to avoid layout trashing it is recommended to invoke this
    * method immediately prior to opening the menu and any DOM modifications
    * (like closing previously visible menu, or adding a class to menu widget).
    *
-   * The transient cache will be released upon `open()` call.
+   * The transient cache will be released upon `open()` call. It is only
+   * used if the menu opens in the document passed here.
    */
-  static saveWindowData(): void {
-    Private.saveWindowData();
+  static saveWindowData(doc: Document = document): void {
+    Private.saveWindowData(doc);
   }
 
   private _childIndex = -1;
@@ -1083,6 +1091,10 @@ export namespace Menu {
      * The DOM node to use as the menu's host.
      *
      * If not specified then uses `document.body`.
+     *
+     * The menu is positioned within the viewport of the document
+     * which owns the host. Use the `body` of another document,
+     * for example a secondary window, to open the menu there.
      */
     host?: HTMLElement;
 
@@ -1097,7 +1109,8 @@ export namespace Menu {
     /**
      * The alignment of the menu.
      *
-     * The default is `'left'` unless the document `dir` attribute is `'rtl'`
+     * The default is `'left'` unless the `dir` attribute of the host
+     * document is `'rtl'`.
      */
     horizontalAlignment?: 'left' | 'right';
   }
@@ -1518,19 +1531,23 @@ namespace Private {
   export const SUBMENU_OVERLAP = 3;
 
   let transientWindowDataCache: IWindowData | null = null;
+  let transientCacheDocument: Document | null = null;
   let transientCacheCounter: number = 0;
 
-  function getWindowData(): IWindowData {
+  function getWindowData(doc: Document): IWindowData {
     // if transient cache is in use, take one from it
     if (transientCacheCounter > 0) {
       transientCacheCounter--;
-      return transientWindowDataCache!;
+      // only use the cache if it was saved for the same document
+      if (transientCacheDocument === doc) {
+        return transientWindowDataCache!;
+      }
     }
-    return _getWindowData();
+    return _getWindowData(doc);
   }
 
   /**
-   * Store window data in transient cache.
+   * Store window data of the given document in transient cache.
    *
    * The transient cache will be released upon `getWindowData()` call.
    * If this function is called multiple times, the cache will be
@@ -1538,8 +1555,9 @@ namespace Private {
    *
    * Note: should be called before any DOM modifications.
    */
-  export function saveWindowData(): void {
-    transientWindowDataCache = _getWindowData();
+  export function saveWindowData(doc: Document): void {
+    transientWindowDataCache = _getWindowData(doc);
+    transientCacheDocument = doc;
     transientCacheCounter++;
   }
 
@@ -1642,12 +1660,13 @@ namespace Private {
     return result;
   }
 
-  function _getWindowData(): IWindowData {
+  function _getWindowData(doc: Document): IWindowData {
+    const view = doc.defaultView ?? window;
     return {
-      pageXOffset: window.pageXOffset,
-      pageYOffset: window.pageYOffset,
-      clientWidth: document.documentElement.clientWidth,
-      clientHeight: document.documentElement.clientHeight
+      pageXOffset: view.pageXOffset,
+      pageYOffset: view.pageYOffset,
+      clientWidth: doc.documentElement.clientWidth,
+      clientHeight: doc.documentElement.clientHeight
     };
   }
 
@@ -1664,8 +1683,8 @@ namespace Private {
     host: HTMLElement | null,
     ref: HTMLElement | null
   ): void {
-    // Get the current position and size of the main viewport.
-    const windowData = getWindowData();
+    // Get the current position and size of the host viewport.
+    const windowData = getWindowData(host?.ownerDocument ?? document);
     let px = windowData.pageXOffset;
     let py = windowData.pageYOffset;
     let cw = windowData.clientWidth;
@@ -1721,8 +1740,11 @@ namespace Private {
    * Open a menu as a submenu using an item node for positioning.
    */
   export function openSubmenu(submenu: Menu, itemNode: HTMLElement): void {
-    // Get the current position and size of the main viewport.
-    const windowData = getWindowData();
+    // Open the submenu in the document of the parent menu.
+    const doc = itemNode.ownerDocument;
+
+    // Get the current position and size of the parent menu viewport.
+    const windowData = getWindowData(doc);
     let px = windowData.pageXOffset;
     let py = windowData.pageYOffset;
     let cw = windowData.clientWidth;
@@ -1743,7 +1765,7 @@ namespace Private {
     style.maxHeight = `${maxHeight}px`;
 
     // Attach the menu to the document.
-    Widget.attach(submenu, document.body);
+    Widget.attach(submenu, doc.body);
 
     // Measure the size of the menu.
     let { width, height } = node.getBoundingClientRect();

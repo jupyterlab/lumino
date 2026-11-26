@@ -25,6 +25,8 @@ import { Layout } from './layout';
 
 import { Title } from './title';
 
+import { Utils } from './utils';
+
 /**
  * The base class of the lumino widget hierarchy.
  *
@@ -1109,6 +1111,11 @@ export namespace Widget {
    * This will throw an error if the widget is not a root widget, if
    * the widget is already attached, or if the host is not attached
    * to the DOM.
+   *
+   * If the host belongs to a different document than the widget node,
+   * for example a secondary window, the node is adopted into the host
+   * document before the `'before-attach'` message is sent. This allows
+   * `onBeforeAttach` handlers to rely on `this.node.ownerDocument`.
    */
   export function attach(
     widget: Widget,
@@ -1124,6 +1131,7 @@ export namespace Widget {
     if (!host.isConnected) {
       throw new Error('Host is not attached.');
     }
+    Utils.adoptNode(widget.node, host);
     MessageLoop.sendMessage(widget, Widget.Msg.BeforeAttach);
     host.insertBefore(widget.node, ref);
     MessageLoop.sendMessage(widget, Widget.Msg.AfterAttach);

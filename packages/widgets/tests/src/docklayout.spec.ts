@@ -104,6 +104,20 @@ describe('@lumino/widgets', () => {
         layout.dispose();
         expect(layout.isDisposed).to.equal(true);
       });
+
+      it('should dispose of the widgets in the tab areas', () => {
+        const layout = new DockLayout({ renderer });
+        const widgets = [new Widget(), new Widget(), new Widget()];
+        layout.addWidget(widgets[0]);
+        layout.addWidget(widgets[1]);
+        layout.addWidget(widgets[2], { mode: 'split-right' });
+        layout.dispose();
+        expect(widgets.map(widget => widget.isDisposed)).to.deep.equal([
+          true,
+          true,
+          true
+        ]);
+      });
     });
 
     describe('#handles()', () => {
@@ -163,6 +177,121 @@ describe('@lumino/widgets', () => {
         layout.hiddenMode = Widget.HiddenMode.Scale;
 
         expect(widgets[0].hiddenMode).to.equal(Widget.HiddenMode.Display);
+      });
+
+      it("should switch a single widget to 'content-visibility'", () => {
+        layout.removeWidget(widgets[1]);
+
+        layout.hiddenMode = Widget.HiddenMode.ContentVisibility;
+
+        expect(widgets[0].hiddenMode).to.equal(
+          Widget.HiddenMode.ContentVisibility
+        );
+      });
+
+      it("should switch a single widget from 'content-visibility' to 'display'", () => {
+        const layout = new DockLayout({
+          renderer,
+          hiddenMode: Widget.HiddenMode.ContentVisibility
+        });
+        const widget = new Widget();
+        layout.addWidget(widget);
+
+        layout.hiddenMode = Widget.HiddenMode.Display;
+
+        expect(widget.hiddenMode).to.equal(Widget.HiddenMode.Display);
+
+        layout.dispose();
+      });
+
+      it("should apply 'content-visibility' to the first widget", () => {
+        const layout = new DockLayout({
+          renderer,
+          hiddenMode: Widget.HiddenMode.ContentVisibility
+        });
+        const widget = new Widget();
+
+        layout.addWidget(widget);
+
+        expect(widget.hiddenMode).to.equal(Widget.HiddenMode.ContentVisibility);
+
+        layout.dispose();
+      });
+
+      it("should apply 'content-visibility' to subsequent widgets", () => {
+        const layout = new DockLayout({
+          renderer,
+          hiddenMode: Widget.HiddenMode.ContentVisibility
+        });
+        const first = new Widget();
+        const second = new Widget();
+
+        layout.addWidget(first);
+        layout.addWidget(second, { mode: 'tab-after' });
+
+        expect(first.hiddenMode).to.equal(Widget.HiddenMode.ContentVisibility);
+        expect(second.hiddenMode).to.equal(Widget.HiddenMode.ContentVisibility);
+
+        layout.dispose();
+      });
+
+      it("should use 'display' for a single 'scale' widget", () => {
+        const layout = new DockLayout({
+          renderer,
+          hiddenMode: Widget.HiddenMode.Scale
+        });
+        const first = new Widget();
+        const second = new Widget();
+        const third = new Widget();
+
+        layout.addWidget(first);
+        expect(first.hiddenMode).to.equal(Widget.HiddenMode.Display);
+
+        layout.addWidget(second, { mode: 'tab-after' });
+        layout.addWidget(third, { mode: 'tab-after' });
+
+        expect(first.hiddenMode).to.equal(Widget.HiddenMode.Scale);
+        expect(second.hiddenMode).to.equal(Widget.HiddenMode.Scale);
+        expect(third.hiddenMode).to.equal(Widget.HiddenMode.Scale);
+
+        layout.dispose();
+      });
+
+      it("should apply 'content-visibility' to the first widget of a split area", () => {
+        const layout = new DockLayout({
+          renderer,
+          hiddenMode: Widget.HiddenMode.ContentVisibility
+        });
+        const first = new Widget();
+        const second = new Widget();
+
+        layout.addWidget(first);
+        layout.addWidget(second, { ref: first, mode: 'split-right' });
+
+        expect(first.hiddenMode).to.equal(Widget.HiddenMode.ContentVisibility);
+        expect(second.hiddenMode).to.equal(Widget.HiddenMode.ContentVisibility);
+
+        layout.dispose();
+      });
+
+      it("should apply 'scale' to single widgets which a restored layout puts in one tab area", () => {
+        const layout = new DockLayout({
+          renderer,
+          hiddenMode: Widget.HiddenMode.Scale
+        });
+        const first = new Widget();
+        const second = new Widget();
+        layout.addWidget(first);
+        layout.addWidget(second, { ref: first, mode: 'split-right' });
+
+        layout.restoreLayout({
+          main: { type: 'tab-area', widgets: [first, second], currentIndex: 0 }
+        });
+
+        expect(first.hiddenMode).to.equal(Widget.HiddenMode.Scale);
+        expect(second.hiddenMode).to.equal(Widget.HiddenMode.Scale);
+
+        layout.dispose();
       });
     });
 

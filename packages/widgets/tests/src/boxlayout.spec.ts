@@ -102,6 +102,17 @@ class LogWidget extends Widget {
   }
 }
 
+/**
+ * Where each node of the parent is in the layout order of the widgets:
+ * ascending when the DOM follows the layout.
+ */
+function domOrder(layout: BoxLayout): number[] {
+  let nodes: Element[] = layout.widgets.map(widget => widget.node);
+  return Array.from(layout.parent!.node.children).map(node =>
+    nodes.indexOf(node)
+  );
+}
+
 describe('@lumino/widgets', () => {
   describe('BoxLayout', () => {
     describe('constructor()', () => {
@@ -236,6 +247,30 @@ describe('@lumino/widgets', () => {
     });
 
     describe('#attachWidget()', () => {
+      it('should insert the widget node in layout order', () => {
+        let panel = new Widget();
+        let layout = new LogBoxLayout();
+        panel.layout = layout;
+        layout.addWidget(new Widget());
+        layout.addWidget(new Widget());
+        layout.insertWidget(1, new Widget());
+        layout.insertWidget(0, new Widget());
+        expect(domOrder(layout)).to.deep.equal([0, 1, 2, 3]);
+        panel.dispose();
+      });
+
+      it('should leave other nodes of the parent in place', () => {
+        let panel = new Widget();
+        panel.node.appendChild(document.createElement('div'));
+        let layout = new LogBoxLayout();
+        panel.layout = layout;
+        layout.addWidget(new Widget());
+        layout.addWidget(new Widget());
+        layout.insertWidget(1, new Widget());
+        expect(domOrder(layout)).to.deep.equal([-1, 0, 1, 2]);
+        panel.dispose();
+      });
+
       it("should attach a widget to the parent's DOM node", () => {
         let panel = new Widget();
         let layout = new LogBoxLayout();
@@ -274,6 +309,96 @@ describe('@lumino/widgets', () => {
     });
 
     describe('#moveWidget()', () => {
+      it('should move the widget nodes in layout order', () => {
+        let panel = new Widget();
+        let layout = new LogBoxLayout();
+        panel.layout = layout;
+        let widgets = [new Widget(), new Widget(), new Widget(), new Widget()];
+        widgets.forEach(w => {
+          layout.addWidget(w);
+        });
+        layout.insertWidget(0, widgets[3]);
+        expect(domOrder(layout)).to.deep.equal([0, 1, 2, 3]);
+        layout.insertWidget(3, widgets[3]);
+        expect(domOrder(layout)).to.deep.equal([0, 1, 2, 3]);
+        layout.insertWidget(1, widgets[0]);
+        expect(domOrder(layout)).to.deep.equal([0, 1, 2, 3]);
+        panel.dispose();
+      });
+
+      it('should move the widget node in an attached panel', function () {
+        if (!('moveBefore' in Element.prototype)) {
+          this.skip();
+        }
+        let panel = new Widget();
+        let layout = new LogBoxLayout();
+        panel.layout = layout;
+        let widgets = [new Widget(), new Widget(), new Widget()];
+        widgets.forEach(w => {
+          layout.addWidget(w);
+        });
+        Widget.attach(panel, document.body);
+        layout.insertWidget(2, widgets[0]);
+        expect(domOrder(layout)).to.deep.equal([0, 1, 2]);
+        panel.dispose();
+      });
+
+      it('should not send detach messages to a moved widget', () => {
+        let panel = new Widget();
+        let layout = new LogBoxLayout();
+        panel.layout = layout;
+        let widgets = [new Widget(), new Widget(), new Widget()];
+        widgets.forEach(w => {
+          layout.addWidget(w);
+        });
+        Widget.attach(panel, document.body);
+        let messages: string[] = [];
+        MessageLoop.installMessageHook(widgets[0], (handler, msg) => {
+          messages.push(msg.type);
+          return true;
+        });
+        layout.insertWidget(2, widgets[0]);
+        expect(messages).to.not.contain('before-detach');
+        expect(messages).to.not.contain('after-detach');
+        panel.dispose();
+      });
+
+      it('should keep the focus in a moved widget', () => {
+        let panel = new Widget();
+        let layout = new LogBoxLayout();
+        panel.layout = layout;
+        let widgets = [new Widget(), new Widget(), new Widget()];
+        widgets.forEach(w => {
+          layout.addWidget(w);
+        });
+        let input = document.createElement('input');
+        widgets[0].node.appendChild(input);
+        Widget.attach(panel, document.body);
+        input.focus();
+        layout.insertWidget(2, widgets[0]);
+        expect(document.activeElement).to.equal(input);
+        panel.dispose();
+      });
+
+      it('should keep the iframe documents of a widget moved without moveBefore', () => {
+        let panel = new Widget();
+        let layout = new LogBoxLayout();
+        panel.layout = layout;
+        let widgets = [new Widget(), new Widget(), new Widget()];
+        widgets.forEach(w => {
+          layout.addWidget(w);
+        });
+        let iframe = document.createElement('iframe');
+        widgets[0].node.appendChild(iframe);
+        Widget.attach(panel, document.body);
+        let frame = iframe.contentWindow;
+        // As in a browser without `moveBefore`, such as Safari.
+        (panel.node as any).moveBefore = undefined;
+        layout.insertWidget(2, widgets[0]);
+        expect(iframe.contentWindow === frame).to.equal(true);
+        panel.dispose();
+      });
+
       it('should post an update request for the parent widget', done => {
         let panel = new Widget();
         let layout = new LogBoxLayout();
