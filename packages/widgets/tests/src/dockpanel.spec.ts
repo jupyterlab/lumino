@@ -83,6 +83,27 @@ describe('@lumino/widgets', () => {
         panel.dispose();
         expect(panel.isDisposed).to.equal(true);
       });
+
+      it('should dispose of the widgets in the tab areas', () => {
+        const panel = new DockPanel();
+        const widgets = [new Widget(), new Widget(), new Widget()];
+        let disposed = 0;
+        widgets.forEach(widget => {
+          widget.disposed.connect(() => {
+            disposed++;
+          });
+        });
+        panel.addWidget(widgets[0]);
+        panel.addWidget(widgets[1]);
+        panel.addWidget(widgets[2], { mode: 'split-right' });
+        panel.dispose();
+        expect(widgets.map(widget => widget.isDisposed)).to.deep.equal([
+          true,
+          true,
+          true
+        ]);
+        expect(disposed).to.equal(3);
+      });
     });
 
     describe('drag-drop overlay', () => {

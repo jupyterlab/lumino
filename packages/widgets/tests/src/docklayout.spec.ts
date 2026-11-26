@@ -104,6 +104,20 @@ describe('@lumino/widgets', () => {
         layout.dispose();
         expect(layout.isDisposed).to.equal(true);
       });
+
+      it('should dispose of the widgets in the tab areas', () => {
+        const layout = new DockLayout({ renderer });
+        const widgets = [new Widget(), new Widget(), new Widget()];
+        layout.addWidget(widgets[0]);
+        layout.addWidget(widgets[1]);
+        layout.addWidget(widgets[2], { mode: 'split-right' });
+        layout.dispose();
+        expect(widgets.map(widget => widget.isDisposed)).to.deep.equal([
+          true,
+          true,
+          true
+        ]);
+      });
     });
 
     describe('#handles()', () => {
