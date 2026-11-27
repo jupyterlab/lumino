@@ -288,8 +288,6 @@ export class Application<T extends Widget = Widget> {
     // Mark the application as started;
     this._started = true;
 
-    this._bubblingKeydown = options.bubblingKeydown ?? false;
-
     // Parse the host ID for attaching the shell.
     const hostID = options.hostID ?? '';
 
@@ -356,8 +354,9 @@ export class Application<T extends Widget = Widget> {
    */
   protected addEventListeners(): void {
     document.addEventListener('contextmenu', this);
-    document.addEventListener('keydown', this, !this._bubblingKeydown);
-    document.addEventListener('keyup', this, !this._bubblingKeydown);
+    document.addEventListener('keydown', this, true);
+    document.addEventListener('keydown', this, false);
+    document.addEventListener('keyup', this);
     window.addEventListener('resize', this);
   }
 
@@ -428,7 +427,6 @@ export class Application<T extends Widget = Widget> {
   protected pluginRegistry: PluginRegistry;
   private _delegate = new PromiseDelegate<void>();
   private _started = false;
-  private _bubblingKeydown = false;
 }
 
 /**
