@@ -28,4 +28,4 @@ header:
     - 'LICENSE'
     - 'yarn.lock'
 
-  comment: on-failure
+  comment: never
