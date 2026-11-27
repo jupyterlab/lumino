@@ -39,7 +39,7 @@ export { type IPlugin };
  * UI applications with the ability to be safely extended by third
  * party code via plugins.
  */
-export class Application<T extends Widget = Widget> {
+export class Application<T extends Widget | HTMLElement = Widget> {
   /**
    * Construct a new application.
    *
@@ -51,12 +51,16 @@ export class Application<T extends Widget = Widget> {
     this.pluginRegistry.application = this;
 
     // Initialize the application state.
-    this.commands = new CommandRegistry();
-    this.contextMenu = new ContextMenu({
+    this.commands = options.commands ?? new CommandRegistry();
+    const contextMenuOptions = {
       commands: this.commands,
       renderer: options.contextMenuRenderer
-    });
+    };
+    this.contextMenu = options.contextMenuFactory
+      ? options.contextMenuFactory(contextMenuOptions)
+      : new ContextMenu(contextMenuOptions);
     this.shell = options.shell;
+    this._hasShellWidget = this.shell instanceof Widget;
   }
 
   /**
@@ -196,7 +200,9 @@ export class Application<T extends Widget = Widget> {
    * If the plugin provides a service which has already been provided
    * by another plugin, the new service will override the old service.
    */
-  registerPlugin(plugin: IPlugin<this, any>): void {
+  registerPlugin(
+    plugin: IPlugin<Application<Widget | HTMLElement>, any>
+  ): void {
     this.pluginRegistry.registerPlugin(plugin);
   }
 
@@ -208,7 +214,9 @@ export class Application<T extends Widget = Widget> {
    * #### Notes
    * This calls `registerPlugin()` for each of the given plugins.
    */
-  registerPlugins(plugins: IPlugin<this, any>[]): void {
+  registerPlugins(
+    plugins: IPlugin<Application<Widget | HTMLElement>, any>[]
+  ): void {
     this.pluginRegistry.registerPlugins(plugins);
   }
 
@@ -339,10 +347,17 @@ export class Application<T extends Widget = Widget> {
    * A subclass may reimplement this method as needed.
    */
   protected attachShell(id: string): void {
-    Widget.attach(
-      this.shell,
-      (id && document.getElementById(id)) || document.body
-    );
+    if (this._hasShellWidget) {
+      Widget.attach(
+        this.shell as Widget,
+        (id && document.getElementById(id)) || document.body
+      );
+    } else {
+      const host = (id && document.getElementById(id)) || document.body;
+      if (!host.contains(this.shell as HTMLElement)) {
+        host.appendChild(this.shell as HTMLElement);
+      }
+    }
   }
 
   /**
@@ -419,7 +434,9 @@ export class Application<T extends Widget = Widget> {
    * A subclass may reimplement this method as needed.
    */
   protected evtResize(event: Event): void {
-    this.shell.update();
+    if (this._hasShellWidget) {
+      (this.shell as Widget).update();
+    }
   }
 
   /**
@@ -429,24 +446,35 @@ export class Application<T extends Widget = Widget> {
   private _delegate = new PromiseDelegate<void>();
   private _started = false;
   private _bubblingKeydown = false;
+  private _hasShellWidget = true;
 }
 
 /**
- * The namespace for the `Application` class statics.
+ * The namespace for the {@link Application} class statics.
  */
 export namespace Application {
   /**
    * An options object for creating an application.
    */
-  export interface IOptions<T extends Widget> extends PluginRegistry.IOptions {
+  export interface IOptions<T extends Widget | HTMLElement>
+    extends PluginRegistry.IOptions {
     /**
-     * The shell widget to use for the application.
+     * The shell element to use for the application.
      *
-     * This should be a newly created and initialized widget.
-     *
-     * The application will attach the widget to the DOM.
+     * If it is a {@link Widget}, this should be a newly created and initialized widget.
+     * and the application will attach the widget to the DOM.
      */
     shell: T;
+
+    /**
+     * A custom commands registry.
+     */
+    commands?: CommandRegistry;
+
+    /**
+     * A custom context menu factory.
+     */
+    contextMenuFactory?: (options: ContextMenu.IOptions) => ContextMenu;
 
     /**
      * A custom renderer for the context menu.
