@@ -27,5 +27,6 @@ header:
     - 'CNAME'
     - 'LICENSE'
     - 'yarn.lock'
+    - '.yarn'
 
   comment: never
