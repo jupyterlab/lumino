@@ -1108,6 +1108,43 @@ describe('@lumino/widgets', () => {
         bar.dispose();
       });
 
+      it('should use the overflow menu when the first update ran before attaching', () => {
+        let bar = new MenuBar();
+        for (let i = 0; i < 3; i++) {
+          let menu = createMenu();
+          menu.title.label = `Menu${i}`;
+          bar.addMenu(menu);
+        }
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        Widget.attach(bar, document.body);
+        bar.node.style.maxWidth = '70px';
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        expect(bar.overflowMenu).to.not.equal(null);
+        bar.dispose();
+      });
+
+      it('should move a menu added after the first render into the overflow menu when it does not fit', () => {
+        let bar = createMenuBar();
+        let sizes = Array.from(bar.contentNode.children).map(
+          item => (item as HTMLElement).offsetWidth
+        );
+        // Room for the three menus, but not for a fourth one
+        bar.node.style.maxWidth = `${sizes[0] + sizes[1] + sizes[2] + 1}px`;
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        expect(bar.overflowMenu).to.equal(null);
+        let menu = createMenu();
+        menu.title.label = 'Menu3';
+        bar.addMenu(menu);
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        MessageLoop.sendMessage(bar, Widget.Msg.UpdateRequest);
+        expect(bar.overflowMenu).to.not.equal(null);
+        expect(bar.overflowMenu!.items.map(item => item.label)).to.include(
+          'Menu3'
+        );
+        bar.dispose();
+      });
+
       it('should keep the menus in the menu bar after it is hidden and shown', () => {
         let bar = createMenuBar();
         bar.hide();

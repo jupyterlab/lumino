@@ -565,8 +565,9 @@ export class MenuBar extends Widget {
     let index = -1;
     let n = itemMenus.length;
 
-    if (this._menuItemSizes.length == 0) {
-      // Check if it is the first resize and get info about menu items sizes
+    if (this._shouldMeasureMenuItems(n, screenSize)) {
+      // Measure the sizes of the menu items
+      this._menuItemSizes.length = 0;
       for (let i = 0; i < n; i++) {
         let item = itemMenus[i] as HTMLLIElement;
         // Add sizes to array
@@ -590,6 +591,35 @@ export class MenuBar extends Widget {
     if (screenSize > 0) {
       this._overflowIndex = index;
     }
+  }
+
+  /**
+   * Whether the rendered menu items should be measured again.
+   *
+   * #### Notes
+   * Only a menu bar with a width can measure its items: a menu bar that
+   * is not attached or is hidden would store zeros, and a sum of zeros
+   * never exceeds its width. The items are measured again when all the
+   * menus are rendered and the stored sizes do not match them, for
+   * example after menus were added or removed.
+   */
+  private _shouldMeasureMenuItems(
+    renderedCount: number,
+    screenSize: number
+  ): boolean {
+    if (screenSize <= 0) {
+      return false;
+    }
+    let sizes = this._menuItemSizes;
+    if (sizes.length === 0) {
+      return true;
+    }
+    let allMenusRendered =
+      this._overflowMenu === null && renderedCount === this._menus.length;
+    return (
+      allMenusRendered &&
+      (sizes.length !== renderedCount || sizes.some(size => size === 0))
+    );
   }
 
   /**
