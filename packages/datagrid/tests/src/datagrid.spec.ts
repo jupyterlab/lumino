@@ -2,7 +2,13 @@
 // Distributed under the terms of the Modified BSD License.
 import { expect } from 'chai';
 
-import { DataGrid, DataModel } from '@lumino/datagrid';
+import {
+  CellRenderer,
+  DataGrid,
+  DataModel,
+  GraphicsContext,
+  TextRenderer
+} from '@lumino/datagrid';
 
 import { MessageLoop } from '@lumino/messaging';
 
@@ -98,6 +104,63 @@ function cellRect(
   return [64 + 64 * c1, top + 20 * r1, 64 * (c2 - c1 + 1), 20 * (r2 - r1 + 1)];
 }
 
+/**
+ * Many rows and ten columns, with one group across all columns on every
+ * 10th body row (#865). Records the reads of the data and of the groups.
+ */
+class ManyGroupsModel extends DataModel {
+  dataReads: Array<[number, number]> = [];
+  groupReads = 0;
+
+  constructor(
+    private rows: number,
+    private groups: number
+  ) {
+    super();
+  }
+  rowCount(region: DataModel.RowRegion): number {
+    return region === 'body' ? this.rows : 1;
+  }
+  columnCount(region: DataModel.ColumnRegion): number {
+    return region === 'body' ? 10 : 1;
+  }
+  data(region: DataModel.CellRegion, row: number, column: number): string {
+    if (region === 'body') {
+      this.dataReads.push([row, column]);
+    }
+    return `${row},${column}`;
+  }
+  groupCount(region: DataModel.CellRegion): number {
+    return region === 'body' ? this.groups : 0;
+  }
+  group(region: DataModel.CellRegion, index: number) {
+    this.groupReads++;
+    return { r1: index * 10, r2: index * 10, c1: 0, c2: 9 };
+  }
+}
+
+/**
+ * A cell renderer which records the config of each painted cell.
+ */
+class RecordingRenderer extends TextRenderer {
+  configs: CellRenderer.CellConfig[] = [];
+
+  paint(gc: GraphicsContext, config: CellRenderer.CellConfig): void {
+    this.configs.push({ ...config });
+    super.paint(gc, config);
+  }
+}
+
+/**
+ * A data grid which can repaint all its content from a test.
+ */
+class RepaintableGrid extends DataGrid {
+  repaintAll(): void {
+    this.repaintContent();
+    MessageLoop.flush();
+  }
+}
+
 describe('@lumino/datagrid', () => {
   let datagrid: DataGrid;
   let model: LargeDataModel;
@@ -173,6 +236,69 @@ describe('@lumino/datagrid', () => {
         MessageLoop.flush();
         expect(grid.painted).to.deep.equal([cellRect('body', 1, 1, 1, 1)]);
       });
+    });
+
+    describe('paint', () => {
+      it('should paint a merged cell as wide as its columns of different sizes', () => {
+        const merged = new MergedModel();
+        const renderer = new RecordingRenderer();
+        const grid = new RepaintableGrid();
+        grid.cellRenderers.update({ body: renderer });
+        grid.dataModel = merged;
+        grid.node.style.width = '500px';
+        grid.node.style.height = '200px';
+        Widget.attach(grid, document.body);
+        grid.resizeColumn('body', 1, 100);
+        MessageLoop.flush();
+        renderer.configs = [];
+        grid.repaintAll();
+        const mergedRow3 = renderer.configs.filter(
+          config => config.row === 3 && config.column === 0
+        );
+        expect(mergedRow3.map(config => config.width)).to.deep.equal([
+          64 + 100 + 64 + 64
+        ]);
+        expect(mergedRow3.map(config => config.height)).to.deep.equal([20]);
+        grid.dispose();
+      });
+    });
+  });
+
+  describe('ManyGroupsModel', () => {
+    let grid: RepaintableGrid;
+    let groupModel: ManyGroupsModel;
+
+    beforeEach(() => {
+      groupModel = new ManyGroupsModel(20_000, 1_000);
+      grid = new RepaintableGrid();
+      grid.dataModel = groupModel;
+      grid.node.style.width = '600px';
+      grid.node.style.height = '260px';
+      Widget.attach(grid, document.body);
+      MessageLoop.flush();
+    });
+
+    afterEach(() => {
+      grid.dispose();
+    });
+
+    it('should not read the data of merged cells outside the viewport when scrolling', () => {
+      groupModel.dataReads = [];
+      grid.scrollTo(0, 20);
+      MessageLoop.flush();
+      const rows = groupModel.dataReads.map(([row]) => row);
+      expect(rows.length).to.be.greaterThan(0);
+      expect(Math.max(...rows)).to.be.lessThan(20);
+    });
+
+    it('should not go through every group for every painted cell', () => {
+      groupModel.dataReads = [];
+      groupModel.groupReads = 0;
+      grid.repaintAll();
+      expect(groupModel.dataReads.length).to.be.greaterThan(0);
+      // About 50 visible body cells outside the merged rows: a few scans of
+      // the groups per paint, not one per cell.
+      expect(groupModel.groupReads).to.be.lessThan(10 * 1_000);
     });
   });
 });

@@ -5035,7 +5035,12 @@ export class DataGrid extends Widget {
       metadata: DataModel.emptyMetadata
     };
 
-    let groupIndex = -1;
+    // Collect the merged cell groups in the region once, instead of going
+    // through all the groups of the data model for every cell.
+    const regionGroups = CellGroup.getCellGroupsAtRegion(
+      this._dataModel,
+      rgn.region
+    ).filter(group => this.cellGroupInteresectsRegion(group, rgn));
 
     // Save the buffer gc before wrapping.
     this._bufferGC.save();
@@ -5076,15 +5081,16 @@ export class DataGrid extends Widget {
         // Compute the row index.
         let row = rgn.row + j;
 
-        groupIndex = CellGroup.getGroupIndex(
-          this.dataModel!,
-          config.region,
-          row,
-          column
+        const inGroup = regionGroups.some(
+          group =>
+            row >= group.r1 &&
+            row <= group.r2 &&
+            column >= group.c1 &&
+            column <= group.c2
         );
 
         // For merged cell regions, don't do anything, we draw merged regions later.
-        if (groupIndex !== -1) {
+        if (inGroup) {
           y += height;
           continue;
         }
@@ -5267,29 +5273,28 @@ export class DataGrid extends Widget {
     // Wrap the buffer gc for painting the cells.
     let gc = new GraphicsContext(this._bufferGC);
 
+    // The sections that size the groups of the region.
+    const columnSections =
+      rgn.region === 'body' || rgn.region === 'column-header'
+        ? this._columnSections
+        : this._rowHeaderSections;
+    const rowSections =
+      rgn.region === 'body' || rgn.region === 'row-header'
+        ? this._rowSections
+        : this._columnHeaderSections;
+
     for (const group of cellGroups) {
-      let width = 0;
-      for (let c = group.c1; c <= group.c2; c++) {
-        width += this._getColumnSize(rgn.region, c);
-      }
-
-      let height = 0;
-      for (let r = group.r1; r <= group.r2; r++) {
-        height += this._getRowSize(rgn.region, r);
-      }
-
-      let value = DataGrid._getCellValue(
-        this.dataModel as DataModel,
-        rgn.region,
-        group.r1,
-        group.c1
-      );
-      let metadata = DataGrid._getCellMetadata(
-        this.dataModel as DataModel,
-        rgn.region,
-        group.r1,
-        group.c2
-      );
+      // The sections of a group are contiguous, so the size of a group is the
+      // distance between the offsets of its first and last sections plus the
+      // size of the last one, which can be stretched.
+      const width =
+        columnSections.offsetOf(group.c2) -
+        columnSections.offsetOf(group.c1) +
+        this._getColumnSize(rgn.region, group.c2);
+      const height =
+        rowSections.offsetOf(group.r2) -
+        rowSections.offsetOf(group.r1) +
+        this._getRowSize(rgn.region, group.r2);
 
       let x = 0;
       let y = 0;
@@ -5324,6 +5329,40 @@ export class DataGrid extends Widget {
           break;
       }
 
+      // Compute the actual X bounds for the cell.
+      const x1 = Math.max(rgn.xMin, x);
+      const x2 = Math.min(x + width - 2, rgn.xMax);
+
+      // Compute the actual Y bounds for the cell.
+      const y1 = Math.max(rgn.yMin, y);
+      const y2 = Math.min(y + height - 2, rgn.yMax);
+
+      // Skip the groups outside the region or the viewport before reading
+      // their data. The regions of scrolls and resizes span the whole body.
+      if (
+        x2 <= x1 ||
+        y2 <= y1 ||
+        x1 >= this._viewportWidth ||
+        y1 >= this._viewportHeight ||
+        x2 < 0 ||
+        y2 < 0
+      ) {
+        continue;
+      }
+
+      let value = DataGrid._getCellValue(
+        this.dataModel as DataModel,
+        rgn.region,
+        group.r1,
+        group.c1
+      );
+      let metadata = DataGrid._getCellMetadata(
+        this.dataModel as DataModel,
+        rgn.region,
+        group.r1,
+        group.c2
+      );
+
       config.x = x;
       config.y = y;
       config.width = width;
@@ -5333,18 +5372,6 @@ export class DataGrid extends Widget {
       config.column = group.c1;
       config.value = value;
       config.metadata = metadata;
-
-      // Compute the actual X bounds for the cell.
-      const x1 = Math.max(rgn.xMin, x);
-      const x2 = Math.min(x + width - 2, rgn.xMax);
-
-      // Compute the actual Y bounds for the cell.
-      const y1 = Math.max(rgn.yMin, y);
-      const y2 = Math.min(y + height - 2, rgn.yMax);
-
-      if (x2 <= x1 || y2 <= y1) {
-        continue;
-      }
 
       // Draw the background.
       if (backgroundColor) {
