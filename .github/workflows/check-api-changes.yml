@@ -43,22 +43,12 @@ jobs:
           yarn build
           yarn api
 
-      - name: Dummy commit
+      - name: Fail if the API reports changed
+        shell: bash
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add ./review/api/*.api.md
-          git commit --allow-empty -m "API changes"
-
-      # TODO: re-enable check for the following files:
-      # review/api/*.api.md
-      # - name: Get API changes
-      #   id: api-changed
-
-      # - name: Fail if API are modified
-      #   if: steps.api-changed.outputs.any_changed == 'true'
-      #   run: |
-      #     for file in ${{ steps.api-changed.outputs.all_changed_files }}; do
-      #       echo "$file"
-      #     done
-      #     exit 1
+          changed=$(git status --porcelain -- review/api)
+          if [ -n "$changed" ]; then
+            echo "$changed"
+            echo "::error::The API reports in review/api are out of date. Run 'yarn build && yarn api' and commit the changes."
+            exit 1
+          fi
